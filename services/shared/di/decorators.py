@@ -76,17 +76,25 @@ def injectable(cls: type[T]) -> type[T]:
                     args_types = get_args(param_type)
                     if len(args_types) == 2 and type(None) in args_types:
                         # Optional type
-                        param_type = args_types[0] if args_types[1] is type(None) else args_types[1]
+                        param_type = (
+                            args_types[0]
+                            if args_types[1] is type(None)
+                            else args_types[1]
+                        )
                         is_optional = True
 
                 # Try to resolve dependency
                 try:
                     dependency = container.resolve(param_type)
                     kwargs[param_name] = dependency
-                    logger.debug(f"Injected {param_type} into {cls.__name__}.{param_name}")
+                    logger.debug(
+                        f"Injected {param_type} into {cls.__name__}.{param_name}"
+                    )
                 except ValueError as e:
                     if not is_optional and param.default == inspect.Parameter.empty:
-                        logger.error(f"Failed to inject {param_type} into {cls.__name__}: {e}")
+                        logger.error(
+                            f"Failed to inject {param_type} into {cls.__name__}: {e}"
+                        )
                         raise
                     # Optional dependency or has default value
                     logger.debug(
@@ -130,7 +138,9 @@ def inject(*dependencies: type) -> Callable:
                         kwargs[param_name] = dependency
                         logger.debug(f"Injected {dep_type} into {func.__name__}")
                     except ValueError as e:
-                        logger.error(f"Failed to inject {dep_type} into {func.__name__}: {e}")
+                        logger.error(
+                            f"Failed to inject {dep_type} into {func.__name__}: {e}"
+                        )
                         raise
 
             return func(*args, **kwargs)
@@ -237,7 +247,9 @@ def factory(interface: type[T], scope: Scope = Scope.TRANSIENT):
         container = get_container()
 
         container.register_factory(interface, func, scope)
-        logger.debug(f"Registered factory {func.__name__} for {interface} ({scope.value})")
+        logger.debug(
+            f"Registered factory {func.__name__} for {interface} ({scope.value})"
+        )
 
         return func
 
@@ -298,7 +310,9 @@ def auto_register(scope: Scope = Scope.TRANSIENT, interface: type = None):
         registration_interface = interface or cls
 
         container.register(registration_interface, cls, scope)
-        logger.debug(f"Auto-registered {cls} for {registration_interface} ({scope.value})")
+        logger.debug(
+            f"Auto-registered {cls} for {registration_interface} ({scope.value})"
+        )
 
         return injectable(cls)
 

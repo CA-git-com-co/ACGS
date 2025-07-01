@@ -298,6 +298,7 @@ os.environ.setdefault("CONSTITUTIONAL_HASH", "cdd01ef066bc6cf2")
 
 # Additional missing fixtures for comprehensive testing
 
+
 @pytest.fixture
 def mock_service_registry():
     """Mock service registry fixture."""
@@ -306,13 +307,25 @@ def mock_service_registry():
 
     registry = Mock()
     registry.services = {
-        "auth": {"url": "http://localhost:8000", "status": "healthy", "version": "3.0.0"},
+        "auth": {
+            "url": "http://localhost:8000",
+            "status": "healthy",
+            "version": "3.0.0",
+        },
         "ac": {"url": "http://localhost:8001", "status": "healthy", "version": "3.0.0"},
-        "integrity": {"url": "http://localhost:8002", "status": "healthy", "version": "3.0.0"},
+        "integrity": {
+            "url": "http://localhost:8002",
+            "status": "healthy",
+            "version": "3.0.0",
+        },
         "fv": {"url": "http://localhost:8003", "status": "healthy", "version": "2.0.0"},
         "gs": {"url": "http://localhost:8004", "status": "healthy", "version": "3.0.0"},
-        "pgc": {"url": "http://localhost:8005", "status": "healthy", "version": "3.0.0"},
-        "ec": {"url": "http://localhost:8006", "status": "healthy", "version": "1.0.0"}
+        "pgc": {
+            "url": "http://localhost:8005",
+            "status": "healthy",
+            "version": "3.0.0",
+        },
+        "ec": {"url": "http://localhost:8006", "status": "healthy", "version": "1.0.0"},
     }
     registry.constitutional_hash = "cdd01ef066bc6cf2"
 
@@ -326,7 +339,7 @@ def mock_service_registry():
         return {
             "status": service["status"],
             "constitutional_hash": registry.constitutional_hash,
-            "timestamp": time.time()
+            "timestamp": time.time(),
         }
 
     registry.get_service = get_service
@@ -358,7 +371,7 @@ def test_user_data():
             email="admin@acgs.test",
             role="admin",
             permissions=["read", "write", "admin", "constitutional_review"],
-            created_at=time.time() - 86400
+            created_at=time.time() - 86400,
         ),
         TestUser(
             user_id="user_002",
@@ -366,8 +379,8 @@ def test_user_data():
             email="user@acgs.test",
             role="user",
             permissions=["read"],
-            created_at=time.time() - 3600
-        )
+            created_at=time.time() - 3600,
+        ),
     ]
 
 
@@ -397,11 +410,11 @@ def test_policy_data():
             rules=[
                 {"type": "constitutional_check", "required": True, "threshold": 0.95},
                 {"type": "hash_validation", "hash": "cdd01ef066bc6cf2"},
-                {"type": "audit_logging", "enabled": True}
+                {"type": "audit_logging", "enabled": True},
             ],
             version="1.0.0",
             constitutional_hash="cdd01ef066bc6cf2",
-            created_at=time.time() - 86400
+            created_at=time.time() - 86400,
         )
     ]
 
@@ -430,5 +443,5 @@ def performance_metrics():
         PerformanceMetric("throughput", 1785, "rps", current_time, "auth", 1000),
         PerformanceMetric("throughput", 658, "rps", current_time, "ac", 1000),
         PerformanceMetric("memory_usage", 512.5, "MB", current_time, "auth", 1024),
-        PerformanceMetric("cpu_usage", 25.4, "percent", current_time, "auth", 80)
+        PerformanceMetric("cpu_usage", 25.4, "percent", current_time, "auth", 80),
     ]

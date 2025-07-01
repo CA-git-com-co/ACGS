@@ -35,7 +35,9 @@ class OCRClient:
         """Initialize the OCR client with service connection details."""
         self.host = host or os.environ.get("OCR_SERVICE_HOST", "ocr-service")
         self.port = port or int(os.environ.get("OCR_SERVICE_PORT", "8666"))
-        self.health_port = health_port or int(os.environ.get("OCR_SERVICE_HEALTH_PORT", "8667"))
+        self.health_port = health_port or int(
+            os.environ.get("OCR_SERVICE_HEALTH_PORT", "8667")
+        )
         self.endpoint = f"http://{self.host}:{self.port}/v1/chat/completions"
         self.health_endpoint = f"http://{self.host}:{self.health_port}/health"
         logger.info(f"OCR client initialized with endpoint: {self.endpoint}")
@@ -163,11 +165,15 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="OCR Client for ACGS-1")
     parser.add_argument("--image", required=True, help="Path or URL to the image")
     parser.add_argument(
-        "--prompt", default="Extract all text from this image.", help="Prompt for the OCR model"
+        "--prompt",
+        default="Extract all text from this image.",
+        help="Prompt for the OCR model",
     )
     parser.add_argument("--host", default="localhost", help="OCR service host")
     parser.add_argument("--port", default=8666, type=int, help="OCR service port")
-    parser.add_argument("--health-port", default=8667, type=int, help="OCR service health port")
+    parser.add_argument(
+        "--health-port", default=8667, type=int, help="OCR service health port"
+    )
     parser.add_argument(
         "--type",
         default="general",

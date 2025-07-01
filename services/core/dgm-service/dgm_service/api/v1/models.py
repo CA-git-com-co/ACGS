@@ -23,7 +23,9 @@ class ImprovementRequest(BaseModel):
     """Request model for triggering improvements."""
 
     description: str = Field(..., description="Description of the improvement")
-    target_services: List[str] = Field(default=[], description="Target services for improvement")
+    target_services: List[str] = Field(
+        default=[], description="Target services for improvement"
+    )
     priority: str = Field(default="normal", description="Improvement priority")
     metadata: Dict[str, Any] = Field(default={}, description="Additional metadata")
 
@@ -41,7 +43,9 @@ class ImprovementResponse(BaseModel):
     status: str = Field(..., description="Improvement status")
     description: str = Field(..., description="Improvement description")
     created_at: datetime = Field(..., description="Creation timestamp")
-    estimated_completion: Optional[datetime] = Field(None, description="Estimated completion time")
+    estimated_completion: Optional[datetime] = Field(
+        None, description="Estimated completion time"
+    )
 
 
 class ArchiveEntry(BaseModel):
@@ -53,8 +57,12 @@ class ArchiveEntry(BaseModel):
     description: str = Field(..., description="Improvement description")
     status: str = Field(..., description="Improvement status")
     constitutional_compliance_score: float = Field(..., description="Compliance score")
-    performance_before: Dict[str, Any] = Field(..., description="Performance before improvement")
-    performance_after: Dict[str, Any] = Field(..., description="Performance after improvement")
+    performance_before: Dict[str, Any] = Field(
+        ..., description="Performance before improvement"
+    )
+    performance_after: Dict[str, Any] = Field(
+        ..., description="Performance after improvement"
+    )
     metadata: Dict[str, Any] = Field(default={}, description="Additional metadata")
 
 
@@ -92,9 +100,15 @@ class PerformanceReport(BaseModel):
 class ConstitutionalValidationRequest(BaseModel):
     """Request model for constitutional validation."""
 
-    improvement_data: Dict[str, Any] = Field(..., description="Improvement data to validate")
-    principles: List[str] = Field(default=[], description="Specific principles to check")
-    strict_mode: bool = Field(default=False, description="Enable strict validation mode")
+    improvement_data: Dict[str, Any] = Field(
+        ..., description="Improvement data to validate"
+    )
+    principles: List[str] = Field(
+        default=[], description="Specific principles to check"
+    )
+    strict_mode: bool = Field(
+        default=False, description="Enable strict validation mode"
+    )
 
 
 class ConstitutionalValidationResponse(BaseModel):
@@ -104,8 +118,12 @@ class ConstitutionalValidationResponse(BaseModel):
     compliance_score: float = Field(..., description="Compliance score (0-1)")
     violations: List[str] = Field(default=[], description="List of violations")
     warnings: List[str] = Field(default=[], description="List of warnings")
-    recommendations: List[str] = Field(default=[], description="Improvement recommendations")
-    details: Dict[str, Any] = Field(default={}, description="Detailed validation results")
+    recommendations: List[str] = Field(
+        default=[], description="Improvement recommendations"
+    )
+    details: Dict[str, Any] = Field(
+        default={}, description="Detailed validation results"
+    )
 
 
 class RollbackRequest(BaseModel):
@@ -122,7 +140,9 @@ class RollbackResponse(BaseModel):
     success: bool = Field(..., description="Whether rollback was successful")
     rollback_id: UUID = Field(..., description="Rollback operation ID")
     message: str = Field(..., description="Rollback result message")
-    restored_state: Dict[str, Any] = Field(default={}, description="Restored system state")
+    restored_state: Dict[str, Any] = Field(
+        default={}, description="Restored system state"
+    )
 
 
 class BanditArmStats(BaseModel):
@@ -133,7 +153,9 @@ class BanditArmStats(BaseModel):
     total_pulls: int = Field(..., description="Total number of pulls")
     total_reward: float = Field(..., description="Total reward accumulated")
     average_reward: float = Field(..., description="Average reward per pull")
-    confidence_bound: Optional[float] = Field(None, description="Upper confidence bound")
+    confidence_bound: Optional[float] = Field(
+        None, description="Upper confidence bound"
+    )
     last_pulled: Optional[datetime] = Field(None, description="Last pull timestamp")
 
 
@@ -145,7 +167,9 @@ class BanditReport(BaseModel):
     best_arm: str = Field(..., description="Currently best performing arm")
     exploration_rate: float = Field(..., description="Current exploration rate")
     arms: List[BanditArmStats] = Field(..., description="Individual arm statistics")
-    performance_history: List[Dict[str, Any]] = Field(..., description="Performance history")
+    performance_history: List[Dict[str, Any]] = Field(
+        ..., description="Performance history"
+    )
 
 
 class SystemStatus(BaseModel):
@@ -158,7 +182,9 @@ class SystemStatus(BaseModel):
     active_improvements: int = Field(..., description="Number of active improvements")
     total_improvements: int = Field(..., description="Total improvements processed")
     average_compliance_score: float = Field(..., description="Average compliance score")
-    last_improvement: Optional[datetime] = Field(None, description="Last improvement timestamp")
+    last_improvement: Optional[datetime] = Field(
+        None, description="Last improvement timestamp"
+    )
     system_health: Dict[str, Any] = Field(..., description="Detailed system health")
 
 

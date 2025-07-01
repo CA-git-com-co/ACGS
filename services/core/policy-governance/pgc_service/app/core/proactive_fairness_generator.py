@@ -184,23 +184,34 @@ class BiasDetectionEngine:
         score = 0.0
 
         # Check for accessibility barriers
-        if "physical" in policy_content.lower() and "accommodation" not in policy_content.lower():
+        if (
+            "physical" in policy_content.lower()
+            and "accommodation" not in policy_content.lower()
+        ):
             indicators.append(
                 "Potential accessibility barrier: physical requirements without accommodations"
             )
             score += 0.2
 
         # Check for economic barriers
-        if any(term in policy_content.lower() for term in ["fee", "cost", "payment", "purchase"]):
+        if any(
+            term in policy_content.lower()
+            for term in ["fee", "cost", "payment", "purchase"]
+        ):
             if (
                 "waiver" not in policy_content.lower()
                 and "assistance" not in policy_content.lower()
             ):
-                indicators.append("Potential economic barrier: costs without assistance provisions")
+                indicators.append(
+                    "Potential economic barrier: costs without assistance provisions"
+                )
                 score += 0.15
 
         # Check for technological barriers
-        if any(term in policy_content.lower() for term in ["online", "digital", "app", "website"]):
+        if any(
+            term in policy_content.lower()
+            for term in ["online", "digital", "app", "website"]
+        ):
             if "alternative" not in policy_content.lower():
                 indicators.append(
                     "Potential digital divide: digital requirements without alternatives"
@@ -273,7 +284,10 @@ class FairnessOptimizer:
             for variation in variations:
                 assessment = await self._assess_policy_fairness(variation, context)
 
-                if assessment.overall_fairness_score > best_assessment.overall_fairness_score:
+                if (
+                    assessment.overall_fairness_score
+                    > best_assessment.overall_fairness_score
+                ):
                     best_policy = variation
                     best_assessment = assessment
 
@@ -286,7 +300,9 @@ class FairnessOptimizer:
 
         return best_policy, best_assessment
 
-    async def _generate_policy_variations(self, policy: str, context: dict[str, Any]) -> list[str]:
+    async def _generate_policy_variations(
+        self, policy: str, context: dict[str, Any]
+    ) -> list[str]:
         """Generate variations of policy for fairness optimization."""
         variations = []
 
@@ -339,9 +355,7 @@ class FairnessOptimizer:
 
         # Add accommodation clauses
         if "accommodation" not in policy.lower():
-            accommodation_clause = (
-                "\n\nReasonable accommodations will be provided for individuals with disabilities."
-            )
+            accommodation_clause = "\n\nReasonable accommodations will be provided for individuals with disabilities."
             variations.append(policy + accommodation_clause)
 
         # Add alternative access methods
@@ -358,9 +372,7 @@ class FairnessOptimizer:
 
         # Add diversity statement
         if "diversity" not in policy.lower() and "inclusion" not in policy.lower():
-            diversity_clause = (
-                "\n\nThis policy promotes diversity, equity, and inclusion in all its applications."
-            )
+            diversity_clause = "\n\nThis policy promotes diversity, equity, and inclusion in all its applications."
             variations.append(policy + diversity_clause)
 
         # Add cultural sensitivity
@@ -512,13 +524,17 @@ class ProactiveFairnessGenerator:
         logger.info("Starting proactive fair policy generation")
 
         # Step 1: Detect bias in initial policy
-        bias_analysis = await self.bias_detector.detect_bias_in_policy(initial_policy, context)
+        bias_analysis = await self.bias_detector.detect_bias_in_policy(
+            initial_policy, context
+        )
 
         # Step 2: Optimize for fairness if bias detected or low fairness score
         if bias_analysis["mitigation_required"]:
             logger.info("Bias detected - optimizing for fairness")
             optimized_policy, assessment = (
-                await self.fairness_optimizer.optimize_policy_for_fairness(initial_policy, context)
+                await self.fairness_optimizer.optimize_policy_for_fairness(
+                    initial_policy, context
+                )
             )
         else:
             # Still assess fairness even if no bias detected
@@ -528,7 +544,9 @@ class ProactiveFairnessGenerator:
             optimized_policy = initial_policy
 
         # Step 3: Final validation
-        final_bias_check = await self.bias_detector.detect_bias_in_policy(optimized_policy, context)
+        final_bias_check = await self.bias_detector.detect_bias_in_policy(
+            optimized_policy, context
+        )
 
         # Update assessment with bias information
         assessment.bias_indicators = final_bias_check["bias_indicators"]
@@ -545,7 +563,9 @@ class ProactiveFairnessGenerator:
             }
         )
 
-        logger.info(f"Fair policy generation completed in {time.time() - start_time:.2f}s")
+        logger.info(
+            f"Fair policy generation completed in {time.time() - start_time:.2f}s"
+        )
 
         return optimized_policy, assessment
 
@@ -576,7 +596,9 @@ class ProactiveFairnessGenerator:
             for group, outcomes in outcome_data.items():
                 success_rate = outcomes.get("success_rate", 0.5)
                 if success_rate < 0.6:
-                    drift_indicators.append(f"Low success rate for {group}: {success_rate:.2f}")
+                    drift_indicators.append(
+                        f"Low success rate for {group}: {success_rate:.2f}"
+                    )
                     drift_score += 0.15
 
         return {
@@ -584,7 +606,9 @@ class ProactiveFairnessGenerator:
             "drift_score": drift_score,
             "drift_indicators": drift_indicators,
             "recommendation": (
-                "Review and update policy" if drift_score > 0.2 else "Continue monitoring"
+                "Review and update policy"
+                if drift_score > 0.2
+                else "Continue monitoring"
             ),
         }
 
@@ -595,10 +619,18 @@ class ProactiveFairnessGenerator:
 
         recent_history = self.generation_history[-100:]  # Last 100 generations
 
-        avg_initial_bias = statistics.mean([h["initial_bias_score"] for h in recent_history])
-        avg_final_bias = statistics.mean([h["final_bias_score"] for h in recent_history])
-        avg_fairness_score = statistics.mean([h["fairness_score"] for h in recent_history])
-        optimization_rate = statistics.mean([h["optimization_applied"] for h in recent_history])
+        avg_initial_bias = statistics.mean(
+            [h["initial_bias_score"] for h in recent_history]
+        )
+        avg_final_bias = statistics.mean(
+            [h["final_bias_score"] for h in recent_history]
+        )
+        avg_fairness_score = statistics.mean(
+            [h["fairness_score"] for h in recent_history]
+        )
+        optimization_rate = statistics.mean(
+            [h["optimization_applied"] for h in recent_history]
+        )
 
         return {
             "average_initial_bias_score": avg_initial_bias,

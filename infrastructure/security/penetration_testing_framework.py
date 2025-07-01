@@ -16,7 +16,13 @@ from typing import Dict, List, Optional, Any
 
 import aiohttp
 import nmap
-from prometheus_client import CollectorRegistry, Counter, Gauge, Histogram, start_http_server
+from prometheus_client import (
+    CollectorRegistry,
+    Counter,
+    Gauge,
+    Histogram,
+    start_http_server,
+)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -25,16 +31,20 @@ logger = logging.getLogger(__name__)
 # Constitutional hash for compliance validation
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
+
 class VulnerabilitySeverity(Enum):
     """Vulnerability severity levels."""
+
     CRITICAL = "critical"
     HIGH = "high"
     MEDIUM = "medium"
     LOW = "low"
     INFO = "info"
 
+
 class TestType(Enum):
     """Penetration test types."""
+
     NETWORK_SCAN = "network_scan"
     WEB_APPLICATION = "web_application"
     API_SECURITY = "api_security"
@@ -44,9 +54,11 @@ class TestType(Enum):
     AUTHORIZATION = "authorization"
     DATA_PROTECTION = "data_protection"
 
+
 @dataclass
 class Vulnerability:
     """Vulnerability finding."""
+
     vuln_id: str
     title: str
     description: str
@@ -75,9 +87,11 @@ class Vulnerability:
     discovered_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     status: str = "open"  # open, in_progress, resolved, false_positive
 
+
 @dataclass
 class PenetrationTestReport:
     """Penetration test report."""
+
     test_id: str
     test_name: str
     test_type: TestType
@@ -108,6 +122,7 @@ class PenetrationTestReport:
     test_duration: float = 0.0
     test_status: str = "completed"  # running, completed, failed
 
+
 class PenetrationTestingFramework:
     """Comprehensive penetration testing framework for ACGS."""
 
@@ -118,13 +133,34 @@ class PenetrationTestingFramework:
 
         # ACGS services configuration
         self.services = {
-            "auth-service": {"port": 8000, "endpoints": ["/api/v1/auth", "/api/v1/users"]},
-            "ac-service": {"port": 8001, "endpoints": ["/api/v1/constitutional", "/api/v1/validate"]},
-            "integrity-service": {"port": 8002, "endpoints": ["/api/v1/integrity", "/api/v1/verify"]},
-            "fv-service": {"port": 8003, "endpoints": ["/api/v1/formal", "/api/v1/proof"]},
-            "gs-service": {"port": 8004, "endpoints": ["/api/v1/governance", "/api/v1/simulate"]},
-            "pgc-service": {"port": 8005, "endpoints": ["/api/v1/policy", "/api/v1/consensus"]},
-            "ec-service": {"port": 8006, "endpoints": ["/api/v1/evolution", "/api/v1/evolve"]}
+            "auth-service": {
+                "port": 8000,
+                "endpoints": ["/api/v1/auth", "/api/v1/users"],
+            },
+            "ac-service": {
+                "port": 8001,
+                "endpoints": ["/api/v1/constitutional", "/api/v1/validate"],
+            },
+            "integrity-service": {
+                "port": 8002,
+                "endpoints": ["/api/v1/integrity", "/api/v1/verify"],
+            },
+            "fv-service": {
+                "port": 8003,
+                "endpoints": ["/api/v1/formal", "/api/v1/proof"],
+            },
+            "gs-service": {
+                "port": 8004,
+                "endpoints": ["/api/v1/governance", "/api/v1/simulate"],
+            },
+            "pgc-service": {
+                "port": 8005,
+                "endpoints": ["/api/v1/policy", "/api/v1/consensus"],
+            },
+            "ec-service": {
+                "port": 8006,
+                "endpoints": ["/api/v1/evolution", "/api/v1/evolve"],
+            },
         }
 
         # Test reports
@@ -136,23 +172,23 @@ class PenetrationTestingFramework:
             TestType.NETWORK_SCAN: {
                 "tools": ["nmap", "masscan"],
                 "frequency": "weekly",
-                "severity_threshold": VulnerabilitySeverity.MEDIUM
+                "severity_threshold": VulnerabilitySeverity.MEDIUM,
             },
             TestType.WEB_APPLICATION: {
                 "tools": ["zap", "nikto", "sqlmap"],
                 "frequency": "daily",
-                "severity_threshold": VulnerabilitySeverity.HIGH
+                "severity_threshold": VulnerabilitySeverity.HIGH,
             },
             TestType.API_SECURITY: {
                 "tools": ["custom_api_scanner"],
                 "frequency": "daily",
-                "severity_threshold": VulnerabilitySeverity.HIGH
+                "severity_threshold": VulnerabilitySeverity.HIGH,
             },
             TestType.CONSTITUTIONAL_COMPLIANCE: {
                 "tools": ["custom_constitutional_scanner"],
                 "frequency": "continuous",
-                "severity_threshold": VulnerabilitySeverity.CRITICAL
-            }
+                "severity_threshold": VulnerabilitySeverity.CRITICAL,
+            },
         }
 
         logger.info("Penetration Testing Framework initialized")
@@ -160,38 +196,38 @@ class PenetrationTestingFramework:
     def setup_metrics(self):
         """Setup Prometheus metrics for penetration testing."""
         self.vulnerabilities_found = Counter(
-            'acgs_pentest_vulnerabilities_found_total',
-            'Total vulnerabilities found by penetration testing',
-            ['service', 'severity', 'test_type'],
-            registry=self.registry
+            "acgs_pentest_vulnerabilities_found_total",
+            "Total vulnerabilities found by penetration testing",
+            ["service", "severity", "test_type"],
+            registry=self.registry,
         )
 
         self.pentest_execution_duration = Histogram(
-            'acgs_pentest_execution_duration_seconds',
-            'Duration of penetration tests',
-            ['test_type', 'service'],
-            registry=self.registry
+            "acgs_pentest_execution_duration_seconds",
+            "Duration of penetration tests",
+            ["test_type", "service"],
+            registry=self.registry,
         )
 
         self.constitutional_compliance_score = Gauge(
-            'acgs_pentest_constitutional_compliance_score',
-            'Constitutional compliance score from penetration testing',
-            ['service'],
-            registry=self.registry
+            "acgs_pentest_constitutional_compliance_score",
+            "Constitutional compliance score from penetration testing",
+            ["service"],
+            registry=self.registry,
         )
 
         self.vulnerability_remediation_time = Histogram(
-            'acgs_vulnerability_remediation_time_hours',
-            'Time to remediate vulnerabilities',
-            ['severity', 'service'],
-            registry=self.registry
+            "acgs_vulnerability_remediation_time_hours",
+            "Time to remediate vulnerabilities",
+            ["severity", "service"],
+            registry=self.registry,
         )
 
         self.pentest_coverage = Gauge(
-            'acgs_pentest_coverage_percentage',
-            'Penetration test coverage percentage',
-            ['test_type'],
-            registry=self.registry
+            "acgs_pentest_coverage_percentage",
+            "Penetration test coverage percentage",
+            ["test_type"],
+            registry=self.registry,
         )
 
     async def start_testing_framework(self):
@@ -210,7 +246,9 @@ class PenetrationTestingFramework:
 
         logger.info("Penetration Testing Framework started")
 
-    async def execute_penetration_test(self, test_type: TestType, target_services: List[str] = None) -> PenetrationTestReport:
+    async def execute_penetration_test(
+        self, test_type: TestType, target_services: List[str] = None
+    ) -> PenetrationTestReport:
         """Execute a penetration test."""
         test_id = f"pentest_{int(time.time())}_{test_type.value}"
 
@@ -222,7 +260,7 @@ class PenetrationTestingFramework:
             test_name=f"{test_type.value.replace('_', ' ').title()} Test",
             test_type=test_type,
             start_time=datetime.now(timezone.utc),
-            target_services=target_services
+            target_services=target_services,
         )
 
         logger.info(f"Starting penetration test: {report.test_name}")
@@ -258,15 +296,16 @@ class PenetrationTestingFramework:
 
             # Record metrics
             self.pentest_execution_duration.labels(
-                test_type=test_type.value,
-                service="all"
+                test_type=test_type.value, service="all"
             ).observe(report.test_duration)
 
             # Store report
             self.test_reports.append(report)
             self.vulnerabilities.extend(report.vulnerabilities)
 
-            logger.info(f"Completed penetration test: {report.test_name} ({len(report.vulnerabilities)} vulnerabilities found)")
+            logger.info(
+                f"Completed penetration test: {report.test_name} ({len(report.vulnerabilities)} vulnerabilities found)"
+            )
             return report
 
         except Exception as e:
@@ -291,7 +330,9 @@ class PenetrationTestingFramework:
                 port = service_config["port"]
 
                 # Scan service port
-                scan_result = nm.scan(hosts="localhost", ports=str(port), arguments="-sV -sC")
+                scan_result = nm.scan(
+                    hosts="localhost", ports=str(port), arguments="-sV -sC"
+                )
 
                 # Analyze results
                 for host in scan_result["scan"]:
@@ -301,12 +342,20 @@ class PenetrationTestingFramework:
                         for port_num, port_data in host_data["tcp"].items():
                             if port_data["state"] == "open":
                                 # Check for potential vulnerabilities
-                                await self.analyze_open_port(report, service_name, port_num, port_data)
+                                await self.analyze_open_port(
+                                    report, service_name, port_num, port_data
+                                )
 
         except Exception as e:
             logger.error(f"Network scan failed: {e}")
 
-    async def analyze_open_port(self, report: PenetrationTestReport, service_name: str, port: int, port_data: dict):
+    async def analyze_open_port(
+        self,
+        report: PenetrationTestReport,
+        service_name: str,
+        port: int,
+        port_data: dict,
+    ):
         """Analyze open port for vulnerabilities."""
         try:
             service_version = port_data.get("version", "")
@@ -322,7 +371,7 @@ class PenetrationTestingFramework:
                     test_type=TestType.NETWORK_SCAN,
                     affected_service=service_name,
                     recommendation="Update to the latest stable version of Nginx",
-                    constitutional_impact=False
+                    constitutional_impact=False,
                 )
                 report.vulnerabilities.append(vulnerability)
 
@@ -336,7 +385,7 @@ class PenetrationTestingFramework:
                     test_type=TestType.NETWORK_SCAN,
                     affected_service=service_name,
                     recommendation="Configure service to hide version information",
-                    constitutional_impact=False
+                    constitutional_impact=False,
                 )
                 report.vulnerabilities.append(vulnerability)
 
@@ -369,14 +418,16 @@ class PenetrationTestingFramework:
         except Exception as e:
             logger.error(f"Web application test failed: {e}")
 
-    async def test_sql_injection(self, report: PenetrationTestReport, service_name: str, url: str):
+    async def test_sql_injection(
+        self, report: PenetrationTestReport, service_name: str, url: str
+    ):
         """Test for SQL injection vulnerabilities."""
         try:
             sql_payloads = [
                 "' OR '1'='1",
                 "'; DROP TABLE users; --",
                 "' UNION SELECT * FROM users --",
-                "1' AND 1=1 --"
+                "1' AND 1=1 --",
             ]
 
             async with aiohttp.ClientSession() as session:
@@ -388,9 +439,17 @@ class PenetrationTestingFramework:
                             response_text = await response.text()
 
                             # Check for SQL error messages
-                            sql_errors = ["sql syntax", "mysql_fetch", "ora-", "postgresql", "sqlite"]
+                            sql_errors = [
+                                "sql syntax",
+                                "mysql_fetch",
+                                "ora-",
+                                "postgresql",
+                                "sqlite",
+                            ]
 
-                            if any(error in response_text.lower() for error in sql_errors):
+                            if any(
+                                error in response_text.lower() for error in sql_errors
+                            ):
                                 vulnerability = Vulnerability(
                                     vuln_id=f"VULN_{int(time.time())}_{service_name}",
                                     title="Potential SQL Injection",
@@ -401,7 +460,8 @@ class PenetrationTestingFramework:
                                     affected_endpoint=url,
                                     proof_of_concept=f"Payload: {payload}",
                                     recommendation="Use parameterized queries and input validation",
-                                    constitutional_impact=service_name in ["ac-service", "pgc-service"]
+                                    constitutional_impact=service_name
+                                    in ["ac-service", "pgc-service"],
                                 )
                                 report.vulnerabilities.append(vulnerability)
                                 break
@@ -414,14 +474,16 @@ class PenetrationTestingFramework:
         except Exception as e:
             logger.error(f"SQL injection test failed: {e}")
 
-    async def test_xss_vulnerabilities(self, report: PenetrationTestReport, service_name: str, url: str):
+    async def test_xss_vulnerabilities(
+        self, report: PenetrationTestReport, service_name: str, url: str
+    ):
         """Test for XSS vulnerabilities."""
         try:
             xss_payloads = [
                 "<script>alert('XSS')</script>",
                 "javascript:alert('XSS')",
                 "<img src=x onerror=alert('XSS')>",
-                "';alert('XSS');//"
+                "';alert('XSS');//",
             ]
 
             async with aiohttp.ClientSession() as session:
@@ -429,7 +491,9 @@ class PenetrationTestingFramework:
                     test_data = {"input": payload, "search": payload}
 
                     try:
-                        async with session.post(url, json=test_data, timeout=5) as response:
+                        async with session.post(
+                            url, json=test_data, timeout=5
+                        ) as response:
                             response_text = await response.text()
 
                             # Check if payload is reflected without encoding
@@ -444,7 +508,7 @@ class PenetrationTestingFramework:
                                     affected_endpoint=url,
                                     proof_of_concept=f"Payload: {payload}",
                                     recommendation="Implement proper input validation and output encoding",
-                                    constitutional_impact=False
+                                    constitutional_impact=False,
                                 )
                                 report.vulnerabilities.append(vulnerability)
                                 break
@@ -455,14 +519,16 @@ class PenetrationTestingFramework:
         except Exception as e:
             logger.error(f"XSS test failed: {e}")
 
-    async def test_path_traversal(self, report: PenetrationTestReport, service_name: str, url: str):
+    async def test_path_traversal(
+        self, report: PenetrationTestReport, service_name: str, url: str
+    ):
         """Test for path traversal vulnerabilities."""
         try:
             traversal_payloads = [
                 "../../../etc/passwd",
                 "..\\..\\..\\windows\\system32\\drivers\\etc\\hosts",
                 "%2e%2e%2f%2e%2e%2f%2e%2e%2fetc%2fpasswd",
-                "....//....//....//etc/passwd"
+                "....//....//....//etc/passwd",
             ]
 
             async with aiohttp.ClientSession() as session:
@@ -485,7 +551,7 @@ class PenetrationTestingFramework:
                                     affected_endpoint=url,
                                     proof_of_concept=f"Payload: {payload}",
                                     recommendation="Implement proper file path validation and sanitization",
-                                    constitutional_impact=False
+                                    constitutional_impact=False,
                                 )
                                 report.vulnerabilities.append(vulnerability)
                                 break
@@ -496,7 +562,9 @@ class PenetrationTestingFramework:
         except Exception as e:
             logger.error(f"Path traversal test failed: {e}")
 
-    async def test_csrf_protection(self, report: PenetrationTestReport, service_name: str, url: str):
+    async def test_csrf_protection(
+        self, report: PenetrationTestReport, service_name: str, url: str
+    ):
         """Test for CSRF protection."""
         try:
             async with aiohttp.ClientSession() as session:
@@ -516,7 +584,8 @@ class PenetrationTestingFramework:
                                 affected_service=service_name,
                                 affected_endpoint=url,
                                 recommendation="Implement CSRF tokens for state-changing operations",
-                                constitutional_impact=service_name in ["ac-service", "pgc-service", "ec-service"]
+                                constitutional_impact=service_name
+                                in ["ac-service", "pgc-service", "ec-service"],
                             )
                             report.vulnerabilities.append(vulnerability)
 
@@ -552,7 +621,9 @@ class PenetrationTestingFramework:
         except Exception as e:
             logger.error(f"API security test failed: {e}")
 
-    async def test_api_authentication(self, report: PenetrationTestReport, service_name: str, url: str):
+    async def test_api_authentication(
+        self, report: PenetrationTestReport, service_name: str, url: str
+    ):
         """Test API authentication mechanisms."""
         try:
             async with aiohttp.ClientSession() as session:
@@ -569,7 +640,8 @@ class PenetrationTestingFramework:
                                 affected_service=service_name,
                                 affected_endpoint=url,
                                 recommendation="Implement proper API authentication",
-                                constitutional_impact=service_name in ["ac-service", "pgc-service", "ec-service"]
+                                constitutional_impact=service_name
+                                in ["ac-service", "pgc-service", "ec-service"],
                             )
                             report.vulnerabilities.append(vulnerability)
 
@@ -579,7 +651,9 @@ class PenetrationTestingFramework:
         except Exception as e:
             logger.error(f"API authentication test failed: {e}")
 
-    async def execute_constitutional_compliance_test(self, report: PenetrationTestReport):
+    async def execute_constitutional_compliance_test(
+        self, report: PenetrationTestReport
+    ):
         """Execute constitutional compliance security tests."""
         logger.info("Executing constitutional compliance test...")
 
@@ -597,7 +671,9 @@ class PenetrationTestingFramework:
         except Exception as e:
             logger.error(f"Constitutional compliance test failed: {e}")
 
-    async def test_constitutional_hash_validation(self, report: PenetrationTestReport, service_name: str):
+    async def test_constitutional_hash_validation(
+        self, report: PenetrationTestReport, service_name: str
+    ):
         """Test constitutional hash validation."""
         try:
             if service_name not in ["ac-service", "pgc-service", "ec-service"]:
@@ -614,7 +690,9 @@ class PenetrationTestingFramework:
                 test_data = {"constitutional_hash": invalid_hash}
 
                 try:
-                    async with session.post(test_url, json=test_data, timeout=5) as response:
+                    async with session.post(
+                        test_url, json=test_data, timeout=5
+                    ) as response:
                         if response.status == 200:
                             vulnerability = Vulnerability(
                                 vuln_id=f"VULN_{int(time.time())}_{service_name}",
@@ -626,7 +704,7 @@ class PenetrationTestingFramework:
                                 affected_endpoint=test_url,
                                 proof_of_concept=f"Invalid hash accepted: {invalid_hash}",
                                 recommendation="Implement strict constitutional hash validation",
-                                constitutional_impact=True
+                                constitutional_impact=True,
                             )
                             report.vulnerabilities.append(vulnerability)
 
@@ -653,21 +731,39 @@ class PenetrationTestingFramework:
                     report.low_count += 1
 
             # Calculate constitutional compliance score
-            constitutional_vulns = [v for v in report.vulnerabilities if v.constitutional_impact]
+            constitutional_vulns = [
+                v for v in report.vulnerabilities if v.constitutional_impact
+            ]
             if constitutional_vulns:
                 # Reduce score based on constitutional vulnerabilities
-                critical_constitutional = len([v for v in constitutional_vulns if v.severity == VulnerabilitySeverity.CRITICAL])
-                high_constitutional = len([v for v in constitutional_vulns if v.severity == VulnerabilitySeverity.HIGH])
+                critical_constitutional = len(
+                    [
+                        v
+                        for v in constitutional_vulns
+                        if v.severity == VulnerabilitySeverity.CRITICAL
+                    ]
+                )
+                high_constitutional = len(
+                    [
+                        v
+                        for v in constitutional_vulns
+                        if v.severity == VulnerabilitySeverity.HIGH
+                    ]
+                )
 
-                score_reduction = (critical_constitutional * 20) + (high_constitutional * 10)
-                report.constitutional_compliance_score = max(0.0, 100.0 - score_reduction)
+                score_reduction = (critical_constitutional * 20) + (
+                    high_constitutional * 10
+                )
+                report.constitutional_compliance_score = max(
+                    0.0, 100.0 - score_reduction
+                )
 
             # Record metrics
             for vuln in report.vulnerabilities:
                 self.vulnerabilities_found.labels(
                     service=vuln.affected_service,
                     severity=vuln.severity.value,
-                    test_type=vuln.test_type.value
+                    test_type=vuln.test_type.value,
                 ).inc()
 
             # Update constitutional compliance metrics
@@ -711,18 +807,28 @@ class PenetrationTestingFramework:
         return {
             "total_tests_executed": len(self.test_reports),
             "total_vulnerabilities_found": len(self.vulnerabilities),
-            "critical_vulnerabilities": len([v for v in self.vulnerabilities if v.severity == VulnerabilitySeverity.CRITICAL]),
-            "constitutional_violations": len([v for v in self.vulnerabilities if v.constitutional_impact]),
+            "critical_vulnerabilities": len(
+                [
+                    v
+                    for v in self.vulnerabilities
+                    if v.severity == VulnerabilitySeverity.CRITICAL
+                ]
+            ),
+            "constitutional_violations": len(
+                [v for v in self.vulnerabilities if v.constitutional_impact]
+            ),
             "services_monitored": len(self.services),
             "constitutional_hash": CONSTITUTIONAL_HASH,
             "framework_status": "active",
-            "timestamp": datetime.now(timezone.utc).isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
+
 
 # Global penetration testing framework instance
 pentest_framework = PenetrationTestingFramework()
 
 if __name__ == "__main__":
+
     async def main():
         await pentest_framework.start_testing_framework()
 

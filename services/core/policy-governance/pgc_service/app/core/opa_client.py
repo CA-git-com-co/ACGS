@@ -147,7 +147,9 @@ class OPAClient:
             logger.error(f"Failed to get OPA server info: {e}")
             return {}
 
-    async def evaluate_policy(self, request: PolicyEvaluationRequest) -> PolicyEvaluationResponse:
+    async def evaluate_policy(
+        self, request: PolicyEvaluationRequest
+    ) -> PolicyEvaluationResponse:
         """
         Evaluate a policy query against the current policy set.
 

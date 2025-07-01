@@ -153,8 +153,12 @@ class GovernanceAlertingConfig:
     alert_retention_days: int = 30
 
     # Notification
-    default_notification_channels: List[str] = field(default_factory=lambda: ["slack", "email"])
-    emergency_notification_channels: List[str] = field(default_factory=lambda: ["pagerduty", "sms"])
+    default_notification_channels: List[str] = field(
+        default_factory=lambda: ["slack", "email"]
+    )
+    emergency_notification_channels: List[str] = field(
+        default_factory=lambda: ["pagerduty", "sms"]
+    )
 
 
 class GovernanceAlertingSystem:
@@ -249,7 +253,9 @@ class GovernanceAlertingSystem:
             comparison=">",
             duration=60,
             notification_channels=["pagerduty", "sms"],
-            escalation_rules=[{"timeout": 180, "channels": ["phone", "emergency_contact"]}],
+            escalation_rules=[
+                {"timeout": 180, "channels": ["phone", "emergency_contact"]}
+            ],
         )
         self.alert_rules[safety_rule.rule_id] = safety_rule
 
@@ -354,7 +360,9 @@ class GovernanceAlertingSystem:
             return
 
         # Check threshold
-        condition_met = self._check_threshold(metric_value, rule.threshold, rule.comparison)
+        condition_met = self._check_threshold(
+            metric_value, rule.threshold, rule.comparison
+        )
 
         if condition_met:
             await self._trigger_alert(rule, metric_value)
@@ -374,7 +382,9 @@ class GovernanceAlertingSystem:
                 conditions_met.append(condition_met)
 
         # Check if all conditions are met
-        if all(conditions_met) and len(conditions_met) == len(rule.composite_conditions):
+        if all(conditions_met) and len(conditions_met) == len(
+            rule.composite_conditions
+        ):
             await self._trigger_composite_alert(rule, conditions_met)
 
             # Update composite alert metrics
@@ -468,7 +478,9 @@ class GovernanceAlertingSystem:
 
         logger.warning(f"Alert triggered: {alert.name} (ID: {alert_id})")
 
-    async def _trigger_composite_alert(self, rule: AlertRule, conditions_met: List[bool]):
+    async def _trigger_composite_alert(
+        self, rule: AlertRule, conditions_met: List[bool]
+    ):
         """Trigger a composite alert."""
         alert_id = f"composite_{rule.rule_id}_{int(time.time())}"
 
@@ -514,7 +526,10 @@ class GovernanceAlertingSystem:
     def _find_active_alert_for_rule(self, rule_id: str) -> Optional[Alert]:
         """Find active alert for a specific rule."""
         for alert in self.active_alerts.values():
-            if alert.labels.get("rule_id") == rule_id and alert.status == AlertStatus.ACTIVE:
+            if (
+                alert.labels.get("rule_id") == rule_id
+                and alert.status == AlertStatus.ACTIVE
+            ):
                 return alert
         return None
 
@@ -546,7 +561,9 @@ class GovernanceAlertingSystem:
         # This would integrate with notification systems
         # For now, just log the notification
 
-        channels = rule.notification_channels or self.config.default_notification_channels
+        channels = (
+            rule.notification_channels or self.config.default_notification_channels
+        )
 
         if alert.severity == AlertSeverity.EMERGENCY:
             channels.extend(self.config.emergency_notification_channels)
@@ -618,7 +635,9 @@ class GovernanceAlertingSystem:
         # Store correlation group
         self.correlation_groups[correlation_id] = {alert.alert_id for alert in alerts}
 
-        logger.info(f"Created correlation group {correlation_id} with {len(alerts)} alerts")
+        logger.info(
+            f"Created correlation group {correlation_id} with {len(alerts)} alerts"
+        )
 
     async def _cleanup_loop(self):
         """Cleanup old alerts and data."""
@@ -633,7 +652,9 @@ class GovernanceAlertingSystem:
 
     async def _cleanup_old_alerts(self):
         """Clean up old resolved alerts."""
-        cutoff_time = datetime.now(timezone.utc) - timedelta(days=self.config.alert_retention_days)
+        cutoff_time = datetime.now(timezone.utc) - timedelta(
+            days=self.config.alert_retention_days
+        )
 
         # Remove old alerts from history
         self.alert_history = [
@@ -646,7 +667,9 @@ class GovernanceAlertingSystem:
         old_correlations = []
         for corr_id, alert_ids in self.correlation_groups.items():
             # Check if any alerts in the group are still active
-            active_alerts_in_group = any(alert_id in self.active_alerts for alert_id in alert_ids)
+            active_alerts_in_group = any(
+                alert_id in self.active_alerts for alert_id in alert_ids
+            )
 
             if not active_alerts_in_group:
                 old_correlations.append(corr_id)
@@ -673,7 +696,9 @@ class GovernanceAlertingSystem:
         return {
             "active_alerts": len(self.active_alerts),
             "total_rules": len(self.alert_rules),
-            "enabled_rules": sum(1 for rule in self.alert_rules.values() if rule.enabled),
+            "enabled_rules": sum(
+                1 for rule in self.alert_rules.values() if rule.enabled
+            ),
             "correlation_groups": len(self.correlation_groups),
             "evaluation_count": self.evaluation_count,
             "last_evaluation": self.last_evaluation.isoformat(),

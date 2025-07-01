@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 class SDKLanguage(str, Enum):
     """Supported SDK languages."""
+
     PYTHON = "python"
     JAVASCRIPT = "javascript"
     TYPESCRIPT = "typescript"
@@ -31,6 +32,7 @@ class SDKLanguage(str, Enum):
 
 class SDKTemplate(str, Enum):
     """SDK template types."""
+
     STANDARD = "standard"
     ASYNC = "async"
     REACTIVE = "reactive"
@@ -40,6 +42,7 @@ class SDKTemplate(str, Enum):
 @dataclass
 class SDKConfig:
     """Configuration for SDK generation."""
+
     language: SDKLanguage
     template: SDKTemplate = SDKTemplate.STANDARD
     package_name: str = "acgs-sdk"
@@ -49,7 +52,7 @@ class SDKConfig:
     include_examples: bool = True
     include_tests: bool = True
     include_docs: bool = True
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
@@ -61,20 +64,21 @@ class SDKConfig:
             "compatibility_versions": self.compatibility_versions,
             "include_examples": self.include_examples,
             "include_tests": self.include_tests,
-            "include_docs": self.include_docs
+            "include_docs": self.include_docs,
         }
 
 
 @dataclass
 class SDKGenerationResult:
     """Result of SDK generation process."""
+
     success: bool
     output_path: Path
     generated_files: List[str] = field(default_factory=list)
     errors: List[str] = field(default_factory=list)
     warnings: List[str] = field(default_factory=list)
     generation_time_seconds: float = 0.0
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
@@ -83,14 +87,14 @@ class SDKGenerationResult:
             "generated_files": self.generated_files,
             "errors": self.errors,
             "warnings": self.warnings,
-            "generation_time_seconds": self.generation_time_seconds
+            "generation_time_seconds": self.generation_time_seconds,
         }
 
 
 class SDKGenerator:
     """
     Generates client SDKs from OpenAPI specifications with version compatibility.
-    
+
     Features:
     - Multi-language SDK generation
     - Version compatibility layers
@@ -98,141 +102,141 @@ class SDKGenerator:
     - Documentation generation
     - Package publishing preparation
     """
-    
+
     def __init__(self, base_output_dir: Path = Path("generated_sdks")):
         self.base_output_dir = base_output_dir
         self.base_output_dir.mkdir(parents=True, exist_ok=True)
-        
+
         # Language-specific configurations
         self.language_configs = {
             SDKLanguage.PYTHON: {
                 "generator": "python",
                 "package_manager": "pip",
                 "test_framework": "pytest",
-                "doc_generator": "sphinx"
+                "doc_generator": "sphinx",
             },
             SDKLanguage.JAVASCRIPT: {
                 "generator": "javascript",
                 "package_manager": "npm",
                 "test_framework": "jest",
-                "doc_generator": "jsdoc"
+                "doc_generator": "jsdoc",
             },
             SDKLanguage.TYPESCRIPT: {
                 "generator": "typescript-node",
                 "package_manager": "npm",
                 "test_framework": "jest",
-                "doc_generator": "typedoc"
+                "doc_generator": "typedoc",
             },
             SDKLanguage.JAVA: {
                 "generator": "java",
                 "package_manager": "maven",
                 "test_framework": "junit",
-                "doc_generator": "javadoc"
+                "doc_generator": "javadoc",
             },
             SDKLanguage.CSHARP: {
                 "generator": "csharp",
                 "package_manager": "nuget",
                 "test_framework": "nunit",
-                "doc_generator": "docfx"
-            }
+                "doc_generator": "docfx",
+            },
         }
-    
+
     def generate_sdk(
-        self,
-        openapi_spec_path: Path,
-        config: SDKConfig
+        self, openapi_spec_path: Path, config: SDKConfig
     ) -> SDKGenerationResult:
         """
         Generate SDK from OpenAPI specification.
-        
+
         Args:
             openapi_spec_path: Path to OpenAPI specification file
             config: SDK generation configuration
-        
+
         Returns:
             Generation result with success status and details
         """
         start_time = datetime.now()
-        
+
         result = SDKGenerationResult(
             success=False,
-            output_path=self.base_output_dir / config.language.value / config.api_version
+            output_path=self.base_output_dir
+            / config.language.value
+            / config.api_version,
         )
-        
+
         try:
             # Create output directory
             result.output_path.mkdir(parents=True, exist_ok=True)
-            
+
             # Load and validate OpenAPI spec
             openapi_spec = self._load_openapi_spec(openapi_spec_path)
             if not openapi_spec:
                 result.errors.append("Failed to load OpenAPI specification")
                 return result
-            
+
             # Generate base SDK using OpenAPI Generator
             base_generation_result = self._generate_base_sdk(
                 openapi_spec_path, config, result.output_path
             )
-            
+
             if not base_generation_result:
                 result.errors.append("Base SDK generation failed")
                 return result
-            
+
             # Add ACGS-specific enhancements
             self._add_acgs_enhancements(config, result.output_path, result)
-            
+
             # Add compatibility layer if needed
             if config.compatibility_versions:
                 self._add_compatibility_layer(config, result.output_path, result)
-            
+
             # Generate tests if requested
             if config.include_tests:
                 self._generate_tests(config, result.output_path, result)
-            
+
             # Generate documentation if requested
             if config.include_docs:
                 self._generate_documentation(config, result.output_path, result)
-            
+
             # Generate examples if requested
             if config.include_examples:
                 self._generate_examples(config, result.output_path, result)
-            
+
             # Validate generated SDK
             validation_result = self._validate_sdk(config, result.output_path)
             if not validation_result:
                 result.warnings.append("SDK validation failed")
-            
+
             result.success = True
-            logger.info(f"SDK generation completed successfully for {config.language.value}")
-            
+            logger.info(
+                f"SDK generation completed successfully for {config.language.value}"
+            )
+
         except Exception as e:
             result.errors.append(f"SDK generation failed: {str(e)}")
             logger.error(f"SDK generation failed: {e}")
-        
+
         finally:
             end_time = datetime.now()
             result.generation_time_seconds = (end_time - start_time).total_seconds()
-        
+
         return result
-    
+
     def _load_openapi_spec(self, spec_path: Path) -> Optional[Dict[str, Any]]:
         """Load and validate OpenAPI specification."""
         try:
-            with open(spec_path, 'r') as f:
-                if spec_path.suffix.lower() in ['.yaml', '.yml']:
+            with open(spec_path, "r") as f:
+                if spec_path.suffix.lower() in [".yaml", ".yml"]:
                     import yaml
+
                     return yaml.safe_load(f)
                 else:
                     return json.load(f)
         except Exception as e:
             logger.error(f"Failed to load OpenAPI spec: {e}")
             return None
-    
+
     def _generate_base_sdk(
-        self,
-        spec_path: Path,
-        config: SDKConfig,
-        output_path: Path
+        self, spec_path: Path, config: SDKConfig, output_path: Path
     ) -> bool:
         """Generate base SDK using OpenAPI Generator."""
         try:
@@ -240,75 +244,78 @@ class SDKGenerator:
             if not lang_config:
                 logger.error(f"Unsupported language: {config.language}")
                 return False
-            
+
             # Prepare OpenAPI Generator command
             cmd = [
-                "openapi-generator-cli", "generate",
-                "-i", str(spec_path),
-                "-g", lang_config["generator"],
-                "-o", str(output_path),
-                "--package-name", config.package_name,
+                "openapi-generator-cli",
+                "generate",
+                "-i",
+                str(spec_path),
+                "-g",
+                lang_config["generator"],
+                "-o",
+                str(output_path),
+                "--package-name",
+                config.package_name,
                 "--additional-properties",
                 f"packageVersion={config.package_version}",
-                "--skip-validate-spec"
+                "--skip-validate-spec",
             ]
-            
+
             # Add language-specific properties
             if config.language == SDKLanguage.PYTHON:
-                cmd.extend([
-                    "--additional-properties",
-                    f"projectName={config.package_name},packageName={config.package_name.replace('-', '_')}"
-                ])
+                cmd.extend(
+                    [
+                        "--additional-properties",
+                        f"projectName={config.package_name},packageName={config.package_name.replace('-', '_')}",
+                    ]
+                )
             elif config.language == SDKLanguage.JAVASCRIPT:
-                cmd.extend([
-                    "--additional-properties",
-                    f"npmName={config.package_name},npmVersion={config.package_version}"
-                ])
-            
+                cmd.extend(
+                    [
+                        "--additional-properties",
+                        f"npmName={config.package_name},npmVersion={config.package_version}",
+                    ]
+                )
+
             # Execute OpenAPI Generator
             result = subprocess.run(cmd, capture_output=True, text=True)
-            
+
             if result.returncode != 0:
                 logger.error(f"OpenAPI Generator failed: {result.stderr}")
                 return False
-            
+
             logger.info(f"Base SDK generated successfully for {config.language.value}")
             return True
-            
+
         except Exception as e:
             logger.error(f"Base SDK generation failed: {e}")
             return False
-    
+
     def _add_acgs_enhancements(
-        self,
-        config: SDKConfig,
-        output_path: Path,
-        result: SDKGenerationResult
+        self, config: SDKConfig, output_path: Path, result: SDKGenerationResult
     ):
         """Add ACGS-specific enhancements to generated SDK."""
         enhancements_dir = output_path / "acgs_enhancements"
         enhancements_dir.mkdir(exist_ok=True)
-        
+
         # Add retry logic
         self._add_retry_logic(config, enhancements_dir, result)
-        
+
         # Add rate limiting
         self._add_rate_limiting(config, enhancements_dir, result)
-        
+
         # Add error handling
         self._add_error_handling(config, enhancements_dir, result)
-        
+
         # Add logging integration
         self._add_logging_integration(config, enhancements_dir, result)
-        
+
         # Add metrics collection
         self._add_metrics_collection(config, enhancements_dir, result)
-    
+
     def _add_retry_logic(
-        self,
-        config: SDKConfig,
-        enhancements_dir: Path,
-        result: SDKGenerationResult
+        self, config: SDKConfig, enhancements_dir: Path, result: SDKGenerationResult
     ):
         """Add retry logic with exponential backoff."""
         if config.language == SDKLanguage.PYTHON:
@@ -358,78 +365,63 @@ def with_retry(retry_config: RetryConfig = None):
         return wrapper
     return decorator
 '''
-            
+
             retry_file = enhancements_dir / "retry_logic.py"
-            with open(retry_file, 'w') as f:
+            with open(retry_file, "w") as f:
                 f.write(retry_code)
-            
+
             result.generated_files.append(str(retry_file))
-    
+
     def _add_rate_limiting(
-        self,
-        config: SDKConfig,
-        enhancements_dir: Path,
-        result: SDKGenerationResult
+        self, config: SDKConfig, enhancements_dir: Path, result: SDKGenerationResult
     ):
         """Add rate limiting functionality."""
         # Implementation would add rate limiting code for each language
         pass
-    
+
     def _add_error_handling(
-        self,
-        config: SDKConfig,
-        enhancements_dir: Path,
-        result: SDKGenerationResult
+        self, config: SDKConfig, enhancements_dir: Path, result: SDKGenerationResult
     ):
         """Add enhanced error handling."""
         # Implementation would add error handling code for each language
         pass
-    
+
     def _add_logging_integration(
-        self,
-        config: SDKConfig,
-        enhancements_dir: Path,
-        result: SDKGenerationResult
+        self, config: SDKConfig, enhancements_dir: Path, result: SDKGenerationResult
     ):
         """Add logging integration."""
         # Implementation would add logging code for each language
         pass
-    
+
     def _add_metrics_collection(
-        self,
-        config: SDKConfig,
-        enhancements_dir: Path,
-        result: SDKGenerationResult
+        self, config: SDKConfig, enhancements_dir: Path, result: SDKGenerationResult
     ):
         """Add metrics collection."""
         # Implementation would add metrics code for each language
         pass
-    
+
     def _add_compatibility_layer(
-        self,
-        config: SDKConfig,
-        output_path: Path,
-        result: SDKGenerationResult
+        self, config: SDKConfig, output_path: Path, result: SDKGenerationResult
     ):
         """Add compatibility layer for older API versions."""
         compatibility_dir = output_path / "compatibility"
         compatibility_dir.mkdir(exist_ok=True)
-        
+
         for version in config.compatibility_versions:
             version_dir = compatibility_dir / version.replace(".", "_")
             version_dir.mkdir(exist_ok=True)
-            
+
             # Generate compatibility transformers
             self._generate_compatibility_transformers(
                 config, version, version_dir, result
             )
-    
+
     def _generate_compatibility_transformers(
         self,
         config: SDKConfig,
         target_version: str,
         version_dir: Path,
-        result: SDKGenerationResult
+        result: SDKGenerationResult,
     ):
         """Generate compatibility transformers for specific version."""
         if config.language == SDKLanguage.PYTHON:
@@ -462,88 +454,70 @@ def snake_case_key(key):
     s1 = re.sub('(.)([A-Z][a-z]+)', r'\\1_\\2', key)
     return re.sub('([a-z0-9])([A-Z])', r'\\1_\\2', s1).lower()
 '''
-            
+
             transformer_file = version_dir / "transformer.py"
-            with open(transformer_file, 'w') as f:
+            with open(transformer_file, "w") as f:
                 f.write(transformer_code)
-            
+
             result.generated_files.append(str(transformer_file))
-    
+
     def _generate_tests(
-        self,
-        config: SDKConfig,
-        output_path: Path,
-        result: SDKGenerationResult
+        self, config: SDKConfig, output_path: Path, result: SDKGenerationResult
     ):
         """Generate test suite for SDK."""
         tests_dir = output_path / "tests"
         tests_dir.mkdir(exist_ok=True)
-        
+
         # Generate unit tests
         self._generate_unit_tests(config, tests_dir, result)
-        
+
         # Generate integration tests
         self._generate_integration_tests(config, tests_dir, result)
-        
+
         # Generate compatibility tests
         if config.compatibility_versions:
             self._generate_compatibility_tests(config, tests_dir, result)
-    
+
     def _generate_unit_tests(
-        self,
-        config: SDKConfig,
-        tests_dir: Path,
-        result: SDKGenerationResult
+        self, config: SDKConfig, tests_dir: Path, result: SDKGenerationResult
     ):
         """Generate unit tests."""
         # Implementation would generate unit tests for each language
         pass
-    
+
     def _generate_integration_tests(
-        self,
-        config: SDKConfig,
-        tests_dir: Path,
-        result: SDKGenerationResult
+        self, config: SDKConfig, tests_dir: Path, result: SDKGenerationResult
     ):
         """Generate integration tests."""
         # Implementation would generate integration tests for each language
         pass
-    
+
     def _generate_compatibility_tests(
-        self,
-        config: SDKConfig,
-        tests_dir: Path,
-        result: SDKGenerationResult
+        self, config: SDKConfig, tests_dir: Path, result: SDKGenerationResult
     ):
         """Generate compatibility tests."""
         # Implementation would generate compatibility tests for each language
         pass
-    
+
     def _generate_documentation(
-        self,
-        config: SDKConfig,
-        output_path: Path,
-        result: SDKGenerationResult
+        self, config: SDKConfig, output_path: Path, result: SDKGenerationResult
     ):
         """Generate SDK documentation."""
         docs_dir = output_path / "docs"
         docs_dir.mkdir(exist_ok=True)
-        
+
         # Generate README
         self._generate_readme(config, docs_dir, result)
-        
+
         # Generate API documentation
         self._generate_api_docs(config, docs_dir, result)
-        
+
         # Generate migration guides
         if config.compatibility_versions:
             self._generate_migration_guides(config, docs_dir, result)
-    
+
     def _generate_readme(
-        self,
-        config: SDKConfig,
-        docs_dir: Path,
-        result: SDKGenerationResult
+        self, config: SDKConfig, docs_dir: Path, result: SDKGenerationResult
     ):
         """Generate README file."""
         readme_content = f"""# ACGS SDK for {config.language.value.title()}
@@ -577,69 +551,54 @@ Official {config.language.value.title()} SDK for ACGS-1 APIs.
 
 For support, please visit [ACGS Documentation](https://docs.acgs.ai).
 """
-        
+
         readme_file = docs_dir / "README.md"
-        with open(readme_file, 'w') as f:
+        with open(readme_file, "w") as f:
             f.write(readme_content)
-        
+
         result.generated_files.append(str(readme_file))
-    
+
     def _generate_api_docs(
-        self,
-        config: SDKConfig,
-        docs_dir: Path,
-        result: SDKGenerationResult
+        self, config: SDKConfig, docs_dir: Path, result: SDKGenerationResult
     ):
         """Generate API documentation."""
         # Implementation would generate API docs for each language
         pass
-    
+
     def _generate_migration_guides(
-        self,
-        config: SDKConfig,
-        docs_dir: Path,
-        result: SDKGenerationResult
+        self, config: SDKConfig, docs_dir: Path, result: SDKGenerationResult
     ):
         """Generate migration guides."""
         # Implementation would generate migration guides
         pass
-    
+
     def _generate_examples(
-        self,
-        config: SDKConfig,
-        output_path: Path,
-        result: SDKGenerationResult
+        self, config: SDKConfig, output_path: Path, result: SDKGenerationResult
     ):
         """Generate usage examples."""
         examples_dir = output_path / "examples"
         examples_dir.mkdir(exist_ok=True)
-        
+
         # Generate basic examples
         self._generate_basic_examples(config, examples_dir, result)
-        
+
         # Generate advanced examples
         self._generate_advanced_examples(config, examples_dir, result)
-    
+
     def _generate_basic_examples(
-        self,
-        config: SDKConfig,
-        examples_dir: Path,
-        result: SDKGenerationResult
+        self, config: SDKConfig, examples_dir: Path, result: SDKGenerationResult
     ):
         """Generate basic usage examples."""
         # Implementation would generate basic examples for each language
         pass
-    
+
     def _generate_advanced_examples(
-        self,
-        config: SDKConfig,
-        examples_dir: Path,
-        result: SDKGenerationResult
+        self, config: SDKConfig, examples_dir: Path, result: SDKGenerationResult
     ):
         """Generate advanced usage examples."""
         # Implementation would generate advanced examples for each language
         pass
-    
+
     def _validate_sdk(self, config: SDKConfig, output_path: Path) -> bool:
         """Validate generated SDK."""
         try:
@@ -649,14 +608,14 @@ For support, please visit [ACGS Documentation](https://docs.acgs.ai).
                 if not (output_path / file_path).exists():
                     logger.warning(f"Required file missing: {file_path}")
                     return False
-            
+
             # Run language-specific validation
             return self._run_language_validation(config, output_path)
-            
+
         except Exception as e:
             logger.error(f"SDK validation failed: {e}")
             return False
-    
+
     def _get_required_files(self, config: SDKConfig) -> List[str]:
         """Get list of required files for the SDK."""
         if config.language == SDKLanguage.PYTHON:
@@ -667,38 +626,42 @@ For support, please visit [ACGS Documentation](https://docs.acgs.ai).
             return ["pom.xml", "README.md"]
         else:
             return ["README.md"]
-    
+
     def _run_language_validation(self, config: SDKConfig, output_path: Path) -> bool:
         """Run language-specific validation."""
         # Implementation would run language-specific validation
         return True
-    
+
     def generate_all_sdks(
         self,
         openapi_spec_path: Path,
         api_version: str,
-        languages: List[SDKLanguage] = None
+        languages: List[SDKLanguage] = None,
     ) -> Dict[SDKLanguage, SDKGenerationResult]:
         """Generate SDKs for all specified languages."""
         if languages is None:
             languages = list(SDKLanguage)
-        
+
         results = {}
-        
+
         for language in languages:
             config = SDKConfig(
                 language=language,
                 api_version=api_version,
-                package_version=api_version.lstrip('v'),
-                compatibility_versions=["v1.5.0"] if api_version.startswith("v2") else []
+                package_version=api_version.lstrip("v"),
+                compatibility_versions=(
+                    ["v1.5.0"] if api_version.startswith("v2") else []
+                ),
             )
-            
+
             result = self.generate_sdk(openapi_spec_path, config)
             results[language] = result
-            
+
             if result.success:
                 logger.info(f"Successfully generated {language.value} SDK")
             else:
-                logger.error(f"Failed to generate {language.value} SDK: {result.errors}")
-        
+                logger.error(
+                    f"Failed to generate {language.value} SDK: {result.errors}"
+                )
+
         return results

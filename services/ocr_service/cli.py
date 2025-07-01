@@ -23,7 +23,9 @@ def setup_logging(verbose: bool = False) -> None:
     """Configure logging for the CLI application."""
     root_logger = logging.getLogger("acgs")
     handler = logging.StreamHandler()
-    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
     handler.setFormatter(formatter)
     root_logger.addHandler(handler)
 
@@ -39,7 +41,9 @@ def parse_arguments() -> argparse.Namespace:
     )
 
     # Image input options
-    parser.add_argument("--image", "-i", required=True, help="Path to image file or URL")
+    parser.add_argument(
+        "--image", "-i", required=True, help="Path to image file or URL"
+    )
 
     # Connection options
     connection_group = parser.add_argument_group("Connection Options")
@@ -66,7 +70,9 @@ def parse_arguments() -> argparse.Namespace:
 
     # OCR options
     ocr_group = parser.add_argument_group("OCR Options")
-    ocr_group.add_argument("--prompt", "-p", default=None, help="Custom prompt for the OCR model")
+    ocr_group.add_argument(
+        "--prompt", "-p", default=None, help="Custom prompt for the OCR model"
+    )
     ocr_group.add_argument(
         "--type",
         "-t",
@@ -100,9 +106,13 @@ def parse_arguments() -> argparse.Namespace:
 
     # Debug options
     debug_group = parser.add_argument_group("Debug Options")
-    debug_group.add_argument("--verbose", "-v", action="store_true", help="Enable verbose output")
     debug_group.add_argument(
-        "--health-check-only", action="store_true", help="Only perform health check and exit"
+        "--verbose", "-v", action="store_true", help="Enable verbose output"
+    )
+    debug_group.add_argument(
+        "--health-check-only",
+        action="store_true",
+        help="Only perform health check and exit",
     )
 
     return parser.parse_args()

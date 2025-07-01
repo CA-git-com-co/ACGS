@@ -34,7 +34,9 @@ __all__ = ["DatabasePoolManager", "ConnectionPool", "PoolConfig", "get_pool_mana
 
 # Add core database components if available
 if _core_database_available:
-    __all__.extend(["Base", "get_async_db", "AsyncSessionLocal", "async_engine", "metadata"])
+    __all__.extend(
+        ["Base", "get_async_db", "AsyncSessionLocal", "async_engine", "metadata"]
+    )
 
 # Optional imports for components that may not be implemented yet
 try:

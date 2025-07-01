@@ -20,14 +20,14 @@ import re
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
+
 class TestInfrastructureReconstructor:
     """Reconstructs and optimizes ACGS-1 test infrastructure"""
-    
+
     def __init__(self, project_root: str = "."):
         self.project_root = Path(project_root)
         self.reconstruction_report = {
@@ -37,56 +37,68 @@ class TestInfrastructureReconstructor:
             "coverage_analysis": {},
             "standardization_actions": [],
             "performance_metrics": {},
-            "recommendations": []
+            "recommendations": [],
         }
-        
+
     def audit_current_test_landscape(self):
         """Comprehensive audit of current test files and organization"""
         logger.info("🔍 Auditing current test landscape...")
-        
+
         # Find all test files across the codebase
         test_patterns = [
             "**/test_*.py",
-            "**/*_test.py", 
+            "**/*_test.py",
             "**/tests/**/*.py",
             "**/*test*.js",
             "**/*test*.ts",
             "**/*test*.tsx",
             "**/spec/**/*.py",
-            "**/spec/**/*.js"
+            "**/spec/**/*.js",
         ]
-        
+
         test_files = {}
-        
+
         for pattern in test_patterns:
             for test_file in self.project_root.rglob(pattern):
                 # Skip node_modules, venv, and other irrelevant directories
-                if any(skip in str(test_file) for skip in [
-                    "node_modules", "venv", "__pycache__", ".git", 
-                    "dist", "build", "target", ".next", "coverage"
-                ]):
+                if any(
+                    skip in str(test_file)
+                    for skip in [
+                        "node_modules",
+                        "venv",
+                        "__pycache__",
+                        ".git",
+                        "dist",
+                        "build",
+                        "target",
+                        ".next",
+                        "coverage",
+                    ]
+                ):
                     continue
-                
+
                 relative_path = test_file.relative_to(self.project_root)
                 test_files[str(relative_path)] = {
                     "type": self._classify_test_file(test_file),
                     "language": self._detect_language(test_file),
                     "size": test_file.stat().st_size,
                     "location": str(test_file.parent.relative_to(self.project_root)),
-                    "last_modified": datetime.fromtimestamp(test_file.stat().st_mtime).isoformat()
+                    "last_modified": datetime.fromtimestamp(
+                        test_file.stat().st_mtime
+                    ).isoformat(),
                 }
-        
+
         self.reconstruction_report["test_files_found"] = test_files
         logger.info(f"✅ Found {len(test_files)} test files")
-        
+
         # Analyze test organization patterns
         self._analyze_test_organization(test_files)
-        
+
     def _classify_test_file(self, test_file: Path) -> str:
         """Classify test file by type and purpose"""
         path_str = str(test_file).lower()
         name = test_file.name.lower()
-        
+
         if "unit" in path_str or "unit" in name:
             return "unit"
         elif "integration" in path_str or "integration" in name:
@@ -101,11 +113,11 @@ class TestInfrastructureReconstructor:
             return "configuration"
         else:
             return "general"
-    
+
     def _detect_language(self, test_file: Path) -> str:
         """Detect programming language of test file"""
         suffix = test_file.suffix.lower()
-        
+
         if suffix == ".py":
             return "python"
         elif suffix in [".js", ".jsx"]:
@@ -116,147 +128,160 @@ class TestInfrastructureReconstructor:
             return "rust"
         else:
             return "unknown"
-    
+
     def _analyze_test_organization(self, test_files: Dict):
         """Analyze current test organization patterns"""
         logger.info("📊 Analyzing test organization patterns...")
-        
+
         # Group by type and location
         by_type = {}
         by_location = {}
         by_language = {}
-        
+
         for file_path, info in test_files.items():
             test_type = info["type"]
             location = info["location"]
             language = info["language"]
-            
+
             # Group by type
             if test_type not in by_type:
                 by_type[test_type] = []
             by_type[test_type].append(file_path)
-            
+
             # Group by location
             if location not in by_location:
                 by_location[location] = []
             by_location[location].append(file_path)
-            
+
             # Group by language
             if language not in by_language:
                 by_language[language] = []
             by_language[language].append(file_path)
-        
+
         self.reconstruction_report["test_organization"] = {
             "by_type": by_type,
             "by_location": by_location,
-            "by_language": by_language
+            "by_language": by_language,
         }
-        
+
         # Identify organization issues
         issues = []
-        
+
         # Check for scattered test files
-        scattered_locations = [loc for loc, files in by_location.items() 
-                             if len(files) < 3 and not loc.startswith("tests")]
+        scattered_locations = [
+            loc
+            for loc, files in by_location.items()
+            if len(files) < 3 and not loc.startswith("tests")
+        ]
         if scattered_locations:
-            issues.append({
-                "type": "scattered_test_files",
-                "description": f"Found test files in {len(scattered_locations)} scattered locations",
-                "locations": scattered_locations,
-                "recommendation": "Consolidate into standardized test directories"
-            })
-        
+            issues.append(
+                {
+                    "type": "scattered_test_files",
+                    "description": f"Found test files in {len(scattered_locations)} scattered locations",
+                    "locations": scattered_locations,
+                    "recommendation": "Consolidate into standardized test directories",
+                }
+            )
+
         # Check for missing test types
         expected_types = ["unit", "integration", "e2e", "performance", "security"]
         missing_types = [t for t in expected_types if t not in by_type]
         if missing_types:
-            issues.append({
-                "type": "missing_test_types",
-                "description": f"Missing test types: {missing_types}",
-                "recommendation": "Create comprehensive test suites for all types"
-            })
-        
+            issues.append(
+                {
+                    "type": "missing_test_types",
+                    "description": f"Missing test types: {missing_types}",
+                    "recommendation": "Create comprehensive test suites for all types",
+                }
+            )
+
         # Check for configuration inconsistencies
         config_files = by_type.get("configuration", [])
         if len(config_files) > 5:
-            issues.append({
-                "type": "multiple_test_configs",
-                "description": f"Found {len(config_files)} test configuration files",
-                "files": config_files,
-                "recommendation": "Consolidate into single test configuration"
-            })
-        
+            issues.append(
+                {
+                    "type": "multiple_test_configs",
+                    "description": f"Found {len(config_files)} test configuration files",
+                    "files": config_files,
+                    "recommendation": "Consolidate into single test configuration",
+                }
+            )
+
         self.reconstruction_report["organization_issues"] = issues
         logger.info(f"⚠️ Found {len(issues)} organization issues")
-    
+
     def create_standardized_test_structure(self):
         """Create standardized test directory structure"""
         logger.info("🏗️ Creating standardized test structure...")
-        
+
         # Define the target test structure
         test_structure = {
             "tests": {
                 "unit": {
                     "services": ["auth", "ac", "integrity", "fv", "gs", "pgc", "ec"],
                     "shared": ["config", "utils", "models"],
-                    "blockchain": ["programs", "clients"]
+                    "blockchain": ["programs", "clients"],
                 },
                 "integration": {
                     "services": ["service_communication", "database", "cache"],
                     "workflows": ["governance", "compliance", "verification"],
-                    "external": ["blockchain", "apis"]
+                    "external": ["blockchain", "apis"],
                 },
                 "e2e": {
                     "governance": ["policy_creation", "voting", "enforcement"],
                     "compliance": ["constitutional_checks", "validation"],
-                    "user_flows": ["authentication", "dashboard", "admin"]
+                    "user_flows": ["authentication", "dashboard", "admin"],
                 },
                 "performance": {
                     "load": ["concurrent_users", "high_throughput"],
                     "stress": ["resource_limits", "failure_scenarios"],
-                    "benchmarks": ["response_times", "throughput"]
+                    "benchmarks": ["response_times", "throughput"],
                 },
                 "security": {
                     "authentication": ["jwt", "oauth", "rbac"],
                     "authorization": ["permissions", "access_control"],
-                    "vulnerabilities": ["injection", "xss", "csrf"]
+                    "vulnerabilities": ["injection", "xss", "csrf"],
                 },
                 "fixtures": ["data", "mocks", "factories"],
                 "utils": ["helpers", "assertions", "matchers"],
-                "coverage": ["reports", "html", "json"]
+                "coverage": ["reports", "html", "json"],
             }
         }
-        
+
         created_dirs = []
-        
+
         def create_directory_structure(base_path: Path, structure: Dict):
             for name, content in structure.items():
                 dir_path = base_path / name
                 dir_path.mkdir(parents=True, exist_ok=True)
                 created_dirs.append(str(dir_path.relative_to(self.project_root)))
-                
+
                 if isinstance(content, dict):
                     create_directory_structure(dir_path, content)
                 elif isinstance(content, list):
                     for subdir in content:
                         sub_path = dir_path / subdir
                         sub_path.mkdir(parents=True, exist_ok=True)
-                        created_dirs.append(str(sub_path.relative_to(self.project_root)))
-        
+                        created_dirs.append(
+                            str(sub_path.relative_to(self.project_root))
+                        )
+
         create_directory_structure(self.project_root, test_structure)
-        
-        self.reconstruction_report["standardization_actions"].append({
-            "action": "create_standardized_structure",
-            "directories_created": created_dirs,
-            "timestamp": datetime.now().isoformat()
-        })
-        
+
+        self.reconstruction_report["standardization_actions"].append(
+            {
+                "action": "create_standardized_structure",
+                "directories_created": created_dirs,
+                "timestamp": datetime.now().isoformat(),
+            }
+        )
+
         logger.info(f"✅ Created {len(created_dirs)} test directories")
-    
+
     def consolidate_test_configurations(self):
         """Consolidate scattered test configurations into unified setup"""
         logger.info("⚙️ Consolidating test configurations...")
-        
+
         # Create unified pytest configuration
         pytest_config = """[tool:pytest]
 # ACGS-1 Unified Test Configuration
@@ -336,12 +361,12 @@ title = ACGS-1 Test Coverage Report
 [coverage:json]
 output = tests/coverage/coverage.json
 """
-        
+
         # Save unified pytest configuration
         pytest_config_path = self.project_root / "pytest.ini"
-        with open(pytest_config_path, 'w') as f:
+        with open(pytest_config_path, "w") as f:
             f.write(pytest_config)
-        
+
         # Create comprehensive conftest.py
         conftest_content = '''"""
 ACGS-1 Comprehensive Test Configuration
@@ -442,91 +467,125 @@ def security_context():
         "test_permissions": []
     }
 '''
-        
+
         conftest_path = self.project_root / "tests" / "conftest.py"
-        with open(conftest_path, 'w') as f:
+        with open(conftest_path, "w") as f:
             f.write(conftest_content)
-        
-        self.reconstruction_report["standardization_actions"].append({
-            "action": "consolidate_test_configurations",
-            "files_created": ["pytest.ini", "tests/conftest.py"],
-            "timestamp": datetime.now().isoformat()
-        })
-        
+
+        self.reconstruction_report["standardization_actions"].append(
+            {
+                "action": "consolidate_test_configurations",
+                "files_created": ["pytest.ini", "tests/conftest.py"],
+                "timestamp": datetime.now().isoformat(),
+            }
+        )
+
         logger.info("✅ Consolidated test configurations")
-    
+
     def run_coverage_analysis(self):
         """Run comprehensive coverage analysis"""
         logger.info("📊 Running coverage analysis...")
-        
+
         try:
             # Run pytest with coverage
-            result = subprocess.run([
-                sys.executable, "-m", "pytest", 
-                "tests/", "--cov=services", "--cov=scripts",
-                "--cov-report=json:tests/coverage/coverage.json",
-                "--cov-report=term-missing",
-                "--tb=no", "-q"
-            ], cwd=self.project_root, capture_output=True, text=True, timeout=300)
-            
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "pytest",
+                    "tests/",
+                    "--cov=services",
+                    "--cov=scripts",
+                    "--cov-report=json:tests/coverage/coverage.json",
+                    "--cov-report=term-missing",
+                    "--tb=no",
+                    "-q",
+                ],
+                cwd=self.project_root,
+                capture_output=True,
+                text=True,
+                timeout=300,
+            )
+
             # Parse coverage results
             coverage_file = self.project_root / "tests" / "coverage" / "coverage.json"
             if coverage_file.exists():
-                with open(coverage_file, 'r') as f:
+                with open(coverage_file, "r") as f:
                     coverage_data = json.load(f)
-                
+
                 self.reconstruction_report["coverage_analysis"] = {
-                    "overall_coverage": coverage_data.get("totals", {}).get("percent_covered", 0),
+                    "overall_coverage": coverage_data.get("totals", {}).get(
+                        "percent_covered", 0
+                    ),
                     "files_analyzed": len(coverage_data.get("files", {})),
-                    "lines_covered": coverage_data.get("totals", {}).get("covered_lines", 0),
-                    "lines_total": coverage_data.get("totals", {}).get("num_statements", 0),
-                    "missing_lines": coverage_data.get("totals", {}).get("missing_lines", 0)
+                    "lines_covered": coverage_data.get("totals", {}).get(
+                        "covered_lines", 0
+                    ),
+                    "lines_total": coverage_data.get("totals", {}).get(
+                        "num_statements", 0
+                    ),
+                    "missing_lines": coverage_data.get("totals", {}).get(
+                        "missing_lines", 0
+                    ),
                 }
-                
-                logger.info(f"✅ Coverage analysis complete: {coverage_data.get('totals', {}).get('percent_covered', 0):.1f}%")
+
+                logger.info(
+                    f"✅ Coverage analysis complete: {coverage_data.get('totals', {}).get('percent_covered', 0):.1f}%"
+                )
             else:
                 logger.warning("⚠️ Coverage report not generated")
-                
+
         except Exception as e:
             logger.error(f"❌ Coverage analysis failed: {e}")
             self.reconstruction_report["coverage_analysis"] = {"error": str(e)}
-    
+
     def generate_reconstruction_report(self):
         """Generate comprehensive reconstruction report"""
-        report_path = self.project_root / "reports" / "test_infrastructure_reconstruction_report.json"
+        report_path = (
+            self.project_root
+            / "reports"
+            / "test_infrastructure_reconstruction_report.json"
+        )
         report_path.parent.mkdir(exist_ok=True)
-        
-        with open(report_path, 'w') as f:
+
+        with open(report_path, "w") as f:
             json.dump(self.reconstruction_report, f, indent=2)
-        
+
         # Generate summary
         summary = {
             "test_files_found": len(self.reconstruction_report["test_files_found"]),
-            "organization_issues": len(self.reconstruction_report.get("organization_issues", [])),
-            "standardization_actions": len(self.reconstruction_report["standardization_actions"]),
-            "coverage_percentage": self.reconstruction_report.get("coverage_analysis", {}).get("overall_coverage", 0)
+            "organization_issues": len(
+                self.reconstruction_report.get("organization_issues", [])
+            ),
+            "standardization_actions": len(
+                self.reconstruction_report["standardization_actions"]
+            ),
+            "coverage_percentage": self.reconstruction_report.get(
+                "coverage_analysis", {}
+            ).get("overall_coverage", 0),
         }
-        
-        print("\n" + "="*60)
+
+        print("\n" + "=" * 60)
         print("🧪 TEST INFRASTRUCTURE RECONSTRUCTION SUMMARY")
-        print("="*60)
+        print("=" * 60)
         print(f"📁 Test files found: {summary['test_files_found']}")
         print(f"⚠️ Organization issues: {summary['organization_issues']}")
         print(f"✅ Standardization actions: {summary['standardization_actions']}")
         print(f"📊 Test coverage: {summary['coverage_percentage']:.1f}%")
         print(f"📋 Report saved: {report_path}")
-    
+
     def run_complete_reconstruction(self):
         """Execute complete test infrastructure reconstruction"""
         logger.info("🚀 Starting ACGS-1 test infrastructure reconstruction...")
-        
+
         self.audit_current_test_landscape()
         self.create_standardized_test_structure()
         self.consolidate_test_configurations()
         self.run_coverage_analysis()
         self.generate_reconstruction_report()
-        
+
         logger.info("✅ Test infrastructure reconstruction complete!")
+
 
 if __name__ == "__main__":
     reconstructor = TestInfrastructureReconstructor()

@@ -19,8 +19,7 @@ from prometheus_client import CollectorRegistry, REGISTRY
 
 # Add the service path to sys.path for imports
 service_path = os.path.join(
-    os.path.dirname(__file__),
-    '../../services/core/policy-governance/pgc_service'
+    os.path.dirname(__file__), "../../services/core/policy-governance/pgc_service"
 )
 sys.path.insert(0, service_path)
 
@@ -178,9 +177,7 @@ class TestConstitutionalHashValidator:
         """Test that validation meets performance targets."""
         start_time = time.time()
 
-        await validator.validate_constitutional_hash(
-            "cdd01ef066bc6cf2", basic_context
-        )
+        await validator.validate_constitutional_hash("cdd01ef066bc6cf2", basic_context)
 
         validation_time_ms = (time.time() - start_time) * 1000
 
@@ -251,8 +248,7 @@ class TestConstitutionalHashValidator:
         )
 
         # Check that validation level is preserved in result
-        assert (result.validation_level ==
-                ConstitutionalValidationLevel.COMPREHENSIVE)
+        assert result.validation_level == ConstitutionalValidationLevel.COMPREHENSIVE
         assert result.integrity_signature is not None
         assert len(result.integrity_signature) > 0
 

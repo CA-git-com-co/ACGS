@@ -85,7 +85,9 @@ class LoadBalancer:
         elif strategy == LoadBalancingStrategy.LEAST_RESPONSE_TIME:
             return self._least_response_time_select(healthy_instances)
         elif strategy == LoadBalancingStrategy.CONSISTENT_HASH:
-            return self._consistent_hash_select(healthy_instances, hash_key or session_id)
+            return self._consistent_hash_select(
+                healthy_instances, hash_key or session_id
+            )
         elif strategy == LoadBalancingStrategy.RANDOM:
             return self._random_select(healthy_instances)
         else:
@@ -108,11 +110,15 @@ class LoadBalancer:
 
         return selected
 
-    def _least_connections_select(self, instances: list[ServiceInstance]) -> ServiceInstance:
+    def _least_connections_select(
+        self, instances: list[ServiceInstance]
+    ) -> ServiceInstance:
         """Select instance with least connections."""
         return min(instances, key=lambda x: x.current_connections)
 
-    def _weighted_round_robin_select(self, instances: list[ServiceInstance]) -> ServiceInstance:
+    def _weighted_round_robin_select(
+        self, instances: list[ServiceInstance]
+    ) -> ServiceInstance:
         """Weighted round robin selection based on instance weights."""
         # Create weighted list
         weighted_instances = []
@@ -125,10 +131,14 @@ class LoadBalancer:
 
         return self._round_robin_select(weighted_instances)
 
-    def _least_response_time_select(self, instances: list[ServiceInstance]) -> ServiceInstance:
+    def _least_response_time_select(
+        self, instances: list[ServiceInstance]
+    ) -> ServiceInstance:
         """Select instance with best response time and load score."""
         # Sort by load score (combines response time, connections, failure rate)
-        instances_with_scores = [(instance, instance.load_score) for instance in instances]
+        instances_with_scores = [
+            (instance, instance.load_score) for instance in instances
+        ]
         instances_with_scores.sort(key=lambda x: x[1])
 
         return instances_with_scores[0][0]
@@ -176,7 +186,9 @@ class LoadBalancer:
         """Random selection."""
         return random.choice(instances)
 
-    def _build_hash_ring(self, service_type: ServiceType, instances: list[ServiceInstance]):
+    def _build_hash_ring(
+        self, service_type: ServiceType, instances: list[ServiceInstance]
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -209,7 +221,9 @@ class LoadBalancer:
         """Clear session affinity for a session."""
         self._session_affinity.pop(session_id, None)
 
-    def get_load_balancing_stats(self, instances: list[ServiceInstance]) -> dict[str, Any]:
+    def get_load_balancing_stats(
+        self, instances: list[ServiceInstance]
+    ) -> dict[str, Any]:
         """Get load balancing statistics."""
         if not instances:
             return {}
@@ -227,7 +241,9 @@ class LoadBalancer:
             "total_requests": total_requests,
             "total_failures": total_failures,
             "failure_rate": (total_failures / max(total_requests, 1)) * 100,
-            "average_response_time": sum(inst.response_time or 0 for inst in healthy_instances)
+            "average_response_time": sum(
+                inst.response_time or 0 for inst in healthy_instances
+            )
             / max(len(healthy_instances), 1),
             "load_distribution": [
                 {
@@ -285,7 +301,9 @@ class SessionAffinityManager:
 
         return session_data.get("affinities", {}).get(service_type.value)
 
-    def set_affinity(self, session_id: str, service_type: ServiceType, instance_id: str):
+    def set_affinity(
+        self, session_id: str, service_type: ServiceType, instance_id: str
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash

@@ -135,9 +135,7 @@ def build_dgm_container(
         else:
             safe_log(f"Docker image '{image_name}' already exists. Skipping build.")
             # Fetch the existing image
-            next(
-                (img for img in client.images.list() if image_name in img.tags), None
-            )
+            next((img for img in client.images.list() if image_name in img.tags), None)
     except Exception as e:
         safe_log(f"Error while building the Docker image: {e}")
         return None

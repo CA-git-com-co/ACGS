@@ -92,7 +92,10 @@ class TieredValidationPipeline:
             overall_confidence += result.confidence_score
 
             # Check if escalation is needed
-            if result.confidence_score < 0.7 and request.validation_tier != ValidationTier.RIGOROUS:
+            if (
+                result.confidence_score < 0.7
+                and request.validation_tier != ValidationTier.RIGOROUS
+            ):
                 escalation_required = True
                 if request.validation_tier == ValidationTier.AUTOMATED:
                     next_tier_recommendation = ValidationTier.HITL
@@ -132,7 +135,9 @@ class TieredValidationPipeline:
 
         try:
             # Generate proof obligations from principles
-            proof_obligations = await generate_proof_obligations_from_principles(ac_principles)
+            proof_obligations = await generate_proof_obligations_from_principles(
+                ac_principles
+            )
             obligation_strings = [ob.obligation_content for ob in proof_obligations]
 
             # Use Z3 SMT solver for verification
@@ -143,7 +148,9 @@ class TieredValidationPipeline:
             # Determine status and confidence
             if smt_result.is_unsatisfiable:
                 status = "verified"
-                confidence = 0.8 if request.validation_level == ValidationLevel.BASELINE else 0.7
+                confidence = (
+                    0.8 if request.validation_level == ValidationLevel.BASELINE else 0.7
+                )
             elif smt_result.is_satisfiable:
                 status = "failed"
                 confidence = 0.9  # High confidence in failure detection
@@ -189,7 +196,9 @@ class TieredValidationPipeline:
         start_time = time.time()
 
         # First, run automated validation
-        automated_result = await self._automated_validation(rule, ac_principles, request)
+        automated_result = await self._automated_validation(
+            rule, ac_principles, request
+        )
 
         # Simulate human review process
         # In a real implementation, this would involve:
@@ -201,7 +210,9 @@ class TieredValidationPipeline:
 
         # Adjust confidence based on human review
         confidence_adjustment = 0.1 if automated_result.status == "verified" else 0.2
-        final_confidence = min(1.0, automated_result.confidence_score + confidence_adjustment)
+        final_confidence = min(
+            1.0, automated_result.confidence_score + confidence_adjustment
+        )
 
         verification_time = int((time.time() - start_time) * 1000)
 
@@ -243,7 +254,9 @@ class TieredValidationPipeline:
                 verification_methods.append("safety_property_verification")
 
             # Method 2: Standard SMT verification
-            standard_result = await self._automated_validation(rule, ac_principles, request)
+            standard_result = await self._automated_validation(
+                rule, ac_principles, request
+            )
             all_results.append(standard_result)
             verification_methods.append("enhanced_z3_verification")
 
@@ -300,16 +313,24 @@ class TieredValidationPipeline:
 
         # Check automated result confidence
         if automated_result.confidence_score < 0.8:
-            review_notes.append("Low automated confidence - manual verification recommended")
+            review_notes.append(
+                "Low automated confidence - manual verification recommended"
+            )
 
         # Add domain-specific insights
         if "sensitive" in rule.rule_content.lower():
             review_notes.append("Rule involves sensitive data - extra scrutiny applied")
 
         if "admin" in rule.rule_content.lower():
-            review_notes.append("Administrative privileges detected - security review completed")
+            review_notes.append(
+                "Administrative privileges detected - security review completed"
+            )
 
-        return "; ".join(review_notes) if review_notes else "Standard human review completed"
+        return (
+            "; ".join(review_notes)
+            if review_notes
+            else "Standard human review completed"
+        )
 
     async def _verify_safety_properties(
         self, rule: PolicyRule, safety_properties: list[SafetyProperty]
@@ -325,7 +346,9 @@ class TieredValidationPipeline:
             if prop.criticality_level == "critical":
                 # Simulate more thorough checking for critical properties
                 if "unsafe" in rule.rule_content.lower():
-                    violations.append(f"Critical safety violation: {prop.property_description}")
+                    violations.append(
+                        f"Critical safety violation: {prop.property_description}"
+                    )
 
         status = "failed" if violations else "verified"
         confidence = 0.9 if not violations else 0.95
@@ -422,7 +445,9 @@ class TieredValidationPipeline:
         total = len(results)
         verified = sum(1 for r in results if r.status == "verified")
         failed = sum(1 for r in results if r.status == "failed")
-        avg_confidence = sum(r.confidence_score for r in results) / total if total > 0 else 0
+        avg_confidence = (
+            sum(r.confidence_score for r in results) / total if total > 0 else 0
+        )
 
         return f"Tier {tier.value}: {verified}/{total} verified, {failed}/{total} failed, avg confidence: {avg_confidence:.2f}"
 

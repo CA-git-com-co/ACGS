@@ -34,11 +34,18 @@ decision_engine = DecisionEngine()
 # Pydantic models for API
 class OperationReviewRequest(BaseModel):
     """Request model for operation review."""
+
     agent_id: str = Field(..., description="Unique identifier of the agent")
-    agent_type: str = Field(..., description="Type of agent (coding_agent, policy_agent, etc.)")
+    agent_type: str = Field(
+        ..., description="Type of agent (coding_agent, policy_agent, etc.)"
+    )
     operation_type: str = Field(..., description="Type of operation being performed")
-    operation_description: str = Field(..., description="Detailed description of the operation")
-    operation_context: Dict[str, Any] = Field(default_factory=dict, description="Additional context")
+    operation_description: str = Field(
+        ..., description="Detailed description of the operation"
+    )
+    operation_context: Dict[str, Any] = Field(
+        default_factory=dict, description="Additional context"
+    )
     operation_target: Optional[str] = Field(None, description="Target of the operation")
     request_id: Optional[str] = Field(None, description="Optional request identifier")
     session_id: Optional[str] = Field(None, description="Optional session identifier")
@@ -46,6 +53,7 @@ class OperationReviewRequest(BaseModel):
 
 class ReviewDecisionRequest(BaseModel):
     """Request model for human review decision."""
+
     decision: str = Field(..., description="Decision: approved or rejected")
     decision_reason: Optional[str] = Field(None, description="Reason for the decision")
     reviewer_notes: Optional[str] = Field(None, description="Additional reviewer notes")
@@ -53,16 +61,22 @@ class ReviewDecisionRequest(BaseModel):
 
 class ReviewFeedbackRequest(BaseModel):
     """Request model for review feedback."""
+
     feedback_type: str = Field(..., description="Type of feedback")
     feedback_value: str = Field(..., description="Feedback value (correct/incorrect)")
     feedback_reason: Optional[str] = Field(None, description="Reason for feedback")
-    suggested_confidence: Optional[float] = Field(None, description="Suggested confidence score")
-    suggested_risk_score: Optional[float] = Field(None, description="Suggested risk score")
+    suggested_confidence: Optional[float] = Field(
+        None, description="Suggested confidence score"
+    )
+    suggested_risk_score: Optional[float] = Field(
+        None, description="Suggested risk score"
+    )
     improvement_notes: Optional[str] = Field(None, description="Notes for improvement")
 
 
 class ReviewResponse(BaseModel):
     """Response model for review."""
+
     review_id: str
     agent_id: str
     agent_type: str
@@ -78,13 +92,14 @@ class ReviewResponse(BaseModel):
     created_at: str
     decided_at: Optional[str]
     processing_time_ms: Optional[int]
-    
+
     class Config:
         from_attributes = True
 
 
 class ReviewListResponse(BaseModel):
     """Response model for review list."""
+
     reviews: List[ReviewResponse]
     total: int
     page: int
@@ -101,7 +116,9 @@ def get_client_ip(request: Request) -> Optional[str]:
     return request.client.host if request.client else None
 
 
-@router.post("/evaluate", response_model=ReviewResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/evaluate", response_model=ReviewResponse, status_code=status.HTTP_201_CREATED
+)
 async def evaluate_operation(
     review_request: OperationReviewRequest,
     request: Request,
@@ -118,14 +135,18 @@ async def evaluate_operation(
         client_ip = get_client_ip(request)
 
         # Generate mock review ID
-        review_id = f"review_{review_request.agent_id}_{int(datetime.utcnow().timestamp())}"
+        review_id = (
+            f"review_{review_request.agent_id}_{int(datetime.utcnow().timestamp())}"
+        )
 
         # Mock evaluation logic - auto-approve low-risk operations
         confidence_score = 0.85
         risk_score = 0.15
 
         # Check constitutional hash
-        constitutional_hash = review_request.operation_context.get("constitutional_hash")
+        constitutional_hash = review_request.operation_context.get(
+            "constitutional_hash"
+        )
         if constitutional_hash == "cdd01ef066bc6cf2":
             decision = "approved"
             status_val = "auto_approved"
@@ -157,15 +178,20 @@ async def evaluate_operation(
             decision=decision,
             decision_reason=decision_reason,
             created_at=datetime.utcnow().isoformat(),
-            decided_at=datetime.utcnow().isoformat() if decision == "approved" else None,
-            processing_time_ms=int((datetime.utcnow() - datetime.utcnow()).total_seconds() * 1000) + 2,  # Mock 2ms processing
+            decided_at=(
+                datetime.utcnow().isoformat() if decision == "approved" else None
+            ),
+            processing_time_ms=int(
+                (datetime.utcnow() - datetime.utcnow()).total_seconds() * 1000
+            )
+            + 2,  # Mock 2ms processing
         )
 
     except Exception as e:
         logger.error(f"Failed to evaluate operation: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to evaluate operation"
+            detail="Failed to evaluate operation",
         )
 
 
@@ -180,35 +206,37 @@ async def list_reviews(
 ):
     """
     List reviews with optional filtering and pagination.
-    
+
     Supports filtering by agent_id, status, and escalation level.
     """
     try:
         # Build query with filters
         query = select(AgentOperationReview)
-        
+
         if agent_id:
             query = query.where(AgentOperationReview.agent_id == agent_id)
-        
+
         if status_filter:
             query = query.where(AgentOperationReview.status == status_filter)
-        
+
         if escalation_level is not None:
-            query = query.where(AgentOperationReview.escalation_level == escalation_level)
-        
+            query = query.where(
+                AgentOperationReview.escalation_level == escalation_level
+            )
+
         # Apply pagination
         offset = (page - 1) * page_size
         query = query.offset(offset).limit(page_size)
         query = query.order_by(AgentOperationReview.created_at.desc())
-        
+
         # Execute query
         result = await db.execute(query)
         reviews = result.scalars().all()
-        
+
         # Get total count (simplified - in production use a count query)
         total = len(reviews)  # Placeholder
         total_pages = (total + page_size - 1) // page_size
-        
+
         return ReviewListResponse(
             reviews=[
                 ReviewResponse(
@@ -225,21 +253,24 @@ async def list_reviews(
                     decision=review.decision,
                     decision_reason=review.decision_reason,
                     created_at=review.created_at.isoformat(),
-                    decided_at=review.decided_at.isoformat() if review.decided_at else None,
+                    decided_at=(
+                        review.decided_at.isoformat() if review.decided_at else None
+                    ),
                     processing_time_ms=review.processing_time_ms,
-                ) for review in reviews
+                )
+                for review in reviews
             ],
             total=total,
             page=page,
             page_size=page_size,
             total_pages=total_pages,
         )
-        
+
     except Exception as e:
         logger.error(f"Failed to list reviews: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve reviews"
+            detail="Failed to retrieve reviews",
         )
 
 
@@ -256,13 +287,13 @@ async def get_review(
             )
         )
         review = result.scalar_one_or_none()
-        
+
         if not review:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Review '{review_id}' not found"
+                detail=f"Review '{review_id}' not found",
             )
-        
+
         return ReviewResponse(
             review_id=review.review_id,
             agent_id=review.agent_id,
@@ -280,14 +311,14 @@ async def get_review(
             decided_at=review.decided_at.isoformat() if review.decided_at else None,
             processing_time_ms=review.processing_time_ms,
         )
-        
+
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Failed to get review {review_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve review"
+            detail="Failed to retrieve review",
         )
 
 
@@ -299,7 +330,7 @@ async def make_review_decision(
 ):
     """
     Make a human review decision on a pending review.
-    
+
     This endpoint is used by human reviewers to approve or reject operations.
     """
     try:
@@ -310,26 +341,29 @@ async def make_review_decision(
             )
         )
         review = result.scalar_one_or_none()
-        
+
         if not review:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Review '{review_id}' not found"
+                detail=f"Review '{review_id}' not found",
             )
-        
-        if review.status not in [ReviewStatus.PENDING.value, ReviewStatus.ESCALATED.value]:
+
+        if review.status not in [
+            ReviewStatus.PENDING.value,
+            ReviewStatus.ESCALATED.value,
+        ]:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Review is not in a decidable state (current status: {review.status})"
+                detail=f"Review is not in a decidable state (current status: {review.status})",
             )
-        
+
         # Validate decision
         if decision_request.decision not in ["approved", "rejected"]:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Decision must be 'approved' or 'rejected'"
+                detail="Decision must be 'approved' or 'rejected'",
             )
-        
+
         # Update review with decision
         review.decision = decision_request.decision
         review.decision_reason = decision_request.decision_reason
@@ -338,19 +372,19 @@ async def make_review_decision(
         review.processing_time_ms = int(
             (review.decided_at - review.created_at).total_seconds() * 1000
         )
-        
+
         if decision_request.decision == "approved":
             review.status = ReviewStatus.HUMAN_APPROVED.value
         else:
             review.status = ReviewStatus.HUMAN_REJECTED.value
-        
+
         await db.commit()
-        
+
         logger.info(
             f"Review {review_id} decided: {decision_request.decision} "
             f"(escalation_level={review.escalation_level})"
         )
-        
+
         return ReviewResponse(
             review_id=review.review_id,
             agent_id=review.agent_id,
@@ -368,14 +402,14 @@ async def make_review_decision(
             decided_at=review.decided_at.isoformat() if review.decided_at else None,
             processing_time_ms=review.processing_time_ms,
         )
-        
+
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Failed to make decision on review {review_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to make decision"
+            detail="Failed to make decision",
         )
 
 
@@ -387,7 +421,7 @@ async def provide_feedback(
 ):
     """
     Provide feedback on a review decision for learning purposes.
-    
+
     This enables the system to learn from human corrections and improve
     confidence scoring over time.
     """
@@ -399,13 +433,13 @@ async def provide_feedback(
             )
         )
         review = result.scalar_one_or_none()
-        
+
         if not review:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Review '{review_id}' not found"
+                detail=f"Review '{review_id}' not found",
             )
-        
+
         # Create feedback record
         feedback = ReviewFeedback(
             review_id=review.id,
@@ -419,25 +453,27 @@ async def provide_feedback(
             provided_by_user_id=1,  # Placeholder - should come from auth
             provided_by_username="reviewer",  # Placeholder
         )
-        
+
         db.add(feedback)
         await db.commit()
-        
+
         # TODO: Update agent confidence profile based on feedback
         # This would involve calling a learning service to adjust the agent's
         # confidence parameters based on the feedback
-        
-        logger.info(f"Feedback provided for review {review_id}: {feedback_request.feedback_value}")
-        
+
+        logger.info(
+            f"Feedback provided for review {review_id}: {feedback_request.feedback_value}"
+        )
+
         return {"message": "Feedback recorded successfully"}
-        
+
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Failed to provide feedback for review {review_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to record feedback"
+            detail="Failed to record feedback",
         )
 
 
@@ -454,7 +490,7 @@ async def get_agent_confidence_profile(
             )
         )
         profile = result.scalar_one_or_none()
-        
+
         if not profile:
             # Return default profile if none exists
             return {
@@ -467,14 +503,17 @@ async def get_agent_confidence_profile(
                 "confidence_adjustments": {},
                 "risk_tolerance_factor": 1.0,
             }
-        
+
         # Calculate accuracy rate
-        total_decided = profile.auto_approved_operations + profile.human_approved_operations
+        total_decided = (
+            profile.auto_approved_operations + profile.human_approved_operations
+        )
         accuracy_rate = (
             profile.correct_auto_approvals / max(total_decided, 1)
-            if total_decided > 0 else 0.0
+            if total_decided > 0
+            else 0.0
         )
-        
+
         return {
             "agent_id": profile.agent_id,
             "total_operations": profile.total_operations,
@@ -487,10 +526,10 @@ async def get_agent_confidence_profile(
             "created_at": profile.created_at.isoformat(),
             "updated_at": profile.updated_at.isoformat(),
         }
-        
+
     except Exception as e:
         logger.error(f"Failed to get agent profile for {agent_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve agent profile"
+            detail="Failed to retrieve agent profile",
         )

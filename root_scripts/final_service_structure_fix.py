@@ -11,6 +11,7 @@ import shutil
 from pathlib import Path
 from datetime import datetime
 
+
 class FinalServiceStructureFix:
     def __init__(self, project_root: str = "/home/dislove/ACGS-1"):
         self.project_root = Path(project_root)
@@ -26,38 +27,42 @@ class FinalServiceStructureFix:
     def fix_service_requirements_location(self):
         """Fix requirements.txt location for nested services."""
         print("📦 Fixing service requirements file locations...")
-        
+
         services_core = self.project_root / "services" / "core"
-        
+
         # Services with nested structure
         nested_services = {
             "constitutional-ai": "ac_service",
-            "governance-synthesis": "gs_service", 
-            "formal-verification": "fv_service"
+            "governance-synthesis": "gs_service",
+            "formal-verification": "fv_service",
         }
-        
+
         for service_name, nested_dir in nested_services.items():
             service_path = services_core / service_name
             nested_path = service_path / nested_dir
-            
+
             if service_path.exists() and nested_path.exists():
                 # Check if requirements.txt exists in nested directory
                 nested_requirements = nested_path / "requirements.txt"
                 top_requirements = service_path / "requirements.txt"
-                
+
                 if top_requirements.exists() and not nested_requirements.exists():
                     # Copy requirements.txt to nested directory
                     shutil.copy2(top_requirements, nested_requirements)
-                    self.log_action(f"Copied requirements.txt to {service_name}/{nested_dir}")
+                    self.log_action(
+                        f"Copied requirements.txt to {service_name}/{nested_dir}"
+                    )
                 elif nested_requirements.exists():
-                    self.log_action(f"Requirements.txt already exists in {service_name}/{nested_dir}")
+                    self.log_action(
+                        f"Requirements.txt already exists in {service_name}/{nested_dir}"
+                    )
 
     def validate_final_service_structure(self):
         """Final validation of all service structures."""
         print("✅ Final service structure validation...")
-        
+
         services_core = self.project_root / "services" / "core"
-        
+
         service_configs = {
             "constitutional-ai": {"nested_dir": "ac_service", "has_app": True},
             "governance-synthesis": {"nested_dir": "gs_service", "has_app": True},
@@ -65,46 +70,48 @@ class FinalServiceStructureFix:
             "policy-governance": {"nested_dir": "pgc_service", "has_app": True},
             "evolutionary-computation": {"nested_dir": "app", "has_app": True},
             "self-evolving-ai": {"nested_dir": "app", "has_app": True},
-            "acgs-pgp-v8": {"nested_dir": "src", "has_app": True}
+            "acgs-pgp-v8": {"nested_dir": "src", "has_app": True},
         }
-        
+
         validation_results = {}
-        
+
         for service_name, config in service_configs.items():
             service_path = services_core / service_name
             nested_path = service_path / config["nested_dir"]
-            
+
             validation = {
                 "exists": service_path.exists(),
                 "has_nested_structure": nested_path.exists(),
                 "has_requirements": False,
-                "structure_valid": False
+                "structure_valid": False,
             }
-            
+
             if validation["exists"]:
                 # Check for requirements.txt in appropriate location
                 req_locations = [
                     nested_path / "requirements.txt",
-                    service_path / "requirements.txt"
+                    service_path / "requirements.txt",
                 ]
-                validation["has_requirements"] = any(loc.exists() for loc in req_locations)
-                
-                validation["structure_valid"] = (
-                    validation["has_nested_structure"] and 
-                    validation["has_requirements"]
+                validation["has_requirements"] = any(
+                    loc.exists() for loc in req_locations
                 )
-            
+
+                validation["structure_valid"] = (
+                    validation["has_nested_structure"]
+                    and validation["has_requirements"]
+                )
+
             validation_results[service_name] = validation
-            
+
             status = "✅" if validation["structure_valid"] else "❌"
             self.log_action(f"Final validation {status} {service_name}")
-        
+
         return validation_results
 
     def create_service_health_check_script(self):
         """Create a health check script for all services."""
         print("🏥 Creating service health check script...")
-        
+
         health_check_script = """#!/usr/bin/env python3
 \"\"\"
 ACGS-1 Service Health Check Script
@@ -160,34 +167,34 @@ def check_service_health():
 if __name__ == "__main__":
     check_service_health()
 """
-        
+
         health_check_file = self.project_root / "check_service_health.py"
-        with open(health_check_file, 'w') as f:
+        with open(health_check_file, "w") as f:
             f.write(health_check_script)
-        
+
         # Make it executable
         health_check_file.chmod(0o755)
-        
+
         self.log_action("Created service health check script")
 
     def test_quantumagi_integration(self):
         """Test Quantumagi integration and constitutional governance."""
         print("⛓️ Testing Quantumagi integration...")
-        
+
         quantumagi_path = self.project_root / "blockchain" / "quantumagi-deployment"
-        
+
         if not quantumagi_path.exists():
             self.log_action("ERROR: Quantumagi deployment missing!")
             return False
-        
+
         # Check critical files
         critical_files = [
             "constitution_data.json",
-            "governance_accounts.json", 
+            "governance_accounts.json",
             "initial_policies.json",
-            "complete_deployment.sh"
+            "complete_deployment.sh",
         ]
-        
+
         all_files_present = True
         for file_name in critical_files:
             file_path = quantumagi_path / file_name
@@ -196,13 +203,13 @@ if __name__ == "__main__":
             else:
                 self.log_action(f"❌ {file_name} missing")
                 all_files_present = False
-        
+
         # Verify constitutional hash
         constitution_file = quantumagi_path / "constitution_data.json"
         hash_verified = False
-        
+
         try:
-            with open(constitution_file, 'r') as f:
+            with open(constitution_file, "r") as f:
                 content = f.read()
                 if "cdd01ef066bc6cf2" in content:
                     self.log_action("✅ Constitutional hash cdd01ef066bc6cf2 verified")
@@ -211,7 +218,7 @@ if __name__ == "__main__":
                     self.log_action("❌ Constitutional hash not found")
         except Exception as e:
             self.log_action(f"❌ Could not verify constitutional hash: {e}")
-        
+
         return all_files_present and hash_verified
 
     def generate_final_completion_report(self):
@@ -220,18 +227,19 @@ if __name__ == "__main__":
             "timestamp": datetime.now().isoformat(),
             "report_type": "Final Service Structure Fix",
             "actions_performed": self.fix_log,
-            "summary": {
-                "total_actions": len(self.fix_log),
-                "fix_completed": True
-            }
+            "summary": {"total_actions": len(self.fix_log), "fix_completed": True},
         }
-        
-        report_file = self.project_root / f"final_service_fix_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-        
+
+        report_file = (
+            self.project_root
+            / f"final_service_fix_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        )
+
         import json
-        with open(report_file, 'w') as f:
+
+        with open(report_file, "w") as f:
             json.dump(report, f, indent=2)
-        
+
         self.log_action(f"Final fix report saved to {report_file}")
         return report
 
@@ -239,48 +247,55 @@ if __name__ == "__main__":
         """Execute final service structure fixes."""
         print("🚀 Starting final service structure fix...")
         print("=" * 50)
-        
+
         try:
             # Step 1: Fix requirements file locations
             self.fix_service_requirements_location()
-            
+
             # Step 2: Final validation
             validation_results = self.validate_final_service_structure()
-            
+
             # Step 3: Create health check script
             self.create_service_health_check_script()
-            
+
             # Step 4: Test Quantumagi integration
             quantumagi_ok = self.test_quantumagi_integration()
-            
+
             # Step 5: Generate final report
             report = self.generate_final_completion_report()
-            
+
             # Summary
-            valid_services = sum(1 for v in validation_results.values() if v["structure_valid"])
+            valid_services = sum(
+                1 for v in validation_results.values() if v["structure_valid"]
+            )
             total_services = len(validation_results)
-            
+
             print("\n🎉 Final service structure fix completed!")
-            print(f"📦 Services with valid structure: {valid_services}/{total_services}")
+            print(
+                f"📦 Services with valid structure: {valid_services}/{total_services}"
+            )
             print(f"⛓️ Quantumagi integration: {'✅' if quantumagi_ok else '❌'}")
             print(f"🏥 Health check script created")
             print(f"📝 Total actions: {len(self.fix_log)}")
-            
-            success = valid_services >= 6 and quantumagi_ok  # Allow 6/7 services minimum
-            
+
+            success = (
+                valid_services >= 6 and quantumagi_ok
+            )  # Allow 6/7 services minimum
+
             if success:
                 print("\n✅ ALL POST-CLEANUP TASKS COMPLETED SUCCESSFULLY!")
                 print("🎯 ACGS-1 project is now fully cleaned and optimized")
                 print("🔧 All critical services are properly structured")
                 print("⛓️ Quantumagi constitutional governance preserved")
                 print("📚 Documentation updated with correct service references")
-            
+
             return success
-            
+
         except Exception as e:
             self.log_action(f"ERROR during final fix: {str(e)}")
             print(f"❌ Final fix failed: {e}")
             return False
+
 
 if __name__ == "__main__":
     fix = FinalServiceStructureFix()

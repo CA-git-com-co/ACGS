@@ -4,18 +4,28 @@ Unit tests for services.core.governance-synthesis.gs_service.app.workflows.struc
 
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
-from services.core.governance-synthesis.gs_service.app.workflows.structured_output_models import PolicyType, ConstitutionalComplianceLevel, ViolationType, ConstitutionalViolation, ConstitutionalFidelityScore, RegoPolicy, PolicySynthesisRequest, PolicySynthesisResponse, ModelSpecializationConfig, WorkflowState
-
+from services.core.governance_synthesis.gs_service.app.workflows.structured_output_models import (
+    PolicyType,
+    ConstitutionalComplianceLevel,
+    ViolationType,
+    ConstitutionalViolation,
+    ConstitutionalFidelityScore,
+    RegoPolicy,
+    PolicySynthesisRequest,
+    PolicySynthesisResponse,
+    ModelSpecializationConfig,
+    WorkflowState,
+)
 
 
 class TestPolicyType:
     """Test suite for PolicyType."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -24,12 +34,12 @@ class TestPolicyType:
 
 class TestConstitutionalComplianceLevel:
     """Test suite for ConstitutionalComplianceLevel."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -38,12 +48,12 @@ class TestConstitutionalComplianceLevel:
 
 class TestViolationType:
     """Test suite for ViolationType."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -52,12 +62,12 @@ class TestViolationType:
 
 class TestConstitutionalViolation:
     """Test suite for ConstitutionalViolation."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -66,12 +76,12 @@ class TestConstitutionalViolation:
 
 class TestConstitutionalFidelityScore:
     """Test suite for ConstitutionalFidelityScore."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -82,24 +92,24 @@ class TestConstitutionalFidelityScore:
         # TODO: Implement test for determine_compliance_level
         instance = ConstitutionalFidelityScore()
         # Add test implementation here
-        assert hasattr(instance, 'determine_compliance_level')
+        assert hasattr(instance, "determine_compliance_level")
 
     def test_meets_target_fidelity(self):
         """Test meets_target_fidelity method."""
         # TODO: Implement test for meets_target_fidelity
         instance = ConstitutionalFidelityScore()
         # Add test implementation here
-        assert hasattr(instance, 'meets_target_fidelity')
+        assert hasattr(instance, "meets_target_fidelity")
 
 
 class TestRegoPolicy:
     """Test suite for RegoPolicy."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -110,31 +120,31 @@ class TestRegoPolicy:
         # TODO: Implement test for validate_package_name
         instance = RegoPolicy()
         # Add test implementation here
-        assert hasattr(instance, 'validate_package_name')
+        assert hasattr(instance, "validate_package_name")
 
     def test_validate_rules(self):
         """Test validate_rules method."""
         # TODO: Implement test for validate_rules
         instance = RegoPolicy()
         # Add test implementation here
-        assert hasattr(instance, 'validate_rules')
+        assert hasattr(instance, "validate_rules")
 
     def test_to_rego_string(self):
         """Test to_rego_string method."""
         # TODO: Implement test for to_rego_string
         instance = RegoPolicy()
         # Add test implementation here
-        assert hasattr(instance, 'to_rego_string')
+        assert hasattr(instance, "to_rego_string")
 
 
 class TestPolicySynthesisRequest:
     """Test suite for PolicySynthesisRequest."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -143,12 +153,12 @@ class TestPolicySynthesisRequest:
 
 class TestPolicySynthesisResponse:
     """Test suite for PolicySynthesisResponse."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -159,17 +169,17 @@ class TestPolicySynthesisResponse:
         # TODO: Implement test for meets_quality_threshold
         instance = PolicySynthesisResponse()
         # Add test implementation here
-        assert hasattr(instance, 'meets_quality_threshold')
+        assert hasattr(instance, "meets_quality_threshold")
 
 
 class TestModelSpecializationConfig:
     """Test suite for ModelSpecializationConfig."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -178,12 +188,12 @@ class TestModelSpecializationConfig:
 
 class TestWorkflowState:
     """Test suite for WorkflowState."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -194,20 +204,18 @@ class TestWorkflowState:
         # TODO: Implement test for add_step
         instance = WorkflowState()
         # Add test implementation here
-        assert hasattr(instance, 'add_step')
+        assert hasattr(instance, "add_step")
 
     def test_add_error(self):
         """Test add_error method."""
         # TODO: Implement test for add_error
         instance = WorkflowState()
         # Add test implementation here
-        assert hasattr(instance, 'add_error')
+        assert hasattr(instance, "add_error")
 
     def test_duration_ms(self):
         """Test duration_ms method."""
         # TODO: Implement test for duration_ms
         instance = WorkflowState()
         # Add test implementation here
-        assert hasattr(instance, 'duration_ms')
-
-
+        assert hasattr(instance, "duration_ms")

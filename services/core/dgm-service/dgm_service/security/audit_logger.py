@@ -148,9 +148,15 @@ class AuditLogger:
     ):
         """Log authentication event."""
         severity = AuditSeverity.LOW if success else AuditSeverity.MEDIUM
-        message = f"Authentication {'successful' if success else 'failed'} for user {user_id}"
+        message = (
+            f"Authentication {'successful' if success else 'failed'} for user {user_id}"
+        )
 
-        event_details = {"authentication_method": method, "success": success, **(details or {})}
+        event_details = {
+            "authentication_method": method,
+            "success": success,
+            **(details or {}),
+        }
 
         await self.log_event(
             AuditEventType.AUTHENTICATION,
@@ -172,11 +178,13 @@ class AuditLogger:
     ):
         """Log authorization event."""
         severity = AuditSeverity.LOW if granted else AuditSeverity.MEDIUM
-        message = (
-            f"Permission '{permission}' {'granted' if granted else 'denied'} for user {user_id}"
-        )
+        message = f"Permission '{permission}' {'granted' if granted else 'denied'} for user {user_id}"
 
-        event_details = {"permission": permission, "granted": granted, **(details or {})}
+        event_details = {
+            "permission": permission,
+            "granted": granted,
+            **(details or {}),
+        }
 
         await self.log_event(
             AuditEventType.AUTHORIZATION,
@@ -234,7 +242,9 @@ class AuditLogger:
     ):
         """Log constitutional compliance event."""
         severity = AuditSeverity.CRITICAL if violations else AuditSeverity.LOW
-        message = f"Constitutional validation {validation_id}: score={compliance_score:.2f}"
+        message = (
+            f"Constitutional validation {validation_id}: score={compliance_score:.2f}"
+        )
 
         event_details = {
             "compliance_score": compliance_score,
@@ -311,7 +321,11 @@ class AuditLogger:
         """Log data access event."""
         message = f"Data access: {action} on {resource_type} {resource_id}"
 
-        event_details = {"resource_type": resource_type, "action": action, **(details or {})}
+        event_details = {
+            "resource_type": resource_type,
+            "action": action,
+            **(details or {}),
+        }
 
         await self.log_event(
             AuditEventType.DATA_ACCESS,

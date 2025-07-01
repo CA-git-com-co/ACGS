@@ -243,11 +243,17 @@ def create_improvement_event(
     event_type: EventType, improvement_id: str, **kwargs
 ) -> ImprovementEvent:
     """Create improvement event with common fields."""
-    return ImprovementEvent(event_type=event_type, improvement_id=improvement_id, **kwargs)
+    return ImprovementEvent(
+        event_type=event_type, improvement_id=improvement_id, **kwargs
+    )
 
 
 def create_performance_event(
-    event_type: EventType, metric_name: str, metric_value: float, service_name: str, **kwargs
+    event_type: EventType,
+    metric_name: str,
+    metric_value: float,
+    service_name: str,
+    **kwargs,
 ) -> PerformanceEvent:
     """Create performance event with common fields."""
     return PerformanceEvent(
@@ -276,5 +282,8 @@ def create_bandit_event(
 ) -> BanditEvent:
     """Create bandit event with common fields."""
     return BanditEvent(
-        event_type=event_type, algorithm_type=algorithm_type, arm_name=arm_name, **kwargs
+        event_type=event_type,
+        algorithm_type=algorithm_type,
+        arm_name=arm_name,
+        **kwargs,
     )

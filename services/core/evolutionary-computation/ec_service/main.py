@@ -22,13 +22,26 @@ import sys
 import os
 
 # Add path for shared services
-sys.path.append('/home/ubuntu/ACGS/services/shared')
+sys.path.append("/home/ubuntu/ACGS/services/shared")
 from leader_election import create_leader_election_service, leader_required
 
 # Import our evolution components
-from .evolution_engine import evolution_engine, EvolutionRequest, EvolutionType, RiskLevel
-from .human_approval_workflow import human_approval_workflow, ReviewDecision, ReviewPriority
-from .security_architecture import security_architecture, SecurityLevel, AuthenticationMethod
+from .evolution_engine import (
+    evolution_engine,
+    EvolutionRequest,
+    EvolutionType,
+    RiskLevel,
+)
+from .human_approval_workflow import (
+    human_approval_workflow,
+    ReviewDecision,
+    ReviewPriority,
+)
+from .security_architecture import (
+    security_architecture,
+    SecurityLevel,
+    AuthenticationMethod,
+)
 
 # Configure logging
 logging.basicConfig(
@@ -50,23 +63,29 @@ ENABLE_LEADER_ELECTION = os.getenv("ENABLE_LEADER_ELECTION", "true").lower() == 
 # Global leader election service
 leader_election_service = None
 
+
 # Pydantic models for API
 class EvolutionRequestModel(BaseModel):
     """Evolution request model for API."""
+
     evolution_type: str = Field(..., description="Type of evolution")
     description: str = Field(..., description="Description of evolution")
     proposed_changes: Dict = Field(..., description="Proposed changes")
     target_service: str = Field(..., description="Target service")
     priority: int = Field(default=3, description="Priority level")
 
+
 class ReviewDecisionModel(BaseModel):
     """Review decision model for API."""
+
     decision: str = Field(..., description="Review decision")
     justification: str = Field(..., description="Justification for decision")
     recommendations: List[str] = Field(default=[], description="Recommendations")
 
+
 class SecurityCredentials(BaseModel):
     """Security credentials for authentication."""
+
     method: str = Field(default="jwt_token", description="Authentication method")
     token: Optional[str] = Field(None, description="JWT token")
     api_key: Optional[str] = Field(None, description="API key")
@@ -76,15 +95,19 @@ class SecurityCredentials(BaseModel):
 # Leader election callbacks
 async def on_started_leading():
     """Called when this instance becomes the leader."""
-    logger.info("🏛️ EC Service became leader - Starting evolutionary computation operations")
+    logger.info(
+        "🏛️ EC Service became leader - Starting evolutionary computation operations"
+    )
     # Initialize leader-only operations here
-    
+
 
 async def on_stopped_leading():
     """Called when this instance loses leadership."""
-    logger.info("🔄 EC Service lost leadership - Stopping evolutionary computation operations")
+    logger.info(
+        "🔄 EC Service lost leadership - Stopping evolutionary computation operations"
+    )
     # Stop leader-only operations here
-    
+
 
 async def on_new_leader(leader_identity: str):
     """Called when a new leader is elected."""
@@ -95,9 +118,9 @@ async def on_new_leader(leader_identity: str):
 async def lifespan(app: FastAPI):
     """Application lifespan management with leader election."""
     global leader_election_service
-    
+
     logger.info(f"🚀 Starting {SERVICE_NAME} v{SERVICE_VERSION}")
-    
+
     # Initialize leader election if enabled
     if ENABLE_LEADER_ELECTION:
         try:
@@ -106,25 +129,26 @@ async def lifespan(app: FastAPI):
                 namespace=NAMESPACE,
                 on_started_leading=on_started_leading,
                 on_stopped_leading=on_stopped_leading,
-                on_new_leader=on_new_leader
+                on_new_leader=on_new_leader,
             )
-            
+
             # Start leader election in background
             asyncio.create_task(leader_election_service.start_leader_election())
             logger.info("✅ Leader election enabled for EC service")
-            
+
         except Exception as e:
             logger.error(f"❌ Failed to initialize leader election: {e}")
             leader_election_service = None
     else:
         logger.info("⚠️ Leader election disabled for EC service")
-    
+
     yield
-    
+
     # Cleanup
     logger.info(f"🔄 Shutting down {SERVICE_NAME}")
     if leader_election_service:
         await leader_election_service.stop_leader_election()
+
 
 app = FastAPI(
     title="ACGS-1 Evolutionary Computation Service",
@@ -136,7 +160,10 @@ app = FastAPI(
 
 # Add secure CORS middleware with environment-based configuration
 import os
-cors_origins = os.getenv("BACKEND_CORS_ORIGINS", "http://localhost:3000,http://localhost:8080").split(",")
+
+cors_origins = os.getenv(
+    "BACKEND_CORS_ORIGINS", "http://localhost:3000,http://localhost:8080"
+).split(",")
 cors_origins = [origin.strip() for origin in cors_origins if origin.strip()]
 
 app.add_middleware(
@@ -146,31 +173,33 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=[
         "Accept",
-        "Accept-Language", 
+        "Accept-Language",
         "Content-Language",
         "Content-Type",
         "Authorization",
         "X-Request-ID",
-        "X-Constitutional-Hash"
+        "X-Constitutional-Hash",
     ],
     expose_headers=["X-Request-ID", "X-Response-Time", "X-Compliance-Score"],
 )
+
 
 @app.middleware("http")
 async def add_security_headers(request, call_next):
     """Add security headers including constitutional hash."""
     response = await call_next(request)
-    
+
     # Core security headers
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["X-XSS-Protection"] = "1; mode=block"
-    
+
     # ACGS-1 specific headers
     response.headers["X-ACGS-Security"] = "enabled"
     response.headers["X-Constitutional-Hash"] = "cdd01ef066bc6cf2"
-    
+
     return response
+
 
 @app.get("/", status_code=status.HTTP_200_OK)
 async def root(request: Request):
@@ -185,16 +214,17 @@ async def root(request: Request):
             "WINA-Optimized Oversight",
             "Advanced Evolutionary Computation Algorithms",
             "AlphaEvolve Integration",
-            "Enterprise Features"
+            "Enterprise Features",
         ],
-        "status": "operational"
+        "status": "operational",
     }
+
 
 @app.get("/health", status_code=status.HTTP_200_OK)
 async def health_check():
     """Health check endpoint."""
     uptime_seconds = time.time() - service_start_time
-    
+
     return {
         "status": "healthy",
         "service": SERVICE_NAME,
@@ -207,14 +237,15 @@ async def health_check():
             "evolution_engine": "operational",
             "genetic_processor": "operational",
             "optimization_manager": "operational",
-            "constraint_handler": "operational"
+            "constraint_handler": "operational",
         },
         "performance_metrics": {
             "uptime_seconds": uptime_seconds,
             "target_response_time": "<300ms",
-            "availability_target": ">99.9%"
-        }
+            "availability_target": ">99.9%",
+        },
     }
+
 
 # Leader election endpoints
 @app.get("/leader-election/status")
@@ -226,8 +257,9 @@ async def get_leader_election_status():
         return {
             "service_name": SERVICE_NAME,
             "leader_election_enabled": False,
-            "message": "Leader election not configured"
+            "message": "Leader election not configured",
         }
+
 
 @app.get("/leader-election/health")
 async def get_leader_election_health():
@@ -237,10 +269,8 @@ async def get_leader_election_health():
         health_info["endpoint"] = "leader_election_health"
         return health_info
     else:
-        return {
-            "status": "disabled",
-            "leader_election_enabled": False
-        }
+        return {"status": "disabled", "leader_election_enabled": False}
+
 
 # Leader-only evolutionary computation operations
 @app.post("/api/v1/evolution/leader/coordinate")
@@ -249,17 +279,26 @@ async def coordinate_evolution_as_leader(request: Request):
     if not leader_election_service or not leader_election_service.is_leader():
         return {
             "error": "Operation requires leadership",
-            "is_leader": leader_election_service.is_leader() if leader_election_service else False,
-            "leader_identity": leader_election_service.get_leader_identity() if leader_election_service else None
+            "is_leader": (
+                leader_election_service.is_leader()
+                if leader_election_service
+                else False
+            ),
+            "leader_identity": (
+                leader_election_service.get_leader_identity()
+                if leader_election_service
+                else None
+            ),
         }
-    
+
     logger.info("🏛️ Coordinating evolutionary computation as leader")
     # Leader-only evolutionary computation logic here
     return {
         "status": "coordinated_as_leader",
         "leader_identity": leader_election_service.get_leader_identity(),
-        "constitutional_hash": "cdd01ef066bc6cf2"
+        "constitutional_hash": "cdd01ef066bc6cf2",
     }
+
 
 @app.post("/api/v1/oversight/coordinate")
 async def coordinate_wina_oversight(request: Request):
@@ -267,11 +306,13 @@ async def coordinate_wina_oversight(request: Request):
     # Placeholder for WINA-optimized oversight coordination
     return {"status": "coordinated"}
 
+
 @app.get("/api/v1/oversight/status/{oversight_id}")
 async def get_oversight_status(oversight_id: str):
     """Get oversight operation status"""
     # Placeholder for getting oversight status
     return {"oversight_id": oversight_id, "status": "in_progress"}
+
 
 @app.post("/api/v1/oversight/feedback")
 async def submit_oversight_feedback(request: Request):
@@ -279,11 +320,13 @@ async def submit_oversight_feedback(request: Request):
     # Placeholder for submitting oversight feedback
     return {"status": "feedback_received"}
 
+
 @app.get("/api/v1/oversight/recommendations")
 async def get_wina_recommendations():
     """Get WINA-informed governance recommendations"""
     # Placeholder for getting WINA recommendations
     return {"recommendations": []}
+
 
 @app.post("/api/v1/advanced-wina/optimization/run")
 async def run_advanced_wina_optimization(request: Request):
@@ -291,11 +334,13 @@ async def run_advanced_wina_optimization(request: Request):
     # Placeholder for running advanced WINA optimization
     return {"status": "optimization_started"}
 
+
 @app.get("/api/v1/advanced-wina/monitoring/real-time")
 async def get_real_time_wina_monitoring():
     """Real-time WINA monitoring"""
     # Placeholder for real-time WINA monitoring
     return {"status": "monitoring_active"}
+
 
 @app.post("/api/v1/advanced-wina/alerts/configure")
 async def configure_wina_alerts(request: Request):
@@ -303,11 +348,13 @@ async def configure_wina_alerts(request: Request):
     # Placeholder for configuring WINA alerts
     return {"status": "alerts_configured"}
 
+
 @app.get("/api/v1/advanced-wina/analytics/performance")
 async def get_advanced_wina_performance_analytics():
     """Advanced performance analytics"""
     # Placeholder for advanced WINA performance analytics
     return {"analytics": {}}
+
 
 @app.get("/api/v1/advanced-wina/enterprise/configuration")
 async def get_enterprise_wina_configuration():
@@ -315,11 +362,13 @@ async def get_enterprise_wina_configuration():
     # Placeholder for enterprise WINA configuration
     return {"configuration": {}}
 
+
 @app.post("/api/v1/alphaevolve/optimize")
 async def optimize_alphaevolve(request: Request):
     """Optimize EC algorithms with constitutional constraints"""
     # Placeholder for optimizing AlphaEvolve
     return {"status": "optimization_complete"}
+
 
 @app.post("/api/v1/alphaevolve/governance")
 async def optimize_alphaevolve_governance(request: Request):
@@ -327,11 +376,13 @@ async def optimize_alphaevolve_governance(request: Request):
     # Placeholder for optimizing AlphaEvolve governance
     return {"status": "governance_optimized"}
 
+
 @app.get("/api/v1/alphaevolve/strategies")
 async def get_alphaevolve_strategies():
     """Available optimization strategies"""
     # Placeholder for getting AlphaEvolve strategies
     return {"strategies": []}
+
 
 @app.post("/api/v1/alphaevolve/constitutional")
 async def optimize_alphaevolve_constitutional(request: Request):
@@ -339,11 +390,13 @@ async def optimize_alphaevolve_constitutional(request: Request):
     # Placeholder for optimizing AlphaEvolve constitutional compliance
     return {"status": "constitutional_optimization_complete"}
 
+
 @app.get("/api/v1/wina/performance/metrics")
 async def get_wina_performance_metrics():
     """WINA performance metrics and insights"""
     # Placeholder for getting WINA performance metrics
     return {"metrics": {}}
+
 
 @app.get("/api/v1/wina/performance/optimization")
 async def get_wina_performance_optimization():
@@ -351,11 +404,13 @@ async def get_wina_performance_optimization():
     # Placeholder for getting WINA performance optimization recommendations
     return {"recommendations": []}
 
+
 @app.post("/api/v1/wina/performance/tune")
 async def tune_wina_performance(request: Request):
     """Dynamic performance tuning"""
     # Placeholder for tuning WINA performance
     return {"status": "performance_tuned"}
+
 
 @app.get("/api/v1/wina/performance/dashboard")
 async def get_wina_performance_dashboard():
@@ -363,11 +418,13 @@ async def get_wina_performance_dashboard():
     # Placeholder for getting WINA performance dashboard
     return {"dashboard": {}}
 
+
 @app.post("/api/v1/evolution/genetic-algorithm")
 async def run_genetic_algorithm(request: Request):
     """Run genetic algorithm optimization"""
     # Placeholder for running genetic algorithm
     return {"status": "ga_complete"}
+
 
 @app.post("/api/v1/evolution/multi-objective")
 async def run_multi_objective_optimization(request: Request):
@@ -375,11 +432,13 @@ async def run_multi_objective_optimization(request: Request):
     # Placeholder for running multi-objective optimization
     return {"status": "moo_complete"}
 
+
 @app.post("/api/v1/evolution/constraint-satisfaction")
 async def run_constraint_satisfaction(request: Request):
     """Constitutional constraint satisfaction"""
     # Placeholder for running constraint satisfaction
     return {"status": "constraint_satisfaction_complete"}
+
 
 @app.get("/api/v1/evolution/population/status")
 async def get_population_status():
@@ -387,11 +446,13 @@ async def get_population_status():
     # Placeholder for getting population status
     return {"population": {"size": 0, "diversity": 0}}
 
+
 @app.get("/api/v1/reporting/oversight")
 async def get_oversight_report():
     """Comprehensive oversight reports"""
     # Placeholder for getting oversight reports
     return {"report": {}}
+
 
 @app.get("/api/v1/reporting/performance")
 async def get_performance_report():
@@ -399,11 +460,13 @@ async def get_performance_report():
     # Placeholder for getting performance reports
     return {"report": {}}
 
+
 @app.get("/api/v1/reporting/constitutional")
 async def get_constitutional_report():
     """Constitutional compliance reports"""
     # Placeholder for getting constitutional reports
     return {"report": {}}
+
 
 @app.post("/api/v1/reporting/custom")
 async def create_custom_report(request: Request):
@@ -411,11 +474,13 @@ async def create_custom_report(request: Request):
     # Placeholder for creating custom reports
     return {"report": {}}
 
+
 @app.get("/api/v1/monitoring/system")
 async def get_system_monitoring():
     """System performance monitoring"""
     # Placeholder for getting system monitoring
     return {"monitoring": {}}
+
 
 @app.get("/api/v1/monitoring/alerts")
 async def get_monitoring_alerts():
@@ -423,17 +488,20 @@ async def get_monitoring_alerts():
     # Placeholder for getting monitoring alerts
     return {"alerts": []}
 
+
 @app.post("/api/v1/monitoring/configure")
 async def configure_monitoring(request: Request):
     """Configure monitoring parameters"""
     # Placeholder for configuring monitoring
     return {"status": "monitoring_configured"}
 
+
 @app.get("/api/v1/monitoring/dashboard")
 async def get_monitoring_dashboard():
     """Real-time monitoring dashboard"""
     # Placeholder for getting monitoring dashboard
     return {"dashboard": {}}
+
 
 @app.get("/api/v1/status")
 async def get_service_status():
@@ -447,9 +515,10 @@ async def get_service_status():
             "wina_optimized_oversight": True,
             "advanced_evolutionary_computation": True,
             "alphaevolve_integration": True,
-            "enterprise_features": True
-        }
+            "enterprise_features": True,
+        },
     }
+
 
 @app.get("/metrics")
 async def get_metrics():
@@ -457,7 +526,9 @@ async def get_metrics():
     # Placeholder for Prometheus metrics
     return {}
 
+
 # Evolution API Endpoints
+
 
 @app.post("/api/v1/evolution/submit")
 async def submit_evolution_request(request: EvolutionRequestModel):
@@ -471,22 +542,25 @@ async def submit_evolution_request(request: EvolutionRequestModel):
             proposed_changes=request.proposed_changes,
             requester_id="api_user",
             target_service=request.target_service,
-            priority=request.priority
+            priority=request.priority,
         )
 
         # Submit through evolution engine
-        evolution_id = await evolution_engine.submit_evolution_request(evolution_request)
+        evolution_id = await evolution_engine.submit_evolution_request(
+            evolution_request
+        )
 
         return {
             "success": True,
             "evolution_id": evolution_id,
             "message": "Evolution request submitted successfully",
-            "status": "pending_evaluation"
+            "status": "pending_evaluation",
         }
 
     except Exception as e:
         logger.error(f"Failed to submit evolution request: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.get("/api/v1/evolution/{evolution_id}/status")
 async def get_evolution_status(evolution_id: str):
@@ -505,19 +579,18 @@ async def get_evolution_status(evolution_id: str):
         logger.error(f"Failed to get evolution status: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @app.get("/api/v1/reviews/pending")
 async def get_pending_reviews():
     """Get list of pending human review tasks."""
     try:
         pending_reviews = evolution_engine.get_pending_reviews()
-        return {
-            "pending_reviews": pending_reviews,
-            "count": len(pending_reviews)
-        }
+        return {"pending_reviews": pending_reviews, "count": len(pending_reviews)}
 
     except Exception as e:
         logger.error(f"Failed to get pending reviews: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.post("/api/v1/reviews/{task_id}/decision")
 async def submit_review_decision(task_id: str, decision: ReviewDecisionModel):
@@ -529,17 +602,19 @@ async def submit_review_decision(task_id: str, decision: ReviewDecisionModel):
             reviewer_id="human_reviewer",
             decision=ReviewDecision(decision.decision),
             justification=decision.justification,
-            recommendations=decision.recommendations
+            recommendations=decision.recommendations,
         )
 
         if success:
             return {
                 "success": True,
                 "message": "Review decision submitted successfully",
-                "task_id": task_id
+                "task_id": task_id,
             }
         else:
-            raise HTTPException(status_code=400, detail="Failed to submit review decision")
+            raise HTTPException(
+                status_code=400, detail="Failed to submit review decision"
+            )
 
     except HTTPException:
         raise
@@ -547,7 +622,9 @@ async def submit_review_decision(task_id: str, decision: ReviewDecisionModel):
         logger.error(f"Failed to submit review decision: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
 if __name__ == "__main__":
     import uvicorn
+
     logger.info(f"Starting {SERVICE_NAME} on port {SERVICE_PORT}")
     uvicorn.run(app, host="0.0.0.0", port=SERVICE_PORT)

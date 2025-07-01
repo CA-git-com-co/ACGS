@@ -209,7 +209,9 @@ class SimpleBackupTest:
         return {
             "status": "passed",
             "services_checked": len(service_states),
-            "running_services": sum(1 for state in service_states.values() if state["running"]),
+            "running_services": sum(
+                1 for state in service_states.values() if state["running"]
+            ),
         }
 
     def _test_blockchain_backup(self, backup_dir: Path) -> dict:
@@ -282,7 +284,9 @@ class SimpleBackupTest:
         result = subprocess.run(cmd, capture_output=True, text=True)
 
         if result.returncode == 0 and compressed_file.exists():
-            original_size = sum(f.stat().st_size for f in backup_dir.rglob("*") if f.is_file())
+            original_size = sum(
+                f.stat().st_size for f in backup_dir.rglob("*") if f.is_file()
+            )
             compressed_size = compressed_file.stat().st_size
             compression_ratio = (
                 (1 - compressed_size / original_size) * 100 if original_size > 0 else 0

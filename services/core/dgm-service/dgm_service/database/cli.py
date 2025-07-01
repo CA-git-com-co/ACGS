@@ -23,7 +23,8 @@ logger = logging.getLogger(__name__)
 def get_database_url() -> str:
     """Get database URL from environment or config."""
     return os.getenv(
-        "DATABASE_URL", "postgresql+asyncpg://acgs_user:acgs_password@localhost:5432/acgs_db"
+        "DATABASE_URL",
+        "postgresql+asyncpg://acgs_user:acgs_password@localhost:5432/acgs_db",
     )
 
 
@@ -54,7 +55,9 @@ def print_result(result: Dict[str, Any], operation: str):
                 if data.get("indexes_created"):
                     print(f"   🔍 Indexes created: {len(data['indexes_created'])}")
                 if data.get("configurations_created", 0) > 0:
-                    print(f"   ⚙️  Configurations initialized: {data['configurations_created']}")
+                    print(
+                        f"   ⚙️  Configurations initialized: {data['configurations_created']}"
+                    )
 
             elif operation == "verify":
                 if data.get("schema_exists"):
@@ -63,7 +66,9 @@ def print_result(result: Dict[str, Any], operation: str):
                     print(f"   📁 Schema exists: ❌")
 
                 tables = data.get("tables", {})
-                healthy_tables = sum(1 for t in tables.values() if t.get("status") == "healthy")
+                healthy_tables = sum(
+                    1 for t in tables.values() if t.get("status") == "healthy"
+                )
                 print(f"   📋 Tables healthy: {healthy_tables}/{len(tables)}")
 
                 if data.get("constitutional_compliance"):
@@ -128,12 +133,18 @@ Examples:
     )
 
     parser.add_argument(
-        "--database-url", default=None, help="Database URL (default: from DATABASE_URL env var)"
+        "--database-url",
+        default=None,
+        help="Database URL (default: from DATABASE_URL env var)",
     )
 
-    parser.add_argument("--json", action="store_true", help="Output results in JSON format")
+    parser.add_argument(
+        "--json", action="store_true", help="Output results in JSON format"
+    )
 
-    parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose logging")
+    parser.add_argument(
+        "--verbose", "-v", action="store_true", help="Enable verbose logging"
+    )
 
     args = parser.parse_args()
 

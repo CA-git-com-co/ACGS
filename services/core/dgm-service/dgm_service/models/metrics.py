@@ -41,7 +41,9 @@ class PerformanceMetric(Base):
     __tablename__ = "performance_metrics"
     __table_args__ = {"schema": "dgm"}
 
-    id = Column(PG_UUID(as_uuid=True), primary_key=True, server_default=func.uuid_generate_v4())
+    id = Column(
+        PG_UUID(as_uuid=True), primary_key=True, server_default=func.uuid_generate_v4()
+    )
     metric_name = Column(String(255), nullable=False, index=True)
     metric_type = Column(Enum(MetricType), nullable=False, index=True)
     metric_scope = Column(Enum(MetricScope), nullable=False, index=True)
@@ -68,7 +70,9 @@ class PerformanceMetric(Base):
     timestamp = Column(
         DateTime(timezone=True), nullable=False, server_default=func.now(), index=True
     )
-    created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    created_at = Column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
 
     def __repr__(self):
         return f"<PerformanceMetric(name={self.metric_name}, type={self.metric_type}, value={self.value})>"
@@ -105,7 +109,9 @@ class MetricAggregation(Base):
     __tablename__ = "metric_aggregations"
     __table_args__ = {"schema": "dgm"}
 
-    id = Column(PG_UUID(as_uuid=True), primary_key=True, server_default=func.uuid_generate_v4())
+    id = Column(
+        PG_UUID(as_uuid=True), primary_key=True, server_default=func.uuid_generate_v4()
+    )
     metric_name = Column(String(255), nullable=False, index=True)
     metric_type = Column(Enum(MetricType), nullable=False, index=True)
 
@@ -126,7 +132,9 @@ class MetricAggregation(Base):
     # Time range
     window_start = Column(DateTime(timezone=True), nullable=False, index=True)
     window_end = Column(DateTime(timezone=True), nullable=False, index=True)
-    created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    created_at = Column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
 
     def __repr__(self):
         return (

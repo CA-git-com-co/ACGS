@@ -4,18 +4,21 @@ Unit tests for services.core.governance-synthesis.gs_service.app.core.nvidia_qwe
 
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
-from services.core.governance-synthesis.gs_service.app.core.nvidia_qwen_client import QwenReasoningResponse, QwenModelConfig, NVIDIAQwenClient
-
+from services.core.governance_synthesis.gs_service.app.core.nvidia_qwen_client import (
+    QwenReasoningResponse,
+    QwenModelConfig,
+    NVIDIAQwenClient,
+)
 
 
 class TestQwenReasoningResponse:
     """Test suite for QwenReasoningResponse."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -24,12 +27,12 @@ class TestQwenReasoningResponse:
 
 class TestQwenModelConfig:
     """Test suite for QwenModelConfig."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -38,12 +41,12 @@ class TestQwenModelConfig:
 
 class TestNVIDIAQwenClient:
     """Test suite for NVIDIAQwenClient."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -54,6 +57,4 @@ class TestNVIDIAQwenClient:
         # TODO: Implement test for get_model_capabilities
         instance = NVIDIAQwenClient()
         # Add test implementation here
-        assert hasattr(instance, 'get_model_capabilities')
-
-
+        assert hasattr(instance, "get_model_capabilities")

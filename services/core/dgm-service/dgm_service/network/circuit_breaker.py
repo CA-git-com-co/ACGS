@@ -126,7 +126,9 @@ class CircuitBreaker:
                 and self.failure_count >= self.failure_threshold
             ):
                 self.state = CircuitBreakerState.OPEN
-                logger.warning(f"Circuit breaker OPEN after {self.failure_count} failures")
+                logger.warning(
+                    f"Circuit breaker OPEN after {self.failure_count} failures"
+                )
 
     def _should_attempt_reset(self) -> bool:
         """Check if enough time has passed to attempt reset."""

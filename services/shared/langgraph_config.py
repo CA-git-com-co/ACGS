@@ -62,7 +62,9 @@ class LangGraphConfiguration(BaseModel):
     )
 
     # Model performance settings
-    max_retries: int = Field(default=3, description="Maximum retry attempts for model calls")
+    max_retries: int = Field(
+        default=3, description="Maximum retry attempts for model calls"
+    )
     timeout_seconds: int = Field(default=30, description="Timeout for model API calls")
     temperature_settings: dict[ModelRole, float] = Field(
         default={
@@ -166,7 +168,9 @@ class LangGraphConfiguration(BaseModel):
         # Get debug settings
         debug_mode = os.getenv("LANGGRAPH_DEBUG_MODE", "false").lower() == "true"
         log_level = os.getenv("LANGGRAPH_LOG_LEVEL", "INFO")
-        enable_workflow_tracing = os.getenv("ENABLE_WORKFLOW_TRACING", "true").lower() == "true"
+        enable_workflow_tracing = (
+            os.getenv("ENABLE_WORKFLOW_TRACING", "true").lower() == "true"
+        )
 
         return cls(
             gemini_api_key=gemini_api_key,
@@ -304,7 +308,9 @@ class LangGraphConfiguration(BaseModel):
         else:
             return "unknown"
 
-    def get_model_config_for_provider(self, model_id: str, role: ModelRole) -> dict[str, Any]:
+    def get_model_config_for_provider(
+        self, model_id: str, role: ModelRole
+    ) -> dict[str, Any]:
         """
         Get model configuration for specific provider integration.
 
@@ -417,7 +423,9 @@ class ConstitutionalCouncilConfig(BaseModel):
     """Specific configuration for Constitutional Council workflows."""
 
     # Amendment processing settings
-    amendment_review_period_hours: int = Field(default=72, description="Hours for amendment review")
+    amendment_review_period_hours: int = Field(
+        default=72, description="Hours for amendment review"
+    )
     voting_period_hours: int = Field(default=48, description="Hours for voting period")
     quorum_percentage: float = Field(
         default=0.6, ge=0.0, le=1.0, description="Required quorum for voting"
@@ -449,7 +457,9 @@ class PolicySynthesisConfig(BaseModel):
 
     # Synthesis parameters
     target_policy_count: int = Field(default=5, ge=1, le=20)
-    policy_complexity_level: str = Field(default="moderate", pattern="^(simple|moderate|complex)$")
+    policy_complexity_level: str = Field(
+        default="moderate", pattern="^(simple|moderate|complex)$"
+    )
 
     # Quality assurance
     enable_multi_model_validation: bool = Field(default=True)

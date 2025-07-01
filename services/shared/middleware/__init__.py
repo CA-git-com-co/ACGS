@@ -11,9 +11,9 @@ from .error_handling import (
 
 __all__ = [
     "ErrorHandlingMiddleware",
-    "StandardErrorResponse", 
+    "StandardErrorResponse",
     "setup_error_handlers",
     "ConstitutionalComplianceError",
-    "SecurityValidationError", 
+    "SecurityValidationError",
     "HealthCheckError",
 ]

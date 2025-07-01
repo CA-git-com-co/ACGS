@@ -62,7 +62,9 @@ class SignACVersionRequest(BaseModel):
     ac_version_data: str = Field(..., description="AC version data to sign")
     key_id: str = Field(..., description="Key ID to use for signing")
     algorithm: str = Field(default="ECDSA_P256", description="Signature algorithm")
-    include_timestamp: bool = Field(default=True, description="Include RFC 3161 timestamp")
+    include_timestamp: bool = Field(
+        default=True, description="Include RFC 3161 timestamp"
+    )
 
 
 class SignACVersionResponse(BaseModel):
@@ -75,7 +77,9 @@ class SignACVersionResponse(BaseModel):
 
 class VerifySignatureRequest(BaseModel):
     data: str = Field(..., description="Original data")
-    integrity_package: dict[str, Any] = Field(..., description="Integrity package to verify")
+    integrity_package: dict[str, Any] = Field(
+        ..., description="Integrity package to verify"
+    )
 
 
 class VerifySignatureResponse(BaseModel):
@@ -96,7 +100,9 @@ class MerkleTreeResponse(BaseModel):
 
 class TimestampRequest(BaseModel):
     document_hash: str = Field(..., description="Hash of document to timestamp")
-    timestamp_authority: str = Field(default="trusted_tsa", description="Timestamp authority")
+    timestamp_authority: str = Field(
+        default="trusted_tsa", description="Timestamp authority"
+    )
 
 
 class TimestampResponse(BaseModel):
@@ -214,14 +220,18 @@ async def verify_signature(
 
             # Timestamp verification
             if request.integrity_package.get("timestamp"):
-                details["timestamp_verified"] = verification_result  # Simplified for now
+                details["timestamp_verified"] = (
+                    verification_result  # Simplified for now
+                )
             else:
                 details["timestamp_verified"] = None  # No timestamp to verify
 
         except Exception as detail_error:
             logger.warning(f"Error getting verification details: {detail_error}")
 
-        return VerifySignatureResponse(verification_result=verification_result, details=details)
+        return VerifySignatureResponse(
+            verification_result=verification_result, details=details
+        )
 
     except Exception as e:
         logger.error(f"Error verifying signature: {e}")
@@ -251,13 +261,17 @@ async def create_merkle_tree(
 
 
 @router.get("/merkle-tree/{tree_id}/root")
-async def get_merkle_root(tree_id: str, current_user: User = Depends(require_internal_service)):
+async def get_merkle_root(
+    tree_id: str, current_user: User = Depends(require_internal_service)
+):
     """Get the root hash of a Merkle tree"""
     try:
         root_hash = pgp_service.get_merkle_root(tree_id)
 
         if root_hash is None:
-            raise HTTPException(status_code=404, detail=f"Merkle tree not found: {tree_id}")
+            raise HTTPException(
+                status_code=404, detail=f"Merkle tree not found: {tree_id}"
+            )
 
         return {"tree_id": tree_id, "root_hash": root_hash}
 
@@ -268,7 +282,9 @@ async def get_merkle_root(tree_id: str, current_user: User = Depends(require_int
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/timestamp", response_model=TimestampResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/timestamp", response_model=TimestampResponse, status_code=status.HTTP_201_CREATED
+)
 async def create_timestamp(
     request: TimestampRequest, current_user: User = Depends(require_integrity_admin)
 ):
@@ -283,7 +299,9 @@ async def create_timestamp(
         # Get timestamp info
         timestamp_info = pgp_service.get_timestamp_info(timestamp_token)
 
-        return TimestampResponse(timestamp_token=timestamp_info, created_at=datetime.utcnow())
+        return TimestampResponse(
+            timestamp_token=timestamp_info, created_at=datetime.utcnow()
+        )
 
     except Exception as e:
         logger.error(f"Error creating timestamp: {e}")
@@ -324,7 +342,9 @@ async def verify_timestamp(
         )
 
         # Verify timestamp
-        verification_result = pgp_service.verify_timestamp(timestamp_token, original_document_hash)
+        verification_result = pgp_service.verify_timestamp(
+            timestamp_token, original_document_hash
+        )
 
         return {
             "verification_result": verification_result,

@@ -156,7 +156,9 @@ class TestComplianceValidation:
         overall_score = 0.0
 
         for principle_name, principle_config in framework["principles"].items():
-            criteria_scores = improvement_proposal["compliance_assessment"][principle_name]
+            criteria_scores = improvement_proposal["compliance_assessment"][
+                principle_name
+            ]
             principle_score = sum(criteria_scores.values()) / len(criteria_scores)
             principle_scores[principle_name] = principle_score
 
@@ -230,18 +232,25 @@ class TestComplianceValidation:
         principle_scores = {}
 
         for principle_name, principle_config in framework["principles"].items():
-            criteria_scores = violating_proposal["compliance_assessment"][principle_name]
+            criteria_scores = violating_proposal["compliance_assessment"][
+                principle_name
+            ]
             principle_score = sum(criteria_scores.values()) / len(criteria_scores)
             principle_scores[principle_name] = principle_score
 
             # Check for principle-level violations
-            if principle_score < framework["compliance_thresholds"]["minimum_per_principle"]:
+            if (
+                principle_score
+                < framework["compliance_thresholds"]["minimum_per_principle"]
+            ):
                 violations.append(
                     {
                         "type": "principle_violation",
                         "principle": principle_name,
                         "score": principle_score,
-                        "threshold": framework["compliance_thresholds"]["minimum_per_principle"],
+                        "threshold": framework["compliance_thresholds"][
+                            "minimum_per_principle"
+                        ],
                     }
                 )
 
@@ -265,12 +274,15 @@ class TestComplianceValidation:
         critical_violations = [
             v
             for v in violations
-            if v.get("principle") in framework["compliance_thresholds"]["critical_principles"]
+            if v.get("principle")
+            in framework["compliance_thresholds"]["critical_principles"]
         ]
         assert len(critical_violations) > 0
 
         # Verify high-severity violations
-        high_severity_violations = [v for v in violations if v.get("severity") == "high"]
+        high_severity_violations = [
+            v for v in violations if v.get("severity") == "high"
+        ]
         assert len(high_severity_violations) > 0
 
     async def test_compliance_remediation_requirements(self):
@@ -342,7 +354,11 @@ class TestComplianceValidation:
         """Test compliance monitoring and alerting systems."""
         monitoring_system = {
             "real_time_monitoring": True,
-            "compliance_thresholds": {"warning": 0.75, "critical": 0.70, "emergency": 0.60},
+            "compliance_thresholds": {
+                "warning": 0.75,
+                "critical": 0.70,
+                "emergency": 0.60,
+            },
             "alert_mechanisms": [
                 "immediate_notification",
                 "automatic_escalation",
@@ -387,7 +403,9 @@ class TestComplianceValidation:
         # Principle-specific alerts
         for principle, score in current_compliance["principle_scores"].items():
             if score <= thresholds["critical"]:
-                alerts_triggered.append(f"CRITICAL: {principle} compliance below threshold")
+                alerts_triggered.append(
+                    f"CRITICAL: {principle} compliance below threshold"
+                )
 
         # Verify alerts were triggered
         assert len(alerts_triggered) >= 2  # Overall warning + safety critical
@@ -425,7 +443,9 @@ class TestComplianceValidation:
                     },
                 },
                 {
-                    "timestamp": (datetime.utcnow() + timedelta(minutes=10)).isoformat(),
+                    "timestamp": (
+                        datetime.utcnow() + timedelta(minutes=10)
+                    ).isoformat(),
                     "event_type": "compliance_decision_made",
                     "details": {
                         "overall_score": 0.82,
@@ -492,10 +512,22 @@ class TestComplianceValidation:
                     "trend": "improving",
                     "violations": 2,
                 },
-                "safety_first": {"average_score": 0.89, "trend": "stable", "violations": 1},
-                "transparency": {"average_score": 0.82, "trend": "improving", "violations": 3},
+                "safety_first": {
+                    "average_score": 0.89,
+                    "trend": "stable",
+                    "violations": 1,
+                },
+                "transparency": {
+                    "average_score": 0.82,
+                    "trend": "improving",
+                    "violations": 3,
+                },
                 "fairness": {"average_score": 0.85, "trend": "stable", "violations": 4},
-                "sustainability": {"average_score": 0.80, "trend": "declining", "violations": 2},
+                "sustainability": {
+                    "average_score": 0.80,
+                    "trend": "declining",
+                    "violations": 2,
+                },
             },
             "public_accessibility": {
                 "published": True,
@@ -506,11 +538,15 @@ class TestComplianceValidation:
         }
 
         # Verify report completeness
-        assert compliance_report["summary_statistics"]["total_improvements_assessed"] > 0
+        assert (
+            compliance_report["summary_statistics"]["total_improvements_assessed"] > 0
+        )
         assert 0.0 <= compliance_report["summary_statistics"]["compliance_rate"] <= 1.0
 
         # Verify principle performance tracking
-        for principle, performance in compliance_report["principle_performance"].items():
+        for principle, performance in compliance_report[
+            "principle_performance"
+        ].items():
             assert 0.0 <= performance["average_score"] <= 1.0
             assert performance["trend"] in ["improving", "stable", "declining"]
             assert performance["violations"] >= 0

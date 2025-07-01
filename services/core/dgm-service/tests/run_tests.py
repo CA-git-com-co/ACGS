@@ -20,7 +20,9 @@ import pytest
 def run_command(cmd: List[str], cwd: str = None) -> Dict[str, Any]:
     """Run a command and return the result."""
     try:
-        result = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, check=False)
+        result = subprocess.run(
+            cmd, cwd=cwd, capture_output=True, text=True, check=False
+        )
         return {
             "success": result.returncode == 0,
             "returncode": result.returncode,
@@ -91,7 +93,11 @@ def run_unit_tests(args) -> Dict[str, Any]:
 
     return_code = pytest.main(pytest_args)
 
-    return {"success": return_code == 0, "return_code": return_code, "test_type": "unit"}
+    return {
+        "success": return_code == 0,
+        "return_code": return_code,
+        "test_type": "unit",
+    }
 
 
 def run_integration_tests(args) -> Dict[str, Any]:
@@ -112,7 +118,11 @@ def run_integration_tests(args) -> Dict[str, Any]:
 
     return_code = pytest.main(pytest_args)
 
-    return {"success": return_code == 0, "return_code": return_code, "test_type": "integration"}
+    return {
+        "success": return_code == 0,
+        "return_code": return_code,
+        "test_type": "integration",
+    }
 
 
 def run_constitutional_tests(args) -> Dict[str, Any]:
@@ -130,7 +140,11 @@ def run_constitutional_tests(args) -> Dict[str, Any]:
 
     return_code = pytest.main(pytest_args)
 
-    return {"success": return_code == 0, "return_code": return_code, "test_type": "constitutional"}
+    return {
+        "success": return_code == 0,
+        "return_code": return_code,
+        "test_type": "constitutional",
+    }
 
 
 def run_performance_tests(args) -> Dict[str, Any]:
@@ -191,7 +205,11 @@ def run_performance_tests(args) -> Dict[str, Any]:
 
         return_code = pytest.main(pytest_args)
 
-        return {"success": return_code == 0, "return_code": return_code, "test_type": "performance"}
+        return {
+            "success": return_code == 0,
+            "return_code": return_code,
+            "test_type": "performance",
+        }
 
 
 def run_security_tests(args) -> Dict[str, Any]:
@@ -202,7 +220,15 @@ def run_security_tests(args) -> Dict[str, Any]:
 
     # Run bandit security linter
     print("Running Bandit security analysis...")
-    bandit_cmd = ["bandit", "-r", "dgm_service/", "-f", "json", "-o", "bandit-report.json"]
+    bandit_cmd = [
+        "bandit",
+        "-r",
+        "dgm_service/",
+        "-f",
+        "json",
+        "-o",
+        "bandit-report.json",
+    ]
     bandit_result = run_command(bandit_cmd)
 
     # Run safety check
@@ -222,7 +248,9 @@ def run_security_tests(args) -> Dict[str, Any]:
 
     return {
         "success": (
-            bandit_result["success"] and safety_result["success"] and pytest_return_code == 0
+            bandit_result["success"]
+            and safety_result["success"]
+            and pytest_return_code == 0
         ),
         "return_code": pytest_return_code,
         "test_type": "security",
@@ -308,11 +336,17 @@ def main():
     """Main test runner function."""
     parser = argparse.ArgumentParser(description="DGM Service Test Runner")
     parser.add_argument("--unit", action="store_true", help="Run unit tests only")
-    parser.add_argument("--integration", action="store_true", help="Run integration tests only")
     parser.add_argument(
-        "--constitutional", action="store_true", help="Run constitutional compliance tests only"
+        "--integration", action="store_true", help="Run integration tests only"
     )
-    parser.add_argument("--performance", action="store_true", help="Run performance tests only")
+    parser.add_argument(
+        "--constitutional",
+        action="store_true",
+        help="Run constitutional compliance tests only",
+    )
+    parser.add_argument(
+        "--performance", action="store_true", help="Run performance tests only"
+    )
     parser.add_argument(
         "--comprehensive-performance",
         action="store_true",
@@ -326,15 +360,25 @@ def main():
     parser.add_argument(
         "--no-load", action="store_true", help="Skip load testing in performance tests"
     )
-    parser.add_argument("--security", action="store_true", help="Run security tests only")
-    parser.add_argument("--quality", action="store_true", help="Run code quality checks only")
-    parser.add_argument("--all", action="store_true", help="Run all test suites (default)")
     parser.add_argument(
-        "--fast", action="store_true", help="Run tests in fast mode (stop on first failure)"
+        "--security", action="store_true", help="Run security tests only"
+    )
+    parser.add_argument(
+        "--quality", action="store_true", help="Run code quality checks only"
+    )
+    parser.add_argument(
+        "--all", action="store_true", help="Run all test suites (default)"
+    )
+    parser.add_argument(
+        "--fast",
+        action="store_true",
+        help="Run tests in fast mode (stop on first failure)",
     )
     parser.add_argument("--parallel", action="store_true", help="Run tests in parallel")
     parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
-    parser.add_argument("--no-setup", action="store_true", help="Skip test environment setup")
+    parser.add_argument(
+        "--no-setup", action="store_true", help="Skip test environment setup"
+    )
 
     args = parser.parse_args()
 

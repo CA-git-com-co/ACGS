@@ -27,7 +27,7 @@ def format_table(data: Any) -> str:
     if isinstance(data, dict):
         if "error" in data:
             return f"Error: {data['error']}"
-        
+
         # Handle special cases
         if "agents" in data:
             # Agent list
@@ -40,14 +40,14 @@ def format_table(data: Any) -> str:
                         a.get("name", ""),
                         a.get("type", ""),
                         a.get("status", ""),
-                        a.get("created_at", "")[:19]
+                        a.get("created_at", "")[:19],
                     ]
                     for a in agents
                 ]
                 return tabulate(rows, headers=headers, tablefmt="grid")
             else:
                 return "No agents found"
-        
+
         elif "entries" in data:
             # Audit entries
             entries = data.get("entries", [])
@@ -59,22 +59,24 @@ def format_table(data: Any) -> str:
                         e.get("operation_id", "")[:8],
                         e.get("agent_id", "")[:8],
                         e.get("action", ""),
-                        e.get("result", {}).get("status", "")
+                        e.get("result", {}).get("status", ""),
                     ]
                     for e in entries
                 ]
                 return tabulate(rows, headers=headers, tablefmt="grid")
             else:
                 return "No audit entries found"
-        
+
         elif "health" in data:
             # Health status
             health = data.get("health", {})
             headers = ["Service", "Status"]
-            rows = [[service, "✓ Healthy" if status else "✗ Unhealthy"] 
-                   for service, status in health.items()]
+            rows = [
+                [service, "✓ Healthy" if status else "✗ Unhealthy"]
+                for service, status in health.items()
+            ]
             return tabulate(rows, headers=headers, tablefmt="grid")
-        
+
         elif "alerts" in data:
             # Alerts
             alerts = data.get("alerts", [])
@@ -86,18 +88,18 @@ def format_table(data: Any) -> str:
                         a.get("severity", "").upper(),
                         a.get("service", ""),
                         a.get("message", "")[:50],
-                        "Yes" if a.get("acknowledged") else "No"
+                        "Yes" if a.get("acknowledged") else "No",
                     ]
                     for a in alerts
                 ]
                 return tabulate(rows, headers=headers, tablefmt="grid")
             else:
                 return "No alerts"
-        
+
         # Default: key-value pairs
         rows = [[k, v] for k, v in data.items() if k != "error"]
         return tabulate(rows, headers=["Key", "Value"], tablefmt="grid")
-    
+
     elif isinstance(data, list):
         if data and isinstance(data[0], dict):
             # List of dicts
@@ -107,7 +109,7 @@ def format_table(data: Any) -> str:
         else:
             # Simple list
             return "\n".join(str(item) for item in data)
-    
+
     else:
         return str(data)
 
@@ -117,7 +119,7 @@ def format_text(data: Any) -> str:
     if isinstance(data, dict):
         if "error" in data:
             return f"Error: {data['error']}"
-        
+
         lines = []
         for key, value in data.items():
             if isinstance(value, (list, dict)):
@@ -126,9 +128,9 @@ def format_text(data: Any) -> str:
             else:
                 lines.append(f"{key}: {value}")
         return "\n".join(lines)
-    
+
     elif isinstance(data, list):
         return "\n".join(f"- {format_text(item)}" for item in data)
-    
+
     else:
         return str(data)

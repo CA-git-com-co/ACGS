@@ -159,7 +159,9 @@ class DGMDatabaseMonitor:
         try:
             async with self.db_manager.get_session() as session:
                 # Create monitoring schema
-                await session.execute(text("CREATE SCHEMA IF NOT EXISTS dgm_monitoring"))
+                await session.execute(
+                    text("CREATE SCHEMA IF NOT EXISTS dgm_monitoring")
+                )
 
                 # Create query performance log table
                 await session.execute(
@@ -276,7 +278,9 @@ class DGMDatabaseMonitor:
                 )
 
                 for row in result.fetchall():
-                    self.db_connections_gauge.labels(state=row[0] or "unknown").set(row[1])
+                    self.db_connections_gauge.labels(state=row[0] or "unknown").set(
+                        row[1]
+                    )
 
                 # Cache hit ratios
                 result = await session.execute(
@@ -445,7 +449,12 @@ class DGMDatabaseMonitor:
         try:
             # Check if this alert is already active (avoid spam)
             existing_alert = next(
-                (a for a in self.active_alerts if a.name == alert.name and not a.resolved), None
+                (
+                    a
+                    for a in self.active_alerts
+                    if a.name == alert.name and not a.resolved
+                ),
+                None,
             )
 
             if existing_alert:
@@ -478,9 +487,13 @@ class DGMDatabaseMonitor:
                     await session.commit()
 
                 # Update Prometheus metrics
-                self.db_alerts_counter.labels(severity=alert.severity, alert_type=alert.name).inc()
+                self.db_alerts_counter.labels(
+                    severity=alert.severity, alert_type=alert.name
+                ).inc()
 
-                logger.warning(f"🚨 Database Alert [{alert.severity.upper()}]: {alert.message}")
+                logger.warning(
+                    f"🚨 Database Alert [{alert.severity.upper()}]: {alert.message}"
+                )
 
         except Exception as e:
             logger.error(f"❌ Alert processing error: {e}")
@@ -516,7 +529,9 @@ class DGMDatabaseMonitor:
                     if result.scalar() > 0:
                         health_status["checks"]["schema"] = "healthy"
                     else:
-                        health_status["checks"]["schema"] = "unhealthy: DGM schema not found"
+                        health_status["checks"][
+                            "schema"
+                        ] = "unhealthy: DGM schema not found"
                         health_status["overall_status"] = "degraded"
                 except Exception as e:
                     health_status["checks"]["schema"] = f"unhealthy: {e}"
@@ -534,7 +549,9 @@ class DGMDatabaseMonitor:
                 accessible_tables = 0
                 for table in dgm_tables:
                     try:
-                        await session.execute(text(f"SELECT 1 FROM dgm.{table} LIMIT 1"))
+                        await session.execute(
+                            text(f"SELECT 1 FROM dgm.{table} LIMIT 1")
+                        )
                         accessible_tables += 1
                     except Exception:
                         pass
@@ -547,12 +564,16 @@ class DGMDatabaseMonitor:
                     ] = f"degraded: {accessible_tables}/{len(dgm_tables)} tables accessible"
                     health_status["overall_status"] = "degraded"
                 else:
-                    health_status["checks"]["tables"] = "unhealthy: no tables accessible"
+                    health_status["checks"][
+                        "tables"
+                    ] = "unhealthy: no tables accessible"
                     health_status["overall_status"] = "unhealthy"
 
             # Log health status
             if health_status["overall_status"] != "healthy":
-                logger.warning(f"⚠️ Database health check: {health_status['overall_status']}")
+                logger.warning(
+                    f"⚠️ Database health check: {health_status['overall_status']}"
+                )
 
         except Exception as e:
             logger.error(f"❌ Health check error: {e}")
@@ -577,7 +598,9 @@ class DGMDatabaseMonitor:
                 ],
                 "alert_summary": {
                     "total_alerts": len(self.alert_history),
-                    "active_alerts": len([a for a in self.active_alerts if not a.resolved]),
+                    "active_alerts": len(
+                        [a for a in self.active_alerts if not a.resolved]
+                    ),
                     "critical_alerts": len(
                         [
                             a

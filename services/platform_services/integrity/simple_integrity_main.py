@@ -38,21 +38,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.middleware("http")
 async def add_security_headers(request, call_next):
     """Add security headers including constitutional hash."""
     response = await call_next(request)
-    
+
     # Core security headers
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["X-XSS-Protection"] = "1; mode=block"
-    
+
     # ACGS-1 specific headers
     response.headers["X-ACGS-Security"] = "enabled"
     response.headers["X-Constitutional-Hash"] = "cdd01ef066bc6cf2"
-    
+
     return response
+
 
 @app.get("/", status_code=status.HTTP_200_OK)
 async def root(request: Request):
@@ -65,18 +67,19 @@ async def root(request: Request):
         "port": SERVICE_PORT,
         "capabilities": [
             "Cryptographic Integrity Verification",
-            "Digital Signature Management", 
+            "Digital Signature Management",
             "Audit Trail Management",
-            "Constitutional Hash Validation"
+            "Constitutional Hash Validation",
         ],
-        "status": "operational"
+        "status": "operational",
     }
+
 
 @app.get("/health", status_code=status.HTTP_200_OK)
 async def health_check():
     """Health check endpoint."""
     uptime_seconds = time.time() - service_start_time
-    
+
     return {
         "status": "healthy",
         "service": SERVICE_NAME,
@@ -87,14 +90,15 @@ async def health_check():
             "crypto_service": "operational",
             "audit_trail": "operational",
             "signature_validator": "operational",
-            "constitutional_validator": "operational"
+            "constitutional_validator": "operational",
         },
         "performance_metrics": {
             "uptime_seconds": uptime_seconds,
             "target_response_time": "<100ms",
-            "availability_target": ">99.9%"
-        }
+            "availability_target": ">99.9%",
+        },
     }
+
 
 @app.get("/api/v1/constitutional/validate")
 async def constitutional_validate():
@@ -104,8 +108,9 @@ async def constitutional_validate():
         "validation_status": "valid",
         "service": SERVICE_NAME,
         "timestamp": time.time(),
-        "integrity_verified": True
+        "integrity_verified": True,
     }
+
 
 @app.get("/api/v1/integrity/status")
 async def integrity_status():
@@ -116,16 +121,18 @@ async def integrity_status():
             "cryptographic_verification": True,
             "digital_signatures": True,
             "audit_trail": True,
-            "constitutional_compliance": True
+            "constitutional_compliance": True,
         },
         "metrics": {
             "verifications_processed": 0,
             "signatures_validated": 0,
-            "audit_entries": 0
-        }
+            "audit_entries": 0,
+        },
     }
+
 
 if __name__ == "__main__":
     import uvicorn
+
     logger.info(f"Starting {SERVICE_NAME} on port {SERVICE_PORT}")
     uvicorn.run(app, host="0.0.0.0", port=SERVICE_PORT)

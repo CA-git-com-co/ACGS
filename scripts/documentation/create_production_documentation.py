@@ -25,13 +25,14 @@ sys.path.insert(0, str(project_root))
 
 logger = logging.getLogger(__name__)
 
+
 class ProductionDocumentationCreator:
     """Creates comprehensive production documentation for ACGS-2."""
-    
+
     def __init__(self):
         self.project_root = project_root
         self.docs_dir = self.project_root / "docs" / "production"
-        
+
         # Documentation structure
         self.documentation_structure = {
             "deployment": [
@@ -39,34 +40,34 @@ class ProductionDocumentationCreator:
                 "infrastructure_setup.md",
                 "service_configuration.md",
                 "security_setup.md",
-                "monitoring_setup.md"
+                "monitoring_setup.md",
             ],
             "configuration": [
                 "environment_variables.md",
                 "service_configuration.md",
                 "database_configuration.md",
                 "cache_configuration.md",
-                "security_configuration.md"
+                "security_configuration.md",
             ],
             "operations": [
                 "operational_runbook.md",
                 "troubleshooting_guide.md",
                 "maintenance_procedures.md",
                 "backup_recovery.md",
-                "incident_response.md"
+                "incident_response.md",
             ],
             "reference": [
                 "api_reference.md",
                 "configuration_reference.md",
                 "architecture_overview.md",
-                "security_reference.md"
-            ]
+                "security_reference.md",
+            ],
         }
-        
+
     def create_production_documentation(self) -> Dict[str, Any]:
         """Create comprehensive production documentation."""
         logger.info("📚 Creating production documentation...")
-        
+
         documentation_results = {
             "documentation_sections_created": 0,
             "total_documents_created": 0,
@@ -76,69 +77,69 @@ class ProductionDocumentationCreator:
             "reference_docs_created": 0,
             "documentation_complete": False,
             "errors": [],
-            "success": True
+            "success": True,
         }
-        
+
         try:
             # Create documentation directory structure
             self._create_documentation_structure()
-            
+
             # Create deployment documentation
             deployment_results = self._create_deployment_documentation()
             documentation_results.update(deployment_results)
-            
+
             # Create configuration documentation
             config_results = self._create_configuration_documentation()
             documentation_results.update(config_results)
-            
+
             # Create operational documentation
             operations_results = self._create_operational_documentation()
             documentation_results.update(operations_results)
-            
+
             # Create reference documentation
             reference_results = self._create_reference_documentation()
             documentation_results.update(reference_results)
-            
+
             # Create master documentation index
             self._create_documentation_index()
-            
+
             # Validate documentation completeness
             validation_results = self._validate_documentation_completeness()
             documentation_results.update(validation_results)
-            
+
             # Generate documentation report
             self._generate_documentation_report(documentation_results)
-            
+
             logger.info("✅ Production documentation creation completed")
             return documentation_results
-            
+
         except Exception as e:
             logger.error(f"❌ Documentation creation failed: {e}")
             documentation_results["success"] = False
             documentation_results["errors"].append(str(e))
             return documentation_results
-    
+
     def _create_documentation_structure(self):
         """Create documentation directory structure."""
         logger.info("📁 Creating documentation structure...")
-        
+
         # Create main docs directory
         self.docs_dir.mkdir(parents=True, exist_ok=True)
-        
+
         # Create subdirectories
         for section in self.documentation_structure.keys():
             section_dir = self.docs_dir / section
             section_dir.mkdir(exist_ok=True)
-        
+
         logger.info("✅ Documentation structure created")
-    
+
     def _create_deployment_documentation(self) -> Dict[str, Any]:
         """Create deployment documentation."""
         logger.info("🚀 Creating deployment documentation...")
-        
+
         try:
             # Main deployment guide
-            deployment_guide = '''# ACGS-2 Production Deployment Guide
+            deployment_guide = """# ACGS-2 Production Deployment Guide
 
 ## Overview
 
@@ -303,15 +304,15 @@ See [Troubleshooting Guide](operations/troubleshooting_guide.md) for common issu
 ## Support
 
 For deployment support, contact the ACGS-2 team or refer to the operational runbook.
-'''
-            
+"""
+
             # Write deployment guide
             deployment_guide_path = self.docs_dir / "deployment" / "deployment_guide.md"
-            with open(deployment_guide_path, 'w') as f:
+            with open(deployment_guide_path, "w") as f:
                 f.write(deployment_guide)
-            
+
             # Infrastructure setup guide
-            infrastructure_guide = '''# Infrastructure Setup Guide
+            infrastructure_guide = """# Infrastructure Setup Guide
 
 ## Production Architecture
 
@@ -420,20 +421,19 @@ server {
 4. Update DNS to point to backup environment
 5. Verify system functionality
 6. Communicate status to stakeholders
-'''
-            
+"""
+
             # Write infrastructure guide
-            infrastructure_guide_path = self.docs_dir / "deployment" / "infrastructure_setup.md"
-            with open(infrastructure_guide_path, 'w') as f:
+            infrastructure_guide_path = (
+                self.docs_dir / "deployment" / "infrastructure_setup.md"
+            )
+            with open(infrastructure_guide_path, "w") as f:
                 f.write(infrastructure_guide)
-            
+
             logger.info("✅ Deployment documentation created")
-            
-            return {
-                "deployment_guides_created": 2,
-                "documentation_sections_created": 1
-            }
-            
+
+            return {"deployment_guides_created": 2, "documentation_sections_created": 1}
+
         except Exception as e:
             logger.error(f"Deployment documentation creation failed: {e}")
             raise
@@ -444,7 +444,7 @@ server {
 
         try:
             # Environment variables documentation
-            env_vars_doc = '''# Environment Variables Reference
+            env_vars_doc = """# Environment Variables Reference
 
 ## Core Application Variables
 
@@ -598,18 +598,18 @@ ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
 - Use IAM roles and policies for cloud deployments
 - Implement least privilege access principles
 - Audit secret access regularly
-'''
+"""
 
             # Write environment variables documentation
             env_vars_path = self.docs_dir / "configuration" / "environment_variables.md"
-            with open(env_vars_path, 'w') as f:
+            with open(env_vars_path, "w") as f:
                 f.write(env_vars_doc)
 
             logger.info("✅ Configuration documentation created")
 
             return {
                 "configuration_docs_created": 1,
-                "documentation_sections_created": 1
+                "documentation_sections_created": 1,
             }
 
         except Exception as e:
@@ -622,7 +622,7 @@ ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
 
         try:
             # Operational runbook
-            operational_runbook = '''# ACGS-2 Operational Runbook
+            operational_runbook = """# ACGS-2 Operational Runbook
 
 ## Daily Operations
 
@@ -825,18 +825,18 @@ du -sh /var/log/acgs/*
 - P1: Escalate to secondary after 2 hours
 - P2: Escalate to secondary next business day
 - P3: Weekly review with team lead
-'''
+"""
 
             # Write operational runbook
             runbook_path = self.docs_dir / "operations" / "operational_runbook.md"
-            with open(runbook_path, 'w') as f:
+            with open(runbook_path, "w") as f:
                 f.write(operational_runbook)
 
             logger.info("✅ Operational documentation created")
 
             return {
                 "operational_runbooks_created": 1,
-                "documentation_sections_created": 1
+                "documentation_sections_created": 1,
             }
 
         except Exception as e:
@@ -849,7 +849,7 @@ du -sh /var/log/acgs/*
 
         try:
             # API reference documentation
-            api_reference = '''# ACGS-2 API Reference
+            api_reference = """# ACGS-2 API Reference
 
 ## Authentication
 
@@ -1041,19 +1041,16 @@ All endpoints may return the following error responses:
   - `X-RateLimit-Limit`: Request limit
   - `X-RateLimit-Remaining`: Remaining requests
   - `X-RateLimit-Reset`: Reset time (Unix timestamp)
-'''
+"""
 
             # Write API reference
             api_ref_path = self.docs_dir / "reference" / "api_reference.md"
-            with open(api_ref_path, 'w') as f:
+            with open(api_ref_path, "w") as f:
                 f.write(api_reference)
 
             logger.info("✅ Reference documentation created")
 
-            return {
-                "reference_docs_created": 1,
-                "documentation_sections_created": 1
-            }
+            return {"reference_docs_created": 1, "documentation_sections_created": 1}
 
         except Exception as e:
             logger.error(f"Reference documentation creation failed: {e}")
@@ -1063,7 +1060,7 @@ All endpoints may return the following error responses:
         """Create master documentation index."""
         logger.info("📑 Creating documentation index...")
 
-        index_content = '''# ACGS-2 Production Documentation
+        index_content = """# ACGS-2 Production Documentation
 
 ## Quick Start
 New to ACGS-2? Start with the [Deployment Guide](deployment/deployment_guide.md).
@@ -1149,11 +1146,11 @@ A new team member should be able to:
 **Last Updated**: {timestamp}
 **Version**: 1.0
 **Maintained By**: ACGS-2 Team
-'''
+"""
 
         # Write documentation index
         index_path = self.docs_dir / "README.md"
-        with open(index_path, 'w') as f:
+        with open(index_path, "w") as f:
             f.write(index_content.format(timestamp=time.strftime("%Y-%m-%d")))
 
         logger.info("✅ Documentation index created")
@@ -1162,7 +1159,9 @@ A new team member should be able to:
         """Validate documentation completeness."""
         logger.info("✅ Validating documentation completeness...")
 
-        total_expected_docs = sum(len(docs) for docs in self.documentation_structure.values())
+        total_expected_docs = sum(
+            len(docs) for docs in self.documentation_structure.values()
+        )
         created_docs = 0
         missing_docs = []
 
@@ -1184,7 +1183,7 @@ A new team member should be able to:
             "documentation_complete": documentation_complete,
             "completeness_percentage": completeness_percentage,
             "total_documents_created": created_docs,
-            "missing_documents": missing_docs
+            "missing_documents": missing_docs,
         }
 
     def _generate_documentation_report(self, results: Dict[str, Any]):
@@ -1196,34 +1195,38 @@ A new team member should be able to:
             "documentation_creation_summary": results,
             "documentation_structure": self.documentation_structure,
             "target_achievement": {
-                "new_team_member_deployment": results.get("documentation_complete", False),
+                "new_team_member_deployment": results.get(
+                    "documentation_complete", False
+                ),
                 "step_by_step_guides": True,
                 "configuration_documentation": True,
-                "operational_procedures": True
+                "operational_procedures": True,
             },
             "documentation_metrics": {
                 "total_sections": len(self.documentation_structure),
-                "total_documents_planned": sum(len(docs) for docs in self.documentation_structure.values()),
+                "total_documents_planned": sum(
+                    len(docs) for docs in self.documentation_structure.values()
+                ),
                 "total_documents_created": results.get("total_documents_created", 0),
-                "completeness_percentage": results.get("completeness_percentage", 0.0)
+                "completeness_percentage": results.get("completeness_percentage", 0.0),
             },
             "documentation_quality": {
                 "step_by_step_instructions": "Comprehensive deployment guide with detailed steps",
                 "configuration_examples": "Complete environment variable and service configuration examples",
                 "operational_procedures": "Daily operations, incident response, and maintenance procedures",
                 "troubleshooting_guides": "Common issues and resolution procedures",
-                "api_documentation": "Complete API reference with examples"
+                "api_documentation": "Complete API reference with examples",
             },
             "next_steps": [
                 "Review documentation with team members",
                 "Test deployment procedures in staging environment",
                 "Gather feedback from new team members",
                 "Establish documentation maintenance procedures",
-                "Schedule regular documentation reviews"
-            ]
+                "Schedule regular documentation reviews",
+            ],
         }
 
-        with open(report_path, 'w') as f:
+        with open(report_path, "w") as f:
             json.dump(report, f, indent=2)
 
         logger.info(f"📊 Documentation report saved to: {report_path}")
@@ -1233,7 +1236,7 @@ def main():
     """Main documentation creation function."""
     logging.basicConfig(
         level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
 
     creator = ProductionDocumentationCreator()
@@ -1241,7 +1244,9 @@ def main():
 
     if results["success"]:
         print("✅ Production documentation creation completed successfully!")
-        print(f"📊 Documentation sections created: {results['documentation_sections_created']}")
+        print(
+            f"📊 Documentation sections created: {results['documentation_sections_created']}"
+        )
         print(f"📊 Total documents created: {results['total_documents_created']}")
         print(f"📊 Deployment guides: {results['deployment_guides_created']}")
         print(f"📊 Configuration docs: {results['configuration_docs_created']}")
@@ -1249,23 +1254,25 @@ def main():
         print(f"📊 Reference docs: {results['reference_docs_created']}")
 
         # Check if target was met
-        if results.get('documentation_complete', False):
-            print("🎯 TARGET ACHIEVED: New team member can deploy using only documentation!")
+        if results.get("documentation_complete", False):
+            print(
+                "🎯 TARGET ACHIEVED: New team member can deploy using only documentation!"
+            )
             print("✅ Comprehensive step-by-step deployment guides created")
             print("✅ Complete configuration parameter documentation")
             print("✅ Operational runbooks and procedures documented")
         else:
             print("⚠️  Documentation partially complete - review missing documents")
-            if 'missing_documents' in results:
+            if "missing_documents" in results:
                 print("Missing documents:")
-                for doc in results['missing_documents']:
+                for doc in results["missing_documents"]:
                     print(f"   - {doc}")
 
         print(f"\n📚 Documentation available at: docs/production/")
         print("📖 Start with: docs/production/README.md")
     else:
         print("❌ Production documentation creation failed!")
-        for error in results['errors']:
+        for error in results["errors"]:
             print(f"   - {error}")
         sys.exit(1)
 

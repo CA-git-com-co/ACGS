@@ -4,18 +4,25 @@ Unit tests for services.core.governance-synthesis.gs_service.app.models.mab_mode
 
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
-from services.core.governance-synthesis.gs_service.app.models.mab_models import PromptTemplateModel, PromptPerformanceModel, OptimizationHistoryModel, MABConfigurationModel, MABSessionModel, PromptTemplateVersionModel, RewardFunctionModel
-
+from services.core.governance_synthesis.gs_service.app.models.mab_models import (
+    PromptTemplateModel,
+    PromptPerformanceModel,
+    OptimizationHistoryModel,
+    MABConfigurationModel,
+    MABSessionModel,
+    PromptTemplateVersionModel,
+    RewardFunctionModel,
+)
 
 
 class TestPromptTemplateModel:
     """Test suite for PromptTemplateModel."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -24,12 +31,12 @@ class TestPromptTemplateModel:
 
 class TestPromptPerformanceModel:
     """Test suite for PromptPerformanceModel."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -38,12 +45,12 @@ class TestPromptPerformanceModel:
 
 class TestOptimizationHistoryModel:
     """Test suite for OptimizationHistoryModel."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -52,12 +59,12 @@ class TestOptimizationHistoryModel:
 
 class TestMABConfigurationModel:
     """Test suite for MABConfigurationModel."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -66,12 +73,12 @@ class TestMABConfigurationModel:
 
 class TestMABSessionModel:
     """Test suite for MABSessionModel."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -80,12 +87,12 @@ class TestMABSessionModel:
 
 class TestPromptTemplateVersionModel:
     """Test suite for PromptTemplateVersionModel."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -94,15 +101,13 @@ class TestPromptTemplateVersionModel:
 
 class TestRewardFunctionModel:
     """Test suite for RewardFunctionModel."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
         pass
-
-

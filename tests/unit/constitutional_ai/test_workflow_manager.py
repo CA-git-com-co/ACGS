@@ -4,18 +4,19 @@ Unit tests for services.core.constitutional-ai.ac_service.app.workflows.workflow
 
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
-from services.core.constitutional-ai.ac_service.app.workflows.workflow_manager import WorkflowManager
-
+from services.core.constitutional_ai.ac_service.app.workflows.workflow_manager import (
+    WorkflowManager,
+)
 
 
 class TestWorkflowManager:
     """Test suite for WorkflowManager."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -26,6 +27,4 @@ class TestWorkflowManager:
         # TODO: Implement test for get_workflow_capabilities
         instance = WorkflowManager()
         # Add test implementation here
-        assert hasattr(instance, 'get_workflow_capabilities')
-
-
+        assert hasattr(instance, "get_workflow_capabilities")

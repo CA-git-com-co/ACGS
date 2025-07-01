@@ -4,18 +4,32 @@ Unit tests for services.core.policy-governance.pgc_service.app.core.incremental_
 
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
-from services.core.policy-governance.pgc_service.app.core.incremental_compiler import MockAsyncSession, MockPolicyVersion, MockPolicyRule, MockACAmendment, CompilationStrategy, DeploymentStatus, ValidationResult, PolicyDependency, CompilationPlan, PolicyChangeSet, DeploymentPlan, ValidationReport, RollbackContext, IncrementalCompiler
-
+from services.core.policy_governance.pgc_service.app.core.incremental_compiler import (
+    MockAsyncSession,
+    MockPolicyVersion,
+    MockPolicyRule,
+    MockACAmendment,
+    CompilationStrategy,
+    DeploymentStatus,
+    ValidationResult,
+    PolicyDependency,
+    CompilationPlan,
+    PolicyChangeSet,
+    DeploymentPlan,
+    ValidationReport,
+    RollbackContext,
+    IncrementalCompiler,
+)
 
 
 class TestMockAsyncSession:
     """Test suite for MockAsyncSession."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -26,17 +40,17 @@ class TestMockAsyncSession:
         # TODO: Implement test for add
         instance = MockAsyncSession()
         # Add test implementation here
-        assert hasattr(instance, 'add')
+        assert hasattr(instance, "add")
 
 
 class TestMockPolicyVersion:
     """Test suite for MockPolicyVersion."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -45,12 +59,12 @@ class TestMockPolicyVersion:
 
 class TestMockPolicyRule:
     """Test suite for MockPolicyRule."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -59,12 +73,12 @@ class TestMockPolicyRule:
 
 class TestMockACAmendment:
     """Test suite for MockACAmendment."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -73,12 +87,12 @@ class TestMockACAmendment:
 
 class TestCompilationStrategy:
     """Test suite for CompilationStrategy."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -87,12 +101,12 @@ class TestCompilationStrategy:
 
 class TestDeploymentStatus:
     """Test suite for DeploymentStatus."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -101,12 +115,12 @@ class TestDeploymentStatus:
 
 class TestValidationResult:
     """Test suite for ValidationResult."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -115,12 +129,12 @@ class TestValidationResult:
 
 class TestPolicyDependency:
     """Test suite for PolicyDependency."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -129,12 +143,12 @@ class TestPolicyDependency:
 
 class TestCompilationPlan:
     """Test suite for CompilationPlan."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -143,12 +157,12 @@ class TestCompilationPlan:
 
 class TestPolicyChangeSet:
     """Test suite for PolicyChangeSet."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -157,12 +171,12 @@ class TestPolicyChangeSet:
 
 class TestDeploymentPlan:
     """Test suite for DeploymentPlan."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -171,12 +185,12 @@ class TestDeploymentPlan:
 
 class TestValidationReport:
     """Test suite for ValidationReport."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -185,12 +199,12 @@ class TestValidationReport:
 
 class TestRollbackContext:
     """Test suite for RollbackContext."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -199,12 +213,12 @@ class TestRollbackContext:
 
 class TestIncrementalCompiler:
     """Test suite for IncrementalCompiler."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -215,6 +229,4 @@ class TestIncrementalCompiler:
         # TODO: Implement test for get_metrics
         instance = IncrementalCompiler()
         # Add test implementation here
-        assert hasattr(instance, 'get_metrics')
-
-
+        assert hasattr(instance, "get_metrics")

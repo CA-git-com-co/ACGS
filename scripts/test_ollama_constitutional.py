@@ -96,7 +96,9 @@ async def test_constitutional_prompting():
 
         avg_response_time = sum(response_times) / len(response_times)
         print(f"   Average response time: {avg_response_time:.2f}s")
-        print(f"   Response time range: {min(response_times):.2f}s - {max(response_times):.2f}s")
+        print(
+            f"   Response time range: {min(response_times):.2f}s - {max(response_times):.2f}s"
+        )
 
         await client.close()
 
@@ -211,7 +213,9 @@ async def test_performance_comparison():
                     "response_time": response_time,
                     "response_length": len(response),
                     "tokens_per_second": (
-                        len(response.split()) / response_time if response_time > 0 else 0
+                        len(response.split()) / response_time
+                        if response_time > 0
+                        else 0
                     ),
                 }
             )

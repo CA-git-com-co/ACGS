@@ -129,14 +129,18 @@ class CryptographicIntegrityService:
         # Sign data
         signature = private_key.sign(
             data.encode("utf-8"),
-            padding.PSS(mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH),
+            padding.PSS(
+                mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH
+            ),
             hashes.SHA256(),
         )
 
         logger.debug(f"Created signature for data: {data[:50]}...")
         return signature
 
-    def verify_signature(self, data: str, signature: bytes, public_key_pem: str) -> bool:
+    def verify_signature(
+        self, data: str, signature: bytes, public_key_pem: str
+    ) -> bool:
         """
         Verify digital signature using RSA-PSS
 
@@ -217,7 +221,9 @@ class MerkleTreeService:
             # Process pairs of nodes
             for i in range(0, len(current_level), 2):
                 left_hash = current_level[i]
-                right_hash = current_level[i + 1] if i + 1 < len(current_level) else left_hash
+                right_hash = (
+                    current_level[i + 1] if i + 1 < len(current_level) else left_hash
+                )
 
                 # Combine hashes
                 combined = left_hash + right_hash
@@ -229,7 +235,9 @@ class MerkleTreeService:
 
         root_hash = current_level[0] if current_level else ""
 
-        logger.info(f"Built Merkle tree with root: {root_hash[:16]}... ({len(data_hashes)} leaves)")
+        logger.info(
+            f"Built Merkle tree with root: {root_hash[:16]}... ({len(data_hashes)} leaves)"
+        )
 
         return {
             "root_hash": root_hash,

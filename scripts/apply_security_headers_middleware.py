@@ -19,7 +19,9 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 # Service paths
@@ -97,7 +99,9 @@ def apply_security_headers_to_service(service_name: str, service_path: str) -> b
 
         # Check if security headers middleware is already present
         if "add_security_headers" in content and "X-Content-Type-Options" in content:
-            logger.info(f"✅ {service_name}: Security headers middleware already present")
+            logger.info(
+                f"✅ {service_name}: Security headers middleware already present"
+            )
             return True
 
         # Find the right place to add the middleware (after app creation)
@@ -154,7 +158,9 @@ def apply_security_headers_to_service(service_name: str, service_path: str) -> b
 def main():
     """Apply security headers middleware to all services."""
     logger.info("🔒 Applying Security Headers Middleware to ACGS Services")
-    logger.info("🎯 Target: Add OWASP-recommended security headers to improve compliance")
+    logger.info(
+        "🎯 Target: Add OWASP-recommended security headers to improve compliance"
+    )
 
     success_count = 0
     total_services = len(SERVICES)

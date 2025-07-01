@@ -46,7 +46,9 @@ async def get_current_user(
     # Skip authentication for health endpoints
     if request.url.path in ["/health", "/health/live", "/health/ready", "/metrics"]:
         # Return a system user for health checks
-        return User(id="system", username="system", is_active=True, roles=[], permissions=[])
+        return User(
+            id="system", username="system", is_active=True, roles=[], permissions=[]
+        )
 
     if not credentials:
         raise HTTPException(
@@ -132,10 +134,13 @@ def require_permission(permission: str):
             ...
     """
 
-    async def permission_dependency(auth_context: AuthContext = Depends(get_auth_context)) -> User:
+    async def permission_dependency(
+        auth_context: AuthContext = Depends(get_auth_context),
+    ) -> User:
         if not auth_context.has_permission(permission):
             raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN, detail=f"Permission required: {permission}"
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Permission required: {permission}",
             )
         return auth_context.user
 
@@ -159,7 +164,9 @@ def require_any_permission(permissions: List[str]):
     Dependency factory for requiring any of the specified permissions.
     """
 
-    async def permission_dependency(auth_context: AuthContext = Depends(get_auth_context)) -> User:
+    async def permission_dependency(
+        auth_context: AuthContext = Depends(get_auth_context),
+    ) -> User:
         if not any(auth_context.has_permission(perm) for perm in permissions):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
@@ -178,7 +185,8 @@ def require_role(role_name: str):
     async def role_dependency(user: User = Depends(get_current_user)) -> User:
         if not user.has_role(role_name):
             raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN, detail=f"Role required: {role_name}"
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Role required: {role_name}",
             )
         return user
 
@@ -206,7 +214,9 @@ def optional_auth():
             return None
 
         try:
-            validation_result = await auth_client.validate_token(credentials.credentials)
+            validation_result = await auth_client.validate_token(
+                credentials.credentials
+            )
 
             if not validation_result.get("valid", False):
                 return None
@@ -229,4 +239,6 @@ def optional_auth():
 require_dgm_read = require_dgm_permission(DGMPermissions.DGM_READ)
 require_dgm_improve = require_dgm_permission(DGMPermissions.DGM_IMPROVE)
 require_dgm_rollback = require_dgm_permission(DGMPermissions.DGM_ROLLBACK)
-require_constitutional_validate = require_dgm_permission(DGMPermissions.CONSTITUTIONAL_VALIDATE)
+require_constitutional_validate = require_dgm_permission(
+    DGMPermissions.CONSTITUTIONAL_VALIDATE
+)

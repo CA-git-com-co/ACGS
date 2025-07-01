@@ -4,18 +4,23 @@ Unit tests for services.core.governance-synthesis.gs_service.app.services.groq_t
 
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
-from services.core.governance-synthesis.gs_service.app.services.groq_tensor_service import TensorDecompositionType, GovernanceConstraints, TensorDecomposition, CircuitBreakerState, GroqTensorService
-
+from services.core.governance_synthesis.gs_service.app.services.groq_tensor_service import (
+    TensorDecompositionType,
+    GovernanceConstraints,
+    TensorDecomposition,
+    CircuitBreakerState,
+    GroqTensorService,
+)
 
 
 class TestTensorDecompositionType:
     """Test suite for TensorDecompositionType."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -24,12 +29,12 @@ class TestTensorDecompositionType:
 
 class TestGovernanceConstraints:
     """Test suite for GovernanceConstraints."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -38,12 +43,12 @@ class TestGovernanceConstraints:
 
 class TestTensorDecomposition:
     """Test suite for TensorDecomposition."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -52,12 +57,12 @@ class TestTensorDecomposition:
 
 class TestCircuitBreakerState:
     """Test suite for CircuitBreakerState."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -66,12 +71,12 @@ class TestCircuitBreakerState:
 
 class TestGroqTensorService:
     """Test suite for GroqTensorService."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -82,6 +87,4 @@ class TestGroqTensorService:
         # TODO: Implement test for get_service_metrics
         instance = GroqTensorService()
         # Add test implementation here
-        assert hasattr(instance, 'get_service_metrics')
-
-
+        assert hasattr(instance, "get_service_metrics")

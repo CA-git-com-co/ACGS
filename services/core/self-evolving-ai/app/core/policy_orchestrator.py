@@ -185,7 +185,9 @@ class PolicyOrchestrator:
             logger.error(f"Policy evaluation failed: {e}")
             return False, {"error": str(e)}
 
-    async def add_policy_rule(self, policy_rule: PolicyRule) -> tuple[bool, dict[str, Any]]:
+    async def add_policy_rule(
+        self, policy_rule: PolicyRule
+    ) -> tuple[bool, dict[str, Any]]:
         """
         Add a new policy rule.
 
@@ -263,7 +265,9 @@ class PolicyOrchestrator:
             updated_rule = PolicyRule(
                 rule_id=current_rule.rule_id,
                 rule_name=updates.get("rule_name", current_rule.rule_name),
-                policy_type=PolicyType(updates.get("policy_type", current_rule.policy_type.value)),
+                policy_type=PolicyType(
+                    updates.get("policy_type", current_rule.policy_type.value)
+                ),
                 rule_content=updates.get("rule_content", current_rule.rule_content),
                 priority=updates.get("priority", current_rule.priority),
                 status=PolicyStatus(updates.get("status", current_rule.status.value)),
@@ -390,7 +394,11 @@ class PolicyOrchestrator:
                 "bundles": {
                     "total_bundles": len(self.policy_bundles),
                     "active_bundles": len(
-                        [b for b in self.policy_bundles.values() if b.status == PolicyStatus.ACTIVE]
+                        [
+                            b
+                            for b in self.policy_bundles.values()
+                            if b.status == PolicyStatus.ACTIVE
+                        ]
                     ),
                 },
                 "metrics": self.policy_metrics,
@@ -497,7 +505,11 @@ class PolicyOrchestrator:
             # Update metrics
             self.policy_metrics["total_policies"] = len(self.active_policies)
             self.policy_metrics["active_policies"] = len(
-                [p for p in self.active_policies.values() if p.status == PolicyStatus.ACTIVE]
+                [
+                    p
+                    for p in self.active_policies.values()
+                    if p.status == PolicyStatus.ACTIVE
+                ]
             )
 
             # Create initial bundle
@@ -661,8 +673,13 @@ class PolicyOrchestrator:
             # Check constitution hash consistency
             for policy in self.active_policies.values():
                 if policy.policy_type == PolicyType.CONSTITUTIONAL:
-                    if policy.metadata.get("constitution_hash") != self.constitution_hash:
-                        logger.warning(f"Constitution hash mismatch in policy {policy.rule_id}")
+                    if (
+                        policy.metadata.get("constitution_hash")
+                        != self.constitution_hash
+                    ):
+                        logger.warning(
+                            f"Constitution hash mismatch in policy {policy.rule_id}"
+                        )
 
             logger.info("Constitutional policy validation complete")
 
@@ -687,7 +704,9 @@ class PolicyOrchestrator:
 
             # Validate rule content syntax (simplified)
             if "package" not in policy_rule.rule_content:
-                validation_result["errors"].append("Rule content must include package declaration")
+                validation_result["errors"].append(
+                    "Rule content must include package declaration"
+                )
 
             # Check for dangerous operations
             dangerous_patterns = ["delete", "drop", "destroy", "bypass"]
@@ -734,7 +753,9 @@ class PolicyOrchestrator:
                 conflicts.append(
                     {
                         "type": "priority_conflict",
-                        "conflicting_rules": [rule.rule_id for rule in same_priority_rules],
+                        "conflicting_rules": [
+                            rule.rule_id for rule in same_priority_rules
+                        ],
                         "description": f"Multiple rules with same priority {policy_rule.priority}",
                     }
                 )

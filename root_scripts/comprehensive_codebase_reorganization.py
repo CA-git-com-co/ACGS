@@ -27,44 +27,51 @@ from typing import Dict, List, Tuple, Optional
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
+    format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.FileHandler(f'acgs_reorganization_{datetime.now().strftime("%Y%m%d_%H%M%S")}.log'),
-        logging.StreamHandler()
-    ]
+        logging.FileHandler(
+            f'acgs_reorganization_{datetime.now().strftime("%Y%m%d_%H%M%S")}.log'
+        ),
+        logging.StreamHandler(),
+    ],
 )
 logger = logging.getLogger(__name__)
 
+
 class ACGSReorganizer:
     """Main class for ACGS-1 codebase reorganization"""
-    
+
     def __init__(self, project_root: str = "."):
         self.project_root = Path(project_root).resolve()
-        self.backup_dir = self.project_root / "backups" / f"reorganization_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        self.backup_dir = (
+            self.project_root
+            / "backups"
+            / f"reorganization_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        )
         self.report = {
             "start_time": datetime.now().isoformat(),
             "phases": {},
             "preserved_functionality": [],
             "performance_metrics": {},
-            "validation_results": {}
+            "validation_results": {},
         }
-        
+
     def create_backup(self) -> bool:
         """Create comprehensive backup before reorganization"""
         try:
             logger.info("Creating comprehensive backup...")
             self.backup_dir.mkdir(parents=True, exist_ok=True)
-            
+
             # Critical directories to backup
             critical_dirs = [
                 "blockchain/programs",
                 "services/core",
-                "services/platform", 
+                "services/platform",
                 "config",
                 "infrastructure",
-                "docs"
+                "docs",
             ]
-            
+
             for dir_path in critical_dirs:
                 src = self.project_root / dir_path
                 if src.exists():
@@ -74,14 +81,14 @@ class ACGSReorganizer:
                         shutil.copytree(src, dst, dirs_exist_ok=True)
                     else:
                         shutil.copy2(src, dst)
-                        
+
             logger.info(f"Backup created at: {self.backup_dir}")
             return True
-            
+
         except Exception as e:
             logger.error(f"Backup creation failed: {e}")
             return False
-    
+
     def validate_service_health(self) -> Dict[str, bool]:
         """Validate current service health status"""
         try:
@@ -90,9 +97,9 @@ class ACGSReorganizer:
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
-                timeout=30
+                timeout=30,
             )
-            
+
             # Parse service health from output
             services = {
                 "constitutional-ai": False,
@@ -101,118 +108,106 @@ class ACGSReorganizer:
                 "policy-governance": False,
                 "evolutionary-computation": False,
                 "self-evolving-ai": False,
-                "acgs-pgp-v8": False
+                "acgs-pgp-v8": False,
             }
-            
+
             if result.returncode == 0:
-                for line in result.stdout.split('\n'):
+                for line in result.stdout.split("\n"):
                     if "✅" in line:
                         for service in services:
-                            if service in line or service.replace('-', '_') in line:
+                            if service in line or service.replace("-", "_") in line:
                                 services[service] = True
-                                
+
             logger.info(f"Service health status: {services}")
             return services
-            
+
         except Exception as e:
             logger.error(f"Service health validation failed: {e}")
             return {}
-    
+
     def reorganize_directory_structure(self) -> bool:
         """Implement the target directory structure"""
         try:
             logger.info("Starting directory structure reorganization...")
-            
+
             # Target structure mapping
             target_structure = {
                 # Core services already well-organized
                 "services/core": [
                     "constitutional-ai",
-                    "governance-synthesis", 
+                    "governance-synthesis",
                     "formal-verification",
                     "policy-governance",
                     "evolutionary-computation",
                     "self-evolving-ai",
-                    "acgs-pgp-v8"
+                    "acgs-pgp-v8",
                 ],
-                
                 # Platform services
                 "services/platform": [
                     "authentication",
                     "integrity",
                     "workflow",
-                    "nvidia-llm-router"
+                    "nvidia-llm-router",
                 ],
-                
                 # Blockchain programs (already good)
-                "blockchain/programs": [
-                    "quantumagi-core",
-                    "appeals", 
-                    "logging"
-                ],
-                
+                "blockchain/programs": ["quantumagi-core", "appeals", "logging"],
                 # Applications
-                "applications": [
-                    "governance-dashboard",
-                    "frontend",
-                    "app"
-                ],
-                
+                "applications": ["governance-dashboard", "frontend", "app"],
                 # Infrastructure
                 "infrastructure": [
                     "docker",
-                    "monitoring", 
+                    "monitoring",
                     "redis",
                     "database",
                     "security",
-                    "load-balancer"
-                ]
+                    "load-balancer",
+                ],
             }
-            
+
             # Create target directories
             for target_dir, subdirs in target_structure.items():
                 target_path = self.project_root / target_dir
                 target_path.mkdir(parents=True, exist_ok=True)
-                
+
                 for subdir in subdirs:
                     (target_path / subdir).mkdir(parents=True, exist_ok=True)
-                    
+
             # Move infrastructure components
             self._reorganize_infrastructure()
-            
+
             # Standardize service directory patterns
             self._standardize_service_structure()
-            
+
             logger.info("Directory structure reorganization completed")
             return True
-            
+
         except Exception as e:
             logger.error(f"Directory reorganization failed: {e}")
             return False
-    
+
     def _reorganize_infrastructure(self):
         """Reorganize infrastructure components"""
         # Move Docker configurations
         docker_files = [
             "docker-compose*.yml",
             "Dockerfile*",
-            "deploy/docker-compose*.yaml"
+            "deploy/docker-compose*.yaml",
         ]
-        
+
         infra_docker = self.project_root / "infrastructure/docker"
         infra_docker.mkdir(parents=True, exist_ok=True)
-        
+
         # Move monitoring configurations
         monitoring_sources = [
             "monitoring",
-            "config/monitoring", 
+            "config/monitoring",
             "config/prometheus.yml",
-            "grafana_dashboard.json"
+            "grafana_dashboard.json",
         ]
-        
+
         infra_monitoring = self.project_root / "infrastructure/monitoring"
         infra_monitoring.mkdir(parents=True, exist_ok=True)
-        
+
         for source in monitoring_sources:
             src_path = self.project_root / source
             if src_path.exists():
@@ -222,64 +217,75 @@ class ACGSReorganizer:
                         shutil.copytree(src_path, dst_path)
                 else:
                     shutil.copy2(src_path, dst_path)
-    
+
     def _standardize_service_structure(self):
         """Standardize service directory patterns"""
         services_core = self.project_root / "services/core"
-        
+
         for service_dir in services_core.iterdir():
             if service_dir.is_dir():
                 # Ensure standard subdirectories
                 standard_dirs = ["src", "tests", "docs", "config"]
                 for std_dir in standard_dirs:
                     (service_dir / std_dir).mkdir(exist_ok=True)
-                    
+
                 # Move service files to src/ if not already there
                 src_dir = service_dir / "src"
                 for item in service_dir.iterdir():
-                    if item.is_file() and item.suffix == ".py" and item.name != "requirements.txt":
+                    if (
+                        item.is_file()
+                        and item.suffix == ".py"
+                        and item.name != "requirements.txt"
+                    ):
                         if not (src_dir / item.name).exists():
                             shutil.move(str(item), str(src_dir / item.name))
-    
+
     def consolidate_configurations(self) -> bool:
         """Consolidate scattered configuration files"""
         try:
             logger.info("Consolidating configuration files...")
-            
+
             config_dir = self.project_root / "config"
             config_dir.mkdir(exist_ok=True)
-            
+
             # Create environment-specific config directories
             env_dirs = ["development", "staging", "production"]
             for env in env_dirs:
                 (config_dir / "environments" / env).mkdir(parents=True, exist_ok=True)
-            
+
             # Consolidate scattered configs
             config_patterns = [
                 "*.env*",
                 "*config*.json",
-                "*config*.yaml", 
-                "*config*.yml"
+                "*config*.yaml",
+                "*config*.yml",
             ]
-            
+
             # Move configs from services to centralized location
             for pattern in config_patterns:
                 for config_file in self.project_root.rglob(pattern):
-                    if "node_modules" not in str(config_file) and "venv" not in str(config_file):
+                    if "node_modules" not in str(config_file) and "venv" not in str(
+                        config_file
+                    ):
                         relative_path = config_file.relative_to(self.project_root)
                         if len(relative_path.parts) > 1:  # Not in root
-                            dst = config_dir / "services" / relative_path.parts[0] / config_file.name
+                            dst = (
+                                config_dir
+                                / "services"
+                                / relative_path.parts[0]
+                                / config_file.name
+                            )
                             dst.parent.mkdir(parents=True, exist_ok=True)
                             if not dst.exists():
                                 shutil.copy2(config_file, dst)
-            
+
             logger.info("Configuration consolidation completed")
             return True
-            
+
         except Exception as e:
             logger.error(f"Configuration consolidation failed: {e}")
             return False
-    
+
     def consolidate_dependencies(self) -> bool:
         """Consolidate and clean up dependency files using package managers"""
         try:
@@ -332,17 +338,17 @@ class ACGSReorganizer:
 
         for req_file in files:
             try:
-                with open(req_file, 'r') as f:
+                with open(req_file, "r") as f:
                     for line in f:
                         line = line.strip()
-                        if line and not line.startswith('#'):
+                        if line and not line.startswith("#"):
                             all_deps.add(line)
             except Exception as e:
                 logger.warning(f"Could not read {req_file}: {e}")
 
         # Write consolidated requirements
         main_req_file = files[0].parent / "requirements.txt"
-        with open(main_req_file, 'w') as f:
+        with open(main_req_file, "w") as f:
             f.write(f"# {service} Service Dependencies\n")
             f.write(f"# Consolidated on {datetime.now().strftime('%Y-%m-%d')}\n\n")
             for dep in sorted(all_deps):
@@ -391,7 +397,7 @@ anchor-spl = "0.29.0"
 solana-program = "~1.18.22"
 """
 
-        with open(self.project_root / "Cargo.toml", 'w') as f:
+        with open(self.project_root / "Cargo.toml", "w") as f:
             f.write(workspace_content)
 
     def apply_code_formatting(self) -> bool:
@@ -422,15 +428,18 @@ solana-program = "~1.18.22"
             subprocess.run(["pip", "install", "black", "isort"], check=False)
 
             # Format with black
-            subprocess.run([
-                "black", "--line-length", "88",
-                "services/", "scripts/", "tests/"
-            ], cwd=self.project_root, check=False)
+            subprocess.run(
+                ["black", "--line-length", "88", "services/", "scripts/", "tests/"],
+                cwd=self.project_root,
+                check=False,
+            )
 
             # Sort imports with isort
-            subprocess.run([
-                "isort", "services/", "scripts/", "tests/"
-            ], cwd=self.project_root, check=False)
+            subprocess.run(
+                ["isort", "services/", "scripts/", "tests/"],
+                cwd=self.project_root,
+                check=False,
+            )
 
         except Exception as e:
             logger.warning(f"Python formatting failed: {e}")
@@ -439,14 +448,21 @@ solana-program = "~1.18.22"
         """Format JavaScript/TypeScript code with prettier"""
         try:
             # Check if prettier is available
-            result = subprocess.run(["npx", "prettier", "--version"],
-                                  capture_output=True, check=False)
+            result = subprocess.run(
+                ["npx", "prettier", "--version"], capture_output=True, check=False
+            )
             if result.returncode == 0:
-                subprocess.run([
-                    "npx", "prettier", "--write",
-                    "applications/**/*.{js,ts,jsx,tsx}",
-                    "blockchain/**/*.{js,ts}"
-                ], cwd=self.project_root, check=False)
+                subprocess.run(
+                    [
+                        "npx",
+                        "prettier",
+                        "--write",
+                        "applications/**/*.{js,ts,jsx,tsx}",
+                        "blockchain/**/*.{js,ts}",
+                    ],
+                    cwd=self.project_root,
+                    check=False,
+                )
 
         except Exception as e:
             logger.warning(f"JavaScript formatting failed: {e}")
@@ -454,7 +470,9 @@ solana-program = "~1.18.22"
     def _format_rust_code(self):
         """Format Rust code with rustfmt"""
         try:
-            subprocess.run(["cargo", "fmt"], cwd=self.project_root / "blockchain", check=False)
+            subprocess.run(
+                ["cargo", "fmt"], cwd=self.project_root / "blockchain", check=False
+            )
         except Exception as e:
             logger.warning(f"Rust formatting failed: {e}")
 
@@ -495,8 +513,11 @@ solana-program = "~1.18.22"
             self.report["end_time"] = datetime.now().isoformat()
             self.report["success"] = True
 
-            report_file = self.project_root / f"reorganization_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-            with open(report_file, 'w') as f:
+            report_file = (
+                self.project_root
+                / f"reorganization_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+            )
+            with open(report_file, "w") as f:
                 json.dump(self.report, f, indent=2)
 
             logger.info(f"Reorganization completed successfully. Report: {report_file}")
@@ -508,10 +529,11 @@ solana-program = "~1.18.22"
             self.report["error"] = str(e)
             return False
 
+
 def main():
     """Main execution function"""
     reorganizer = ACGSReorganizer()
-    
+
     if reorganizer.run_comprehensive_reorganization():
         print("✅ ACGS-1 codebase reorganization completed successfully!")
         print(f"📁 Backup created at: {reorganizer.backup_dir}")
@@ -520,6 +542,7 @@ def main():
     else:
         print("❌ Reorganization failed. Check logs for details.")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

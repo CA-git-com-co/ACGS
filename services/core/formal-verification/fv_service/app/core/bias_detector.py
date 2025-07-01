@@ -24,7 +24,9 @@ except ImportError:
     FAIRLEARN_AVAILABLE = False
     import logging
 
-    logging.getLogger(__name__).warning("Fairlearn not available, using mock implementations")
+    logging.getLogger(__name__).warning(
+        "Fairlearn not available, using mock implementations"
+    )
 from ..schemas import (
     BiasDetectionRequest,
     BiasDetectionResponse,
@@ -55,9 +57,16 @@ class BiasDetector:
 
         # Pre-compiled patterns for efficient bias detection
         self._bias_patterns = {
-            "protected_attributes": re.compile(r'\b(age|gender|race|religion|disability|sexual orientation)\b', re.IGNORECASE),
-            "conditional_logic": re.compile(r'\b(if|when|where|unless|provided)\b', re.IGNORECASE),
-            "exclusionary_terms": re.compile(r'\b(exclude|deny|reject|prohibit|ban)\b', re.IGNORECASE),
+            "protected_attributes": re.compile(
+                r"\b(age|gender|race|religion|disability|sexual orientation)\b",
+                re.IGNORECASE,
+            ),
+            "conditional_logic": re.compile(
+                r"\b(if|when|where|unless|provided)\b", re.IGNORECASE
+            ),
+            "exclusionary_terms": re.compile(
+                r"\b(exclude|deny|reject|prohibit|ban)\b", re.IGNORECASE
+            ),
         }
 
         # Shared computation cache for bias detection
@@ -76,7 +85,9 @@ class BiasDetector:
         """
         start_time = time.time()
 
-        logger.info(f"Starting bias detection for {len(request.policy_rule_ids)} policy rules")
+        logger.info(
+            f"Starting bias detection for {len(request.policy_rule_ids)} policy rules"
+        )
 
         all_results = []
 
@@ -103,7 +114,9 @@ class BiasDetector:
         )
 
         # Generate summary and recommendations
-        summary = self._generate_bias_summary(all_results, overall_bias_score, risk_level)
+        summary = self._generate_bias_summary(
+            all_results, overall_bias_score, risk_level
+        )
         recommendations = self._generate_bias_recommendations(all_results, risk_level)
 
         total_time = int((time.time() - start_time) * 1000)
@@ -139,9 +152,13 @@ class BiasDetector:
                 rule, metric, dataset, protected_attributes
             )
         elif metric.metric_type == "counterfactual":
-            result = await self._counterfactual_bias_detection(rule, metric, protected_attributes)
+            result = await self._counterfactual_bias_detection(
+                rule, metric, protected_attributes
+            )
         elif metric.metric_type == "embedding":
-            result = await self._embedding_bias_detection(rule, metric, protected_attributes)
+            result = await self._embedding_bias_detection(
+                rule, metric, protected_attributes
+            )
         elif metric.metric_type == "llm_review":
             result = await self._llm_bias_review(rule, metric, protected_attributes)
         else:
@@ -182,8 +199,10 @@ class BiasDetector:
         if FAIRLEARN_AVAILABLE and len(dataset) > 10:
             # Use actual fairlearn implementation
             try:
-                bias_score, explanation, recommendations = await self._calculate_fairlearn_metrics(
-                    rule, dataset, protected_attributes, metric
+                bias_score, explanation, recommendations = (
+                    await self._calculate_fairlearn_metrics(
+                        rule, dataset, protected_attributes, metric
+                    )
                 )
                 threshold = metric.threshold or 0.1
                 bias_detected = bias_score > threshold
@@ -208,7 +227,9 @@ class BiasDetector:
                 )
 
         # Fallback to enhanced heuristic method
-        return await self._heuristic_bias_detection(rule, metric, dataset, protected_attributes)
+        return await self._heuristic_bias_detection(
+            rule, metric, dataset, protected_attributes
+        )
 
     async def _calculate_fairlearn_metrics(
         self,
@@ -250,7 +271,9 @@ class BiasDetector:
         # Calculate overall bias score (0 = no bias, 1 = maximum bias)
         bias_score = abs(dp_diff)
 
-        explanation = f"Fairlearn analysis: Demographic parity difference = {dp_diff:.3f}, "
+        explanation = (
+            f"Fairlearn analysis: Demographic parity difference = {dp_diff:.3f}, "
+        )
         explanation += f"Selection rates by group: {dict(selection_rates)}"
 
         recommendations = [
@@ -262,7 +285,9 @@ class BiasDetector:
 
         return bias_score, explanation, recommendations
 
-    def _simulate_policy_predictions(self, rule: PolicyRule, df: pd.DataFrame) -> np.ndarray:
+    def _simulate_policy_predictions(
+        self, rule: PolicyRule, df: pd.DataFrame
+    ) -> np.ndarray:
         """
         Simulate policy rule application to generate binary predictions.
         In real implementation, this would execute the actual policy rule.
@@ -381,7 +406,9 @@ class BiasDetector:
 
         explanation = f"Counterfactual analysis bias score: {bias_score:.3f}"
         if bias_detected:
-            explanation += " - Rule shows differential treatment based on protected attributes"
+            explanation += (
+                " - Rule shows differential treatment based on protected attributes"
+            )
 
         return BiasDetectionResult(
             metric_id=metric.metric_id,
@@ -451,7 +478,9 @@ class BiasDetector:
         ):
             bias_detected = True
             bias_score = 0.8
-            explanation = "LLM Review: Potential bias detected in rule language and structure"
+            explanation = (
+                "LLM Review: Potential bias detected in rule language and structure"
+            )
             recommendations = [
                 "Rewrite rule to be attribute-neutral",
                 "Add explicit fairness checks",
@@ -473,7 +502,9 @@ class BiasDetector:
             requires_human_review=bias_detected,
         )
 
-    def _calculate_overall_bias_score(self, results: list[BiasDetectionResult]) -> float:
+    def _calculate_overall_bias_score(
+        self, results: list[BiasDetectionResult]
+    ) -> float:
         """Calculate overall bias score from individual results."""
         if not results:
             return 0.0
@@ -541,7 +572,9 @@ class BiasDetector:
         """
         start_time = time.time()
 
-        logger.info(f"Starting fairness validation for {len(request.policy_rule_ids)} policy rules")
+        logger.info(
+            f"Starting fairness validation for {len(request.policy_rule_ids)} policy rules"
+        )
 
         all_results = []
 
@@ -637,9 +670,13 @@ class BiasDetector:
         for attr in property.protected_attributes:
             if attr.lower() in rule_content:
                 # Simulate checking if the attribute is used in a discriminatory way
-                if any(word in rule_content for word in ["exclude", "deny", "restrict"]):
+                if any(
+                    word in rule_content for word in ["exclude", "deny", "restrict"]
+                ):
                     fairness_score -= 0.3
-                    violation_details = f"Rule may violate demographic parity for attribute: {attr}"
+                    violation_details = (
+                        f"Rule may violate demographic parity for attribute: {attr}"
+                    )
 
         fairness_score = max(0.0, fairness_score)
         fairness_satisfied = fairness_score >= (1.0 - property.threshold)
@@ -709,7 +746,9 @@ class BiasDetector:
             policy_rule_id=rule.id,
             fairness_satisfied=fairness_satisfied,
             fairness_score=fairness_score,
-            violation_details=(None if fairness_satisfied else "Calibration may be violated"),
+            violation_details=(
+                None if fairness_satisfied else "Calibration may be violated"
+            ),
         )
 
     async def _validate_individual_fairness(
@@ -731,7 +770,9 @@ class BiasDetector:
         # Look for inconsistent treatment patterns
         if "exception" in rule_content or "special case" in rule_content:
             fairness_score -= 0.2
-            violation_details = "Rule contains exceptions that may violate individual fairness"
+            violation_details = (
+                "Rule contains exceptions that may violate individual fairness"
+            )
 
         fairness_satisfied = fairness_score >= (1.0 - property.threshold)
 
@@ -743,7 +784,9 @@ class BiasDetector:
             violation_details=violation_details,
         )
 
-    def _calculate_overall_fairness_score(self, results: list[FairnessValidationResult]) -> float:
+    def _calculate_overall_fairness_score(
+        self, results: list[FairnessValidationResult]
+    ) -> float:
         """Calculate overall fairness score from individual results."""
         if not results:
             return 1.0

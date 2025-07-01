@@ -102,7 +102,9 @@ class ModelRouter:
                         logger.info(f"Initialized client for {client_id}")
 
                     except Exception as e:
-                        logger.error(f"Failed to initialize client for {client_id}: {e}")
+                        logger.error(
+                            f"Failed to initialize client for {client_id}: {e}"
+                        )
 
             logger.info(f"Initialized {len(self.clients)} model clients")
 
@@ -302,7 +304,8 @@ class ModelRouter:
 
         # Simple round-robin based on request count
         request_counts = {
-            client_id: self.model_stats[client_id]["requests"] for client_id in available_clients
+            client_id: self.model_stats[client_id]["requests"]
+            for client_id in available_clients
         }
 
         # Return client with least requests
@@ -343,7 +346,8 @@ class ModelRouter:
             stats["avg_response_time"] = response.response_time
         else:
             stats["avg_response_time"] = (
-                stats["avg_response_time"] * (stats["successes"] - 1) + response.response_time
+                stats["avg_response_time"] * (stats["successes"] - 1)
+                + response.response_time
             ) / stats["successes"]
 
         stats["last_used"] = asyncio.get_event_loop().time()
@@ -357,7 +361,13 @@ class ModelRouter:
         return {
             "available_clients": list(self.clients.keys()),
             "model_stats": self.model_stats,
-            "total_requests": sum(stats["requests"] for stats in self.model_stats.values()),
-            "total_successes": sum(stats["successes"] for stats in self.model_stats.values()),
-            "total_failures": sum(stats["failures"] for stats in self.model_stats.values()),
+            "total_requests": sum(
+                stats["requests"] for stats in self.model_stats.values()
+            ),
+            "total_successes": sum(
+                stats["successes"] for stats in self.model_stats.values()
+            ),
+            "total_failures": sum(
+                stats["failures"] for stats in self.model_stats.values()
+            ),
         }

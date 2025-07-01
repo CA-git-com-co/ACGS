@@ -32,14 +32,14 @@ from pathlib import Path
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
+
 class ComprehensiveMonitoringDashboard:
     """Comprehensive monitoring dashboard for ACGS production operations."""
-    
+
     def __init__(self):
         self.constitutional_hash = "cdd01ef066bc6cf2"
         self.app = FastAPI(title="ACGS Monitoring Dashboard", version="1.0")
@@ -52,60 +52,60 @@ class ComprehensiveMonitoringDashboard:
             "disk_usage": 90.0,
             "response_time_ms": 5.0,
             "error_rate": 1.0,
-            "constitutional_compliance": 100.0
+            "constitutional_compliance": 100.0,
         }
-        
+
         # Initialize dashboard
         self._setup_routes()
         self._setup_static_files()
-        
+
     def _setup_routes(self):
         """Setup FastAPI routes for the monitoring dashboard."""
-        
+
         @self.app.get("/", response_class=HTMLResponse)
         async def dashboard_home(request: Request):
             """Main dashboard page."""
             return await self._render_dashboard_template(request)
-        
+
         @self.app.get("/api/metrics")
         async def get_metrics():
             """Get current system metrics."""
             return await self._get_current_metrics()
-        
+
         @self.app.get("/api/constitutional-compliance")
         async def get_constitutional_compliance():
             """Get constitutional compliance metrics."""
             return await self._get_constitutional_compliance_metrics()
-        
+
         @self.app.get("/api/service-health")
         async def get_service_health():
             """Get service health status."""
             return await self._get_service_health_status()
-        
+
         @self.app.get("/api/performance-analytics")
         async def get_performance_analytics():
             """Get performance analytics data."""
             return await self._get_performance_analytics()
-        
+
         @self.app.get("/api/alerts")
         async def get_alerts():
             """Get current alerts and notifications."""
             return await self._get_current_alerts()
-        
+
         @self.app.websocket("/ws/metrics")
         async def websocket_metrics(websocket: WebSocket):
             """WebSocket endpoint for real-time metrics."""
             await self._handle_websocket_connection(websocket)
-    
+
     def _setup_static_files(self):
         """Setup static file serving for dashboard assets."""
         # Create static directory if it doesn't exist
         static_dir = Path("static")
         static_dir.mkdir(exist_ok=True)
-        
+
         # Mount static files
         self.app.mount("/static", StaticFiles(directory="static"), name="static")
-    
+
     async def _render_dashboard_template(self, request: Request) -> HTMLResponse:
         """Render the main dashboard HTML template."""
         dashboard_html = f"""
@@ -401,33 +401,33 @@ class ComprehensiveMonitoringDashboard:
 </body>
 </html>
         """
-        
+
         return HTMLResponse(content=dashboard_html)
-    
+
     async def _get_current_metrics(self) -> Dict[str, Any]:
         """Get current system and application metrics."""
         try:
             # System metrics
             cpu_percent = psutil.cpu_percent(interval=1)
             memory = psutil.virtual_memory()
-            disk = psutil.disk_usage('/')
-            
+            disk = psutil.disk_usage("/")
+
             # Performance metrics (simulated for demo)
             performance_metrics = {
                 "response_time_ms": 2.3,
                 "throughput_rps": 156,
                 "cache_hit_rate": 87.2,
-                "error_rate": 0.1
+                "error_rate": 0.1,
             }
-            
+
             # Constitutional compliance metrics
             constitutional_compliance = {
                 "compliance_rate": 100.0,
                 "hash_valid": True,
                 "hash_value": self.constitutional_hash,
-                "policy_violations": 0
+                "policy_violations": 0,
             }
-            
+
             metrics = {
                 "timestamp": datetime.now(timezone.utc).isoformat(),
                 "constitutional_hash": self.constitutional_hash,
@@ -436,21 +436,21 @@ class ComprehensiveMonitoringDashboard:
                     "memory_percent": round(memory.percent, 1),
                     "disk_percent": round((disk.used / disk.total) * 100, 1),
                     "memory_used_gb": round(memory.used / (1024**3), 2),
-                    "memory_total_gb": round(memory.total / (1024**3), 2)
+                    "memory_total_gb": round(memory.total / (1024**3), 2),
                 },
                 "performance_metrics": performance_metrics,
-                "constitutional_compliance": constitutional_compliance
+                "constitutional_compliance": constitutional_compliance,
             }
-            
+
             # Cache metrics for WebSocket broadcasting
             self.metrics_cache = metrics
-            
+
             return metrics
-            
+
         except Exception as e:
             logger.error(f"Error getting current metrics: {e}")
             return {"error": str(e)}
-    
+
     async def _get_constitutional_compliance_metrics(self) -> Dict[str, Any]:
         """Get detailed constitutional compliance metrics."""
         return {
@@ -460,71 +460,134 @@ class ComprehensiveMonitoringDashboard:
                 "status": "VALID",
                 "last_validated": datetime.now(timezone.utc).isoformat(),
                 "validation_count_24h": 1440,  # Every minute
-                "validation_success_rate": 100.0
+                "validation_success_rate": 100.0,
             },
             "policy_compliance": {
                 "total_policies": 1247,
                 "compliant_policies": 1247,
                 "compliance_rate": 100.0,
-                "last_violation": None
+                "last_violation": None,
             },
             "governance_metrics": {
                 "decisions_processed_24h": 89,
                 "average_decision_time_ms": 0.8,
                 "constitutional_violations": 0,
-                "appeal_rate": 2.3
-            }
+                "appeal_rate": 2.3,
+            },
         }
-    
+
     async def _get_service_health_status(self) -> Dict[str, Any]:
         """Get health status of all ACGS services."""
         services = {
-            "auth-service": {"status": "healthy", "response_time_ms": 1.2, "uptime": "99.98%"},
-            "constitutional-ai": {"status": "healthy", "response_time_ms": 2.1, "uptime": "99.95%"},
-            "policy-governance": {"status": "healthy", "response_time_ms": 1.8, "uptime": "99.97%"},
-            "governance-synthesis": {"status": "warning", "response_time_ms": 3.2, "uptime": "99.89%"},
-            "integrity-service": {"status": "healthy", "response_time_ms": 1.5, "uptime": "99.96%"},
-            "formal-verification": {"status": "healthy", "response_time_ms": 2.8, "uptime": "99.92%"}
+            "auth-service": {
+                "status": "healthy",
+                "response_time_ms": 1.2,
+                "uptime": "99.98%",
+            },
+            "constitutional-ai": {
+                "status": "healthy",
+                "response_time_ms": 2.1,
+                "uptime": "99.95%",
+            },
+            "policy-governance": {
+                "status": "healthy",
+                "response_time_ms": 1.8,
+                "uptime": "99.97%",
+            },
+            "governance-synthesis": {
+                "status": "warning",
+                "response_time_ms": 3.2,
+                "uptime": "99.89%",
+            },
+            "integrity-service": {
+                "status": "healthy",
+                "response_time_ms": 1.5,
+                "uptime": "99.96%",
+            },
+            "formal-verification": {
+                "status": "healthy",
+                "response_time_ms": 2.8,
+                "uptime": "99.92%",
+            },
         }
-        
+
         overall_health = "healthy"
         if any(service["status"] == "critical" for service in services.values()):
             overall_health = "critical"
         elif any(service["status"] == "warning" for service in services.values()):
             overall_health = "warning"
-        
+
         return {
             "overall_health": overall_health,
             "services": services,
             "constitutional_hash": self.constitutional_hash,
-            "last_updated": datetime.now(timezone.utc).isoformat()
+            "last_updated": datetime.now(timezone.utc).isoformat(),
         }
-    
+
     async def _get_performance_analytics(self) -> Dict[str, Any]:
         """Get performance analytics and trends."""
         # Generate sample performance data
         now = datetime.now(timezone.utc)
-        time_points = [(now - timedelta(minutes=i*5)) for i in range(12, 0, -1)]
-        
+        time_points = [(now - timedelta(minutes=i * 5)) for i in range(12, 0, -1)]
+
         analytics = {
             "time_series": {
                 "timestamps": [t.isoformat() for t in time_points],
-                "response_times": [2.1, 2.3, 1.9, 2.5, 2.2, 1.8, 2.4, 2.1, 2.0, 2.3, 2.2, 2.3],
-                "throughput": [145, 156, 162, 148, 159, 167, 152, 158, 164, 156, 161, 156],
-                "cache_hit_rates": [85.2, 87.1, 86.8, 88.2, 87.2, 89.1, 86.5, 87.8, 88.5, 87.2, 87.9, 87.2]
+                "response_times": [
+                    2.1,
+                    2.3,
+                    1.9,
+                    2.5,
+                    2.2,
+                    1.8,
+                    2.4,
+                    2.1,
+                    2.0,
+                    2.3,
+                    2.2,
+                    2.3,
+                ],
+                "throughput": [
+                    145,
+                    156,
+                    162,
+                    148,
+                    159,
+                    167,
+                    152,
+                    158,
+                    164,
+                    156,
+                    161,
+                    156,
+                ],
+                "cache_hit_rates": [
+                    85.2,
+                    87.1,
+                    86.8,
+                    88.2,
+                    87.2,
+                    89.1,
+                    86.5,
+                    87.8,
+                    88.5,
+                    87.2,
+                    87.9,
+                    87.2,
+                ],
             },
             "performance_summary": {
                 "avg_response_time_ms": 2.2,
                 "p95_response_time_ms": 2.8,
                 "p99_response_time_ms": 3.1,
                 "avg_throughput_rps": 157.8,
-                "avg_cache_hit_rate": 87.4
+                "avg_cache_hit_rate": 87.4,
             },
-            "constitutional_hash": self.constitutional_hash
+            "constitutional_hash": self.constitutional_hash,
         }
-        
+
         return analytics
-    
+
     async def _get_current_alerts(self) -> Dict[str, Any]:
         """Get current alerts and notifications."""
         alerts = [
@@ -533,77 +596,76 @@ class ComprehensiveMonitoringDashboard:
                 "severity": "warning",
                 "title": "Elevated Response Time",
                 "description": "Governance Synthesis service response time elevated (3.2ms)",
-                "timestamp": (datetime.now(timezone.utc) - timedelta(minutes=15)).isoformat(),
+                "timestamp": (
+                    datetime.now(timezone.utc) - timedelta(minutes=15)
+                ).isoformat(),
                 "service": "governance-synthesis",
-                "acknowledged": False
+                "acknowledged": False,
             },
             {
-                "id": "alert_002", 
+                "id": "alert_002",
                 "severity": "info",
                 "title": "Scheduled Maintenance",
                 "description": "Scheduled maintenance window in 2 hours",
-                "timestamp": (datetime.now(timezone.utc) - timedelta(hours=1)).isoformat(),
+                "timestamp": (
+                    datetime.now(timezone.utc) - timedelta(hours=1)
+                ).isoformat(),
                 "service": "system",
-                "acknowledged": True
-            }
+                "acknowledged": True,
+            },
         ]
-        
+
         return {
             "alerts": alerts,
             "total_alerts": len(alerts),
             "critical_alerts": len([a for a in alerts if a["severity"] == "critical"]),
             "warning_alerts": len([a for a in alerts if a["severity"] == "warning"]),
             "info_alerts": len([a for a in alerts if a["severity"] == "info"]),
-            "constitutional_hash": self.constitutional_hash
+            "constitutional_hash": self.constitutional_hash,
         }
-    
+
     async def _handle_websocket_connection(self, websocket: WebSocket):
         """Handle WebSocket connection for real-time metrics."""
         await websocket.accept()
         self.websocket_connections.append(websocket)
-        
+
         try:
             while True:
                 # Send current metrics every 5 seconds
                 metrics = await self._get_current_metrics()
                 await websocket.send_text(json.dumps(metrics))
                 await asyncio.sleep(5)
-                
+
         except WebSocketDisconnect:
             self.websocket_connections.remove(websocket)
         except Exception as e:
             logger.error(f"WebSocket error: {e}")
             if websocket in self.websocket_connections:
                 self.websocket_connections.remove(websocket)
-    
+
     async def start_monitoring(self, host: str = "0.0.0.0", port: int = 8000):
         """Start the monitoring dashboard server."""
         import uvicorn
-        
+
         logger.info(f"🚀 Starting ACGS Monitoring Dashboard")
         logger.info(f"📜 Constitutional Hash: {self.constitutional_hash}")
         logger.info(f"🌐 Dashboard URL: http://{host}:{port}")
-        
+
         # Start background tasks
         asyncio.create_task(self._background_metrics_collection())
-        
+
         # Start the server
-        config = uvicorn.Config(
-            app=self.app,
-            host=host,
-            port=port,
-            log_level="info"
-        )
+        config = uvicorn.Config(app=self.app, host=host, port=port, log_level="info")
         server = uvicorn.Server(config)
         await server.serve()
-    
+
     async def _background_metrics_collection(self):
         """Background task for continuous metrics collection."""
         while True:
             try:
                 # Collect and cache metrics
                 await self._get_current_metrics()
-                
+
                 # Broadcast to WebSocket connections
                 if self.websocket_connections and self.metrics_cache:
                     disconnected = []
@@ -612,20 +674,22 @@ class ComprehensiveMonitoringDashboard:
                             await websocket.send_text(json.dumps(self.metrics_cache))
                         except Exception:
                             disconnected.append(websocket)
-                    
+
                     # Remove disconnected WebSockets
                     for ws in disconnected:
                         if ws in self.websocket_connections:
                             self.websocket_connections.remove(ws)
-                
+
                 await asyncio.sleep(5)  # Update every 5 seconds
-                
+
             except Exception as e:
                 logger.error(f"Error in background metrics collection: {e}")
                 await asyncio.sleep(10)
 
+
 # Global dashboard instance
 monitoring_dashboard = ComprehensiveMonitoringDashboard()
+
 
 async def main():
     """Main function to start the monitoring dashboard."""
@@ -635,6 +699,7 @@ async def main():
         logger.info("Monitoring dashboard stopped by user")
     except Exception as e:
         logger.error(f"Error starting monitoring dashboard: {e}")
+
 
 if __name__ == "__main__":
     asyncio.run(main())

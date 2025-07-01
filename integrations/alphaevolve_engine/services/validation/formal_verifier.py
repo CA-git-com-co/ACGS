@@ -12,6 +12,7 @@ from typing import Any, Dict, List, Optional
 
 class PropertyType(Enum):
     """Types of formal verification properties."""
+
     SAFETY = "safety"
     LIVENESS = "liveness"
     FAIRNESS = "fairness"
@@ -21,7 +22,7 @@ class PropertyType(Enum):
 @dataclass
 class FormalVerificationProperty:
     """Formal verification property definition."""
-    
+
     property_id: str
     property_type: PropertyType
     description: str
@@ -34,7 +35,7 @@ class FormalVerificationProperty:
 @dataclass
 class VerificationResult:
     """Result of formal verification."""
-    
+
     property_id: str
     verified: bool
     confidence: float
@@ -46,22 +47,22 @@ class VerificationResult:
 
 class MockFormalVerifier:
     """Mock formal verifier for testing and development."""
-    
+
     def __init__(self):
         self.verification_history: List[VerificationResult] = []
-    
+
     async def verify_property(
-        self, 
+        self,
         property_def: FormalVerificationProperty,
-        context: Optional[Dict[str, Any]] = None
+        context: Optional[Dict[str, Any]] = None,
     ) -> VerificationResult:
         """Verify a formal property (mock implementation)."""
-        
+
         # Mock verification logic
         verified = True
         confidence = 0.95
         execution_time_ms = 50.0
-        
+
         # Simulate some failures for testing
         if "fail" in property_def.description.lower():
             verified = False
@@ -69,7 +70,7 @@ class MockFormalVerifier:
             counterexample = "Mock counterexample for testing"
         else:
             counterexample = None
-        
+
         result = VerificationResult(
             property_id=property_def.property_id,
             verified=verified,
@@ -79,17 +80,17 @@ class MockFormalVerifier:
             metadata={
                 "verifier": "MockFormalVerifier",
                 "property_type": property_def.property_type.value,
-                "context": context or {}
-            }
+                "context": context or {},
+            },
         )
-        
+
         self.verification_history.append(result)
         return result
-    
+
     async def verify_multiple_properties(
         self,
         properties: List[FormalVerificationProperty],
-        context: Optional[Dict[str, Any]] = None
+        context: Optional[Dict[str, Any]] = None,
     ) -> List[VerificationResult]:
         """Verify multiple properties."""
         results = []
@@ -97,11 +98,11 @@ class MockFormalVerifier:
             result = await self.verify_property(prop, context)
             results.append(result)
         return results
-    
+
     def get_verification_history(self) -> List[VerificationResult]:
         """Get verification history."""
         return self.verification_history.copy()
-    
+
     def clear_history(self):
         """Clear verification history."""
         self.verification_history.clear()
@@ -123,22 +124,22 @@ COMMON_PROPERTIES = {
         property_type=PropertyType.CONSTITUTIONAL,
         description="Policy must comply with constitutional principles",
         formal_specification="∀p ∈ policies: constitutional_compliant(p)",
-        expected_result=True
+        expected_result=True,
     ),
     "fairness_guarantee": FormalVerificationProperty(
         property_id="fairness_001",
         property_type=PropertyType.FAIRNESS,
         description="Policy must ensure fairness across all user groups",
         formal_specification="∀g ∈ groups: fair_treatment(g)",
-        expected_result=True
+        expected_result=True,
     ),
     "safety_property": FormalVerificationProperty(
         property_id="safety_001",
         property_type=PropertyType.SAFETY,
         description="System must never reach unsafe states",
         formal_specification="□¬unsafe_state",
-        expected_result=True
-    )
+        expected_result=True,
+    ),
 }
 
 

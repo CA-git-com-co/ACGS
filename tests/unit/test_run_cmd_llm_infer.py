@@ -29,13 +29,13 @@ def test_run_cmd_llm_infer():
     Uses (if available) VLLM servers, then sends the same prompt
     with with openai python api to check if generation works.
     """
-    model_type = os.getenv('NEMO_SKILLS_TEST_MODEL_TYPE')
+    model_type = os.getenv("NEMO_SKILLS_TEST_MODEL_TYPE")
     if not model_type:
         pytest.skip("Define NEMO_SKILLS_TEST_MODEL_TYPE to run this test")
-    prompt_template = 'llama3-instruct' if model_type == 'llama' else 'qwen-instruct'
+    prompt_template = "llama3-instruct" if model_type == "llama" else "qwen-instruct"
 
     model_info = [
-        ("vllm", os.getenv('NEMO_SKILLS_TEST_HF_MODEL')),
+        ("vllm", os.getenv("NEMO_SKILLS_TEST_HF_MODEL")),
     ]
 
     outputs_map = {}

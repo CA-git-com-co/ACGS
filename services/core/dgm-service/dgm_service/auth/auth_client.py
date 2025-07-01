@@ -38,7 +38,9 @@ class AuthClient:
         self.user_cache: Dict[str, User] = {}
         self.user_cache_ttl = timedelta(minutes=10)
 
-    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
+    @retry(
+        stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10)
+    )
     async def validate_token(self, token: str) -> Dict[str, Any]:
         """
         Validate JWT token with ACGS Auth Service.
@@ -68,7 +70,10 @@ class AuthClient:
                     result = response.json()
 
                     # Cache the result
-                    self.token_cache[token] = {"data": result, "cached_at": datetime.utcnow()}
+                    self.token_cache[token] = {
+                        "data": result,
+                        "cached_at": datetime.utcnow(),
+                    }
 
                     return result
 
@@ -117,11 +122,16 @@ class AuthClient:
                         email=user_data.get("email"),
                         full_name=user_data.get("full_name"),
                         roles=[
-                            UserRole(name=role["name"], permissions=role.get("permissions", []))
+                            UserRole(
+                                name=role["name"],
+                                permissions=role.get("permissions", []),
+                            )
                             for role in user_data.get("roles", [])
                         ],
                         permissions=[
-                            Permission(name=perm["name"], description=perm.get("description"))
+                            Permission(
+                                name=perm["name"], description=perm.get("description")
+                            )
                             for perm in user_data.get("permissions", [])
                         ],
                         is_active=user_data.get("is_active", True),
@@ -169,7 +179,9 @@ class AuthClient:
                     return result.get("permissions", [])
 
                 else:
-                    logger.error(f"Failed to get user permissions: {response.status_code}")
+                    logger.error(
+                        f"Failed to get user permissions: {response.status_code}"
+                    )
                     return []
 
         except Exception as e:
@@ -221,7 +233,9 @@ class AuthClient:
                     return result.get("token")
 
                 else:
-                    logger.error(f"Failed to create service token: {response.status_code}")
+                    logger.error(
+                        f"Failed to create service token: {response.status_code}"
+                    )
                     return None
 
         except Exception as e:

@@ -145,11 +145,17 @@ class TestPerformanceMonitor:
 
         # Mock database query
         mock_metrics = [
-            MagicMock(metric_name="response_time", value=125.5, timestamp=datetime.utcnow()),
-            MagicMock(metric_name="throughput", value=850.2, timestamp=datetime.utcnow()),
+            MagicMock(
+                metric_name="response_time", value=125.5, timestamp=datetime.utcnow()
+            ),
+            MagicMock(
+                metric_name="throughput", value=850.2, timestamp=datetime.utcnow()
+            ),
         ]
 
-        monitor.db_session.execute.return_value.scalars.return_value.all.return_value = mock_metrics
+        monitor.db_session.execute.return_value.scalars.return_value.all.return_value = (
+            mock_metrics
+        )
         monitor.cache_manager.set.return_value = True
 
         metrics = await monitor.get_current_metrics()
@@ -183,7 +189,9 @@ class TestPerformanceMonitor:
             ),
         ]
 
-        monitor.db_session.execute.return_value.scalars.return_value.all.return_value = mock_metrics
+        monitor.db_session.execute.return_value.scalars.return_value.all.return_value = (
+            mock_metrics
+        )
 
         result = await monitor.query_metrics(
             metric_name="response_time",
@@ -309,7 +317,9 @@ class TestPerformanceMonitor:
             {"value": 110.0, "timestamp": datetime.utcnow()},
         ]
 
-        aggregation = await monitor._aggregate_metrics(raw_metrics, metric_name, time_window)
+        aggregation = await monitor._aggregate_metrics(
+            raw_metrics, metric_name, time_window
+        )
 
         assert aggregation["metric_name"] == metric_name
         assert aggregation["time_window"] == time_window
@@ -424,7 +434,9 @@ class TestPerformanceMonitor:
         tasks = []
         for i in range(100):
             task = monitor.record_metric(
-                metric_name=f"test_metric_{i % 10}", value=float(i), service_name="test-service"
+                metric_name=f"test_metric_{i % 10}",
+                value=float(i),
+                service_name="test-service",
             )
             tasks.append(task)
 

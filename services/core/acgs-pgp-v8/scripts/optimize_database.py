@@ -21,11 +21,11 @@ from database.optimization import DatabaseOptimizer
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     handlers=[
         logging.StreamHandler(),
-        logging.FileHandler('database_optimization.log')
-    ]
+        logging.FileHandler("database_optimization.log"),
+    ],
 )
 logger = logging.getLogger(__name__)
 
@@ -36,48 +36,51 @@ async def main():
     parser.add_argument(
         "--database-url",
         type=str,
-        default=os.getenv("DATABASE_URL", "postgresql://acgs_user:acgs_password@localhost:5432/acgs_db"),
-        help="Database connection URL"
+        default=os.getenv(
+            "DATABASE_URL",
+            "postgresql://acgs_user:acgs_password@localhost:5432/acgs_db",
+        ),
+        help="Database connection URL",
     )
     parser.add_argument(
         "--slow-query-threshold",
         type=float,
         default=1.0,
-        help="Slow query threshold in seconds"
+        help="Slow query threshold in seconds",
     )
     parser.add_argument(
         "--operations",
         nargs="+",
         choices=["indexes", "settings", "statistics", "all"],
         default=["all"],
-        help="Optimization operations to perform"
+        help="Optimization operations to perform",
     )
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="Show what would be done without executing"
+        help="Show what would be done without executing",
     )
-    
+
     args = parser.parse_args()
-    
+
     logger.info("Starting ACGS-PGP v8 database optimization")
     logger.info(f"Database URL: {args.database_url}")
     logger.info(f"Operations: {args.operations}")
     logger.info(f"Dry run: {args.dry_run}")
-    
+
     try:
         # Initialize optimizer
         optimizer = DatabaseOptimizer(
             database_url=args.database_url,
-            slow_query_threshold=args.slow_query_threshold
+            slow_query_threshold=args.slow_query_threshold,
         )
-        
+
         # Determine operations to perform
         if "all" in args.operations:
             operations = ["indexes", "settings", "statistics"]
         else:
             operations = args.operations
-        
+
         # Perform optimizations
         if "indexes" in operations:
             logger.info("🔍 Creating performance indexes...")
@@ -86,7 +89,7 @@ async def main():
                 logger.info("✅ Performance indexes created")
             else:
                 logger.info("📋 Would create performance indexes")
-        
+
         if "settings" in operations:
             logger.info("⚙️ Optimizing PostgreSQL settings...")
             if not args.dry_run:
@@ -94,7 +97,7 @@ async def main():
                 logger.info("✅ PostgreSQL settings optimized")
             else:
                 logger.info("📋 Would optimize PostgreSQL settings")
-        
+
         if "statistics" in operations:
             logger.info("📊 Updating table statistics...")
             if not args.dry_run:
@@ -102,18 +105,18 @@ async def main():
                 logger.info("✅ Table statistics updated")
             else:
                 logger.info("📋 Would update table statistics")
-        
+
         # Display optimization summary
         logger.info("📈 Database optimization completed successfully!")
-        
+
         if not args.dry_run:
             # Show performance summary
             summary = optimizer.get_performance_summary()
             print_optimization_summary(summary)
-        
+
         # Cleanup
         await optimizer.cleanup()
-        
+
     except Exception as e:
         logger.error(f"Database optimization failed: {e}")
         sys.exit(1)
@@ -121,60 +124,67 @@ async def main():
 
 def print_optimization_summary(summary: dict):
     """Print optimization summary."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("ACGS-PGP v8 Database Optimization Summary")
-    print("="*60)
-    
+    print("=" * 60)
+
     print(f"\n📊 Query Performance:")
     print(f"  Total Queries: {summary['total_queries']}")
     print(f"  Total Execution Time: {summary['total_execution_time']:.3f}s")
     print(f"  Average Query Time: {summary['average_query_time']:.3f}s")
-    print(f"  Slow Queries: {summary['slow_query_count']} ({summary['slow_query_percentage']:.1f}%)")
-    
+    print(
+        f"  Slow Queries: {summary['slow_query_count']} ({summary['slow_query_percentage']:.1f}%)"
+    )
+
     print(f"\n🔍 Query Types:")
-    for qtype, count in summary['query_types'].items():
+    for qtype, count in summary["query_types"].items():
         print(f"  {qtype}: {count}")
-    
+
     print(f"\n🔗 Connection Pools: {summary['pool_metrics_count']}")
     print(f"📅 Summary Generated: {summary['timestamp']}")
-    
-    print("\n" + "="*60)
+
+    print("\n" + "=" * 60)
 
 
 async def test_database_performance():
     """Test database performance after optimization."""
     logger.info("🧪 Testing database performance...")
-    
+
     try:
         import asyncpg
         import time
-        
-        database_url = os.getenv("DATABASE_URL", "postgresql://acgs_user:acgs_password@localhost:5432/acgs_db")
-        
+
+        database_url = os.getenv(
+            "DATABASE_URL",
+            "postgresql://acgs_user:acgs_password@localhost:5432/acgs_db",
+        )
+
         # Test connection performance
         start_time = time.time()
         conn = await asyncpg.connect(database_url)
         connection_time = time.time() - start_time
-        
+
         # Test simple query performance
         start_time = time.time()
         result = await conn.fetchval("SELECT 1")
         query_time = time.time() - start_time
-        
+
         # Test complex query performance (if tables exist)
         try:
             start_time = time.time()
-            count = await conn.fetchval("""
+            count = await conn.fetchval(
+                """
                 SELECT COUNT(*) FROM policy_generations 
                 WHERE created_at > NOW() - INTERVAL '1 day'
-            """)
+            """
+            )
             complex_query_time = time.time() - start_time
         except Exception:
             complex_query_time = None
             count = None
-        
+
         await conn.close()
-        
+
         # Print performance results
         print(f"\n🚀 Performance Test Results:")
         print(f"  Connection Time: {connection_time*1000:.2f}ms")
@@ -182,7 +192,7 @@ async def test_database_performance():
         if complex_query_time is not None:
             print(f"  Complex Query Time: {complex_query_time*1000:.2f}ms")
             print(f"  Recent Policies: {count}")
-        
+
         # Performance benchmarks
         if connection_time < 0.1:
             print("  ✅ Connection performance: Excellent")
@@ -190,14 +200,14 @@ async def test_database_performance():
             print("  ⚠️ Connection performance: Good")
         else:
             print("  ❌ Connection performance: Needs improvement")
-        
+
         if query_time < 0.01:
             print("  ✅ Query performance: Excellent")
         elif query_time < 0.05:
             print("  ⚠️ Query performance: Good")
         else:
             print("  ❌ Query performance: Needs improvement")
-        
+
     except Exception as e:
         logger.error(f"Performance test failed: {e}")
 
@@ -205,7 +215,7 @@ async def test_database_performance():
 async def create_monitoring_views():
     """Create database monitoring views for ongoing performance tracking."""
     logger.info("📊 Creating monitoring views...")
-    
+
     monitoring_views = [
         # Connection pool monitoring view
         """
@@ -225,7 +235,6 @@ async def create_monitoring_views():
         FROM pg_stat_database 
         WHERE datname = current_database();
         """,
-        
         # Query performance monitoring view
         """
         CREATE OR REPLACE VIEW v_query_performance AS
@@ -247,7 +256,6 @@ async def create_monitoring_views():
         ORDER BY total_time DESC
         LIMIT 50;
         """,
-        
         # Index usage monitoring view
         """
         CREATE OR REPLACE VIEW v_index_usage AS
@@ -266,7 +274,6 @@ async def create_monitoring_views():
         FROM pg_stat_user_indexes
         ORDER BY idx_scan DESC;
         """,
-        
         # Table statistics view
         """
         CREATE OR REPLACE VIEW v_table_stats AS
@@ -289,25 +296,29 @@ async def create_monitoring_views():
             last_autoanalyze
         FROM pg_stat_user_tables
         ORDER BY n_live_tup DESC;
-        """
+        """,
     ]
-    
+
     try:
         import asyncpg
-        database_url = os.getenv("DATABASE_URL", "postgresql://acgs_user:acgs_password@localhost:5432/acgs_db")
-        
+
+        database_url = os.getenv(
+            "DATABASE_URL",
+            "postgresql://acgs_user:acgs_password@localhost:5432/acgs_db",
+        )
+
         conn = await asyncpg.connect(database_url)
-        
+
         for view_sql in monitoring_views:
             try:
                 await conn.execute(view_sql)
                 logger.info("✅ Monitoring view created")
             except Exception as e:
                 logger.warning(f"Failed to create monitoring view: {e}")
-        
+
         await conn.close()
         logger.info("📊 Monitoring views setup completed")
-        
+
     except Exception as e:
         logger.error(f"Failed to create monitoring views: {e}")
 

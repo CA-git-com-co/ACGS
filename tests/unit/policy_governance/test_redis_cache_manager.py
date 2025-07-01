@@ -4,18 +4,23 @@ Unit tests for services.core.policy-governance.pgc_service.app.core.redis_cache_
 
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
-from services.core.policy-governance.pgc_service.app.core.redis_cache_manager import CacheLevel, CacheStrategy, CacheEntry, CacheMetrics, RedisCacheManager
-
+from services.core.policy_governance.pgc_service.app.core.redis_cache_manager import (
+    CacheLevel,
+    CacheStrategy,
+    CacheEntry,
+    CacheMetrics,
+    RedisCacheManager,
+)
 
 
 class TestCacheLevel:
     """Test suite for CacheLevel."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -24,12 +29,12 @@ class TestCacheLevel:
 
 class TestCacheStrategy:
     """Test suite for CacheStrategy."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -38,12 +43,12 @@ class TestCacheStrategy:
 
 class TestCacheEntry:
     """Test suite for CacheEntry."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -52,12 +57,12 @@ class TestCacheEntry:
 
 class TestCacheMetrics:
     """Test suite for CacheMetrics."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -66,12 +71,12 @@ class TestCacheMetrics:
 
 class TestRedisCacheManager:
     """Test suite for RedisCacheManager."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -82,6 +87,4 @@ class TestRedisCacheManager:
         # TODO: Implement test for get_metrics
         instance = RedisCacheManager()
         # Add test implementation here
-        assert hasattr(instance, 'get_metrics')
-
-
+        assert hasattr(instance, "get_metrics")

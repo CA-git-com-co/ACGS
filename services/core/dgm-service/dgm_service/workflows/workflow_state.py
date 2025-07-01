@@ -100,7 +100,9 @@ class WorkflowState:
 
     def can_retry(self) -> bool:
         """Check if workflow can be retried."""
-        return self.status == WorkflowStatus.FAILED and self.retry_count < self.max_retries
+        return (
+            self.status == WorkflowStatus.FAILED and self.retry_count < self.max_retries
+        )
 
     def update_progress(self, step_name: str, percentage: Optional[float] = None):
         """Update workflow progress."""
@@ -112,7 +114,9 @@ class WorkflowState:
         if percentage is not None:
             self.progress_percentage = max(0.0, min(100.0, percentage))
         elif self.total_steps:
-            self.progress_percentage = (len(self.completed_steps) / self.total_steps) * 100
+            self.progress_percentage = (
+                len(self.completed_steps) / self.total_steps
+            ) * 100
 
     def add_metadata(self, key: str, value: Any):
         """Add metadata entry."""
@@ -135,7 +139,9 @@ class WorkflowState:
             "status": self.status.value,
             "created_at": self.created_at.isoformat(),
             "started_at": self.started_at.isoformat() if self.started_at else None,
-            "completed_at": self.completed_at.isoformat() if self.completed_at else None,
+            "completed_at": (
+                self.completed_at.isoformat() if self.completed_at else None
+            ),
             "timeout_seconds": self.timeout.total_seconds(),
             "input_data": self.input_data,
             "output_data": self.output_data,
@@ -151,10 +157,14 @@ class WorkflowState:
             "metadata": self.metadata,
             "tags": self.tags,
             "elapsed_time_seconds": (
-                self.get_elapsed_time().total_seconds() if self.get_elapsed_time() else None
+                self.get_elapsed_time().total_seconds()
+                if self.get_elapsed_time()
+                else None
             ),
             "remaining_time_seconds": (
-                self.get_remaining_time().total_seconds() if self.get_remaining_time() else None
+                self.get_remaining_time().total_seconds()
+                if self.get_remaining_time()
+                else None
             ),
             "is_timed_out": self.is_timed_out(),
             "is_terminal": self.is_terminal_status(),
@@ -210,7 +220,9 @@ class WorkflowStep:
             "name": self.name,
             "description": self.description,
             "started_at": self.started_at.isoformat() if self.started_at else None,
-            "completed_at": self.completed_at.isoformat() if self.completed_at else None,
+            "completed_at": (
+                self.completed_at.isoformat() if self.completed_at else None
+            ),
             "duration_seconds": (
                 self.get_duration().total_seconds() if self.get_duration() else None
             ),

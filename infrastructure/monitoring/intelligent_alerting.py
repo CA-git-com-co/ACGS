@@ -28,6 +28,7 @@ logger = logging.getLogger(__name__)
 
 class AlertSeverity(Enum):
     """Alert severity levels"""
+
     CRITICAL = "critical"
     HIGH = "high"
     MEDIUM = "medium"
@@ -37,6 +38,7 @@ class AlertSeverity(Enum):
 
 class AlertStatus(Enum):
     """Alert status"""
+
     ACTIVE = "active"
     RESOLVED = "resolved"
     SUPPRESSED = "suppressed"
@@ -45,6 +47,7 @@ class AlertStatus(Enum):
 
 class RemediationStatus(Enum):
     """Remediation status"""
+
     PENDING = "pending"
     RUNNING = "running"
     SUCCESS = "success"
@@ -55,6 +58,7 @@ class RemediationStatus(Enum):
 @dataclass
 class Alert:
     """Alert data structure"""
+
     id: str
     name: str
     severity: AlertSeverity
@@ -75,6 +79,7 @@ class Alert:
 @dataclass
 class RemediationAction:
     """Remediation action definition"""
+
     name: str
     command: str
     timeout: int = 300
@@ -88,6 +93,7 @@ class RemediationAction:
 @dataclass
 class RemediationResult:
     """Remediation execution result"""
+
     action_name: str
     status: RemediationStatus
     start_time: datetime
@@ -110,49 +116,49 @@ class IntelligentAlertManager:
         self.notification_channels: Dict[str, Dict] = {}
         self.escalation_policies: Dict[str, Dict] = {}
         self.remediation_history: List[RemediationResult] = []
-        
+
         # State tracking
         self.last_notification_times: Dict[str, datetime] = {}
         self.suppressed_alerts: Dict[str, datetime] = {}
         self.running_remediations: Dict[str, asyncio.Task] = {}
-        
+
         # Metrics
         self.registry = CollectorRegistry()
         self.alert_counter = Counter(
-            'acgs_alerts_total',
-            'Total number of alerts generated',
-            ['severity', 'source', 'alert_name'],
-            registry=self.registry
+            "acgs_alerts_total",
+            "Total number of alerts generated",
+            ["severity", "source", "alert_name"],
+            registry=self.registry,
         )
         self.remediation_counter = Counter(
-            'acgs_remediations_total',
-            'Total number of automated remediations attempted',
-            ['action', 'success'],
-            registry=self.registry
+            "acgs_remediations_total",
+            "Total number of automated remediations attempted",
+            ["action", "success"],
+            registry=self.registry,
         )
         self.alert_duration = Histogram(
-            'acgs_alert_duration_seconds',
-            'Duration of alerts from creation to resolution',
-            ['severity', 'alert_name'],
-            registry=self.registry
+            "acgs_alert_duration_seconds",
+            "Duration of alerts from creation to resolution",
+            ["severity", "alert_name"],
+            registry=self.registry,
         )
         self.notification_counter = Counter(
-            'acgs_notifications_total',
-            'Total notifications sent',
-            ['channel', 'severity'],
-            registry=self.registry
+            "acgs_notifications_total",
+            "Total notifications sent",
+            ["channel", "severity"],
+            registry=self.registry,
         )
-        
+
         self._initialize_remediation_actions()
         self._initialize_notification_channels()
         self._initialize_escalation_policies()
-        
+
         logger.info("Intelligent Alert Manager initialized")
 
     def _load_config(self, config_path: str) -> Dict[str, Any]:
         """Load configuration from file"""
         try:
-            with open(config_path, 'r') as f:
+            with open(config_path, "r") as f:
                 return json.load(f)
         except FileNotFoundError:
             logger.warning(f"Config file {config_path} not found, using defaults")
@@ -171,25 +177,25 @@ class IntelligentAlertManager:
             "webhook_endpoints": {
                 "slack": os.getenv("SLACK_WEBHOOK_URL", ""),
                 "pagerduty": os.getenv("PAGERDUTY_WEBHOOK_URL", ""),
-                "custom": os.getenv("CUSTOM_WEBHOOK_URL", "")
+                "custom": os.getenv("CUSTOM_WEBHOOK_URL", ""),
             },
             "notification_channels": {
                 "email": {
                     "enabled": True,
                     "smtp_server": "localhost",
                     "smtp_port": 587,
-                    "from_address": "acgs-alerts@acgs.ai"
+                    "from_address": "acgs-alerts@acgs.ai",
                 },
                 "slack": {
                     "enabled": True,
                     "webhook_url": os.getenv("SLACK_WEBHOOK_URL", ""),
-                    "channel": "#acgs-alerts"
+                    "channel": "#acgs-alerts",
                 },
                 "pagerduty": {
                     "enabled": False,
-                    "integration_key": os.getenv("PAGERDUTY_INTEGRATION_KEY", "")
-                }
-            }
+                    "integration_key": os.getenv("PAGERDUTY_INTEGRATION_KEY", ""),
+                },
+            },
         }
 
     def _initialize_remediation_actions(self):
@@ -200,28 +206,28 @@ class IntelligentAlertManager:
                 command="python3 /home/dislove/ACGS-1/scripts/emergency_rollback_procedures.py restart",
                 timeout=120,
                 retry_count=2,
-                impact_level="medium"
+                impact_level="medium",
             ),
             "service_isolation": RemediationAction(
                 name="service_isolation",
                 command="python3 /home/dislove/ACGS-1/scripts/emergency_rollback_procedures.py isolate --service {service}",
                 timeout=60,
                 retry_count=1,
-                impact_level="high"
+                impact_level="high",
             ),
             "health_check": RemediationAction(
                 name="health_check",
                 command="python3 /home/dislove/ACGS-1/scripts/emergency_rollback_procedures.py health",
                 timeout=30,
                 retry_count=3,
-                impact_level="low"
+                impact_level="low",
             ),
             "clear_cache": RemediationAction(
                 name="clear_cache",
                 command="redis-cli FLUSHALL",
                 timeout=30,
                 retry_count=1,
-                impact_level="medium"
+                impact_level="medium",
             ),
             "restart_database": RemediationAction(
                 name="restart_database",
@@ -229,15 +235,15 @@ class IntelligentAlertManager:
                 timeout=60,
                 retry_count=1,
                 requires_approval=True,
-                impact_level="critical"
+                impact_level="critical",
             ),
             "scale_service": RemediationAction(
                 name="scale_service",
                 command="docker-compose up --scale {service}=2",
                 timeout=120,
                 retry_count=1,
-                impact_level="medium"
-            )
+                impact_level="medium",
+            ),
         }
 
     def _initialize_notification_channels(self):
@@ -251,20 +257,15 @@ class IntelligentAlertManager:
                 "immediate": ["slack", "pagerduty"],
                 "5_minutes": ["email"],
                 "15_minutes": ["phone"],
-                "30_minutes": ["escalation_team"]
+                "30_minutes": ["escalation_team"],
             },
             "high": {
                 "immediate": ["slack"],
                 "10_minutes": ["email"],
-                "30_minutes": ["pagerduty"]
+                "30_minutes": ["pagerduty"],
             },
-            "medium": {
-                "immediate": ["slack"],
-                "1_hour": ["email"]
-            },
-            "low": {
-                "immediate": ["slack"]
-            }
+            "medium": {"immediate": ["slack"], "1_hour": ["email"]},
+            "low": {"immediate": ["slack"]},
         }
 
     async def generate_alert_id(self, alert_name: str, source: str) -> str:
@@ -280,7 +281,7 @@ class IntelligentAlertManager:
         message: str,
         source: str,
         labels: Optional[Dict[str, str]] = None,
-        annotations: Optional[Dict[str, str]] = None
+        annotations: Optional[Dict[str, str]] = None,
     ) -> Alert:
         """Create a new alert"""
         alert_id = await self.generate_alert_id(name, source)
@@ -294,7 +295,7 @@ class IntelligentAlertManager:
             source=source,
             timestamp=datetime.now(),
             labels=labels or {},
-            annotations=annotations or {}
+            annotations=annotations or {},
         )
 
         self.active_alerts[alert_id] = alert
@@ -302,9 +303,7 @@ class IntelligentAlertManager:
 
         # Update metrics
         self.alert_counter.labels(
-            severity=severity.value,
-            source=source,
-            alert_name=name
+            severity=severity.value, source=source, alert_name=name
         ).inc()
 
         logger.info(f"Alert created: {alert_id} - {name} ({severity.value})")
@@ -349,9 +348,11 @@ class IntelligentAlertManager:
 
         # Check if similar alert is already active
         for active_alert in self.active_alerts.values():
-            if (active_alert.name == alert.name and
-                active_alert.source == alert.source and
-                active_alert.status == AlertStatus.ACTIVE):
+            if (
+                active_alert.name == alert.name
+                and active_alert.source == alert.source
+                and active_alert.status == AlertStatus.ACTIVE
+            ):
                 return True
 
         return False
@@ -365,8 +366,7 @@ class IntelligentAlertManager:
             try:
                 await self._send_notification_to_channel(alert, channel)
                 self.notification_counter.labels(
-                    channel=channel,
-                    severity=alert.severity.value
+                    channel=channel, severity=alert.severity.value
                 ).inc()
             except Exception as e:
                 logger.error(f"Failed to send notification to {channel}: {e}")
@@ -399,23 +399,33 @@ class IntelligentAlertManager:
             AlertSeverity.HIGH: "warning",
             AlertSeverity.MEDIUM: "warning",
             AlertSeverity.LOW: "good",
-            AlertSeverity.INFO: "good"
+            AlertSeverity.INFO: "good",
         }
 
         payload = {
-            "attachments": [{
-                "color": color_map.get(alert.severity, "warning"),
-                "title": f"🚨 ACGS-1 Alert: {alert.name}",
-                "text": alert.message,
-                "fields": [
-                    {"title": "Severity", "value": alert.severity.value.upper(), "short": True},
-                    {"title": "Source", "value": alert.source, "short": True},
-                    {"title": "Time", "value": alert.timestamp.strftime("%Y-%m-%d %H:%M:%S"), "short": True},
-                    {"title": "Alert ID", "value": alert.id, "short": True}
-                ],
-                "footer": "ACGS-1 Constitutional Governance System",
-                "ts": int(alert.timestamp.timestamp())
-            }]
+            "attachments": [
+                {
+                    "color": color_map.get(alert.severity, "warning"),
+                    "title": f"🚨 ACGS-1 Alert: {alert.name}",
+                    "text": alert.message,
+                    "fields": [
+                        {
+                            "title": "Severity",
+                            "value": alert.severity.value.upper(),
+                            "short": True,
+                        },
+                        {"title": "Source", "value": alert.source, "short": True},
+                        {
+                            "title": "Time",
+                            "value": alert.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
+                            "short": True,
+                        },
+                        {"title": "Alert ID", "value": alert.id, "short": True},
+                    ],
+                    "footer": "ACGS-1 Constitutional Governance System",
+                    "ts": int(alert.timestamp.timestamp()),
+                }
+            ]
         }
 
         async with httpx.AsyncClient() as client:
@@ -424,7 +434,9 @@ class IntelligentAlertManager:
 
     async def _send_pagerduty_notification(self, alert: Alert):
         """Send PagerDuty notification"""
-        integration_key = self.notification_channels.get("pagerduty", {}).get("integration_key")
+        integration_key = self.notification_channels.get("pagerduty", {}).get(
+            "integration_key"
+        )
         if not integration_key:
             logger.warning("PagerDuty integration key not configured")
             return
@@ -443,16 +455,14 @@ class IntelligentAlertManager:
                 "custom_details": {
                     "message": alert.message,
                     "labels": alert.labels,
-                    "annotations": alert.annotations
-                }
-            }
+                    "annotations": alert.annotations,
+                },
+            },
         }
 
         async with httpx.AsyncClient() as client:
             response = await client.post(
-                "https://events.pagerduty.com/v2/enqueue",
-                json=payload,
-                timeout=10
+                "https://events.pagerduty.com/v2/enqueue", json=payload, timeout=10
             )
             response.raise_for_status()
 
@@ -471,7 +481,7 @@ class IntelligentAlertManager:
             "source": alert.source,
             "timestamp": alert.timestamp.isoformat(),
             "labels": alert.labels,
-            "annotations": alert.annotations
+            "annotations": alert.annotations,
         }
 
         async with httpx.AsyncClient() as client:
@@ -487,7 +497,9 @@ class IntelligentAlertManager:
 
         # Check if remediation requires approval for high-impact actions
         if remediation_action.requires_approval:
-            logger.warning(f"Remediation {remediation_action.name} requires manual approval")
+            logger.warning(
+                f"Remediation {remediation_action.name} requires manual approval"
+            )
             await self._request_remediation_approval(alert, remediation_action)
             return
 
@@ -506,7 +518,7 @@ class IntelligentAlertManager:
             # Update metrics
             self.remediation_counter.labels(
                 action=remediation_action.name,
-                success=str(alert.remediation_success).lower()
+                success=str(alert.remediation_success).lower(),
             ).inc()
 
             if alert.remediation_success:
@@ -517,7 +529,9 @@ class IntelligentAlertManager:
                 await self._escalate_alert(alert)
 
         except Exception as e:
-            logger.error(f"Error during automated remediation for alert {alert.id}: {e}")
+            logger.error(
+                f"Error during automated remediation for alert {alert.id}: {e}"
+            )
             alert.remediation_success = False
         finally:
             if alert.id in self.running_remediations:
@@ -533,7 +547,7 @@ class IntelligentAlertManager:
             "DatabaseConnectionIssues": "restart_database",
             "HighMemoryUsage": "clear_cache",
             "HighCPUUsage": "scale_service",
-            "GovernanceWorkflowFailure": "service_restart"
+            "GovernanceWorkflowFailure": "service_restart",
         }
 
         action_name = action_mapping.get(alert.name)
@@ -548,7 +562,9 @@ class IntelligentAlertManager:
 
         return None
 
-    async def _execute_remediation(self, alert: Alert, action: RemediationAction) -> RemediationResult:
+    async def _execute_remediation(
+        self, alert: Alert, action: RemediationAction
+    ) -> RemediationResult:
         """Execute remediation action"""
         start_time = datetime.now()
         result = RemediationResult(
@@ -558,7 +574,7 @@ class IntelligentAlertManager:
             end_time=None,
             output="",
             error=None,
-            exit_code=None
+            exit_code=None,
         )
 
         try:
@@ -566,7 +582,7 @@ class IntelligentAlertManager:
             command = action.command.format(
                 service=alert.labels.get("service", "unknown"),
                 alert_id=alert.id,
-                severity=alert.severity.value
+                severity=alert.severity.value,
             )
 
             logger.info(f"Executing remediation: {command}")
@@ -576,13 +592,12 @@ class IntelligentAlertManager:
                 command,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
-                cwd="/home/dislove/ACGS-1"
+                cwd="/home/dislove/ACGS-1",
             )
 
             try:
                 stdout, stderr = await asyncio.wait_for(
-                    process.communicate(),
-                    timeout=action.timeout
+                    process.communicate(), timeout=action.timeout
                 )
 
                 result.output = stdout.decode() if stdout else ""
@@ -595,7 +610,9 @@ class IntelligentAlertManager:
                     logger.info(f"Remediation {action.name} completed successfully")
                 else:
                     result.status = RemediationStatus.FAILED
-                    logger.error(f"Remediation {action.name} failed with exit code {process.returncode}")
+                    logger.error(
+                        f"Remediation {action.name} failed with exit code {process.returncode}"
+                    )
 
             except asyncio.TimeoutError:
                 result.status = RemediationStatus.TIMEOUT
@@ -612,7 +629,9 @@ class IntelligentAlertManager:
 
         return result
 
-    async def _request_remediation_approval(self, alert: Alert, action: RemediationAction):
+    async def _request_remediation_approval(
+        self, alert: Alert, action: RemediationAction
+    ):
         """Request manual approval for high-impact remediation"""
         approval_message = {
             "type": "remediation_approval_request",
@@ -622,7 +641,7 @@ class IntelligentAlertManager:
             "action": action.name,
             "impact_level": action.impact_level,
             "command": action.command,
-            "message": f"High-impact remediation requested for alert {alert.name}. Manual approval required."
+            "message": f"High-impact remediation requested for alert {alert.name}. Manual approval required.",
         }
 
         # Send approval request through notification channels
@@ -637,18 +656,32 @@ class IntelligentAlertManager:
 
         slack_payload = {
             "text": f"🔧 Remediation Approval Required",
-            "attachments": [{
-                "color": "warning",
-                "title": "High-Impact Remediation Request",
-                "fields": [
-                    {"title": "Alert", "value": payload["alert_name"], "short": True},
-                    {"title": "Severity", "value": payload["severity"].upper(), "short": True},
-                    {"title": "Action", "value": payload["action"], "short": True},
-                    {"title": "Impact", "value": payload["impact_level"].upper(), "short": True}
-                ],
-                "text": payload["message"],
-                "footer": "React with ✅ to approve or ❌ to deny"
-            }]
+            "attachments": [
+                {
+                    "color": "warning",
+                    "title": "High-Impact Remediation Request",
+                    "fields": [
+                        {
+                            "title": "Alert",
+                            "value": payload["alert_name"],
+                            "short": True,
+                        },
+                        {
+                            "title": "Severity",
+                            "value": payload["severity"].upper(),
+                            "short": True,
+                        },
+                        {"title": "Action", "value": payload["action"], "short": True},
+                        {
+                            "title": "Impact",
+                            "value": payload["impact_level"].upper(),
+                            "short": True,
+                        },
+                    ],
+                    "text": payload["message"],
+                    "footer": "React with ✅ to approve or ❌ to deny",
+                }
+            ],
         }
 
         async with httpx.AsyncClient() as client:
@@ -667,8 +700,7 @@ class IntelligentAlertManager:
         # Calculate alert duration
         duration = (alert.resolution_time - alert.timestamp).total_seconds()
         self.alert_duration.labels(
-            severity=alert.severity.value,
-            alert_name=alert.name
+            severity=alert.severity.value, alert_name=alert.name
         ).observe(duration)
 
         # Remove from active alerts
@@ -691,7 +723,9 @@ class IntelligentAlertManager:
         logger.warning(f"Escalating alert {alert.id} to level {alert.escalation_level}")
 
         # Send escalation notification
-        escalation_message = f"Alert escalated to level {alert.escalation_level}: {alert.message}"
+        escalation_message = (
+            f"Alert escalated to level {alert.escalation_level}: {alert.message}"
+        )
         await self._send_escalation_notification(alert, escalation_message)
 
     async def _schedule_escalation(self, alert: Alert):
@@ -726,7 +760,9 @@ class IntelligentAlertManager:
                 try:
                     await self._send_notification_to_channel(alert, channel)
                 except Exception as e:
-                    logger.error(f"Failed to send escalation notification to {channel}: {e}")
+                    logger.error(
+                        f"Failed to send escalation notification to {channel}: {e}"
+                    )
 
     async def _send_resolution_notification(self, alert: Alert, reason: str):
         """Send alert resolution notification"""
@@ -739,17 +775,25 @@ class IntelligentAlertManager:
             duration = f" (Duration: {duration_seconds:.1f}s)"
 
         payload = {
-            "attachments": [{
-                "color": "good",
-                "title": f"✅ ACGS-1 Alert Resolved: {alert.name}",
-                "text": f"Alert has been resolved: {reason}",
-                "fields": [
-                    {"title": "Alert ID", "value": alert.id, "short": True},
-                    {"title": "Duration", "value": duration, "short": True},
-                    {"title": "Remediation", "value": "Success" if alert.remediation_success else "Manual", "short": True}
-                ],
-                "footer": "ACGS-1 Constitutional Governance System"
-            }]
+            "attachments": [
+                {
+                    "color": "good",
+                    "title": f"✅ ACGS-1 Alert Resolved: {alert.name}",
+                    "text": f"Alert has been resolved: {reason}",
+                    "fields": [
+                        {"title": "Alert ID", "value": alert.id, "short": True},
+                        {"title": "Duration", "value": duration, "short": True},
+                        {
+                            "title": "Remediation",
+                            "value": (
+                                "Success" if alert.remediation_success else "Manual"
+                            ),
+                            "short": True,
+                        },
+                    ],
+                    "footer": "ACGS-1 Constitutional Governance System",
+                }
+            ]
         }
 
         webhook_url = self.config["webhook_endpoints"]["slack"]
@@ -762,24 +806,40 @@ class IntelligentAlertManager:
             return
 
         payload = {
-            "attachments": [{
-                "color": "danger",
-                "title": f"🚨 ESCALATED: {alert.name}",
-                "text": message,
-                "fields": [
-                    {"title": "Escalation Level", "value": str(alert.escalation_level), "short": True},
-                    {"title": "Severity", "value": alert.severity.value.upper(), "short": True},
-                    {"title": "Duration", "value": f"{(datetime.now() - alert.timestamp).total_seconds():.1f}s", "short": True}
-                ],
-                "footer": "ACGS-1 Constitutional Governance System - ESCALATED ALERT"
-            }]
+            "attachments": [
+                {
+                    "color": "danger",
+                    "title": f"🚨 ESCALATED: {alert.name}",
+                    "text": message,
+                    "fields": [
+                        {
+                            "title": "Escalation Level",
+                            "value": str(alert.escalation_level),
+                            "short": True,
+                        },
+                        {
+                            "title": "Severity",
+                            "value": alert.severity.value.upper(),
+                            "short": True,
+                        },
+                        {
+                            "title": "Duration",
+                            "value": f"{(datetime.now() - alert.timestamp).total_seconds():.1f}s",
+                            "short": True,
+                        },
+                    ],
+                    "footer": "ACGS-1 Constitutional Governance System - ESCALATED ALERT",
+                }
+            ]
         }
 
         webhook_url = self.config["webhook_endpoints"]["slack"]
         async with httpx.AsyncClient() as client:
             await client.post(webhook_url, json=payload, timeout=10)
 
-    async def acknowledge_alert(self, alert_id: str, acknowledged_by: str = "system") -> bool:
+    async def acknowledge_alert(
+        self, alert_id: str, acknowledged_by: str = "system"
+    ) -> bool:
         """Acknowledge an alert"""
         if alert_id not in self.active_alerts:
             return False
@@ -803,7 +863,11 @@ class IntelligentAlertManager:
     async def get_remediation_history(self, hours: int = 24) -> List[RemediationResult]:
         """Get remediation history for specified hours"""
         cutoff_time = datetime.now() - timedelta(hours=hours)
-        return [result for result in self.remediation_history if result.start_time >= cutoff_time]
+        return [
+            result
+            for result in self.remediation_history
+            if result.start_time >= cutoff_time
+        ]
 
     async def push_metrics(self):
         """Push metrics to Prometheus pushgateway"""
@@ -812,8 +876,8 @@ class IntelligentAlertManager:
             if pushgateway_url:
                 push_to_gateway(
                     pushgateway_url,
-                    job='acgs_intelligent_alerting',
-                    registry=self.registry
+                    job="acgs_intelligent_alerting",
+                    registry=self.registry,
                 )
         except Exception as e:
             logger.error(f"Failed to push metrics: {e}")
@@ -825,13 +889,13 @@ class IntelligentAlertManager:
 
         # Clean up alert history
         self.alert_history = [
-            alert for alert in self.alert_history
-            if alert.timestamp >= cutoff_time
+            alert for alert in self.alert_history if alert.timestamp >= cutoff_time
         ]
 
         # Clean up remediation history
         self.remediation_history = [
-            result for result in self.remediation_history
+            result
+            for result in self.remediation_history
             if result.start_time >= cutoff_time
         ]
 
@@ -843,13 +907,23 @@ async def main():
     import argparse
 
     parser = argparse.ArgumentParser(description="ACGS-1 Intelligent Alerting System")
-    parser.add_argument("action", choices=["test", "monitor", "status", "cleanup"],
-                       help="Action to perform")
-    parser.add_argument("--config", default="config/intelligent_alerting.json",
-                       help="Configuration file path")
+    parser.add_argument(
+        "action",
+        choices=["test", "monitor", "status", "cleanup"],
+        help="Action to perform",
+    )
+    parser.add_argument(
+        "--config",
+        default="config/intelligent_alerting.json",
+        help="Configuration file path",
+    )
     parser.add_argument("--alert-name", help="Alert name for testing")
-    parser.add_argument("--severity", choices=["critical", "high", "medium", "low", "info"],
-                       default="medium", help="Alert severity for testing")
+    parser.add_argument(
+        "--severity",
+        choices=["critical", "high", "medium", "low", "info"],
+        default="medium",
+        help="Alert severity for testing",
+    )
     parser.add_argument("--message", help="Alert message for testing")
     parser.add_argument("--source", default="test", help="Alert source for testing")
 
@@ -871,7 +945,7 @@ async def main():
                 severity=severity,
                 message=args.message,
                 source=args.source,
-                labels={"component": "test", "service": "test_service"}
+                labels={"component": "test", "service": "test_service"},
             )
 
             print(f"Test alert created: {alert.id}")
@@ -881,9 +955,15 @@ async def main():
 
             # Show alert status
             if alert.id in alert_manager.active_alerts:
-                print(f"Alert status: {alert_manager.active_alerts[alert.id].status.value}")
-                print(f"Remediation attempted: {alert_manager.active_alerts[alert.id].remediation_attempted}")
-                print(f"Remediation success: {alert_manager.active_alerts[alert.id].remediation_success}")
+                print(
+                    f"Alert status: {alert_manager.active_alerts[alert.id].status.value}"
+                )
+                print(
+                    f"Remediation attempted: {alert_manager.active_alerts[alert.id].remediation_attempted}"
+                )
+                print(
+                    f"Remediation success: {alert_manager.active_alerts[alert.id].remediation_success}"
+                )
 
         elif args.action == "monitor":
             print("Starting intelligent alerting monitor...")
@@ -907,7 +987,9 @@ async def main():
             if active_alerts:
                 print("\nActive Alerts:")
                 for alert in active_alerts:
-                    print(f"  {alert.id}: {alert.name} ({alert.severity.value}) - {alert.message}")
+                    print(
+                        f"  {alert.id}: {alert.name} ({alert.severity.value}) - {alert.message}"
+                    )
 
             if recent_remediations:
                 print("\nRecent Remediations:")

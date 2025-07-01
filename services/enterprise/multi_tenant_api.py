@@ -65,7 +65,9 @@ class TenantCreateRequest(BaseModel):
     """Request model for creating a new tenant"""
 
     name: str = Field(..., description="Tenant name")
-    constitution_hash: str = Field(default="cdd01ef066bc6cf2", description="Constitution hash")
+    constitution_hash: str = Field(
+        default="cdd01ef066bc6cf2", description="Constitution hash"
+    )
     max_users: int = Field(default=1000, description="Maximum users allowed")
     max_policies: int = Field(default=10000, description="Maximum policies allowed")
     max_governance_actions_per_hour: int = Field(
@@ -170,7 +172,9 @@ class MockTenantManager:
                 "max_governance_actions_per_hour", 1000
             ),
             storage_quota_gb=tenant_data.get("storage_quota_gb", 100),
-            features=tenant_data.get("features", ["basic_governance", "policy_creation"]),
+            features=tenant_data.get(
+                "features", ["basic_governance", "policy_creation"]
+            ),
             created_at=datetime.now(),
             status="active",
         )
@@ -178,7 +182,9 @@ class MockTenantManager:
         self.tenants[tenant_id] = tenant
         return tenant
 
-    async def list_tenants(self, limit: int = 100, offset: int = 0) -> list[TenantConfig]:
+    async def list_tenants(
+        self, limit: int = 100, offset: int = 0
+    ) -> list[TenantConfig]:
         """List all tenants"""
         return list(self.tenants.values())[offset : offset + limit]
 
@@ -261,7 +267,9 @@ async def health_check():
 
 
 @app.post("/api/v1/tenants", response_model=TenantResponse)
-async def create_tenant(tenant_data: TenantCreateRequest, manager=Depends(get_tenant_manager)):
+async def create_tenant(
+    tenant_data: TenantCreateRequest, manager=Depends(get_tenant_manager)
+):
     """Create a new tenant"""
     try:
         tenant = await manager.create_tenant(tenant_data.dict())
@@ -279,11 +287,15 @@ async def create_tenant(tenant_data: TenantCreateRequest, manager=Depends(get_te
         )
     except Exception as e:
         logger.error(f"Failed to create tenant: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to create tenant: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to create tenant: {str(e)}"
+        )
 
 
 @app.get("/api/v1/tenants", response_model=list[TenantResponse])
-async def list_tenants(limit: int = 100, offset: int = 0, manager=Depends(get_tenant_manager)):
+async def list_tenants(
+    limit: int = 100, offset: int = 0, manager=Depends(get_tenant_manager)
+):
     """List all tenants"""
     try:
         tenants = await manager.list_tenants(limit=limit, offset=offset)
@@ -342,7 +354,9 @@ async def update_tenant(
 ):
     """Update tenant configuration"""
     try:
-        tenant = await manager.update_tenant(tenant_id, update_data.dict(exclude_unset=True))
+        tenant = await manager.update_tenant(
+            tenant_id, update_data.dict(exclude_unset=True)
+        )
         if not tenant:
             raise HTTPException(status_code=404, detail="Tenant not found")
 
@@ -362,7 +376,9 @@ async def update_tenant(
         raise
     except Exception as e:
         logger.error(f"Failed to update tenant {tenant_id}: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to update tenant: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to update tenant: {str(e)}"
+        )
 
 
 @app.delete("/api/v1/tenants/{tenant_id}")
@@ -378,7 +394,9 @@ async def delete_tenant(tenant_id: str, manager=Depends(get_tenant_manager)):
         raise
     except Exception as e:
         logger.error(f"Failed to delete tenant {tenant_id}: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to delete tenant: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to delete tenant: {str(e)}"
+        )
 
 
 @app.get("/api/v1/tenants/{tenant_id}/metrics", response_model=TenantMetricsResponse)
@@ -404,7 +422,9 @@ async def get_tenant_metrics(tenant_id: str, manager=Depends(get_tenant_manager)
         raise
     except Exception as e:
         logger.error(f"Failed to get metrics for tenant {tenant_id}: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to get tenant metrics: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to get tenant metrics: {str(e)}"
+        )
 
 
 @app.post("/api/v1/tenants/{tenant_id}/validate-limits")
@@ -424,7 +444,9 @@ async def validate_tenant_limits(
         }
     except Exception as e:
         logger.error(f"Failed to validate limits for tenant {tenant_id}: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to validate tenant limits: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to validate tenant limits: {str(e)}"
+        )
 
 
 @app.get("/api/v1/status")

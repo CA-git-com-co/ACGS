@@ -4,18 +4,33 @@ Unit tests for services.core.governance-synthesis.gs_service.app.services.qec_er
 
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
-from services.core.governance-synthesis.gs_service.app.services.qec_error_correction_service import ConflictType, ResolutionStrategy, ErrorCorrectionStatus, ConflictDetectionResult, ErrorCorrectionResult, PolicyRefinementSuggestion, ConflictDetectionEngine, AutomaticResolutionWorkflow, SemanticValidationEngine, PolicyRefinementSuggester, ConflictComplexityScorer, ParallelConflictProcessor, QECErrorCorrectionService, ConflictComplexityScorer, ParallelConflictProcessor
-
+from services.core.governance_synthesis.gs_service.app.services.qec_error_correction_service import (
+    ConflictType,
+    ResolutionStrategy,
+    ErrorCorrectionStatus,
+    ConflictDetectionResult,
+    ErrorCorrectionResult,
+    PolicyRefinementSuggestion,
+    ConflictDetectionEngine,
+    AutomaticResolutionWorkflow,
+    SemanticValidationEngine,
+    PolicyRefinementSuggester,
+    ConflictComplexityScorer,
+    ParallelConflictProcessor,
+    QECErrorCorrectionService,
+    ConflictComplexityScorer,
+    ParallelConflictProcessor,
+)
 
 
 class TestConflictType:
     """Test suite for ConflictType."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -24,12 +39,12 @@ class TestConflictType:
 
 class TestResolutionStrategy:
     """Test suite for ResolutionStrategy."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -38,12 +53,12 @@ class TestResolutionStrategy:
 
 class TestErrorCorrectionStatus:
     """Test suite for ErrorCorrectionStatus."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -52,12 +67,12 @@ class TestErrorCorrectionStatus:
 
 class TestConflictDetectionResult:
     """Test suite for ConflictDetectionResult."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -66,12 +81,12 @@ class TestConflictDetectionResult:
 
 class TestErrorCorrectionResult:
     """Test suite for ErrorCorrectionResult."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -80,12 +95,12 @@ class TestErrorCorrectionResult:
 
 class TestPolicyRefinementSuggestion:
     """Test suite for PolicyRefinementSuggestion."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -94,12 +109,12 @@ class TestPolicyRefinementSuggestion:
 
 class TestConflictDetectionEngine:
     """Test suite for ConflictDetectionEngine."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -108,12 +123,12 @@ class TestConflictDetectionEngine:
 
 class TestAutomaticResolutionWorkflow:
     """Test suite for AutomaticResolutionWorkflow."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -122,12 +137,12 @@ class TestAutomaticResolutionWorkflow:
 
 class TestSemanticValidationEngine:
     """Test suite for SemanticValidationEngine."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -136,12 +151,12 @@ class TestSemanticValidationEngine:
 
 class TestPolicyRefinementSuggester:
     """Test suite for PolicyRefinementSuggester."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -150,12 +165,12 @@ class TestPolicyRefinementSuggester:
 
 class TestConflictComplexityScorer:
     """Test suite for ConflictComplexityScorer."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -164,12 +179,12 @@ class TestConflictComplexityScorer:
 
 class TestParallelConflictProcessor:
     """Test suite for ParallelConflictProcessor."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -178,12 +193,12 @@ class TestParallelConflictProcessor:
 
 class TestQECErrorCorrectionService:
     """Test suite for QECErrorCorrectionService."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -194,17 +209,17 @@ class TestQECErrorCorrectionService:
         # TODO: Implement test for get_performance_summary
         instance = QECErrorCorrectionService()
         # Add test implementation here
-        assert hasattr(instance, 'get_performance_summary')
+        assert hasattr(instance, "get_performance_summary")
 
 
 class TestConflictComplexityScorer:
     """Test suite for ConflictComplexityScorer."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -213,15 +228,13 @@ class TestConflictComplexityScorer:
 
 class TestParallelConflictProcessor:
     """Test suite for ParallelConflictProcessor."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
         pass
-
-

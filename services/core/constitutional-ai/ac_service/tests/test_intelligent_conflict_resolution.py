@@ -85,7 +85,9 @@ class TestIntelligentConflictDetector:
         # ensures: Correct function execution
         # sha256: func_hash
         """Test basic conflict detection functionality."""
-        with patch.object(detector, "_get_principles_for_analysis", return_value=mock_principles):
+        with patch.object(
+            detector, "_get_principles_for_analysis", return_value=mock_principles
+        ):
             with patch.object(detector, "_analyze_principles") as mock_analyze:
                 # Mock principle analyses
                 mock_analyze.return_value = [
@@ -224,7 +226,9 @@ class TestAutomatedResolutionEngine:
         )
 
     @pytest.mark.asyncio
-    async def test_strategy_evaluation(self, resolver, mock_conflict, mock_detection_result):
+    async def test_strategy_evaluation(
+        self, resolver, mock_conflict, mock_detection_result
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -328,7 +332,9 @@ class TestHumanEscalationSystem:
         # sha256: func_hash
         """Test escalation need evaluation."""
         # Mock resolution result that failed
-        mock_resolution = Mock(success=False, confidence_score=0.3, escalation_required=True)
+        mock_resolution = Mock(
+            success=False, confidence_score=0.3, escalation_required=True
+        )
 
         # Mock detection result
         mock_detection = Mock(
@@ -479,8 +485,12 @@ class TestConflictResolutionOrchestrator:
 
         # Mock all subsystems
         with patch.object(orchestrator.detector, "detect_conflicts") as mock_detect:
-            with patch.object(orchestrator.resolver, "resolve_conflict") as mock_resolve:
-                with patch.object(orchestrator.auditor, "log_conflict_detection") as mock_audit:
+            with patch.object(
+                orchestrator.resolver, "resolve_conflict"
+            ) as mock_resolve:
+                with patch.object(
+                    orchestrator.auditor, "log_conflict_detection"
+                ) as mock_audit:
 
                     # Setup mocks
                     mock_detect.return_value = [
@@ -536,7 +546,9 @@ class TestConflictResolutionOrchestrator:
         mock_db = AsyncMock()
 
         # Mock performance metrics
-        with patch.object(orchestrator.auditor, "collect_performance_metrics") as mock_metrics:
+        with patch.object(
+            orchestrator.auditor, "collect_performance_metrics"
+        ) as mock_metrics:
             mock_metrics.return_value = PerformanceMetrics(
                 detection_accuracy=85.0,
                 auto_resolution_rate=82.0,  # Above 80% target

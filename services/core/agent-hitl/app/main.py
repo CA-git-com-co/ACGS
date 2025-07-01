@@ -31,13 +31,13 @@ decision_engine = None
 async def lifespan(app: FastAPI):
     """Application lifespan manager."""
     global decision_engine
-    
+
     # Startup
     logger.info(f"Starting {settings.SERVICE_NAME} v{settings.SERVICE_VERSION}")
     decision_engine = DecisionEngine()
-    
+
     yield
-    
+
     # Shutdown
     if decision_engine:
         await decision_engine.close()
@@ -70,7 +70,11 @@ async def http_exception_handler(request: Request, exc: HTTPException):
         content={
             "error": exc.detail,
             "status_code": exc.status_code,
-            "timestamp": str(request.state.timestamp) if hasattr(request.state, "timestamp") else None,
+            "timestamp": (
+                str(request.state.timestamp)
+                if hasattr(request.state, "timestamp")
+                else None
+            ),
         },
     )
 
@@ -92,13 +96,14 @@ async def general_exception_handler(request: Request, exc: Exception):
 async def add_process_time_header(request: Request, call_next):
     """Add processing time header to responses."""
     import time
+
     start_time = time.time()
     request.state.timestamp = start_time
-    
+
     response = await call_next(request)
     process_time = time.time() - start_time
     response.headers["X-Process-Time"] = str(process_time)
-    
+
     return response
 
 
@@ -134,6 +139,7 @@ async def health_check():
         "timestamp": str(time.time()),
         "service": settings.SERVICE_NAME,
         "version": settings.SERVICE_VERSION,
+        "constitutional_hash": settings.CONSTITUTIONAL_HASH,
     }
 
 
@@ -155,7 +161,7 @@ async def get_metrics():
 
 if __name__ == "__main__":
     import uvicorn
-    
+
     uvicorn.run(
         "main:app",
         host=settings.HOST,

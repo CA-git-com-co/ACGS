@@ -105,14 +105,18 @@ class RedisCache:
             logger.error(f"Error in get_or_set for key {key}: {e}")
             return None
 
-    def cache_policy_decision(self, policy_content: str, input_data: dict, result: Any) -> str:
+    def cache_policy_decision(
+        self, policy_content: str, input_data: dict, result: Any
+    ) -> str:
         """Cache a policy decision with 5-minute TTL."""
         cache_data = {"policy_content": policy_content, "input_data": input_data}
         key = self._generate_key("policy_decision", cache_data)
         self.set(key, result, ttl_seconds=300)  # 5 minutes
         return key
 
-    def get_cached_policy_decision(self, policy_content: str, input_data: dict) -> Any | None:
+    def get_cached_policy_decision(
+        self, policy_content: str, input_data: dict
+    ) -> Any | None:
         """Get cached policy decision."""
         cache_data = {"policy_content": policy_content, "input_data": input_data}
         key = self._generate_key("policy_decision", cache_data)

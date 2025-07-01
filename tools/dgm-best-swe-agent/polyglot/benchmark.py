@@ -744,9 +744,9 @@ def run_test_real(
 
     # Forcibly ignore certain files not covered by test_files and example_files
     ignore_files = {
-            "CMakeLists.txt",
-            "Cargo.toml",
-        }
+        "CMakeLists.txt",
+        "Cargo.toml",
+    }
 
     # Add all files under .meta and .docs directories
     ignore_files.update(str(p.relative_to(testdir)) for p in testdir.glob(".meta/**/*"))
@@ -966,7 +966,8 @@ def run_test_real(
         "chat_hashes": list(
             zip(
                 coder.chat_completion_call_hashes,
-                coder.chat_completion_response_hashes, strict=False,
+                coder.chat_completion_response_hashes,
+                strict=False,
             )
         ),
     }

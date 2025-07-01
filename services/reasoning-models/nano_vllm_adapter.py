@@ -39,18 +39,21 @@ logger = structlog.get_logger(__name__)
 # GPU and system monitoring imports
 try:
     import torch
+
     TORCH_AVAILABLE = True
 except ImportError:
     TORCH_AVAILABLE = False
 
 try:
     import pynvml
+
     PYNVML_AVAILABLE = True
 except ImportError:
     PYNVML_AVAILABLE = False
 
 try:
     from nanovllm import LLM, SamplingParams
+
     NANO_VLLM_AVAILABLE = True
     USING_MOCK = False
 except ImportError:
@@ -58,8 +61,10 @@ except ImportError:
         # Try mock implementation
         import sys
         import os
+
         sys.path.insert(0, os.path.dirname(__file__))
         from nanovllm_mock import LLM, SamplingParams
+
         NANO_VLLM_AVAILABLE = True
         USING_MOCK = True
         logger.warning("Using mock Nano-vLLM implementation")
@@ -73,6 +78,7 @@ except ImportError:
 @dataclass
 class ModelConfig:
     """Configuration for Nano-vLLM model initialization."""
+
     model_path: str
     tensor_parallel_size: int = 1
     enforce_eager: bool = True
@@ -86,12 +92,14 @@ class ModelConfig:
 
 class ChatMessage(BaseModel):
     """OpenAI-compatible chat message format."""
+
     role: str = Field(..., description="Message role: system, user, or assistant")
     content: str = Field(..., description="Message content")
 
 
 class ChatCompletionRequest(BaseModel):
     """OpenAI-compatible chat completion request."""
+
     model: str = Field(..., description="Model identifier")
     messages: List[ChatMessage] = Field(..., description="List of chat messages")
     max_tokens: int = Field(default=512, description="Maximum tokens to generate")
@@ -103,6 +111,7 @@ class ChatCompletionRequest(BaseModel):
 
 class ChatCompletionResponse(BaseModel):
     """OpenAI-compatible chat completion response."""
+
     id: str = Field(..., description="Unique response identifier")
     object: str = Field(default="chat.completion", description="Response object type")
     created: int = Field(..., description="Unix timestamp of creation")
@@ -129,7 +138,7 @@ class NanoVLLMAdapter:
             "requests_total": 0,
             "requests_failed": 0,
             "total_inference_time": 0.0,
-            "total_tokens_generated": 0
+            "total_tokens_generated": 0,
         }
 
         if not NANO_VLLM_AVAILABLE:
@@ -145,27 +154,27 @@ class NanoVLLMAdapter:
         # Set CUDA visible devices if specified
         if model_config.cuda_visible_devices:
             os.environ["CUDA_VISIBLE_DEVICES"] = model_config.cuda_visible_devices
-    
+
     async def initialize(self) -> None:
         """Initialize the Nano-vLLM model asynchronously."""
         if self.is_initialized:
             return
-            
-        logger.info("Initializing Nano-vLLM model", model_path=self.model_config.model_path)
-        
+
+        logger.info(
+            "Initializing Nano-vLLM model", model_path=self.model_config.model_path
+        )
+
         try:
             # Run model initialization in thread pool to avoid blocking
             loop = asyncio.get_event_loop()
-            self.llm = await loop.run_in_executor(
-                None, self._initialize_model
-            )
+            self.llm = await loop.run_in_executor(None, self._initialize_model)
             self.is_initialized = True
             logger.info("Nano-vLLM model initialized successfully")
-            
+
         except Exception as e:
             logger.error("Failed to initialize Nano-vLLM model", error=str(e))
             raise
-    
+
     def _detect_gpu_configuration(self) -> None:
         """Detect available GPU configuration and capabilities."""
         self.gpu_info = {
@@ -173,7 +182,7 @@ class NanoVLLMAdapter:
             "gpu_count": 0,
             "gpu_devices": [],
             "total_memory": 0,
-            "driver_version": None
+            "driver_version": None,
         }
 
         if TORCH_AVAILABLE and torch.cuda.is_available():
@@ -187,7 +196,7 @@ class NanoVLLMAdapter:
                     "name": device_props.name,
                     "memory_total": device_props.total_memory,
                     "memory_free": torch.cuda.mem_get_info(i)[0],
-                    "compute_capability": f"{device_props.major}.{device_props.minor}"
+                    "compute_capability": f"{device_props.major}.{device_props.minor}",
                 }
                 self.gpu_info["gpu_devices"].append(device_info)
                 self.gpu_info["total_memory"] += device_props.total_memory
@@ -210,7 +219,7 @@ class NanoVLLMAdapter:
                 logger.warning(
                     "Reducing tensor parallel size to match available GPUs",
                     requested=self.model_config.tensor_parallel_size,
-                    available=available_gpus
+                    available=available_gpus,
                 )
                 self.model_config.tensor_parallel_size = available_gpus
 
@@ -222,33 +231,33 @@ class NanoVLLMAdapter:
             gpu_memory_utilization=self.model_config.gpu_memory_utilization,
             max_model_len=self.model_config.max_model_len,
         )
-    
+
     async def chat_completion(
         self,
         messages: List[Dict[str, str]],
         max_tokens: int = 512,
         temperature: float = 0.7,
         top_p: float = 0.9,
-        **kwargs
+        **kwargs,
     ) -> Dict[str, Any]:
         """
         Generate chat completion using Nano-vLLM.
-        
+
         Maintains compatibility with OpenAI chat completion API format.
         """
         if not self.is_initialized:
             await self.initialize()
-        
+
         # Convert messages to prompt format
         prompt = self._messages_to_prompt(messages)
-        
+
         # Create sampling parameters
         sampling_params = SamplingParams(
             temperature=temperature,
             top_p=top_p,
             max_tokens=max_tokens,
         )
-        
+
         # Generate response asynchronously
         start_time = time.time()
 
@@ -270,7 +279,7 @@ class NanoVLLMAdapter:
                 "Chat completion generated",
                 model=self.model_name,
                 tokens=response["usage"]["completion_tokens"],
-                time=generation_time
+                time=generation_time,
             )
 
             return response
@@ -279,34 +288,34 @@ class NanoVLLMAdapter:
             self._update_metrics(None, time.time() - start_time, success=False)
             logger.error("Chat completion failed", error=str(e))
             raise
-    
+
     def _messages_to_prompt(self, messages: List[Dict[str, str]]) -> str:
         """Convert OpenAI messages format to a single prompt string."""
         prompt_parts = []
-        
+
         for message in messages:
             role = message.get("role", "user")
             content = message.get("content", "")
-            
+
             if role == "system":
                 prompt_parts.append(f"System: {content}")
             elif role == "user":
                 prompt_parts.append(f"User: {content}")
             elif role == "assistant":
                 prompt_parts.append(f"Assistant: {content}")
-        
+
         prompt_parts.append("Assistant:")
         return "\n".join(prompt_parts)
-    
+
     def _format_response(self, output: Any, generation_time: float) -> Dict[str, Any]:
         """Format Nano-vLLM output to OpenAI-compatible response."""
         generated_text = output.get("text", "")
-        
+
         # Estimate token counts (rough approximation)
         completion_tokens = len(generated_text.split())
         prompt_tokens = 50  # Rough estimate
         total_tokens = completion_tokens + prompt_tokens
-        
+
         return {
             "id": f"chatcmpl-{int(time.time() * 1000)}",
             "object": "chat.completion",
@@ -315,23 +324,21 @@ class NanoVLLMAdapter:
             "choices": [
                 {
                     "index": 0,
-                    "message": {
-                        "role": "assistant",
-                        "content": generated_text
-                    },
-                    "finish_reason": "stop"
+                    "message": {"role": "assistant", "content": generated_text},
+                    "finish_reason": "stop",
                 }
             ],
             "usage": {
                 "prompt_tokens": prompt_tokens,
                 "completion_tokens": completion_tokens,
-                "total_tokens": total_tokens
+                "total_tokens": total_tokens,
             },
-            "generation_time": generation_time
+            "generation_time": generation_time,
         }
 
-    def _update_metrics(self, response: Optional[Dict[str, Any]],
-                       generation_time: float, success: bool) -> None:
+    def _update_metrics(
+        self, response: Optional[Dict[str, Any]], generation_time: float, success: bool
+    ) -> None:
         """Update internal metrics for monitoring."""
         self.metrics["requests_total"] += 1
         self.metrics["total_inference_time"] += generation_time
@@ -351,24 +358,30 @@ class NanoVLLMAdapter:
                     memory_used = torch.cuda.memory_allocated(i)
                     memory_total = device["memory_total"]
                     gpu_metrics[f"gpu_{i}_memory_used"] = memory_used
-                    gpu_metrics[f"gpu_{i}_memory_utilization"] = memory_used / memory_total
+                    gpu_metrics[f"gpu_{i}_memory_utilization"] = (
+                        memory_used / memory_total
+                    )
                     gpu_metrics[f"gpu_{i}_temperature"] = self._get_gpu_temperature(i)
             except Exception as e:
                 logger.warning("Failed to collect GPU metrics", error=str(e))
 
         avg_inference_time = 0
         if self.metrics["requests_total"] > 0:
-            avg_inference_time = (self.metrics["total_inference_time"] /
-                                self.metrics["requests_total"])
+            avg_inference_time = (
+                self.metrics["total_inference_time"] / self.metrics["requests_total"]
+            )
 
         return {
             "requests_total": self.metrics["requests_total"],
             "requests_failed": self.metrics["requests_failed"],
-            "success_rate": (self.metrics["requests_total"] - self.metrics["requests_failed"]) / max(1, self.metrics["requests_total"]),
+            "success_rate": (
+                self.metrics["requests_total"] - self.metrics["requests_failed"]
+            )
+            / max(1, self.metrics["requests_total"]),
             "avg_inference_time": avg_inference_time,
             "total_tokens_generated": self.metrics["total_tokens_generated"],
             "gpu_info": self.gpu_info,
-            **gpu_metrics
+            **gpu_metrics,
         }
 
     def _get_gpu_temperature(self, device_id: int) -> Optional[float]:
@@ -376,7 +389,9 @@ class NanoVLLMAdapter:
         if PYNVML_AVAILABLE:
             try:
                 handle = pynvml.nvmlDeviceGetHandleByIndex(device_id)
-                temp = pynvml.nvmlDeviceGetTemperature(handle, pynvml.NVML_TEMPERATURE_GPU)
+                temp = pynvml.nvmlDeviceGetTemperature(
+                    handle, pynvml.NVML_TEMPERATURE_GPU
+                )
                 return float(temp)
             except Exception:
                 pass
@@ -387,24 +402,24 @@ class NanoVLLMAdapter:
         try:
             if not self.is_initialized:
                 return {"status": "not_initialized", "healthy": False}
-            
+
             # Simple test generation
             test_messages = [{"role": "user", "content": "Hello"}]
             response = await self.chat_completion(
                 test_messages, max_tokens=10, temperature=0.1
             )
-            
+
             return {
                 "status": "healthy",
                 "healthy": True,
                 "model": self.model_name,
-                "response_time": response.get("generation_time", 0)
+                "response_time": response.get("generation_time", 0),
             }
-            
+
         except Exception as e:
             logger.error("Health check failed", error=str(e))
             return {"status": "unhealthy", "healthy": False, "error": str(e)}
-    
+
     async def shutdown(self) -> None:
         """Shutdown the model and clean up resources."""
         if self.llm:
@@ -419,13 +434,13 @@ def create_nano_vllm_adapter(
     model_path: str,
     tensor_parallel_size: int = 1,
     gpu_memory_utilization: float = 0.9,
-    **kwargs
+    **kwargs,
 ) -> NanoVLLMAdapter:
     """Create a Nano-vLLM adapter with the specified configuration."""
     config = ModelConfig(
         model_path=model_path,
         tensor_parallel_size=tensor_parallel_size,
         gpu_memory_utilization=gpu_memory_utilization,
-        **kwargs
+        **kwargs,
     )
     return NanoVLLMAdapter(config)

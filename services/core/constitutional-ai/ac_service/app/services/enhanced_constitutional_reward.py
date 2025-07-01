@@ -192,20 +192,28 @@ class EnhancedConstitutionalReward:
             critique = await self._generate_critique(action, context)
 
             # Evaluate against each constitutional dimension
-            dimension_scores = await self._evaluate_dimensions(action, context, critique)
+            dimension_scores = await self._evaluate_dimensions(
+                action, context, critique
+            )
 
             # Evaluate against specific principles
-            principle_scores = await self._evaluate_principles(action, context, critique)
+            principle_scores = await self._evaluate_principles(
+                action, context, critique
+            )
 
             # Calculate composite score
-            composite_score = self._calculate_composite_score(dimension_scores, principle_scores)
+            composite_score = self._calculate_composite_score(
+                dimension_scores, principle_scores
+            )
 
             # Calculate confidence
             confidence = self._calculate_confidence(dimension_scores, principle_scores)
 
             # Detect violations and generate recommendations
             violations = self._detect_violations(dimension_scores, principle_scores)
-            recommendations = await self._generate_recommendations(action, context, violations)
+            recommendations = await self._generate_recommendations(
+                action, context, violations
+            )
 
             # Create evaluation result
             evaluation = ConstitutionalEvaluation(
@@ -397,7 +405,9 @@ class EnhancedConstitutionalReward:
 
         for principle in top_principles:
             try:
-                score = await self._evaluate_single_principle(action, context, critique, principle)
+                score = await self._evaluate_single_principle(
+                    action, context, critique, principle
+                )
                 principle_scores[principle.name] = score
             except Exception as e:
                 logger.error(f"Failed to evaluate principle {principle.name}: {e}")
@@ -459,7 +469,9 @@ class EnhancedConstitutionalReward:
 
         # Average of principle scores
         principle_score = (
-            sum(principle_scores.values()) / len(principle_scores) if principle_scores else 0.5
+            sum(principle_scores.values()) / len(principle_scores)
+            if principle_scores
+            else 0.5
         )
 
         # Combine dimension and principle scores (70% dimension, 30% principle)
@@ -505,7 +517,9 @@ class EnhancedConstitutionalReward:
         # Check principle violations
         for principle_name, score in principle_scores.items():
             if score < self.config.violation_threshold:
-                violations.append(f"Principle violation - {principle_name}: {score:.2f}")
+                violations.append(
+                    f"Principle violation - {principle_name}: {score:.2f}"
+                )
 
         return violations
 
@@ -514,7 +528,9 @@ class EnhancedConstitutionalReward:
     ) -> List[str]:
         """Generate recommendations for improving constitutional compliance."""
         if not violations:
-            return ["No violations detected. Action appears constitutionally compliant."]
+            return [
+                "No violations detected. Action appears constitutionally compliant."
+            ]
 
         violations_text = "\n".join(violations)
 
@@ -536,19 +552,26 @@ class EnhancedConstitutionalReward:
             )
 
             recommendations_text = response.choices[0].message.content.strip()
-            recommendations = [r.strip() for r in recommendations_text.split("\n") if r.strip()]
+            recommendations = [
+                r.strip() for r in recommendations_text.split("\n") if r.strip()
+            ]
             return recommendations[:5]  # Limit to 5 recommendations
 
         except Exception as e:
             logger.error(f"Failed to generate recommendations: {e}")
-            return ["Review action for constitutional compliance", "Consult governance team"]
+            return [
+                "Review action for constitutional compliance",
+                "Consult governance team",
+            ]
 
     def _generate_cache_key(self, action: str, context: Dict[str, Any]) -> str:
         """Generate cache key for evaluation using secure SHA-256 hashing."""
         import hashlib
 
         # Create deterministic key from action and relevant context
-        key_data = f"{action}:{context.get('description', '')}:{context.get('category', '')}"
+        key_data = (
+            f"{action}:{context.get('description', '')}:{context.get('category', '')}"
+        )
         # SECURITY: Use SHA-256 instead of MD5 for cryptographic security
         return hashlib.sha256(key_data.encode()).hexdigest()
 

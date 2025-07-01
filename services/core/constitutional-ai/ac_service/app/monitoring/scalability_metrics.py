@@ -167,7 +167,9 @@ class ScalabilityMetricsCollector:
         )
 
         self.error_rate = Gauge(
-            "constitutional_council_error_rate", "Error rate percentage", registry=self.registry
+            "constitutional_council_error_rate",
+            "Error rate percentage",
+            registry=self.registry,
         )
 
         self.availability = Gauge(
@@ -256,7 +258,9 @@ class ScalabilityMetricsCollector:
             ts_key = f"constitutional_council:timeseries:{metric.name}"
             await self.redis_client.zadd(
                 ts_key,
-                {f"{metric.timestamp.timestamp()}:{metric.value}": metric.timestamp.timestamp()},
+                {
+                    f"{metric.timestamp.timestamp()}:{metric.value}": metric.timestamp.timestamp()
+                },
             )
 
             # Expire old time series data (keep 30 days)
@@ -269,7 +273,9 @@ class ScalabilityMetricsCollector:
     async def _flush_metrics_buffer(self):
         """Flush metrics buffer to persistent storage."""
         # In a real implementation, this would write to a database
-        logger.info(f"Flushing {len(self.metrics_buffer)} metrics to persistent storage")
+        logger.info(
+            f"Flushing {len(self.metrics_buffer)} metrics to persistent storage"
+        )
         self.metrics_buffer.clear()
 
     async def get_performance_summary(self) -> PerformanceMetrics:
@@ -286,7 +292,9 @@ class ScalabilityMetricsCollector:
             availability_percentage=99.7,
         )
 
-    async def get_democratic_participation_summary(self) -> DemocraticParticipationMetrics:
+    async def get_democratic_participation_summary(
+        self,
+    ) -> DemocraticParticipationMetrics:
         """Get current democratic participation metrics."""
         # This would typically aggregate from database
         metrics = DemocraticParticipationMetrics(
@@ -300,7 +308,9 @@ class ScalabilityMetricsCollector:
         metrics.participation_rate = metrics.calculate_participation_rate()
         return metrics
 
-    async def record_amendment_processing_time(self, amendment_id: int, processing_time_ms: float):
+    async def record_amendment_processing_time(
+        self, amendment_id: int, processing_time_ms: float
+    ):
         """Record amendment processing time."""
         metric = ScalabilityMetric(
             metric_type=MetricType.PERFORMANCE,
@@ -362,7 +372,9 @@ def get_metrics_collector() -> ScalabilityMetricsCollector:
     return _metrics_collector
 
 
-async def initialize_metrics_collector(redis_client=None, prometheus_enabled: bool = True):
+async def initialize_metrics_collector(
+    redis_client=None, prometheus_enabled: bool = True
+):
     """Initialize the global metrics collector."""
     global _metrics_collector
     _metrics_collector = ScalabilityMetricsCollector(

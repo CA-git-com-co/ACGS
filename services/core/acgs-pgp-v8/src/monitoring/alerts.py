@@ -101,7 +101,8 @@ class AlertManager:
         self.register_alert_rule(
             name="high_response_time",
             condition=lambda data: (
-                data.get("type") == "performance" and data.get("response_time_ms", 0) > 500
+                data.get("type") == "performance"
+                and data.get("response_time_ms", 0) > 500
             ),
             severity=AlertSeverity.HIGH,
             message_template="High response time detected: {response_time_ms}ms on {endpoint}",
@@ -112,7 +113,8 @@ class AlertManager:
         self.register_alert_rule(
             name="component_unhealthy",
             condition=lambda data: (
-                data.get("type") == "health_check_failure" and data.get("status") == "unhealthy"
+                data.get("type") == "health_check_failure"
+                and data.get("status") == "unhealthy"
             ),
             severity=AlertSeverity.HIGH,
             message_template="Component {component} is unhealthy: {message}",
@@ -123,7 +125,8 @@ class AlertManager:
         self.register_alert_rule(
             name="low_cache_hit_rate",
             condition=lambda data: (
-                data.get("type") == "cache_performance" and data.get("hit_rate", 100) < 70
+                data.get("type") == "cache_performance"
+                and data.get("hit_rate", 100) < 70
             ),
             severity=AlertSeverity.MEDIUM,
             message_template="Low cache hit rate: {hit_rate}% for {cache_type}",
@@ -146,7 +149,8 @@ class AlertManager:
         self.register_alert_rule(
             name="low_compliance_score",
             condition=lambda data: (
-                data.get("type") == "policy_generation" and data.get("compliance_score", 1.0) < 0.8
+                data.get("type") == "policy_generation"
+                and data.get("compliance_score", 1.0) < 0.8
             ),
             severity=AlertSeverity.MEDIUM,
             message_template="Low constitutional compliance score: {compliance_score:.2f}",
@@ -157,7 +161,8 @@ class AlertManager:
         self.register_alert_rule(
             name="high_memory_usage",
             condition=lambda data: (
-                data.get("type") == "resource_usage" and data.get("memory_usage_percent", 0) > 85
+                data.get("type") == "resource_usage"
+                and data.get("memory_usage_percent", 0) > 85
             ),
             severity=AlertSeverity.HIGH,
             message_template="High memory usage: {memory_usage_percent}%",
@@ -336,14 +341,18 @@ class AlertManager:
 
         # Recent alerts (last 24 hours)
         recent_cutoff = datetime.now() - timedelta(hours=24)
-        recent_alerts = [alert for alert in self.alert_history if alert.timestamp >= recent_cutoff]
+        recent_alerts = [
+            alert for alert in self.alert_history if alert.timestamp >= recent_cutoff
+        ]
 
         return {
             "active_alerts_count": len(active_alerts),
             "severity_breakdown": severity_counts,
             "recent_alerts_24h": len(recent_alerts),
             "total_rules": len(self.alert_rules),
-            "enabled_rules": sum(1 for rule in self.alert_rules.values() if rule.enabled),
+            "enabled_rules": sum(
+                1 for rule in self.alert_rules.values() if rule.enabled
+            ),
             "constitutional_hash": self.constitutional_hash,
             "timestamp": datetime.now().isoformat(),
         }
@@ -388,7 +397,9 @@ class AlertManager:
     def export_alerts(self, start_date: datetime, end_date: datetime) -> str:
         """Export alerts in JSON format for the specified date range."""
         filtered_alerts = [
-            alert for alert in self.alert_history if start_date <= alert.timestamp <= end_date
+            alert
+            for alert in self.alert_history
+            if start_date <= alert.timestamp <= end_date
         ]
 
         export_data = {
@@ -407,7 +418,9 @@ class AlertManager:
                     "message": alert.message,
                     "status": alert.status.value,
                     "timestamp": alert.timestamp.isoformat(),
-                    "resolved_at": (alert.resolved_at.isoformat() if alert.resolved_at else None),
+                    "resolved_at": (
+                        alert.resolved_at.isoformat() if alert.resolved_at else None
+                    ),
                     "data": alert.data,
                 }
                 for alert in filtered_alerts

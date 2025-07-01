@@ -66,7 +66,9 @@ class BanditAlgorithm:
         try:
             async with get_db_session() as session:
                 # Check if arm already exists
-                existing_arm = await session.get(BanditState, (self.algorithm_type, arm_id))
+                existing_arm = await session.get(
+                    BanditState, (self.algorithm_type, arm_id)
+                )
 
                 if not existing_arm:
                     # Create new arm
@@ -114,7 +116,10 @@ class BanditAlgorithm:
             if not safe_arms:
                 # If no arms are considered safe, select the least risky
                 safe_arms = [
-                    min(self.arms.keys(), key=lambda x: self.arms[x].get("risk_score", 1.0))
+                    min(
+                        self.arms.keys(),
+                        key=lambda x: self.arms[x].get("risk_score", 1.0),
+                    )
                 ]
                 logger.warning("No safe arms available, selecting least risky")
 
@@ -132,9 +137,13 @@ class BanditAlgorithm:
                 selected_arm = await self._select_ucb(safe_arms)
 
             # Update selection count
-            self.arms[selected_arm]["selections"] = self.arms[selected_arm].get("selections", 0) + 1
+            self.arms[selected_arm]["selections"] = (
+                self.arms[selected_arm].get("selections", 0) + 1
+            )
 
-            logger.info(f"Selected arm: {selected_arm} using {self.algorithm_type.value}")
+            logger.info(
+                f"Selected arm: {selected_arm} using {self.algorithm_type.value}"
+            )
             return selected_arm
 
         except Exception as e:
@@ -153,23 +162,31 @@ class BanditAlgorithm:
         try:
             async with get_db_session() as session:
                 # Get existing arm state
-                arm_state = await session.get(BanditState, (self.algorithm_type, arm_id))
+                arm_state = await session.get(
+                    BanditState, (self.algorithm_type, arm_id)
+                )
 
                 if not arm_state:
                     logger.warning(f"Arm {arm_id} not found, creating new one")
                     await self.add_arm(arm_id)
-                    arm_state = await session.get(BanditState, (self.algorithm_type, arm_id))
+                    arm_state = await session.get(
+                        BanditState, (self.algorithm_type, arm_id)
+                    )
 
                 # Update statistics
                 arm_state.total_pulls += 1
                 arm_state.total_reward += reward
-                arm_state.average_reward = arm_state.total_reward / arm_state.total_pulls
+                arm_state.average_reward = (
+                    arm_state.total_reward / arm_state.total_pulls
+                )
                 arm_state.last_pulled_at = datetime.utcnow()
 
                 # Update confidence bound for UCB
                 if self.algorithm_type == BanditAlgorithmType.UCB:
                     arm_state.confidence_bound = self._calculate_ucb_bound(
-                        arm_state.average_reward, arm_state.total_pulls, self.total_pulls + 1
+                        arm_state.average_reward,
+                        arm_state.total_pulls,
+                        self.total_pulls + 1,
                     )
 
                 await session.commit()
@@ -203,7 +220,9 @@ class BanditAlgorithm:
 
             # Calculate exploration rate
             if total_pulls > 0:
-                recent_pulls = sum(arm.get("selections", 0) for arm in self.arms.values())
+                recent_pulls = sum(
+                    arm.get("selections", 0) for arm in self.arms.values()
+                )
                 exploration_rate = recent_pulls / max(total_pulls, 1)
             else:
                 exploration_rate = 1.0
@@ -258,7 +277,8 @@ class BanditAlgorithm:
                 ucb_values[arm_id] = float("inf")
             else:
                 confidence_bonus = math.sqrt(
-                    (self.exploration_parameter * math.log(self.total_pulls)) / arm["total_pulls"]
+                    (self.exploration_parameter * math.log(self.total_pulls))
+                    / arm["total_pulls"]
                 )
                 ucb_values[arm_id] = arm["average_reward"] + confidence_bonus
 
@@ -303,7 +323,9 @@ class BanditAlgorithm:
             total_weight += weight
 
         # Normalize weights to probabilities
-        probabilities = {arm_id: weight / total_weight for arm_id, weight in weights.items()}
+        probabilities = {
+            arm_id: weight / total_weight for arm_id, weight in weights.items()
+        }
 
         # Sample from the distribution
         rand = random.random()
@@ -336,7 +358,9 @@ class BanditAlgorithm:
 
         return list(set(safe_arms))  # Remove duplicates
 
-    def _calculate_ucb_bound(self, avg_reward: float, arm_pulls: int, total_pulls: int) -> float:
+    def _calculate_ucb_bound(
+        self, avg_reward: float, arm_pulls: int, total_pulls: int
+    ) -> float:
         """Calculate UCB confidence bound."""
         if arm_pulls == 0 or total_pulls == 0:
             return float("inf")
@@ -350,7 +374,9 @@ class BanditAlgorithm:
         """Load arm statistics from database."""
         try:
             async with get_db_session() as session:
-                arm_state = await session.get(BanditState, (self.algorithm_type, arm_id))
+                arm_state = await session.get(
+                    BanditState, (self.algorithm_type, arm_id)
+                )
 
                 if arm_state:
                     self.arms[arm_id] = {
@@ -377,7 +403,9 @@ class BanditAlgorithm:
                 from sqlalchemy import select
 
                 result = await session.execute(
-                    select(BanditState).where(BanditState.algorithm_type == self.algorithm_type)
+                    select(BanditState).where(
+                        BanditState.algorithm_type == self.algorithm_type
+                    )
                 )
                 arm_states = result.scalars().all()
 

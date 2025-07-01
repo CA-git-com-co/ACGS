@@ -61,8 +61,12 @@ async def lifespan(app: FastAPI):
     await app.state.trigger_manager.start()
 
     # Start background tasks
-    app.state.monitor_task = asyncio.create_task(app.state.performance_monitor.start_monitoring())
-    app.state.gs_monitor_task = asyncio.create_task(app.state.gs_integration.start_monitoring())
+    app.state.monitor_task = asyncio.create_task(
+        app.state.performance_monitor.start_monitoring()
+    )
+    app.state.gs_monitor_task = asyncio.create_task(
+        app.state.gs_integration.start_monitoring()
+    )
     app.state.cross_service_task = asyncio.create_task(
         app.state.cross_service_monitor.start_monitoring()
     )
@@ -124,8 +128,12 @@ instrumentator.instrument(app).expose(app)
 # Include routers
 app.include_router(health_router, prefix="", tags=["Health"])
 app.include_router(dgm_router, prefix="/api/v1/dgm", tags=["DGM Operations"])
-app.include_router(constitutional_router, prefix="/api/v1/constitutional", tags=["Constitutional"])
-app.include_router(integration_router, prefix="/api/v1/integration", tags=["Service Integration"])
+app.include_router(
+    constitutional_router, prefix="/api/v1/constitutional", tags=["Constitutional"]
+)
+app.include_router(
+    integration_router, prefix="/api/v1/integration", tags=["Service Integration"]
+)
 
 
 # Global exception handler

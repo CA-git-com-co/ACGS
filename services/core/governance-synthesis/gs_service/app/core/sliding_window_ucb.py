@@ -173,17 +173,25 @@ class SlidingWindowUCB(MABAlgorithmBase):
                 n_pulls = len(arm_window.rewards)
 
                 # Confidence bound
-                confidence = self.config.alpha * np.sqrt(np.log(self.total_rounds + 1) / n_pulls)
+                confidence = self.config.alpha * np.sqrt(
+                    np.log(self.total_rounds + 1) / n_pulls
+                )
 
                 # Constitutional and safety bonuses
                 constitutional_bonus = self._calculate_constitutional_bonus(arm_window)
                 safety_bonus = self._calculate_safety_bonus(arm_window)
 
                 # Exploration bonus for recently changed arms
-                change_bonus = self.config.exploration_bonus if arm_window.change_detected else 0.0
+                change_bonus = (
+                    self.config.exploration_bonus if arm_window.change_detected else 0.0
+                )
 
                 ucb_values[arm_id] = (
-                    mean_reward + confidence + constitutional_bonus + safety_bonus + change_bonus
+                    mean_reward
+                    + confidence
+                    + constitutional_bonus
+                    + safety_bonus
+                    + change_bonus
                 )
 
         # Select arm with highest UCB value
@@ -192,7 +200,9 @@ class SlidingWindowUCB(MABAlgorithmBase):
 
         selected_arm = max(ucb_values.keys(), key=lambda x: ucb_values[x])
 
-        logger.debug(f"Selected arm {selected_arm} with UCB {ucb_values[selected_arm]:.3f}")
+        logger.debug(
+            f"Selected arm {selected_arm} with UCB {ucb_values[selected_arm]:.3f}"
+        )
 
         return selected_arm
 
@@ -268,7 +278,9 @@ class SlidingWindowUCB(MABAlgorithmBase):
         adjusted_size = int(base_size * (0.5 + 0.5 * stability_factor))
 
         # Ensure within bounds
-        return max(self.config.min_window_size, min(self.config.max_window_size, adjusted_size))
+        return max(
+            self.config.min_window_size, min(self.config.max_window_size, adjusted_size)
+        )
 
     def _update_arm_statistics(self, arm_window: ArmWindow):
         """Update statistics for an arm window."""
@@ -316,7 +328,10 @@ class SlidingWindowUCB(MABAlgorithmBase):
         """Detect changes in arm performance using statistical tests."""
         for arm_id in available_arms:
             arm_window = self.arm_windows.get(arm_id)
-            if not arm_window or len(arm_window.rewards) < self.config.min_samples_for_detection:
+            if (
+                not arm_window
+                or len(arm_window.rewards) < self.config.min_samples_for_detection
+            ):
                 continue
 
             # Perform change detection
@@ -357,7 +372,9 @@ class SlidingWindowUCB(MABAlgorithmBase):
 
         # Calculate detection window size
         detection_window = int(n_rewards * self.config.detection_window_ratio)
-        detection_window = max(self.config.min_samples_for_detection // 2, detection_window)
+        detection_window = max(
+            self.config.min_samples_for_detection // 2, detection_window
+        )
 
         if detection_window * 2 > n_rewards:
             return ChangeDetectionResult(
@@ -384,7 +401,9 @@ class SlidingWindowUCB(MABAlgorithmBase):
             change_magnitude = abs(new_mean - old_mean)
 
             # Determine if change is significant
-            change_detected = p_value < 0.05 and change_magnitude > self.config.change_threshold
+            change_detected = (
+                p_value < 0.05 and change_magnitude > self.config.change_threshold
+            )
 
             confidence = 1.0 - p_value if change_detected else 0.0
 
@@ -438,7 +457,8 @@ class SlidingWindowUCB(MABAlgorithmBase):
 
         # Ensure within bounds
         self.global_window_size = max(
-            self.config.min_window_size, min(self.config.max_window_size, self.global_window_size)
+            self.config.min_window_size,
+            min(self.config.max_window_size, self.global_window_size),
         )
 
         # Update metrics
@@ -499,7 +519,9 @@ class SlidingWindowUCB(MABAlgorithmBase):
             },
             "safety_scores": {
                 "mean": (
-                    np.mean(list(arm_window.safety_scores)) if arm_window.safety_scores else 0.0
+                    np.mean(list(arm_window.safety_scores))
+                    if arm_window.safety_scores
+                    else 0.0
                 ),
                 "count": len(arm_window.safety_scores),
             },
@@ -517,7 +539,8 @@ class SlidingWindowUCB(MABAlgorithmBase):
                 [
                     c
                     for c in self.change_history
-                    if (datetime.now(timezone.utc) - c.change_timestamp).total_seconds() < 3600
+                    if (datetime.now(timezone.utc) - c.change_timestamp).total_seconds()
+                    < 3600
                 ]
             ),
             "performance_metrics": self.performance_metrics,

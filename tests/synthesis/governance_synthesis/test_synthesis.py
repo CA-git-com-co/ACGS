@@ -19,12 +19,7 @@ class TestSynthesis:
     @pytest.fixture
     def sample_principles(self):
         """Sample constitutional principles."""
-        return [
-            "transparency",
-            "accountability",
-            "fairness",
-            "privacy"
-        ]
+        return ["transparency", "accountability", "fairness", "privacy"]
 
     @pytest.mark.asyncio
     async def test_policy_synthesis(self, mock_llm_service, sample_principles):

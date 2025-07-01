@@ -99,5 +99,8 @@ def pytest_collection_modifyitems(config, items):
             item.add_marker(pytest.mark.e2e)
 
         # Add slow marker for tests that might be slow
-        if any(keyword in item.name.lower() for keyword in ["performance", "load", "stress"]):
+        if any(
+            keyword in item.name.lower()
+            for keyword in ["performance", "load", "stress"]
+        ):
             item.add_marker(pytest.mark.slow)

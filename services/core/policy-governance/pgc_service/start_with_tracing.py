@@ -62,7 +62,9 @@ def main():
         trace.set_tracer_provider(tracer_provider)
 
         # Add OTLP exporter
-        otlp_exporter = OTLPSpanExporter(endpoint="http://localhost:4317", insecure=True)
+        otlp_exporter = OTLPSpanExporter(
+            endpoint="http://localhost:4317", insecure=True
+        )
         span_processor = BatchSpanProcessor(otlp_exporter)
         tracer_provider.add_span_processor(span_processor)
 

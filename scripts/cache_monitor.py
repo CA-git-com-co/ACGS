@@ -24,7 +24,9 @@ async def get_redis_info():
             "hit_rate": round(
                 (
                     info.get("keyspace_hits", 0)
-                    / max(info.get("keyspace_hits", 0) + info.get("keyspace_misses", 0), 1)
+                    / max(
+                        info.get("keyspace_hits", 0) + info.get("keyspace_misses", 0), 1
+                    )
                 )
                 * 100,
                 2,

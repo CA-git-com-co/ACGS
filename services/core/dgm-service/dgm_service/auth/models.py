@@ -146,9 +146,13 @@ class User:
             "username": self.username,
             "email": self.email,
             "full_name": self.full_name,
-            "roles": [{"name": role.name, "permissions": role.permissions} for role in self.roles],
+            "roles": [
+                {"name": role.name, "permissions": role.permissions}
+                for role in self.roles
+            ],
             "permissions": [
-                {"name": perm.name, "description": perm.description} for perm in self.permissions
+                {"name": perm.name, "description": perm.description}
+                for perm in self.permissions
             ],
             "is_active": self.is_active,
             "is_admin": self.is_admin,

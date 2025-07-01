@@ -69,11 +69,15 @@ class ACGSPerformanceValidator:
         logger.info("🔍 Validating service health before performance testing...")
 
         healthy_services = 0
-        async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=5)) as session:
+        async with aiohttp.ClientSession(
+            timeout=aiohttp.ClientTimeout(total=5)
+        ) as session:
             for service_id, config in self.services.items():
                 try:
                     start_time = time.time()
-                    async with session.get(f"http://localhost:{config['port']}/health") as response:
+                    async with session.get(
+                        f"http://localhost:{config['port']}/health"
+                    ) as response:
                         end_time = time.time()
                         response_time_ms = (end_time - start_time) * 1000
 
@@ -89,7 +93,9 @@ class ACGSPerformanceValidator:
                             )
 
                 except Exception as e:
-                    logger.error(f"❌ {config['name']} (:{config['port']}) - Error: {str(e)}")
+                    logger.error(
+                        f"❌ {config['name']} (:{config['port']}) - Error: {str(e)}"
+                    )
 
         all_healthy = healthy_services == len(self.services)
         logger.info(
@@ -123,7 +129,9 @@ class ACGSPerformanceValidator:
                     baseline_results[service_id] = {
                         "avg_latency_ms": statistics.mean(response_times),
                         "median_latency_ms": statistics.median(response_times),
-                        "p95_latency_ms": sorted(response_times)[int(0.95 * len(response_times))],
+                        "p95_latency_ms": sorted(response_times)[
+                            int(0.95 * len(response_times))
+                        ],
                         "min_latency_ms": min(response_times),
                         "max_latency_ms": max(response_times),
                         "sample_count": len(response_times),
@@ -140,7 +148,9 @@ class ACGSPerformanceValidator:
         self.results["performance_metrics"]["baseline"] = baseline_results
         return baseline_results
 
-    async def run_load_test(self, concurrent_users: int = 100, duration_minutes: int = 10) -> dict:
+    async def run_load_test(
+        self, concurrent_users: int = 100, duration_minutes: int = 10
+    ) -> dict:
         """Run comprehensive load test with specified concurrent users."""
         logger.info(
             f"🚀 Starting load test: {concurrent_users} concurrent users for {duration_minutes} minutes..."
@@ -160,7 +170,9 @@ class ACGSPerformanceValidator:
             while time.time() < end_time:
                 try:
                     request_start = time.time()
-                    async with session.get(f"http://localhost:{config['port']}/health") as response:
+                    async with session.get(
+                        f"http://localhost:{config['port']}/health"
+                    ) as response:
                         request_end = time.time()
                         response_time_ms = (request_end - request_start) * 1000
 
@@ -215,7 +227,8 @@ class ACGSPerformanceValidator:
                         if (success_counts[service_id] + error_counts[service_id]) > 0
                         else 0
                     ),
-                    "requests_per_second": len(response_times[service_id]) / test_duration_seconds,
+                    "requests_per_second": len(response_times[service_id])
+                    / test_duration_seconds,
                 }
 
                 avg_latency = load_test_results[service_id]["avg_latency_ms"]
@@ -259,7 +272,8 @@ class ACGSPerformanceValidator:
         # Check average latency across all services
         if "load_test_results" in self.results:
             avg_latencies = [
-                result["avg_latency_ms"] for result in self.results["load_test_results"].values()
+                result["avg_latency_ms"]
+                for result in self.results["load_test_results"].values()
             ]
 
             if avg_latencies:
@@ -281,9 +295,15 @@ class ACGSPerformanceValidator:
         # Check memory usage
         if self.results["memory_monitoring"]:
             max_memory_usage = (
-                max(entry["memory_percent"] for entry in self.results["memory_monitoring"]) / 100
+                max(
+                    entry["memory_percent"]
+                    for entry in self.results["memory_monitoring"]
+                )
+                / 100
             )
-            memory_success = max_memory_usage < self.performance_targets["max_memory_usage"]
+            memory_success = (
+                max_memory_usage < self.performance_targets["max_memory_usage"]
+            )
             success_criteria["memory_usage"] = {
                 "target_percent": self.performance_targets["max_memory_usage"] * 100,
                 "actual_percent": max_memory_usage * 100,
@@ -298,7 +318,8 @@ class ACGSPerformanceValidator:
         # Check error rates
         if "load_test_results" in self.results:
             error_rates = [
-                result["error_rate"] for result in self.results["load_test_results"].values()
+                result["error_rate"]
+                for result in self.results["load_test_results"].values()
             ]
 
             if error_rates:
@@ -320,7 +341,9 @@ class ACGSPerformanceValidator:
 
         return overall_success
 
-    async def run_validation(self, concurrent_users: int = 100, duration_minutes: int = 10) -> bool:
+    async def run_validation(
+        self, concurrent_users: int = 100, duration_minutes: int = 10
+    ) -> bool:
         """Run complete performance validation."""
         logger.info("🚀 Starting ACGS Phase 3 Performance Validation")
         logger.info("=" * 80)
@@ -371,7 +394,9 @@ class ACGSPerformanceValidator:
         logger.info(f"Detailed Report: {report_file}")
 
         if self.results["overall_status"] == "PASSED":
-            logger.info("🚀 All performance targets met! Ready for Phase 3 production deployment.")
+            logger.info(
+                "🚀 All performance targets met! Ready for Phase 3 production deployment."
+            )
         else:
             logger.info(
                 "⚠️ Performance targets not met. Review results and optimize before production."

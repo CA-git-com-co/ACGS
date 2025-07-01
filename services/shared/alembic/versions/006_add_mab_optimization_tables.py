@@ -32,7 +32,9 @@ def upgrade():
         sa.Column("template_content", sa.Text(), nullable=False),
         sa.Column("category", sa.String(100), nullable=False),
         sa.Column("version", sa.String(50), nullable=True, default="1.0"),
-        sa.Column("metadata_json", postgresql.JSON(astext_type=sa.Text()), nullable=True),
+        sa.Column(
+            "metadata_json", postgresql.JSON(astext_type=sa.Text()), nullable=True
+        ),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("created_by_user_id", sa.Integer(), nullable=True),
@@ -65,7 +67,9 @@ def upgrade():
         sa.Column("bias_mitigation", sa.Float(), nullable=False),
         sa.Column("composite_score", sa.Float(), nullable=False),
         sa.Column("confidence", sa.Float(), nullable=False),
-        sa.Column("context_json", postgresql.JSON(astext_type=sa.Text()), nullable=True),
+        sa.Column(
+            "context_json", postgresql.JSON(astext_type=sa.Text()), nullable=True
+        ),
         sa.Column("category", sa.String(100), nullable=True),
         sa.Column("llm_response_length", sa.Integer(), nullable=True),
         sa.Column("llm_response_hash", sa.String(64), nullable=True),
@@ -75,8 +79,12 @@ def upgrade():
         sa.ForeignKeyConstraint(["template_id"], ["prompt_templates.template_id"]),
     )
     op.create_index("ix_prompt_performance_id", "prompt_performance", ["id"])
-    op.create_index("ix_prompt_performance_template_id", "prompt_performance", ["template_id"])
-    op.create_index("ix_prompt_performance_category", "prompt_performance", ["category"])
+    op.create_index(
+        "ix_prompt_performance_template_id", "prompt_performance", ["template_id"]
+    )
+    op.create_index(
+        "ix_prompt_performance_category", "prompt_performance", ["category"]
+    )
 
     # Create optimization_history table
     op.create_table(
@@ -86,19 +94,29 @@ def upgrade():
         sa.Column("algorithm_type", sa.String(50), nullable=False),
         sa.Column("selection_reason", sa.String(255), nullable=True),
         sa.Column("composite_score", sa.Float(), nullable=False),
-        sa.Column("reward_components", postgresql.JSON(astext_type=sa.Text()), nullable=True),
+        sa.Column(
+            "reward_components", postgresql.JSON(astext_type=sa.Text()), nullable=True
+        ),
         sa.Column("total_uses_at_selection", sa.Integer(), nullable=False),
         sa.Column("average_reward_at_selection", sa.Float(), nullable=False),
-        sa.Column("context_json", postgresql.JSON(astext_type=sa.Text()), nullable=True),
+        sa.Column(
+            "context_json", postgresql.JSON(astext_type=sa.Text()), nullable=True
+        ),
         sa.Column("category", sa.String(100), nullable=True),
         sa.Column("timestamp", sa.DateTime(timezone=True), nullable=True),
         sa.PrimaryKeyConstraint("id"),
         sa.ForeignKeyConstraint(["template_id"], ["prompt_templates.template_id"]),
     )
     op.create_index("ix_optimization_history_id", "optimization_history", ["id"])
-    op.create_index("ix_optimization_history_template_id", "optimization_history", ["template_id"])
-    op.create_index("ix_optimization_history_category", "optimization_history", ["category"])
-    op.create_index("ix_optimization_history_timestamp", "optimization_history", ["timestamp"])
+    op.create_index(
+        "ix_optimization_history_template_id", "optimization_history", ["template_id"]
+    )
+    op.create_index(
+        "ix_optimization_history_category", "optimization_history", ["category"]
+    )
+    op.create_index(
+        "ix_optimization_history_timestamp", "optimization_history", ["timestamp"]
+    )
 
     # Create mab_configurations table
     op.create_table(
@@ -112,7 +130,9 @@ def upgrade():
         sa.Column("beta_prior", sa.Float(), nullable=True, default=1.0),
         sa.Column("semantic_similarity_weight", sa.Float(), nullable=True, default=0.4),
         sa.Column("policy_quality_weight", sa.Float(), nullable=True, default=0.3),
-        sa.Column("constitutional_compliance_weight", sa.Float(), nullable=True, default=0.2),
+        sa.Column(
+            "constitutional_compliance_weight", sa.Float(), nullable=True, default=0.2
+        ),
         sa.Column("bias_mitigation_weight", sa.Float(), nullable=True, default=0.1),
         sa.Column("min_uses_for_confidence", sa.Integer(), nullable=True, default=10),
         sa.Column("reward_threshold", sa.Float(), nullable=True, default=0.8),
@@ -121,7 +141,9 @@ def upgrade():
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("created_by_user_id", sa.Integer(), nullable=True),
-        sa.Column("additional_config", postgresql.JSON(astext_type=sa.Text()), nullable=True),
+        sa.Column(
+            "additional_config", postgresql.JSON(astext_type=sa.Text()), nullable=True
+        ),
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_index("ix_mab_configurations_id", "mab_configurations", ["id"])
@@ -150,12 +172,16 @@ def upgrade():
         sa.Column("convergence_iteration", sa.Integer(), nullable=True),
         sa.Column("is_active", sa.Boolean(), nullable=True, default=True),
         sa.Column("status", sa.String(50), nullable=True, default="running"),
-        sa.Column("session_metadata", postgresql.JSON(astext_type=sa.Text()), nullable=True),
+        sa.Column(
+            "session_metadata", postgresql.JSON(astext_type=sa.Text()), nullable=True
+        ),
         sa.PrimaryKeyConstraint("id"),
         sa.ForeignKeyConstraint(["config_name"], ["mab_configurations.config_name"]),
     )
     op.create_index("ix_mab_sessions_id", "mab_sessions", ["id"])
-    op.create_index("ix_mab_sessions_session_id", "mab_sessions", ["session_id"], unique=True)
+    op.create_index(
+        "ix_mab_sessions_session_id", "mab_sessions", ["session_id"], unique=True
+    )
 
     # Create prompt_template_versions table
     op.create_table(
@@ -167,13 +193,17 @@ def upgrade():
         sa.Column("change_description", sa.Text(), nullable=True),
         sa.Column("parent_version", sa.String(50), nullable=True),
         sa.Column("performance_improvement", sa.Float(), nullable=True),
-        sa.Column("a_b_test_results", postgresql.JSON(astext_type=sa.Text()), nullable=True),
+        sa.Column(
+            "a_b_test_results", postgresql.JSON(astext_type=sa.Text()), nullable=True
+        ),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("created_by_user_id", sa.Integer(), nullable=True),
         sa.Column("is_current", sa.Boolean(), nullable=True, default=False),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index("ix_prompt_template_versions_id", "prompt_template_versions", ["id"])
+    op.create_index(
+        "ix_prompt_template_versions_id", "prompt_template_versions", ["id"]
+    )
     op.create_index(
         "ix_prompt_template_versions_template_id",
         "prompt_template_versions",
@@ -187,11 +217,17 @@ def upgrade():
         sa.Column("function_name", sa.String(255), nullable=False),
         sa.Column("function_code", sa.Text(), nullable=False),
         sa.Column("function_type", sa.String(50), nullable=True, default="composite"),
-        sa.Column("weight_config", postgresql.JSON(astext_type=sa.Text()), nullable=True),
-        sa.Column("threshold_config", postgresql.JSON(astext_type=sa.Text()), nullable=True),
+        sa.Column(
+            "weight_config", postgresql.JSON(astext_type=sa.Text()), nullable=True
+        ),
+        sa.Column(
+            "threshold_config", postgresql.JSON(astext_type=sa.Text()), nullable=True
+        ),
         sa.Column("is_active", sa.Boolean(), nullable=True, default=True),
         sa.Column("is_validated", sa.Boolean(), nullable=True, default=False),
-        sa.Column("validation_results", postgresql.JSON(astext_type=sa.Text()), nullable=True),
+        sa.Column(
+            "validation_results", postgresql.JSON(astext_type=sa.Text()), nullable=True
+        ),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("created_by_user_id", sa.Integer(), nullable=True),

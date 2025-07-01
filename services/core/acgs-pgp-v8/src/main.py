@@ -102,7 +102,9 @@ async def lifespan(app: FastAPI):
 
         # Initialize Stabilizer Execution Environment
         stabilizer_env = StabilizerExecutionEnvironment(
-            redis_url=config.gs_service_url.replace("8004", "6379").replace("http://", "redis://")
+            redis_url=config.gs_service_url.replace("8004", "6379").replace(
+                "http://", "redis://"
+            )
             + "/0",
             postgres_url=os.getenv(
                 "DATABASE_URL",
@@ -140,7 +142,9 @@ async def lifespan(app: FastAPI):
         logger.info("✅ Specialized caches initialized")
 
         # Initialize Monitoring System
-        metrics_manager = initialize_metrics_manager(constitutional_hash=config.constitutional_hash)
+        metrics_manager = initialize_metrics_manager(
+            constitutional_hash=config.constitutional_hash
+        )
         logger.info("✅ Metrics Manager initialized")
 
         # Initialize Health Monitor
@@ -227,7 +231,9 @@ async def security_headers_middleware(request, call_next):
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["X-XSS-Protection"] = "1; mode=block"
-    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    response.headers["Strict-Transport-Security"] = (
+        "max-age=31536000; includeSubDomains"
+    )
     response.headers["Content-Security-Policy"] = "default-src 'self'"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
 
@@ -269,7 +275,9 @@ async def verify_token(
     """Verify JWT token and return user information."""
     try:
         # Try to decode JWT token locally first
-        payload = jwt.decode(credentials.credentials, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
+        payload = jwt.decode(
+            credentials.credentials, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM]
+        )
         return payload
     except jwt.InvalidTokenError:
         # If local verification fails, try auth service
@@ -283,9 +291,13 @@ async def verify_token(
                 if response.status_code == 200:
                     return response.json()
                 else:
-                    raise HTTPException(status_code=401, detail="Invalid authentication token")
+                    raise HTTPException(
+                        status_code=401, detail="Invalid authentication token"
+                    )
         except Exception:
-            raise HTTPException(status_code=401, detail="Authentication service unavailable")
+            raise HTTPException(
+                status_code=401, detail="Authentication service unavailable"
+            )
 
 
 async def get_current_user(
@@ -306,7 +318,9 @@ async def get_generation_engine() -> GenerationEngine:
 async def get_stabilizer_env() -> StabilizerExecutionEnvironment:
     """Get stabilizer execution environment instance."""
     if not stabilizer_env:
-        raise HTTPException(status_code=503, detail="Stabilizer environment not initialized")
+        raise HTTPException(
+            status_code=503, detail="Stabilizer environment not initialized"
+        )
     return stabilizer_env
 
 
@@ -413,11 +427,15 @@ async def health_check():
         components["cache_manager"] = {"status": "not_initialized"}
 
     # Determine overall status
-    unhealthy_components = sum(1 for comp in components.values() if comp.get("status") != "healthy")
+    unhealthy_components = sum(
+        1 for comp in components.values() if comp.get("status") != "healthy"
+    )
 
     overall_status = "healthy"
     if unhealthy_components > 0:
-        overall_status = "degraded" if unhealthy_components < len(components) else "unhealthy"
+        overall_status = (
+            "degraded" if unhealthy_components < len(components) else "unhealthy"
+        )
 
     return HealthResponse(
         status=overall_status,
@@ -538,7 +556,9 @@ async def generate_policy(
 
                 # Apply automatic recommendations if available
                 auto_recommendations = [
-                    rec for rec in diagnostic_result.recommendations if rec.is_safe_to_execute()
+                    rec
+                    for rec in diagnostic_result.recommendations
+                    if rec.is_safe_to_execute()
                 ]
 
                 if auto_recommendations:
@@ -550,12 +570,16 @@ async def generate_policy(
                         execution.add_log(f"Applied recommendation: {rec.description}")
 
             # Generate policy using the generation engine
-            response = await engine.generate_policy(request, use_quantum_enhancement=True)
+            response = await engine.generate_policy(
+                request, use_quantum_enhancement=True
+            )
 
             # Validate constitutional compliance of the generated policy
             lsu.compliance_validated = response.constitutional_compliance_score >= 0.8
 
-            execution.add_log(f"Policy generated successfully: {response.generation_id}")
+            execution.add_log(
+                f"Policy generated successfully: {response.generation_id}"
+            )
             execution.result_data = {
                 "generation_id": response.generation_id,
                 "constitutional_compliance_score": response.constitutional_compliance_score,
@@ -575,7 +599,9 @@ async def generate_policy(
                     "lsu_id": lsu.id,
                     "stabilizers_executed": len(stabilizer_results),
                     "system_health_score": diagnostic_result.overall_health_score,
-                    "errors_corrected": sum(r.errors_corrected for r in stabilizer_results),
+                    "errors_corrected": sum(
+                        r.errors_corrected for r in stabilizer_results
+                    ),
                     "syndrome_diagnosis_id": diagnostic_result.diagnostic_id,
                 }
             )
@@ -584,7 +610,9 @@ async def generate_policy(
 
         except Exception as e:
             execution.add_log(f"Policy generation failed: {str(e)}", "ERROR")
-            raise HTTPException(status_code=500, detail=f"Policy generation failed: {str(e)}")
+            raise HTTPException(
+                status_code=500, detail=f"Policy generation failed: {str(e)}"
+            )
 
 
 @app.post("/api/v1/diagnose")
@@ -688,13 +716,17 @@ async def list_stabilizers(
         return {
             "stabilizers": stabilizers,
             "total_count": len(stabilizers),
-            "enabled_count": sum(1 for s in env.stabilizer_registry.values() if s.enabled),
+            "enabled_count": sum(
+                1 for s in env.stabilizer_registry.values() if s.enabled
+            ),
             "constitutional_hash": "cdd01ef066bc6cf2",
         }
 
     except Exception as e:
         logger.error(f"Failed to list stabilizers: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to list stabilizers: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to list stabilizers: {str(e)}"
+        )
 
 
 @app.get("/api/v1/diagnostics/{diagnostic_id}")
@@ -719,7 +751,9 @@ async def get_diagnostic_result(
         raise
     except Exception as e:
         logger.error(f"Failed to get diagnostic result: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to get diagnostic result: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to get diagnostic result: {str(e)}"
+        )
 
 
 @app.get("/metrics")

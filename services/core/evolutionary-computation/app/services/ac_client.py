@@ -17,7 +17,9 @@ try:
 
     # Add the correct path to services/shared
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    shared_path = os.path.join(current_dir, "..", "..", "..", "..", "services", "shared")
+    shared_path = os.path.join(
+        current_dir, "..", "..", "..", "..", "services", "shared"
+    )
     sys.path.insert(0, os.path.abspath(shared_path))
 
     from config import get_config
@@ -160,7 +162,9 @@ class ACServiceClient:
                 "source": "ec_service",
             }
 
-            response = await self.client.post("/api/v1/fidelity/report-activity", json=request_data)
+            response = await self.client.post(
+                "/api/v1/fidelity/report-activity", json=request_data
+            )
             response.raise_for_status()
 
             return response.json()

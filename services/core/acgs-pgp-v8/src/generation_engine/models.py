@@ -121,10 +121,16 @@ class Representation(BaseModel):
     """
 
     lsu: LSU
-    confidence_score: float = Field(ge=0.0, le=1.0, description="Confidence in representation")
-    constitutional_hash: str = Field(default="cdd01ef066bc6cf2", description="Constitution hash")
+    confidence_score: float = Field(
+        ge=0.0, le=1.0, description="Confidence in representation"
+    )
+    constitutional_hash: str = Field(
+        default="cdd01ef066bc6cf2", description="Constitution hash"
+    )
     validation_status: str = Field(default="pending", description="Validation status")
-    dependencies: list[str] = Field(default_factory=list, description="Dependent LSU hashes")
+    dependencies: list[str] = Field(
+        default_factory=list, description="Dependent LSU hashes"
+    )
 
     class Config:
         arbitrary_types_allowed = True

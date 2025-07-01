@@ -85,13 +85,17 @@ class DomainContextManager:
         if cache_key in self.adaptation_cache:
             return self.adaptation_cache[cache_key]
 
-        logger.info(f"Adapting principle {principle.id} to domain {domain_context.domain_name}")
+        logger.info(
+            f"Adapting principle {principle.id} to domain {domain_context.domain_name}"
+        )
 
         # Analyze domain-specific requirements
         domain_requirements = await self._analyze_domain_requirements(domain_context)
 
         # Analyze principle characteristics
-        principle_characteristics = await self._analyze_principle_characteristics(principle)
+        principle_characteristics = await self._analyze_principle_characteristics(
+            principle
+        )
 
         # Perform adaptation based on strategy
         if strategy == AdaptationStrategy.CONSERVATIVE:
@@ -123,7 +127,9 @@ class DomainContextManager:
         adaptation.constitutional_fidelity_score = fidelity_score
 
         # Calculate domain fit score
-        fit_score = await self._calculate_domain_fit(adaptation.adapted_content, domain_context)
+        fit_score = await self._calculate_domain_fit(
+            adaptation.adapted_content, domain_context
+        )
         adaptation.domain_fit_score = fit_score
 
         # Cache the result
@@ -151,9 +157,7 @@ class DomainContextManager:
             CrossDomainMapping with similarity and conflict analysis
         """
 
-        cache_key = (
-            f"{source_principle.id}_{target_principle.id}_{source_domain.id}_{target_domain.id}"
-        )
+        cache_key = f"{source_principle.id}_{target_principle.id}_{source_domain.id}_{target_domain.id}"
         if cache_key in self.mapping_cache:
             return self.mapping_cache[cache_key]
 
@@ -233,22 +237,32 @@ class DomainContextManager:
                         "conflict_type": conflict_analysis["conflict_type"],
                         "severity": conflict_analysis["severity"],
                         "description": conflict_analysis["description"],
-                        "resolution_suggestions": conflict_analysis["resolution_suggestions"],
+                        "resolution_suggestions": conflict_analysis[
+                            "resolution_suggestions"
+                        ],
                     }
 
-                    conflicts[conflict_analysis["conflict_category"]].append(conflict_entry)
+                    conflicts[conflict_analysis["conflict_category"]].append(
+                        conflict_entry
+                    )
 
         # Analyze regulatory conflicts
-        regulatory_conflicts = await self._analyze_regulatory_conflicts(principles, domain_context)
+        regulatory_conflicts = await self._analyze_regulatory_conflicts(
+            principles, domain_context
+        )
         conflicts["regulatory_conflicts"].extend(regulatory_conflicts)
 
         # Analyze cultural conflicts
-        cultural_conflicts = await self._analyze_cultural_conflicts(principles, domain_context)
+        cultural_conflicts = await self._analyze_cultural_conflicts(
+            principles, domain_context
+        )
         conflicts["cultural_conflicts"].extend(cultural_conflicts)
 
         return conflicts
 
-    async def _analyze_domain_requirements(self, domain_context: DomainContext) -> dict[str, Any]:
+    async def _analyze_domain_requirements(
+        self, domain_context: DomainContext
+    ) -> dict[str, Any]:
         """Analyze domain-specific requirements and constraints."""
 
         requirements = {
@@ -276,7 +290,9 @@ class DomainContextManager:
 
         return requirements
 
-    async def _analyze_principle_characteristics(self, principle: Principle) -> dict[str, Any]:
+    async def _analyze_principle_characteristics(
+        self, principle: Principle
+    ) -> dict[str, Any]:
         """Analyze characteristics of a constitutional principle."""
 
         characteristics = {
@@ -366,7 +382,9 @@ class DomainContextManager:
         if domain_context.domain_name.lower() in ["healthcare", "finance"]:
             if "compliance" not in adapted_content.lower():
                 adapted_content += f" This principle must be applied in compliance with {domain_context.domain_name} regulations."
-                rationale += f" Added {domain_context.domain_name} compliance requirement."
+                rationale += (
+                    f" Added {domain_context.domain_name} compliance requirement."
+                )
 
         return PrincipleAdaptation(
             original_principle_id=principle.id,
@@ -377,7 +395,9 @@ class DomainContextManager:
             domain_fit_score=0.0,  # Will be calculated later
             adaptation_metadata={
                 "changes_made": (
-                    ["minimal_compliance_addition"] if adapted_content != principle.content else []
+                    ["minimal_compliance_addition"]
+                    if adapted_content != principle.content
+                    else []
                 ),
                 "original_length": len(principle.content),
                 "adapted_length": len(adapted_content),
@@ -398,25 +418,36 @@ class DomainContextManager:
 
         # Domain-specific adaptations
         if domain_context.domain_name.lower() == "healthcare":
-            if "data" in adapted_content.lower() and "privacy" not in adapted_content.lower():
+            if (
+                "data" in adapted_content.lower()
+                and "privacy" not in adapted_content.lower()
+            ):
                 adapted_content = adapted_content.replace(
                     "data", "patient data with privacy protections"
                 )
                 changes_made.append("added_privacy_protections")
 
-            if "decision" in adapted_content.lower() and "safety" not in adapted_content.lower():
-                adapted_content += (
-                    " All decisions must prioritize patient safety and clinical best practices."
-                )
+            if (
+                "decision" in adapted_content.lower()
+                and "safety" not in adapted_content.lower()
+            ):
+                adapted_content += " All decisions must prioritize patient safety and clinical best practices."
                 changes_made.append("added_safety_requirements")
 
         elif domain_context.domain_name.lower() == "finance":
-            if "transaction" in adapted_content.lower() and "audit" not in adapted_content.lower():
-                adapted_content += " All transactions must maintain comprehensive audit trails."
+            if (
+                "transaction" in adapted_content.lower()
+                and "audit" not in adapted_content.lower()
+            ):
+                adapted_content += (
+                    " All transactions must maintain comprehensive audit trails."
+                )
                 changes_made.append("added_audit_requirements")
 
             if "risk" not in adapted_content.lower():
-                adapted_content += " Risk assessment and mitigation procedures must be implemented."
+                adapted_content += (
+                    " Risk assessment and mitigation procedures must be implemented."
+                )
                 changes_made.append("added_risk_management")
 
         rationale = f"Contextual adaptation for {domain_context.domain_name} domain with specific requirements"
@@ -448,7 +479,9 @@ class DomainContextManager:
         # This would involve more sophisticated NLP and domain knowledge
         # For now, implement a simplified version
 
-        adapted_content = f"In the context of {domain_context.domain_name}: {principle.content}"
+        adapted_content = (
+            f"In the context of {domain_context.domain_name}: {principle.content}"
+        )
 
         # Add comprehensive domain-specific requirements
         if domain_context.regulatory_frameworks:

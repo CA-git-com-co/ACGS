@@ -110,7 +110,9 @@ class StructuredLogger:
         context.update({"level": "DEBUG", "message": message, "extra": extra or {}})
         self.logger.debug(json.dumps(context))
 
-    def log_request(self, request: Request, request_id: str, user_id: Optional[str] = None):
+    def log_request(
+        self, request: Request, request_id: str, user_id: Optional[str] = None
+    ):
         """Log incoming HTTP request."""
         context = self._create_base_context(request_id, user_id)
         context.update(
@@ -230,7 +232,8 @@ class StructuredLogger:
             {
                 "level": "INFO",
                 "event_type": "performance_metric",
-                "message": message or f"Performance metric: {metric_name} = {metric_value}",
+                "message": message
+                or f"Performance metric: {metric_name} = {metric_value}",
                 "performance": {
                     "metric_name": metric_name,
                     "metric_value": metric_value,
@@ -282,7 +285,9 @@ class LoggingMiddleware(BaseHTTPMiddleware):
             duration_ms = (time.time() - start_time) * 1000
 
             # Log response
-            self.logger.log_response(request, response, request_id, duration_ms, user_id)
+            self.logger.log_response(
+                request, response, request_id, duration_ms, user_id
+            )
 
             # Record metrics
             metrics_collector.record_http_request(

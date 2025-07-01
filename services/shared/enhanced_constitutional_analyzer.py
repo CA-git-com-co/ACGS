@@ -138,10 +138,14 @@ class EnhancedConstitutionalAnalyzer:
             try:
                 self.embedding_client = await get_qwen3_embedding_client()
                 if self.embedding_client is None:
-                    logger.warning("Embedding client initialization returned None, using fallback")
+                    logger.warning(
+                        "Embedding client initialization returned None, using fallback"
+                    )
                     self.embedding_client = None
             except Exception as e:
-                logger.warning(f"Failed to initialize embedding client: {e}, using fallback")
+                logger.warning(
+                    f"Failed to initialize embedding client: {e}, using fallback"
+                )
                 self.embedding_client = None
 
             # Initialize AI model service
@@ -219,8 +223,8 @@ class EnhancedConstitutionalAnalyzer:
                 policy_embedding = [0.1] * 8192  # Mock embedding
                 logger.warning("Using fallback embedding due to client unavailability")
             else:
-                policy_embedding_response = await self.embedding_client.generate_embedding(
-                    embedding_request
+                policy_embedding_response = (
+                    await self.embedding_client.generate_embedding(embedding_request)
                 )
 
                 if not policy_embedding_response.success:
@@ -372,12 +376,16 @@ class EnhancedConstitutionalAnalyzer:
 
                 if self.embedding_client is None:
                     # Use fallback similarity calculation
-                    similarity_scores[principle["id"]] = 0.5  # Default moderate similarity
-                    logger.warning(f"Using fallback similarity for principle {principle['id']}")
+                    similarity_scores[principle["id"]] = (
+                        0.5  # Default moderate similarity
+                    )
+                    logger.warning(
+                        f"Using fallback similarity for principle {principle['id']}"
+                    )
                     continue
 
-                principle_embedding_response = await self.embedding_client.generate_embedding(
-                    principle_request
+                principle_embedding_response = (
+                    await self.embedding_client.generate_embedding(principle_request)
                 )
 
                 if principle_embedding_response.success:
@@ -390,7 +398,9 @@ class EnhancedConstitutionalAnalyzer:
                     weighted_similarity = similarity * principle.get("weight", 1.0)
                     similarity_scores[principle["id"]] = weighted_similarity
                 else:
-                    logger.warning(f"Failed to generate embedding for principle {principle['id']}")
+                    logger.warning(
+                        f"Failed to generate embedding for principle {principle['id']}"
+                    )
                     similarity_scores[principle["id"]] = 0.0
 
             return similarity_scores
@@ -711,7 +721,8 @@ Respond in JSON format with the following structure:
             "performance_metrics": {
                 "total_analyses": self.total_analyses,
                 "successful_analyses": self.successful_analyses,
-                "success_rate": (self.successful_analyses / max(1, self.total_analyses)) * 100,
+                "success_rate": (self.successful_analyses / max(1, self.total_analyses))
+                * 100,
                 "average_response_time_ms": 0.0,
             },
         }
@@ -722,7 +733,9 @@ Respond in JSON format with the following structure:
                 # Test embedding client
                 if self.embedding_client:
                     embedding_health = await self.embedding_client.health_check()
-                    health_status["components"]["embedding_client"] = embedding_health["status"]
+                    health_status["components"]["embedding_client"] = embedding_health[
+                        "status"
+                    ]
                 else:
                     health_status["components"]["embedding_client"] = "unavailable"
 
@@ -760,10 +773,14 @@ Respond in JSON format with the following structure:
                     "compliance_score": test_result.compliance_score,
                 }
 
-                health_status["performance_metrics"]["average_response_time_ms"] = test_time
+                health_status["performance_metrics"][
+                    "average_response_time_ms"
+                ] = test_time
 
                 # Check if performance targets are met
-                health_status["performance_targets_met"] = test_time < 500.0  # <500ms target
+                health_status["performance_targets_met"] = (
+                    test_time < 500.0
+                )  # <500ms target
 
             except Exception as e:
                 health_status["status"] = "degraded"

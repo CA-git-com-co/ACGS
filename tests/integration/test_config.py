@@ -30,21 +30,21 @@ sys.path.insert(0, str(PROJECT_ROOT))
 SERVICE_PATH_MAPPINGS = {
     "constitutional_ai": [
         "services.core.constitutional_ai.ac_service",
-        "services.core.constitutional_ai.ac_service", 
+        "services.core.constitutional_ai.ac_service",
         "constitutional_ai.ac_service",
         "ac_service",
     ],
     "governance_synthesis": [
         "services.core.governance_synthesis.gs_service",
         "services.core.governance_synthesis.gs_service",
-        "governance_synthesis.gs_service", 
+        "governance_synthesis.gs_service",
         "gs_service",
     ],
     "formal_verification": [
         "services.core.formal_verification.fv_service",
         "services.core.formal_verification.fv_service",
         "formal_verification.fv_service",
-        "fv_service", 
+        "fv_service",
     ],
     "pgc": [
         "services.platform.pgc.pgc_service",
@@ -53,14 +53,14 @@ SERVICE_PATH_MAPPINGS = {
         "pgc_service",
     ],
     "authentication": [
-        "services.platform.authentication.auth_service", 
+        "services.platform.authentication.auth_service",
         "platform.authentication.auth_service",
         "authentication.auth_service",
         "auth_service",
     ],
     "integrity": [
         "services.platform.integrity.integrity_service",
-        "platform.integrity.integrity_service", 
+        "platform.integrity.integrity_service",
         "integrity.integrity_service",
         "integrity_service",
     ],
@@ -69,7 +69,7 @@ SERVICE_PATH_MAPPINGS = {
 # Service port mappings
 SERVICE_PORTS = {
     "auth": 8000,
-    "ac": 8001, 
+    "ac": 8001,
     "integrity": 8002,
     "fv": 8003,
     "gs": 8004,
@@ -78,17 +78,19 @@ SERVICE_PORTS = {
 }
 
 # Service URLs
-SERVICE_URLS = {name: f"http://localhost:{port}" for name, port in SERVICE_PORTS.items()}
+SERVICE_URLS = {
+    name: f"http://localhost:{port}" for name, port in SERVICE_PORTS.items()
+}
 
 
 def safe_import(module_paths: list[str], component_name: str = None) -> Any:
     """
     Safely import a module or component, trying multiple paths.
-    
+
     Args:
         module_paths: List of module paths to try
         component_name: Specific component to import from module
-        
+
     Returns:
         Imported module/component or None if all fail
     """
@@ -101,7 +103,7 @@ def safe_import(module_paths: list[str], component_name: str = None) -> Any:
         except (ImportError, AttributeError) as e:
             logger.debug(f"Failed to import {module_path}: {e}")
             continue
-    
+
     logger.warning(f"Failed to import from any path: {module_paths}")
     return None
 
@@ -118,11 +120,13 @@ def create_mock_service(service_name: str) -> MagicMock:
 def create_mock_llm_service() -> MagicMock:
     """Create a mock LLM service."""
     mock_llm = MagicMock()
-    mock_llm.generate = AsyncMock(return_value={
-        "content": "Mock LLM response",
-        "confidence": 0.95,
-        "model": "mock-model"
-    })
+    mock_llm.generate = AsyncMock(
+        return_value={
+            "content": "Mock LLM response",
+            "confidence": 0.95,
+            "model": "mock-model",
+        }
+    )
     mock_llm.validate = AsyncMock(return_value={"valid": True, "score": 0.9})
     return mock_llm
 
@@ -139,7 +143,7 @@ def create_mock_database() -> MagicMock:
 
 class MockComponents:
     """Container for mock implementations of missing components."""
-    
+
     @staticmethod
     def get_lipschitz_estimator():
         """Mock Lipschitz estimator."""
@@ -147,56 +151,64 @@ class MockComponents:
         mock.estimate = AsyncMock(return_value=0.65)
         mock.validate_bounds = AsyncMock(return_value=True)
         return mock
-    
-    @staticmethod 
+
+    @staticmethod
     def get_llm_reliability_framework():
         """Mock LLM reliability framework."""
         mock = MagicMock()
-        mock.validate_response = AsyncMock(return_value={
-            "reliability_score": 0.95,
-            "confidence": 0.9,
-            "bias_score": 0.1
-        })
+        mock.validate_response = AsyncMock(
+            return_value={
+                "reliability_score": 0.95,
+                "confidence": 0.9,
+                "bias_score": 0.1,
+            }
+        )
         return mock
-    
+
     @staticmethod
     def get_constitutional_council_scalability():
         """Mock constitutional council scalability framework."""
         mock = MagicMock()
-        mock.process_amendment = AsyncMock(return_value={
-            "processed": True,
-            "voting_result": "approved",
-            "processing_time": 0.5
-        })
+        mock.process_amendment = AsyncMock(
+            return_value={
+                "processed": True,
+                "voting_result": "approved",
+                "processing_time": 0.5,
+            }
+        )
         return mock
-    
+
     @staticmethod
     def get_adversarial_robustness_tester():
         """Mock adversarial robustness tester."""
         mock = MagicMock()
-        mock.test_robustness = AsyncMock(return_value={
-            "robustness_score": 0.85,
-            "vulnerabilities": [],
-            "test_passed": True
-        })
+        mock.test_robustness = AsyncMock(
+            return_value={
+                "robustness_score": 0.85,
+                "vulnerabilities": [],
+                "test_passed": True,
+            }
+        )
         return mock
-    
+
     @staticmethod
     def get_proactive_fairness_generator():
         """Mock proactive fairness generator."""
         mock = MagicMock()
-        mock.generate_fair_policy = AsyncMock(return_value={
-            "policy": "Mock fair policy",
-            "fairness_score": 0.9,
-            "bias_metrics": {"demographic": 0.05, "socioeconomic": 0.03}
-        })
+        mock.generate_fair_policy = AsyncMock(
+            return_value={
+                "policy": "Mock fair policy",
+                "fairness_score": 0.9,
+                "bias_metrics": {"demographic": 0.05, "socioeconomic": 0.03},
+            }
+        )
         return mock
 
 
 # Test configuration
 TEST_CONFIG = {
     "database_url": "sqlite+aiosqlite:///./test_acgs.db",
-    "redis_url": "redis://localhost:6379/1", 
+    "redis_url": "redis://localhost:6379/1",
     "secret_key": "test-secret-key-for-testing-only",
     "constitutional_hash": "cdd01ef066bc6cf2",
     "testing": True,
@@ -210,6 +222,7 @@ async def check_service_health(service_url: str, timeout: int = 5) -> bool:
     """Check if a service is healthy."""
     try:
         import httpx
+
         async with httpx.AsyncClient(timeout=timeout) as client:
             response = await client.get(f"{service_url}/health")
             return response.status_code == 200
@@ -239,7 +252,7 @@ async def wait_for_services(services: list[str], max_wait: int = 30) -> Dict[str
 # Export commonly used fixtures and utilities
 __all__ = [
     "safe_import",
-    "create_mock_service", 
+    "create_mock_service",
     "create_mock_llm_service",
     "create_mock_database",
     "MockComponents",

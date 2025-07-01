@@ -60,7 +60,10 @@ class CompatibilityRule:
 
     def is_compatible(self) -> bool:
         """Check if versions are compatible."""
-        return self.compatibility_level in [CompatibilityLevel.FULL, CompatibilityLevel.PARTIAL]
+        return self.compatibility_level in [
+            CompatibilityLevel.FULL,
+            CompatibilityLevel.PARTIAL,
+        ]
 
 
 class CompatibilityManager:
@@ -177,7 +180,9 @@ class CompatibilityManager:
 
         # Calculate deprecation timeline
         deprecation_start = now
-        sunset_notice = now + timedelta(days=self.deprecation_period_days - self.sunset_notice_days)
+        sunset_notice = now + timedelta(
+            days=self.deprecation_period_days - self.sunset_notice_days
+        )
         sunset_date = now + timedelta(days=self.deprecation_period_days)
 
         return {

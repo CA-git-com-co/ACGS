@@ -88,32 +88,56 @@ class ConstitutionalValidator:
             },
             "privacy": {
                 "description": "Protect user data and privacy rights",
-                "checks": ["data_minimization", "consent_management", "anonymization_compliance"],
+                "checks": [
+                    "data_minimization",
+                    "consent_management",
+                    "anonymization_compliance",
+                ],
                 "weight": 0.1,
             },
             "safety": {
                 "description": "Ensure system and user safety",
-                "checks": ["risk_assessment", "failure_mode_analysis", "safety_constraints"],
+                "checks": [
+                    "risk_assessment",
+                    "failure_mode_analysis",
+                    "safety_constraints",
+                ],
                 "weight": 0.15,
             },
             "beneficence": {
                 "description": "Promote positive outcomes and benefits",
-                "checks": ["benefit_analysis", "positive_impact_validation", "stakeholder_benefit"],
+                "checks": [
+                    "benefit_analysis",
+                    "positive_impact_validation",
+                    "stakeholder_benefit",
+                ],
                 "weight": 0.05,
             },
             "non_maleficence": {
                 "description": "Do no harm principle",
-                "checks": ["harm_assessment", "negative_impact_prevention", "risk_mitigation"],
+                "checks": [
+                    "harm_assessment",
+                    "negative_impact_prevention",
+                    "risk_mitigation",
+                ],
                 "weight": 0.05,
             },
             "justice": {
                 "description": "Ensure fair distribution of benefits and burdens",
-                "checks": ["distributive_justice", "procedural_fairness", "access_equality"],
+                "checks": [
+                    "distributive_justice",
+                    "procedural_fairness",
+                    "access_equality",
+                ],
                 "weight": 0.03,
             },
             "respect_for_persons": {
                 "description": "Treat individuals with dignity and respect",
-                "checks": ["dignity_preservation", "autonomy_respect", "informed_consent"],
+                "checks": [
+                    "dignity_preservation",
+                    "autonomy_respect",
+                    "informed_consent",
+                ],
                 "weight": 0.02,
             },
         }
@@ -158,14 +182,18 @@ class ConstitutionalValidator:
             )
 
             # Log compliance result
-            await self._log_compliance_result(validation_id, improvement_data, combined_result)
+            await self._log_compliance_result(
+                validation_id, improvement_data, combined_result
+            )
 
             # Add metadata
             combined_result.update(
                 {
                     "validation_id": str(validation_id),
                     "timestamp": start_time.isoformat(),
-                    "validation_duration": (datetime.utcnow() - start_time).total_seconds(),
+                    "validation_duration": (
+                        datetime.utcnow() - start_time
+                    ).total_seconds(),
                     "principles_checked": principles_to_check,
                     "strict_mode": strict_mode,
                     "validator_version": "1.0.0",
@@ -200,13 +228,17 @@ class ConstitutionalValidator:
                 continue
 
             rule = self.validation_rules[principle]
-            score = await self._validate_principle(improvement_data, principle, rule, strict_mode)
+            score = await self._validate_principle(
+                improvement_data, principle, rule, strict_mode
+            )
 
             principle_scores[principle] = score
 
             # Check for violations
             if score < 0.5:
-                violations.append(f"Principle violation: {principle} (score: {score:.2f})")
+                violations.append(
+                    f"Principle violation: {principle} (score: {score:.2f})"
+                )
             elif score < 0.7:
                 warnings.append(f"Principle concern: {principle} (score: {score:.2f})")
 
@@ -228,7 +260,9 @@ class ConstitutionalValidator:
                 for principle in principle_scores.keys()
                 if principle in self.validation_rules
             )
-            compliance_score = weighted_score / total_weight if total_weight > 0 else 0.0
+            compliance_score = (
+                weighted_score / total_weight if total_weight > 0 else 0.0
+            )
         else:
             compliance_score = 0.0
 
@@ -238,7 +272,8 @@ class ConstitutionalValidator:
             "violations": violations,
             "warnings": warnings,
             "recommendations": recommendations,
-            "is_compliant": compliance_score >= self.compliance_threshold and not violations,
+            "is_compliant": compliance_score >= self.compliance_threshold
+            and not violations,
         }
 
     async def _perform_ac_service_validation(
@@ -246,7 +281,9 @@ class ConstitutionalValidator:
     ) -> Optional[Dict[str, Any]]:
         """Perform validation using AC Service."""
         try:
-            result = await self.service_client.validate_constitutional_compliance(improvement_data)
+            result = await self.service_client.validate_constitutional_compliance(
+                improvement_data
+            )
             return result
 
         except Exception as e:
@@ -254,7 +291,10 @@ class ConstitutionalValidator:
             return None
 
     async def _combine_validation_results(
-        self, local_result: Dict[str, Any], ac_result: Optional[Dict[str, Any]], strict_mode: bool
+        self,
+        local_result: Dict[str, Any],
+        ac_result: Optional[Dict[str, Any]],
+        strict_mode: bool,
     ) -> Dict[str, Any]:
         """Combine local and AC Service validation results."""
         if not ac_result:
@@ -262,7 +302,8 @@ class ConstitutionalValidator:
 
         # Take the more restrictive result
         combined_score = min(
-            local_result.get("compliance_score", 0), ac_result.get("compliance_score", 0)
+            local_result.get("compliance_score", 0),
+            ac_result.get("compliance_score", 0),
         )
 
         # Combine violations and warnings
@@ -275,16 +316,24 @@ class ConstitutionalValidator:
         )
 
         combined_recommendations = list(
-            set(local_result.get("recommendations", []) + ac_result.get("recommendations", []))
+            set(
+                local_result.get("recommendations", [])
+                + ac_result.get("recommendations", [])
+            )
         )
 
         # Determine compliance
-        is_compliant = combined_score >= self.compliance_threshold and len(combined_violations) == 0
+        is_compliant = (
+            combined_score >= self.compliance_threshold
+            and len(combined_violations) == 0
+        )
 
         # In strict mode, warnings also count as violations
         if strict_mode and combined_warnings:
             is_compliant = False
-            combined_violations.extend([f"Strict mode warning: {w}" for w in combined_warnings])
+            combined_violations.extend(
+                [f"Strict mode warning: {w}" for w in combined_warnings]
+            )
 
         return {
             "is_compliant": is_compliant,
@@ -317,7 +366,11 @@ class ConstitutionalValidator:
         return sum(check_scores) / len(check_scores) if check_scores else 0.0
 
     async def _perform_principle_check(
-        self, improvement_data: Dict[str, Any], principle: str, check: str, strict_mode: bool
+        self,
+        improvement_data: Dict[str, Any],
+        principle: str,
+        check: str,
+        strict_mode: bool,
     ) -> float:
         """Perform a specific principle check."""
         # This would implement specific validation logic for each check
@@ -347,7 +400,9 @@ class ConstitutionalValidator:
 
         return min(1.0, score)
 
-    async def _generate_principle_recommendations(self, principle: str, score: float) -> List[str]:
+    async def _generate_principle_recommendations(
+        self, principle: str, score: float
+    ) -> List[str]:
         """Generate recommendations for improving principle compliance."""
         recommendations = []
 
@@ -383,7 +438,10 @@ class ConstitutionalValidator:
         return recommendations
 
     async def _log_compliance_result(
-        self, validation_id: UUID, improvement_data: Dict[str, Any], result: Dict[str, Any]
+        self,
+        validation_id: UUID,
+        improvement_data: Dict[str, Any],
+        result: Dict[str, Any],
     ):
         """Log compliance validation result."""
         try:

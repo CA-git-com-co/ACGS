@@ -28,7 +28,9 @@ class EnvironmentalFactor:
         # ensures: Correct function execution
         # sha256: func_hash
         self.factor_id = factor_id
-        self.factor_type = factor_type  # e.g., "regulatory", "operational", "technical", "social"
+        self.factor_type = (
+            factor_type  # e.g., "regulatory", "operational", "technical", "social"
+        )
         self.value = value
         self.timestamp = timestamp or datetime.now(timezone.utc)
         self.source = source
@@ -67,9 +69,13 @@ class ContextualAnalyzer:
     def add_environmental_factor(self, factor: EnvironmentalFactor) -> None:
         """Add or update an environmental factor."""
         self.environmental_factors[factor.factor_id] = factor
-        logger.info(f"Added environmental factor: {factor.factor_id} ({factor.factor_type})")
+        logger.info(
+            f"Added environmental factor: {factor.factor_id} ({factor.factor_type})"
+        )
 
-    def get_environmental_factors_by_type(self, factor_type: str) -> list[EnvironmentalFactor]:
+    def get_environmental_factors_by_type(
+        self, factor_type: str
+    ) -> list[EnvironmentalFactor]:
         """Get all environmental factors of a specific type."""
         return [
             factor
@@ -148,7 +154,9 @@ class ContextualAnalyzer:
 
         return relevant_factors
 
-    def _is_factor_relevant(self, factor: EnvironmentalFactor, context_lower: str) -> bool:
+    def _is_factor_relevant(
+        self, factor: EnvironmentalFactor, context_lower: str
+    ) -> bool:
         """Determine if an environmental factor is relevant to the context."""
         # Basic keyword matching - could be enhanced with semantic analysis
         factor_keywords = {
@@ -193,7 +201,9 @@ class ContextualAnalyzer:
                         "context": historical_context["context"],
                         "similarity_score": similarity_score,
                         "timestamp": historical_context["timestamp"],
-                        "factor_count": historical_context["analysis_metadata"]["factor_count"],
+                        "factor_count": historical_context["analysis_metadata"][
+                            "factor_count"
+                        ],
                     }
                 )
 

@@ -28,21 +28,24 @@ sys.path.insert(0, str(project_root))
 
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class SecurityMetric:
     """Security metric tracking."""
+
     name: str
     current_score: float
     target_score: float
     weight: float
     status: str
 
+
 class AdvancedSecurityImplementor:
     """Implements advanced security posture for ACGS-2."""
-    
+
     def __init__(self):
         self.project_root = project_root
-        
+
         # Security posture components and weights
         self.security_components = {
             "continuous_scanning": {"weight": 25, "target": 95},
@@ -50,16 +53,16 @@ class AdvancedSecurityImplementor:
             "threat_detection": {"weight": 20, "target": 85},
             "security_reviews": {"weight": 15, "target": 90},
             "incident_response": {"weight": 10, "target": 95},
-            "compliance_monitoring": {"weight": 10, "target": 90}
+            "compliance_monitoring": {"weight": 10, "target": 90},
         }
-        
+
         # Security metrics
         self.security_metrics: List[SecurityMetric] = []
-        
+
     async def implement_advanced_security_posture(self) -> Dict[str, Any]:
         """Implement comprehensive advanced security posture."""
         logger.info("🔒 Implementing advanced security posture...")
-        
+
         security_results = {
             "continuous_scanning_implemented": False,
             "dependency_monitoring_enabled": False,
@@ -69,151 +72,142 @@ class AdvancedSecurityImplementor:
             "target_achieved": False,
             "security_components_implemented": 0,
             "errors": [],
-            "success": True
+            "success": True,
         }
-        
+
         try:
             # Implement continuous security scanning
             scanning_results = await self._implement_continuous_scanning()
             security_results.update(scanning_results)
-            
+
             # Implement dependency vulnerability monitoring
             dependency_results = await self._implement_dependency_monitoring()
             security_results.update(dependency_results)
-            
+
             # Implement advanced threat detection
             threat_detection_results = await self._implement_threat_detection()
             security_results.update(threat_detection_results)
-            
+
             # Establish security review process
             review_process_results = await self._establish_security_review_process()
             security_results.update(review_process_results)
-            
+
             # Implement incident response automation
             incident_response_results = await self._implement_incident_response()
             security_results.update(incident_response_results)
-            
+
             # Implement compliance monitoring
             compliance_results = await self._implement_compliance_monitoring()
             security_results.update(compliance_results)
-            
+
             # Calculate overall security posture score
             posture_score = await self._calculate_security_posture_score()
             security_results.update(posture_score)
-            
+
             # Generate security posture report
             await self._generate_security_posture_report(security_results)
-            
+
             logger.info("✅ Advanced security posture implementation completed")
             return security_results
-            
+
         except Exception as e:
             logger.error(f"❌ Advanced security posture implementation failed: {e}")
             security_results["success"] = False
             security_results["errors"].append(str(e))
             return security_results
-    
+
     async def _implement_continuous_scanning(self) -> Dict[str, Any]:
         """Implement continuous security scanning in CI/CD."""
         logger.info("🔍 Implementing continuous security scanning...")
-        
+
         try:
             # Create continuous security scanning workflow
             security_scanning_workflow = {
                 "name": "ACGS-2 Continuous Security Scanning",
                 "on": {
-                    "push": {
-                        "branches": ["main", "develop"]
-                    },
-                    "pull_request": {
-                        "branches": ["main", "develop"]
-                    },
-                    "schedule": [
-                        {"cron": "0 2 * * *"}  # Daily at 2 AM
-                    ]
+                    "push": {"branches": ["main", "develop"]},
+                    "pull_request": {"branches": ["main", "develop"]},
+                    "schedule": [{"cron": "0 2 * * *"}],  # Daily at 2 AM
                 },
                 "jobs": {
                     "security-scan": {
                         "runs-on": "ubuntu-latest",
                         "steps": [
-                            {
-                                "name": "Checkout code",
-                                "uses": "actions/checkout@v4"
-                            },
+                            {"name": "Checkout code", "uses": "actions/checkout@v4"},
                             {
                                 "name": "Set up Python",
                                 "uses": "actions/setup-python@v4",
-                                "with": {
-                                    "python-version": "3.10"
-                                }
+                                "with": {"python-version": "3.10"},
                             },
                             {
                                 "name": "Install security tools",
-                                "run": "pip install bandit safety semgrep pip-audit"
+                                "run": "pip install bandit safety semgrep pip-audit",
                             },
                             {
                                 "name": "Run Bandit security scan",
-                                "run": "bandit -r services/ scripts/ -f json -o bandit-report.json"
+                                "run": "bandit -r services/ scripts/ -f json -o bandit-report.json",
                             },
                             {
                                 "name": "Run Safety dependency scan",
-                                "run": "safety check --json --output safety-report.json"
+                                "run": "safety check --json --output safety-report.json",
                             },
                             {
                                 "name": "Run Semgrep SAST scan",
-                                "run": "semgrep --config=auto --json --output=semgrep-report.json services/ scripts/"
+                                "run": "semgrep --config=auto --json --output=semgrep-report.json services/ scripts/",
                             },
                             {
                                 "name": "Run pip-audit",
-                                "run": "pip-audit --format=json --output=pip-audit-report.json"
+                                "run": "pip-audit --format=json --output=pip-audit-report.json",
                             },
                             {
                                 "name": "Upload security reports",
                                 "uses": "actions/upload-artifact@v3",
                                 "with": {
                                     "name": "security-reports",
-                                    "path": "*-report.json"
-                                }
+                                    "path": "*-report.json",
+                                },
                             },
                             {
                                 "name": "Security gate check",
-                                "run": "python scripts/security/evaluate_security_reports.py"
-                            }
-                        ]
+                                "run": "python scripts/security/evaluate_security_reports.py",
+                            },
+                        ],
                     },
                     "container-scan": {
                         "runs-on": "ubuntu-latest",
                         "steps": [
-                            {
-                                "name": "Checkout code",
-                                "uses": "actions/checkout@v4"
-                            },
+                            {"name": "Checkout code", "uses": "actions/checkout@v4"},
                             {
                                 "name": "Build Docker images",
-                                "run": "docker build -t acgs-security-scan ."
+                                "run": "docker build -t acgs-security-scan .",
                             },
                             {
                                 "name": "Run Trivy container scan",
-                                "run": "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image --format json --output trivy-report.json acgs-security-scan"
+                                "run": "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image --format json --output trivy-report.json acgs-security-scan",
                             },
                             {
                                 "name": "Upload container scan results",
                                 "uses": "actions/upload-artifact@v3",
                                 "with": {
                                     "name": "container-security-reports",
-                                    "path": "trivy-report.json"
-                                }
-                            }
-                        ]
-                    }
-                }
+                                    "path": "trivy-report.json",
+                                },
+                            },
+                        ],
+                    },
+                },
             }
-            
+
             # Write continuous scanning workflow
-            workflow_path = self.project_root / ".github" / "workflows" / "continuous-security-scanning.yml"
-            with open(workflow_path, 'w') as f:
+            workflow_path = (
+                self.project_root
+                / ".github"
+                / "workflows"
+                / "continuous-security-scanning.yml"
+            )
+            with open(workflow_path, "w") as f:
                 yaml.dump(security_scanning_workflow, f, default_flow_style=False)
-            
+
             # Create security evaluation script
             security_eval_script = '''#!/usr/bin/env python3
 """
@@ -272,84 +266,87 @@ def evaluate_security_reports():
 if __name__ == "__main__":
     evaluate_security_reports()
 '''
-            
+
             # Write security evaluation script
-            eval_script_path = self.project_root / "scripts" / "security" / "evaluate_security_reports.py"
-            with open(eval_script_path, 'w') as f:
+            eval_script_path = (
+                self.project_root
+                / "scripts"
+                / "security"
+                / "evaluate_security_reports.py"
+            )
+            with open(eval_script_path, "w") as f:
                 f.write(security_eval_script)
             os.chmod(eval_script_path, 0o755)
-            
+
             logger.info("✅ Continuous security scanning implemented")
-            
+
             return {
                 "continuous_scanning_implemented": True,
-                "security_components_implemented": 1
+                "security_components_implemented": 1,
             }
-            
+
         except Exception as e:
             logger.error(f"Continuous scanning implementation failed: {e}")
             raise
-    
+
     async def _implement_dependency_monitoring(self) -> Dict[str, Any]:
         """Implement automated dependency vulnerability monitoring."""
         logger.info("📦 Implementing dependency vulnerability monitoring...")
-        
+
         try:
             # Create dependency monitoring workflow
             dependency_workflow = {
                 "name": "ACGS-2 Dependency Monitoring",
                 "on": {
-                    "schedule": [
-                        {"cron": "0 6 * * 1"}  # Weekly on Monday at 6 AM
-                    ],
-                    "workflow_dispatch": {}
+                    "schedule": [{"cron": "0 6 * * 1"}],  # Weekly on Monday at 6 AM
+                    "workflow_dispatch": {},
                 },
                 "jobs": {
                     "dependency-scan": {
                         "runs-on": "ubuntu-latest",
                         "steps": [
-                            {
-                                "name": "Checkout code",
-                                "uses": "actions/checkout@v4"
-                            },
+                            {"name": "Checkout code", "uses": "actions/checkout@v4"},
                             {
                                 "name": "Set up Python",
                                 "uses": "actions/setup-python@v4",
-                                "with": {
-                                    "python-version": "3.10"
-                                }
+                                "with": {"python-version": "3.10"},
                             },
                             {
                                 "name": "Install dependencies",
-                                "run": "pip install -r requirements.txt"
+                                "run": "pip install -r requirements.txt",
                             },
                             {
                                 "name": "Run comprehensive dependency audit",
-                                "run": "python scripts/security/comprehensive_dependency_audit.py"
+                                "run": "python scripts/security/comprehensive_dependency_audit.py",
                             },
                             {
                                 "name": "Check for outdated packages",
-                                "run": "pip list --outdated --format=json > outdated-packages.json"
+                                "run": "pip list --outdated --format=json > outdated-packages.json",
                             },
                             {
                                 "name": "Generate dependency report",
-                                "run": "python scripts/security/generate_dependency_report.py"
+                                "run": "python scripts/security/generate_dependency_report.py",
                             },
                             {
                                 "name": "Create security advisory",
                                 "if": "failure()",
-                                "run": "python scripts/security/create_security_advisory.py"
-                            }
-                        ]
+                                "run": "python scripts/security/create_security_advisory.py",
+                            },
+                        ],
                     }
-                }
+                },
             }
-            
+
             # Write dependency monitoring workflow
-            dep_workflow_path = self.project_root / ".github" / "workflows" / "dependency-monitoring.yml"
-            with open(dep_workflow_path, 'w') as f:
+            dep_workflow_path = (
+                self.project_root
+                / ".github"
+                / "workflows"
+                / "dependency-monitoring.yml"
+            )
+            with open(dep_workflow_path, "w") as f:
                 yaml.dump(dependency_workflow, f, default_flow_style=False)
-            
+
             # Create comprehensive dependency audit script
             dep_audit_script = '''#!/usr/bin/env python3
 """
@@ -413,20 +410,25 @@ def run_dependency_audit():
 if __name__ == "__main__":
     run_dependency_audit()
 '''
-            
+
             # Write dependency audit script
-            dep_audit_path = self.project_root / "scripts" / "security" / "comprehensive_dependency_audit.py"
-            with open(dep_audit_path, 'w') as f:
+            dep_audit_path = (
+                self.project_root
+                / "scripts"
+                / "security"
+                / "comprehensive_dependency_audit.py"
+            )
+            with open(dep_audit_path, "w") as f:
                 f.write(dep_audit_script)
             os.chmod(dep_audit_path, 0o755)
-            
+
             logger.info("✅ Dependency vulnerability monitoring implemented")
-            
+
             return {
                 "dependency_monitoring_enabled": True,
-                "security_components_implemented": 1
+                "security_components_implemented": 1,
             }
-            
+
         except Exception as e:
             logger.error(f"Dependency monitoring implementation failed: {e}")
             raise
@@ -446,44 +448,43 @@ if __name__ == "__main__":
                             "pattern": "multiple_failed_logins",
                             "threshold": 5,
                             "window_minutes": 10,
-                            "action": "block_ip"
+                            "action": "block_ip",
                         },
                         {
                             "name": "Unusual API Access Patterns",
                             "pattern": "high_frequency_requests",
                             "threshold": 1000,
                             "window_minutes": 5,
-                            "action": "rate_limit"
+                            "action": "rate_limit",
                         },
                         {
                             "name": "Privilege Escalation Attempts",
                             "pattern": "unauthorized_admin_access",
                             "threshold": 1,
                             "window_minutes": 1,
-                            "action": "alert_security_team"
-                        }
+                            "action": "alert_security_team",
+                        },
                     ],
                     "response_actions": {
-                        "block_ip": {
-                            "duration_minutes": 60,
-                            "notification": True
-                        },
+                        "block_ip": {"duration_minutes": 60, "notification": True},
                         "rate_limit": {
                             "limit_requests_per_minute": 10,
-                            "duration_minutes": 30
+                            "duration_minutes": 30,
                         },
                         "alert_security_team": {
                             "channels": ["slack", "email", "pagerduty"],
-                            "severity": "high"
-                        }
-                    }
+                            "severity": "high",
+                        },
+                    },
                 }
             }
 
             # Write threat detection configuration
-            threat_config_path = self.project_root / "config" / "security" / "threat_detection.json"
+            threat_config_path = (
+                self.project_root / "config" / "security" / "threat_detection.json"
+            )
             threat_config_path.parent.mkdir(parents=True, exist_ok=True)
-            with open(threat_config_path, 'w') as f:
+            with open(threat_config_path, "w") as f:
                 json.dump(threat_detection_config, f, indent=2)
 
             # Create threat detection monitoring script
@@ -602,8 +603,13 @@ if __name__ == "__main__":
 '''
 
             # Write threat detection monitor script
-            threat_monitor_path = self.project_root / "scripts" / "security" / "threat_detection_monitor.py"
-            with open(threat_monitor_path, 'w') as f:
+            threat_monitor_path = (
+                self.project_root
+                / "scripts"
+                / "security"
+                / "threat_detection_monitor.py"
+            )
+            with open(threat_monitor_path, "w") as f:
                 f.write(threat_monitor_script)
             os.chmod(threat_monitor_path, 0o755)
 
@@ -611,7 +617,7 @@ if __name__ == "__main__":
 
             return {
                 "threat_detection_deployed": True,
-                "security_components_implemented": 1
+                "security_components_implemented": 1,
             }
 
         except Exception as e:
@@ -624,7 +630,7 @@ if __name__ == "__main__":
 
         try:
             # Create security review process documentation
-            security_review_process = '''# ACGS-2 Quarterly Security Review Process
+            security_review_process = """# ACGS-2 Quarterly Security Review Process
 
 ## Overview
 This document outlines the quarterly security review process for ACGS-2 to maintain and improve our security posture continuously.
@@ -740,12 +746,17 @@ This document outlines the quarterly security review process for ACGS-2 to maint
 - Stakeholder feedback integration
 - Industry best practice adoption
 - Emerging threat consideration
-'''
+"""
 
             # Write security review process documentation
-            review_process_path = self.project_root / "docs" / "security" / "quarterly_security_review_process.md"
+            review_process_path = (
+                self.project_root
+                / "docs"
+                / "security"
+                / "quarterly_security_review_process.md"
+            )
             review_process_path.parent.mkdir(parents=True, exist_ok=True)
-            with open(review_process_path, 'w') as f:
+            with open(review_process_path, "w") as f:
                 f.write(security_review_process)
 
             # Create automated security review workflow
@@ -753,49 +764,53 @@ This document outlines the quarterly security review process for ACGS-2 to maint
                 "name": "ACGS-2 Quarterly Security Review",
                 "on": {
                     "schedule": [
-                        {"cron": "0 9 15 1,4,7,10 *"}  # 15th of Jan, Apr, Jul, Oct at 9 AM
+                        {
+                            "cron": "0 9 15 1,4,7,10 *"
+                        }  # 15th of Jan, Apr, Jul, Oct at 9 AM
                     ],
-                    "workflow_dispatch": {}
+                    "workflow_dispatch": {},
                 },
                 "jobs": {
                     "security-review": {
                         "runs-on": "ubuntu-latest",
                         "steps": [
-                            {
-                                "name": "Checkout code",
-                                "uses": "actions/checkout@v4"
-                            },
+                            {"name": "Checkout code", "uses": "actions/checkout@v4"},
                             {
                                 "name": "Generate security metrics report",
-                                "run": "python scripts/security/generate_security_metrics_report.py"
+                                "run": "python scripts/security/generate_security_metrics_report.py",
                             },
                             {
                                 "name": "Run comprehensive security assessment",
-                                "run": "python scripts/security/comprehensive_security_assessment.py"
+                                "run": "python scripts/security/comprehensive_security_assessment.py",
                             },
                             {
                                 "name": "Create security review issue",
-                                "run": "python scripts/security/create_security_review_issue.py"
+                                "run": "python scripts/security/create_security_review_issue.py",
                             },
                             {
                                 "name": "Notify security team",
-                                "run": "python scripts/security/notify_security_review.py"
-                            }
-                        ]
+                                "run": "python scripts/security/notify_security_review.py",
+                            },
+                        ],
                     }
-                }
+                },
             }
 
             # Write security review workflow
-            review_workflow_path = self.project_root / ".github" / "workflows" / "quarterly-security-review.yml"
-            with open(review_workflow_path, 'w') as f:
+            review_workflow_path = (
+                self.project_root
+                / ".github"
+                / "workflows"
+                / "quarterly-security-review.yml"
+            )
+            with open(review_workflow_path, "w") as f:
                 yaml.dump(review_workflow, f, default_flow_style=False)
 
             logger.info("✅ Security review process established")
 
             return {
                 "security_review_process_established": True,
-                "security_components_implemented": 1
+                "security_components_implemented": 1,
             }
 
         except Exception as e:
@@ -932,8 +947,13 @@ if __name__ == "__main__":
 '''
 
             # Write incident response script
-            incident_response_path = self.project_root / "scripts" / "security" / "automated_incident_response.py"
-            with open(incident_response_path, 'w') as f:
+            incident_response_path = (
+                self.project_root
+                / "scripts"
+                / "security"
+                / "automated_incident_response.py"
+            )
+            with open(incident_response_path, "w") as f:
                 f.write(incident_response_script)
             os.chmod(incident_response_path, 0o755)
 
@@ -941,7 +961,7 @@ if __name__ == "__main__":
 
             return {
                 "incident_response_implemented": True,
-                "security_components_implemented": 1
+                "security_components_implemented": 1,
             }
 
         except Exception as e:
@@ -962,9 +982,9 @@ if __name__ == "__main__":
                             "data_encryption",
                             "audit_logging",
                             "incident_response",
-                            "vulnerability_management"
+                            "vulnerability_management",
                         ],
-                        "reporting_frequency": "quarterly"
+                        "reporting_frequency": "quarterly",
                     },
                     "ISO27001": {
                         "controls": [
@@ -972,29 +992,31 @@ if __name__ == "__main__":
                             "risk_management",
                             "asset_management",
                             "access_control",
-                            "cryptography"
+                            "cryptography",
                         ],
-                        "reporting_frequency": "annually"
-                    }
+                        "reporting_frequency": "annually",
+                    },
                 },
                 "monitoring_schedule": {
                     "daily": ["access_logs", "security_events"],
                     "weekly": ["vulnerability_scans", "compliance_checks"],
                     "monthly": ["control_effectiveness", "risk_assessment"],
-                    "quarterly": ["compliance_reporting", "audit_preparation"]
-                }
+                    "quarterly": ["compliance_reporting", "audit_preparation"],
+                },
             }
 
             # Write compliance configuration
-            compliance_config_path = self.project_root / "config" / "security" / "compliance_monitoring.json"
-            with open(compliance_config_path, 'w') as f:
+            compliance_config_path = (
+                self.project_root / "config" / "security" / "compliance_monitoring.json"
+            )
+            with open(compliance_config_path, "w") as f:
                 json.dump(compliance_config, f, indent=2)
 
             logger.info("✅ Compliance monitoring implemented")
 
             return {
                 "compliance_monitoring_implemented": True,
-                "security_components_implemented": 1
+                "security_components_implemented": 1,
             }
 
         except Exception as e:
@@ -1013,7 +1035,7 @@ if __name__ == "__main__":
                 "threat_detection": 85,  # Real-time monitoring with response
                 "security_reviews": 90,  # Quarterly process established
                 "incident_response": 95,  # Automated response system
-                "compliance_monitoring": 90  # Framework monitoring implemented
+                "compliance_monitoring": 90,  # Framework monitoring implemented
             }
 
             # Calculate weighted score
@@ -1036,7 +1058,11 @@ if __name__ == "__main__":
                     current_score=score,
                     target_score=self.security_components[component]["target"],
                     weight=self.security_components[component]["weight"],
-                    status="achieved" if score >= self.security_components[component]["target"] else "needs_improvement"
+                    status=(
+                        "achieved"
+                        if score >= self.security_components[component]["target"]
+                        else "needs_improvement"
+                    ),
                 )
                 self.security_metrics.append(metric)
 
@@ -1045,7 +1071,7 @@ if __name__ == "__main__":
             return {
                 "security_posture_score": overall_score,
                 "target_achieved": target_achieved,
-                "component_scores": component_scores
+                "component_scores": component_scores,
             }
 
         except Exception as e:
@@ -1061,11 +1087,17 @@ if __name__ == "__main__":
             "security_posture_summary": results,
             "security_components": self.security_components,
             "target_achievements": {
-                "continuous_scanning": results.get("continuous_scanning_implemented", False),
-                "dependency_monitoring": results.get("dependency_monitoring_enabled", False),
+                "continuous_scanning": results.get(
+                    "continuous_scanning_implemented", False
+                ),
+                "dependency_monitoring": results.get(
+                    "dependency_monitoring_enabled", False
+                ),
                 "threat_detection": results.get("threat_detection_deployed", False),
-                "security_reviews": results.get("security_review_process_established", False),
-                "security_posture_score_over_90": results.get("target_achieved", False)
+                "security_reviews": results.get(
+                    "security_review_process_established", False
+                ),
+                "security_posture_score_over_90": results.get("target_achieved", False),
             },
             "security_metrics": [
                 {
@@ -1073,7 +1105,7 @@ if __name__ == "__main__":
                     "current_score": metric.current_score,
                     "target_score": metric.target_score,
                     "weight": metric.weight,
-                    "status": metric.status
+                    "status": metric.status,
                 }
                 for metric in self.security_metrics
             ],
@@ -1083,27 +1115,27 @@ if __name__ == "__main__":
                 "advanced_threat_detection": "Real-time threat monitoring with automated response",
                 "quarterly_security_reviews": "Structured quarterly security assessment process",
                 "automated_incident_response": "Automated incident detection and response system",
-                "compliance_monitoring": "SOC2 and ISO27001 compliance tracking"
+                "compliance_monitoring": "SOC2 and ISO27001 compliance tracking",
             },
             "security_workflows": [
                 ".github/workflows/continuous-security-scanning.yml",
                 ".github/workflows/dependency-monitoring.yml",
-                ".github/workflows/quarterly-security-review.yml"
+                ".github/workflows/quarterly-security-review.yml",
             ],
             "security_configurations": [
                 "config/security/threat_detection.json",
-                "config/security/compliance_monitoring.json"
+                "config/security/compliance_monitoring.json",
             ],
             "next_steps": [
                 "Configure security tool integrations",
                 "Set up security team notification channels",
                 "Establish security metrics dashboards",
                 "Conduct first quarterly security review",
-                "Implement security awareness training program"
-            ]
+                "Implement security awareness training program",
+            ],
         }
 
-        with open(report_path, 'w') as f:
+        with open(report_path, "w") as f:
             json.dump(report, f, indent=2)
 
         logger.info(f"📊 Security posture report saved to: {report_path}")
@@ -1113,7 +1145,7 @@ async def main():
     """Main advanced security posture implementation function."""
     logging.basicConfig(
         level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
 
     implementor = AdvancedSecurityImplementor()
@@ -1122,22 +1154,26 @@ async def main():
     if results["success"]:
         print("✅ Advanced security posture implementation completed successfully!")
         print(f"📊 Security posture score: {results['security_posture_score']:.1f}/100")
-        print(f"📊 Security components implemented: {results['security_components_implemented']}")
+        print(
+            f"📊 Security components implemented: {results['security_components_implemented']}"
+        )
 
         # Check target achievement
-        if results.get('target_achieved', False):
+        if results.get("target_achieved", False):
             print("🎯 TARGET ACHIEVED: Security posture score >90/100!")
         else:
-            print(f"⚠️  Security posture score: {results['security_posture_score']:.1f}/100 (target: >90)")
+            print(
+                f"⚠️  Security posture score: {results['security_posture_score']:.1f}/100 (target: >90)"
+            )
 
         # Check individual components
-        if results.get('continuous_scanning_implemented', False):
+        if results.get("continuous_scanning_implemented", False):
             print("✅ Continuous security scanning implemented")
-        if results.get('dependency_monitoring_enabled', False):
+        if results.get("dependency_monitoring_enabled", False):
             print("✅ Dependency vulnerability monitoring enabled")
-        if results.get('threat_detection_deployed', False):
+        if results.get("threat_detection_deployed", False):
             print("✅ Advanced threat detection deployed")
-        if results.get('security_review_process_established', False):
+        if results.get("security_review_process_established", False):
             print("✅ Quarterly security review process established")
 
         print("\n🎯 ADVANCED SECURITY FEATURES IMPLEMENTED:")
@@ -1149,7 +1185,7 @@ async def main():
         print("✅ Compliance monitoring framework")
     else:
         print("❌ Advanced security posture implementation failed!")
-        for error in results['errors']:
+        for error in results["errors"]:
             print(f"   - {error}")
         sys.exit(1)
 

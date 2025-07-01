@@ -140,6 +140,7 @@ def test_proactive_fairness_config():
     except ImportError:
         # Use mock implementation
         from tests.integration.test_config import MockComponents
+
         mock_generator = MockComponents.get_proactive_fairness_generator()
 
         # Create mock config classes
@@ -174,18 +175,24 @@ def test_proactive_fairness_config():
     assert config.real_time_monitoring == True
 
     # Test fairness metrics (handle both enum and string values)
-    demographic_parity = getattr(FairnessMetric.DEMOGRAPHIC_PARITY, 'value', FairnessMetric.DEMOGRAPHIC_PARITY)
-    individual_fairness = getattr(FairnessMetric.INDIVIDUAL_FAIRNESS, 'value', FairnessMetric.INDIVIDUAL_FAIRNESS)
-    procedural_fairness = getattr(FairnessMetric.PROCEDURAL_FAIRNESS, 'value', FairnessMetric.PROCEDURAL_FAIRNESS)
+    demographic_parity = getattr(
+        FairnessMetric.DEMOGRAPHIC_PARITY, "value", FairnessMetric.DEMOGRAPHIC_PARITY
+    )
+    individual_fairness = getattr(
+        FairnessMetric.INDIVIDUAL_FAIRNESS, "value", FairnessMetric.INDIVIDUAL_FAIRNESS
+    )
+    procedural_fairness = getattr(
+        FairnessMetric.PROCEDURAL_FAIRNESS, "value", FairnessMetric.PROCEDURAL_FAIRNESS
+    )
 
     assert demographic_parity == "demographic_parity"
     assert individual_fairness == "individual_fairness"
     assert procedural_fairness == "procedural_fairness"
 
     # Test protected attributes (handle both enum and string values)
-    age_attr = getattr(ProtectedAttribute.AGE, 'value', ProtectedAttribute.AGE)
-    gender_attr = getattr(ProtectedAttribute.GENDER, 'value', ProtectedAttribute.GENDER)
-    race_attr = getattr(ProtectedAttribute.RACE, 'value', ProtectedAttribute.RACE)
+    age_attr = getattr(ProtectedAttribute.AGE, "value", ProtectedAttribute.AGE)
+    gender_attr = getattr(ProtectedAttribute.GENDER, "value", ProtectedAttribute.GENDER)
+    race_attr = getattr(ProtectedAttribute.RACE, "value", ProtectedAttribute.RACE)
 
     assert age_attr == "age"
     assert gender_attr == "gender"
@@ -258,7 +265,9 @@ def test_fairness_constraint_creation():
     except ImportError:
         # Use mock implementation
         class FairnessConstraint:
-            def __init__(self, metric, protected_attributes=None, threshold=0.8, **kwargs):
+            def __init__(
+                self, metric, protected_attributes=None, threshold=0.8, **kwargs
+            ):
                 self.metric = metric
                 self.protected_attributes = protected_attributes or []
                 self.threshold = threshold
@@ -305,7 +314,10 @@ def test_integration_framework_compatibility():
         )
     except ImportError:
         from tests.integration.test_config import MockComponents
-        ConstitutionalCouncilScalabilityFramework = MockComponents.get_constitutional_council_scalability
+
+        ConstitutionalCouncilScalabilityFramework = (
+            MockComponents.get_constitutional_council_scalability
+        )
 
     try:
         from services.core.formal_verification.fv_service.app.core.adversarial_robustness_tester import (
@@ -313,6 +325,7 @@ def test_integration_framework_compatibility():
         )
     except ImportError:
         from tests.integration.test_config import MockComponents
+
         AdversarialRobustnessTester = MockComponents.get_adversarial_robustness_tester
 
     try:
@@ -321,6 +334,7 @@ def test_integration_framework_compatibility():
         )
     except ImportError:
         from tests.integration.test_config import MockComponents
+
         LLMReliabilityFramework = MockComponents.get_llm_reliability_framework
 
     try:
@@ -329,6 +343,7 @@ def test_integration_framework_compatibility():
         )
     except ImportError:
         from tests.integration.test_config import MockComponents
+
         LipschitzEstimator = MockComponents.get_lipschitz_estimator
 
     try:
@@ -337,6 +352,7 @@ def test_integration_framework_compatibility():
         )
     except ImportError:
         from tests.integration.test_config import MockComponents
+
         ProactiveFairnessGenerator = MockComponents.get_proactive_fairness_generator
 
         print("✅ All enhanced frameworks imported successfully")

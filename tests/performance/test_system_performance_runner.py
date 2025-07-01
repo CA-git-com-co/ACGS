@@ -1,7 +1,7 @@
-
 import pytest
 import json
 from tests.performance.test_system_performance import PerformanceTestSuite
+
 
 @pytest.mark.asyncio
 async def test_system_performance():

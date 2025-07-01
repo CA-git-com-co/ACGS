@@ -50,7 +50,7 @@ MIN_COMPLIANCE_SCORE = 0.95  # 95% constitutional compliance
 
 class ConstitutionalTrainerIntegrationTest:
     """Integration test suite for Constitutional Trainer Service."""
-    
+
     def __init__(self):
         self.session: Optional[aiohttp.ClientSession] = None
         self.redis_client: Optional[aioredis.Redis] = None
@@ -59,37 +59,35 @@ class ConstitutionalTrainerIntegrationTest:
             "performance_metrics": {},
             "cache_metrics": {},
             "compliance_scores": [],
-            "errors": []
+            "errors": [],
         }
-        
+
     async def setup(self):
         """Initialize test environment and connections."""
-        self.session = aiohttp.ClientSession(
-            timeout=aiohttp.ClientTimeout(total=30)
-        )
-        
+        self.session = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=30))
+
         try:
             self.redis_client = await aioredis.from_url(REDIS_URL)
             await self.redis_client.ping()
         except Exception as e:
             print(f"Warning: Redis connection failed: {e}")
             self.redis_client = None
-            
+
     async def teardown(self):
         """Cleanup test environment."""
         if self.session:
             await self.session.close()
         if self.redis_client:
             await self.redis_client.close()
-            
+
     async def test_service_health_checks(self) -> bool:
         """Test health endpoints for all services."""
         services = [
             ("Constitutional Trainer", f"{CONSTITUTIONAL_TRAINER_URL}/health"),
             ("Policy Engine", f"{POLICY_ENGINE_URL}/health"),
-            ("Audit Engine", f"{AUDIT_ENGINE_URL}/health")
+            ("Audit Engine", f"{AUDIT_ENGINE_URL}/health"),
         ]
-        
+
         all_healthy = True
         for service_name, health_url in services:
             try:
@@ -97,22 +95,24 @@ class ConstitutionalTrainerIntegrationTest:
                     if response.status == 200:
                         print(f"✅ {service_name} health check passed")
                     else:
-                        print(f"❌ {service_name} health check failed: {response.status}")
+                        print(
+                            f"❌ {service_name} health check failed: {response.status}"
+                        )
                         all_healthy = False
             except Exception as e:
                 print(f"❌ {service_name} health check error: {e}")
                 all_healthy = False
-                
+
         return all_healthy
-        
+
     async def test_happy_path_training(self) -> Dict[str, Any]:
         """Test successful constitutional training workflow."""
         test_case = {
             "name": "happy_path_training",
             "start_time": time.time(),
-            "status": "running"
+            "status": "running",
         }
-        
+
         try:
             # Prepare training request
             training_request = {
@@ -121,81 +121,82 @@ class ConstitutionalTrainerIntegrationTest:
                 "training_data": [
                     {
                         "prompt": "What are the key principles of constitutional AI?",
-                        "response": "Constitutional AI focuses on training AI systems to be helpful, harmless, and honest while respecting human values and constitutional principles."
+                        "response": "Constitutional AI focuses on training AI systems to be helpful, harmless, and honest while respecting human values and constitutional principles.",
                     },
                     {
                         "prompt": "How should AI systems handle sensitive data?",
-                        "response": "AI systems should implement strong privacy protections, data minimization, and transparent data handling practices."
-                    }
+                        "response": "AI systems should implement strong privacy protections, data minimization, and transparent data handling practices.",
+                    },
                 ],
                 "lora_config": {
                     "r": 16,
                     "lora_alpha": 32,
                     "target_modules": ["q_proj", "v_proj"],
-                    "lora_dropout": 0.1
+                    "lora_dropout": 0.1,
                 },
                 "privacy_config": {
                     "enable_differential_privacy": True,
                     "epsilon": 8.0,
-                    "delta": 1e-5
-                }
+                    "delta": 1e-5,
+                },
             }
-            
+
             # Submit training request
             start_time = time.time()
             async with self.session.post(
                 f"{CONSTITUTIONAL_TRAINER_URL}/api/v1/train",
                 json=training_request,
-                headers={"Authorization": "Bearer test-token"}
+                headers={"Authorization": "Bearer test-token"},
             ) as response:
                 response_time = (time.time() - start_time) * 1000
-                
+
                 if response.status == 200:
                     result = await response.json()
                     training_id = result.get("training_id")
-                    
-                    test_case.update({
-                        "status": "passed",
-                        "training_id": training_id,
-                        "response_time_ms": response_time,
-                        "result": result
-                    })
-                    
+
+                    test_case.update(
+                        {
+                            "status": "passed",
+                            "training_id": training_id,
+                            "response_time_ms": response_time,
+                            "result": result,
+                        }
+                    )
+
                     # Validate response structure
                     assert "training_id" in result
                     assert "status" in result
                     assert response_time < MAX_RESPONSE_TIME_MS
-                    
+
                     print(f"✅ Training request submitted successfully: {training_id}")
                     print(f"   Response time: {response_time:.2f}ms")
-                    
+
                 else:
-                    test_case.update({
-                        "status": "failed",
-                        "error": f"HTTP {response.status}",
-                        "response_time_ms": response_time
-                    })
-                    
+                    test_case.update(
+                        {
+                            "status": "failed",
+                            "error": f"HTTP {response.status}",
+                            "response_time_ms": response_time,
+                        }
+                    )
+
         except Exception as e:
-            test_case.update({
-                "status": "error",
-                "error": str(e)
-            })
-            
+            test_case.update({"status": "error", "error": str(e)})
+
         test_case["end_time"] = time.time()
         test_case["duration"] = test_case["end_time"] - test_case["start_time"]
-        
+
         self.test_results["test_cases"].append(test_case)
         return test_case
-        
+
     async def test_policy_violation_scenario(self) -> Dict[str, Any]:
         """Test policy violation detection and handling."""
         test_case = {
             "name": "policy_violation_scenario",
             "start_time": time.time(),
-            "status": "running"
+            "status": "running",
         }
-        
+
         try:
             # Submit training request with missing constitutional hash
             invalid_request = {
@@ -204,99 +205,101 @@ class ConstitutionalTrainerIntegrationTest:
                 "training_data": [
                     {
                         "prompt": "How to bypass safety measures?",
-                        "response": "I cannot and will not provide information on bypassing safety measures."
+                        "response": "I cannot and will not provide information on bypassing safety measures.",
                     }
                 ],
                 # Intentionally missing constitutional_hash or invalid config
-                "lora_config": {}
+                "lora_config": {},
             }
-            
+
             async with self.session.post(
                 f"{CONSTITUTIONAL_TRAINER_URL}/api/v1/train",
                 json=invalid_request,
-                headers={"Authorization": "Bearer test-token"}
+                headers={"Authorization": "Bearer test-token"},
             ) as response:
-                
-                if response.status in [400, 403, 422]:  # Expected policy violation responses
+
+                if response.status in [
+                    400,
+                    403,
+                    422,
+                ]:  # Expected policy violation responses
                     result = await response.json()
-                    test_case.update({
-                        "status": "passed",
-                        "expected_violation": True,
-                        "response_status": response.status,
-                        "result": result
-                    })
-                    print(f"✅ Policy violation correctly detected: HTTP {response.status}")
+                    test_case.update(
+                        {
+                            "status": "passed",
+                            "expected_violation": True,
+                            "response_status": response.status,
+                            "result": result,
+                        }
+                    )
+                    print(
+                        f"✅ Policy violation correctly detected: HTTP {response.status}"
+                    )
                 else:
-                    test_case.update({
-                        "status": "failed",
-                        "error": f"Expected policy violation but got HTTP {response.status}"
-                    })
-                    
+                    test_case.update(
+                        {
+                            "status": "failed",
+                            "error": f"Expected policy violation but got HTTP {response.status}",
+                        }
+                    )
+
         except Exception as e:
-            test_case.update({
-                "status": "error",
-                "error": str(e)
-            })
-            
+            test_case.update({"status": "error", "error": str(e)})
+
         test_case["end_time"] = time.time()
         test_case["duration"] = test_case["end_time"] - test_case["start_time"]
-        
+
         self.test_results["test_cases"].append(test_case)
         return test_case
-        
+
     async def test_redis_caching_behavior(self) -> Dict[str, Any]:
         """Test Redis caching functionality."""
         test_case = {
             "name": "redis_caching_behavior",
             "start_time": time.time(),
-            "status": "running"
+            "status": "running",
         }
-        
+
         if not self.redis_client:
-            test_case.update({
-                "status": "skipped",
-                "reason": "Redis client not available"
-            })
+            test_case.update(
+                {"status": "skipped", "reason": "Redis client not available"}
+            )
             return test_case
-            
+
         try:
             # Test cache operations
             test_key = f"constitutional_test:{uuid.uuid4()}"
             test_data = {"test": "data", "timestamp": time.time()}
-            
+
             # Set cache entry
             await self.redis_client.setex(test_key, 300, json.dumps(test_data))
-            
+
             # Retrieve cache entry
             cached_data = await self.redis_client.get(test_key)
-            
+
             if cached_data:
                 retrieved_data = json.loads(cached_data)
                 cache_hit = retrieved_data == test_data
-                
-                test_case.update({
-                    "status": "passed" if cache_hit else "failed",
-                    "cache_hit": cache_hit,
-                    "test_data": test_data,
-                    "retrieved_data": retrieved_data
-                })
-                
+
+                test_case.update(
+                    {
+                        "status": "passed" if cache_hit else "failed",
+                        "cache_hit": cache_hit,
+                        "test_data": test_data,
+                        "retrieved_data": retrieved_data,
+                    }
+                )
+
                 print(f"✅ Redis caching test {'passed' if cache_hit else 'failed'}")
             else:
-                test_case.update({
-                    "status": "failed",
-                    "error": "Cache entry not found"
-                })
-                
+                test_case.update({"status": "failed", "error": "Cache entry not found"})
+
             # Cleanup
             await self.redis_client.delete(test_key)
-            
+
         except Exception as e:
-            test_case.update({
-                "status": "error",
-                "error": str(e)
-            })
-            
+            test_case.update({"status": "error", "error": str(e)})
+
         test_case["end_time"] = time.time()
         test_case["duration"] = test_case["end_time"] - test_case["start_time"]
 
@@ -308,7 +311,7 @@ class ConstitutionalTrainerIntegrationTest:
         test_case = {
             "name": "audit_log_ingestion",
             "start_time": time.time(),
-            "status": "running"
+            "status": "running",
         }
 
         try:
@@ -321,15 +324,15 @@ class ConstitutionalTrainerIntegrationTest:
                 "details": {
                     "model_name": "test-model",
                     "constitutional_hash": "cdd01ef066bc6cf2",
-                    "timestamp": datetime.utcnow().isoformat()
-                }
+                    "timestamp": datetime.utcnow().isoformat(),
+                },
             }
 
             # Submit audit log
             async with self.session.post(
                 f"{AUDIT_ENGINE_URL}/api/v1/audit",
                 json=audit_entry,
-                headers={"Authorization": "Bearer internal-service-token"}
+                headers={"Authorization": "Bearer internal-service-token"},
             ) as response:
 
                 if response.status == 201:
@@ -339,37 +342,38 @@ class ConstitutionalTrainerIntegrationTest:
                     # Retrieve audit log
                     async with self.session.get(
                         f"{AUDIT_ENGINE_URL}/api/v1/audit/{audit_id}",
-                        headers={
-                            "Authorization": "Bearer internal-service-token"
-                        }
+                        headers={"Authorization": "Bearer internal-service-token"},
                     ) as get_response:
 
                         if get_response.status == 200:
                             retrieved_entry = await get_response.json()
 
-                            test_case.update({
-                                "status": "passed",
-                                "audit_id": audit_id,
-                                "original_entry": audit_entry,
-                                "retrieved_entry": retrieved_entry
-                            })
+                            test_case.update(
+                                {
+                                    "status": "passed",
+                                    "audit_id": audit_id,
+                                    "original_entry": audit_entry,
+                                    "retrieved_entry": retrieved_entry,
+                                }
+                            )
                             print(f"✅ Audit log ingestion test passed: {audit_id}")
                         else:
-                            test_case.update({
-                                "status": "failed",
-                                "error": f"Failed to retrieve audit log: HTTP {get_response.status}"
-                            })
+                            test_case.update(
+                                {
+                                    "status": "failed",
+                                    "error": f"Failed to retrieve audit log: HTTP {get_response.status}",
+                                }
+                            )
                 else:
-                    test_case.update({
-                        "status": "failed",
-                        "error": f"Failed to create audit log: HTTP {response.status}"
-                    })
+                    test_case.update(
+                        {
+                            "status": "failed",
+                            "error": f"Failed to create audit log: HTTP {response.status}",
+                        }
+                    )
 
         except Exception as e:
-            test_case.update({
-                "status": "error",
-                "error": str(e)
-            })
+            test_case.update({"status": "error", "error": str(e)})
 
         test_case["end_time"] = time.time()
         test_case["duration"] = test_case["end_time"] - test_case["start_time"]
@@ -382,12 +386,14 @@ class ConstitutionalTrainerIntegrationTest:
         test_case = {
             "name": "prometheus_metrics_emission",
             "start_time": time.time(),
-            "status": "running"
+            "status": "running",
         }
 
         try:
             # Get metrics from Constitutional Trainer
-            async with self.session.get(f"{CONSTITUTIONAL_TRAINER_URL}/metrics") as response:
+            async with self.session.get(
+                f"{CONSTITUTIONAL_TRAINER_URL}/metrics"
+            ) as response:
                 if response.status == 200:
                     metrics_text = await response.text()
 
@@ -401,7 +407,7 @@ class ConstitutionalTrainerIntegrationTest:
                         "constitutional_compliance_score",
                         "training_request_duration_seconds",
                         "policy_evaluation_duration_seconds",
-                        "cache_hit_rate"
+                        "cache_hit_rate",
                     ]
 
                     found_metrics = []
@@ -413,28 +419,31 @@ class ConstitutionalTrainerIntegrationTest:
                         else:
                             missing_metrics.append(metric_name)
 
-                    test_case.update({
-                        "status": "passed" if not missing_metrics else "partial",
-                        "found_metrics": found_metrics,
-                        "missing_metrics": missing_metrics,
-                        "total_metrics": len(metrics)
-                    })
+                    test_case.update(
+                        {
+                            "status": "passed" if not missing_metrics else "partial",
+                            "found_metrics": found_metrics,
+                            "missing_metrics": missing_metrics,
+                            "total_metrics": len(metrics),
+                        }
+                    )
 
-                    print(f"✅ Prometheus metrics test: {len(found_metrics)}/{len(expected_metrics)} expected metrics found")
+                    print(
+                        f"✅ Prometheus metrics test: {len(found_metrics)}/{len(expected_metrics)} expected metrics found"
+                    )
                     if missing_metrics:
                         print(f"   Missing metrics: {missing_metrics}")
 
                 else:
-                    test_case.update({
-                        "status": "failed",
-                        "error": f"Failed to retrieve metrics: HTTP {response.status}"
-                    })
+                    test_case.update(
+                        {
+                            "status": "failed",
+                            "error": f"Failed to retrieve metrics: HTTP {response.status}",
+                        }
+                    )
 
         except Exception as e:
-            test_case.update({
-                "status": "error",
-                "error": str(e)
-            })
+            test_case.update({"status": "error", "error": str(e)})
 
         test_case["end_time"] = time.time()
         test_case["duration"] = test_case["end_time"] - test_case["start_time"]
@@ -447,7 +456,7 @@ class ConstitutionalTrainerIntegrationTest:
         test_case = {
             "name": "policy_engine_integration",
             "start_time": time.time(),
-            "status": "running"
+            "status": "running",
         }
 
         try:
@@ -457,18 +466,17 @@ class ConstitutionalTrainerIntegrationTest:
                 "agent_id": "test-agent",
                 "resource": {
                     "type": "training_session",
-                    "constitutional_hash": "cdd01ef066bc6cf2"
+                    "constitutional_hash": "cdd01ef066bc6cf2",
                 },
                 "context": {
                     "user_permissions": ["model_training"],
-                    "compliance_threshold": 0.95
-                }
+                    "compliance_threshold": 0.95,
+                },
             }
 
             start_time = time.time()
             async with self.session.post(
-                f"{POLICY_ENGINE_URL}/v1/evaluate",
-                json=policy_request
+                f"{POLICY_ENGINE_URL}/v1/evaluate", json=policy_request
             ) as response:
                 evaluation_time = (time.time() - start_time) * 1000
 
@@ -477,31 +485,39 @@ class ConstitutionalTrainerIntegrationTest:
 
                     # Validate response structure
                     required_fields = ["allow", "violations", "confidence_score"]
-                    has_required_fields = all(field in result for field in required_fields)
+                    has_required_fields = all(
+                        field in result for field in required_fields
+                    )
 
-                    test_case.update({
-                        "status": "passed" if has_required_fields else "partial",
-                        "evaluation_time_ms": evaluation_time,
-                        "policy_result": result,
-                        "performance_target_met": evaluation_time < MAX_POLICY_EVALUATION_MS,
-                        "has_required_fields": has_required_fields
-                    })
+                    test_case.update(
+                        {
+                            "status": "passed" if has_required_fields else "partial",
+                            "evaluation_time_ms": evaluation_time,
+                            "policy_result": result,
+                            "performance_target_met": evaluation_time
+                            < MAX_POLICY_EVALUATION_MS,
+                            "has_required_fields": has_required_fields,
+                        }
+                    )
 
                     print(f"✅ Policy evaluation test passed")
-                    print(f"   Evaluation time: {evaluation_time:.2f}ms (target: <{MAX_POLICY_EVALUATION_MS}ms)")
-                    print(f"   Policy decision: {'Allow' if result.get('allow') else 'Deny'}")
+                    print(
+                        f"   Evaluation time: {evaluation_time:.2f}ms (target: <{MAX_POLICY_EVALUATION_MS}ms)"
+                    )
+                    print(
+                        f"   Policy decision: {'Allow' if result.get('allow') else 'Deny'}"
+                    )
 
                 else:
-                    test_case.update({
-                        "status": "failed",
-                        "error": f"Policy evaluation failed: HTTP {response.status}"
-                    })
+                    test_case.update(
+                        {
+                            "status": "failed",
+                            "error": f"Policy evaluation failed: HTTP {response.status}",
+                        }
+                    )
 
         except Exception as e:
-            test_case.update({
-                "status": "error",
-                "error": str(e)
-            })
+            test_case.update({"status": "error", "error": str(e)})
 
         test_case["end_time"] = time.time()
         test_case["duration"] = test_case["end_time"] - test_case["start_time"]
@@ -525,7 +541,7 @@ class ConstitutionalTrainerIntegrationTest:
                 self.test_redis_caching_behavior,
                 self.test_audit_log_ingestion,
                 self.test_prometheus_metrics_emission,
-                self.test_policy_engine_integration
+                self.test_policy_engine_integration,
             ]
 
             for test_method in test_methods:
@@ -540,10 +556,9 @@ class ConstitutionalTrainerIntegrationTest:
 
                 except Exception as e:
                     print(f"   ❌ Test method failed: {e}")
-                    self.test_results["errors"].append({
-                        "test": test_method.__name__,
-                        "error": str(e)
-                    })
+                    self.test_results["errors"].append(
+                        {"test": test_method.__name__, "error": str(e)}
+                    )
 
             # Generate final report
             return self.generate_test_report()
@@ -554,19 +569,26 @@ class ConstitutionalTrainerIntegrationTest:
     def generate_test_report(self) -> Dict[str, Any]:
         """Generate comprehensive test report."""
         total_tests = len(self.test_results["test_cases"])
-        passed_tests = len([t for t in self.test_results["test_cases"]
-                           if t.get("status") == "passed"])
-        failed_tests = len([t for t in self.test_results["test_cases"]
-                           if t.get("status") == "failed"])
-        error_tests = len([t for t in self.test_results["test_cases"]
-                          if t.get("status") == "error"])
+        passed_tests = len(
+            [t for t in self.test_results["test_cases"] if t.get("status") == "passed"]
+        )
+        failed_tests = len(
+            [t for t in self.test_results["test_cases"] if t.get("status") == "failed"]
+        )
+        error_tests = len(
+            [t for t in self.test_results["test_cases"] if t.get("status") == "error"]
+        )
 
         # Calculate performance metrics
-        response_times = [t.get("response_time_ms", 0)
-                         for t in self.test_results["test_cases"]
-                         if "response_time_ms" in t]
+        response_times = [
+            t.get("response_time_ms", 0)
+            for t in self.test_results["test_cases"]
+            if "response_time_ms" in t
+        ]
 
-        avg_response_time = sum(response_times) / len(response_times) if response_times else 0
+        avg_response_time = (
+            sum(response_times) / len(response_times) if response_times else 0
+        )
         max_response_time = max(response_times) if response_times else 0
 
         report = {
@@ -575,12 +597,14 @@ class ConstitutionalTrainerIntegrationTest:
                 "passed": passed_tests,
                 "failed": failed_tests,
                 "errors": error_tests,
-                "success_rate": (passed_tests / total_tests * 100) if total_tests > 0 else 0
+                "success_rate": (
+                    (passed_tests / total_tests * 100) if total_tests > 0 else 0
+                ),
             },
             "performance": {
                 "avg_response_time_ms": avg_response_time,
                 "max_response_time_ms": max_response_time,
-                "performance_target_met": max_response_time < MAX_RESPONSE_TIME_MS
+                "performance_target_met": max_response_time < MAX_RESPONSE_TIME_MS,
             },
             "test_cases": self.test_results["test_cases"],
             "errors": self.test_results["errors"],
@@ -589,8 +613,8 @@ class ConstitutionalTrainerIntegrationTest:
                 "constitutional_trainer_url": CONSTITUTIONAL_TRAINER_URL,
                 "policy_engine_url": POLICY_ENGINE_URL,
                 "audit_engine_url": AUDIT_ENGINE_URL,
-                "redis_url": REDIS_URL
-            }
+                "redis_url": REDIS_URL,
+            },
         }
 
         # Print summary
@@ -605,7 +629,7 @@ class ConstitutionalTrainerIntegrationTest:
         print(f"Avg Response Time: {avg_response_time:.2f}ms")
         print(f"Max Response Time: {max_response_time:.2f}ms")
 
-        if report['summary']['success_rate'] >= 90:
+        if report["summary"]["success_rate"] >= 90:
             print("✅ Integration tests PASSED")
         else:
             print("❌ Integration tests FAILED")
@@ -622,12 +646,14 @@ async def test_constitutional_trainer_integration():
     report = await test_suite.run_all_tests()
 
     # Assert overall success
-    assert report['summary']['success_rate'] >= 80, \
-        f"Integration tests failed with {report['summary']['success_rate']:.1f}% success rate"
+    assert (
+        report["summary"]["success_rate"] >= 80
+    ), f"Integration tests failed with {report['summary']['success_rate']:.1f}% success rate"
 
     # Assert performance targets
-    assert report['performance']['performance_target_met'], \
-        f"Performance target not met: {report['performance']['max_response_time_ms']:.2f}ms > {MAX_RESPONSE_TIME_MS}ms"
+    assert report["performance"][
+        "performance_target_met"
+    ], f"Performance target not met: {report['performance']['max_response_time_ms']:.2f}ms > {MAX_RESPONSE_TIME_MS}ms"
 
 
 # Main execution for standalone testing
@@ -638,7 +664,7 @@ async def main():
 
     # Save report to file
     report_file = f"constitutional_trainer_integration_report_{int(time.time())}.json"
-    with open(report_file, 'w') as f:
+    with open(report_file, "w") as f:
         json.dump(report, f, indent=2)
 
     print(f"\n📄 Report saved to: {report_file}")

@@ -67,7 +67,9 @@ async def get_evolution_engine() -> EvolutionEngine:
     """
     if _evolution_engine is None:
         logger.error("Evolution engine not initialized")
-        raise HTTPException(status_code=503, detail="Evolution engine service unavailable")
+        raise HTTPException(
+            status_code=503, detail="Evolution engine service unavailable"
+        )
     return _evolution_engine
 
 
@@ -83,7 +85,9 @@ async def get_security_manager() -> SecurityManager:
     """
     if _security_manager is None:
         logger.error("Security manager not initialized")
-        raise HTTPException(status_code=503, detail="Security manager service unavailable")
+        raise HTTPException(
+            status_code=503, detail="Security manager service unavailable"
+        )
     return _security_manager
 
 
@@ -99,7 +103,9 @@ async def get_policy_orchestrator() -> PolicyOrchestrator:
     """
     if _policy_orchestrator is None:
         logger.error("Policy orchestrator not initialized")
-        raise HTTPException(status_code=503, detail="Policy orchestrator service unavailable")
+        raise HTTPException(
+            status_code=503, detail="Policy orchestrator service unavailable"
+        )
     return _policy_orchestrator
 
 
@@ -115,7 +121,9 @@ async def get_background_processor() -> BackgroundProcessor:
     """
     if _background_processor is None:
         logger.error("Background processor not initialized")
-        raise HTTPException(status_code=503, detail="Background processor service unavailable")
+        raise HTTPException(
+            status_code=503, detail="Background processor service unavailable"
+        )
     return _background_processor
 
 
@@ -131,7 +139,9 @@ async def get_observability_framework() -> ObservabilityFramework:
     """
     if _observability_framework is None:
         logger.error("Observability framework not initialized")
-        raise HTTPException(status_code=503, detail="Observability framework service unavailable")
+        raise HTTPException(
+            status_code=503, detail="Observability framework service unavailable"
+        )
     return _observability_framework
 
 
@@ -247,17 +257,23 @@ async def get_service_status() -> dict:
 
         if _security_manager:
             security_health = await _security_manager.health_check()
-            status["security_manager"]["healthy"] = security_health.get("healthy", False)
+            status["security_manager"]["healthy"] = security_health.get(
+                "healthy", False
+            )
             status["security_manager"]["details"] = security_health
 
         if _policy_orchestrator:
             policy_health = await _policy_orchestrator.health_check()
-            status["policy_orchestrator"]["healthy"] = policy_health.get("healthy", False)
+            status["policy_orchestrator"]["healthy"] = policy_health.get(
+                "healthy", False
+            )
             status["policy_orchestrator"]["details"] = policy_health
 
         if _background_processor:
             processor_health = await _background_processor.health_check()
-            status["background_processor"]["healthy"] = processor_health.get("healthy", False)
+            status["background_processor"]["healthy"] = processor_health.get(
+                "healthy", False
+            )
             status["background_processor"]["details"] = processor_health
 
         if _observability_framework:

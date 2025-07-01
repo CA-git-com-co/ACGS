@@ -100,13 +100,21 @@ class WorkflowRecoveryManager:
         self.recovery_handlers["network_timeout"] = self._handle_network_timeout
         self.recovery_handlers["service_unavailable"] = self._handle_service_unavailable
         self.recovery_handlers["validation_failure"] = self._handle_validation_failure
-        self.recovery_handlers["constitutional_violation"] = self._handle_constitutional_violation
-        self.recovery_handlers["cryptographic_failure"] = self._handle_cryptographic_failure
+        self.recovery_handlers["constitutional_violation"] = (
+            self._handle_constitutional_violation
+        )
+        self.recovery_handlers["cryptographic_failure"] = (
+            self._handle_cryptographic_failure
+        )
 
         # Register default rollback handlers
         self.rollback_handlers["policy_deployment"] = self._rollback_policy_deployment
-        self.rollback_handlers["constitutional_amendment"] = self._rollback_constitutional_amendment
-        self.rollback_handlers["cryptographic_signing"] = self._rollback_cryptographic_signing
+        self.rollback_handlers["constitutional_amendment"] = (
+            self._rollback_constitutional_amendment
+        )
+        self.rollback_handlers["cryptographic_signing"] = (
+            self._rollback_cryptographic_signing
+        )
 
     async def create_checkpoint(
         self,
@@ -150,7 +158,9 @@ class WorkflowRecoveryManager:
         recovery_action = await self._analyze_failure(error_type, error_message)
 
         # Find appropriate rollback checkpoint
-        rollback_checkpoint = await self._find_rollback_checkpoint(workflow_id, failed_step_id)
+        rollback_checkpoint = await self._find_rollback_checkpoint(
+            workflow_id, failed_step_id
+        )
 
         # Generate alternative steps if needed
         alternative_steps = await self._generate_alternative_steps(
@@ -207,7 +217,9 @@ class WorkflowRecoveryManager:
             logger.error(f"Recovery execution failed for plan {recovery_plan_id}: {e}")
             return False
 
-    async def _analyze_failure(self, error_type: str, error_message: str) -> RecoveryAction:
+    async def _analyze_failure(
+        self, error_type: str, error_message: str
+    ) -> RecoveryAction:
         """Analyze failure and determine appropriate recovery action"""
 
         # Network-related failures
@@ -223,7 +235,10 @@ class WorkflowRecoveryManager:
             return RecoveryAction.ALTERNATIVE_PATH
 
         # Constitutional violations
-        if "constitutional" in error_message.lower() or "principle" in error_message.lower():
+        if (
+            "constitutional" in error_message.lower()
+            or "principle" in error_message.lower()
+        ):
             return RecoveryAction.ROLLBACK
 
         # Cryptographic failures
@@ -233,7 +248,9 @@ class WorkflowRecoveryManager:
         # Default to manual intervention for unknown errors
         return RecoveryAction.MANUAL_INTERVENTION
 
-    async def _find_rollback_checkpoint(self, workflow_id: str, failed_step_id: str) -> str | None:
+    async def _find_rollback_checkpoint(
+        self, workflow_id: str, failed_step_id: str
+    ) -> str | None:
         """Find the most appropriate checkpoint for rollback"""
 
         if workflow_id not in self.checkpoints:
@@ -377,7 +394,9 @@ class WorkflowRecoveryManager:
                 step.started_at = None
                 step.completed_at = None
 
-        logger.info(f"Rolled back workflow {plan.workflow_id} to checkpoint {checkpoint.id}")
+        logger.info(
+            f"Rolled back workflow {plan.workflow_id} to checkpoint {checkpoint.id}"
+        )
 
         # Resume workflow execution
         return await workflow_engine.resume_workflow(plan.workflow_id)
@@ -405,7 +424,9 @@ class WorkflowRecoveryManager:
 
         workflow.steps = new_steps
 
-        logger.info(f"Replaced failed step with {len(plan.alternative_steps)} alternative steps")
+        logger.info(
+            f"Replaced failed step with {len(plan.alternative_steps)} alternative steps"
+        )
 
         # Resume workflow execution
         return await workflow_engine.resume_workflow(plan.workflow_id)
@@ -451,15 +472,21 @@ class WorkflowRecoveryManager:
         return True
 
     # Recovery handlers
-    async def _handle_network_timeout(self, step: WorkflowStep, error: str) -> RecoveryAction:
+    async def _handle_network_timeout(
+        self, step: WorkflowStep, error: str
+    ) -> RecoveryAction:
         """Handle network timeout errors"""
         return RecoveryAction.RETRY
 
-    async def _handle_service_unavailable(self, step: WorkflowStep, error: str) -> RecoveryAction:
+    async def _handle_service_unavailable(
+        self, step: WorkflowStep, error: str
+    ) -> RecoveryAction:
         """Handle service unavailable errors"""
         return RecoveryAction.RETRY
 
-    async def _handle_validation_failure(self, step: WorkflowStep, error: str) -> RecoveryAction:
+    async def _handle_validation_failure(
+        self, step: WorkflowStep, error: str
+    ) -> RecoveryAction:
         """Handle validation failure errors"""
         return RecoveryAction.ALTERNATIVE_PATH
 
@@ -469,7 +496,9 @@ class WorkflowRecoveryManager:
         """Handle constitutional violation errors"""
         return RecoveryAction.ROLLBACK
 
-    async def _handle_cryptographic_failure(self, step: WorkflowStep, error: str) -> RecoveryAction:
+    async def _handle_cryptographic_failure(
+        self, step: WorkflowStep, error: str
+    ) -> RecoveryAction:
         """Handle cryptographic failure errors"""
         return RecoveryAction.ROLLBACK
 
@@ -508,14 +537,20 @@ class WorkflowRecoveryManager:
         """Get recovery status for a workflow"""
 
         checkpoints = self.checkpoints.get(workflow_id, [])
-        recovery_plans = [p for p in self.recovery_plans.values() if p.workflow_id == workflow_id]
+        recovery_plans = [
+            p for p in self.recovery_plans.values() if p.workflow_id == workflow_id
+        ]
 
         return {
             "workflow_id": workflow_id,
             "checkpoints": len(checkpoints),
-            "latest_checkpoint": (checkpoints[-1].timestamp.isoformat() if checkpoints else None),
+            "latest_checkpoint": (
+                checkpoints[-1].timestamp.isoformat() if checkpoints else None
+            ),
             "recovery_plans": len(recovery_plans),
-            "active_recovery": any(p.retry_count < p.max_retries for p in recovery_plans),
+            "active_recovery": any(
+                p.retry_count < p.max_retries for p in recovery_plans
+            ),
         }
 
 

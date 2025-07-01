@@ -131,7 +131,9 @@ class WorkflowEngine:
             # Start workflow execution
             asyncio.create_task(self._execute_workflow(workflow_id))
 
-            logger.info(f"Submitted workflow {workflow_id} of type {workflow_type.value}")
+            logger.info(
+                f"Submitted workflow {workflow_id} of type {workflow_type.value}"
+            )
             return workflow_id
 
         except Exception as e:
@@ -163,7 +165,10 @@ class WorkflowEngine:
         # Cancel the workflow
         workflow_state.status = WorkflowStatus.CANCELLED
         workflow_state.completed_at = datetime.utcnow()
-        workflow_state.result = {"cancelled": True, "reason": "User requested cancellation"}
+        workflow_state.result = {
+            "cancelled": True,
+            "reason": "User requested cancellation",
+        }
 
         # Cancel the execution task if it exists
         if workflow_state.execution_task:
@@ -194,7 +199,9 @@ class WorkflowEngine:
         # Start execution
         asyncio.create_task(self._execute_workflow(workflow_id))
 
-        logger.info(f"Retrying workflow {workflow_id} (attempt {workflow_state.retry_count})")
+        logger.info(
+            f"Retrying workflow {workflow_id} (attempt {workflow_state.retry_count})"
+        )
         return True
 
     async def _execute_workflow(self, workflow_id: UUID):
@@ -212,7 +219,9 @@ class WorkflowEngine:
             # Get workflow class
             workflow_class = self.workflow_classes.get(workflow_state.workflow_type)
             if not workflow_class:
-                raise Exception(f"Unknown workflow type: {workflow_state.workflow_type}")
+                raise Exception(
+                    f"Unknown workflow type: {workflow_state.workflow_type}"
+                )
 
             # Create and execute workflow
             workflow_instance = workflow_class(workflow_state)
@@ -222,7 +231,8 @@ class WorkflowEngine:
 
             # Execute with timeout
             result = await asyncio.wait_for(
-                workflow_instance.execute(), timeout=workflow_state.timeout.total_seconds()
+                workflow_instance.execute(),
+                timeout=workflow_state.timeout.total_seconds(),
             )
 
             # Update state with result
@@ -285,7 +295,8 @@ class WorkflowEngine:
                         # Keep completed workflows for a while for status queries
                         if (
                             workflow_state.completed_at
-                            and current_time - workflow_state.completed_at > timedelta(hours=1)
+                            and current_time - workflow_state.completed_at
+                            > timedelta(hours=1)
                         ):
                             workflows_to_remove.append(workflow_id)
 
@@ -293,7 +304,8 @@ class WorkflowEngine:
                     elif workflow_state.status == WorkflowStatus.RUNNING:
                         if (
                             workflow_state.started_at
-                            and current_time - workflow_state.started_at > workflow_state.timeout
+                            and current_time - workflow_state.started_at
+                            > workflow_state.timeout
                         ):
                             logger.warning(
                                 f"Workflow {workflow_id} appears stuck, marking as failed"
@@ -346,7 +358,9 @@ class WorkflowEngine:
         except Exception as e:
             logger.error(f"Failed to persist workflow state: {e}")
 
-    async def _load_workflow_from_db(self, workflow_id: UUID) -> Optional[WorkflowState]:
+    async def _load_workflow_from_db(
+        self, workflow_id: UUID
+    ) -> Optional[WorkflowState]:
         """Load workflow state from database."""
         try:
             # This would query the database for the workflow

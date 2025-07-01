@@ -35,17 +35,16 @@ import time
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('reorganization_plan.log'),
-        logging.StreamHandler()
-    ]
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    handlers=[logging.FileHandler("reorganization_plan.log"), logging.StreamHandler()],
 )
 logger = logging.getLogger(__name__)
+
 
 @dataclass
 class FileOperation:
     """Track file operations for rollback capability."""
+
     operation_type: str  # move, copy, delete, create
     source_path: str
     destination_path: Optional[str]
@@ -53,9 +52,11 @@ class FileOperation:
     success: bool = False
     error_message: Optional[str] = None
 
+
 @dataclass
 class ServiceStatus:
     """Track service health status."""
+
     service_name: str
     port: int
     status: str  # running, stopped, error
@@ -63,9 +64,11 @@ class ServiceStatus:
     health_check_url: Optional[str] = None
     last_check: Optional[str] = None
 
+
 @dataclass
 class PhaseResult:
     """Track phase execution results."""
+
     phase_name: str
     start_time: str
     end_time: Optional[str]
@@ -75,14 +78,15 @@ class PhaseResult:
     warnings: List[str]
     metrics: Dict[str, Any]
 
+
 class ACGSReorganizationPlan:
     """
     ACGS-1 Comprehensive Cleanup and Reorganization Implementation.
-    
+
     This class orchestrates the 7-phase cleanup and reorganization process
     while preserving all critical system functionality.
     """
-    
+
     def __init__(self, project_root: str = "/home/ubuntu/ACGS", dry_run: bool = False):
         self.project_root = Path(project_root)
         self.dry_run = dry_run
@@ -90,7 +94,7 @@ class ACGSReorganizationPlan:
         self.backup_dir = self.project_root / "backups" / self.backup_timestamp
         self.operations_log: List[FileOperation] = []
         self.phase_results: List[PhaseResult] = []
-        
+
         # Critical preservation targets
         self.constitution_hash = "cdd01ef066bc6cf2"
         self.core_services = [
@@ -100,9 +104,9 @@ class ACGSReorganizationPlan:
             {"name": "fv", "port": 8003},
             {"name": "gs", "port": 8004},
             {"name": "pgc", "port": 8005},
-            {"name": "ec", "port": 8006}
+            {"name": "ec", "port": 8006},
         ]
-        
+
         # Standard directory structure
         self.standard_dirs = {
             "services": {
@@ -112,25 +116,25 @@ class ACGSReorganizationPlan:
                     "governance-synthesis/gs_service",
                     "policy-governance/pgc_service",
                     "evolutionary-computation/ec_service",
-                    "self-evolving-ai/se_service"
+                    "self-evolving-ai/se_service",
                 ],
                 "platform": [
                     "authentication/auth_service",
-                    "integrity/integrity_service"
-                ]
+                    "integrity/integrity_service",
+                ],
             },
             "blockchain": ["programs", "tests", "scripts", "quantumagi-deployment"],
             "infrastructure": ["docker", "kubernetes", "monitoring", "database"],
             "config": ["production", "staging", "development", "monitoring"],
             "docs": ["api", "architecture", "deployment", "user_guide"],
             "tests": ["unit", "integration", "e2e", "performance"],
-            "scripts": ["deployment", "monitoring", "maintenance", "security"]
+            "scripts": ["deployment", "monitoring", "maintenance", "security"],
         }
-        
+
         # Essential root files (limit to 12)
         self.essential_root_files = [
             "README.md",
-            "LICENSE", 
+            "LICENSE",
             "CHANGELOG.md",
             "CONTRIBUTING.md",
             "SECURITY.md",
@@ -140,60 +144,59 @@ class ACGSReorganizationPlan:
             "package.json",
             "Cargo.toml",
             ".gitignore",
-            "conftest.py"
+            "conftest.py",
         ]
 
     def log_operation(self, operation: FileOperation) -> None:
         """Log a file operation for rollback capability."""
         self.operations_log.append(operation)
-        logger.info(f"Operation: {operation.operation_type} {operation.source_path} -> {operation.destination_path}")
+        logger.info(
+            f"Operation: {operation.operation_type} {operation.source_path} -> {operation.destination_path}"
+        )
 
     def check_service_health(self, service: Dict[str, Any]) -> ServiceStatus:
         """Check if a service is running and healthy."""
         service_name = service["name"]
         port = service["port"]
-        
+
         try:
             # Check if port is in use
             result = subprocess.run(
-                ["netstat", "-tlnp"], 
-                capture_output=True, 
-                text=True, 
-                timeout=10
+                ["netstat", "-tlnp"], capture_output=True, text=True, timeout=10
             )
-            
+
             port_in_use = f":{port}" in result.stdout
-            
+
             # Try to get PID
             pid = None
             if port_in_use:
                 pid_result = subprocess.run(
-                    ["lsof", "-ti", f":{port}"], 
-                    capture_output=True, 
-                    text=True, 
-                    timeout=5
+                    ["lsof", "-ti", f":{port}"],
+                    capture_output=True,
+                    text=True,
+                    timeout=5,
                 )
                 if pid_result.returncode == 0 and pid_result.stdout.strip():
-                    pid = int(pid_result.stdout.strip().split('\n')[0])
-            
+                    pid = int(pid_result.stdout.strip().split("\n")[0])
+
             status = "running" if port_in_use else "stopped"
-            
+
             return ServiceStatus(
                 service_name=service_name,
                 port=port,
                 status=status,
                 pid=pid,
                 health_check_url=f"http://localhost:{port}/health",
-                last_check=datetime.now().isoformat()
+                last_check=datetime.now().isoformat(),
             )
-            
+
         except Exception as e:
             logger.error(f"Error checking service {service_name}: {e}")
             return ServiceStatus(
                 service_name=service_name,
                 port=port,
                 status="error",
-                last_check=datetime.now().isoformat()
+                last_check=datetime.now().isoformat(),
             )
 
     def verify_constitution_hash(self) -> bool:
@@ -201,26 +204,30 @@ class ACGSReorganizationPlan:
         try:
             # Check blockchain deployment files
             blockchain_dir = self.project_root / "blockchain"
-            
+
             # Look for constitution hash in various files
             search_files = [
                 "constitution_data.json",
                 "devnet_program_ids.json",
-                "governance_accounts.json"
+                "governance_accounts.json",
             ]
-            
+
             for file_name in search_files:
                 file_path = blockchain_dir / file_name
                 if file_path.exists():
-                    with open(file_path, 'r') as f:
+                    with open(file_path, "r") as f:
                         content = f.read()
                         if self.constitution_hash in content:
-                            logger.info(f"Constitution hash {self.constitution_hash} found in {file_name}")
+                            logger.info(
+                                f"Constitution hash {self.constitution_hash} found in {file_name}"
+                            )
                             return True
-            
-            logger.warning(f"Constitution hash {self.constitution_hash} not found in expected files")
+
+            logger.warning(
+                f"Constitution hash {self.constitution_hash} not found in expected files"
+            )
             return False
-            
+
         except Exception as e:
             logger.error(f"Error verifying constitution hash: {e}")
             return False
@@ -228,24 +235,24 @@ class ACGSReorganizationPlan:
     def create_backup(self) -> bool:
         """Create a comprehensive backup of the current state."""
         logger.info(f"Creating backup in {self.backup_dir}")
-        
+
         if self.dry_run:
             logger.info("DRY RUN: Would create backup")
             return True
-        
+
         try:
             self.backup_dir.mkdir(parents=True, exist_ok=True)
-            
+
             # Backup critical directories
             critical_dirs = ["services", "blockchain", "config", "scripts", "docs"]
-            
+
             for dir_name in critical_dirs:
                 source_dir = self.project_root / dir_name
                 if source_dir.exists():
                     dest_dir = self.backup_dir / dir_name
                     shutil.copytree(source_dir, dest_dir, ignore_dangling_symlinks=True)
                     logger.info(f"Backed up {dir_name}")
-            
+
             # Backup essential root files
             for file_name in self.essential_root_files:
                 source_file = self.project_root / file_name
@@ -253,22 +260,25 @@ class ACGSReorganizationPlan:
                     dest_file = self.backup_dir / file_name
                     shutil.copy2(source_file, dest_file)
                     logger.info(f"Backed up {file_name}")
-            
+
             # Create backup manifest
             manifest = {
                 "timestamp": self.backup_timestamp,
                 "constitution_hash": self.constitution_hash,
                 "services_backed_up": critical_dirs,
                 "files_backed_up": self.essential_root_files,
-                "backup_size_mb": self._get_directory_size(self.backup_dir) / (1024 * 1024)
+                "backup_size_mb": self._get_directory_size(self.backup_dir)
+                / (1024 * 1024),
             }
-            
-            with open(self.backup_dir / "backup_manifest.json", 'w') as f:
+
+            with open(self.backup_dir / "backup_manifest.json", "w") as f:
                 json.dump(manifest, f, indent=2)
-            
-            logger.info(f"Backup completed successfully: {manifest['backup_size_mb']:.2f} MB")
+
+            logger.info(
+                f"Backup completed successfully: {manifest['backup_size_mb']:.2f} MB"
+            )
             return True
-            
+
         except Exception as e:
             logger.error(f"Backup failed: {e}")
             return False
@@ -305,8 +315,16 @@ class ACGSReorganizationPlan:
             # Step 1: Create backup
             if not self.create_backup():
                 errors.append("Failed to create backup")
-                return PhaseResult("Phase 1", start_time, datetime.now().isoformat(),
-                                 False, operations, errors, warnings, {})
+                return PhaseResult(
+                    "Phase 1",
+                    start_time,
+                    datetime.now().isoformat(),
+                    False,
+                    operations,
+                    errors,
+                    warnings,
+                    {},
+                )
 
             # Step 2: Document symlinks and .env files
             symlinks = []
@@ -316,11 +334,13 @@ class ACGSReorganizationPlan:
                 for file in files:
                     file_path = Path(root) / file
                     if file_path.is_symlink():
-                        symlinks.append({
-                            "path": str(file_path),
-                            "target": str(file_path.readlink())
-                        })
-                    elif file.endswith('.env') or file.startswith('.env'):
+                        symlinks.append(
+                            {
+                                "path": str(file_path),
+                                "target": str(file_path.readlink()),
+                            }
+                        )
+                    elif file.endswith(".env") or file.startswith(".env"):
                         env_files.append(str(file_path))
 
             # Step 3: Health check all core services
@@ -340,12 +360,15 @@ class ACGSReorganizationPlan:
 
             # Collect metrics
             metrics = {
-                "backup_size_mb": self._get_directory_size(self.backup_dir) / (1024 * 1024),
+                "backup_size_mb": self._get_directory_size(self.backup_dir)
+                / (1024 * 1024),
                 "symlinks_found": len(symlinks),
                 "env_files_found": len(env_files),
-                "services_running": len([s for s in service_statuses if s.status == "running"]),
+                "services_running": len(
+                    [s for s in service_statuses if s.status == "running"]
+                ),
                 "services_total": len(service_statuses),
-                "constitution_hash_verified": self.verify_constitution_hash()
+                "constitution_hash_verified": self.verify_constitution_hash(),
             }
 
             # Save analysis report
@@ -355,22 +378,40 @@ class ACGSReorganizationPlan:
                 "env_files": env_files,
                 "service_statuses": [asdict(s) for s in service_statuses],
                 "metrics": metrics,
-                "rollback_script": rollback_script
+                "rollback_script": rollback_script,
             }
 
             if not self.dry_run:
-                with open(self.project_root / "analysis_report.json", 'w') as f:
+                with open(self.project_root / "analysis_report.json", "w") as f:
                     json.dump(analysis_report, f, indent=2)
 
-            logger.info(f"Phase 1 completed: {len(errors)} errors, {len(warnings)} warnings")
-            return PhaseResult("Phase 1", start_time, datetime.now().isoformat(),
-                             len(errors) == 0, operations, errors, warnings, metrics)
+            logger.info(
+                f"Phase 1 completed: {len(errors)} errors, {len(warnings)} warnings"
+            )
+            return PhaseResult(
+                "Phase 1",
+                start_time,
+                datetime.now().isoformat(),
+                len(errors) == 0,
+                operations,
+                errors,
+                warnings,
+                metrics,
+            )
 
         except Exception as e:
             logger.error(f"Phase 1 failed: {e}")
             errors.append(str(e))
-            return PhaseResult("Phase 1", start_time, datetime.now().isoformat(),
-                             False, operations, errors, warnings, {})
+            return PhaseResult(
+                "Phase 1",
+                start_time,
+                datetime.now().isoformat(),
+                False,
+                operations,
+                errors,
+                warnings,
+                {},
+            )
 
     def _create_rollback_script(self) -> str:
         """Create a rollback script that can restore from backup."""
@@ -408,7 +449,7 @@ echo "Rollback completed. Please verify system functionality."
 
         rollback_path = self.project_root / "emergency_rollback.sh"
         if not self.dry_run:
-            with open(rollback_path, 'w') as f:
+            with open(rollback_path, "w") as f:
                 f.write(rollback_script)
             os.chmod(rollback_path, 0o755)
 
@@ -429,8 +470,11 @@ echo "Rollback completed. Please verify system functionality."
 
         try:
             # Get current root files
-            root_files = [f for f in self.project_root.iterdir()
-                         if f.is_file() and not f.name.startswith('.')]
+            root_files = [
+                f
+                for f in self.project_root.iterdir()
+                if f.is_file() and not f.name.startswith(".")
+            ]
 
             files_to_move = []
             files_to_keep = []
@@ -453,7 +497,7 @@ echo "Rollback completed. Please verify system functionality."
                         operation_type="move",
                         source_path=str(file_path),
                         destination_path=str(destination),
-                        timestamp=datetime.now().isoformat()
+                        timestamp=datetime.now().isoformat(),
                     )
 
                     try:
@@ -474,56 +518,77 @@ echo "Rollback completed. Please verify system functionality."
                     warnings.append(f"No destination determined for {file_path.name}")
 
             # Verify we're under the 12 file limit
-            remaining_files = [f for f in self.project_root.iterdir()
-                             if f.is_file() and not f.name.startswith('.')]
+            remaining_files = [
+                f
+                for f in self.project_root.iterdir()
+                if f.is_file() and not f.name.startswith(".")
+            ]
 
             if len(remaining_files) > 12:
-                warnings.append(f"Root directory still has {len(remaining_files)} files (target: 12)")
+                warnings.append(
+                    f"Root directory still has {len(remaining_files)} files (target: 12)"
+                )
 
             metrics = {
                 "files_moved": len([op for op in operations if op.success]),
                 "files_kept": len(files_to_keep),
                 "files_remaining": len(remaining_files),
-                "target_achieved": len(remaining_files) <= 12
+                "target_achieved": len(remaining_files) <= 12,
             }
 
             logger.info(f"Phase 2 completed: {metrics['files_moved']} files moved")
-            return PhaseResult("Phase 2", start_time, datetime.now().isoformat(),
-                             len(errors) == 0, operations, errors, warnings, metrics)
+            return PhaseResult(
+                "Phase 2",
+                start_time,
+                datetime.now().isoformat(),
+                len(errors) == 0,
+                operations,
+                errors,
+                warnings,
+                metrics,
+            )
 
         except Exception as e:
             logger.error(f"Phase 2 failed: {e}")
             errors.append(str(e))
-            return PhaseResult("Phase 2", start_time, datetime.now().isoformat(),
-                             False, operations, errors, warnings, {})
+            return PhaseResult(
+                "Phase 2",
+                start_time,
+                datetime.now().isoformat(),
+                False,
+                operations,
+                errors,
+                warnings,
+                {},
+            )
 
     def _determine_file_destination(self, file_path: Path) -> Optional[Path]:
         """Determine the appropriate destination for a file based on its type."""
         file_name = file_path.name.lower()
 
         # Documentation files
-        if any(ext in file_name for ext in ['.md', '_report', '_summary', '_guide']):
+        if any(ext in file_name for ext in [".md", "_report", "_summary", "_guide"]):
             return self.project_root / "docs" / "reports" / file_path.name
 
         # Configuration files
-        if any(ext in file_name for ext in ['.yml', '.yaml', '.json', '.toml', '.ini']):
-            if 'docker' in file_name:
+        if any(ext in file_name for ext in [".yml", ".yaml", ".json", ".toml", ".ini"]):
+            if "docker" in file_name:
                 return self.project_root / "infrastructure" / "docker" / file_path.name
-            elif any(env in file_name for env in ['prod', 'staging', 'dev']):
+            elif any(env in file_name for env in ["prod", "staging", "dev"]):
                 return self.project_root / "config" / "environments" / file_path.name
             else:
                 return self.project_root / "config" / file_path.name
 
         # Script files
-        if file_name.endswith('.sh') or file_name.endswith('.py'):
+        if file_name.endswith(".sh") or file_name.endswith(".py"):
             return self.project_root / "scripts" / "maintenance" / file_path.name
 
         # Log files
-        if 'log' in file_name or file_name.endswith('.log'):
+        if "log" in file_name or file_name.endswith(".log"):
             return self.project_root / "logs" / file_path.name
 
         # Backup files
-        if 'backup' in file_name or file_name.endswith('.bak'):
+        if "backup" in file_name or file_name.endswith(".bak"):
             return self.project_root / "backups" / "misc" / file_path.name
 
         # Default to archive for unclassified files
@@ -538,7 +603,7 @@ echo "Rollback completed. Please verify system functionality."
             "services": {},
             "blockchain": {},
             "configuration": {},
-            "overall_status": "unknown"
+            "overall_status": "unknown",
         }
 
         try:
@@ -550,7 +615,7 @@ echo "Rollback completed. Please verify system functionality."
                     "status": status.status,
                     "port": status.port,
                     "pid": status.pid,
-                    "healthy": status.status == "running"
+                    "healthy": status.status == "running",
                 }
                 if status.status == "running":
                     services_healthy += 1
@@ -559,32 +624,36 @@ echo "Rollback completed. Please verify system functionality."
             constitution_valid = self.verify_constitution_hash()
             validation_results["blockchain"] = {
                 "constitution_hash_valid": constitution_valid,
-                "quantumagi_deployment": "verified" if constitution_valid else "error"
+                "quantumagi_deployment": "verified" if constitution_valid else "error",
             }
 
             # Validate configuration
-            config_files_exist = all([
-                (self.project_root / "config" / "production.env").exists(),
-                (self.project_root / "config" / "services").exists(),
-                (self.project_root / "docker-compose.yml").exists()
-            ])
+            config_files_exist = all(
+                [
+                    (self.project_root / "config" / "production.env").exists(),
+                    (self.project_root / "config" / "services").exists(),
+                    (self.project_root / "docker-compose.yml").exists(),
+                ]
+            )
 
             validation_results["configuration"] = {
                 "essential_configs_exist": config_files_exist,
-                "directory_structure_valid": self._validate_directory_structure()
+                "directory_structure_valid": self._validate_directory_structure(),
             }
 
             # Overall status
             all_services_healthy = services_healthy == len(self.core_services)
-            overall_healthy = (all_services_healthy and
-                             constitution_valid and
-                             config_files_exist)
+            overall_healthy = (
+                all_services_healthy and constitution_valid and config_files_exist
+            )
 
-            validation_results["overall_status"] = "healthy" if overall_healthy else "degraded"
+            validation_results["overall_status"] = (
+                "healthy" if overall_healthy else "degraded"
+            )
             validation_results["summary"] = {
                 "services_healthy": f"{services_healthy}/{len(self.core_services)}",
                 "blockchain_valid": constitution_valid,
-                "config_valid": config_files_exist
+                "config_valid": config_files_exist,
             }
 
             logger.info(f"Validation completed: {validation_results['overall_status']}")
@@ -607,7 +676,7 @@ echo "Rollback completed. Please verify system functionality."
                 "config",
                 "docs",
                 "tests",
-                "scripts"
+                "scripts",
             ]
 
             for dir_path in required_dirs:
@@ -639,9 +708,13 @@ echo "Rollback completed. Please verify system functionality."
                 end_time=datetime.now().isoformat(),
                 success=validation["overall_status"] == "healthy",
                 operations=[],
-                errors=[] if validation["overall_status"] != "error" else [validation.get("error", "Unknown error")],
+                errors=(
+                    []
+                    if validation["overall_status"] != "error"
+                    else [validation.get("error", "Unknown error")]
+                ),
                 warnings=[],
-                metrics=validation
+                metrics=validation,
             )
         else:
             logger.error(f"Unknown phase: {phase_name}")
@@ -653,7 +726,7 @@ echo "Rollback completed. Please verify system functionality."
                 operations=[],
                 errors=[f"Unknown phase: {phase_name}"],
                 warnings=[],
-                metrics={}
+                metrics={},
             )
 
     def execute_all_phases(self) -> List[PhaseResult]:
@@ -701,7 +774,7 @@ echo "Rollback completed. Please verify system functionality."
                 "total_operations": total_operations,
                 "successful_operations": successful_operations,
                 "dry_run": self.dry_run,
-                "backup_location": str(self.backup_dir)
+                "backup_location": str(self.backup_dir),
             },
             "phase_results": [asdict(phase) for phase in self.phase_results],
             "preservation_status": {
@@ -710,10 +783,10 @@ echo "Rollback completed. Please verify system functionality."
                 "services_status": [
                     asdict(self.check_service_health(service))
                     for service in self.core_services
-                ]
+                ],
             },
             "file_operations": [asdict(op) for op in self.operations_log],
-            "recommendations": self._generate_recommendations()
+            "recommendations": self._generate_recommendations(),
         }
 
         return report
@@ -737,9 +810,7 @@ echo "Rollback completed. Please verify system functionality."
                 unhealthy_services.append(service["name"])
 
         if unhealthy_services:
-            recommendations.append(
-                f"Restart unhealthy services: {unhealthy_services}"
-            )
+            recommendations.append(f"Restart unhealthy services: {unhealthy_services}")
 
         # Check constitution hash
         if not self.verify_constitution_hash():
@@ -748,14 +819,17 @@ echo "Rollback completed. Please verify system functionality."
             )
 
         # General recommendations
-        recommendations.extend([
-            "Run comprehensive tests to verify system functionality",
-            "Update documentation to reflect new directory structure",
-            "Monitor system performance for 24 hours after reorganization",
-            "Schedule regular cleanup maintenance based on this process"
-        ])
+        recommendations.extend(
+            [
+                "Run comprehensive tests to verify system functionality",
+                "Update documentation to reflect new directory structure",
+                "Monitor system performance for 24 hours after reorganization",
+                "Schedule regular cleanup maintenance based on this process",
+            ]
+        )
 
         return recommendations
+
 
 def main():
     """Main execution function with command-line interface."""
@@ -767,33 +841,30 @@ def main():
         "--phase",
         choices=["all", "preparation", "cleanup", "validation", "1", "2"],
         default="all",
-        help="Phase to execute (default: all)"
+        help="Phase to execute (default: all)",
     )
 
     parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="Preview changes without executing them"
+        "--dry-run", action="store_true", help="Preview changes without executing them"
     )
 
     parser.add_argument(
         "--project-root",
         default="/home/ubuntu/ACGS",
-        help="Project root directory (default: /home/ubuntu/ACGS)"
+        help="Project root directory (default: /home/ubuntu/ACGS)",
     )
 
     parser.add_argument(
         "--rollback",
         action="store_true",
-        help="Execute emergency rollback from latest backup"
+        help="Execute emergency rollback from latest backup",
     )
 
     args = parser.parse_args()
 
     # Initialize reorganization plan
     reorganizer = ACGSReorganizationPlan(
-        project_root=args.project_root,
-        dry_run=args.dry_run
+        project_root=args.project_root, dry_run=args.dry_run
     )
 
     try:
@@ -835,7 +906,7 @@ def main():
         report = reorganizer.generate_execution_report()
         report_file = f"reorganization_report_{reorganizer.backup_timestamp}.json"
 
-        with open(report_file, 'w') as f:
+        with open(report_file, "w") as f:
             json.dump(report, f, indent=2)
 
         # Print summary
@@ -871,6 +942,7 @@ def main():
     except Exception as e:
         logger.error(f"Reorganization failed: {e}")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

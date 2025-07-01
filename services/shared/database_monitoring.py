@@ -132,7 +132,9 @@ class DatabaseMonitor:
                     health_status = await client.health_check()
 
                     # Connection pool metrics
-                    for pool_name, pool_info in health_status.get("connection_pools", {}).items():
+                    for pool_name, pool_info in health_status.get(
+                        "connection_pools", {}
+                    ).items():
                         if pool_info.get("status") == "healthy":
                             total_connections += pool_info.get("pool_size", 0)
                             active_connections += pool_info.get("checked_out", 0)
@@ -141,7 +143,9 @@ class DatabaseMonitor:
                             failed_connections += 1
 
                 except Exception as e:
-                    logger.warning(f"Failed to collect metrics from {service_name}: {e}")
+                    logger.warning(
+                        f"Failed to collect metrics from {service_name}: {e}"
+                    )
                     failed_connections += 1
 
             # Collect resilience metrics
@@ -167,7 +171,9 @@ class DatabaseMonitor:
             # Calculate uptime percentage
             if self.metrics_history:
                 recent_metrics = self.metrics_history[-10:]  # Last 10 measurements
-                healthy_count = sum(1 for m in recent_metrics if m.failed_connections == 0)
+                healthy_count = sum(
+                    1 for m in recent_metrics if m.failed_connections == 0
+                )
                 metrics.uptime_percentage = (healthy_count / len(recent_metrics)) * 100
 
             metrics.last_health_check = time.time()
@@ -261,13 +267,18 @@ class DatabaseMonitor:
         recent_metrics = self.metrics_history[-last_n:]
 
         return {
-            "status": ("healthy" if recent_metrics[-1].failed_connections == 0 else "degraded"),
+            "status": (
+                "healthy" if recent_metrics[-1].failed_connections == 0 else "degraded"
+            ),
             "total_measurements": len(recent_metrics),
             "avg_connections": sum(m.total_connections for m in recent_metrics)
             / len(recent_metrics),
-            "avg_uptime": sum(m.uptime_percentage for m in recent_metrics) / len(recent_metrics),
+            "avg_uptime": sum(m.uptime_percentage for m in recent_metrics)
+            / len(recent_metrics),
             "total_failures": sum(m.failed_connections for m in recent_metrics),
-            "total_circuit_breaker_trips": sum(m.circuit_breaker_trips for m in recent_metrics),
+            "total_circuit_breaker_trips": sum(
+                m.circuit_breaker_trips for m in recent_metrics
+            ),
             "last_check": recent_metrics[-1].last_health_check,
             "monitoring_interval": self.monitoring_interval,
         }

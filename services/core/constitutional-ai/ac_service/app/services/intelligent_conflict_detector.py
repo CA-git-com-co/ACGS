@@ -111,7 +111,7 @@ class IntelligentConflictDetector:
 
         # Performance optimization: caching for repeated computations
         self._similarity_cache = {}  # Cache for semantic similarity calculations
-        self._analysis_cache = {}    # Cache for principle analysis results
+        self._analysis_cache = {}  # Cache for principle analysis results
         self._cache_max_size = 1000  # Maximum cache size to prevent memory issues
 
         # Performance metrics
@@ -204,7 +204,9 @@ class IntelligentConflictDetector:
             conflicts = []
 
             # 1. Semantic conflict detection
-            semantic_conflicts = await self._detect_semantic_conflicts(principle_analyses)
+            semantic_conflicts = await self._detect_semantic_conflicts(
+                principle_analyses
+            )
             conflicts.extend(semantic_conflicts)
 
             # 2. Pattern-based conflict detection
@@ -212,7 +214,9 @@ class IntelligentConflictDetector:
             conflicts.extend(pattern_conflicts)
 
             # 3. Priority-based conflict detection
-            priority_conflicts = await self._detect_priority_conflicts(principle_analyses)
+            priority_conflicts = await self._detect_priority_conflicts(
+                principle_analyses
+            )
             conflicts.extend(priority_conflicts)
 
             # 4. Scope overlap detection
@@ -222,7 +226,9 @@ class IntelligentConflictDetector:
             # Remove duplicates and filter by confidence threshold
             unique_conflicts = self._deduplicate_conflicts(conflicts)
             filtered_conflicts = [
-                c for c in unique_conflicts if c.confidence_score >= self.detection_threshold
+                c
+                for c in unique_conflicts
+                if c.confidence_score >= self.detection_threshold
             ]
 
             # Calculate priority scores
@@ -258,7 +264,9 @@ class IntelligentConflictDetector:
         result = await db.execute(query)
         return result.scalars().all()
 
-    async def _analyze_principles(self, principles: list[Principle]) -> list[PrincipleAnalysis]:
+    async def _analyze_principles(
+        self, principles: list[Principle]
+    ) -> list[PrincipleAnalysis]:
         """Analyze principles to extract features for conflict detection."""
         analyses = []
 
@@ -276,7 +284,9 @@ class IntelligentConflictDetector:
 
         return analyses
 
-    async def _generate_semantic_embedding(self, principle: Principle) -> np.ndarray | None:
+    async def _generate_semantic_embedding(
+        self, principle: Principle
+    ) -> np.ndarray | None:
         """Generate semantic embedding for principle text."""
         if not self.semantic_analyzer_available:
             return None
@@ -288,7 +298,9 @@ class IntelligentConflictDetector:
             # For now, return a random embedding as placeholder
             return np.random.rand(384)  # Typical sentence embedding size
         except Exception as e:
-            logger.warning(f"Failed to generate embedding for principle {principle.id}: {e}")
+            logger.warning(
+                f"Failed to generate embedding for principle {principle.id}: {e}"
+            )
             return None
 
     def _extract_scope_keywords(self, principle: Principle) -> set[str]:
@@ -397,10 +409,13 @@ class IntelligentConflictDetector:
         for i in range(len(analyses)):
             for j in range(i + 1, len(analyses)):
                 analysis_a, analysis_b = analyses[i], analyses[j]
-                
-                if analysis_a.semantic_embedding is None or analysis_b.semantic_embedding is None:
+
+                if (
+                    analysis_a.semantic_embedding is None
+                    or analysis_b.semantic_embedding is None
+                ):
                     continue
-                    
+
                 task = asyncio.create_task(
                     self._analyze_semantic_conflict_pair(analysis_a, analysis_b)
                 )
@@ -408,8 +423,10 @@ class IntelligentConflictDetector:
 
         # Process all comparisons in parallel
         if comparison_tasks:
-            conflict_results = await asyncio.gather(*comparison_tasks, return_exceptions=True)
-            
+            conflict_results = await asyncio.gather(
+                *comparison_tasks, return_exceptions=True
+            )
+
             # Filter out exceptions and None results
             for result in conflict_results:
                 if isinstance(result, ConflictDetectionResult):
@@ -495,7 +512,9 @@ class IntelligentConflictDetector:
                             conflict = ConflictDetectionResult(
                                 conflict_type=ConflictType.PRACTICAL_INCOMPATIBILITY,
                                 severity=self._determine_severity(confidence),
-                                principle_ids=[p.principle_id for p in conflict_principles],
+                                principle_ids=[
+                                    p.principle_id for p in conflict_principles
+                                ],
                                 confidence_score=confidence,
                                 description=f"Pattern-based conflict detected: {typical_conflict}",
                                 context=f"pattern_{pattern_name}",
@@ -505,7 +524,9 @@ class IntelligentConflictDetector:
                                     "typical_conflict": typical_conflict,
                                     "method": "pattern_matching",
                                 },
-                                recommended_strategy=pattern_data["resolution_strategies"][0],
+                                recommended_strategy=pattern_data[
+                                    "resolution_strategies"
+                                ][0],
                             )
                             conflicts.append(conflict)
 
@@ -522,7 +543,7 @@ class IntelligentConflictDetector:
         for i in range(len(analyses)):
             for j in range(i + 1, len(analyses)):
                 analysis_a, analysis_b = analyses[i], analyses[j]
-                
+
                 task = asyncio.create_task(
                     self._analyze_priority_conflict_pair(analysis_a, analysis_b)
                 )
@@ -530,8 +551,10 @@ class IntelligentConflictDetector:
 
         # Process all priority comparisons in parallel
         if priority_tasks:
-            conflict_results = await asyncio.gather(*priority_tasks, return_exceptions=True)
-            
+            conflict_results = await asyncio.gather(
+                *priority_tasks, return_exceptions=True
+            )
+
             # Filter out exceptions and None results
             for result in conflict_results:
                 if isinstance(result, ConflictDetectionResult):
@@ -552,7 +575,9 @@ class IntelligentConflictDetector:
             ) / max(len(analysis_a.scope_keywords), len(analysis_b.scope_keywords), 1)
 
             if scope_overlap > 0.3:  # Significant scope overlap
-                priority_diff = abs(analysis_a.priority_weight - analysis_b.priority_weight)
+                priority_diff = abs(
+                    analysis_a.priority_weight - analysis_b.priority_weight
+                )
 
                 if priority_diff > 0.5:  # Significant priority difference
                     confidence = min(scope_overlap + (priority_diff / 2), 1.0)
@@ -592,7 +617,7 @@ class IntelligentConflictDetector:
         for i in range(len(analyses)):
             for j in range(i + 1, len(analyses)):
                 analysis_a, analysis_b = analyses[i], analyses[j]
-                
+
                 task = asyncio.create_task(
                     self._analyze_scope_conflict_pair(analysis_a, analysis_b)
                 )
@@ -600,8 +625,10 @@ class IntelligentConflictDetector:
 
         # Process all scope comparisons in parallel
         if scope_tasks:
-            conflict_results = await asyncio.gather(*scope_tasks, return_exceptions=True)
-            
+            conflict_results = await asyncio.gather(
+                *scope_tasks, return_exceptions=True
+            )
+
             # Filter out exceptions and None results
             for result in conflict_results:
                 if isinstance(result, ConflictDetectionResult):
@@ -617,7 +644,9 @@ class IntelligentConflictDetector:
         """Analyze a single pair of principles for scope conflicts."""
         try:
             # Calculate scope overlap
-            common_keywords = analysis_a.scope_keywords.intersection(analysis_b.scope_keywords)
+            common_keywords = analysis_a.scope_keywords.intersection(
+                analysis_b.scope_keywords
+            )
             total_keywords = analysis_a.scope_keywords.union(analysis_b.scope_keywords)
 
             if len(total_keywords) == 0:
@@ -668,14 +697,14 @@ class IntelligentConflictDetector:
         try:
             # Create cache key from embeddings (use hash of concatenated embeddings)
             cache_key = hash((embedding_a.tobytes(), embedding_b.tobytes()))
-            
+
             # Check cache first
             if cache_key in self._similarity_cache:
                 self.detection_stats["cache_hits"] += 1
                 return self._similarity_cache[cache_key]
-            
+
             self.detection_stats["cache_misses"] += 1
-            
+
             # Cosine similarity calculation
             dot_product = np.dot(embedding_a, embedding_b)
             norm_a = np.linalg.norm(embedding_a)
@@ -686,23 +715,27 @@ class IntelligentConflictDetector:
             else:
                 similarity = dot_product / (norm_a * norm_b)
                 similarity = max(0.0, min(1.0, similarity))  # Clamp to [0, 1]
-            
+
             # Cache the result if cache isn't full
             if len(self._similarity_cache) < self._cache_max_size:
                 self._similarity_cache[cache_key] = similarity
             elif len(self._similarity_cache) >= self._cache_max_size:
                 # Simple cache eviction: clear half the cache when full
-                keys_to_remove = list(self._similarity_cache.keys())[:len(self._similarity_cache)//2]
+                keys_to_remove = list(self._similarity_cache.keys())[
+                    : len(self._similarity_cache) // 2
+                ]
                 for key in keys_to_remove:
                     del self._similarity_cache[key]
                 self._similarity_cache[cache_key] = similarity
-            
+
             return similarity
         except Exception as e:
             logger.warning(f"Failed to calculate semantic similarity: {e}")
             return 0.0
 
-    def _detect_contradiction(self, statements_a: list[str], statements_b: list[str]) -> float:
+    def _detect_contradiction(
+        self, statements_a: list[str], statements_b: list[str]
+    ) -> float:
         """Detect contradictions between normative statements."""
         if not statements_a or not statements_b:
             return 0.0
@@ -829,7 +862,9 @@ class IntelligentConflictDetector:
     ) -> float:
         """Calculate priority score for conflict resolution."""
         # Get analyses for conflicted principles
-        conflict_analyses = [a for a in analyses if a.principle_id in conflict.principle_ids]
+        conflict_analyses = [
+            a for a in analyses if a.principle_id in conflict.principle_ids
+        ]
 
         if not conflict_analyses:
             return 0.0
@@ -865,7 +900,9 @@ class IntelligentConflictDetector:
         }.get(conflict.severity, 0.5)
 
         # Scope breadth (number of principles involved)
-        scope_score = min(len(conflict.principle_ids) / 5, 1.0)  # Normalize to max 5 principles
+        scope_score = min(
+            len(conflict.principle_ids) / 5, 1.0
+        )  # Normalize to max 5 principles
 
         # Calculate weighted priority score
         priority_score = (
@@ -914,7 +951,8 @@ class IntelligentConflictDetector:
         self.detection_stats["false_positives"] += false_positives
 
         total_detections = (
-            self.detection_stats["conflicts_detected"] + self.detection_stats["false_positives"]
+            self.detection_stats["conflicts_detected"]
+            + self.detection_stats["false_positives"]
         )
         if total_detections > 0:
             self.detection_stats["accuracy_rate"] = (

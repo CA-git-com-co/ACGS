@@ -113,9 +113,7 @@ def read_file(path: Path) -> str:
         raise ValueError(f"Failed to read file: {e}")
 
 
-def read_file_range(
-    path: Path, line_range: list[int] | None = None
-) -> tuple[str, int]:
+def read_file_range(path: Path, line_range: list[int] | None = None) -> tuple[str, int]:
     """
     Read and return file contents within specified line range.
     Returns tuple of (content, start_line).

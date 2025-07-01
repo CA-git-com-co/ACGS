@@ -8,21 +8,25 @@ import json
 import sys
 from pathlib import Path
 
+
 def evaluate_security_reports():
     """Evaluate all security reports and determine if security gates pass."""
     reports_dir = Path(".")
     security_issues = []
-    
+
     # Evaluate Bandit report
     bandit_report = reports_dir / "bandit-report.json"
     if bandit_report.exists():
         with open(bandit_report) as f:
             bandit_data = json.load(f)
-            high_severity = [issue for issue in bandit_data.get("results", []) 
-                           if issue.get("issue_severity") == "HIGH"]
+            high_severity = [
+                issue
+                for issue in bandit_data.get("results", [])
+                if issue.get("issue_severity") == "HIGH"
+            ]
             if high_severity:
                 security_issues.extend(high_severity)
-    
+
     # Evaluate Safety report
     safety_report = reports_dir / "safety-report.json"
     if safety_report.exists():
@@ -31,17 +35,19 @@ def evaluate_security_reports():
             vulnerabilities = safety_data.get("vulnerabilities", [])
             if vulnerabilities:
                 security_issues.extend(vulnerabilities)
-    
+
     # Evaluate Semgrep report
     semgrep_report = reports_dir / "semgrep-report.json"
     if semgrep_report.exists():
         with open(semgrep_report) as f:
             semgrep_data = json.load(f)
             results = semgrep_data.get("results", [])
-            critical_issues = [r for r in results if r.get("extra", {}).get("severity") == "ERROR"]
+            critical_issues = [
+                r for r in results if r.get("extra", {}).get("severity") == "ERROR"
+            ]
             if critical_issues:
                 security_issues.extend(critical_issues)
-    
+
     # Security gate decision
     if security_issues:
         print(f"❌ Security gate FAILED: {len(security_issues)} critical issues found")
@@ -51,6 +57,7 @@ def evaluate_security_reports():
     else:
         print("✅ Security gate PASSED: No critical security issues found")
         sys.exit(0)
+
 
 if __name__ == "__main__":
     evaluate_security_reports()

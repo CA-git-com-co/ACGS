@@ -11,7 +11,7 @@ from unittest.mock import Mock, patch, AsyncMock
 class TestEdgeCases:
     """Edge case test suite for policy-governance."""
 
-    MAX_INT = 2 ** 31 - 1
+    MAX_INT = 2**31 - 1
 
     def process_input(self, data):
         if data in ("", None, [], {}):
@@ -80,14 +80,14 @@ class TestEdgeCases:
         """Test network failure edge cases."""
         with pytest.raises(httpx.HTTPError):
             httpx.get("http://localhost:9", timeout=1)
-    
+
     def test_configuration_edge_cases(self):
         """Test configuration edge cases."""
         # TODO: Test missing configuration
         # TODO: Test invalid configuration values
         # TODO: Test configuration conflicts
         assert True  # Placeholder
-    
+
     def test_unicode_and_encoding_edge_cases(self):
         """Test Unicode and encoding edge cases."""
         # TODO: Test special Unicode characters

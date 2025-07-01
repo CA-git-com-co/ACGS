@@ -19,6 +19,7 @@ sys.path.insert(0, str(project_root / "services/core/constitutional-ai"))
 sys.path.insert(0, str(project_root / "services/core/formal-verification"))
 sys.path.insert(0, str(project_root / "services/core/policy-governance"))
 
+
 def test_lipschitz_estimator_import():
     """Test importing Lipschitz estimator components."""
     try:
@@ -27,11 +28,13 @@ def test_lipschitz_estimator_import():
             LipschitzEstimationResult,
             LipschitzEstimator,
         )
+
         print("✅ Lipschitz estimator components imported successfully")
         return True
     except ImportError as e:
         print(f"❌ Lipschitz estimator import failed: {e}")
         return False
+
 
 def test_llm_reliability_framework_import():
     """Test importing LLM reliability framework components."""
@@ -41,11 +44,13 @@ def test_llm_reliability_framework_import():
             LLMReliabilityFramework,
             ReliabilityLevel,
         )
+
         print("✅ LLM reliability framework components imported successfully")
         return True
     except ImportError as e:
         print(f"❌ LLM reliability framework import failed: {e}")
         return False
+
 
 def test_constitutional_council_scalability_import():
     """Test importing Constitutional Council scalability components."""
@@ -55,11 +60,13 @@ def test_constitutional_council_scalability_import():
             ConstitutionalCouncilScalabilityFramework,
             ScalabilityConfig,
         )
+
         print("✅ Constitutional Council scalability components imported successfully")
         return True
     except ImportError as e:
         print(f"❌ Constitutional Council scalability import failed: {e}")
         return False
+
 
 def test_adversarial_robustness_tester_import():
     """Test importing Adversarial robustness tester components."""
@@ -69,11 +76,13 @@ def test_adversarial_robustness_tester_import():
             AdversarialTestConfig,
             AdversarialTestType,
         )
+
         print("✅ Adversarial robustness tester components imported successfully")
         return True
     except ImportError as e:
         print(f"❌ Adversarial robustness tester import failed: {e}")
         return False
+
 
 def test_proactive_fairness_generator_import():
     """Test importing Proactive fairness generator components."""
@@ -83,11 +92,13 @@ def test_proactive_fairness_generator_import():
             FairnessMetric,
             ProactiveFairnessGenerator,
         )
+
         print("✅ Proactive fairness generator components imported successfully")
         return True
     except ImportError as e:
         print(f"❌ Proactive fairness generator import failed: {e}")
         return False
+
 
 def test_schemas_import():
     """Test importing schema components."""
@@ -96,17 +107,19 @@ def test_schemas_import():
             LLMInterpretationInput,
             LLMStructuredOutput,
         )
+
         print("✅ Schema components imported successfully")
         return True
     except ImportError as e:
         print(f"❌ Schema import failed: {e}")
         return False
 
+
 def main():
     """Run all import verification tests."""
     print("🚀 Running AlphaEvolve-ACGS Import Verification Tests")
     print("=" * 60)
-    
+
     tests = [
         test_lipschitz_estimator_import,
         test_llm_reliability_framework_import,
@@ -115,21 +128,22 @@ def main():
         test_proactive_fairness_generator_import,
         test_schemas_import,
     ]
-    
+
     results = []
     for test in tests:
         result = test()
         results.append(result)
-    
+
     print("\n" + "=" * 60)
     print(f"📊 Import Verification Results: {sum(results)}/{len(results)} passed")
-    
+
     if all(results):
         print("🎉 All components imported successfully!")
         return True
     else:
         print("⚠️  Some components failed to import. Check the errors above.")
         return False
+
 
 if __name__ == "__main__":
     success = main()

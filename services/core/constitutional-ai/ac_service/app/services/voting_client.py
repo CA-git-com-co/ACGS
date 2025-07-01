@@ -127,7 +127,9 @@ class EnhancedVotingClient:
 
         for attempt in range(self.config.max_retries + 1):
             try:
-                result = await self._submit_vote_attempt(amendment_id, vote_data, auth_token)
+                result = await self._submit_vote_attempt(
+                    amendment_id, vote_data, auth_token
+                )
                 await self._record_success()
                 return result
 
@@ -164,12 +166,16 @@ class EnhancedVotingClient:
             cache_key = f"vote_submission:{amendment_id}:{vote_data.voter_id}"
             cached_result = await self.redis_client.get_json(cache_key)
             if cached_result:
-                logger.info(f"Returning cached vote result for amendment {amendment_id}")
+                logger.info(
+                    f"Returning cached vote result for amendment {amendment_id}"
+                )
                 return cached_result
 
         self.total_requests += 1
 
-        response = await self.client.post(endpoint, json=vote_data.model_dump(), headers=headers)
+        response = await self.client.post(
+            endpoint, json=vote_data.model_dump(), headers=headers
+        )
 
         if response.status_code == 201:
             result = {
@@ -182,7 +188,9 @@ class EnhancedVotingClient:
             # Cache successful result
             if self.config.enable_caching and self.redis_client:
                 cache_key = f"vote_submission:{amendment_id}:{vote_data.voter_id}"
-                await self.redis_client.set_json(cache_key, result, self.config.cache_ttl)
+                await self.redis_client.set_json(
+                    cache_key, result, self.config.cache_ttl
+                )
 
             return result
 
@@ -202,7 +210,9 @@ class EnhancedVotingClient:
         else:
             response.raise_for_status()
 
-    async def get_amendment_votes(self, amendment_id: int, auth_token: str) -> list[dict[str, Any]]:
+    async def get_amendment_votes(
+        self, amendment_id: int, auth_token: str
+    ) -> list[dict[str, Any]]:
         """Get all votes for an amendment."""
         if not self.client:
             raise VotingClientError("Client not initialized")
@@ -235,7 +245,9 @@ class EnhancedVotingClient:
         current_time = time.time()
 
         # Remove timestamps older than 1 minute
-        self.request_timestamps = [ts for ts in self.request_timestamps if current_time - ts < 60]
+        self.request_timestamps = [
+            ts for ts in self.request_timestamps if current_time - ts < 60
+        ]
 
         # Check if we're within the rate limit
         if len(self.request_timestamps) >= self.config.rate_limit_requests_per_minute:
@@ -251,7 +263,10 @@ class EnhancedVotingClient:
 
         if self.circuit_breaker_state == CircuitBreakerState.OPEN:
             # Check if recovery timeout has passed
-            if current_time - self.last_failure_time > self.config.circuit_breaker_recovery_timeout:
+            if (
+                current_time - self.last_failure_time
+                > self.config.circuit_breaker_recovery_timeout
+            ):
                 self.circuit_breaker_state = CircuitBreakerState.HALF_OPEN
                 logger.info("Circuit breaker moved to HALF_OPEN state")
                 return True
@@ -296,7 +311,9 @@ class EnhancedVotingClient:
     def get_metrics(self) -> dict[str, Any]:
         """Get client metrics."""
         success_rate = (
-            self.successful_requests / self.total_requests if self.total_requests > 0 else 0
+            self.successful_requests / self.total_requests
+            if self.total_requests > 0
+            else 0
         )
 
         return {

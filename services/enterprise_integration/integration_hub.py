@@ -31,10 +31,10 @@ from xml.etree import ElementTree as ET
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
+
 
 # GraphQL Schema Types
 @strawberry.type
@@ -46,6 +46,7 @@ class ConstitutionalPolicy:
     constitutional_compliance: bool
     description: Optional[str] = None
 
+
 @strawberry.type
 class GovernanceMetrics:
     constitutional_compliance_score: float
@@ -53,6 +54,7 @@ class GovernanceMetrics:
     policy_violations_detected: int
     average_decision_time_ms: float
     constitutional_hash_validations: int
+
 
 @strawberry.type
 class UserInfo:
@@ -62,6 +64,7 @@ class UserInfo:
     groups: List[str]
     department: Optional[str] = None
 
+
 @strawberry.type
 class AuthenticationResult:
     access_token: str
@@ -70,15 +73,18 @@ class AuthenticationResult:
     constitutional_hash: str
     user_info: UserInfo
 
+
 @strawberry.input
 class LDAPCredentials:
     username: str
     password: str
 
+
 @strawberry.input
 class PolicyValidationInput:
     policies: List[str]
     constitutional_context: Optional[str] = None
+
 
 @strawberry.type
 class ValidationResult:
@@ -101,7 +107,7 @@ class Query:
                 version="1.0",
                 status="active",
                 constitutional_compliance=True,
-                description="Ensures fair treatment in all governance decisions"
+                description="Ensures fair treatment in all governance decisions",
             ),
             ConstitutionalPolicy(
                 id="transparency_policy",
@@ -109,8 +115,8 @@ class Query:
                 version="1.0",
                 status="active",
                 constitutional_compliance=True,
-                description="Ensures transparency in governance processes"
-            )
+                description="Ensures transparency in governance processes",
+            ),
         ]
 
     @strawberry.field
@@ -121,14 +127,16 @@ class Query:
             governance_decisions_processed=1247,
             policy_violations_detected=3,
             average_decision_time_ms=4.2,
-            constitutional_hash_validations=1247
+            constitutional_hash_validations=1247,
         )
 
 
 @strawberry.type
 class Mutation:
     @strawberry.mutation
-    async def authenticate_ldap(self, credentials: LDAPCredentials) -> AuthenticationResult:
+    async def authenticate_ldap(
+        self, credentials: LDAPCredentials
+    ) -> AuthenticationResult:
         """Authenticate user via LDAP."""
         # This would integrate with real LDAP in production
         user_info = UserInfo(
@@ -136,7 +144,7 @@ class Mutation:
             email=f"{credentials.username}@enterprise.com",
             constitutional_clearance=True,
             groups=["domain_users", "constitutional_users"],
-            department="Constitutional Governance"
+            department="Constitutional Governance",
         )
 
         return AuthenticationResult(
@@ -144,7 +152,7 @@ class Mutation:
             token_type="bearer",
             expires_in=3600,
             constitutional_hash="cdd01ef066bc6cf2",
-            user_info=user_info
+            user_info=user_info,
         )
 
     @strawberry.mutation
@@ -154,8 +162,11 @@ class Mutation:
             all_policies_valid=True,
             constitutional_hash="cdd01ef066bc6cf2",
             policy_count=len(input.policies),
-            validation_details=[f"Policy {i+1}: Valid" for i in range(len(input.policies))]
+            validation_details=[
+                f"Policy {i+1}: Valid" for i in range(len(input.policies))
+            ],
         )
+
 
 class EnterpriseIntegrationHub:
     """Enterprise integration hub for ACGS ecosystem connectivity."""
@@ -165,7 +176,7 @@ class EnterpriseIntegrationHub:
         self.app = FastAPI(
             title="ACGS Enterprise Integration Hub",
             description="Constitutional governance enterprise integration APIs",
-            version="1.0.0"
+            version="1.0.0",
         )
         self.security = HTTPBearer()
         self.integrations = {}
@@ -194,10 +205,10 @@ class EnterpriseIntegrationHub:
         schema = strawberry.Schema(query=Query, mutation=Mutation)
         graphql_app = GraphQLRouter(schema)
         self.app.include_router(graphql_app, prefix="/graphql")
-    
+
     def _setup_rest_apis(self):
         """Setup REST API endpoints for enterprise integration."""
-        
+
         @self.app.get("/api/v1/health")
         async def health_check():
             """Health check endpoint."""
@@ -205,18 +216,18 @@ class EnterpriseIntegrationHub:
                 "status": "healthy",
                 "constitutional_hash": self.constitutional_hash,
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-                "service": "enterprise_integration_hub"
+                "service": "enterprise_integration_hub",
             }
-        
+
         @self.app.get("/api/v1/constitutional/policies")
         async def get_constitutional_policies(
-            credentials: HTTPAuthorizationCredentials = Security(self.security)
+            credentials: HTTPAuthorizationCredentials = Security(self.security),
         ):
             """Get constitutional policies for enterprise integration."""
             # Validate token (simplified)
             if not await self._validate_token(credentials.credentials):
                 raise HTTPException(status_code=401, detail="Invalid token")
-            
+
             return {
                 "constitutional_hash": self.constitutional_hash,
                 "policies": [
@@ -225,47 +236,49 @@ class EnterpriseIntegrationHub:
                         "name": "Constitutional Fairness Policy",
                         "version": "1.0",
                         "status": "active",
-                        "constitutional_compliance": True
+                        "constitutional_compliance": True,
                     },
                     {
-                        "id": "transparency_policy", 
+                        "id": "transparency_policy",
                         "name": "Constitutional Transparency Policy",
                         "version": "1.0",
                         "status": "active",
-                        "constitutional_compliance": True
-                    }
+                        "constitutional_compliance": True,
+                    },
                 ],
-                "total_count": 2
+                "total_count": 2,
             }
-        
+
         @self.app.post("/api/v1/constitutional/decisions")
         async def submit_governance_decision(
             decision_data: Dict[str, Any],
-            credentials: HTTPAuthorizationCredentials = Security(self.security)
+            credentials: HTTPAuthorizationCredentials = Security(self.security),
         ):
             """Submit a governance decision for constitutional validation."""
             if not await self._validate_token(credentials.credentials):
                 raise HTTPException(status_code=401, detail="Invalid token")
-            
+
             # Validate constitutional compliance
-            validation_result = await self._validate_constitutional_decision(decision_data)
-            
+            validation_result = await self._validate_constitutional_decision(
+                decision_data
+            )
+
             return {
                 "decision_id": f"dec_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
                 "constitutional_hash": self.constitutional_hash,
                 "validation_result": validation_result,
                 "status": "processed",
-                "timestamp": datetime.now(timezone.utc).isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
-        
+
         @self.app.get("/api/v1/governance/metrics")
         async def get_governance_metrics(
-            credentials: HTTPAuthorizationCredentials = Security(self.security)
+            credentials: HTTPAuthorizationCredentials = Security(self.security),
         ):
             """Get governance metrics for enterprise dashboards."""
             if not await self._validate_token(credentials.credentials):
                 raise HTTPException(status_code=401, detail="Invalid token")
-            
+
             return {
                 "constitutional_hash": self.constitutional_hash,
                 "metrics": {
@@ -273,25 +286,25 @@ class EnterpriseIntegrationHub:
                     "governance_decisions_processed": 1247,
                     "policy_violations_detected": 3,
                     "average_decision_time_ms": 4.2,
-                    "constitutional_hash_validations": 1247
+                    "constitutional_hash_validations": 1247,
                 },
-                "timestamp": datetime.now(timezone.utc).isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
-    
+
     def _setup_sso_integration(self):
         """Setup Single Sign-On integration endpoints."""
-        
+
         @self.app.post("/api/v1/sso/saml/callback")
         async def saml_callback(saml_response: Dict[str, Any]):
             """Handle SAML SSO callback."""
             logger.info("Processing SAML SSO callback")
-            
+
             # Validate SAML response (simplified)
             user_info = await self._process_saml_response(saml_response)
-            
+
             # Generate ACGS token
             token = await self._generate_acgs_token(user_info)
-            
+
             return {
                 "access_token": token,
                 "token_type": "bearer",
@@ -300,168 +313,180 @@ class EnterpriseIntegrationHub:
                 "user_info": {
                     "user_id": user_info.get("user_id"),
                     "email": user_info.get("email"),
-                    "constitutional_clearance": user_info.get("constitutional_clearance", False)
-                }
+                    "constitutional_clearance": user_info.get(
+                        "constitutional_clearance", False
+                    ),
+                },
             }
-        
+
         @self.app.post("/api/v1/sso/oidc/callback")
         async def oidc_callback(oidc_token: Dict[str, Any]):
             """Handle OpenID Connect SSO callback."""
             logger.info("Processing OIDC SSO callback")
-            
+
             # Validate OIDC token (simplified)
             user_info = await self._process_oidc_token(oidc_token)
-            
+
             # Generate ACGS token
             token = await self._generate_acgs_token(user_info)
-            
+
             return {
                 "access_token": token,
-                "token_type": "bearer", 
+                "token_type": "bearer",
                 "expires_in": 3600,
                 "constitutional_hash": self.constitutional_hash,
                 "user_info": {
                     "user_id": user_info.get("user_id"),
                     "email": user_info.get("email"),
-                    "constitutional_clearance": user_info.get("constitutional_clearance", False)
-                }
+                    "constitutional_clearance": user_info.get(
+                        "constitutional_clearance", False
+                    ),
+                },
             }
-    
+
     def _setup_ldap_connector(self):
         """Setup LDAP/Active Directory connector endpoints."""
-        
+
         @self.app.post("/api/v1/ldap/authenticate")
         async def ldap_authenticate(credentials: Dict[str, str]):
             """Authenticate user against LDAP/Active Directory."""
             logger.info("Processing LDAP authentication")
-            
+
             username = credentials.get("username")
             password = credentials.get("password")
-            
+
             # LDAP authentication (simplified)
             auth_result = await self._authenticate_ldap_user(username, password)
-            
+
             if auth_result["authenticated"]:
                 # Generate ACGS token
                 token = await self._generate_acgs_token(auth_result["user_info"])
-                
+
                 return {
                     "access_token": token,
                     "token_type": "bearer",
                     "expires_in": 3600,
                     "constitutional_hash": self.constitutional_hash,
-                    "user_info": auth_result["user_info"]
+                    "user_info": auth_result["user_info"],
                 }
             else:
                 raise HTTPException(status_code=401, detail="Authentication failed")
-        
+
         @self.app.get("/api/v1/ldap/users/{user_id}")
         async def get_ldap_user(
             user_id: str,
-            credentials: HTTPAuthorizationCredentials = Security(self.security)
+            credentials: HTTPAuthorizationCredentials = Security(self.security),
         ):
             """Get user information from LDAP/Active Directory."""
             if not await self._validate_token(credentials.credentials):
                 raise HTTPException(status_code=401, detail="Invalid token")
-            
+
             user_info = await self._get_ldap_user_info(user_id)
-            
+
             return {
                 "user_id": user_id,
                 "constitutional_hash": self.constitutional_hash,
                 "user_info": user_info,
-                "constitutional_clearance": user_info.get("constitutional_clearance", False)
+                "constitutional_clearance": user_info.get(
+                    "constitutional_clearance", False
+                ),
             }
-    
+
     def _setup_cicd_integration(self):
         """Setup CI/CD pipeline integration endpoints."""
-        
+
         @self.app.post("/api/v1/cicd/policy-validation")
         async def validate_policies_cicd(
             policy_data: Dict[str, Any],
-            credentials: HTTPAuthorizationCredentials = Security(self.security)
+            credentials: HTTPAuthorizationCredentials = Security(self.security),
         ):
             """Validate constitutional policies in CI/CD pipeline."""
             if not await self._validate_token(credentials.credentials):
                 raise HTTPException(status_code=401, detail="Invalid token")
-            
+
             validation_results = await self._validate_policies_for_cicd(policy_data)
-            
+
             return {
                 "constitutional_hash": self.constitutional_hash,
                 "validation_results": validation_results,
                 "pipeline_approved": validation_results["all_policies_valid"],
-                "timestamp": datetime.now(timezone.utc).isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
-        
+
         @self.app.post("/api/v1/cicd/deployment-approval")
         async def approve_deployment(
             deployment_data: Dict[str, Any],
-            credentials: HTTPAuthorizationCredentials = Security(self.security)
+            credentials: HTTPAuthorizationCredentials = Security(self.security),
         ):
             """Approve deployment based on constitutional governance."""
             if not await self._validate_token(credentials.credentials):
                 raise HTTPException(status_code=401, detail="Invalid token")
-            
+
             approval_result = await self._evaluate_deployment_approval(deployment_data)
-            
+
             return {
                 "deployment_id": deployment_data.get("deployment_id"),
                 "constitutional_hash": self.constitutional_hash,
                 "approval_status": approval_result["approved"],
                 "approval_reason": approval_result["reason"],
-                "constitutional_compliance": approval_result["constitutional_compliance"],
-                "timestamp": datetime.now(timezone.utc).isoformat()
+                "constitutional_compliance": approval_result[
+                    "constitutional_compliance"
+                ],
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
-    
+
     def _setup_governance_connectors(self):
         """Setup third-party governance tool connectors."""
-        
+
         @self.app.post("/api/v1/connectors/jira/webhook")
         async def jira_webhook(webhook_data: Dict[str, Any]):
             """Handle Jira webhook for governance integration."""
             logger.info("Processing Jira webhook")
-            
+
             # Process Jira issue for constitutional governance
             governance_result = await self._process_jira_governance(webhook_data)
-            
+
             return {
                 "constitutional_hash": self.constitutional_hash,
                 "processing_result": governance_result,
-                "status": "processed"
+                "status": "processed",
             }
-        
+
         @self.app.post("/api/v1/connectors/servicenow/incident")
         async def servicenow_incident(incident_data: Dict[str, Any]):
             """Handle ServiceNow incident for governance escalation."""
             logger.info("Processing ServiceNow incident")
-            
+
             # Process incident for constitutional governance
             governance_result = await self._process_servicenow_incident(incident_data)
-            
+
             return {
                 "constitutional_hash": self.constitutional_hash,
                 "incident_id": incident_data.get("incident_id"),
                 "governance_result": governance_result,
-                "status": "processed"
+                "status": "processed",
             }
-    
+
     async def _validate_token(self, token: str) -> bool:
         """Validate authentication token."""
         # Simplified token validation
         return token.startswith("acgs_") and len(token) > 20
-    
-    async def _validate_constitutional_decision(self, decision_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    async def _validate_constitutional_decision(
+        self, decision_data: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Validate decision against constitutional requirements."""
         return {
             "constitutional_compliant": True,
             "constitutional_hash": self.constitutional_hash,
             "compliance_score": 0.95,
             "violations": [],
-            "recommendations": []
+            "recommendations": [],
         }
-    
-    async def _process_saml_response(self, saml_response: Dict[str, Any]) -> Dict[str, Any]:
+
+    async def _process_saml_response(
+        self, saml_response: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Process SAML response and extract user information."""
         try:
             # Extract SAML assertion (simplified - in production use proper SAML library)
@@ -479,8 +504,9 @@ class EnterpriseIntegrationHub:
                     return {
                         "user_id": user_id or "unknown_user",
                         "email": email or "unknown@enterprise.com",
-                        "constitutional_clearance": "constitutional_users" in (groups or []),
-                        "groups": groups or ["constitutional_users"]
+                        "constitutional_clearance": "constitutional_users"
+                        in (groups or []),
+                        "groups": groups or ["constitutional_users"],
                     }
                 except ET.ParseError:
                     logger.error("Failed to parse SAML response")
@@ -493,7 +519,7 @@ class EnterpriseIntegrationHub:
             "user_id": "user123",
             "email": "user@enterprise.com",
             "constitutional_clearance": True,
-            "groups": ["constitutional_users", "governance_admins"]
+            "groups": ["constitutional_users", "governance_admins"],
         }
 
     def _extract_saml_attribute(self, root, attribute_name: str, is_list: bool = False):
@@ -509,7 +535,7 @@ class EnterpriseIntegrationHub:
         except Exception:
             pass
         return None
-    
+
     async def _process_oidc_token(self, oidc_token: Dict[str, Any]) -> Dict[str, Any]:
         """Process OIDC token and extract user information."""
         try:
@@ -530,7 +556,7 @@ class EnterpriseIntegrationHub:
                         "user_id": user_id,
                         "email": email,
                         "constitutional_clearance": "constitutional_users" in groups,
-                        "groups": groups
+                        "groups": groups,
                     }
                 except jwt.DecodeError:
                     logger.error("Failed to decode OIDC JWT token")
@@ -548,7 +574,7 @@ class EnterpriseIntegrationHub:
                             "user_id": userinfo.get("sub", "unknown_user"),
                             "email": userinfo.get("email", "unknown@enterprise.com"),
                             "constitutional_clearance": True,
-                            "groups": userinfo.get("groups", ["constitutional_users"])
+                            "groups": userinfo.get("groups", ["constitutional_users"]),
                         }
 
         except Exception as e:
@@ -559,17 +585,19 @@ class EnterpriseIntegrationHub:
             "user_id": "user456",
             "email": "user@enterprise.com",
             "constitutional_clearance": True,
-            "groups": ["constitutional_users"]
+            "groups": ["constitutional_users"],
         }
-    
+
     async def _generate_acgs_token(self, user_info: Dict[str, Any]) -> str:
         """Generate ACGS authentication token."""
         # Simplified token generation
         timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
         user_id = user_info.get("user_id", "unknown")
         return f"acgs_{user_id}_{timestamp}_{self.constitutional_hash[:8]}"
-    
-    async def _authenticate_ldap_user(self, username: str, password: str) -> Dict[str, Any]:
+
+    async def _authenticate_ldap_user(
+        self, username: str, password: str
+    ) -> Dict[str, Any]:
         """Authenticate user against LDAP/Active Directory."""
         try:
             # Get LDAP configuration from environment
@@ -587,21 +615,38 @@ class EnterpriseIntegrationHub:
             if conn.bind():
                 # Search for user attributes
                 search_filter = f"(cn={username})"
-                conn.search(ldap_base_dn, search_filter, attributes=['mail', 'memberOf', 'department'])
+                conn.search(
+                    ldap_base_dn,
+                    search_filter,
+                    attributes=["mail", "memberOf", "department"],
+                )
 
                 if conn.entries:
                     entry = conn.entries[0]
-                    groups = [str(group) for group in entry.memberOf] if hasattr(entry, 'memberOf') else []
+                    groups = (
+                        [str(group) for group in entry.memberOf]
+                        if hasattr(entry, "memberOf")
+                        else []
+                    )
 
                     return {
                         "authenticated": True,
                         "user_info": {
                             "user_id": username,
-                            "email": str(entry.mail) if hasattr(entry, 'mail') else f"{username}@enterprise.com",
-                            "constitutional_clearance": "constitutional_users" in str(groups),
+                            "email": (
+                                str(entry.mail)
+                                if hasattr(entry, "mail")
+                                else f"{username}@enterprise.com"
+                            ),
+                            "constitutional_clearance": "constitutional_users"
+                            in str(groups),
                             "groups": groups,
-                            "department": str(entry.department) if hasattr(entry, 'department') else "Unknown"
-                        }
+                            "department": (
+                                str(entry.department)
+                                if hasattr(entry, "department")
+                                else "Unknown"
+                            ),
+                        },
                     }
 
                 conn.unbind()
@@ -616,12 +661,12 @@ class EnterpriseIntegrationHub:
                         "user_id": username,
                         "email": f"{username}@enterprise.com",
                         "constitutional_clearance": True,
-                        "groups": ["domain_users", "constitutional_users"]
-                    }
+                        "groups": ["domain_users", "constitutional_users"],
+                    },
                 }
 
         return {"authenticated": False}
-    
+
     async def _get_ldap_user_info(self, user_id: str) -> Dict[str, Any]:
         """Get user information from LDAP/Active Directory."""
         return {
@@ -630,10 +675,12 @@ class EnterpriseIntegrationHub:
             "display_name": f"User {user_id}",
             "constitutional_clearance": True,
             "groups": ["domain_users", "constitutional_users"],
-            "department": "Constitutional Governance"
+            "department": "Constitutional Governance",
         }
-    
-    async def _validate_policies_for_cicd(self, policy_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    async def _validate_policies_for_cicd(
+        self, policy_data: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Validate policies for CI/CD pipeline."""
         try:
             policies = policy_data.get("policies", [])
@@ -648,13 +695,17 @@ class EnterpriseIntegrationHub:
                 # Perform constitutional validation
                 validation_result = await self._validate_single_policy(policy_content)
 
-                validation_details.append({
-                    "policy_id": policy_id,
-                    "valid": validation_result["valid"],
-                    "constitutional_compliant": validation_result["constitutional_compliant"],
-                    "violations": validation_result.get("violations", []),
-                    "recommendations": validation_result.get("recommendations", [])
-                })
+                validation_details.append(
+                    {
+                        "policy_id": policy_id,
+                        "valid": validation_result["valid"],
+                        "constitutional_compliant": validation_result[
+                            "constitutional_compliant"
+                        ],
+                        "violations": validation_result.get("violations", []),
+                        "recommendations": validation_result.get("recommendations", []),
+                    }
+                )
 
                 if not validation_result["valid"]:
                     all_valid = False
@@ -665,7 +716,7 @@ class EnterpriseIntegrationHub:
                 "policy_count": len(policies),
                 "validation_details": validation_details,
                 "pipeline_status": "approved" if all_valid else "rejected",
-                "timestamp": datetime.now(timezone.utc).isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
         except Exception as e:
@@ -675,7 +726,7 @@ class EnterpriseIntegrationHub:
                 "constitutional_hash": self.constitutional_hash,
                 "policy_count": 0,
                 "validation_details": [],
-                "error": str(e)
+                "error": str(e),
             }
 
     async def _validate_single_policy(self, policy_content: str) -> Dict[str, Any]:
@@ -697,57 +748,60 @@ class EnterpriseIntegrationHub:
             "valid": len(violations) == 0,
             "constitutional_compliant": len(violations) == 0,
             "violations": violations,
-            "recommendations": recommendations
+            "recommendations": recommendations,
         }
-    
-    async def _evaluate_deployment_approval(self, deployment_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    async def _evaluate_deployment_approval(
+        self, deployment_data: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Evaluate deployment for constitutional governance approval."""
         return {
             "approved": True,
             "reason": "Constitutional compliance validated",
             "constitutional_compliance": True,
-            "risk_level": "low"
+            "risk_level": "low",
         }
-    
-    async def _process_jira_governance(self, webhook_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    async def _process_jira_governance(
+        self, webhook_data: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Process Jira webhook for governance integration."""
         return {
             "governance_action": "policy_review_required",
             "constitutional_impact": "medium",
-            "recommendations": ["Review constitutional implications"]
+            "recommendations": ["Review constitutional implications"],
         }
-    
-    async def _process_servicenow_incident(self, incident_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    async def _process_servicenow_incident(
+        self, incident_data: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Process ServiceNow incident for governance escalation."""
         return {
             "governance_escalation": "constitutional_review",
             "priority": "high",
-            "constitutional_impact": "potential_violation"
+            "constitutional_impact": "potential_violation",
         }
-    
+
     async def start_server(self, host: str = "0.0.0.0", port: int = 8020):
         """Start the enterprise integration hub server."""
         logger.info(f"🚀 Starting Enterprise Integration Hub on {host}:{port}")
         logger.info(f"📜 Constitutional Hash: {self.constitutional_hash}")
-        
-        config = uvicorn.Config(
-            app=self.app,
-            host=host,
-            port=port,
-            log_level="info"
-        )
+
+        config = uvicorn.Config(app=self.app, host=host, port=port, log_level="info")
         server = uvicorn.Server(config)
         await server.serve()
+
 
 async def main():
     """Main function to run the enterprise integration hub."""
     hub = EnterpriseIntegrationHub()
-    
+
     try:
         await hub.start_server()
     except Exception as e:
         logger.error(f"❌ Enterprise integration hub failed: {e}")
         return 1
+
 
 if __name__ == "__main__":
     exit_code = asyncio.run(main())

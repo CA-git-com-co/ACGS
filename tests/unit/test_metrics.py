@@ -52,18 +52,26 @@ def test_metrics(tmp_path):
     assert result.returncode == 0, f"ns summarize_results failed: {result.stderr}"
 
     # 4. Compare output (excluding last line) to expected output file
-    output_lines = result.stdout.rstrip('\n').split('\n')
-    output_without_last = '\n'.join(output_lines[:-1]) + '\n' if len(output_lines) > 1 else ''
+    output_lines = result.stdout.rstrip("\n").split("\n")
+    output_without_last = (
+        "\n".join(output_lines[:-1]) + "\n" if len(output_lines) > 1 else ""
+    )
     with open(os.path.join(dst, "summarize_results_output.txt"), "w") as f:
         f.write(output_without_last)
-    expected_path = os.path.join(os.path.dirname(__file__), "data/eval_outputs/summarize_results_output.txt")
+    expected_path = os.path.join(
+        os.path.dirname(__file__), "data/eval_outputs/summarize_results_output.txt"
+    )
     with open(expected_path, "r") as f:
         expected = f.read()
-    assert output_without_last == expected, "summarize_results output does not match expected output"
+    assert (
+        output_without_last == expected
+    ), "summarize_results output does not match expected output"
 
     # 5. Check that metrics.json matches metrics.json-test
     metrics_path = dst / "metrics.json"
-    metrics_ref_path = os.path.join(os.path.dirname(__file__), "data/eval_outputs/eval-results/metrics.json-test")
+    metrics_ref_path = os.path.join(
+        os.path.dirname(__file__), "data/eval_outputs/eval-results/metrics.json-test"
+    )
     with open(metrics_path, "r") as f:
         metrics = json.load(f)
     with open(metrics_ref_path, "r") as f:
@@ -71,12 +79,18 @@ def test_metrics(tmp_path):
 
     def check_metrics_equal(metrics1, metrics2, path=""):
         if isinstance(metrics1, dict) and isinstance(metrics2, dict):
-            assert set(metrics1.keys()) == set(metrics2.keys()), f"Keys mismatch at {path}"
+            assert set(metrics1.keys()) == set(
+                metrics2.keys()
+            ), f"Keys mismatch at {path}"
             for k in metrics1:
                 check_metrics_equal(metrics1[k], metrics2[k], f"{path}.{k}")
         elif isinstance(metrics1, (int, float)) and isinstance(metrics2, (int, float)):
-            assert abs(metrics1 - metrics2) < 1e-6, f"Value mismatch at {path}: {metrics1} != {metrics2}"
+            assert (
+                abs(metrics1 - metrics2) < 1e-6
+            ), f"Value mismatch at {path}: {metrics1} != {metrics2}"
         else:
-            assert metrics1 == metrics2, f"Type mismatch at {path}: {type(metrics1)} != {type(metrics2)}"
+            assert (
+                metrics1 == metrics2
+            ), f"Type mismatch at {path}: {type(metrics1)} != {type(metrics2)}"
 
     check_metrics_equal(metrics, metrics_ref)

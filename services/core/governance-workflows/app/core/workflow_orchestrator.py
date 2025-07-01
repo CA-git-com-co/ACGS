@@ -102,7 +102,9 @@ class WorkflowOrchestrator:
     providing state management, performance monitoring, and error recovery.
     """
 
-    def __init__(self, settings, performance_monitor, service_integrator, metrics_collector):
+    def __init__(
+        self, settings, performance_monitor, service_integrator, metrics_collector
+    ):
         self.settings = settings
         self.performance_monitor = performance_monitor
         self.service_integrator = service_integrator
@@ -181,7 +183,9 @@ class WorkflowOrchestrator:
                 )
 
             # Create workflow instance
-            workflow_id = f"{workflow_type.value}_{int(time.time())}_{str(uuid.uuid4())[:8]}"
+            workflow_id = (
+                f"{workflow_type.value}_{int(time.time())}_{str(uuid.uuid4())[:8]}"
+            )
 
             workflow_instance = WorkflowInstance(
                 workflow_id=workflow_id,
@@ -213,7 +217,9 @@ class WorkflowOrchestrator:
                     "workflow_type": workflow_type.value,
                     "status": "initiated",
                     "priority": priority.value,
-                    "estimated_duration_minutes": self._estimate_workflow_duration(workflow_type),
+                    "estimated_duration_minutes": self._estimate_workflow_duration(
+                        workflow_type
+                    ),
                     "steps_count": len(workflow_instance.steps),
                 },
             )
@@ -222,7 +228,9 @@ class WorkflowOrchestrator:
             logger.error(f"Failed to initiate workflow: {e}")
             return False, "", {"error": str(e)}
 
-    async def get_workflow_status(self, workflow_id: str) -> tuple[bool, dict[str, Any]]:
+    async def get_workflow_status(
+        self, workflow_id: str
+    ) -> tuple[bool, dict[str, Any]]:
         """
         Get the status of a workflow.
 
@@ -292,20 +300,28 @@ class WorkflowOrchestrator:
             # Calculate current metrics
             total_workflows = len(self.workflow_history) + len(self.active_workflows)
             completed_workflows = len(
-                [w for w in self.workflow_history if w.status == WorkflowStatus.COMPLETED]
+                [
+                    w
+                    for w in self.workflow_history
+                    if w.status == WorkflowStatus.COMPLETED
+                ]
             )
             failed_workflows = len(
                 [w for w in self.workflow_history if w.status == WorkflowStatus.FAILED]
             )
 
             # Calculate success rate
-            success_rate = (completed_workflows / max(len(self.workflow_history), 1)) * 100
+            success_rate = (
+                completed_workflows / max(len(self.workflow_history), 1)
+            ) * 100
 
             # Calculate average duration
             completed_with_duration = [
                 w
                 for w in self.workflow_history
-                if w.status == WorkflowStatus.COMPLETED and w.started_at and w.completed_at
+                if w.status == WorkflowStatus.COMPLETED
+                and w.started_at
+                and w.completed_at
             ]
 
             if completed_with_duration:
@@ -353,7 +369,9 @@ class WorkflowOrchestrator:
             }
 
             # Check workflow capacity
-            workflow_capacity = (len(self.active_workflows) / self.max_concurrent_workflows) * 100
+            workflow_capacity = (
+                len(self.active_workflows) / self.max_concurrent_workflows
+            ) * 100
             health_status["checks"]["workflow_capacity"] = {
                 "healthy": workflow_capacity < 90,
                 "capacity_percent": round(workflow_capacity, 2),
@@ -417,7 +435,9 @@ class WorkflowOrchestrator:
                 WorkflowStep("validation_initiation", "Initiate Validation"),
                 WorkflowStep("constitutional_analysis", "Constitutional Analysis"),
                 WorkflowStep("compliance_assessment", "Compliance Assessment"),
-                WorkflowStep("enforcement_recommendation", "Enforcement Recommendation"),
+                WorkflowStep(
+                    "enforcement_recommendation", "Enforcement Recommendation"
+                ),
             ]
 
             # Policy Enforcement workflow template
@@ -433,7 +453,9 @@ class WorkflowOrchestrator:
                 WorkflowStep("performance_monitoring", "Performance Monitoring"),
                 WorkflowStep("bottleneck_analysis", "Bottleneck Analysis"),
                 WorkflowStep("optimization_planning", "Optimization Planning"),
-                WorkflowStep("optimization_implementation", "Optimization Implementation"),
+                WorkflowStep(
+                    "optimization_implementation", "Optimization Implementation"
+                ),
                 WorkflowStep("performance_reporting", "Performance Reporting"),
             ]
 
@@ -482,8 +504,12 @@ class WorkflowOrchestrator:
             "status": workflow.status.value,
             "priority": workflow.priority.value,
             "created_at": workflow.created_at.isoformat(),
-            "started_at": (workflow.started_at.isoformat() if workflow.started_at else None),
-            "completed_at": (workflow.completed_at.isoformat() if workflow.completed_at else None),
+            "started_at": (
+                workflow.started_at.isoformat() if workflow.started_at else None
+            ),
+            "completed_at": (
+                workflow.completed_at.isoformat() if workflow.completed_at else None
+            ),
             "duration_ms": (
                 (workflow.completed_at - workflow.started_at).total_seconds() * 1000
                 if workflow.started_at and workflow.completed_at
@@ -505,7 +531,9 @@ class WorkflowOrchestrator:
             "metadata": workflow.metadata,
         }
 
-    def _calculate_workflow_progress(self, workflow: WorkflowInstance) -> dict[str, Any]:
+    def _calculate_workflow_progress(
+        self, workflow: WorkflowInstance
+    ) -> dict[str, Any]:
         """Calculate workflow progress percentage."""
         total_steps = len(workflow.steps)
         if total_steps == 0:
@@ -547,7 +575,9 @@ class WorkflowOrchestrator:
             workflow.status = WorkflowStatus.IN_PROGRESS
             workflow.started_at = datetime.now(timezone.utc)
 
-            logger.info(f"Executing workflow: {workflow_id} ({workflow.workflow_type.value})")
+            logger.info(
+                f"Executing workflow: {workflow_id} ({workflow.workflow_type.value})"
+            )
 
             # Execute workflow steps
             for step in workflow.steps:
@@ -602,7 +632,9 @@ class WorkflowOrchestrator:
                 self.workflow_history.append(workflow)
                 del self.active_workflows[workflow_id]
 
-    async def _execute_workflow_step(self, workflow: WorkflowInstance, step: WorkflowStep) -> bool:
+    async def _execute_workflow_step(
+        self, workflow: WorkflowInstance, step: WorkflowStep
+    ) -> bool:
         """Execute a single workflow step."""
         try:
             step.status = WorkflowStatus.IN_PROGRESS
@@ -612,7 +644,9 @@ class WorkflowOrchestrator:
             if workflow.workflow_type == WorkflowType.POLICY_CREATION:
                 result = await self._execute_policy_creation_step(workflow, step)
             elif workflow.workflow_type == WorkflowType.CONSTITUTIONAL_COMPLIANCE:
-                result = await self._execute_constitutional_compliance_step(workflow, step)
+                result = await self._execute_constitutional_compliance_step(
+                    workflow, step
+                )
             elif workflow.workflow_type == WorkflowType.POLICY_ENFORCEMENT:
                 result = await self._execute_policy_enforcement_step(workflow, step)
             elif workflow.workflow_type == WorkflowType.WINA_OVERSIGHT:
@@ -623,7 +657,9 @@ class WorkflowOrchestrator:
                 result = {"success": False, "error": "Unknown workflow type"}
 
             step.completed_at = datetime.now(timezone.utc)
-            step.duration_ms = (step.completed_at - step.started_at).total_seconds() * 1000
+            step.duration_ms = (
+                step.completed_at - step.started_at
+            ).total_seconds() * 1000
             step.result = result
 
             if result.get("success", False):
@@ -639,7 +675,9 @@ class WorkflowOrchestrator:
             step.error_message = str(e)
             step.completed_at = datetime.now(timezone.utc)
             if step.started_at:
-                step.duration_ms = (step.completed_at - step.started_at).total_seconds() * 1000
+                step.duration_ms = (
+                    step.completed_at - step.started_at
+                ).total_seconds() * 1000
             return False
 
     async def _execute_policy_creation_step(
@@ -734,15 +772,25 @@ class WorkflowOrchestrator:
         """Execute a WINA oversight workflow step."""
         try:
             if "performance_monitoring" in step.step_id:
-                return await self.performance_monitor.start_monitoring(workflow.input_data)
+                return await self.performance_monitor.start_monitoring(
+                    workflow.input_data
+                )
             elif "bottleneck_analysis" in step.step_id:
-                return await self.performance_monitor.analyze_bottlenecks(workflow.workflow_id)
+                return await self.performance_monitor.analyze_bottlenecks(
+                    workflow.workflow_id
+                )
             elif "optimization_planning" in step.step_id:
-                return await self.performance_monitor.plan_optimization(workflow.workflow_id)
+                return await self.performance_monitor.plan_optimization(
+                    workflow.workflow_id
+                )
             elif "optimization_implementation" in step.step_id:
-                return await self.performance_monitor.implement_optimization(workflow.workflow_id)
+                return await self.performance_monitor.implement_optimization(
+                    workflow.workflow_id
+                )
             elif "performance_reporting" in step.step_id:
-                return await self.performance_monitor.generate_report(workflow.workflow_id)
+                return await self.performance_monitor.generate_report(
+                    workflow.workflow_id
+                )
             else:
                 return {"success": False, "error": "Unknown WINA oversight step"}
         except Exception as e:
@@ -784,7 +832,9 @@ class WorkflowOrchestrator:
 
                 for workflow_id, workflow in self.active_workflows.items():
                     if workflow.started_at:
-                        elapsed_minutes = (current_time - workflow.started_at).total_seconds() / 60
+                        elapsed_minutes = (
+                            current_time - workflow.started_at
+                        ).total_seconds() / 60
                         if elapsed_minutes > workflow.timeout_minutes:
                             timeout_workflows.append(workflow_id)
 
@@ -817,7 +867,9 @@ class WorkflowOrchestrator:
                 # Remove workflows older than 24 hours
                 for workflow in self.workflow_history:
                     if workflow.completed_at:
-                        age_hours = (current_time - workflow.completed_at).total_seconds() / 3600
+                        age_hours = (
+                            current_time - workflow.completed_at
+                        ).total_seconds() / 3600
                         if age_hours > 24:
                             old_workflows.append(workflow)
 

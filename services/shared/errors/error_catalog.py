@@ -105,7 +105,9 @@ class ErrorCodeRegistry:
         self._service_counters: Dict[str, Dict[str, int]] = {}
         self._initialize_error_catalog()
 
-    def _get_next_code_number(self, service: ServiceCode, category: ErrorCategory) -> int:
+    def _get_next_code_number(
+        self, service: ServiceCode, category: ErrorCategory
+    ) -> int:
         """Get next available error code number for service/category combination."""
         service_key = service.value
         category_key = category.value
@@ -192,7 +194,8 @@ class ErrorCodeRegistry:
             "generated_at": "2025-06-22T10:30:00Z",
             "total_errors": len(self._error_definitions),
             "errors": {
-                code: error_def.to_dict() for code, error_def in self._error_definitions.items()
+                code: error_def.to_dict()
+                for code, error_def in self._error_definitions.items()
             },
         }
 

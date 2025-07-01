@@ -160,7 +160,11 @@ async def get_controller_metrics():
         "requests_processed": 0,  # Would be tracked in real implementation
         "configuration_reloads": 0,
         "active_models": len(
-            [model for tier_models in config.get("models", {}).values() for model in tier_models]
+            [
+                model
+                for tier_models in config.get("models", {}).values()
+                for model in tier_models
+            ]
         ),
         "uptime_seconds": 0,  # Would track actual uptime
     }

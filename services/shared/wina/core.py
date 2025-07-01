@@ -116,7 +116,8 @@ class WINACore:
         """Clean up expired entries from WINA caches."""
         # Cleanup WINA weight cache
         expired_keys = [
-            key for key, entry in self._wina_weight_cache.items()
+            key
+            for key, entry in self._wina_weight_cache.items()
             if current_time - entry.get("timestamp", 0) > self._cache_ttl
         ]
         for key in expired_keys:
@@ -124,14 +125,17 @@ class WINACore:
 
         # Cleanup gating decision cache
         expired_gating_keys = [
-            key for key, entry in self._gating_decision_cache.items()
+            key
+            for key, entry in self._gating_decision_cache.items()
             if current_time - entry.get("timestamp", 0) > self._cache_ttl
         ]
         for key in expired_gating_keys:
             del self._gating_decision_cache[key]
 
         if expired_keys or expired_gating_keys:
-            logger.debug(f"Cleaned up {len(expired_keys + expired_gating_keys)} expired WINA cache entries")
+            logger.debug(
+                f"Cleaned up {len(expired_keys + expired_gating_keys)} expired WINA cache entries"
+            )
 
     async def _get_cached_column_norms(self, layer_name: str) -> torch.Tensor | None:
         """Get column norms for a layer with caching."""
@@ -147,7 +151,9 @@ class WINACore:
 
         return None
 
-    async def initialize_model_transformation(self, model: Any, layer_names: list[str]) -> bool:
+    async def initialize_model_transformation(
+        self, model: Any, layer_names: list[str]
+    ) -> bool:
         """
         Initialize model transformation for WINA optimization.
 
@@ -159,7 +165,9 @@ class WINACore:
             True if initialization successful, False otherwise
         """
         try:
-            logger.info(f"Initializing WINA transformation for {len(layer_names)} layers")
+            logger.info(
+                f"Initializing WINA transformation for {len(layer_names)} layers"
+            )
 
             for layer_name in layer_names:
                 # Get layer weights (this would be model-specific)
@@ -184,15 +192,21 @@ class WINACore:
                 self._layer_configs[layer_name] = {
                     "sparsity": layer_sparsity,
                     "num_neurons": layer_weights.shape[1],
-                    "active_neurons": int(layer_weights.shape[1] * (1 - layer_sparsity)),
+                    "active_neurons": int(
+                        layer_weights.shape[1] * (1 - layer_sparsity)
+                    ),
                 }
 
-            logger.info("WINA model transformation initialization completed successfully")
+            logger.info(
+                "WINA model transformation initialization completed successfully"
+            )
             return True
 
         except Exception as e:
             logger.error(f"Failed to initialize WINA model transformation: {e}")
-            raise WINAOptimizationError(f"Model transformation initialization failed: {e}")
+            raise WINAOptimizationError(
+                f"Model transformation initialization failed: {e}"
+            )
 
     async def optimize_inference(
         self, model: Any, input_data: Any, layer_names: list[str] | None = None
@@ -217,7 +231,9 @@ class WINACore:
             baseline_gflops = self.gflops_tracker.estimate_gflops(model, input_data)
 
             # Generate activation masks
-            activation_masks = await self._generate_activation_masks(model, input_data, layer_names)
+            activation_masks = await self._generate_activation_masks(
+                model, input_data, layer_names
+            )
 
             # Apply WINA optimization
             optimized_output = await self._apply_wina_optimization(
@@ -245,7 +261,9 @@ class WINACore:
 
             # Calculate accuracy metrics (placeholder - would need actual accuracy evaluation)
             accuracy_metrics = {
-                "estimated_accuracy_retention": self._estimate_accuracy_retention(activation_masks),
+                "estimated_accuracy_retention": self._estimate_accuracy_retention(
+                    activation_masks
+                ),
                 "constitutional_compliance": 1.0,  # Placeholder
             }
 
@@ -305,7 +323,9 @@ class WINACore:
 
         for layer_name in layer_names:
             if layer_name not in self._transformed_weights:
-                logger.warning(f"Layer {layer_name} not found in transformed weights, skipping")
+                logger.warning(
+                    f"Layer {layer_name} not found in transformed weights, skipping"
+                )
                 continue
 
             # Get hidden state for this layer (model-specific implementation needed)
@@ -337,7 +357,9 @@ class WINACore:
 
         return activation_masks
 
-    def _calculate_wina_scores(self, hidden_state: torch.Tensor, layer_name: str) -> np.ndarray:
+    def _calculate_wina_scores(
+        self, hidden_state: torch.Tensor, layer_name: str
+    ) -> np.ndarray:
         """
         Calculate WINA scores for neuron activation.
 
@@ -377,7 +399,9 @@ class WINACore:
         # Mock implementation - return random weights
         return torch.randn(768, 768)  # Example dimensions
 
-    def _extract_hidden_state(self, model: Any, input_data: Any, layer_name: str) -> torch.Tensor:
+    def _extract_hidden_state(
+        self, model: Any, input_data: Any, layer_name: str
+    ) -> torch.Tensor:
         """
         Extract hidden state for a specific layer (model-specific implementation).
 
@@ -455,11 +479,15 @@ class WINACore:
             Estimated accuracy retention ratio
         """
         # Simple heuristic based on average sparsity
-        avg_sparsity = np.mean([mask.sparsity_ratio for mask in activation_masks.values()])
+        avg_sparsity = np.mean(
+            [mask.sparsity_ratio for mask in activation_masks.values()]
+        )
 
         # Assume linear relationship between sparsity and accuracy retention
         # This is a simplified model - in practice, this would be more sophisticated
-        accuracy_retention = 1.0 - (avg_sparsity * 0.1)  # 10% accuracy loss per 100% sparsity
+        accuracy_retention = 1.0 - (
+            avg_sparsity * 0.1
+        )  # 10% accuracy loss per 100% sparsity
 
         return max(0.0, min(1.0, accuracy_retention))
 

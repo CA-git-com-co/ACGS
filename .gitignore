@@ -742,3 +742,34 @@ coverage.xml
 # OS specific files
 .DS_Store
 Thumbs.db
+
+# ============================================================================
+# REPOSITORY HYGIENE IMPROVEMENTS (Added by repository audit)
+# ============================================================================
+
+# Machine learning models and data files
+*.joblib
+*.pkl
+*.model
+*.weights
+
+# Security and audit reports
+bandit-report.json
+security-report.json
+
+# Additional Rust build artifacts (Tauri/Claudia specific)
+claudia-acgs/src-tauri/target/
+
+# Additional temporary files
+*.tmp
+*.temp
+tmp/
+temp/
+
+# Additional cache directories
+.cache/
+cache/
+
+# Embedded git repositories (should be submodules if needed)
+claudia/
+claudia-acgs/

@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 class PromptRole(Enum):
     """AI agent roles in ACGS constitutional governance."""
+
     CONSTITUTIONAL_VALIDATOR = "constitutional_validator"
     POLICY_SYNTHESIZER = "policy_synthesizer"
     GOVERNANCE_ANALYZER = "governance_analyzer"
@@ -30,30 +31,33 @@ class PromptRole(Enum):
 
 class DiscourseMode(Enum):
     """Discourse modes for different types of interactions."""
+
     CONVERSATIONAL = "conversational"  # Idiomatic prose, no lists
-    DOCUMENTARIAN = "documentarian"   # Structured documentation
-    ANALYTICAL = "analytical"         # Deep analysis with examples
-    TECHNICAL = "technical"          # Precise technical specifications
+    DOCUMENTARIAN = "documentarian"  # Structured documentation
+    ANALYTICAL = "analytical"  # Deep analysis with examples
+    TECHNICAL = "technical"  # Precise technical specifications
 
 
 class SafetyLevel(Enum):
     """Safety levels for content validation."""
-    PERMISSIVE = "permissive"        # Allow most content
-    MODERATE = "moderate"           # Standard safety checks
-    STRICT = "strict"              # Enhanced safety validation
+
+    PERMISSIVE = "permissive"  # Allow most content
+    MODERATE = "moderate"  # Standard safety checks
+    STRICT = "strict"  # Enhanced safety validation
     CONSTITUTIONAL = "constitutional"  # Constitutional compliance required
 
 
 @dataclass
 class ModelIdentity:
     """Model identity and metadata specification."""
+
     name: str
     version: str
     role: PromptRole
     epistemic_cutoff: str
     support_url: str = "https://acgs.ai/support"
     constitutional_hash: str = "cdd01ef066bc6cf2"
-    
+
     def get_identity_prompt(self) -> str:
         """Generate structured identity prompt."""
         return f"""You are designated as {self.name}, release {self.version}.
@@ -67,52 +71,62 @@ Inquiries regarding operational constraints or platform functionalities should b
 @dataclass
 class PersonalityConfig:
     """Personality and discourse register configuration."""
+
     discourse_mode: DiscourseMode = DiscourseMode.CONVERSATIONAL
     response_length_preference: str = "adaptive"
     technical_depth: str = "contextual"
     constitutional_emphasis: bool = True
-    
+
     def get_personality_prompt(self) -> str:
         """Generate personality configuration prompt."""
         base_prompt = """# Personality and Discourse Register
 - Elementary interrogatives → pithy expositions (one to two sentences).
 - Complex discursive demands → expansive exegesis accompanied by illustrative exemplars.
 """
-        
+
         if self.discourse_mode == DiscourseMode.CONVERSATIONAL:
-            base_prompt += "- Conversational mode: idiomatic prose devoid of enumerative lists.\n"
+            base_prompt += (
+                "- Conversational mode: idiomatic prose devoid of enumerative lists.\n"
+            )
         elif self.discourse_mode == DiscourseMode.DOCUMENTARIAN:
             base_prompt += "- Documentarian mode: contiguous paragraphs; enumerations only upon explicit solicitation.\n"
         elif self.discourse_mode == DiscourseMode.ANALYTICAL:
             base_prompt += "- Analytical mode: comprehensive analysis with supporting evidence and examples.\n"
         elif self.discourse_mode == DiscourseMode.TECHNICAL:
             base_prompt += "- Technical mode: precise specifications with formal validation criteria.\n"
-            
+
         if self.constitutional_emphasis:
-            base_prompt += "- Constitutional compliance takes precedence in all responses.\n"
-            
+            base_prompt += (
+                "- Constitutional compliance takes precedence in all responses.\n"
+            )
+
         return base_prompt
 
 
 @dataclass
 class SafetyConfig:
     """Safety and ethics configuration."""
+
     safety_level: SafetyLevel = SafetyLevel.CONSTITUTIONAL
-    blocked_content_types: List[str] = field(default_factory=lambda: [
-        "constitutional_bypass_attempts",
-        "governance_nullification",
-        "democratic_process_subversion",
-        "privacy_violations",
-        "discriminatory_policies"
-    ])
-    constitutional_principles: List[str] = field(default_factory=lambda: [
-        "democratic_participation",
-        "transparency_requirement",
-        "accountability_framework",
-        "rights_protection",
-        "separation_of_powers"
-    ])
-    
+    blocked_content_types: List[str] = field(
+        default_factory=lambda: [
+            "constitutional_bypass_attempts",
+            "governance_nullification",
+            "democratic_process_subversion",
+            "privacy_violations",
+            "discriminatory_policies",
+        ]
+    )
+    constitutional_principles: List[str] = field(
+        default_factory=lambda: [
+            "democratic_participation",
+            "transparency_requirement",
+            "accountability_framework",
+            "rights_protection",
+            "separation_of_powers",
+        ]
+    )
+
     def get_safety_prompt(self) -> str:
         """Generate safety and ethics prompt."""
         return f"""# Ethical Safeguards and Constitutional Compliance
@@ -127,13 +141,14 @@ class SafetyConfig:
 @dataclass
 class ToolOrchestrationConfig:
     """Tool orchestration and search configuration."""
+
     use_internal_knowledge: bool = True
-    web_search_triggers: List[str] = field(default_factory=lambda: [
-        "current", "latest", "recent", "new", "updated"
-    ])
+    web_search_triggers: List[str] = field(
+        default_factory=lambda: ["current", "latest", "recent", "new", "updated"]
+    )
     max_search_queries: int = 5
     citation_required: bool = True
-    
+
     def get_orchestration_prompt(self) -> str:
         """Generate tool orchestration prompt."""
         return f"""# Information Retrieval Protocol
@@ -149,6 +164,7 @@ class ToolOrchestrationConfig:
 @dataclass
 class ConstitutionalPromptSchema:
     """Complete constitutional prompt schema implementation."""
+
     identity: ModelIdentity
     personality: PersonalityConfig
     safety: SafetyConfig
@@ -156,43 +172,47 @@ class ConstitutionalPromptSchema:
     custom_instructions: Optional[str] = None
     version: str = "1.0.0"
     created_at: float = field(default_factory=time.time)
-    
+
     def compile_prompt(self) -> str:
         """Compile complete structured prompt."""
         sections = []
-        
+
         # Model Identity & Metadata
         sections.append(self.identity.get_identity_prompt())
-        
+
         # Personality & Tone
         sections.append(self.personality.get_personality_prompt())
-        
+
         # Safety & Ethics
         sections.append(self.safety.get_safety_prompt())
-        
+
         # Tool Orchestration
         sections.append(self.orchestration.get_orchestration_prompt())
-        
+
         # Copyright & Quoting (standard implementation)
-        sections.append("""# Intellectual Property Compliance
+        sections.append(
+            """# Intellectual Property Compliance
 - Restrict direct quotations to a singular excerpt not exceeding fifteen lexemes, each accompanied by proper citation.
 - Proffer paraphrastic summaries that transform source material substantively, avoiding rote reproduction.
-""")
-        
+"""
+        )
+
         # Custom Instructions
         if self.custom_instructions:
             sections.append(f"# Custom Instructions\n{self.custom_instructions}")
-        
+
         # Version and governance metadata
-        sections.append(f"""# Prompt Governance Metadata
+        sections.append(
+            f"""# Prompt Governance Metadata
 - Schema version: {self.version}
 - Constitutional hash: {self.identity.constitutional_hash}
 - Compiled at: {time.strftime('%Y-%m-%d %H:%M:%S UTC', time.gmtime(self.created_at))}
 - Role: {self.identity.role.value}
-""")
-        
+"""
+        )
+
         return "\n\n".join(sections)
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for storage/transmission."""
         return {
@@ -202,32 +222,32 @@ class ConstitutionalPromptSchema:
                 "role": self.identity.role.value,
                 "epistemic_cutoff": self.identity.epistemic_cutoff,
                 "support_url": self.identity.support_url,
-                "constitutional_hash": self.identity.constitutional_hash
+                "constitutional_hash": self.identity.constitutional_hash,
             },
             "personality": {
                 "discourse_mode": self.personality.discourse_mode.value,
                 "response_length_preference": self.personality.response_length_preference,
                 "technical_depth": self.personality.technical_depth,
-                "constitutional_emphasis": self.personality.constitutional_emphasis
+                "constitutional_emphasis": self.personality.constitutional_emphasis,
             },
             "safety": {
                 "safety_level": self.safety.safety_level.value,
                 "blocked_content_types": self.safety.blocked_content_types,
-                "constitutional_principles": self.safety.constitutional_principles
+                "constitutional_principles": self.safety.constitutional_principles,
             },
             "orchestration": {
                 "use_internal_knowledge": self.orchestration.use_internal_knowledge,
                 "web_search_triggers": self.orchestration.web_search_triggers,
                 "max_search_queries": self.orchestration.max_search_queries,
-                "citation_required": self.orchestration.citation_required
+                "citation_required": self.orchestration.citation_required,
             },
             "custom_instructions": self.custom_instructions,
             "version": self.version,
-            "created_at": self.created_at
+            "created_at": self.created_at,
         }
-    
+
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'ConstitutionalPromptSchema':
+    def from_dict(cls, data: Dict[str, Any]) -> "ConstitutionalPromptSchema":
         """Create from dictionary."""
         identity = ModelIdentity(
             name=data["identity"]["name"],
@@ -235,29 +255,31 @@ class ConstitutionalPromptSchema:
             role=PromptRole(data["identity"]["role"]),
             epistemic_cutoff=data["identity"]["epistemic_cutoff"],
             support_url=data["identity"]["support_url"],
-            constitutional_hash=data["identity"]["constitutional_hash"]
+            constitutional_hash=data["identity"]["constitutional_hash"],
         )
-        
+
         personality = PersonalityConfig(
             discourse_mode=DiscourseMode(data["personality"]["discourse_mode"]),
-            response_length_preference=data["personality"]["response_length_preference"],
+            response_length_preference=data["personality"][
+                "response_length_preference"
+            ],
             technical_depth=data["personality"]["technical_depth"],
-            constitutional_emphasis=data["personality"]["constitutional_emphasis"]
+            constitutional_emphasis=data["personality"]["constitutional_emphasis"],
         )
-        
+
         safety = SafetyConfig(
             safety_level=SafetyLevel(data["safety"]["safety_level"]),
             blocked_content_types=data["safety"]["blocked_content_types"],
-            constitutional_principles=data["safety"]["constitutional_principles"]
+            constitutional_principles=data["safety"]["constitutional_principles"],
         )
-        
+
         orchestration = ToolOrchestrationConfig(
             use_internal_knowledge=data["orchestration"]["use_internal_knowledge"],
             web_search_triggers=data["orchestration"]["web_search_triggers"],
             max_search_queries=data["orchestration"]["max_search_queries"],
-            citation_required=data["orchestration"]["citation_required"]
+            citation_required=data["orchestration"]["citation_required"],
         )
-        
+
         return cls(
             identity=identity,
             personality=personality,
@@ -265,154 +287,144 @@ class ConstitutionalPromptSchema:
             orchestration=orchestration,
             custom_instructions=data.get("custom_instructions"),
             version=data.get("version", "1.0.0"),
-            created_at=data.get("created_at", time.time())
+            created_at=data.get("created_at", time.time()),
         )
 
 
 class ConstitutionalPromptManager:
     """Manager for constitutional prompt schemas in ACGS."""
-    
+
     def __init__(self):
         self.schemas: Dict[str, ConstitutionalPromptSchema] = {}
         self._load_default_schemas()
-    
+
     def _load_default_schemas(self):
         """Load default schemas for ACGS roles."""
-        
+
         # Constitutional Validator Schema
         validator_identity = ModelIdentity(
             name="ACGS-Constitutional-Validator",
             version="3.0.0",
             role=PromptRole.CONSTITUTIONAL_VALIDATOR,
-            epistemic_cutoff="2024-12-31"
+            epistemic_cutoff="2024-12-31",
         )
-        
+
         validator_personality = PersonalityConfig(
-            discourse_mode=DiscourseMode.ANALYTICAL,
-            constitutional_emphasis=True
+            discourse_mode=DiscourseMode.ANALYTICAL, constitutional_emphasis=True
         )
-        
-        validator_safety = SafetyConfig(
-            safety_level=SafetyLevel.CONSTITUTIONAL
-        )
-        
+
+        validator_safety = SafetyConfig(safety_level=SafetyLevel.CONSTITUTIONAL)
+
         validator_orchestration = ToolOrchestrationConfig(
-            citation_required=True,
-            max_search_queries=3
+            citation_required=True, max_search_queries=3
         )
-        
+
         self.schemas["constitutional_validator"] = ConstitutionalPromptSchema(
             identity=validator_identity,
             personality=validator_personality,
             safety=validator_safety,
             orchestration=validator_orchestration,
             custom_instructions="""You are responsible for ensuring all policies and decisions comply with constitutional principles. 
-Analyze content for democratic participation requirements, transparency standards, accountability mechanisms, and rights protection."""
+Analyze content for democratic participation requirements, transparency standards, accountability mechanisms, and rights protection.""",
         )
-        
+
         # Policy Synthesizer Schema
         synthesizer_identity = ModelIdentity(
             name="ACGS-Policy-Synthesizer",
             version="3.0.0",
             role=PromptRole.POLICY_SYNTHESIZER,
-            epistemic_cutoff="2024-12-31"
+            epistemic_cutoff="2024-12-31",
         )
-        
+
         synthesizer_personality = PersonalityConfig(
-            discourse_mode=DiscourseMode.DOCUMENTARIAN,
-            constitutional_emphasis=True
+            discourse_mode=DiscourseMode.DOCUMENTARIAN, constitutional_emphasis=True
         )
-        
+
         self.schemas["policy_synthesizer"] = ConstitutionalPromptSchema(
             identity=synthesizer_identity,
             personality=synthesizer_personality,
             safety=SafetyConfig(safety_level=SafetyLevel.CONSTITUTIONAL),
             orchestration=ToolOrchestrationConfig(max_search_queries=5),
             custom_instructions="""You synthesize governance policies ensuring constitutional compliance and democratic participation.
-Focus on creating balanced, transparent, and accountable policy frameworks."""
+Focus on creating balanced, transparent, and accountable policy frameworks.""",
         )
-        
+
         # Multimodal Moderator Schema
         moderator_identity = ModelIdentity(
             name="ACGS-Multimodal-Moderator",
             version="3.0.0",
             role=PromptRole.MULTIMODAL_MODERATOR,
-            epistemic_cutoff="2024-12-31"
+            epistemic_cutoff="2024-12-31",
         )
-        
+
         moderator_personality = PersonalityConfig(
-            discourse_mode=DiscourseMode.TECHNICAL,
-            constitutional_emphasis=True
+            discourse_mode=DiscourseMode.TECHNICAL, constitutional_emphasis=True
         )
-        
+
         moderator_safety = SafetyConfig(
             safety_level=SafetyLevel.STRICT,
             blocked_content_types=[
                 "constitutional_bypass_attempts",
-                "governance_nullification", 
+                "governance_nullification",
                 "democratic_process_subversion",
                 "privacy_violations",
                 "discriminatory_policies",
                 "harmful_visual_content",
-                "misleading_information"
-            ]
+                "misleading_information",
+            ],
         )
-        
+
         self.schemas["multimodal_moderator"] = ConstitutionalPromptSchema(
             identity=moderator_identity,
             personality=moderator_personality,
             safety=moderator_safety,
             orchestration=ToolOrchestrationConfig(citation_required=True),
             custom_instructions="""You moderate multimodal content (text + images) for constitutional compliance and policy adherence.
-Analyze both textual and visual elements for governance implications and democratic principles."""
+Analyze both textual and visual elements for governance implications and democratic principles.""",
         )
-        
+
         # Chinese Governance Specialist Schema (for Hunyuan model)
         chinese_specialist_identity = ModelIdentity(
             name="ACGS-Chinese-Governance-Specialist",
             version="3.0.0",
             role=PromptRole.CHINESE_GOVERNANCE_SPECIALIST,
-            epistemic_cutoff="2024-12-31"
+            epistemic_cutoff="2024-12-31",
         )
-        
+
         chinese_specialist_personality = PersonalityConfig(
-            discourse_mode=DiscourseMode.ANALYTICAL,
-            constitutional_emphasis=True
+            discourse_mode=DiscourseMode.ANALYTICAL, constitutional_emphasis=True
         )
-        
+
         chinese_specialist_safety = SafetyConfig(
-            safety_level=SafetyLevel.CONSTITUTIONAL,
-            threat_detection=True
+            safety_level=SafetyLevel.CONSTITUTIONAL, threat_detection=True
         )
-        
+
         self.schemas["chinese_governance_specialist"] = ConstitutionalPromptSchema(
             identity=chinese_specialist_identity,
             personality=chinese_specialist_personality,
             safety=chinese_specialist_safety,
             orchestration=ToolOrchestrationConfig(
-                citation_required=True,
-                max_search_queries=4
+                citation_required=True, max_search_queries=4
             ),
             custom_instructions="""你是专门从事中国治理分析的宪政专家。分析中国政策、法律框架和治理结构，
 确保符合宪政原则。提供中文和英文双语分析，关注透明度、问责制和公民参与。
 You are a constitutional expert specializing in Chinese governance analysis. Analyze Chinese policies, 
 legal frameworks, and governance structures ensuring constitutional compliance. Provide bilingual analysis 
-in Chinese and English, focusing on transparency, accountability, and civic participation."""
+in Chinese and English, focusing on transparency, accountability, and civic participation.""",
         )
-        
+
         # Multilingual Translator Schema
         translator_identity = ModelIdentity(
             name="ACGS-Multilingual-Translator",
-            version="3.0.0", 
+            version="3.0.0",
             role=PromptRole.MULTILINGUAL_TRANSLATOR,
-            epistemic_cutoff="2024-12-31"
+            epistemic_cutoff="2024-12-31",
         )
-        
+
         translator_personality = PersonalityConfig(
-            discourse_mode=DiscourseMode.CONVERSATIONAL,
-            constitutional_emphasis=False
+            discourse_mode=DiscourseMode.CONVERSATIONAL, constitutional_emphasis=False
         )
-        
+
         self.schemas["multilingual_translator"] = ConstitutionalPromptSchema(
             identity=translator_identity,
             personality=translator_personality,
@@ -420,76 +432,84 @@ in Chinese and English, focusing on transparency, accountability, and civic part
             orchestration=ToolOrchestrationConfig(max_search_queries=1),
             custom_instructions="""You provide accurate multilingual translation services with constitutional context awareness.
 Maintain the original meaning while adapting cultural and legal contexts appropriately. 
-Support Chinese, English, Japanese, Korean, and other languages as needed."""
+Support Chinese, English, Japanese, Korean, and other languages as needed.""",
         )
-        
-        # Cross-Cultural Analyst Schema  
+
+        # Cross-Cultural Analyst Schema
         cultural_analyst_identity = ModelIdentity(
             name="ACGS-Cross-Cultural-Analyst",
             version="3.0.0",
             role=PromptRole.CROSS_CULTURAL_ANALYST,
-            epistemic_cutoff="2024-12-31"
+            epistemic_cutoff="2024-12-31",
         )
-        
+
         cultural_analyst_personality = PersonalityConfig(
-            discourse_mode=DiscourseMode.ANALYTICAL,
-            constitutional_emphasis=True
+            discourse_mode=DiscourseMode.ANALYTICAL, constitutional_emphasis=True
         )
-        
+
         self.schemas["cross_cultural_analyst"] = ConstitutionalPromptSchema(
             identity=cultural_analyst_identity,
             personality=cultural_analyst_personality,
             safety=SafetyConfig(safety_level=SafetyLevel.CONSTITUTIONAL),
             orchestration=ToolOrchestrationConfig(
-                citation_required=True,
-                max_search_queries=3
+                citation_required=True, max_search_queries=3
             ),
             custom_instructions="""You analyze governance policies across different cultural contexts, ensuring constitutional principles 
 are adapted appropriately while maintaining democratic values. Consider cultural sensitivities, legal traditions, 
-and social norms when evaluating policy implementation across diverse populations."""
+and social norms when evaluating policy implementation across diverse populations.""",
         )
-    
-    def get_schema(self, role: Union[str, PromptRole]) -> Optional[ConstitutionalPromptSchema]:
+
+    def get_schema(
+        self, role: Union[str, PromptRole]
+    ) -> Optional[ConstitutionalPromptSchema]:
         """Get prompt schema by role."""
         if isinstance(role, PromptRole):
             role = role.value
         return self.schemas.get(role)
-    
+
     def get_prompt(self, role: Union[str, PromptRole]) -> Optional[str]:
         """Get compiled prompt by role."""
         schema = self.get_schema(role)
         return schema.compile_prompt() if schema else None
-    
+
     def register_schema(self, name: str, schema: ConstitutionalPromptSchema):
         """Register a custom schema."""
         self.schemas[name] = schema
         logger.info(f"Registered constitutional prompt schema: {name}")
-    
+
     def validate_schema(self, schema: ConstitutionalPromptSchema) -> Dict[str, Any]:
         """Validate a constitutional prompt schema."""
-        validation_result = {
-            "valid": True,
-            "warnings": [],
-            "errors": []
-        }
-        
+        validation_result = {"valid": True, "warnings": [], "errors": []}
+
         # Check constitutional hash
         if schema.identity.constitutional_hash != "cdd01ef066bc6cf2":
-            validation_result["warnings"].append("Constitutional hash mismatch - schema may be outdated")
-        
+            validation_result["warnings"].append(
+                "Constitutional hash mismatch - schema may be outdated"
+            )
+
         # Check safety configuration
         if schema.safety.safety_level == SafetyLevel.PERMISSIVE:
-            validation_result["warnings"].append("Permissive safety level may not be appropriate for constitutional governance")
-        
+            validation_result["warnings"].append(
+                "Permissive safety level may not be appropriate for constitutional governance"
+            )
+
         # Check for required constitutional principles
-        required_principles = {"democratic_participation", "transparency_requirement", "accountability_framework"}
-        missing_principles = required_principles - set(schema.safety.constitutional_principles)
+        required_principles = {
+            "democratic_participation",
+            "transparency_requirement",
+            "accountability_framework",
+        }
+        missing_principles = required_principles - set(
+            schema.safety.constitutional_principles
+        )
         if missing_principles:
-            validation_result["errors"].append(f"Missing required constitutional principles: {missing_principles}")
+            validation_result["errors"].append(
+                f"Missing required constitutional principles: {missing_principles}"
+            )
             validation_result["valid"] = False
-        
+
         return validation_result
-    
+
     def get_all_schemas(self) -> Dict[str, Dict[str, Any]]:
         """Get all registered schemas as dictionaries."""
         return {name: schema.to_dict() for name, schema in self.schemas.items()}
@@ -512,23 +532,25 @@ def get_constitutional_prompt(role: Union[str, PromptRole]) -> Optional[str]:
     return get_prompt_manager().get_prompt(role)
 
 
-def validate_constitutional_prompt(schema: ConstitutionalPromptSchema) -> Dict[str, Any]:
+def validate_constitutional_prompt(
+    schema: ConstitutionalPromptSchema,
+) -> Dict[str, Any]:
     """Convenience function to validate a constitutional prompt schema."""
     return get_prompt_manager().validate_schema(schema)
 
 
 # Export main components
 __all__ = [
-    'PromptRole',
-    'DiscourseMode', 
-    'SafetyLevel',
-    'ModelIdentity',
-    'PersonalityConfig',
-    'SafetyConfig',
-    'ToolOrchestrationConfig',
-    'ConstitutionalPromptSchema',
-    'ConstitutionalPromptManager',
-    'get_prompt_manager',
-    'get_constitutional_prompt',
-    'validate_constitutional_prompt'
+    "PromptRole",
+    "DiscourseMode",
+    "SafetyLevel",
+    "ModelIdentity",
+    "PersonalityConfig",
+    "SafetyConfig",
+    "ToolOrchestrationConfig",
+    "ConstitutionalPromptSchema",
+    "ConstitutionalPromptManager",
+    "get_prompt_manager",
+    "get_constitutional_prompt",
+    "validate_constitutional_prompt",
 ]

@@ -23,23 +23,17 @@ from .model_versioning import (
     SemanticVersion,
     ModelVersionManager,
     VersioningError,
-    VersionPolicy
+    VersionPolicy,
 )
 
-from .git_integration import (
-    GitIntegration,
-    GitTracker,
-    GitError,
-    CommitInfo,
-    TagInfo
-)
+from .git_integration import GitIntegration, GitTracker, GitError, CommitInfo, TagInfo
 
 from .artifact_storage import (
     ArtifactStorage,
     ArtifactManager,
     ArtifactMetadata,
     LineageTracker,
-    StorageError
+    StorageError,
 )
 
 from .deployment_pipeline import (
@@ -47,15 +41,10 @@ from .deployment_pipeline import (
     StagingValidator,
     ProductionPromoter,
     DeploymentStatus,
-    PipelineError
+    PipelineError,
 )
 
-from .mlops_manager import (
-    MLOpsManager,
-    MLOpsConfig,
-    MLOpsError,
-    DeploymentResult
-)
+from .mlops_manager import MLOpsManager, MLOpsConfig, MLOpsError, DeploymentResult
 
 __version__ = "1.0.0"
 __author__ = "ACGS-PGP Development Team"
@@ -70,7 +59,7 @@ PERFORMANCE_TARGETS = {
     "constitutional_compliance": 0.95,  # >95% compliance
     "cost_savings": 0.74,  # 74% cost savings
     "availability": 0.999,  # 99.9% availability
-    "model_accuracy": 0.90  # >90% prediction accuracy
+    "model_accuracy": 0.90,  # >90% prediction accuracy
 }
 
 # MLOps configuration defaults
@@ -79,19 +68,19 @@ DEFAULT_MLOPS_CONFIG = {
         "strategy": "semantic",
         "auto_increment": True,
         "git_integration": True,
-        "constitutional_hash_verification": True
+        "constitutional_hash_verification": True,
     },
     "artifact_storage": {
         "backend": "filesystem",
         "compression": True,
         "encryption": True,
-        "retention_days": 90
+        "retention_days": 90,
     },
     "deployment": {
         "staging_validation": True,
         "production_promotion": "manual",
         "rollback_enabled": True,
-        "health_check_timeout": 300
+        "health_check_timeout": 300,
     },
     "monitoring": {
         "performance_tracking": True,
@@ -99,48 +88,43 @@ DEFAULT_MLOPS_CONFIG = {
         "alert_thresholds": {
             "accuracy_degradation": 0.05,
             "response_time_increase": 0.20,
-            "constitutional_compliance_drop": 0.02
-        }
-    }
+            "constitutional_compliance_drop": 0.02,
+        },
+    },
 }
 
 __all__ = [
     # Model Versioning
     "MLOpsModelVersion",
-    "SemanticVersion", 
+    "SemanticVersion",
     "ModelVersionManager",
     "VersioningError",
     "VersionPolicy",
-    
     # Git Integration
     "GitIntegration",
     "GitTracker",
     "GitError",
     "CommitInfo",
     "TagInfo",
-    
     # Artifact Storage
     "ArtifactStorage",
     "ArtifactManager",
     "ArtifactMetadata",
     "LineageTracker",
     "StorageError",
-    
     # Deployment Pipeline
     "DeploymentPipeline",
     "StagingValidator",
     "ProductionPromoter",
     "DeploymentStatus",
     "PipelineError",
-    
     # MLOps Manager
     "MLOpsManager",
     "MLOpsConfig",
     "MLOpsError",
     "DeploymentResult",
-    
     # Constants
     "CONSTITUTIONAL_HASH",
     "PERFORMANCE_TARGETS",
-    "DEFAULT_MLOPS_CONFIG"
+    "DEFAULT_MLOPS_CONFIG",
 ]

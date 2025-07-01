@@ -100,7 +100,9 @@ async def lifespan(app: FastAPI):
     settings = get_settings()
 
     try:
-        logger.info("🚀 Starting ACGS-1 Self-Evolving AI Architecture Foundation Service")
+        logger.info(
+            "🚀 Starting ACGS-1 Self-Evolving AI Architecture Foundation Service"
+        )
 
         # Initialize observability framework first
         observability_framework = ObservabilityFramework(settings)
@@ -148,7 +150,9 @@ async def lifespan(app: FastAPI):
         logger.info("⚠️ Startup health check temporarily disabled")
 
         logger.info("🎯 Self-Evolving AI Architecture Foundation Service ready")
-        logger.info("📊 Performance targets: >1000 concurrent actions, >99.9% availability")
+        logger.info(
+            "📊 Performance targets: >1000 concurrent actions, >99.9% availability"
+        )
         logger.info("🔒 Security: 4-layer architecture with human oversight")
         logger.info("🏛️ Quantumagi compatibility: Constitution Hash cdd01ef066bc6cf2")
 
@@ -249,7 +253,9 @@ async def add_security_headers(request, call_next):
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
 
     # HSTS (HTTP Strict Transport Security)
-    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
+    response.headers["Strict-Transport-Security"] = (
+        "max-age=31536000; includeSubDomains; preload"
+    )
 
     # Content Security Policy (CSP) - Enhanced for XSS protection
     csp_policy = (

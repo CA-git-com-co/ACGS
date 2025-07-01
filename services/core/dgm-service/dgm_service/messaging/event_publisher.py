@@ -70,7 +70,9 @@ class EventPublisher:
 
             if success:
                 self._update_metrics(event, success=True)
-                self.logger.debug(f"Published event {event.event_id}: {event.event_type.value}")
+                self.logger.debug(
+                    f"Published event {event.event_id}: {event.event_type.value}"
+                )
             else:
                 self._update_metrics(event, success=False)
                 self.logger.error(f"Failed to publish event {event.event_id}")
@@ -189,7 +191,11 @@ class EventPublisher:
             service_name=service_name,
             alert_level=alert_level,
             threshold_value=threshold_value,
-            priority=EventPriority.HIGH if alert_level == "critical" else EventPriority.NORMAL,
+            priority=(
+                EventPriority.HIGH
+                if alert_level == "critical"
+                else EventPriority.NORMAL
+            ),
             **kwargs,
         )
 

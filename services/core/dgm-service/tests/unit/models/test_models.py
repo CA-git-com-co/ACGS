@@ -147,7 +147,9 @@ class TestDGMModels:
 
         assert len(queried_metrics) == 4  # 0, 1, 2, 3 minute marks
 
-    async def test_constitutional_compliance_log_creation(self, test_db_session: AsyncSession):
+    async def test_constitutional_compliance_log_creation(
+        self, test_db_session: AsyncSession
+    ):
         """Test constitutional compliance log model."""
         compliance_log = ConstitutionalComplianceLog(
             improvement_id=uuid4(),
@@ -321,7 +323,9 @@ class TestDGMModels:
 
     async def test_system_configuration_unique_key(self, test_db_session: AsyncSession):
         """Test system configuration unique key constraint."""
-        config1 = SystemConfiguration(key="test_config", value="value1", category="test")
+        config1 = SystemConfiguration(
+            key="test_config", value="value1", category="test"
+        )
 
         config2 = SystemConfiguration(
             key="test_config", value="value2", category="test"  # Same key
@@ -377,7 +381,9 @@ class TestDGMModels:
         from sqlalchemy import select
 
         # Find metrics for the improvement
-        stmt = select(PerformanceMetric).where(PerformanceMetric.improvement_id == improvement_id)
+        stmt = select(PerformanceMetric).where(
+            PerformanceMetric.improvement_id == improvement_id
+        )
         result = await test_db_session.execute(stmt)
         related_metrics = result.scalars().all()
 

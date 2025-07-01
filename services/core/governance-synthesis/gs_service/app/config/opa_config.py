@@ -150,49 +150,67 @@ class OPAConfig:
             timeout_seconds=int(os.getenv("OPA_TIMEOUT_SECONDS", "5")),
             max_retries=int(os.getenv("OPA_MAX_RETRIES", "3")),
             retry_delay_seconds=float(os.getenv("OPA_RETRY_DELAY_SECONDS", "0.1")),
-            health_check_interval_seconds=int(os.getenv("OPA_HEALTH_CHECK_INTERVAL", "30")),
+            health_check_interval_seconds=int(
+                os.getenv("OPA_HEALTH_CHECK_INTERVAL", "30")
+            ),
         )
 
     def _get_performance_config(self) -> OPAPerformanceConfig:
         """Get OPA performance configuration from environment."""
         return OPAPerformanceConfig(
             max_policy_decision_latency_ms=int(os.getenv("OPA_MAX_LATENCY_MS", "50")),
-            enable_decision_caching=os.getenv("OPA_ENABLE_CACHING", "true").lower() == "true",
+            enable_decision_caching=os.getenv("OPA_ENABLE_CACHING", "true").lower()
+            == "true",
             cache_ttl_seconds=int(os.getenv("OPA_CACHE_TTL_SECONDS", "300")),
             cache_max_size=int(os.getenv("OPA_CACHE_MAX_SIZE", "1000")),
-            enable_batch_evaluation=os.getenv("OPA_ENABLE_BATCH", "true").lower() == "true",
+            enable_batch_evaluation=os.getenv("OPA_ENABLE_BATCH", "true").lower()
+            == "true",
             batch_size=int(os.getenv("OPA_BATCH_SIZE", "100")),
-            enable_parallel_evaluation=os.getenv("OPA_ENABLE_PARALLEL", "true").lower() == "true",
+            enable_parallel_evaluation=os.getenv("OPA_ENABLE_PARALLEL", "true").lower()
+            == "true",
             max_parallel_workers=int(os.getenv("OPA_MAX_WORKERS", "4")),
-            enable_metrics_collection=os.getenv("OPA_ENABLE_METRICS", "true").lower() == "true",
-            metrics_export_interval_seconds=int(os.getenv("OPA_METRICS_INTERVAL", "60")),
+            enable_metrics_collection=os.getenv("OPA_ENABLE_METRICS", "true").lower()
+            == "true",
+            metrics_export_interval_seconds=int(
+                os.getenv("OPA_METRICS_INTERVAL", "60")
+            ),
         )
 
     def _get_policy_config(self) -> OPAPolicyConfig:
         """Get OPA policy configuration from environment."""
         return OPAPolicyConfig(
-            policy_directory=os.getenv("OPA_POLICY_DIR", "src/backend/gs_service/policies"),
+            policy_directory=os.getenv(
+                "OPA_POLICY_DIR", "src/backend/gs_service/policies"
+            ),
             auto_reload_policies=os.getenv("OPA_AUTO_RELOAD", "true").lower() == "true",
-            policy_validation_on_load=os.getenv("OPA_VALIDATE_ON_LOAD", "true").lower() == "true",
-            enable_policy_versioning=os.getenv("OPA_ENABLE_VERSIONING", "true").lower() == "true",
+            policy_validation_on_load=os.getenv("OPA_VALIDATE_ON_LOAD", "true").lower()
+            == "true",
+            enable_policy_versioning=os.getenv("OPA_ENABLE_VERSIONING", "true").lower()
+            == "true",
             default_policy_package=os.getenv("OPA_DEFAULT_PACKAGE", "acgs.governance"),
             constitutional_principles_package=os.getenv(
                 "OPA_CONSTITUTIONAL_PACKAGE", "acgs.constitutional"
             ),
-            policy_synthesis_package=os.getenv("OPA_SYNTHESIS_PACKAGE", "acgs.synthesis"),
+            policy_synthesis_package=os.getenv(
+                "OPA_SYNTHESIS_PACKAGE", "acgs.synthesis"
+            ),
             compliance_package=os.getenv("OPA_COMPLIANCE_PACKAGE", "acgs.compliance"),
         )
 
     def _get_security_config(self) -> OPASecurityConfig:
         """Get OPA security configuration from environment."""
-        allowed_origins = os.getenv("OPA_ALLOWED_ORIGINS", "localhost,127.0.0.1").split(",")
+        allowed_origins = os.getenv("OPA_ALLOWED_ORIGINS", "localhost,127.0.0.1").split(
+            ","
+        )
         return OPASecurityConfig(
-            enable_authentication=os.getenv("OPA_ENABLE_AUTH", "false").lower() == "true",
+            enable_authentication=os.getenv("OPA_ENABLE_AUTH", "false").lower()
+            == "true",
             api_key=os.getenv("OPA_API_KEY"),
             enable_tls=os.getenv("OPA_ENABLE_TLS", "false").lower() == "true",
             tls_cert_path=os.getenv("OPA_TLS_CERT_PATH"),
             tls_key_path=os.getenv("OPA_TLS_KEY_PATH"),
-            enable_authorization=os.getenv("OPA_ENABLE_AUTHZ", "false").lower() == "true",
+            enable_authorization=os.getenv("OPA_ENABLE_AUTHZ", "false").lower()
+            == "true",
             allowed_origins=[origin.strip() for origin in allowed_origins],
         )
 
@@ -248,7 +266,9 @@ class OPAConfig:
                 return False
 
             if self.performance.max_policy_decision_latency_ms > 1000:
-                logger.warning("Max policy decision latency > 1000ms may impact performance")
+                logger.warning(
+                    "Max policy decision latency > 1000ms may impact performance"
+                )
 
             # Validate server configuration
             if self.mode in [OPAMode.SERVER, OPAMode.HYBRID]:

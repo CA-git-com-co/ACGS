@@ -46,7 +46,9 @@ class LogManager:
 
         # Load logging configuration
         if config_path is None:
-            config_path = Path(__file__).parent.parent.parent / "config" / "logging.yaml"
+            config_path = (
+                Path(__file__).parent.parent.parent / "config" / "logging.yaml"
+            )
 
         try:
             with open(config_path, "r") as f:
@@ -79,7 +81,9 @@ class LogManager:
             logger.error(f"Failed to load logging configuration: {e}")
             logger.info("Using fallback logging configuration")
 
-    def _apply_env_overrides(self, base_config: Dict[str, Any], env_config: Dict[str, Any]) -> None:
+    def _apply_env_overrides(
+        self, base_config: Dict[str, Any], env_config: Dict[str, Any]
+    ) -> None:
         """Apply environment-specific configuration overrides."""
         if "loggers" in env_config:
             for logger_name, logger_config in env_config["loggers"].items():

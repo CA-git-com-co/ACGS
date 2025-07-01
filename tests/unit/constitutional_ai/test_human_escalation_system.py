@@ -4,18 +4,25 @@ Unit tests for services.core.constitutional-ai.ac_service.app.services.human_esc
 
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
-from services.core.constitutional-ai.ac_service.app.services.human_escalation_system import EscalationLevel, EscalationReason, NotificationChannel, EscalationRule, EscalationRequest, EscalationResponse, HumanEscalationSystem
-
+from services.core.constitutional_ai.ac_service.app.services.human_escalation_system import (
+    EscalationLevel,
+    EscalationReason,
+    NotificationChannel,
+    EscalationRule,
+    EscalationRequest,
+    EscalationResponse,
+    HumanEscalationSystem,
+)
 
 
 class TestEscalationLevel:
     """Test suite for EscalationLevel."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -24,12 +31,12 @@ class TestEscalationLevel:
 
 class TestEscalationReason:
     """Test suite for EscalationReason."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -38,12 +45,12 @@ class TestEscalationReason:
 
 class TestNotificationChannel:
     """Test suite for NotificationChannel."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -52,12 +59,12 @@ class TestNotificationChannel:
 
 class TestEscalationRule:
     """Test suite for EscalationRule."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -66,12 +73,12 @@ class TestEscalationRule:
 
 class TestEscalationRequest:
     """Test suite for EscalationRequest."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -80,12 +87,12 @@ class TestEscalationRequest:
 
 class TestEscalationResponse:
     """Test suite for EscalationResponse."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -94,15 +101,13 @@ class TestEscalationResponse:
 
 class TestHumanEscalationSystem:
     """Test suite for HumanEscalationSystem."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
         pass
-
-

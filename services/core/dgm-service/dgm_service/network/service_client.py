@@ -11,7 +11,12 @@ from typing import Any, Dict, List, Optional
 from urllib.parse import urljoin
 
 import httpx
-from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
+from tenacity import (
+    retry,
+    retry_if_exception_type,
+    stop_after_attempt,
+    wait_exponential,
+)
 
 from ..config import settings
 from .circuit_breaker import CircuitBreaker
@@ -38,7 +43,9 @@ class ACGSServiceClient:
         # Initialize circuit breakers for each service
         for service_name in self.service_urls.keys():
             self.circuit_breakers[service_name] = CircuitBreaker(
-                failure_threshold=5, recovery_timeout=30, expected_exception=httpx.RequestError
+                failure_threshold=5,
+                recovery_timeout=30,
+                expected_exception=httpx.RequestError,
             )
 
     async def _get_auth_headers(self) -> Dict[str, str]:
@@ -102,7 +109,9 @@ class ACGSServiceClient:
 
     async def get_user_permissions(self, user_id: str) -> List[str]:
         """Get user permissions from Auth Service."""
-        response = await self._make_request("auth", "GET", f"/api/v1/users/{user_id}/permissions")
+        response = await self._make_request(
+            "auth", "GET", f"/api/v1/users/{user_id}/permissions"
+        )
         return response.get("permissions", [])
 
     # Constitutional AI Service Methods
@@ -143,7 +152,9 @@ class ACGSServiceClient:
         )
 
     # Formal Verification Service Methods
-    async def verify_improvement_safety(self, improvement_spec: Dict[str, Any]) -> Dict[str, Any]:
+    async def verify_improvement_safety(
+        self, improvement_spec: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Verify improvement safety using FV Service."""
         return await self._make_request(
             "fv", "POST", "/api/v1/verification/safety", data=improvement_spec
@@ -161,7 +172,9 @@ class ACGSServiceClient:
         )
 
     # Policy Governance & Compliance Service Methods
-    async def enforce_policy(self, policy_id: str, context: Dict[str, Any]) -> Dict[str, Any]:
+    async def enforce_policy(
+        self, policy_id: str, context: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Enforce policy using PGC Service."""
         return await self._make_request(
             "pgc",
@@ -172,7 +185,9 @@ class ACGSServiceClient:
 
     async def log_compliance_event(self, event_data: Dict[str, Any]) -> Dict[str, Any]:
         """Log compliance event using PGC Service."""
-        return await self._make_request("pgc", "POST", "/api/v1/compliance/log", data=event_data)
+        return await self._make_request(
+            "pgc", "POST", "/api/v1/compliance/log", data=event_data
+        )
 
     # Executive Council Service Methods
     async def request_oversight_approval(
@@ -183,18 +198,29 @@ class ACGSServiceClient:
             "ec", "POST", "/api/v1/oversight/approval", data=improvement_proposal
         )
 
-    async def report_performance_metrics(self, metrics: Dict[str, Any]) -> Dict[str, Any]:
+    async def report_performance_metrics(
+        self, metrics: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Report performance metrics to EC Service."""
-        return await self._make_request("ec", "POST", "/api/v1/metrics/report", data=metrics)
-
-    # Integrity Service Methods
-    async def create_audit_log(self, action: str, details: Dict[str, Any]) -> Dict[str, Any]:
-        """Create audit log entry using Integrity Service."""
         return await self._make_request(
-            "integrity", "POST", "/api/v1/audit/log", data={"action": action, "details": details}
+            "ec", "POST", "/api/v1/metrics/report", data=metrics
         )
 
-    async def verify_data_integrity(self, data_hash: str, signature: str) -> Dict[str, Any]:
+    # Integrity Service Methods
+    async def create_audit_log(
+        self, action: str, details: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Create audit log entry using Integrity Service."""
+        return await self._make_request(
+            "integrity",
+            "POST",
+            "/api/v1/audit/log",
+            data={"action": action, "details": details},
+        )
+
+    async def verify_data_integrity(
+        self, data_hash: str, signature: str
+    ) -> Dict[str, Any]:
         """Verify data integrity using Integrity Service."""
         return await self._make_request(
             "integrity",
@@ -221,7 +247,9 @@ class ACGSServiceClient:
             for service_name in self.service_urls.keys()
         ]
 
-        results = await asyncio.gather(*[task[1] for task in tasks], return_exceptions=True)
+        results = await asyncio.gather(
+            *[task[1] for task in tasks], return_exceptions=True
+        )
 
         for (service_name, _), result in zip(tasks, results):
             health_status[service_name] = result if isinstance(result, bool) else False

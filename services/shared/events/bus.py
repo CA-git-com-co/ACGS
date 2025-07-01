@@ -124,7 +124,9 @@ class EventHandler:
         try:
             if self.is_async:
                 if asyncio.iscoroutinefunction(self.handler_func):
-                    return await asyncio.wait_for(self.handler_func(event), timeout=self.timeout)
+                    return await asyncio.wait_for(
+                        self.handler_func(event), timeout=self.timeout
+                    )
                 else:
                     # Run sync function in thread pool
                     loop = asyncio.get_event_loop()
@@ -133,7 +135,9 @@ class EventHandler:
                 return self.handler_func(event)
 
         except TimeoutError:
-            raise ACGSException(f"Event handler {self.handler_id} timed out", "HANDLER_TIMEOUT")
+            raise ACGSException(
+                f"Event handler {self.handler_id} timed out", "HANDLER_TIMEOUT"
+            )
         except Exception as e:
             raise handle_service_error(
                 e, self.service_name, f"handle_event_{event.metadata.event_type.value}"
@@ -276,7 +280,9 @@ class EventBus(EventBusInterface):
             for middleware in self.middleware:
                 event = await middleware(event)
                 if event is None:
-                    logger.warning(f"Event {event_type_enum.value} filtered by middleware")
+                    logger.warning(
+                        f"Event {event_type_enum.value} filtered by middleware"
+                    )
                     return False
 
             # Store event
@@ -285,7 +291,9 @@ class EventBus(EventBusInterface):
             # Update metrics
             self.metrics["events_published"] += 1
 
-            logger.debug(f"Published event {event.metadata.event_id}: {event_type_enum.value}")
+            logger.debug(
+                f"Published event {event.metadata.event_id}: {event_type_enum.value}"
+            )
             return True
 
         except Exception as e:
@@ -399,7 +407,9 @@ class EventBus(EventBusInterface):
                     self.processing_tasks.add(task)
 
                     # Clean up completed tasks
-                    self.processing_tasks = {t for t in self.processing_tasks if not t.done()}
+                    self.processing_tasks = {
+                        t for t in self.processing_tasks if not t.done()
+                    }
 
                 # Wait before next iteration
                 await asyncio.sleep(1.0)
@@ -434,12 +444,16 @@ class EventBus(EventBusInterface):
                 if handler.matches_filters(event):
                     try:
                         result = await handler.handle(event)
-                        handler_results.append({"handler_id": handler.handler_id, "result": result})
+                        handler_results.append(
+                            {"handler_id": handler.handler_id, "result": result}
+                        )
                     except Exception as e:
                         logger.error(
                             f"Handler {handler.handler_id} failed for event {event.metadata.event_id}: {e}"
                         )
-                        handler_results.append({"handler_id": handler.handler_id, "error": str(e)})
+                        handler_results.append(
+                            {"handler_id": handler.handler_id, "error": str(e)}
+                        )
 
             # Update event status
             event.metadata.status = EventStatus.COMPLETED
@@ -463,7 +477,8 @@ class EventBus(EventBusInterface):
         return {
             **self.metrics,
             "handlers_by_type": {
-                event_type.value: len(handlers) for event_type, handlers in self.handlers.items()
+                event_type.value: len(handlers)
+                for event_type, handlers in self.handlers.items()
             },
             "active_processing_tasks": len(self.processing_tasks),
         }

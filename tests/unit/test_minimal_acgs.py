@@ -18,6 +18,7 @@ class ACGSMinimalTests(unittest.TestCase):
     def test_project_structure(self):
         """Test that project structure exists."""
         from pathlib import Path
+
         project_root = Path(__file__).parent.parent.parent
         self.assertTrue(project_root.exists())
         self.assertTrue((project_root / "services").exists())

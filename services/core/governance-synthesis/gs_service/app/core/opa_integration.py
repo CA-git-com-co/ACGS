@@ -159,10 +159,14 @@ class PolicyDecisionCache:
         return (
             key_data
             if self.use_advanced_cache
-            else hashlib.sha256(json.dumps(key_data, sort_keys=True).encode()).hexdigest()
+            else hashlib.sha256(
+                json.dumps(key_data, sort_keys=True).encode()
+            ).hexdigest()
         )
 
-    async def get(self, request: PolicyDecisionRequest) -> PolicyDecisionResponse | None:
+    async def get(
+        self, request: PolicyDecisionRequest
+    ) -> PolicyDecisionResponse | None:
         """Get cached decision if available and not expired."""
         key = self._generate_key(request)
 
@@ -179,7 +183,9 @@ class PolicyDecisionCache:
                     del self.cache[key]
             return None
 
-    async def put(self, request: PolicyDecisionRequest, response: PolicyDecisionResponse):
+    async def put(
+        self, request: PolicyDecisionRequest, response: PolicyDecisionResponse
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -187,11 +193,15 @@ class PolicyDecisionCache:
         key = self._generate_key(request)
 
         if self.use_advanced_cache:
-            await self.cache.put(key, response, self.ttl_seconds, tags=["policy_decision"])
+            await self.cache.put(
+                key, response, self.ttl_seconds, tags=["policy_decision"]
+            )
         else:
             # Fallback to simple cache logic
             if len(self.cache) >= self.max_size:
-                oldest_key = min(self.cache.keys(), key=lambda k: self.cache[k]["created_at"])
+                oldest_key = min(
+                    self.cache.keys(), key=lambda k: self.cache[k]["created_at"]
+                )
                 del self.cache[oldest_key]
 
             self.cache[key] = {
@@ -363,7 +373,9 @@ class OPAClient:
                 logger.error(f"Health check loop error: {e}")
 
     @performance_monitor_decorator("opa_policy_evaluation", "policy_decision")
-    async def evaluate_policy(self, request: PolicyDecisionRequest) -> PolicyDecisionResponse:
+    async def evaluate_policy(
+        self, request: PolicyDecisionRequest
+    ) -> PolicyDecisionResponse:
         """
         Evaluate policy with advanced performance optimization and caching.
 
@@ -386,7 +398,9 @@ class OPAClient:
             cached_response = await self.cache.get(request)
             if cached_response:
                 self.metrics["cache_hits"] += 1
-                logger.debug("Policy decision cache hit", policy_path=request.policy_path)
+                logger.debug(
+                    "Policy decision cache hit", policy_path=request.policy_path
+                )
                 return cached_response
             self.metrics["cache_misses"] += 1
 
@@ -418,7 +432,9 @@ class OPAClient:
 
         except Exception as e:
             self.metrics["error_count"] += 1
-            logger.error(f"Policy evaluation failed for {request.policy_path}: {str(e)}")
+            logger.error(
+                f"Policy evaluation failed for {request.policy_path}: {str(e)}"
+            )
             raise OPAIntegrationError(f"Policy evaluation failed: {e}")
 
     async def _evaluate_policy_internal(
@@ -432,15 +448,24 @@ class OPAClient:
             # Try server mode first if available
             if self.config.mode in [OPAMode.SERVER, OPAMode.HYBRID] and self.session:
                 try:
-                    return await self._evaluate_via_server(request, decision_id, start_time)
+                    return await self._evaluate_via_server(
+                        request, decision_id, start_time
+                    )
                 except Exception as e:
                     if self.config.mode == OPAMode.SERVER:
                         raise
-                    logger.warning(f"Server evaluation failed, falling back to embedded: {e}")
+                    logger.warning(
+                        f"Server evaluation failed, falling back to embedded: {e}"
+                    )
 
             # Fall back to embedded mode
-            if self.config.mode in [OPAMode.EMBEDDED, OPAMode.HYBRID] and self.opa_client:
-                return await self._evaluate_via_embedded(request, decision_id, start_time)
+            if (
+                self.config.mode in [OPAMode.EMBEDDED, OPAMode.HYBRID]
+                and self.opa_client
+            ):
+                return await self._evaluate_via_embedded(
+                    request, decision_id, start_time
+                )
 
             raise OPAIntegrationError("No available OPA evaluation method")
 
@@ -521,7 +546,9 @@ class OPAClient:
         # Update average latency
         total = self.metrics["total_decisions"]
         current_avg = self.metrics["average_latency_ms"]
-        self.metrics["average_latency_ms"] = ((current_avg * (total - 1)) + latency_ms) / total
+        self.metrics["average_latency_ms"] = (
+            (current_avg * (total - 1)) + latency_ms
+        ) / total
 
         # Update max latency
         if latency_ms > self.metrics["max_latency_ms"]:
@@ -582,7 +609,9 @@ class OPAClient:
                 semantic_errors=semantic_errors,
             )
 
-    async def batch_evaluate(self, batch: BatchPolicyDecision) -> list[PolicyDecisionResponse]:
+    async def batch_evaluate(
+        self, batch: BatchPolicyDecision
+    ) -> list[PolicyDecisionResponse]:
         """
         Evaluate multiple policies in batch for improved performance.
 
@@ -595,7 +624,10 @@ class OPAClient:
         if not batch.decisions:
             return []
 
-        if batch.parallel_execution and self.config.performance.enable_parallel_evaluation:
+        if (
+            batch.parallel_execution
+            and self.config.performance.enable_parallel_evaluation
+        ):
             # Parallel execution
             semaphore = asyncio.Semaphore(self.config.performance.max_parallel_workers)
 

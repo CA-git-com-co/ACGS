@@ -15,9 +15,10 @@ from starlette.responses import JSONResponse
 
 logger = logging.getLogger(__name__)
 
+
 class SecurityInputValidator:
     """Security-focused input validator with comprehensive protection."""
-    
+
     def __init__(self):
         # Dangerous patterns for different attack types
         self.sql_injection_patterns = [
@@ -26,7 +27,7 @@ class SecurityInputValidator:
             r"'\s*(or|and)\s*'",
             r"'\s*(or|and)\s*\d+\s*=\s*\d+",
         ]
-        
+
         self.xss_patterns = [
             r"<script[^>]*>.*?</script>",
             r"javascript:",
@@ -35,14 +36,14 @@ class SecurityInputValidator:
             r"<object[^>]*>",
             r"<embed[^>]*>",
         ]
-        
+
         self.command_injection_patterns = [
             r"[;&|`]\s*(rm|del|format|cat|type|whoami|id|ps|ls|dir)",
             r"\$\([^)]*\)",
             r"`[^`]*`",
             r"\|\s*(curl|wget|nc|netcat)",
         ]
-        
+
         self.path_traversal_patterns = [
             r"\.\./",
             r"\.\.\\",
@@ -79,7 +80,7 @@ class SecurityInputValidator:
             r"\$or\s*:",
             r"\$and\s*:",
         ]
-        
+
         # Maximum lengths for different input types
         self.max_lengths = {
             "username": 50,
@@ -87,17 +88,19 @@ class SecurityInputValidator:
             "password": 128,
             "title": 200,
             "description": 2000,
-            "general": 1000
+            "general": 1000,
         }
-    
-    def validate_input(self, input_data: Any, input_type: str = "general") -> Dict[str, Any]:
+
+    def validate_input(
+        self, input_data: Any, input_type: str = "general"
+    ) -> Dict[str, Any]:
         """
         Comprehensive input validation.
-        
+
         Args:
             input_data: The input to validate
             input_type: Type of input (username, email, password, etc.)
-            
+
         Returns:
             Dict with validation results
         """
@@ -105,31 +108,31 @@ class SecurityInputValidator:
             "is_valid": True,
             "sanitized_input": input_data,
             "violations": [],
-            "risk_level": "LOW"
+            "risk_level": "LOW",
         }
-        
+
         # Convert to string for validation
         if input_data is None:
             result["is_valid"] = False
             result["violations"].append("Input cannot be None")
             result["risk_level"] = "HIGH"
             return result
-        
+
         input_str = str(input_data)
-        
+
         # Check length limits
         max_length = self.max_lengths.get(input_type, self.max_lengths["general"])
         if len(input_str) > max_length:
             result["is_valid"] = False
             result["violations"].append(f"Input exceeds maximum length of {max_length}")
             result["risk_level"] = "MEDIUM"
-        
+
         # Check for null bytes
         if "\x00" in input_str or "\0" in input_str:
             result["is_valid"] = False
             result["violations"].append("Null bytes not allowed")
             result["risk_level"] = "HIGH"
-        
+
         # Check for SQL injection patterns
         for pattern in self.sql_injection_patterns:
             if re.search(pattern, input_str, re.IGNORECASE):
@@ -137,7 +140,7 @@ class SecurityInputValidator:
                 result["violations"].append("Potential SQL injection detected")
                 result["risk_level"] = "CRITICAL"
                 break
-        
+
         # Check for XSS patterns
         for pattern in self.xss_patterns:
             if re.search(pattern, input_str, re.IGNORECASE):
@@ -145,7 +148,7 @@ class SecurityInputValidator:
                 result["violations"].append("Potential XSS attack detected")
                 result["risk_level"] = "CRITICAL"
                 break
-        
+
         # Check for command injection patterns
         for pattern in self.command_injection_patterns:
             if re.search(pattern, input_str, re.IGNORECASE):
@@ -153,7 +156,7 @@ class SecurityInputValidator:
                 result["violations"].append("command injection")
                 result["risk_level"] = "CRITICAL"
                 break
-        
+
         # Check for path traversal patterns
         for pattern in self.path_traversal_patterns:
             if re.search(pattern, input_str, re.IGNORECASE):
@@ -185,53 +188,68 @@ class SecurityInputValidator:
                 result["violations"].append("NoSQL injection detected")
                 result["risk_level"] = "HIGH"
                 break
-        
+
         # Sanitize input if valid
         if result["is_valid"]:
             result["sanitized_input"] = self.sanitize_input(input_str, input_type)
-        
+
         return result
-    
+
     def sanitize_input(self, input_str: str, input_type: str = "general") -> str:
         """Sanitize input string based on type."""
         if input_type == "email":
             # Basic email sanitization
-            return re.sub(r'[^a-zA-Z0-9@._-]', '', input_str)
+            return re.sub(r"[^a-zA-Z0-9@._-]", "", input_str)
         elif input_type == "username":
             # Allow alphanumeric and basic punctuation
-            return re.sub(r'[^a-zA-Z0-9._-]', '', input_str)
+            return re.sub(r"[^a-zA-Z0-9._-]", "", input_str)
         elif input_type == "html":
             # HTML escape
             return html.escape(input_str)
         else:
             # General sanitization - remove dangerous characters and script tags
-            sanitized = re.sub(r'<script[^>]*>.*?</script>', '', input_str, flags=re.IGNORECASE | re.DOTALL)
-            sanitized = re.sub(r'</?script[^>]*>', '', sanitized, flags=re.IGNORECASE)
-            sanitized = re.sub(r'[<>"\'`]', '', sanitized)
+            sanitized = re.sub(
+                r"<script[^>]*>.*?</script>",
+                "",
+                input_str,
+                flags=re.IGNORECASE | re.DOTALL,
+            )
+            sanitized = re.sub(r"</?script[^>]*>", "", sanitized, flags=re.IGNORECASE)
+            sanitized = re.sub(r'[<>"\'`]', "", sanitized)
             return sanitized
-    
+
     def validate_json_input(self, json_str: str) -> Dict[str, Any]:
         """Validate JSON input for injection attacks."""
         result = {
             "is_valid": True,
             "parsed_json": None,
             "violations": [],
-            "risk_level": "LOW"
+            "risk_level": "LOW",
         }
-        
+
         try:
             # Parse JSON
             parsed = json.loads(json_str)
-            
+
             # Check for dangerous keys/values
-            dangerous_keys = ["$ne", "$gt", "$lt", "$regex", "$where", "eval", "function"]
-            
+            dangerous_keys = [
+                "$ne",
+                "$gt",
+                "$lt",
+                "$regex",
+                "$where",
+                "eval",
+                "function",
+            ]
+
             def check_dangerous_content(obj, path=""):
                 if isinstance(obj, dict):
                     for key, value in obj.items():
                         if key in dangerous_keys:
                             result["is_valid"] = False
-                            result["violations"].append(f"Dangerous key '{key}' found at {path}")
+                            result["violations"].append(
+                                f"Dangerous key '{key}' found at {path}"
+                            )
                             result["risk_level"] = "HIGH"
                         check_dangerous_content(value, f"{path}.{key}")
                 elif isinstance(obj, list):
@@ -245,19 +263,21 @@ class SecurityInputValidator:
                         result["violations"].extend(validation_result["violations"])
                         if validation_result["risk_level"] == "CRITICAL":
                             result["risk_level"] = "CRITICAL"
-            
+
             check_dangerous_content(parsed)
             result["parsed_json"] = parsed
-            
+
         except json.JSONDecodeError as e:
             result["is_valid"] = False
             result["violations"].append(f"Invalid JSON format: {str(e)}")
             result["risk_level"] = "MEDIUM"
-        
+
         return result
+
 
 # Global validator instance
 security_validator = SecurityInputValidator()
+
 
 def validate_user_input(input_data: Any, input_type: str = "general") -> Dict[str, Any]:
     """
@@ -282,7 +302,12 @@ class SecurityValidationMiddleware(BaseHTTPMiddleware):
     def __init__(self, app, exempt_paths: Optional[List[str]] = None):
         super().__init__(app)
         self.exempt_paths = exempt_paths or [
-            "/health", "/metrics", "/docs", "/openapi.json", "/redoc", "/favicon.ico"
+            "/health",
+            "/metrics",
+            "/docs",
+            "/openapi.json",
+            "/redoc",
+            "/favicon.ico",
         ]
         self.validator = SecurityInputValidator()
 
@@ -310,16 +335,18 @@ class SecurityValidationMiddleware(BaseHTTPMiddleware):
             return response
 
         except HTTPException as e:
-            logger.warning(f"Security validation failed for {request.url.path}: {e.detail}")
+            logger.warning(
+                f"Security validation failed for {request.url.path}: {e.detail}"
+            )
             return JSONResponse(
                 status_code=e.status_code,
-                content={"error": "Input validation failed", "detail": e.detail}
+                content={"error": "Input validation failed", "detail": e.detail},
             )
         except Exception as e:
             logger.error(f"Security validation error for {request.url.path}: {e}")
             return JSONResponse(
                 status_code=400,
-                content={"error": "Input validation error", "detail": str(e)}
+                content={"error": "Input validation error", "detail": str(e)},
             )
 
     async def _validate_request_body(self, request: Request):
@@ -332,15 +359,15 @@ class SecurityValidationMiddleware(BaseHTTPMiddleware):
 
             # Parse JSON body
             try:
-                json_data = json.loads(body.decode('utf-8'))
+                json_data = json.loads(body.decode("utf-8"))
             except json.JSONDecodeError:
                 # If not JSON, validate as string
-                body_str = body.decode('utf-8')
+                body_str = body.decode("utf-8")
                 result = self.validator.validate_input(body_str, "general")
                 if not result["is_valid"]:
                     raise HTTPException(
                         status_code=400,
-                        detail=f"Request body validation failed: {', '.join(result['violations'])}"
+                        detail=f"Request body validation failed: {', '.join(result['violations'])}",
                     )
                 return
 
@@ -357,7 +384,7 @@ class SecurityValidationMiddleware(BaseHTTPMiddleware):
             if not result["is_valid"]:
                 raise HTTPException(
                     status_code=400,
-                    detail=f"Query parameter '{key}' validation failed: {', '.join(result['violations'])}"
+                    detail=f"Query parameter '{key}' validation failed: {', '.join(result['violations'])}",
                 )
 
     def _validate_json_data(self, data: Any, context: str = "json"):
@@ -369,7 +396,7 @@ class SecurityValidationMiddleware(BaseHTTPMiddleware):
                 if not key_result["is_valid"]:
                     raise HTTPException(
                         status_code=400,
-                        detail=f"JSON key '{key}' validation failed: {', '.join(key_result['violations'])}"
+                        detail=f"JSON key '{key}' validation failed: {', '.join(key_result['violations'])}",
                     )
 
                 # Recursively validate value
@@ -386,7 +413,7 @@ class SecurityValidationMiddleware(BaseHTTPMiddleware):
             if not result["is_valid"]:
                 raise HTTPException(
                     status_code=400,
-                    detail=f"Field '{context}' validation failed: {', '.join(result['violations'])}"
+                    detail=f"Field '{context}' validation failed: {', '.join(result['violations'])}",
                 )
 
     def _determine_input_type(self, context: str, value: str) -> str:
@@ -410,7 +437,10 @@ class SecurityValidationMiddleware(BaseHTTPMiddleware):
             return "title"
 
         # Description/content detection
-        if any(keyword in context_lower for keyword in ["description", "content", "text", "body", "message"]):
+        if any(
+            keyword in context_lower
+            for keyword in ["description", "content", "text", "body", "message"]
+        ):
             return "description"
 
         # HTML content detection
@@ -425,6 +455,7 @@ def create_security_validation_dependency():
     Create a FastAPI dependency for manual input validation in specific endpoints.
     Use this for endpoints that need custom validation logic.
     """
+
     def validate_input_dependency(input_data: Dict[str, Any]) -> Dict[str, Any]:
         """Dependency function for input validation."""
         validator = SecurityInputValidator()
@@ -438,7 +469,7 @@ def create_security_validation_dependency():
                 if not result["is_valid"]:
                     raise HTTPException(
                         status_code=400,
-                        detail=f"Input validation failed for '{key}': {', '.join(result['violations'])}"
+                        detail=f"Input validation failed for '{key}': {', '.join(result['violations'])}",
                     )
 
                 # Replace with sanitized input
@@ -452,53 +483,70 @@ def create_security_validation_dependency():
 # Validation decorators for specific use cases
 def validate_policy_input(func):
     """Decorator for policy-related endpoints."""
+
     async def wrapper(*args, **kwargs):
         # Extract request data from kwargs
         for key, value in kwargs.items():
-            if hasattr(value, 'dict'):  # Pydantic model
+            if hasattr(value, "dict"):  # Pydantic model
                 data = value.dict()
                 for field_name, field_value in data.items():
                     if isinstance(field_value, str):
-                        input_type = "description" if field_name in ["content", "description", "text"] else "general"
-                        result = security_validator.validate_input(field_value, input_type)
+                        input_type = (
+                            "description"
+                            if field_name in ["content", "description", "text"]
+                            else "general"
+                        )
+                        result = security_validator.validate_input(
+                            field_value, input_type
+                        )
                         if not result["is_valid"]:
                             raise HTTPException(
                                 status_code=400,
-                                detail=f"Policy input validation failed for '{field_name}': {', '.join(result['violations'])}"
+                                detail=f"Policy input validation failed for '{field_name}': {', '.join(result['violations'])}",
                             )
 
         return await func(*args, **kwargs)
+
     return wrapper
 
 
 def validate_governance_input(func):
     """Decorator for governance workflow endpoints."""
+
     async def wrapper(*args, **kwargs):
         # Extract request data from kwargs
         for key, value in kwargs.items():
-            if hasattr(value, 'dict'):  # Pydantic model
+            if hasattr(value, "dict"):  # Pydantic model
                 data = value.dict()
                 for field_name, field_value in data.items():
                     if isinstance(field_value, str):
-                        input_type = "description" if field_name in ["reasoning", "justification", "rationale"] else "general"
-                        result = security_validator.validate_input(field_value, input_type)
+                        input_type = (
+                            "description"
+                            if field_name in ["reasoning", "justification", "rationale"]
+                            else "general"
+                        )
+                        result = security_validator.validate_input(
+                            field_value, input_type
+                        )
                         if not result["is_valid"]:
                             raise HTTPException(
                                 status_code=400,
-                                detail=f"Governance input validation failed for '{field_name}': {', '.join(result['violations'])}"
+                                detail=f"Governance input validation failed for '{field_name}': {', '.join(result['violations'])}",
                             )
 
         return await func(*args, **kwargs)
+
     return wrapper
+
 
 def sanitize_user_input(input_data: str, input_type: str = "general") -> str:
     """
     Main function for sanitizing user input.
-    
+
     Args:
         input_data: The input to sanitize
         input_type: Type of input for context-specific sanitization
-        
+
     Returns:
         Sanitized input string
     """

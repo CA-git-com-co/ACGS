@@ -129,11 +129,20 @@ class MonitoringIntegrator:
         async def metrics_endpoint():
             """Prometheus metrics endpoint."""
             if self.metrics_enabled:
-                return Response(content=generate_latest(), media_type=CONTENT_TYPE_LATEST)
+                return Response(
+                    content=generate_latest(), media_type=CONTENT_TYPE_LATEST
+                )
             else:
                 # Return Prometheus format even for fallback metrics
-                from prometheus_client import CONTENT_TYPE_LATEST, REGISTRY, generate_latest
-                return Response(content=generate_latest(REGISTRY), media_type=CONTENT_TYPE_LATEST)
+                from prometheus_client import (
+                    CONTENT_TYPE_LATEST,
+                    REGISTRY,
+                    generate_latest,
+                )
+
+                return Response(
+                    content=generate_latest(REGISTRY), media_type=CONTENT_TYPE_LATEST
+                )
 
         # Add enhanced health endpoint
         @app.get("/health")
@@ -150,7 +159,9 @@ class MonitoringIntegrator:
 
         logger.info(f"Monitoring endpoints added to {self.service_name}")
 
-    def record_request(self, method: str, endpoint: str, status_code: int, duration: float):
+    def record_request(
+        self, method: str, endpoint: str, status_code: int, duration: float
+    ):
         """Record request metrics."""
         if self.metrics_enabled:
             # Record Prometheus metrics
@@ -169,7 +180,9 @@ class MonitoringIntegrator:
         self.fallback_metrics["requests_total"] += 1
         self.fallback_metrics["requests_duration_sum"] += duration
 
-    def record_constitutional_compliance(self, result: str, score: Optional[float] = None):
+    def record_constitutional_compliance(
+        self, result: str, score: Optional[float] = None
+    ):
         """Record constitutional compliance metrics."""
         if self.metrics_enabled:
             self.constitutional_compliance_checks.labels(
@@ -177,7 +190,9 @@ class MonitoringIntegrator:
             ).inc()
 
             if score is not None:
-                self.constitutional_compliance_score.labels(service=self.service_name).set(score)
+                self.constitutional_compliance_score.labels(
+                    service=self.service_name
+                ).set(score)
 
         # Update fallback metrics
         self.fallback_metrics["constitutional_compliance_checks"] += 1
@@ -204,7 +219,9 @@ class MonitoringIntegrator:
             )
 
         if "availability" in metrics:
-            self.availability.labels(service=self.service_name).set(metrics["availability"])
+            self.availability.labels(service=self.service_name).set(
+                metrics["availability"]
+            )
 
     def get_health_metrics(self) -> Dict[str, Any]:
         """Get current health and performance metrics."""

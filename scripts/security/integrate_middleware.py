@@ -11,12 +11,16 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-from services.shared.security.enhanced_security_middleware import EnhancedSecurityMiddleware
+from services.shared.security.enhanced_security_middleware import (
+    EnhancedSecurityMiddleware,
+)
+
 
 def integrate_middleware():
     """Integrate security middleware with services."""
     print("Security middleware integration completed")
     return True
+
 
 if __name__ == "__main__":
     integrate_middleware()

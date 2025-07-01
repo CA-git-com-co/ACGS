@@ -18,20 +18,23 @@ from typing import Dict, List, Any, Tuple
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
+    format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.FileHandler('logs/manual_code_security_review.log'),
-        logging.StreamHandler()
-    ]
+        logging.FileHandler("logs/manual_code_security_review.log"),
+        logging.StreamHandler(),
+    ],
 )
 logger = logging.getLogger(__name__)
 
+
 class ManualCodeSecurityReview:
     """Manual code security review for ACGS-1."""
-    
+
     def __init__(self, project_root: str = "/home/dislove/ACGS-1"):
         self.project_root = Path(project_root)
-        self.review_id = f"manual_security_review_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        self.review_id = (
+            f"manual_security_review_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        )
         self.results = {
             "review_id": self.review_id,
             "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -43,12 +46,12 @@ class ManualCodeSecurityReview:
                 "medium_findings": 0,
                 "low_findings": 0,
                 "total_findings": 0,
-                "files_reviewed": 0
+                "files_reviewed": 0,
             },
             "compliance_status": "UNKNOWN",
-            "recommendations": []
+            "recommendations": [],
         }
-        
+
         # Security patterns to look for
         self.security_patterns = {
             "hardcoded_secrets": [
@@ -56,42 +59,37 @@ class ManualCodeSecurityReview:
                 r"secret\s*=\s*['\"][^'\"]+['\"]",
                 r"api_key\s*=\s*['\"][^'\"]+['\"]",
                 r"private_key\s*=\s*['\"][^'\"]+['\"]",
-                r"SECRET_KEY\s*=\s*['\"][^'\"]+['\"]"
+                r"SECRET_KEY\s*=\s*['\"][^'\"]+['\"]",
             ],
             "sql_injection": [
                 r"execute\s*\(\s*['\"].*%.*['\"]",
                 r"query\s*\(\s*['\"].*\+.*['\"]",
                 r"\.format\s*\(",
-                r"f['\"].*\{.*\}.*['\"]"
+                r"f['\"].*\{.*\}.*['\"]",
             ],
             "command_injection": [
                 r"os\.system\s*\(",
                 r"subprocess\.(call|run|Popen).*shell\s*=\s*True",
                 r"eval\s*\(",
-                r"exec\s*\("
+                r"exec\s*\(",
             ],
             "path_traversal": [
                 r"open\s*\(\s*.*\+",
                 r"\.\.\/",
                 r"\.\.\\",
-                r"os\.path\.join\s*\(.*user"
+                r"os\.path\.join\s*\(.*user",
             ],
-            "weak_crypto": [
-                r"md5\s*\(",
-                r"sha1\s*\(",
-                r"DES\s*\(",
-                r"RC4\s*\("
-            ]
+            "weak_crypto": [r"md5\s*\(", r"sha1\s*\(", r"DES\s*\(", r"RC4\s*\("],
         }
-        
+
         # Ensure directories exist
         os.makedirs("logs", exist_ok=True)
         os.makedirs("reports/security", exist_ok=True)
-    
+
     def run_review(self) -> Dict[str, Any]:
         """Run comprehensive manual code security review."""
         logger.info(f"🔍 Starting manual code security review: {self.review_id}")
-        
+
         # Review critical security components
         self._review_authentication_code()
         self._review_security_middleware()
@@ -99,182 +97,221 @@ class ManualCodeSecurityReview:
         self._review_database_code()
         self._review_cryptographic_implementations()
         self._review_configuration_files()
-        
+
         # Generate final assessment
         self._assess_compliance()
         self._generate_recommendations()
         self._save_results()
-        
+
         logger.info(f"🎯 Manual code security review completed: {self.review_id}")
         return self.results
-    
+
     def _review_authentication_code(self) -> None:
         """Review authentication and authorization code."""
         try:
             logger.info("🔐 Reviewing authentication code...")
-            
+
             auth_files = [
                 "services/shared/auth.py",
                 "services/shared/enhanced_auth.py",
-                "services/platform/authentication/auth_service/app/core/security.py"
+                "services/platform/authentication/auth_service/app/core/security.py",
             ]
-            
+
             findings = []
-            
+
             for auth_file in auth_files:
                 file_path = self.project_root / auth_file
                 if file_path.exists():
-                    findings.extend(self._analyze_file_security(file_path, "authentication"))
-            
+                    findings.extend(
+                        self._analyze_file_security(file_path, "authentication")
+                    )
+
             # Specific authentication security checks
             enhanced_auth_path = self.project_root / "services/shared/enhanced_auth.py"
             if enhanced_auth_path.exists():
-                with open(enhanced_auth_path, 'r') as f:
+                with open(enhanced_auth_path, "r") as f:
                     content = f.read()
-                
+
                 # Check for secure password hashing
-                if "bcrypt" not in content and "scrypt" not in content and "argon2" not in content:
-                    findings.append({
-                        "file": "services/shared/enhanced_auth.py",
-                        "type": "weak_password_hashing",
-                        "severity": "HIGH",
-                        "line": "N/A",
-                        "issue": "Password hashing may not use secure algorithm",
-                        "recommendation": "Use bcrypt, scrypt, or argon2 for password hashing"
-                    })
+                if (
+                    "bcrypt" not in content
+                    and "scrypt" not in content
+                    and "argon2" not in content
+                ):
+                    findings.append(
+                        {
+                            "file": "services/shared/enhanced_auth.py",
+                            "type": "weak_password_hashing",
+                            "severity": "HIGH",
+                            "line": "N/A",
+                            "issue": "Password hashing may not use secure algorithm",
+                            "recommendation": "Use bcrypt, scrypt, or argon2 for password hashing",
+                        }
+                    )
                     self.results["summary"]["high_findings"] += 1
-                
+
                 # Check for session management
                 if "session" in content.lower():
-                    if "secure" not in content.lower() or "httponly" not in content.lower():
-                        findings.append({
-                            "file": "services/shared/enhanced_auth.py",
-                            "type": "insecure_session_config",
-                            "severity": "MEDIUM",
-                            "line": "N/A",
-                            "issue": "Session configuration may lack security flags",
-                            "recommendation": "Ensure sessions use Secure and HttpOnly flags"
-                        })
+                    if (
+                        "secure" not in content.lower()
+                        or "httponly" not in content.lower()
+                    ):
+                        findings.append(
+                            {
+                                "file": "services/shared/enhanced_auth.py",
+                                "type": "insecure_session_config",
+                                "severity": "MEDIUM",
+                                "line": "N/A",
+                                "issue": "Session configuration may lack security flags",
+                                "recommendation": "Ensure sessions use Secure and HttpOnly flags",
+                            }
+                        )
                         self.results["summary"]["medium_findings"] += 1
-            
+
             self.results["reviews"]["authentication"] = {
                 "status": "SUCCESS",
-                "files_reviewed": len([f for f in auth_files if (self.project_root / f).exists()]),
+                "files_reviewed": len(
+                    [f for f in auth_files if (self.project_root / f).exists()]
+                ),
                 "findings_count": len(findings),
                 "findings": findings,
-                "timestamp": datetime.now(timezone.utc).isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
-            
-            self.results["summary"]["files_reviewed"] += len([f for f in auth_files if (self.project_root / f).exists()])
-            logger.info(f"✅ Authentication code review completed: {len(findings)} findings")
-            
+
+            self.results["summary"]["files_reviewed"] += len(
+                [f for f in auth_files if (self.project_root / f).exists()]
+            )
+            logger.info(
+                f"✅ Authentication code review completed: {len(findings)} findings"
+            )
+
         except Exception as e:
             logger.error(f"❌ Authentication code review failed: {e}")
             self.results["reviews"]["authentication"] = {
                 "status": "FAILED",
                 "error": str(e),
-                "timestamp": datetime.now(timezone.utc).isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
-    
+
     def _review_security_middleware(self) -> None:
         """Review security middleware implementations."""
         try:
             logger.info("🛡️ Reviewing security middleware...")
-            
+
             middleware_files = [
                 "services/shared/security_middleware.py",
                 "services/shared/middleware/security.py",
-                "services/shared/input_validation_middleware.py"
+                "services/shared/input_validation_middleware.py",
             ]
-            
+
             findings = []
-            
+
             for middleware_file in middleware_files:
                 file_path = self.project_root / middleware_file
                 if file_path.exists():
-                    findings.extend(self._analyze_file_security(file_path, "middleware"))
-            
+                    findings.extend(
+                        self._analyze_file_security(file_path, "middleware")
+                    )
+
             # Check security middleware completeness
-            security_middleware_path = self.project_root / "services/shared/security_middleware.py"
+            security_middleware_path = (
+                self.project_root / "services/shared/security_middleware.py"
+            )
             if security_middleware_path.exists():
-                with open(security_middleware_path, 'r') as f:
+                with open(security_middleware_path, "r") as f:
                     content = f.read()
-                
+
                 # Check for essential security features
                 security_features = {
                     "CSRF protection": "csrf",
                     "Rate limiting": "rate_limit",
                     "XSS protection": "xss",
                     "SQL injection detection": "sql_injection",
-                    "Input validation": "validation"
+                    "Input validation": "validation",
                 }
-                
+
                 for feature_name, pattern in security_features.items():
                     if pattern.lower() not in content.lower():
-                        findings.append({
-                            "file": "services/shared/security_middleware.py",
-                            "type": "missing_security_feature",
-                            "severity": "MEDIUM",
-                            "line": "N/A",
-                            "issue": f"Missing {feature_name} implementation",
-                            "recommendation": f"Implement {feature_name} in security middleware"
-                        })
+                        findings.append(
+                            {
+                                "file": "services/shared/security_middleware.py",
+                                "type": "missing_security_feature",
+                                "severity": "MEDIUM",
+                                "line": "N/A",
+                                "issue": f"Missing {feature_name} implementation",
+                                "recommendation": f"Implement {feature_name} in security middleware",
+                            }
+                        )
                         self.results["summary"]["medium_findings"] += 1
-            
+
             self.results["reviews"]["security_middleware"] = {
                 "status": "SUCCESS",
-                "files_reviewed": len([f for f in middleware_files if (self.project_root / f).exists()]),
+                "files_reviewed": len(
+                    [f for f in middleware_files if (self.project_root / f).exists()]
+                ),
                 "findings_count": len(findings),
                 "findings": findings,
-                "timestamp": datetime.now(timezone.utc).isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
-            
-            self.results["summary"]["files_reviewed"] += len([f for f in middleware_files if (self.project_root / f).exists()])
-            logger.info(f"✅ Security middleware review completed: {len(findings)} findings")
-            
+
+            self.results["summary"]["files_reviewed"] += len(
+                [f for f in middleware_files if (self.project_root / f).exists()]
+            )
+            logger.info(
+                f"✅ Security middleware review completed: {len(findings)} findings"
+            )
+
         except Exception as e:
             logger.error(f"❌ Security middleware review failed: {e}")
             self.results["reviews"]["security_middleware"] = {
                 "status": "FAILED",
                 "error": str(e),
-                "timestamp": datetime.now(timezone.utc).isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
-    
+
     def _review_input_validation(self) -> None:
         """Review input validation implementations."""
         try:
             logger.info("✅ Reviewing input validation...")
-            
+
             validation_files = [
                 "services/shared/input_validation.py",
                 "services/shared/validation_helpers.py",
-                "services/shared/input_validation_middleware.py"
+                "services/shared/input_validation_middleware.py",
             ]
-            
+
             findings = []
-            
+
             for validation_file in validation_files:
                 file_path = self.project_root / validation_file
                 if file_path.exists():
-                    findings.extend(self._analyze_file_security(file_path, "input_validation"))
-            
+                    findings.extend(
+                        self._analyze_file_security(file_path, "input_validation")
+                    )
+
             self.results["reviews"]["input_validation"] = {
                 "status": "SUCCESS",
-                "files_reviewed": len([f for f in validation_files if (self.project_root / f).exists()]),
+                "files_reviewed": len(
+                    [f for f in validation_files if (self.project_root / f).exists()]
+                ),
                 "findings_count": len(findings),
                 "findings": findings,
-                "timestamp": datetime.now(timezone.utc).isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
-            
-            self.results["summary"]["files_reviewed"] += len([f for f in validation_files if (self.project_root / f).exists()])
-            logger.info(f"✅ Input validation review completed: {len(findings)} findings")
-            
+
+            self.results["summary"]["files_reviewed"] += len(
+                [f for f in validation_files if (self.project_root / f).exists()]
+            )
+            logger.info(
+                f"✅ Input validation review completed: {len(findings)} findings"
+            )
+
         except Exception as e:
             logger.error(f"❌ Input validation review failed: {e}")
             self.results["reviews"]["input_validation"] = {
                 "status": "FAILED",
                 "error": str(e),
-                "timestamp": datetime.now(timezone.utc).isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
     def _review_database_code(self) -> None:
@@ -282,10 +319,7 @@ class ManualCodeSecurityReview:
         try:
             logger.info("🗄️ Reviewing database code...")
 
-            db_files = [
-                "services/shared/database.py",
-                "services/shared/db_utils.py"
-            ]
+            db_files = ["services/shared/database.py", "services/shared/db_utils.py"]
 
             findings = []
 
@@ -296,13 +330,17 @@ class ManualCodeSecurityReview:
 
             self.results["reviews"]["database"] = {
                 "status": "SUCCESS",
-                "files_reviewed": len([f for f in db_files if (self.project_root / f).exists()]),
+                "files_reviewed": len(
+                    [f for f in db_files if (self.project_root / f).exists()]
+                ),
                 "findings_count": len(findings),
                 "findings": findings,
-                "timestamp": datetime.now(timezone.utc).isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
-            self.results["summary"]["files_reviewed"] += len([f for f in db_files if (self.project_root / f).exists()])
+            self.results["summary"]["files_reviewed"] += len(
+                [f for f in db_files if (self.project_root / f).exists()]
+            )
             logger.info(f"✅ Database code review completed: {len(findings)} findings")
 
         except Exception as e:
@@ -310,7 +348,7 @@ class ManualCodeSecurityReview:
             self.results["reviews"]["database"] = {
                 "status": "FAILED",
                 "error": str(e),
-                "timestamp": datetime.now(timezone.utc).isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
     def _review_cryptographic_implementations(self) -> None:
@@ -320,7 +358,7 @@ class ManualCodeSecurityReview:
 
             crypto_files = [
                 "services/shared/security_config.py",
-                "services/shared/crypto_utils.py"
+                "services/shared/crypto_utils.py",
             ]
 
             findings = []
@@ -328,25 +366,33 @@ class ManualCodeSecurityReview:
             for crypto_file in crypto_files:
                 file_path = self.project_root / crypto_file
                 if file_path.exists():
-                    findings.extend(self._analyze_file_security(file_path, "cryptography"))
+                    findings.extend(
+                        self._analyze_file_security(file_path, "cryptography")
+                    )
 
             self.results["reviews"]["cryptography"] = {
                 "status": "SUCCESS",
-                "files_reviewed": len([f for f in crypto_files if (self.project_root / f).exists()]),
+                "files_reviewed": len(
+                    [f for f in crypto_files if (self.project_root / f).exists()]
+                ),
                 "findings_count": len(findings),
                 "findings": findings,
-                "timestamp": datetime.now(timezone.utc).isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
-            self.results["summary"]["files_reviewed"] += len([f for f in crypto_files if (self.project_root / f).exists()])
-            logger.info(f"✅ Cryptographic implementations review completed: {len(findings)} findings")
+            self.results["summary"]["files_reviewed"] += len(
+                [f for f in crypto_files if (self.project_root / f).exists()]
+            )
+            logger.info(
+                f"✅ Cryptographic implementations review completed: {len(findings)} findings"
+            )
 
         except Exception as e:
             logger.error(f"❌ Cryptographic implementations review failed: {e}")
             self.results["reviews"]["cryptography"] = {
                 "status": "FAILED",
                 "error": str(e),
-                "timestamp": datetime.now(timezone.utc).isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
     def _review_configuration_files(self) -> None:
@@ -357,7 +403,7 @@ class ManualCodeSecurityReview:
             config_files = [
                 "config/security.py",
                 "services/shared/config.py",
-                ".env.example"
+                ".env.example",
             ]
 
             findings = []
@@ -365,35 +411,45 @@ class ManualCodeSecurityReview:
             for config_file in config_files:
                 file_path = self.project_root / config_file
                 if file_path.exists():
-                    findings.extend(self._analyze_file_security(file_path, "configuration"))
+                    findings.extend(
+                        self._analyze_file_security(file_path, "configuration")
+                    )
 
             self.results["reviews"]["configuration"] = {
                 "status": "SUCCESS",
-                "files_reviewed": len([f for f in config_files if (self.project_root / f).exists()]),
+                "files_reviewed": len(
+                    [f for f in config_files if (self.project_root / f).exists()]
+                ),
                 "findings_count": len(findings),
                 "findings": findings,
-                "timestamp": datetime.now(timezone.utc).isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
-            self.results["summary"]["files_reviewed"] += len([f for f in config_files if (self.project_root / f).exists()])
-            logger.info(f"✅ Configuration files review completed: {len(findings)} findings")
+            self.results["summary"]["files_reviewed"] += len(
+                [f for f in config_files if (self.project_root / f).exists()]
+            )
+            logger.info(
+                f"✅ Configuration files review completed: {len(findings)} findings"
+            )
 
         except Exception as e:
             logger.error(f"❌ Configuration files review failed: {e}")
             self.results["reviews"]["configuration"] = {
                 "status": "FAILED",
                 "error": str(e),
-                "timestamp": datetime.now(timezone.utc).isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
-    def _analyze_file_security(self, file_path: Path, category: str) -> List[Dict[str, Any]]:
+    def _analyze_file_security(
+        self, file_path: Path, category: str
+    ) -> List[Dict[str, Any]]:
         """Analyze a single file for security issues."""
         findings = []
 
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
-                lines = content.split('\n')
+                lines = content.split("\n")
 
             # Check for security patterns
             for pattern_category, patterns in self.security_patterns.items():
@@ -401,16 +457,22 @@ class ManualCodeSecurityReview:
                     for line_num, line in enumerate(lines, 1):
                         if re.search(pattern, line, re.IGNORECASE):
                             severity = self._get_pattern_severity(pattern_category)
-                            findings.append({
-                                "file": str(file_path.relative_to(self.project_root)),
-                                "type": pattern_category,
-                                "severity": severity,
-                                "line": line_num,
-                                "code": line.strip(),
-                                "pattern": pattern,
-                                "issue": f"Potential {pattern_category.replace('_', ' ')} detected",
-                                "recommendation": self._get_pattern_recommendation(pattern_category)
-                            })
+                            findings.append(
+                                {
+                                    "file": str(
+                                        file_path.relative_to(self.project_root)
+                                    ),
+                                    "type": pattern_category,
+                                    "severity": severity,
+                                    "line": line_num,
+                                    "code": line.strip(),
+                                    "pattern": pattern,
+                                    "issue": f"Potential {pattern_category.replace('_', ' ')} detected",
+                                    "recommendation": self._get_pattern_recommendation(
+                                        pattern_category
+                                    ),
+                                }
+                            )
 
                             # Update summary
                             if severity == "CRITICAL":
@@ -440,7 +502,7 @@ class ManualCodeSecurityReview:
             "sql_injection": "HIGH",
             "command_injection": "HIGH",
             "path_traversal": "HIGH",
-            "weak_crypto": "MEDIUM"
+            "weak_crypto": "MEDIUM",
         }
         return severity_map.get(pattern_category, "MEDIUM")
 
@@ -451,42 +513,50 @@ class ManualCodeSecurityReview:
             "sql_injection": "Use parameterized queries or ORM",
             "command_injection": "Avoid shell execution or sanitize input",
             "path_traversal": "Validate and sanitize file paths",
-            "weak_crypto": "Use strong cryptographic algorithms (SHA-256+, AES)"
+            "weak_crypto": "Use strong cryptographic algorithms (SHA-256+, AES)",
         }
         return recommendations.get(pattern_category, "Review and fix security issue")
 
-    def _check_auth_specific_issues(self, content: str, file_path: Path) -> List[Dict[str, Any]]:
+    def _check_auth_specific_issues(
+        self, content: str, file_path: Path
+    ) -> List[Dict[str, Any]]:
         """Check for authentication-specific security issues."""
         findings = []
 
         # Check for weak JWT configuration
         if "HS256" in content and "RS256" not in content:
-            findings.append({
-                "file": str(file_path.relative_to(self.project_root)),
-                "type": "weak_jwt_algorithm",
-                "severity": "MEDIUM",
-                "line": "N/A",
-                "issue": "Using symmetric JWT algorithm (HS256) instead of asymmetric",
-                "recommendation": "Consider using RS256 for better security"
-            })
+            findings.append(
+                {
+                    "file": str(file_path.relative_to(self.project_root)),
+                    "type": "weak_jwt_algorithm",
+                    "severity": "MEDIUM",
+                    "line": "N/A",
+                    "issue": "Using symmetric JWT algorithm (HS256) instead of asymmetric",
+                    "recommendation": "Consider using RS256 for better security",
+                }
+            )
             self.results["summary"]["medium_findings"] += 1
 
         return findings
 
-    def _check_db_specific_issues(self, content: str, file_path: Path) -> List[Dict[str, Any]]:
+    def _check_db_specific_issues(
+        self, content: str, file_path: Path
+    ) -> List[Dict[str, Any]]:
         """Check for database-specific security issues."""
         findings = []
 
         # Check for connection string exposure
         if "postgresql://" in content or "mysql://" in content:
-            findings.append({
-                "file": str(file_path.relative_to(self.project_root)),
-                "type": "exposed_connection_string",
-                "severity": "HIGH",
-                "line": "N/A",
-                "issue": "Database connection string may be exposed",
-                "recommendation": "Use environment variables for database credentials"
-            })
+            findings.append(
+                {
+                    "file": str(file_path.relative_to(self.project_root)),
+                    "type": "exposed_connection_string",
+                    "severity": "HIGH",
+                    "line": "N/A",
+                    "issue": "Database connection string may be exposed",
+                    "recommendation": "Use environment variables for database credentials",
+                }
+            )
             self.results["summary"]["high_findings"] += 1
 
         return findings
@@ -495,10 +565,10 @@ class ManualCodeSecurityReview:
         """Assess overall compliance status."""
         # Update total findings
         self.results["summary"]["total_findings"] = (
-            self.results["summary"]["critical_findings"] +
-            self.results["summary"]["high_findings"] +
-            self.results["summary"]["medium_findings"] +
-            self.results["summary"]["low_findings"]
+            self.results["summary"]["critical_findings"]
+            + self.results["summary"]["high_findings"]
+            + self.results["summary"]["medium_findings"]
+            + self.results["summary"]["low_findings"]
         )
 
         critical = self.results["summary"]["critical_findings"]
@@ -522,38 +592,49 @@ class ManualCodeSecurityReview:
         medium = self.results["summary"]["medium_findings"]
 
         if critical > 0:
-            recommendations.append({
-                "priority": "CRITICAL",
-                "action": f"Immediately fix {critical} critical security vulnerabilities",
-                "timeline": "Within 24 hours",
-                "impact": "System compromise risk"
-            })
+            recommendations.append(
+                {
+                    "priority": "CRITICAL",
+                    "action": f"Immediately fix {critical} critical security vulnerabilities",
+                    "timeline": "Within 24 hours",
+                    "impact": "System compromise risk",
+                }
+            )
 
         if high > 0:
-            recommendations.append({
-                "priority": "HIGH",
-                "action": f"Address {high} high-severity security findings",
-                "timeline": "Within 1 week",
-                "impact": "Significant security risk"
-            })
+            recommendations.append(
+                {
+                    "priority": "HIGH",
+                    "action": f"Address {high} high-severity security findings",
+                    "timeline": "Within 1 week",
+                    "impact": "Significant security risk",
+                }
+            )
 
         if medium > 5:
-            recommendations.append({
-                "priority": "MEDIUM",
-                "action": f"Address {medium} medium-severity security findings",
-                "timeline": "Within 2 weeks",
-                "impact": "Moderate security risk"
-            })
+            recommendations.append(
+                {
+                    "priority": "MEDIUM",
+                    "action": f"Address {medium} medium-severity security findings",
+                    "timeline": "Within 2 weeks",
+                    "impact": "Moderate security risk",
+                }
+            )
 
         # Add specific recommendations based on review categories
         for category, review_data in self.results["reviews"].items():
-            if review_data.get("status") == "SUCCESS" and review_data.get("findings_count", 0) > 0:
-                recommendations.append({
-                    "priority": "HIGH",
-                    "action": f"Review and fix {category} security issues",
-                    "timeline": "Within 1 week",
-                    "impact": f"Security vulnerabilities in {category} components"
-                })
+            if (
+                review_data.get("status") == "SUCCESS"
+                and review_data.get("findings_count", 0) > 0
+            ):
+                recommendations.append(
+                    {
+                        "priority": "HIGH",
+                        "action": f"Review and fix {category} security issues",
+                        "timeline": "Within 1 week",
+                        "impact": f"Security vulnerabilities in {category} components",
+                    }
+                )
 
         self.results["recommendations"] = recommendations
 
@@ -561,7 +642,7 @@ class ManualCodeSecurityReview:
         """Save review results to files."""
         # Save detailed results
         results_file = f"reports/security/{self.review_id}_results.json"
-        with open(results_file, 'w') as f:
+        with open(results_file, "w") as f:
             json.dump(self.results, f, indent=2)
 
         # Save summary report
@@ -571,10 +652,10 @@ class ManualCodeSecurityReview:
             "timestamp": self.results["timestamp"],
             "summary": self.results["summary"],
             "compliance_status": self.results["compliance_status"],
-            "recommendations": self.results["recommendations"]
+            "recommendations": self.results["recommendations"],
         }
 
-        with open(summary_file, 'w') as f:
+        with open(summary_file, "w") as f:
             json.dump(summary, f, indent=2)
 
         logger.info(f"📊 Results saved to {results_file}")
@@ -589,9 +670,9 @@ def main():
         results = review.run_review()
 
         # Print summary
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("🔍 ACGS-1 MANUAL CODE SECURITY REVIEW RESULTS")
-        print("="*80)
+        print("=" * 80)
         print(f"Review ID: {results['review_id']}")
         print(f"Timestamp: {results['timestamp']}")
         print(f"Files Reviewed: {results['summary']['files_reviewed']}")
@@ -604,23 +685,25 @@ def main():
         print(f"  Total:    {results['summary']['total_findings']}")
 
         print("\nTop Priority Recommendations:")
-        for i, rec in enumerate(results['recommendations'][:3], 1):
+        for i, rec in enumerate(results["recommendations"][:3], 1):
             print(f"  {i}. [{rec['priority']}] {rec['action']}")
             print(f"     Timeline: {rec['timeline']}")
             print(f"     Impact: {rec['impact']}")
 
         print("\nReview Status by Category:")
-        for category, review_result in results['reviews'].items():
-            status = review_result.get('status', 'UNKNOWN')
-            findings_count = review_result.get('findings_count', 0)
-            files_reviewed = review_result.get('files_reviewed', 0)
-            print(f"  {category}: {status} ({files_reviewed} files, {findings_count} findings)")
+        for category, review_result in results["reviews"].items():
+            status = review_result.get("status", "UNKNOWN")
+            findings_count = review_result.get("findings_count", 0)
+            files_reviewed = review_result.get("files_reviewed", 0)
+            print(
+                f"  {category}: {status} ({files_reviewed} files, {findings_count} findings)"
+            )
 
-        print("="*80)
+        print("=" * 80)
         print("✅ Task 1.2: Manual Code Security Review - COMPLETED")
-        print("="*80)
+        print("=" * 80)
 
-        return 0 if results['summary']['critical_findings'] == 0 else 1
+        return 0 if results["summary"]["critical_findings"] == 0 else 1
 
     except Exception as e:
         logger.error(f"❌ Manual code security review failed: {e}")

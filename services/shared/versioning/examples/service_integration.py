@@ -41,7 +41,9 @@ class ConstitutionalAIVersionedService:
         # Version 1.5.0 - Legacy format
         @self.router.version("v1.5.0", "/principles", ["GET"])
         async def get_principles_v1_5(
-            skip: int = 0, limit: int = 100, version: APIVersion = Depends(get_api_version)
+            skip: int = 0,
+            limit: int = 100,
+            version: APIVersion = Depends(get_api_version),
         ):
             """Get principles in v1.5.0 format (snake_case fields)."""
             principles = await self._fetch_principles(skip, limit)
@@ -58,23 +60,34 @@ class ConstitutionalAIVersionedService:
                     }
                 )
 
-            return {"principles": legacy_principles, "total_count": len(legacy_principles)}
+            return {
+                "principles": legacy_principles,
+                "total_count": len(legacy_principles),
+            }
 
         # Version 2.0.0 - Unified format
         @self.router.version("v2.0.0", "/principles", ["GET"])
         async def get_principles_v2_0(
-            skip: int = 0, limit: int = 100, version: APIVersion = Depends(get_api_version)
+            skip: int = 0,
+            limit: int = 100,
+            version: APIVersion = Depends(get_api_version),
         ):
             """Get principles in v2.0.0 format (camelCase fields)."""
             principles = await self._fetch_principles(skip, limit)
 
-            return {"principles": principles, "totalCount": len(principles), "apiVersion": "v2.0.0"}
+            return {
+                "principles": principles,
+                "totalCount": len(principles),
+                "apiVersion": "v2.0.0",
+            }
 
         # Version 2.1.0 - Enhanced format
         @self.router.version("v2.1.0", "/principles", ["GET"])
         @versioned_response()
         async def get_principles_v2_1(
-            skip: int = 0, limit: int = 100, version: APIVersion = Depends(get_api_version)
+            skip: int = 0,
+            limit: int = 100,
+            version: APIVersion = Depends(get_api_version),
         ):
             """Get principles in v2.1.0 format with enhanced metadata."""
             principles = await self._fetch_principles(skip, limit)
@@ -85,7 +98,10 @@ class ConstitutionalAIVersionedService:
                 "apiVersion": "v2.1.0",
                 "metadata": {
                     "queryTime": "2025-06-22T10:00:00Z",
-                    "performanceMetrics": {"dbQueryTime": 15.2, "transformationTime": 2.1},
+                    "performanceMetrics": {
+                        "dbQueryTime": 15.2,
+                        "transformationTime": 2.1,
+                    },
                 },
             }
 
@@ -224,10 +240,14 @@ def create_versioned_app() -> FastAPI:
     from ..middleware.version_routing_middleware import VersionRoutingMiddleware
     from ..version_manager import VersionManager
 
-    version_manager = VersionManager(service_name="example-service", current_version="v2.1.0")
+    version_manager = VersionManager(
+        service_name="example-service", current_version="v2.1.0"
+    )
 
     app.add_middleware(
-        VersionRoutingMiddleware, service_name="example-service", version_manager=version_manager
+        VersionRoutingMiddleware,
+        service_name="example-service",
+        version_manager=version_manager,
     )
 
     # Include versioned routers
@@ -277,7 +297,9 @@ class MigrationHelper:
         return re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
 
     @staticmethod
-    def transform_dict_keys(data: Dict[str, Any], transformer: callable) -> Dict[str, Any]:
+    def transform_dict_keys(
+        data: Dict[str, Any], transformer: callable
+    ) -> Dict[str, Any]:
         """Transform dictionary keys using provided transformer function."""
         if not isinstance(data, dict):
             return data
@@ -286,7 +308,9 @@ class MigrationHelper:
         for key, value in data.items():
             new_key = transformer(key)
             if isinstance(value, dict):
-                transformed[new_key] = MigrationHelper.transform_dict_keys(value, transformer)
+                transformed[new_key] = MigrationHelper.transform_dict_keys(
+                    value, transformer
+                )
             elif isinstance(value, list):
                 transformed[new_key] = [
                     (
@@ -305,7 +329,9 @@ class MigrationHelper:
     def v1_to_v2_transform(data: Dict[str, Any]) -> Dict[str, Any]:
         """Transform v1.x data to v2.x format."""
         # Convert snake_case to camelCase
-        transformed = MigrationHelper.transform_dict_keys(data, MigrationHelper.snake_to_camel_case)
+        transformed = MigrationHelper.transform_dict_keys(
+            data, MigrationHelper.snake_to_camel_case
+        )
 
         # Add v2.x specific fields
         transformed["apiVersion"] = "v2.0.0"
@@ -322,7 +348,9 @@ class MigrationHelper:
     def v2_to_v1_transform(data: Dict[str, Any]) -> Dict[str, Any]:
         """Transform v2.x data to v1.x format for backward compatibility."""
         # Convert camelCase to snake_case
-        transformed = MigrationHelper.transform_dict_keys(data, MigrationHelper.camel_to_snake_case)
+        transformed = MigrationHelper.transform_dict_keys(
+            data, MigrationHelper.camel_to_snake_case
+        )
 
         # Remove v2.x specific fields
         v2_fields = ["api_version", "quantum_hash", "semantic_fault_tolerance"]

@@ -78,7 +78,9 @@ class MultiTierCache:
             cache_ttl = ttl or self.default_ttl
 
             # Store in memory cache
-            self.memory_cache[key] = CacheEntry(value=value, timestamp=time.time(), ttl=cache_ttl)
+            self.memory_cache[key] = CacheEntry(
+                value=value, timestamp=time.time(), ttl=cache_ttl
+            )
 
             # Evict old entries if memory cache is full
             if len(self.memory_cache) > self.max_memory_entries:
@@ -155,7 +157,9 @@ class MultiTierCache:
     def get_stats(self) -> dict[str, Any]:
         """Get cache statistics."""
         memory_entries = len(self.memory_cache)
-        expired_entries = sum(1 for entry in self.memory_cache.values() if entry.is_expired())
+        expired_entries = sum(
+            1 for entry in self.memory_cache.values() if entry.is_expired()
+        )
 
         return {
             "memory_entries": memory_entries,

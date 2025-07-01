@@ -82,7 +82,13 @@ class DGMServiceUser(HttpUser):
         """Query specific metrics."""
         payload = {
             "metric_name": random.choice(
-                ["response_time", "throughput", "error_rate", "cpu_usage", "memory_usage"]
+                [
+                    "response_time",
+                    "throughput",
+                    "error_rate",
+                    "cpu_usage",
+                    "memory_usage",
+                ]
             ),
             "start_time": "2024-01-01T00:00:00Z",
             "end_time": "2024-12-31T23:59:59Z",
@@ -119,10 +125,16 @@ class DGMServiceUser(HttpUser):
             "improvement_type": "performance",
             "priority": random.choice(["low", "medium", "high"]),
             "description": f"Load test improvement request from {self.user_id}",
-            "metadata": {"test_run": True, "user_id": self.user_id, "timestamp": time.time()},
+            "metadata": {
+                "test_run": True,
+                "user_id": self.user_id,
+                "timestamp": time.time(),
+            },
         }
 
-        with self.client.post("/api/v1/dgm/improve", json=payload, catch_response=True) as response:
+        with self.client.post(
+            "/api/v1/dgm/improve", json=payload, catch_response=True
+        ) as response:
             if response.status_code in [200, 201, 202]:
                 response.success()
             else:
@@ -170,7 +182,9 @@ class SpikeTestUser(HttpUser):
 
 # Event handlers for custom metrics and reporting
 @events.request.add_listener
-def on_request(request_type, name, response_time, response_length, exception, context, **kwargs):
+def on_request(
+    request_type, name, response_time, response_length, exception, context, **kwargs
+):
     """Custom request handler for SLA validation."""
     if exception:
         print(f"Request failed: {name} - {exception}")
@@ -205,7 +219,9 @@ def on_test_stop(environment, **kwargs):
     total_requests = stats.total.num_requests
     total_failures = stats.total.num_failures
     success_rate = (
-        ((total_requests - total_failures) / total_requests * 100) if total_requests > 0 else 0
+        ((total_requests - total_failures) / total_requests * 100)
+        if total_requests > 0
+        else 0
     )
 
     avg_response_time = stats.total.avg_response_time
@@ -225,7 +241,9 @@ def on_test_stop(environment, **kwargs):
 
     # SLA Requirement 1: >99.9% uptime (success rate)
     sla_uptime_met = success_rate >= 99.9
-    print(f"Uptime SLA (>99.9%): {'✓ PASS' if sla_uptime_met else '✗ FAIL'} ({success_rate:.2f}%)")
+    print(
+        f"Uptime SLA (>99.9%): {'✓ PASS' if sla_uptime_met else '✗ FAIL'} ({success_rate:.2f}%)"
+    )
 
     # SLA Requirement 2: <500ms response time (95th percentile)
     sla_response_time_met = p95_response_time < 500
@@ -258,14 +276,18 @@ def on_test_stop(environment, **kwargs):
             print(f"  Requests: {entry.num_requests}, Failures: {entry.num_failures}")
             print(f"  Success Rate: {endpoint_success_rate:.2f}%")
             print(f"  Avg Response Time: {entry.avg_response_time:.2f}ms")
-            print(f"  P95 Response Time: {entry.get_response_time_percentile(0.95):.2f}ms")
+            print(
+                f"  P95 Response Time: {entry.get_response_time_percentile(0.95):.2f}ms"
+            )
 
     # Overall SLA compliance
     overall_sla_met = sla_uptime_met and sla_response_time_met
     print(f"\nOVERALL SLA COMPLIANCE: {'✓ PASS' if overall_sla_met else '✗ FAIL'}")
 
     if not overall_sla_met:
-        print("\n⚠ WARNING: SLA requirements not met. Review system performance and scaling.")
+        print(
+            "\n⚠ WARNING: SLA requirements not met. Review system performance and scaling."
+        )
     else:
         print("\n✓ SUCCESS: All SLA requirements met.")
 
@@ -277,7 +299,12 @@ class LoadTestScenarios:
     @staticmethod
     def normal_load():
         """Normal operational load."""
-        return {"users": 50, "spawn_rate": 5, "run_time": "5m", "user_classes": [DGMServiceUser]}
+        return {
+            "users": 50,
+            "spawn_rate": 5,
+            "run_time": "5m",
+            "user_classes": [DGMServiceUser],
+        }
 
     @staticmethod
     def high_load():

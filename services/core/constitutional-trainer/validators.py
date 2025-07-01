@@ -41,7 +41,13 @@ class ACGSConstitutionalValidator:
         self.constitutional_principles = {
             "harmlessness": {
                 "weight": 0.3,
-                "keywords": ["harmful", "dangerous", "illegal", "unethical", "violence"],
+                "keywords": [
+                    "harmful",
+                    "dangerous",
+                    "illegal",
+                    "unethical",
+                    "violence",
+                ],
                 "threshold": 0.1,
             },
             "helpfulness": {
@@ -69,7 +75,9 @@ class ACGSConstitutionalValidator:
             self.redis_client = await aioredis.from_url(redis_url)
             logger.info("Constitutional validator initialized with Redis caching")
         except Exception as e:
-            logger.warning(f"Redis initialization failed, proceeding without cache: {e}")
+            logger.warning(
+                f"Redis initialization failed, proceeding without cache: {e}"
+            )
             self.redis_client = None
 
     async def validate_response(
@@ -102,17 +110,22 @@ class ACGSConstitutionalValidator:
 
             # Combine results with weighted scoring
             combined_score = (
-                policy_result["confidence_score"] * 0.7 + local_result["confidence_score"] * 0.3
+                policy_result["confidence_score"] * 0.7
+                + local_result["confidence_score"] * 0.3
             )
 
             # Determine compliance based on threshold
             is_compliant = (
-                policy_result["allow"] and combined_score >= self.config.compliance_threshold
+                policy_result["allow"]
+                and combined_score >= self.config.compliance_threshold
             )
 
             # Combine violations
             violations = list(
-                set(policy_result.get("violations", []) + local_result.get("violations", []))
+                set(
+                    policy_result.get("violations", [])
+                    + local_result.get("violations", [])
+                )
             )
 
             result = (is_compliant, combined_score, violations)
@@ -124,7 +137,9 @@ class ACGSConstitutionalValidator:
             self.validation_count += 1
 
             # Log validation to Audit Engine
-            await self._log_validation(response, context, combined_score, violations, evaluation_id)
+            await self._log_validation(
+                response, context, combined_score, violations, evaluation_id
+            )
 
             validation_time = time.time() - start_time
             logger.debug(
@@ -184,7 +199,9 @@ class ACGSConstitutionalValidator:
             logger.error(f"Policy Engine validation failed: {e}")
             return self._get_default_policy_result()
 
-    async def _validate_locally(self, response: str, context: Dict[str, Any]) -> Dict[str, Any]:
+    async def _validate_locally(
+        self, response: str, context: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Perform local constitutional validation as backup."""
 
         violations = []
@@ -213,7 +230,9 @@ class ACGSConstitutionalValidator:
             "validation_method": "local",
         }
 
-    async def _evaluate_principle(self, response: str, principle: str, config: Dict) -> float:
+    async def _evaluate_principle(
+        self, response: str, principle: str, config: Dict
+    ) -> float:
         """Evaluate a specific constitutional principle."""
 
         keywords = config["keywords"]
@@ -230,8 +249,16 @@ class ACGSConstitutionalValidator:
 
         elif principle == "privacy":
             # For privacy, check for potential privacy violations
-            privacy_keywords = ["personal", "private", "confidential", "ssn", "credit card"]
-            privacy_violations = sum(1 for keyword in privacy_keywords if keyword in response)
+            privacy_keywords = [
+                "personal",
+                "private",
+                "confidential",
+                "ssn",
+                "credit card",
+            ]
+            privacy_violations = sum(
+                1 for keyword in privacy_keywords if keyword in response
+            )
             return max(0.0, 1.0 - (privacy_violations * 0.3))
 
         return 0.5  # Default neutral score
@@ -264,16 +291,24 @@ class ACGSConstitutionalValidator:
             return None
 
         try:
-            cached_data = await self.redis_client.get(f"constitutional_validation:{evaluation_id}")
+            cached_data = await self.redis_client.get(
+                f"constitutional_validation:{evaluation_id}"
+            )
             if cached_data:
                 result = json.loads(cached_data)
-                return (result["is_compliant"], result["confidence_score"], result["violations"])
+                return (
+                    result["is_compliant"],
+                    result["confidence_score"],
+                    result["violations"],
+                )
         except Exception as e:
             logger.error(f"Cache retrieval failed: {e}")
 
         return None
 
-    async def _cache_result(self, evaluation_id: str, result: Tuple[bool, float, List[str]]):
+    async def _cache_result(
+        self, evaluation_id: str, result: Tuple[bool, float, List[str]]
+    ):
         """Cache validation result."""
         if not self.redis_client:
             return
@@ -287,7 +322,9 @@ class ACGSConstitutionalValidator:
             }
 
             await self.redis_client.setex(
-                f"constitutional_validation:{evaluation_id}", self.cache_ttl, json.dumps(cache_data)
+                f"constitutional_validation:{evaluation_id}",
+                self.cache_ttl,
+                json.dumps(cache_data),
             )
         except Exception as e:
             logger.error(f"Cache storage failed: {e}")

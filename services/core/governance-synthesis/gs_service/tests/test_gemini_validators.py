@@ -84,7 +84,9 @@ class TestGeminiProValidator(unittest.TestCase):
                                         "implementation_feasibility": 0.95,
                                         "stakeholder_impact": 0.90,
                                         "detailed_analysis": "Policy demonstrates strong constitutional alignment",
-                                        "recommendations": ["Consider stakeholder feedback"],
+                                        "recommendations": [
+                                            "Consider stakeholder feedback"
+                                        ],
                                         "risk_factors": ["Implementation complexity"],
                                     }
                                 )
@@ -151,7 +153,9 @@ class TestGeminiProValidator(unittest.TestCase):
         mock_response = AsyncMock()
         mock_response.status = 200
         mock_response.json.return_value = {
-            "candidates": [{"content": {"parts": [{"text": "This is not valid JSON for parsing"}]}}]
+            "candidates": [
+                {"content": {"parts": [{"text": "This is not valid JSON for parsing"}]}}
+            ]
         }
         mock_post.return_value.__aenter__.return_value = mock_response
 
@@ -372,7 +376,9 @@ class TestPerformanceRequirements(unittest.TestCase):
             "candidates": [
                 {
                     "content": {
-                        "parts": [{"text": "SCORE: 0.8 | ASSESSMENT: Quick screening passed"}]
+                        "parts": [
+                            {"text": "SCORE: 0.8 | ASSESSMENT: Quick screening passed"}
+                        ]
                     }
                 }
             ]

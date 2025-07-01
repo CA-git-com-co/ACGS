@@ -88,7 +88,9 @@ class CachePerformanceTest:
                 "key": key,
             }
 
-    async def cache_hit_ratio_test(self, num_keys: int = 100, cache_percentage: int = 70) -> Dict:
+    async def cache_hit_ratio_test(
+        self, num_keys: int = 100, cache_percentage: int = 70
+    ) -> Dict:
         """Test cache hit ratio performance."""
         # Populate cache with some keys
         cached_keys = []
@@ -115,7 +117,9 @@ class CachePerformanceTest:
         misses = len(results) - hits
         hit_ratio = (hits / len(results)) * 100
 
-        avg_hit_time = statistics.mean([r["execution_time_ms"] for r in results if r.get("hit")])
+        avg_hit_time = statistics.mean(
+            [r["execution_time_ms"] for r in results if r.get("hit")]
+        )
         avg_miss_time = statistics.mean(
             [r["execution_time_ms"] for r in results if not r.get("hit")]
         )
@@ -145,7 +149,9 @@ class CachePerformanceTest:
 
                 # Mix of operations
                 if i % 3 == 0:
-                    result = await self.measure_cache_operation("set", key, value, ttl=300)
+                    result = await self.measure_cache_operation(
+                        "set", key, value, ttl=300
+                    )
                 elif i % 3 == 1:
                     result = await self.measure_cache_operation("get", key)
                 else:
@@ -164,7 +170,9 @@ class CachePerformanceTest:
         total_time = (end_time - start_time) * 1000
 
         # Flatten results
-        flat_results = [result for worker_results in all_results for result in worker_results]
+        flat_results = [
+            result for worker_results in all_results for result in worker_results
+        ]
 
         execution_times = [r["execution_time_ms"] for r in flat_results if r["success"]]
         success_count = sum(1 for r in flat_results if r["success"])
@@ -176,11 +184,14 @@ class CachePerformanceTest:
             "total_operations": len(flat_results),
             "successful_operations": success_count,
             "success_rate": (success_count / len(flat_results)) * 100,
-            "avg_operation_time_ms": statistics.mean(execution_times) if execution_times else 0,
+            "avg_operation_time_ms": (
+                statistics.mean(execution_times) if execution_times else 0
+            ),
             "p95_operation_time_ms": (
                 self._percentile(execution_times, 95) if execution_times else 0
             ),
-            "operations_per_second": len(flat_results) / ((end_time - start_time) or 0.001),
+            "operations_per_second": len(flat_results)
+            / ((end_time - start_time) or 0.001),
         }
 
     def _percentile(self, data: List[float], percentile: int) -> float:
@@ -208,14 +219,18 @@ async def test_basic_cache_operations_performance(cache_test):
     set_result = await cache_test.measure_cache_operation(
         "set", "perf_test_key", "test_value", ttl=300
     )
-    assert set_result["success"], f"Cache SET failed: {set_result.get('error', 'Unknown error')}"
+    assert set_result[
+        "success"
+    ], f"Cache SET failed: {set_result.get('error', 'Unknown error')}"
     assert (
         set_result["execution_time_ms"] < 10
     ), f"Cache SET too slow: {set_result['execution_time_ms']}ms"
 
     # Test GET operation (cache hit)
     get_result = await cache_test.measure_cache_operation("get", "perf_test_key")
-    assert get_result["success"], f"Cache GET failed: {get_result.get('error', 'Unknown error')}"
+    assert get_result[
+        "success"
+    ], f"Cache GET failed: {get_result.get('error', 'Unknown error')}"
     assert get_result["hit"], "Cache GET should be a hit"
     assert (
         get_result["execution_time_ms"] < 5
@@ -274,7 +289,9 @@ async def test_cache_hit_ratio_performance(cache_test):
     assert (
         result["avg_hit_time_ms"] < result["avg_miss_time_ms"]
     ), "Cache hits should be faster than misses"
-    assert result["avg_hit_time_ms"] < 5, f"Cache hits too slow: {result['avg_hit_time_ms']}ms"
+    assert (
+        result["avg_hit_time_ms"] < 5
+    ), f"Cache hits too slow: {result['avg_hit_time_ms']}ms"
 
     # Overall performance should be good
     assert (
@@ -353,10 +370,14 @@ async def test_performance_cache_specific_operations(cache_test):
     start_time = time.perf_counter()
 
     # Cache performance metrics
-    await cache_test.performance_cache.cache_metrics("dgm-service", metrics_data, ttl=300)
+    await cache_test.performance_cache.cache_metrics(
+        "dgm-service", metrics_data, ttl=300
+    )
 
     # Retrieve cached metrics
-    cached_metrics = await cache_test.performance_cache.get_cached_metrics("dgm-service")
+    cached_metrics = await cache_test.performance_cache.get_cached_metrics(
+        "dgm-service"
+    )
 
     end_time = time.perf_counter()
     total_time = (end_time - start_time) * 1000
@@ -380,7 +401,9 @@ async def test_performance_cache_specific_operations(cache_test):
     aggregation_time = (aggregation_end - aggregation_start) * 1000
 
     assert cached_aggregation is not None, "Aggregated metrics should be cached"
-    assert aggregation_time < 15, f"Aggregation cache operations too slow: {aggregation_time}ms"
+    assert (
+        aggregation_time < 15
+    ), f"Aggregation cache operations too slow: {aggregation_time}ms"
 
 
 @pytest.mark.performance

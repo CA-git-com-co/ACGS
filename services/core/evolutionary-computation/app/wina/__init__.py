@@ -18,19 +18,15 @@ from .performance_monitoring import (
     WINANeuronActivationMetrics,
     WINADynamicGatingMetrics,
     WINAIntegrationPerformanceMetrics,
-    WINAConstitutionalComplianceMetrics
+    WINAConstitutionalComplianceMetrics,
 )
-from .continuous_learning import (
-    get_wina_learning_system,
-    FeedbackSignal,
-    FeedbackType
-)
+from .continuous_learning import get_wina_learning_system, FeedbackSignal, FeedbackType
 
 __version__ = "1.0.0"
 __all__ = [
     "load_wina_config_from_env",
     "WINACore",
-    "WINAMetrics", 
+    "WINAMetrics",
     "ConstitutionalWINASupport",
     "RuntimeGating",
     "GatingStrategy",
@@ -38,11 +34,11 @@ __all__ = [
     "WINAMonitoringLevel",
     "WINAComponentType",
     "WINASystemHealthMetrics",
-    "WINANeuronActivationMetrics", 
+    "WINANeuronActivationMetrics",
     "WINADynamicGatingMetrics",
     "WINAIntegrationPerformanceMetrics",
     "WINAConstitutionalComplianceMetrics",
     "get_wina_learning_system",
     "FeedbackSignal",
-    "FeedbackType"
+    "FeedbackType",
 ]

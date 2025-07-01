@@ -21,7 +21,9 @@ def upgrade() -> None:
     """Add PolicyVersion model and enhance PolicyRule for incremental compilation."""
 
     # Add incremental compilation fields to policy_rules table
-    op.add_column("policy_rules", sa.Column("compilation_hash", sa.String(64), nullable=True))
+    op.add_column(
+        "policy_rules", sa.Column("compilation_hash", sa.String(64), nullable=True)
+    )
     op.add_column(
         "policy_rules",
         sa.Column("last_compiled_at", sa.DateTime(timezone=True), nullable=True),
@@ -45,8 +47,12 @@ def upgrade() -> None:
     )
 
     # Create indexes for policy_rules
-    op.create_index("ix_policy_rules_compilation_hash", "policy_rules", ["compilation_hash"])
-    op.create_index("ix_policy_rules_compilation_status", "policy_rules", ["compilation_status"])
+    op.create_index(
+        "ix_policy_rules_compilation_hash", "policy_rules", ["compilation_hash"]
+    )
+    op.create_index(
+        "ix_policy_rules_compilation_status", "policy_rules", ["compilation_status"]
+    )
 
     # Create policy_versions table
     op.create_table(
@@ -79,7 +85,9 @@ def upgrade() -> None:
             server_default="false",
             index=True,
         ),
-        sa.Column("is_rollback_point", sa.Boolean(), nullable=False, server_default="false"),
+        sa.Column(
+            "is_rollback_point", sa.Boolean(), nullable=False, server_default="false"
+        ),
         sa.Column("rollback_reason", sa.Text(), nullable=True),
         # Constitutional amendment integration
         sa.Column(
@@ -97,14 +105,18 @@ def upgrade() -> None:
             server_default="pending",
             index=True,
         ),
-        sa.Column("deployment_metrics", postgresql.JSONB(astext_type=sa.Text()), nullable=True),
+        sa.Column(
+            "deployment_metrics", postgresql.JSONB(astext_type=sa.Text()), nullable=True
+        ),
         # Backward compatibility tracking (3-version requirement)
         sa.Column(
             "compatible_versions",
             postgresql.JSONB(astext_type=sa.Text()),
             nullable=True,
         ),
-        sa.Column("breaking_changes", postgresql.JSONB(astext_type=sa.Text()), nullable=True),
+        sa.Column(
+            "breaking_changes", postgresql.JSONB(astext_type=sa.Text()), nullable=True
+        ),
         # Timestamps and user tracking
         sa.Column(
             "created_at",
@@ -112,14 +124,24 @@ def upgrade() -> None:
             nullable=False,
             server_default=sa.text("now()"),
         ),
-        sa.Column("created_by_user_id", sa.Integer(), sa.ForeignKey("users.id"), nullable=True),
+        sa.Column(
+            "created_by_user_id", sa.Integer(), sa.ForeignKey("users.id"), nullable=True
+        ),
     )
 
     # Create indexes for policy_versions
-    op.create_index("ix_policy_versions_policy_rule_id", "policy_versions", ["policy_rule_id"])
-    op.create_index("ix_policy_versions_version_number", "policy_versions", ["version_number"])
-    op.create_index("ix_policy_versions_content_hash", "policy_versions", ["content_hash"])
-    op.create_index("ix_policy_versions_compilation_hash", "policy_versions", ["compilation_hash"])
+    op.create_index(
+        "ix_policy_versions_policy_rule_id", "policy_versions", ["policy_rule_id"]
+    )
+    op.create_index(
+        "ix_policy_versions_version_number", "policy_versions", ["version_number"]
+    )
+    op.create_index(
+        "ix_policy_versions_content_hash", "policy_versions", ["content_hash"]
+    )
+    op.create_index(
+        "ix_policy_versions_compilation_hash", "policy_versions", ["compilation_hash"]
+    )
     op.create_index(
         "ix_policy_versions_compilation_status",
         "policy_versions",

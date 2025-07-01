@@ -4,18 +4,22 @@ Unit tests for services.core.governance-synthesis.gs_service.app.api.v1.qec_erro
 
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
-from services.core.governance-synthesis.gs_service.app.api.v1.qec_error_correction import ErrorCorrectionRequest, ConflictDetectionRequest, SemanticValidationRequest, PolicyRefinementRequest
-
+from services.core.governance_synthesis.gs_service.app.api.v1.qec_error_correction import (
+    ErrorCorrectionRequest,
+    ConflictDetectionRequest,
+    SemanticValidationRequest,
+    PolicyRefinementRequest,
+)
 
 
 class TestErrorCorrectionRequest:
     """Test suite for ErrorCorrectionRequest."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -24,12 +28,12 @@ class TestErrorCorrectionRequest:
 
 class TestConflictDetectionRequest:
     """Test suite for ConflictDetectionRequest."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -38,12 +42,12 @@ class TestConflictDetectionRequest:
 
 class TestSemanticValidationRequest:
     """Test suite for SemanticValidationRequest."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -52,15 +56,13 @@ class TestSemanticValidationRequest:
 
 class TestPolicyRefinementRequest:
     """Test suite for PolicyRefinementRequest."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
         pass
-
-

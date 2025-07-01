@@ -4,18 +4,23 @@ Unit tests for services.core.governance-synthesis.gs_service.app.security.advers
 
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
-from services.core.governance-synthesis.gs_service.app.security.adversarial_defenses import AttackType, DefenseLevel, AdversarialEvent, RefusalFeature, AdversarialDefenseSystem
-
+from services.core.governance_synthesis.gs_service.app.security.adversarial_defenses import (
+    AttackType,
+    DefenseLevel,
+    AdversarialEvent,
+    RefusalFeature,
+    AdversarialDefenseSystem,
+)
 
 
 class TestAttackType:
     """Test suite for AttackType."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -24,12 +29,12 @@ class TestAttackType:
 
 class TestDefenseLevel:
     """Test suite for DefenseLevel."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -38,12 +43,12 @@ class TestDefenseLevel:
 
 class TestAdversarialEvent:
     """Test suite for AdversarialEvent."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -52,12 +57,12 @@ class TestAdversarialEvent:
 
 class TestRefusalFeature:
     """Test suite for RefusalFeature."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -66,12 +71,12 @@ class TestRefusalFeature:
 
 class TestAdversarialDefenseSystem:
     """Test suite for AdversarialDefenseSystem."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -82,6 +87,4 @@ class TestAdversarialDefenseSystem:
         # TODO: Implement test for get_defense_metrics
         instance = AdversarialDefenseSystem()
         # Add test implementation here
-        assert hasattr(instance, 'get_defense_metrics')
-
-
+        assert hasattr(instance, "get_defense_metrics")

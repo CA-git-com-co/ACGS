@@ -24,10 +24,10 @@ import pytest
 from nemo_skills.evaluation.metrics import ComputeMetrics
 
 DATA_TO_TEST = []
-template_folder = Path(__file__).parents[1] / 'nemo_skills' / 'prompt' / 'template'
-prompt_templates = [f[:-5] for f in os.listdir(template_folder) if f.endswith('.yaml')]
+template_folder = Path(__file__).parents[1] / "nemo_skills" / "prompt" / "template"
+prompt_templates = [f[:-5] for f in os.listdir(template_folder) if f.endswith(".yaml")]
 
-for dataset, split in [('gsm8k', 'train'), ('gsm8k', 'test'), ('math-500', 'test')]:
+for dataset, split in [("gsm8k", "train"), ("gsm8k", "test"), ("math-500", "test")]:
     DATA_TO_TEST.append((dataset, split))
 
 
@@ -35,8 +35,12 @@ for dataset, split in [('gsm8k', 'train'), ('gsm8k', 'test'), ('math-500', 'test
 def test_generation_dryrun_llama(dataset, split):
     """Testing the default prompts for each dataset."""
     prompt_template = "llama3-instruct"
-    extra_args = importlib.import_module(f'nemo_skills.dataset.{dataset}').GENERATION_ARGS
-    prompt_config = importlib.import_module(f'nemo_skills.dataset.{dataset}').PROMPT_CONFIG
+    extra_args = importlib.import_module(
+        f"nemo_skills.dataset.{dataset}"
+    ).GENERATION_ARGS
+    prompt_config = importlib.import_module(
+        f"nemo_skills.dataset.{dataset}"
+    ).PROMPT_CONFIG
     cmd = (
         "python nemo_skills/inference/generate.py "
         f"    ++output_file=./test.jsonl "
@@ -68,7 +72,7 @@ def test_generation_dryrun_gsm8k(prompt_template):
 
 
 def test_eval_mtbench_api(tmp_path):
-    if not os.getenv('NVIDIA_API_KEY'):
+    if not os.getenv("NVIDIA_API_KEY"):
         pytest.skip("Define NVIDIA_API_KEY to run this test")
 
     cmd = (
@@ -78,7 +82,7 @@ def test_eval_mtbench_api(tmp_path):
         f"    --server_address=https://integrate.api.nvidia.com/v1 "
         f"    --benchmarks=mt-bench:0 "
         f"    --output_dir={tmp_path} "
-        f"    --extra_eval_args=\"++eval_config.use_batch_api=False "
+        f'    --extra_eval_args="++eval_config.use_batch_api=False '
         f"                        ++eval_config.judge_model='meta/llama-3.1-8b-instruct' "
         f"                        ++eval_config.base_url='https://integrate.api.nvidia.com/v1'\" "
         f"    ++max_samples=2 "
@@ -93,16 +97,16 @@ def test_eval_mtbench_api(tmp_path):
     )
 
     # running compute_metrics to check that results are expected
-    metrics = ComputeMetrics(benchmark='mt-bench').compute_metrics(
+    metrics = ComputeMetrics(benchmark="mt-bench").compute_metrics(
         [f"{tmp_path}/eval-results/mt-bench/output.jsonl"],
     )["all"]["greedy"]
 
     # not having other categories since we just ran with 2 samples
-    assert metrics['average'] >= 6
-    assert metrics['average_turn1'] >= 6
-    assert metrics['average_turn2'] >= 6
-    assert metrics['writing_turn1'] >= 6
-    assert metrics['writing_turn2'] >= 6
-    assert metrics['missing_rating_turn1'] < 2
-    assert metrics['missing_rating_turn2'] < 2
-    assert metrics['num_entries'] == 2
+    assert metrics["average"] >= 6
+    assert metrics["average_turn1"] >= 6
+    assert metrics["average_turn2"] >= 6
+    assert metrics["writing_turn1"] >= 6
+    assert metrics["writing_turn2"] >= 6
+    assert metrics["missing_rating_turn1"] < 2
+    assert metrics["missing_rating_turn2"] < 2
+    assert metrics["num_entries"] == 2

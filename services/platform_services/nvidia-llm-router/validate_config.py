@@ -59,14 +59,18 @@ def validate_config_file(config_path: str) -> bool:
                 else:
                     for i, model in enumerate(tier_models):
                         if not isinstance(model, dict):
-                            errors.append(f"Model {i} in tier '{tier}' must be a dictionary")
+                            errors.append(
+                                f"Model {i} in tier '{tier}' must be a dictionary"
+                            )
                             continue
 
                         if "name" not in model:
                             errors.append(f"Model {i} in tier '{tier}' missing 'name'")
 
                         if "capabilities" not in model:
-                            warnings.append(f"Model {i} in tier '{tier}' missing 'capabilities'")
+                            warnings.append(
+                                f"Model {i} in tier '{tier}' missing 'capabilities'"
+                            )
 
     # Validate task routing
     if "task_routing" not in config:
@@ -98,7 +102,9 @@ def validate_config_file(config_path: str) -> bool:
             else:
                 level_config = complexity_routing[level]
                 if "preferred_tier" not in level_config:
-                    errors.append(f"Complexity level '{level}' missing 'preferred_tier'")
+                    errors.append(
+                        f"Complexity level '{level}' missing 'preferred_tier'"
+                    )
 
     # Validate ACGS integration
     if "acgs_integration" not in config:
@@ -143,7 +149,9 @@ def main():
         config_path = sys.argv[1]
     else:
         # Default path
-        config_path = os.path.join(os.path.dirname(__file__), "router_controller", "config.yml")
+        config_path = os.path.join(
+            os.path.dirname(__file__), "router_controller", "config.yml"
+        )
 
     print("🔍 Validating NVIDIA LLM Router Configuration")
     print(f"📁 Config file: {config_path}")

@@ -105,7 +105,10 @@ class ErrorResponse(BaseModel):
     class Config:
         """Pydantic configuration."""
 
-        json_encoders = {datetime: lambda v: v.isoformat(), ErrorDetails: lambda v: v.to_dict()}
+        json_encoders = {
+            datetime: lambda v: v.isoformat(),
+            ErrorDetails: lambda v: v.to_dict(),
+        }
         use_enum_values = True
 
 
@@ -120,7 +123,10 @@ class MultipleErrorResponse(BaseModel):
     class Config:
         """Pydantic configuration."""
 
-        json_encoders = {datetime: lambda v: v.isoformat(), ErrorDetails: lambda v: v.to_dict()}
+        json_encoders = {
+            datetime: lambda v: v.isoformat(),
+            ErrorDetails: lambda v: v.to_dict(),
+        }
         use_enum_values = True
 
 
@@ -169,7 +175,9 @@ class ErrorResponseBuilder:
         if not error_def:
             # Fallback for unknown error codes
             return self.generic_error(
-                message=f"Unknown error code: {error_code}", details=details or {}, context=context
+                message=f"Unknown error code: {error_code}",
+                details=details or {},
+                context=context,
             )
 
         error_details = ErrorDetails(
@@ -189,7 +197,9 @@ class ErrorResponseBuilder:
         return ErrorResponse(error=error_details, metadata=self._create_metadata())
 
     def validation_error(
-        self, validation_errors: List[Dict[str, Any]], message: str = "Request validation failed"
+        self,
+        validation_errors: List[Dict[str, Any]],
+        message: str = "Request validation failed",
     ) -> ErrorResponse:
         """Create validation error response."""
         return self.from_error_code(
@@ -199,7 +209,9 @@ class ErrorResponseBuilder:
         )
 
     def authentication_error(
-        self, reason: str = "Authentication failed", details: Optional[Dict[str, Any]] = None
+        self,
+        reason: str = "Authentication failed",
+        details: Optional[Dict[str, Any]] = None,
     ) -> ErrorResponse:
         """Create authentication error response."""
         return self.from_error_code(
@@ -214,7 +226,10 @@ class ErrorResponseBuilder:
         """Create authorization error response."""
         return self.from_error_code(
             "AUTH_AUTHORIZATION_001",
-            details={"required_permission": required_permission, "user_role": user_role},
+            details={
+                "required_permission": required_permission,
+                "user_role": user_role,
+            },
         )
 
     def business_logic_error(
@@ -245,7 +260,9 @@ class ErrorResponseBuilder:
         """Create system error response."""
         error_id = error_id or str(uuid.uuid4())
         return self.from_error_code(
-            "SHARED_SYSTEM_ERROR_001", details=details or {}, context={"error_id": error_id}
+            "SHARED_SYSTEM_ERROR_001",
+            details=details or {},
+            context={"error_id": error_id},
         )
 
     def generic_error(
@@ -275,7 +292,9 @@ class ErrorResponseBuilder:
         return ErrorResponse(error=error_details, metadata=self._create_metadata())
 
     def multiple_errors(
-        self, errors: List[Dict[str, Any]], primary_message: str = "Multiple errors occurred"
+        self,
+        errors: List[Dict[str, Any]],
+        primary_message: str = "Multiple errors occurred",
     ) -> MultipleErrorResponse:
         """Create response for multiple errors."""
         error_details_list = []
@@ -315,7 +334,9 @@ class ErrorResponseBuilder:
 
             error_details_list.append(error_details)
 
-        return MultipleErrorResponse(errors=error_details_list, metadata=self._create_metadata())
+        return MultipleErrorResponse(
+            errors=error_details_list, metadata=self._create_metadata()
+        )
 
 
 class ErrorJSONResponse(UnifiedJSONResponse):
@@ -352,7 +373,9 @@ class ErrorJSONResponse(UnifiedJSONResponse):
         if headers:
             error_headers.update(headers)
 
-        super().__init__(content=error_response, status_code=status_code, headers=error_headers)
+        super().__init__(
+            content=error_response, status_code=status_code, headers=error_headers
+        )
 
 
 # Service-specific error response builders

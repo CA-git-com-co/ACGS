@@ -9,6 +9,7 @@ import logging
 import time
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
+
 # In a real implementation, we would use the OPA Python client.
 # from opa_client.client import OPAClient
 
@@ -41,21 +42,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.middleware("http")
 async def add_security_headers(request, call_next):
     """Add security headers including constitutional hash."""
     response = await call_next(request)
-    
+
     # Core security headers
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["X-XSS-Protection"] = "1; mode=block"
-    
+
     # ACGS-1 specific headers
     response.headers["X-ACGS-Security"] = "enabled"
     response.headers["X-Constitutional-Hash"] = "cdd01ef066bc6cf2"
-    
+
     return response
+
 
 @app.get("/", status_code=status.HTTP_200_OK)
 async def root(request: Request):
@@ -70,16 +73,17 @@ async def root(request: Request):
             "Real-time Policy Enforcement (OPA)",
             "Policy Governance",
             "Compliance Checking",
-            "Governance Workflows"
+            "Governance Workflows",
         ],
-        "status": "operational"
+        "status": "operational",
     }
+
 
 @app.get("/health", status_code=status.HTTP_200_OK)
 async def health_check():
     """Health check endpoint."""
     uptime_seconds = time.time() - service_start_time
-    
+
     return {
         "status": "healthy",
         "service": SERVICE_NAME,
@@ -90,14 +94,15 @@ async def health_check():
             "opa_engine": "operational",
             "policy_engine": "operational",
             "compliance_checker": "operational",
-            "governance_workflows": "operational"
+            "governance_workflows": "operational",
         },
         "performance_metrics": {
             "uptime_seconds": uptime_seconds,
             "target_response_time": "<50ms",
-            "availability_target": ">99.9%"
-        }
+            "availability_target": ">99.9%",
+        },
     }
+
 
 @app.post("/api/v1/policies/enforce")
 async def enforce_policy(request: Request):
@@ -105,6 +110,7 @@ async def enforce_policy(request: Request):
     # Placeholder for OPA policy enforcement
     # In a real implementation, we would use the OPA client to evaluate the policy.
     return {"status": "policy_enforced"}
+
 
 @app.get("/api/v1/status")
 async def api_status():
@@ -119,11 +125,13 @@ async def api_status():
             "policy_management": True,
             "compliance_checking": True,
             "governance_workflows": True,
-            "enforcement": True
-        }
+            "enforcement": True,
+        },
     }
+
 
 if __name__ == "__main__":
     import uvicorn
+
     logger.info(f"Starting {SERVICE_NAME} on port {SERVICE_PORT}")
     uvicorn.run(app, host="0.0.0.0", port=SERVICE_PORT)

@@ -170,11 +170,15 @@ class DGMMetrics:
 
         # Archive Metrics
         self.archive_entries_total = Gauge(
-            "dgm_archive_entries_total", "Total entries in DGM archive", registry=self.registry
+            "dgm_archive_entries_total",
+            "Total entries in DGM archive",
+            registry=self.registry,
         )
 
         self.archive_size_bytes = Gauge(
-            "dgm_archive_size_bytes", "Size of DGM archive in bytes", registry=self.registry
+            "dgm_archive_size_bytes",
+            "Size of DGM archive in bytes",
+            registry=self.registry,
         )
 
         # Database Metrics
@@ -237,12 +241,18 @@ class DGMMetrics:
 
         # Error Metrics
         self.errors_total = Counter(
-            "dgm_errors_total", "Total errors", ["component", "error_type"], registry=self.registry
+            "dgm_errors_total",
+            "Total errors",
+            ["component", "error_type"],
+            registry=self.registry,
         )
 
         # Workflow Metrics
         self.workflows_total = Counter(
-            "dgm_workflows_total", "Total workflows", ["type", "status"], registry=self.registry
+            "dgm_workflows_total",
+            "Total workflows",
+            ["type", "status"],
+            registry=self.registry,
         )
 
         self.workflow_duration = Histogram(
@@ -270,7 +280,11 @@ class DGMMetrics:
 
         # Set service info
         self.service_info.info(
-            {"version": "1.0.0", "service": "dgm-service", "environment": settings.ENVIRONMENT}
+            {
+                "version": "1.0.0",
+                "service": "dgm-service",
+                "environment": settings.ENVIRONMENT,
+            }
         )
 
         # Set initial values
@@ -290,15 +304,17 @@ class MetricsCollector:
         self.dgm_metrics = DGMMetrics(self.registry)
         self._start_time = time.time()
 
-    def record_http_request(self, method: str, endpoint: str, status_code: int, duration: float):
+    def record_http_request(
+        self, method: str, endpoint: str, status_code: int, duration: float
+    ):
         """Record HTTP request metrics."""
         self.dgm_metrics.http_requests_total.labels(
             method=method, endpoint=endpoint, status_code=str(status_code)
         ).inc()
 
-        self.dgm_metrics.http_request_duration.labels(method=method, endpoint=endpoint).observe(
-            duration
-        )
+        self.dgm_metrics.http_request_duration.labels(
+            method=method, endpoint=endpoint
+        ).observe(duration)
 
     def record_improvement(
         self,
@@ -308,12 +324,14 @@ class MetricsCollector:
         strategy: Optional[str] = None,
     ):
         """Record improvement metrics."""
-        self.dgm_metrics.improvements_total.labels(status=status, priority=priority).inc()
+        self.dgm_metrics.improvements_total.labels(
+            status=status, priority=priority
+        ).inc()
 
         if duration is not None and strategy:
-            self.dgm_metrics.improvement_duration.labels(status=status, strategy=strategy).observe(
-                duration
-            )
+            self.dgm_metrics.improvement_duration.labels(
+                status=status, strategy=strategy
+            ).observe(duration)
 
     def update_active_improvements(self, count: int):
         """Update active improvements count."""
@@ -346,23 +364,29 @@ class MetricsCollector:
         """Update performance score."""
         self.dgm_metrics.performance_score.labels(service=service).set(score)
 
-    def record_performance_improvement(self, service: str, metric: str, improvement_percent: float):
+    def record_performance_improvement(
+        self, service: str, metric: str, improvement_percent: float
+    ):
         """Record performance improvement."""
-        self.dgm_metrics.performance_improvement.labels(service=service, metric=metric).observe(
-            improvement_percent
-        )
+        self.dgm_metrics.performance_improvement.labels(
+            service=service, metric=metric
+        ).observe(improvement_percent)
 
     def record_bandit_operation(
         self, algorithm: str, arm_id: str, reward: float, exploration_rate: float
     ):
         """Record bandit algorithm metrics."""
-        self.dgm_metrics.bandit_arm_pulls.labels(algorithm=algorithm, arm_id=arm_id).inc()
+        self.dgm_metrics.bandit_arm_pulls.labels(
+            algorithm=algorithm, arm_id=arm_id
+        ).inc()
 
-        self.dgm_metrics.bandit_arm_reward.labels(algorithm=algorithm, arm_id=arm_id).observe(
-            reward
+        self.dgm_metrics.bandit_arm_reward.labels(
+            algorithm=algorithm, arm_id=arm_id
+        ).observe(reward)
+
+        self.dgm_metrics.bandit_exploration_rate.labels(algorithm=algorithm).set(
+            exploration_rate
         )
-
-        self.dgm_metrics.bandit_exploration_rate.labels(algorithm=algorithm).set(exploration_rate)
 
     def record_model_request(
         self,
@@ -379,9 +403,9 @@ class MetricsCollector:
             provider=provider, model=model, status=status
         ).inc()
 
-        self.dgm_metrics.model_request_duration.labels(provider=provider, model=model).observe(
-            duration
-        )
+        self.dgm_metrics.model_request_duration.labels(
+            provider=provider, model=model
+        ).observe(duration)
 
         self.dgm_metrics.model_tokens_total.labels(
             provider=provider, model=model, type="input"
@@ -391,11 +415,15 @@ class MetricsCollector:
             provider=provider, model=model, type="output"
         ).inc(output_tokens)
 
-        self.dgm_metrics.model_cost_total.labels(provider=provider, model=model).inc(cost)
+        self.dgm_metrics.model_cost_total.labels(provider=provider, model=model).inc(
+            cost
+        )
 
     def record_error(self, component: str, error_type: str):
         """Record error metrics."""
-        self.dgm_metrics.errors_total.labels(component=component, error_type=error_type).inc()
+        self.dgm_metrics.errors_total.labels(
+            component=component, error_type=error_type
+        ).inc()
 
     def record_auth_attempt(self, result: str):
         """Record authentication attempt."""
@@ -403,7 +431,9 @@ class MetricsCollector:
 
     def record_permission_check(self, permission: str, result: str):
         """Record permission check."""
-        self.dgm_metrics.permission_checks_total.labels(permission=permission, result=result).inc()
+        self.dgm_metrics.permission_checks_total.labels(
+            permission=permission, result=result
+        ).inc()
 
     def get_metrics(self) -> str:
         """Get metrics in Prometheus exposition format."""

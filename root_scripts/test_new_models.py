@@ -10,11 +10,10 @@ import sys
 
 # Add the services path to import our modules
 from pathlib import Path
+
 project_root = Path(__file__).parent.parent
 sys.path.append(str(project_root / "services/shared"))
-sys.path.append(
-    str(project_root / "services/core/governance-synthesis/gs_service/app")
-)
+sys.path.append(str(project_root / "services/core/governance-synthesis/gs_service/app"))
 
 from groq import Groq
 from openai import OpenAI

@@ -11,13 +11,13 @@ Test Coverage:
 - Constitutional compliance validation
 - Integration with GS Engine LLM clients
 """
+
 import pytest
 
 # Skip this test file if dependencies are not available
 pytestmark = pytest.mark.skipif(
     True, reason="Skipping due to dependency issues - will be fixed in next iteration"
 )
-
 
 
 import asyncio
@@ -42,9 +42,9 @@ except ImportError:
     torch.zeros = MagicMock()
     torch.ones = MagicMock()
     torch.randn = MagicMock()
-    torch.float32 = 'float32'
+    torch.float32 = "float32"
     torch.device = MagicMock()
-    sys.modules['torch'] = torch
+    sys.modules["torch"] = torch
 
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
@@ -60,7 +60,10 @@ try:
         WINAModelIntegrator,
         WINAOptimizationResult,
     )
-    from services.shared.wina.exceptions import WINAError, WINAOptimizationError  # noqa: E501
+    from services.shared.wina.exceptions import (
+        WINAError,
+        WINAOptimizationError,
+    )  # noqa: E501
     from services.shared.wina.svd_transformation import SVDTransformation
 
     WINA_AVAILABLE = True

@@ -32,11 +32,15 @@ router = APIRouter()
 class OptimizationRequest(BaseModel):
     """Request model for optimization operations."""
 
-    algorithm_type: str = Field(..., description="Type of optimization algorithm to run")
+    algorithm_type: str = Field(
+        ..., description="Type of optimization algorithm to run"
+    )
     context: dict[str, Any] = Field(
         default_factory=dict, description="Optimization context and parameters"
     )
-    priority: str = Field(default="medium", description="Operation priority (low, medium, high)")
+    priority: str = Field(
+        default="medium", description="Operation priority (low, medium, high)"
+    )
     target_metrics: dict[str, float] | None = Field(
         default=None, description="Target performance metrics"
     )
@@ -57,7 +61,9 @@ class MonitoringRequest(BaseModel):
     """Request model for monitoring operations."""
 
     monitoring_type: str = Field(..., description="Type of monitoring to perform")
-    duration_seconds: int | None = Field(default=60, description="Monitoring duration in seconds")
+    duration_seconds: int | None = Field(
+        default=60, description="Monitoring duration in seconds"
+    )
     alert_thresholds: dict[str, float] | None = Field(
         default=None, description="Custom alert thresholds"
     )
@@ -78,8 +84,12 @@ class PGCIntegrationRequest(BaseModel):
     """Request model for PGC service integration."""
 
     operation_type: str = Field(..., description="Type of PGC integration operation")
-    policy_id: str | None = Field(default=None, description="Policy ID for governance operations")
-    stakeholders: list[str] = Field(default_factory=list, description="Stakeholders involved")
+    policy_id: str | None = Field(
+        default=None, description="Policy ID for governance operations"
+    )
+    stakeholders: list[str] = Field(
+        default_factory=list, description="Stakeholders involved"
+    )
     compliance_requirements: list[str] = Field(
         default_factory=list, description="Compliance requirements"
     )
@@ -270,11 +280,23 @@ async def get_active_alerts(
             "active_alerts": alerts,
             "total_alerts": len(coordinator.active_alerts),
             "alert_summary": {
-                "high": len([a for a in coordinator.active_alerts if a.get("severity") == "high"]),
-                "medium": len(
-                    [a for a in coordinator.active_alerts if a.get("severity") == "medium"]
+                "high": len(
+                    [
+                        a
+                        for a in coordinator.active_alerts
+                        if a.get("severity") == "high"
+                    ]
                 ),
-                "low": len([a for a in coordinator.active_alerts if a.get("severity") == "low"]),
+                "medium": len(
+                    [
+                        a
+                        for a in coordinator.active_alerts
+                        if a.get("severity") == "medium"
+                    ]
+                ),
+                "low": len(
+                    [a for a in coordinator.active_alerts if a.get("severity") == "low"]
+                ),
             },
             "timestamp": time.time(),
         }
@@ -357,7 +379,9 @@ async def get_pgc_integration_status(
 
     except Exception as e:
         logger.error(f"Failed to get PGC integration status: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to get PGC status: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to get PGC status: {str(e)}"
+        )
 
 
 # Task #4: Advanced Analytics and Reporting Endpoints
@@ -419,16 +443,32 @@ async def get_analytics_overview(
             "active_alerts": len(coordinator.active_alerts),
             "alert_types": {
                 "performance": len(
-                    [a for a in coordinator.active_alerts if a.get("type") == "performance"]
+                    [
+                        a
+                        for a in coordinator.active_alerts
+                        if a.get("type") == "performance"
+                    ]
                 ),
                 "reliability": len(
-                    [a for a in coordinator.active_alerts if a.get("type") == "reliability"]
+                    [
+                        a
+                        for a in coordinator.active_alerts
+                        if a.get("type") == "reliability"
+                    ]
                 ),
                 "resource": len(
-                    [a for a in coordinator.active_alerts if a.get("type") == "resource"]
+                    [
+                        a
+                        for a in coordinator.active_alerts
+                        if a.get("type") == "resource"
+                    ]
                 ),
                 "governance": len(
-                    [a for a in coordinator.active_alerts if a.get("type") == "governance"]
+                    [
+                        a
+                        for a in coordinator.active_alerts
+                        if a.get("type") == "governance"
+                    ]
                 ),
             },
             "resolution_rate_percent": 87.3,
@@ -449,7 +489,9 @@ async def get_analytics_overview(
 
 @router.get("/analytics/performance-metrics")
 async def get_performance_metrics(
-    metric_type: str | None = Query(None, description="Specific metric type to retrieve"),
+    metric_type: str | None = Query(
+        None, description="Specific metric type to retrieve"
+    ),
     coordinator: WINAECOversightCoordinator = Depends(get_wina_coordinator),
 ):
     """Get detailed performance metrics for enterprise-scale operations."""
@@ -476,7 +518,9 @@ async def get_performance_metrics(
                 "storage_percent": 34.7,
             },
             "optimization_metrics": {
-                "total_optimizations": coordinator.analytics_data["optimization_cycles"],
+                "total_optimizations": coordinator.analytics_data[
+                    "optimization_cycles"
+                ],
                 "avg_optimization_time_ms": 12.4,
                 "optimization_success_rate": 94.5,
                 "performance_improvement_percent": 12.3,
@@ -499,7 +543,9 @@ async def get_performance_metrics(
 
     except Exception as e:
         logger.error(f"Failed to get performance metrics: {e}")
-        raise HTTPException(status_code=500, detail=f"Performance metrics failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Performance metrics failed: {str(e)}"
+        )
 
 
 # Task #4: Enterprise Configuration Endpoints

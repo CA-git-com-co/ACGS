@@ -166,7 +166,9 @@ class LLMCircuitBreaker:
                     self.request_counter.labels(
                         model=self.model_name, state="open", result="blocked"
                     ).inc()
-                raise CircuitBreakerOpenError(f"Circuit breaker open for {self.model_name}")
+                raise CircuitBreakerOpenError(
+                    f"Circuit breaker open for {self.model_name}"
+                )
             else:
                 # Transition to half-open
                 await self._transition_to_half_open()
@@ -222,10 +224,14 @@ class LLMCircuitBreaker:
             jitter = random.uniform(0.8, 1.2)
             backoff_time *= jitter
 
-        time_since_failure = (datetime.utcnow() - self.last_failure_time).total_seconds()
+        time_since_failure = (
+            datetime.utcnow() - self.last_failure_time
+        ).total_seconds()
         return time_since_failure >= backoff_time
 
-    def _classify_failure(self, exception: Exception, response_time: float) -> FailureType:
+    def _classify_failure(
+        self, exception: Exception, response_time: float
+    ) -> FailureType:
         """Classify the type of failure."""
         error_message = str(exception).lower()
 
@@ -263,7 +269,9 @@ class LLMCircuitBreaker:
             self.request_counter.labels(
                 model=self.model_name, state=self.state.value, result="success"
             ).inc()
-            self.response_time_histogram.labels(model=self.model_name).observe(response_time)
+            self.response_time_histogram.labels(model=self.model_name).observe(
+                response_time
+            )
 
         # Adaptive threshold adjustment
         if self.config.adaptive_thresholds:
@@ -364,7 +372,9 @@ class LLMCircuitBreaker:
         if PROMETHEUS_AVAILABLE:
             self.state_gauge.labels(model=self.model_name).set(1)  # 1 = half-open
 
-        logger.info(f"Circuit breaker HALF-OPEN for {self.model_name}, testing recovery")
+        logger.info(
+            f"Circuit breaker HALF-OPEN for {self.model_name}, testing recovery"
+        )
 
     async def _transition_to_closed(self):
         """Transition circuit to closed state."""
@@ -385,7 +395,9 @@ class LLMCircuitBreaker:
         if PROMETHEUS_AVAILABLE:
             self.state_gauge.labels(model=self.model_name).set(0)  # 0 = closed
 
-        logger.info(f"Circuit breaker CLOSED for {self.model_name}, normal operation resumed")
+        logger.info(
+            f"Circuit breaker CLOSED for {self.model_name}, normal operation resumed"
+        )
 
     async def _adjust_thresholds(self):
         """Adaptively adjust failure thresholds based on performance."""
@@ -394,7 +406,9 @@ class LLMCircuitBreaker:
 
         # Calculate performance metrics
         avg_response_time = sum(self.response_times) / len(self.response_times)
-        recent_error_rate = self.metrics.failed_requests / max(self.metrics.total_requests, 1)
+        recent_error_rate = self.metrics.failed_requests / max(
+            self.metrics.total_requests, 1
+        )
 
         # Adjust failure threshold based on performance
         if avg_response_time < 5.0 and recent_error_rate < 0.1:
@@ -459,7 +473,9 @@ class LLMCircuitBreakerManager:
         """Get or create circuit breaker for a model."""
         if model_name not in self.circuit_breakers:
             breaker_config = config or self.default_config
-            self.circuit_breakers[model_name] = LLMCircuitBreaker(model_name, breaker_config)
+            self.circuit_breakers[model_name] = LLMCircuitBreaker(
+                model_name, breaker_config
+            )
 
         return self.circuit_breakers[model_name]
 

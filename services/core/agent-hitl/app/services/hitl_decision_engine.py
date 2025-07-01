@@ -34,16 +34,16 @@ logger = logging.getLogger(__name__)
 
 class DecisionCache:
     """Redis-based caching for HITL decisions."""
-    
+
     def __init__(self, redis_url: str = "redis://localhost:6379"):
         self.redis_pool = redis.ConnectionPool.from_url(redis_url)
         self.redis_client = redis.Redis(connection_pool=self.redis_pool)
-        
+
         # Cache TTLs
-        self.confidence_ttl = 3600      # 1 hour
-        self.pattern_ttl = 86400        # 24 hours
-        self.decision_ttl = 604800      # 7 days
-        
+        self.confidence_ttl = 3600  # 1 hour
+        self.pattern_ttl = 86400  # 24 hours
+        self.decision_ttl = 604800  # 7 days
+
     async def get_agent_confidence(self, agent_id: str) -> Optional[Dict[str, Any]]:
         """Get cached agent confidence profile."""
         try:
@@ -53,19 +53,19 @@ class DecisionCache:
         except Exception as e:
             logger.warning(f"Cache get failed for agent confidence {agent_id}: {e}")
             return None
-    
-    async def set_agent_confidence(self, agent_id: str, confidence_data: Dict[str, Any]) -> None:
+
+    async def set_agent_confidence(
+        self, agent_id: str, confidence_data: Dict[str, Any]
+    ) -> None:
         """Cache agent confidence profile."""
         try:
             key = f"agent_confidence:{agent_id}"
             await self.redis_client.setex(
-                key, 
-                self.confidence_ttl, 
-                json.dumps(confidence_data, default=str)
+                key, self.confidence_ttl, json.dumps(confidence_data, default=str)
             )
         except Exception as e:
             logger.warning(f"Cache set failed for agent confidence {agent_id}: {e}")
-    
+
     async def get_decision_pattern(self, pattern_hash: str) -> Optional[Dict[str, Any]]:
         """Get cached decision pattern."""
         try:
@@ -75,19 +75,19 @@ class DecisionCache:
         except Exception as e:
             logger.warning(f"Cache get failed for decision pattern {pattern_hash}: {e}")
             return None
-    
-    async def set_decision_pattern(self, pattern_hash: str, decision_data: Dict[str, Any]) -> None:
+
+    async def set_decision_pattern(
+        self, pattern_hash: str, decision_data: Dict[str, Any]
+    ) -> None:
         """Cache decision pattern."""
         try:
             key = f"decision_pattern:{pattern_hash}"
             await self.redis_client.setex(
-                key,
-                self.pattern_ttl,
-                json.dumps(decision_data, default=str)
+                key, self.pattern_ttl, json.dumps(decision_data, default=str)
             )
         except Exception as e:
             logger.warning(f"Cache set failed for decision pattern {pattern_hash}: {e}")
-    
+
     async def increment_metric(self, metric_name: str, value: int = 1) -> None:
         """Increment a metric counter."""
         try:
@@ -102,22 +102,22 @@ class HITLDecisionEngine:
     """
     High-performance HITL decision engine with sub-5ms latency for automated decisions.
     """
-    
+
     def __init__(self, redis_url: str = "redis://localhost:6379"):
         self.cache = DecisionCache(redis_url)
         self.constitutional_hash = "cdd01ef066bc6cf2"
-        
+
         # Performance configuration
         self.max_decision_time_ms = 5.0  # Target for Level 1 decisions
         self.cache_enabled = True
-        
+
         # Escalation thresholds
         self.escalation_thresholds = {
-            "level_1_confidence": 0.9,    # Automated approval
-            "level_2_confidence": 0.7,    # Automated with notification
-            "level_3_confidence": 0.5,    # Human approval required
+            "level_1_confidence": 0.9,  # Automated approval
+            "level_2_confidence": 0.7,  # Automated with notification
+            "level_3_confidence": 0.5,  # Human approval required
         }
-        
+
         # Risk weights
         self.operation_risk_weights = {
             "code_generation": 0.3,
@@ -127,28 +127,28 @@ class HITLDecisionEngine:
             "policy_change": 1.0,
             "constitutional_change": 1.0,
         }
-        
+
         # Agent compliance weights
         self.compliance_weights = {
             "standard": 1.0,
             "high": 0.8,
             "critical": 0.6,
         }
-    
+
     async def evaluate_operation(
         self,
         db: AsyncSession,
         operation_request: AgentOperationRequestCreate,
         force_escalation_level: Optional[EscalationLevel] = None,
-        bypass_cache: bool = False
+        bypass_cache: bool = False,
     ) -> HITLDecisionResponse:
         """
         Evaluate an agent operation request and make HITL decision.
-        
+
         Target: <5ms P99 latency for Level 1 decisions.
         """
         start_time = time.time()
-        
+
         try:
             # Create operation request record
             db_request = AgentOperationRequest(
@@ -166,53 +166,73 @@ class HITLDecisionEngine:
                 client_ip=operation_request.client_ip,
                 user_agent=operation_request.user_agent,
             )
-            
+
             db.add(db_request)
             await db.flush()
-            
+
             # Check cache for similar decision patterns (if not bypassed)
             cache_hit = False
             cached_decision = None
-            
+
             if self.cache_enabled and not bypass_cache:
                 pattern_hash = self._generate_pattern_hash(operation_request)
                 cached_decision = await self.cache.get_decision_pattern(pattern_hash)
                 cache_hit = cached_decision is not None
-            
+
             # Get agent confidence profile
-            agent_confidence = await self._get_agent_confidence(db, operation_request.agent_id)
-            
+            agent_confidence = await self._get_agent_confidence(
+                db, operation_request.agent_id
+            )
+
             # Calculate decision if not cached
             if cached_decision:
                 escalation_level = EscalationLevel(cached_decision["escalation_level"])
                 confidence_score = cached_decision["confidence_score"]
                 decision_reasoning = cached_decision["reasoning"]
                 risk_assessment = cached_decision["risk_assessment"]
-                constitutional_compliance_score = cached_decision["constitutional_compliance_score"]
+                constitutional_compliance_score = cached_decision[
+                    "constitutional_compliance_score"
+                ]
             else:
                 # Perform real-time decision calculation
-                escalation_level, confidence_score, decision_reasoning, risk_assessment, constitutional_compliance_score = await self._calculate_decision(
+                (
+                    escalation_level,
+                    confidence_score,
+                    decision_reasoning,
+                    risk_assessment,
+                    constitutional_compliance_score,
+                ) = await self._calculate_decision(
                     operation_request, agent_confidence, force_escalation_level
                 )
-                
+
                 # Cache the decision pattern for future use
                 if self.cache_enabled:
                     pattern_hash = self._generate_pattern_hash(operation_request)
-                    await self.cache.set_decision_pattern(pattern_hash, {
-                        "escalation_level": escalation_level.value,
-                        "confidence_score": confidence_score,
-                        "reasoning": decision_reasoning,
-                        "risk_assessment": risk_assessment,
-                        "constitutional_compliance_score": constitutional_compliance_score,
-                    })
-            
+                    await self.cache.set_decision_pattern(
+                        pattern_hash,
+                        {
+                            "escalation_level": escalation_level.value,
+                            "confidence_score": confidence_score,
+                            "reasoning": decision_reasoning,
+                            "risk_assessment": risk_assessment,
+                            "constitutional_compliance_score": constitutional_compliance_score,
+                        },
+                    )
+
             # Determine decision status
-            decision_status = DecisionStatus.APPROVED if escalation_level == EscalationLevel.LEVEL_1_AUTO_APPROVE else DecisionStatus.PENDING
-            requires_human_review = escalation_level in [EscalationLevel.LEVEL_3_HUMAN_REVIEW, EscalationLevel.LEVEL_4_COUNCIL_REVIEW]
-            
+            decision_status = (
+                DecisionStatus.APPROVED
+                if escalation_level == EscalationLevel.LEVEL_1_AUTO_APPROVE
+                else DecisionStatus.PENDING
+            )
+            requires_human_review = escalation_level in [
+                EscalationLevel.LEVEL_3_HUMAN_REVIEW,
+                EscalationLevel.LEVEL_4_COUNCIL_REVIEW,
+            ]
+
             # Calculate processing time
             processing_time_ms = (time.time() - start_time) * 1000
-            
+
             # Create decision record
             decision = HITLDecision(
                 decision_id=f"dec_{int(time.time() * 1000)}_{operation_request.agent_id}",
@@ -229,22 +249,28 @@ class HITLDecisionEngine:
                 requires_human_review=requires_human_review,
                 constitutional_hash=self.constitutional_hash,
                 compliance_verified=constitutional_compliance_score >= 0.8,
-                completed_at=datetime.now(timezone.utc) if decision_status == DecisionStatus.APPROVED else None,
+                completed_at=(
+                    datetime.now(timezone.utc)
+                    if decision_status == DecisionStatus.APPROVED
+                    else None
+                ),
             )
-            
+
             db.add(decision)
             await db.commit()
-            
+
             # Update metrics
             await self.cache.increment_metric("decisions_total")
             await self.cache.increment_metric(f"decisions_{escalation_level.value}")
             if cache_hit:
                 await self.cache.increment_metric("cache_hits")
-            
+
             # Log performance warning if too slow
             if processing_time_ms > self.max_decision_time_ms:
-                logger.warning(f"Decision took {processing_time_ms:.2f}ms (target: {self.max_decision_time_ms}ms)")
-            
+                logger.warning(
+                    f"Decision took {processing_time_ms:.2f}ms (target: {self.max_decision_time_ms}ms)"
+                )
+
             return HITLDecisionResponse(
                 decision_id=decision.decision_id,
                 operation_request_id=str(db_request.id),
@@ -263,26 +289,30 @@ class HITLDecisionEngine:
                 constitutional_hash=self.constitutional_hash,
                 compliance_verified=decision.compliance_verified,
             )
-            
+
         except Exception as e:
             logger.error(f"Decision evaluation failed: {e}")
             await db.rollback()
             raise
-    
-    async def _get_agent_confidence(self, db: AsyncSession, agent_id: str) -> Dict[str, Any]:
+
+    async def _get_agent_confidence(
+        self, db: AsyncSession, agent_id: str
+    ) -> Dict[str, Any]:
         """Get agent confidence profile with caching."""
         # Try cache first
         if self.cache_enabled:
             cached_confidence = await self.cache.get_agent_confidence(agent_id)
             if cached_confidence:
                 return cached_confidence
-        
+
         # Query database
         result = await db.execute(
-            select(AgentConfidenceProfile).where(AgentConfidenceProfile.agent_id == agent_id)
+            select(AgentConfidenceProfile).where(
+                AgentConfidenceProfile.agent_id == agent_id
+            )
         )
         profile = result.scalar_one_or_none()
-        
+
         if profile:
             confidence_data = {
                 "overall_confidence_score": profile.overall_confidence_score,
@@ -315,7 +345,7 @@ class HITLDecisionEngine:
         self,
         operation_request: AgentOperationRequestCreate,
         agent_confidence: Dict[str, Any],
-        force_escalation_level: Optional[EscalationLevel] = None
+        force_escalation_level: Optional[EscalationLevel] = None,
     ) -> Tuple[EscalationLevel, float, str, Dict[str, Any], float]:
         """Calculate HITL decision based on confidence and risk factors."""
 
@@ -325,11 +355,13 @@ class HITLDecisionEngine:
         # Get operation-specific confidence
         operation_confidence = agent_confidence["operation_type_scores"].get(
             operation_request.operation_type,
-            agent_confidence["overall_confidence_score"]
+            agent_confidence["overall_confidence_score"],
         )
 
         # Calculate risk factor
-        operation_risk_weight = self.operation_risk_weights.get(operation_request.operation_type, 0.5)
+        operation_risk_weight = self.operation_risk_weights.get(
+            operation_request.operation_type, 0.5
+        )
         risk_level_weight = {
             OperationRiskLevel.LOW.value: 0.2,
             OperationRiskLevel.MEDIUM.value: 0.5,
@@ -338,10 +370,14 @@ class HITLDecisionEngine:
         }.get(operation_request.risk_level.value, 0.5)
 
         # Adjust confidence based on risk
-        risk_adjusted_confidence = operation_confidence * (1.0 - (operation_risk_weight * risk_level_weight * 0.3))
+        risk_adjusted_confidence = operation_confidence * (
+            1.0 - (operation_risk_weight * risk_level_weight * 0.3)
+        )
 
         # Constitutional compliance factor
-        constitutional_compliance_score = agent_confidence["constitutional_compliance_score"]
+        constitutional_compliance_score = agent_confidence[
+            "constitutional_compliance_score"
+        ]
         final_confidence = risk_adjusted_confidence * constitutional_compliance_score
 
         # Determine escalation level
@@ -373,15 +409,25 @@ class HITLDecisionEngine:
             "constitutional_compliance_score": constitutional_compliance_score,
         }
 
-        return escalation_level, final_confidence, reasoning, risk_assessment, constitutional_compliance_score
+        return (
+            escalation_level,
+            final_confidence,
+            reasoning,
+            risk_assessment,
+            constitutional_compliance_score,
+        )
 
-    def _generate_pattern_hash(self, operation_request: AgentOperationRequestCreate) -> str:
+    def _generate_pattern_hash(
+        self, operation_request: AgentOperationRequestCreate
+    ) -> str:
         """Generate hash for decision pattern caching."""
         pattern_data = {
             "operation_type": operation_request.operation_type,
             "risk_level": operation_request.risk_level.value,
             "requires_constitutional_review": operation_request.requires_constitutional_review,
-            "constitutional_principles": sorted(operation_request.constitutional_principles or []),
+            "constitutional_principles": sorted(
+                operation_request.constitutional_principles or []
+            ),
         }
 
         pattern_str = json.dumps(pattern_data, sort_keys=True)

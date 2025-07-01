@@ -14,9 +14,13 @@ api_router = APIRouter(prefix="/api/v1")
 
 # Include sub-routers
 api_router.include_router(dgm_router, prefix="/dgm", tags=["DGM Operations"])
-api_router.include_router(constitutional_router, prefix="/constitutional", tags=["Constitutional"])
+api_router.include_router(
+    constitutional_router, prefix="/constitutional", tags=["Constitutional"]
+)
 api_router.include_router(health_router, prefix="", tags=["Health"])
-api_router.include_router(integration_router, prefix="/integration", tags=["Service Integration"])
+api_router.include_router(
+    integration_router, prefix="/integration", tags=["Service Integration"]
+)
 
 __all__ = [
     "api_router",

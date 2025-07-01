@@ -14,11 +14,15 @@ class BaseSchema(BaseModel):
 # Token Schemas (originally from auth_service/app/schemas/token.py)
 class Token(BaseSchema):
     access_token: str
-    refresh_token: str | None = None  # Refresh token might not always be sent with access token
+    refresh_token: str | None = (
+        None  # Refresh token might not always be sent with access token
+    )
     token_type: str = "bearer"
 
 
-class TokenPayload(BaseModel):  # Not inheriting BaseSchema as it's for internal processing
+class TokenPayload(
+    BaseModel
+):  # Not inheriting BaseSchema as it's for internal processing
     sub: str | None = None  # Subject (user identifier, e.g., username or user ID)
     user_id: UUID | None = None  # UUID for User.id
     # Add any other claims you expect in the token payload (e.g., roles, permissions)
@@ -118,8 +122,12 @@ class PolicyRuleBase(BaseSchema):
         max_length=50,
         description="Policy framework: Datalog, Rego, JSON, YAML",
     )
-    principle_text: str | None = Field(None, description="Human-readable principle description")
-    pgp_signature: str | None = Field(None, description="PGP signature for integrity verification")
+    principle_text: str | None = Field(
+        None, description="Human-readable principle description"
+    )
+    pgp_signature: str | None = Field(
+        None, description="PGP signature for integrity verification"
+    )
     source_file: str | None = Field(
         None, max_length=500, description="Source file path for provenance"
     )

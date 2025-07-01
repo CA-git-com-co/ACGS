@@ -4,18 +4,65 @@ Unit tests for services.core.constitutional-ai.ac_service.app.schemas
 
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
-from services.core.constitutional-ai.ac_service.app.schemas import PrincipleBase, PrincipleCreate, PrincipleUpdate, Principle, PrincipleList, User, ACMetaRuleBase, ACMetaRuleCreate, ACMetaRuleUpdate, ACMetaRule, ACAmendmentBase, ACAmendmentCreate, ACAmendmentUpdate, ACAmendment, ACAmendmentVoteBase, ACAmendmentVoteCreate, ACAmendmentVote, ACAmendmentCommentBase, ACAmendmentCommentCreate, ACAmendmentComment, ACConflictResolutionBase, ACConflictResolutionCreate, ACConflictResolutionUpdate, ACConflictResolution, UncertaintyMetrics, HITLSamplingRequest, HITLSamplingResult, HITLFeedbackRequest, HITLPerformanceMetrics, PublicProposalCreate, PublicProposalResponse, PublicFeedbackCreate, PublicFeedbackResponse, ConsultationMetricsResponse, ContentValidationRequest, ContentValidationResponse, ConstitutionalComplianceRequest, Config, Config, Config, Config, Config, Config, Config, Config, Config, Config
-
+from services.core.constitutional_ai.ac_service.app.schemas import (
+    PrincipleBase,
+    PrincipleCreate,
+    PrincipleUpdate,
+    Principle,
+    PrincipleList,
+    User,
+    ACMetaRuleBase,
+    ACMetaRuleCreate,
+    ACMetaRuleUpdate,
+    ACMetaRule,
+    ACAmendmentBase,
+    ACAmendmentCreate,
+    ACAmendmentUpdate,
+    ACAmendment,
+    ACAmendmentVoteBase,
+    ACAmendmentVoteCreate,
+    ACAmendmentVote,
+    ACAmendmentCommentBase,
+    ACAmendmentCommentCreate,
+    ACAmendmentComment,
+    ACConflictResolutionBase,
+    ACConflictResolutionCreate,
+    ACConflictResolutionUpdate,
+    ACConflictResolution,
+    UncertaintyMetrics,
+    HITLSamplingRequest,
+    HITLSamplingResult,
+    HITLFeedbackRequest,
+    HITLPerformanceMetrics,
+    PublicProposalCreate,
+    PublicProposalResponse,
+    PublicFeedbackCreate,
+    PublicFeedbackResponse,
+    ConsultationMetricsResponse,
+    ContentValidationRequest,
+    ContentValidationResponse,
+    ConstitutionalComplianceRequest,
+    Config,
+    Config,
+    Config,
+    Config,
+    Config,
+    Config,
+    Config,
+    Config,
+    Config,
+    Config,
+)
 
 
 class TestPrincipleBase:
     """Test suite for PrincipleBase."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -24,12 +71,12 @@ class TestPrincipleBase:
 
 class TestPrincipleCreate:
     """Test suite for PrincipleCreate."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -38,12 +85,12 @@ class TestPrincipleCreate:
 
 class TestPrincipleUpdate:
     """Test suite for PrincipleUpdate."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -52,12 +99,12 @@ class TestPrincipleUpdate:
 
 class TestPrinciple:
     """Test suite for Principle."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -66,12 +113,12 @@ class TestPrinciple:
 
 class TestPrincipleList:
     """Test suite for PrincipleList."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -80,12 +127,12 @@ class TestPrincipleList:
 
 class TestUser:
     """Test suite for User."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -94,12 +141,12 @@ class TestUser:
 
 class TestACMetaRuleBase:
     """Test suite for ACMetaRuleBase."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -108,12 +155,12 @@ class TestACMetaRuleBase:
 
 class TestACMetaRuleCreate:
     """Test suite for ACMetaRuleCreate."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -122,12 +169,12 @@ class TestACMetaRuleCreate:
 
 class TestACMetaRuleUpdate:
     """Test suite for ACMetaRuleUpdate."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -136,12 +183,12 @@ class TestACMetaRuleUpdate:
 
 class TestACMetaRule:
     """Test suite for ACMetaRule."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -150,12 +197,12 @@ class TestACMetaRule:
 
 class TestACAmendmentBase:
     """Test suite for ACAmendmentBase."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -164,12 +211,12 @@ class TestACAmendmentBase:
 
 class TestACAmendmentCreate:
     """Test suite for ACAmendmentCreate."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -180,24 +227,24 @@ class TestACAmendmentCreate:
         # TODO: Implement test for validate_stakeholder_groups
         instance = ACAmendmentCreate()
         # Add test implementation here
-        assert hasattr(instance, 'validate_stakeholder_groups')
+        assert hasattr(instance, "validate_stakeholder_groups")
 
     def test_validate_co_evolution_context(self):
         """Test validate_co_evolution_context method."""
         # TODO: Implement test for validate_co_evolution_context
         instance = ACAmendmentCreate()
         # Add test implementation here
-        assert hasattr(instance, 'validate_co_evolution_context')
+        assert hasattr(instance, "validate_co_evolution_context")
 
 
 class TestACAmendmentUpdate:
     """Test suite for ACAmendmentUpdate."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -206,12 +253,12 @@ class TestACAmendmentUpdate:
 
 class TestACAmendment:
     """Test suite for ACAmendment."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -220,12 +267,12 @@ class TestACAmendment:
 
 class TestACAmendmentVoteBase:
     """Test suite for ACAmendmentVoteBase."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -234,12 +281,12 @@ class TestACAmendmentVoteBase:
 
 class TestACAmendmentVoteCreate:
     """Test suite for ACAmendmentVoteCreate."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -248,12 +295,12 @@ class TestACAmendmentVoteCreate:
 
 class TestACAmendmentVote:
     """Test suite for ACAmendmentVote."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -262,12 +309,12 @@ class TestACAmendmentVote:
 
 class TestACAmendmentCommentBase:
     """Test suite for ACAmendmentCommentBase."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -276,12 +323,12 @@ class TestACAmendmentCommentBase:
 
 class TestACAmendmentCommentCreate:
     """Test suite for ACAmendmentCommentCreate."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -290,12 +337,12 @@ class TestACAmendmentCommentCreate:
 
 class TestACAmendmentComment:
     """Test suite for ACAmendmentComment."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -304,12 +351,12 @@ class TestACAmendmentComment:
 
 class TestACConflictResolutionBase:
     """Test suite for ACConflictResolutionBase."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -318,12 +365,12 @@ class TestACConflictResolutionBase:
 
 class TestACConflictResolutionCreate:
     """Test suite for ACConflictResolutionCreate."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -332,12 +379,12 @@ class TestACConflictResolutionCreate:
 
 class TestACConflictResolutionUpdate:
     """Test suite for ACConflictResolutionUpdate."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -346,12 +393,12 @@ class TestACConflictResolutionUpdate:
 
 class TestACConflictResolution:
     """Test suite for ACConflictResolution."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -360,12 +407,12 @@ class TestACConflictResolution:
 
 class TestUncertaintyMetrics:
     """Test suite for UncertaintyMetrics."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -374,12 +421,12 @@ class TestUncertaintyMetrics:
 
 class TestHITLSamplingRequest:
     """Test suite for HITLSamplingRequest."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -388,12 +435,12 @@ class TestHITLSamplingRequest:
 
 class TestHITLSamplingResult:
     """Test suite for HITLSamplingResult."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -402,12 +449,12 @@ class TestHITLSamplingResult:
 
 class TestHITLFeedbackRequest:
     """Test suite for HITLFeedbackRequest."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -416,12 +463,12 @@ class TestHITLFeedbackRequest:
 
 class TestHITLPerformanceMetrics:
     """Test suite for HITLPerformanceMetrics."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -430,12 +477,12 @@ class TestHITLPerformanceMetrics:
 
 class TestPublicProposalCreate:
     """Test suite for PublicProposalCreate."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -444,12 +491,12 @@ class TestPublicProposalCreate:
 
 class TestPublicProposalResponse:
     """Test suite for PublicProposalResponse."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -458,12 +505,12 @@ class TestPublicProposalResponse:
 
 class TestPublicFeedbackCreate:
     """Test suite for PublicFeedbackCreate."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -472,12 +519,12 @@ class TestPublicFeedbackCreate:
 
 class TestPublicFeedbackResponse:
     """Test suite for PublicFeedbackResponse."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -486,12 +533,12 @@ class TestPublicFeedbackResponse:
 
 class TestConsultationMetricsResponse:
     """Test suite for ConsultationMetricsResponse."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -500,12 +547,12 @@ class TestConsultationMetricsResponse:
 
 class TestContentValidationRequest:
     """Test suite for ContentValidationRequest."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -516,17 +563,17 @@ class TestContentValidationRequest:
         # TODO: Implement test for validate_content
         instance = ContentValidationRequest()
         # Add test implementation here
-        assert hasattr(instance, 'validate_content')
+        assert hasattr(instance, "validate_content")
 
 
 class TestContentValidationResponse:
     """Test suite for ContentValidationResponse."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -535,12 +582,12 @@ class TestContentValidationResponse:
 
 class TestConstitutionalComplianceRequest:
     """Test suite for ConstitutionalComplianceRequest."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -551,17 +598,17 @@ class TestConstitutionalComplianceRequest:
         # TODO: Implement test for validate_policy
         instance = ConstitutionalComplianceRequest()
         # Add test implementation here
-        assert hasattr(instance, 'validate_policy')
+        assert hasattr(instance, "validate_policy")
 
 
 class TestConfig:
     """Test suite for Config."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -570,12 +617,12 @@ class TestConfig:
 
 class TestConfig:
     """Test suite for Config."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -584,12 +631,12 @@ class TestConfig:
 
 class TestConfig:
     """Test suite for Config."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -598,12 +645,12 @@ class TestConfig:
 
 class TestConfig:
     """Test suite for Config."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -612,12 +659,12 @@ class TestConfig:
 
 class TestConfig:
     """Test suite for Config."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -626,12 +673,12 @@ class TestConfig:
 
 class TestConfig:
     """Test suite for Config."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -640,12 +687,12 @@ class TestConfig:
 
 class TestConfig:
     """Test suite for Config."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -654,12 +701,12 @@ class TestConfig:
 
 class TestConfig:
     """Test suite for Config."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -668,12 +715,12 @@ class TestConfig:
 
 class TestConfig:
     """Test suite for Config."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -682,15 +729,13 @@ class TestConfig:
 
 class TestConfig:
     """Test suite for Config."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
         pass
-
-

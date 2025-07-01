@@ -40,6 +40,7 @@ for path in paths_to_add:
 
 # Alias modules with underscores to corresponding hyphenated package names
 import importlib
+
 ALIASES = {
     "services.core.constitutional_ai": "services.core.constitutional-ai",
     "services.core.governance_synthesis": "services.core.governance-synthesis",

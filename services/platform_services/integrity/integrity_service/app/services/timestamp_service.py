@@ -19,7 +19,9 @@ class RFC3161TimestampService:
     RFC 3161 Timestamp Authority (TSA) client implementation
     """
 
-    def __init__(self, tsa_url: str = "http://timestamp.digicert.com", timeout: int = 30):
+    def __init__(
+        self, tsa_url: str = "http://timestamp.digicert.com", timeout: int = 30
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -34,7 +36,9 @@ class RFC3161TimestampService:
         self.timeout = timeout
         self.hash_algorithm = "SHA3-256"
 
-    def create_timestamp_request(self, message_hash: bytes, nonce: int | None = None) -> bytes:
+    def create_timestamp_request(
+        self, message_hash: bytes, nonce: int | None = None
+    ) -> bytes:
         """
         Create RFC 3161 timestamp request (TSRequest)
 
@@ -119,7 +123,9 @@ class RFC3161TimestampService:
             logger.error(f"Unexpected error in timestamp request: {e}")
             return None
 
-    def verify_timestamp_token(self, timestamp_token: bytes, message_hash: bytes) -> bool:
+    def verify_timestamp_token(
+        self, timestamp_token: bytes, message_hash: bytes
+    ) -> bool:
         """
         Verify RFC 3161 timestamp token
 
@@ -209,7 +215,9 @@ class MockTimestampService(RFC3161TimestampService):
             logger.error(f"Mock timestamp error: {e}")
             return None
 
-    def verify_timestamp_token(self, timestamp_token: bytes, message_hash: bytes) -> bool:
+    def verify_timestamp_token(
+        self, timestamp_token: bytes, message_hash: bytes
+    ) -> bool:
         """
         Mock timestamp verification
         """
@@ -318,7 +326,9 @@ class TimestampManager:
         message_hash = hashlib.sha3_256(original_data.encode("utf-8")).digest()
 
         # Verify timestamp
-        return self.timestamp_service.verify_timestamp_token(timestamp_token, message_hash)
+        return self.timestamp_service.verify_timestamp_token(
+            timestamp_token, message_hash
+        )
 
 
 # Global timestamp manager instance

@@ -188,7 +188,11 @@ class EncryptionManager:
             algorithm=EncryptionAlgorithm.AES_256_GCM,
             key_rotation_days=7,
             retention_days=2555,
-            access_controls=["role:top_secret_access", "mfa:required", "approval:required"],
+            access_controls=[
+                "role:top_secret_access",
+                "mfa:required",
+                "approval:required",
+            ],
         )
 
     def generate_data_encryption_key(
@@ -209,7 +213,8 @@ class EncryptionManager:
             algorithm=policy.algorithm,
             key_material=key_material,
             created_at=datetime.now(timezone.utc),
-            expires_at=datetime.now(timezone.utc) + timedelta(days=policy.key_rotation_days),
+            expires_at=datetime.now(timezone.utc)
+            + timedelta(days=policy.key_rotation_days),
             rotation_period_days=policy.key_rotation_days,
             max_usage_count=1000000,  # 1M operations before rotation
         )
@@ -249,7 +254,10 @@ class EncryptionManager:
             raise ValueError(f"Encryption key not found: {key_id}")
 
         # Check key expiration and usage limits
-        if encryption_key.expires_at and datetime.now(timezone.utc) > encryption_key.expires_at:
+        if (
+            encryption_key.expires_at
+            and datetime.now(timezone.utc) > encryption_key.expires_at
+        ):
             raise ValueError(f"Encryption key expired: {key_id}")
 
         if (
@@ -268,7 +276,9 @@ class EncryptionManager:
         elif encryption_key.algorithm == EncryptionAlgorithm.FERNET:
             encrypted_data = self._encrypt_fernet(data, encryption_key.key_material)
         else:
-            raise ValueError(f"Unsupported encryption algorithm: {encryption_key.algorithm}")
+            raise ValueError(
+                f"Unsupported encryption algorithm: {encryption_key.algorithm}"
+            )
 
         # Update key usage
         encryption_key.usage_count += 1
@@ -298,7 +308,9 @@ class EncryptionManager:
         elif encrypted_data.algorithm == EncryptionAlgorithm.FERNET:
             return self._decrypt_fernet(encrypted_data, encryption_key.key_material)
         else:
-            raise ValueError(f"Unsupported decryption algorithm: {encrypted_data.algorithm}")
+            raise ValueError(
+                f"Unsupported decryption algorithm: {encrypted_data.algorithm}"
+            )
 
     def _encrypt_aes_gcm(self, data: bytes, key: bytes) -> EncryptedData:
         """Encrypt data using AES-256-GCM."""
@@ -369,7 +381,9 @@ class EncryptionManager:
         field_str = str(field_value)
 
         # Generate field-specific key
-        key_id = self.generate_data_encryption_key(classification, f"field_{field_name}")
+        key_id = self.generate_data_encryption_key(
+            classification, f"field_{field_name}"
+        )
 
         # Encrypt field
         encrypted_data = self.encrypt_data(field_str, classification, key_id)
@@ -380,7 +394,11 @@ class EncryptionManager:
             "algorithm": encrypted_data.algorithm.value,
             "key_id": encrypted_data.key_id,
             "iv": base64.b64encode(encrypted_data.iv).decode(),
-            "tag": base64.b64encode(encrypted_data.tag).decode() if encrypted_data.tag else None,
+            "tag": (
+                base64.b64encode(encrypted_data.tag).decode()
+                if encrypted_data.tag
+                else None
+            ),
             "metadata": encrypted_data.metadata,
         }
 
@@ -397,7 +415,9 @@ class EncryptionManager:
             # Decode and parse encrypted payload
             import json
 
-            encrypted_payload = json.loads(base64.b64decode(encrypted_field.encode()).decode())
+            encrypted_payload = json.loads(
+                base64.b64decode(encrypted_field.encode()).decode()
+            )
 
             # Reconstruct EncryptedData object
             encrypted_data = EncryptedData(
@@ -437,7 +457,8 @@ class EncryptionManager:
             algorithm=old_key.algorithm,
             key_material=new_key_material,
             created_at=datetime.now(timezone.utc),
-            expires_at=datetime.now(timezone.utc) + timedelta(days=old_key.rotation_period_days),
+            expires_at=datetime.now(timezone.utc)
+            + timedelta(days=old_key.rotation_period_days),
             rotation_period_days=old_key.rotation_period_days,
             max_usage_count=old_key.max_usage_count,
         )

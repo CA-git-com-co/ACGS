@@ -17,6 +17,7 @@ from dataclasses import dataclass
 project_root = Path(__file__).parent
 sys.path.insert(0, str(project_root))
 
+
 @dataclass
 class ResolutionResult:
     issue_id: str
@@ -27,36 +28,40 @@ class ResolutionResult:
     remaining_work: List[str]
     details: Dict[str, Any]
 
+
 class CriticalIssueResolver:
     def __init__(self):
         self.project_root = project_root
         self.resolution_results = []
-        
+
     def load_critical_issues(self) -> List[Dict[str, Any]]:
         """Load critical issues from the analysis results."""
         issue_file = self.project_root / "issue_analysis_results.json"
-        
+
         if not issue_file.exists():
             print("❌ Issue analysis results not found. Run issue_analyzer.py first.")
             return []
-        
-        with open(issue_file, 'r') as f:
+
+        with open(issue_file, "r") as f:
             data = json.load(f)
-        
+
         # Filter for critical issues
         critical_issues = [
-            issue for issue in data.get("prioritized_issues", [])
+            issue
+            for issue in data.get("prioritized_issues", [])
             if issue.get("severity") == "CRITICAL"
         ]
-        
+
         print(f"📋 Found {len(critical_issues)} critical issues to resolve")
         return critical_issues
-    
-    def resolve_input_validation_security(self, issue: Dict[str, Any]) -> ResolutionResult:
+
+    def resolve_input_validation_security(
+        self, issue: Dict[str, Any]
+    ) -> ResolutionResult:
         """Resolve critical input validation security vulnerabilities."""
         start_time = time.time()
         actions_taken = []
-        
+
         try:
             # Create comprehensive input validation module
             validation_code = '''"""
@@ -283,16 +288,18 @@ def sanitize_user_input(input_data: str, input_type: str = "general") -> str:
     """
     return security_validator.sanitize_input(input_data, input_type)
 '''
-            
+
             # Save the validation module
-            validation_file = self.project_root / "services" / "shared" / "security_validation.py"
+            validation_file = (
+                self.project_root / "services" / "shared" / "security_validation.py"
+            )
             validation_file.parent.mkdir(parents=True, exist_ok=True)
-            
-            with open(validation_file, 'w') as f:
+
+            with open(validation_file, "w") as f:
                 f.write(validation_code)
-            
+
             actions_taken.append("Created comprehensive input validation module")
-            
+
             # Create test file for the validation module
             test_code = '''"""
 Tests for the security input validation module.
@@ -366,26 +373,30 @@ def test_input_sanitization():
         sanitized = sanitize_user_input(input_text)
         assert sanitized == expected, f"Sanitization failed for: {input_text}"
 '''
-            
-            test_file = self.project_root / "tests" / "unit" / "test_security_validation.py"
+
+            test_file = (
+                self.project_root / "tests" / "unit" / "test_security_validation.py"
+            )
             test_file.parent.mkdir(parents=True, exist_ok=True)
-            
-            with open(test_file, 'w') as f:
+
+            with open(test_file, "w") as f:
                 f.write(test_code)
-            
-            actions_taken.append("Created comprehensive test suite for input validation")
-            
+
+            actions_taken.append(
+                "Created comprehensive test suite for input validation"
+            )
+
             # Verify the fix by running a quick test
             verification_passed = self._verify_input_validation_fix()
             actions_taken.append("Verified input validation fixes")
-            
+
             remaining_work = [
                 "Integrate validation module into all input endpoints",
                 "Update existing code to use new validation functions",
                 "Add logging for security violations",
-                "Implement rate limiting for repeated violations"
+                "Implement rate limiting for repeated violations",
             ]
-            
+
             return ResolutionResult(
                 issue["id"],
                 "RESOLVED" if verification_passed else "PARTIAL",
@@ -396,10 +407,10 @@ def test_input_sanitization():
                 {
                     "validation_module_created": str(validation_file),
                     "test_file_created": str(test_file),
-                    "security_patterns_implemented": 4
-                }
+                    "security_patterns_implemented": 4,
+                },
             )
-            
+
         except Exception as e:
             return ResolutionResult(
                 issue["id"],
@@ -408,47 +419,51 @@ def test_input_sanitization():
                 actions_taken,
                 False,
                 [],
-                {"error": str(e)}
+                {"error": str(e)},
             )
-    
+
     def _verify_input_validation_fix(self) -> bool:
         """Verify that the input validation fix works correctly."""
         try:
             # Import the new validation module
             sys.path.insert(0, str(self.project_root / "services" / "shared"))
             from security_validation import validate_user_input
-            
+
             # Test with known malicious inputs
             malicious_inputs = [
                 "'; DROP TABLE users; --",
                 "<script>alert('XSS')</script>",
                 "; rm -rf /",
-                "../../../etc/passwd"
+                "../../../etc/passwd",
             ]
-            
+
             for malicious_input in malicious_inputs:
                 result = validate_user_input(malicious_input)
                 if result["is_valid"]:
                     return False  # Should have been rejected
-            
+
             # Test with valid input
             valid_result = validate_user_input("normal text input")
             if not valid_result["is_valid"]:
                 return False  # Should have been accepted
-            
+
             return True
-            
+
         except Exception:
             return False
-    
+
     def resolve_test_coverage_gaps(self, issue: Dict[str, Any]) -> ResolutionResult:
         """Resolve critical test coverage gaps."""
         start_time = time.time()
         actions_taken = []
-        
+
         try:
-            component_name = issue["affected_components"][0] if issue["affected_components"] else "unknown"
-            
+            component_name = (
+                issue["affected_components"][0]
+                if issue["affected_components"]
+                else "unknown"
+            )
+
             # Create basic test template for the component
             test_template = f'''"""
 Test suite for {component_name} component.
@@ -525,36 +540,45 @@ class Test{component_name.replace("-", "").replace("_", "").title()}Performance:
         # TODO: Implement throughput tests
         assert True, "Throughput test placeholder"
 '''
-            
+
             # Create test file
             safe_component_name = component_name.replace("-", "_").replace(" ", "_")
-            test_file = self.project_root / "tests" / "unit" / f"test_{safe_component_name}.py"
+            test_file = (
+                self.project_root / "tests" / "unit" / f"test_{safe_component_name}.py"
+            )
             test_file.parent.mkdir(parents=True, exist_ok=True)
-            
-            with open(test_file, 'w') as f:
+
+            with open(test_file, "w") as f:
                 f.write(test_template)
-            
+
             actions_taken.append(f"Created test template for {component_name}")
-            
+
             # Create integration test file
-            integration_test_file = self.project_root / "tests" / "integration" / f"test_{safe_component_name}_integration.py"
+            integration_test_file = (
+                self.project_root
+                / "tests"
+                / "integration"
+                / f"test_{safe_component_name}_integration.py"
+            )
             integration_test_file.parent.mkdir(parents=True, exist_ok=True)
-            
-            with open(integration_test_file, 'w') as f:
+
+            with open(integration_test_file, "w") as f:
                 f.write(test_template.replace("unit", "integration"))
-            
-            actions_taken.append(f"Created integration test template for {component_name}")
-            
+
+            actions_taken.append(
+                f"Created integration test template for {component_name}"
+            )
+
             verification_passed = test_file.exists() and integration_test_file.exists()
-            
+
             remaining_work = [
                 f"Implement actual test cases for {component_name}",
                 "Add component-specific test data and fixtures",
                 "Implement mocking for external dependencies",
                 "Add performance benchmarks",
-                "Integrate tests into CI/CD pipeline"
+                "Integrate tests into CI/CD pipeline",
             ]
-            
+
             return ResolutionResult(
                 issue["id"],
                 "PARTIAL",  # Templates created, but actual tests need implementation
@@ -565,10 +589,10 @@ class Test{component_name.replace("-", "").replace("_", "").title()}Performance:
                 {
                     "test_file_created": str(test_file),
                     "integration_test_file_created": str(integration_test_file),
-                    "component_name": component_name
-                }
+                    "component_name": component_name,
+                },
             )
-            
+
         except Exception as e:
             return ResolutionResult(
                 issue["id"],
@@ -577,29 +601,35 @@ class Test{component_name.replace("-", "").replace("_", "").title()}Performance:
                 actions_taken,
                 False,
                 [],
-                {"error": str(e)}
+                {"error": str(e)},
             )
-    
+
     def resolve_critical_issues(self) -> Dict[str, Any]:
         """Resolve all critical issues."""
         print("Starting Critical Issue Resolution...")
         print("=" * 60)
-        
+
         critical_issues = self.load_critical_issues()
-        
+
         if not critical_issues:
             print("✅ No critical issues found to resolve.")
             return {"total_issues": 0, "resolved": 0, "failed": 0, "results": []}
-        
+
         resolved_count = 0
         failed_count = 0
-        
+
         for issue in critical_issues:
             print(f"\n🔧 Resolving: {issue['id']} - {issue['title']}")
-            
-            if issue["category"] == "SECURITY" and "input_validation" in issue["title"].lower():
+
+            if (
+                issue["category"] == "SECURITY"
+                and "input_validation" in issue["title"].lower()
+            ):
                 result = self.resolve_input_validation_security(issue)
-            elif issue["category"] == "RELIABILITY" and "test coverage" in issue["title"].lower():
+            elif (
+                issue["category"] == "RELIABILITY"
+                and "test coverage" in issue["title"].lower()
+            ):
                 result = self.resolve_test_coverage_gaps(issue)
             else:
                 # Generic resolution for other critical issues
@@ -610,25 +640,32 @@ class Test{component_name.replace("-", "").replace("_", "").title()}Performance:
                     ["Issue type not yet supported by automated resolution"],
                     False,
                     ["Manual resolution required"],
-                    {"issue_type": issue["category"]}
+                    {"issue_type": issue["category"]},
                 )
-            
+
             self.resolution_results.append(result)
-            
+
             # Log result
-            status_symbol = {"RESOLVED": "✅", "PARTIAL": "🟡", "FAILED": "❌", "SKIPPED": "⊝"}
+            status_symbol = {
+                "RESOLVED": "✅",
+                "PARTIAL": "🟡",
+                "FAILED": "❌",
+                "SKIPPED": "⊝",
+            }
             symbol = status_symbol.get(result.status, "?")
-            
-            print(f"{symbol} {result.issue_id}: {result.status} ({result.resolution_time:.3f}s)")
+
+            print(
+                f"{symbol} {result.issue_id}: {result.status} ({result.resolution_time:.3f}s)"
+            )
             print(f"   Actions: {len(result.actions_taken)}")
             print(f"   Verified: {'✓' if result.verification_passed else '✗'}")
             print(f"   Remaining: {len(result.remaining_work)}")
-            
+
             if result.status == "RESOLVED":
                 resolved_count += 1
             elif result.status == "FAILED":
                 failed_count += 1
-        
+
         # Generate summary
         summary = {
             "total_issues": len(critical_issues),
@@ -636,7 +673,9 @@ class Test{component_name.replace("-", "").replace("_", "").title()}Performance:
             "partial": sum(1 for r in self.resolution_results if r.status == "PARTIAL"),
             "failed": failed_count,
             "skipped": sum(1 for r in self.resolution_results if r.status == "SKIPPED"),
-            "resolution_rate": (resolved_count / len(critical_issues) * 100) if critical_issues else 0,
+            "resolution_rate": (
+                (resolved_count / len(critical_issues) * 100) if critical_issues else 0
+            ),
             "results": [
                 {
                     "issue_id": r.issue_id,
@@ -645,12 +684,12 @@ class Test{component_name.replace("-", "").replace("_", "").title()}Performance:
                     "actions_taken": r.actions_taken,
                     "verification_passed": r.verification_passed,
                     "remaining_work": r.remaining_work,
-                    "details": r.details
+                    "details": r.details,
                 }
                 for r in self.resolution_results
-            ]
+            ],
         }
-        
+
         print("\n" + "=" * 60)
         print("CRITICAL ISSUE RESOLUTION SUMMARY")
         print("=" * 60)
@@ -660,28 +699,32 @@ class Test{component_name.replace("-", "").replace("_", "").title()}Performance:
         print(f"Failed: {summary['failed']}")
         print(f"Skipped: {summary['skipped']}")
         print(f"Resolution Rate: {summary['resolution_rate']:.1f}%")
-        
+
         return summary
+
 
 def main():
     resolver = CriticalIssueResolver()
     summary = resolver.resolve_critical_issues()
-    
+
     # Save results
     output_file = project_root / "critical_issue_resolution_results.json"
-    with open(output_file, 'w') as f:
+    with open(output_file, "w") as f:
         json.dump(summary, f, indent=2)
-    
+
     print(f"\nDetailed results saved to: {output_file}")
-    
+
     # Return appropriate exit code
     if summary["failed"] > 0:
         print(f"\n⚠️  {summary['failed']} critical issues failed to resolve!")
         return 1
     elif summary["resolved"] < summary["total_issues"]:
-        print(f"\n⚠️  {summary['total_issues'] - summary['resolved']} critical issues need manual attention!")
+        print(
+            f"\n⚠️  {summary['total_issues'] - summary['resolved']} critical issues need manual attention!"
+        )
         return 1
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

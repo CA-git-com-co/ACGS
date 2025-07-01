@@ -1,33 +1,36 @@
-# Contributing to ACGS-1
+# Contributing to ACGS-2
 
-Welcome to the ACGS-1 (Autonomous Constitutional Governance System) project! This guide will help you get started with contributing to our blockchain-focused constitutional governance platform.
+Welcome to the ACGS-2 (Adaptive Constitutional Governance System) project! This guide will help you get started with contributing to our advanced constitutional AI governance platform.
 
 ## 🏗️ Project Structure
 
-ACGS-1 follows a blockchain-first architecture:
+ACGS-2 follows a microservices architecture with constitutional AI at its core:
 
-```
-ACGS-1/
-├── blockchain/                 # 🔗 Solana/Anchor Programs
-├── services/                   # 🏗️ Backend Microservices
-├── applications/               # 🖥️ Frontend Applications
-├── integrations/               # 🔗 Integration Layer
-├── infrastructure/             # 🏗️ Infrastructure & Ops
-├── tools/                      # 🛠️ Development Tools
-├── tests/                      # 🧪 Test Suites
-└── docs/                       # 📚 Documentation
+```text
+ACGS-2/
+├── services/                   # 🏗️ Core Services & Platform
+│   ├── core/                   # Constitutional AI, Policy Governance
+│   ├── platform_services/     # Authentication, Integrity
+│   └── shared/                 # Common utilities and middleware
+├── blockchain/                 # 🔗 Solana/Anchor Programs (legacy)
+├── config/                     # 🔧 Configuration files
+├── scripts/                    # 🛠️ Automation and deployment scripts
+├── tests/                      # 🧪 Comprehensive test suites
+├── docs/                       # 📚 Documentation
+└── tools/                      # 🛠️ Development and analysis tools
 ```
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
-- **Rust** 1.81.0+ (for Anchor programs and blockchain development)
-- **Solana CLI** 1.18.22+ (for blockchain development)
-- **Anchor CLI** 0.29.0+ (for smart contract framework)
-- **Node.js** 18+ (for TypeScript/React development)
-- **Python** 3.11+ (required for all backend services)
-- **UV Package Manager** (recommended for Python dependency management)
+- **Python** 3.10+ (3.11 or 3.12 recommended for all backend services)
+- **uv** (recommended) or **pip** for Python dependency management
+- **Git** for version control
+- **Redis** 6.0+ (for caching and session storage)
+- **PostgreSQL** 13+ (for persistent data storage)
+- **Node.js** 18+ (optional, for frontend development)
+- **Docker** (optional, for containerized development)
 - **PostgreSQL** 15+ (for database services)
 - **Redis** 7+ (for caching and session management)
 - **Docker** 24.0+ & **Docker Compose** (for containerization)
@@ -38,41 +41,43 @@ ACGS-1/
 
    ```bash
    git clone https://github.com/CA-git-com-co/ACGS.git
-   cd ACGS-1
+   cd ACGS-2
    ```
 
-2. **Install Solana & Anchor** (for blockchain development):
+2. **Set up Python environment** (recommended approach):
 
    ```bash
-   # Install Solana CLI
-   sh -c "$(curl -sSfL https://release.solana.com/v1.18.22/install)"
-
-   # Install Anchor CLI
-   cargo install --git https://github.com/coral-xyz/anchor avm --locked --force
-   avm install 0.29.0
-   avm use 0.29.0
-   ```
-
-3. **Set up Python environment** (for backend services):
-
-   ```bash
-   # Using UV package manager (recommended)
+   # Using uv package manager (recommended)
    curl -LsSf https://astral.sh/uv/install.sh | sh
    source ~/.bashrc
-   uv sync
 
-   # Alternative: Traditional Python setup
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   pip install -r requirements.txt
+   # Create virtual environment and install dependencies
+   uv venv
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+   uv pip install -e .
+   uv pip install -e .[dev,test]
    ```
 
-4. **Install Node.js dependencies** (for frontend application):
+3. **Alternative: Traditional Python setup**:
 
    ```bash
-   cd project
-   npm install
-   cd ..
+   python3 -m venv .venv
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+   pip install -r requirements.txt
+   pip install -r requirements-test.txt
+   ```
+
+4. **Set up pre-commit hooks**:
+
+   ```bash
+   pre-commit install
+   ```
+
+5. **Configure environment variables**:
+
+   ```bash
+   cp config/test.env .env
+   # Edit .env with your API keys and database URLs
    ```
 
 5. **Build Anchor programs**:
@@ -81,6 +86,51 @@ ACGS-1/
    anchor build
    cd ..
    ```
+
+## 📦 Dependency Management
+
+ACGS-2 uses a standardized approach to dependency management with **pyproject.toml** as the primary source of truth.
+
+### Adding Dependencies
+
+1. **Core dependencies** (required for runtime):
+   ```bash
+   # Add to pyproject.toml [project.dependencies]
+   uv add package-name>=version
+   ```
+
+2. **Development dependencies**:
+   ```bash
+   # Add to pyproject.toml [project.optional-dependencies.dev]
+   uv add --dev package-name>=version
+   ```
+
+3. **Test dependencies**:
+   ```bash
+   # Add to pyproject.toml [project.optional-dependencies.test]
+   uv add --group test package-name>=version
+   ```
+
+### Dependency Guidelines
+
+- **Always pin minimum versions** with `>=` for compatibility
+- **Use version ranges sparingly** and only for security-critical packages
+- **Update requirements.txt** to match pyproject.toml for deployment compatibility
+- **Test all dependency changes** with the full test suite
+- **Document breaking changes** in commit messages
+
+### Updating Dependencies
+
+```bash
+# Update all dependencies
+uv sync --upgrade
+
+# Update specific package
+uv add package-name>=new-version
+
+# Check for outdated packages
+uv pip list --outdated
+```
 
 ## 🎯 Development Workflows
 

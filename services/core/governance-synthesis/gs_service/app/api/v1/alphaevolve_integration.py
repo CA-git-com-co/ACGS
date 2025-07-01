@@ -46,7 +46,9 @@ async def ec_constitutional_prompting(
         prompting_id = str(uuid.uuid4())
 
         # Step 1: Retrieve relevant constitutional principles
-        principles = await ac_client.get_principles_by_context(prompting_request.ec_context)
+        principles = await ac_client.get_principles_by_context(
+            prompting_request.ec_context
+        )
         if not principles:
             logger.warning(
                 f"No constitutional principles found for EC context: {prompting_request.ec_context}"
@@ -54,7 +56,9 @@ async def ec_constitutional_prompting(
             principles = []
 
         # Step 2: Analyze current EC population for constitutional compliance
-        population_analysis = _analyze_ec_population(prompting_request.current_population)
+        population_analysis = _analyze_ec_population(
+            prompting_request.current_population
+        )
 
         # Step 3: Build constitutional context for EC
         constitutional_context = await _build_ec_constitutional_context(
@@ -81,7 +85,9 @@ async def ec_constitutional_prompting(
         llm_response = await llm_client.get_constitutional_synthesis(synthesis_input)
 
         # Step 5: Parse LLM response and extract structured guidance
-        structured_guidance = _parse_ec_constitutional_guidance(llm_response.raw_llm_response)
+        structured_guidance = _parse_ec_constitutional_guidance(
+            llm_response.raw_llm_response
+        )
 
         # Step 6: Generate fitness modifications and operator constraints
         fitness_modifications = _generate_fitness_modifications(
@@ -92,7 +98,9 @@ async def ec_constitutional_prompting(
             structured_guidance, prompting_request.constitutional_constraints
         )
 
-        population_filters = _generate_population_filters(structured_guidance, population_analysis)
+        population_filters = _generate_population_filters(
+            structured_guidance, population_analysis
+        )
 
         # Step 7: Prepare response
         response = gs_schemas.ECConstitutionalPromptingOutput(
@@ -154,7 +162,9 @@ async def ec_governance_evaluation(
         start_time = time.time()
 
         # Step 1: Retrieve relevant constitutional principles for context
-        principles = await ac_client.get_principles_by_context(governance_request.context)
+        principles = await ac_client.get_principles_by_context(
+            governance_request.context
+        )
         if not principles:
             logger.warning(
                 f"No constitutional principles found for context: {governance_request.context}"
@@ -166,7 +176,9 @@ async def ec_governance_evaluation(
         total_compliance_score = 0.0
 
         for proposal in governance_request.proposals:
-            decision = await _evaluate_ec_proposal(proposal, principles, governance_request.context)
+            decision = await _evaluate_ec_proposal(
+                proposal, principles, governance_request.context
+            )
             decisions.append(decision)
 
             # Calculate compliance score (1.0 - governance_penalty)
@@ -187,10 +199,14 @@ async def ec_governance_evaluation(
             "denied_proposals": len([d for d in decisions if d.decision == "deny"]),
             "modified_proposals": len([d for d in decisions if d.decision == "modify"]),
             "average_confidence": (
-                sum(d.confidence for d in decisions) / len(decisions) if decisions else 0.0
+                sum(d.confidence for d in decisions) / len(decisions)
+                if decisions
+                else 0.0
             ),
             "average_governance_penalty": (
-                sum(d.governance_penalty for d in decisions) / len(decisions) if decisions else 0.0
+                sum(d.governance_penalty for d in decisions) / len(decisions)
+                if decisions
+                else 0.0
             ),
             "violated_principles_count": len(
                 set().union(*[d.violated_principles for d in decisions])
@@ -254,7 +270,9 @@ def _analyze_ec_population(population: list[gs_schemas.ECProposal]) -> dict[str,
 
     # Identify potential constitutional issues
     if len(population) > 100:
-        analysis["potential_issues"].append("Large population size may require batch processing")
+        analysis["potential_issues"].append(
+            "Large population size may require batch processing"
+        )
 
     return analysis
 
@@ -448,7 +466,9 @@ async def _evaluate_ec_proposal(
     confidence = 0.8
     violated_principles = []
     governance_penalty = 0.0
-    explanation = f"Proposal {proposal.proposal_id} evaluated for constitutional compliance"
+    explanation = (
+        f"Proposal {proposal.proposal_id} evaluated for constitutional compliance"
+    )
     enforcement_actions = []
 
     # Check for potential constitutional violations
@@ -464,9 +484,7 @@ async def _evaluate_ec_proposal(
                 violated_principles.append(str(principle.get("id", "unknown")))
                 governance_penalty += 0.3
                 decision = "deny"
-                explanation += (
-                    f". Safety violation detected in principle {principle.get('name', 'unknown')}"
-                )
+                explanation += f". Safety violation detected in principle {principle.get('name', 'unknown')}"
 
     # Adjust confidence based on violations
     if violated_principles:
@@ -503,10 +521,14 @@ def _generate_ec_recommendations(
     avg_penalty = batch_summary["average_governance_penalty"]
 
     if denied_rate > 0.3:
-        recommendations.append("High denial rate detected - consider adjusting EC operators")
+        recommendations.append(
+            "High denial rate detected - consider adjusting EC operators"
+        )
 
     if avg_penalty > 0.2:
-        recommendations.append("High governance penalties - review constitutional compliance")
+        recommendations.append(
+            "High governance penalties - review constitutional compliance"
+        )
 
     if batch_summary["violated_principles_count"] > 5:
         recommendations.append(

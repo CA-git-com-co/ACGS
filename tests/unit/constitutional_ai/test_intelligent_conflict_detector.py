@@ -4,18 +4,23 @@ Unit tests for services.core.constitutional-ai.ac_service.app.services.intellige
 
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
-from services.core.constitutional-ai.ac_service.app.services.intelligent_conflict_detector import ConflictType, ConflictSeverity, ConflictDetectionResult, PrincipleAnalysis, IntelligentConflictDetector
-
+from services.core.constitutional_ai.ac_service.app.services.intelligent_conflict_detector import (
+    ConflictType,
+    ConflictSeverity,
+    ConflictDetectionResult,
+    PrincipleAnalysis,
+    IntelligentConflictDetector,
+)
 
 
 class TestConflictType:
     """Test suite for ConflictType."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -24,12 +29,12 @@ class TestConflictType:
 
 class TestConflictSeverity:
     """Test suite for ConflictSeverity."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -38,12 +43,12 @@ class TestConflictSeverity:
 
 class TestConflictDetectionResult:
     """Test suite for ConflictDetectionResult."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -52,12 +57,12 @@ class TestConflictDetectionResult:
 
 class TestPrincipleAnalysis:
     """Test suite for PrincipleAnalysis."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -66,12 +71,12 @@ class TestPrincipleAnalysis:
 
 class TestIntelligentConflictDetector:
     """Test suite for IntelligentConflictDetector."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -82,13 +87,11 @@ class TestIntelligentConflictDetector:
         # TODO: Implement test for update_detection_stats
         instance = IntelligentConflictDetector()
         # Add test implementation here
-        assert hasattr(instance, 'update_detection_stats')
+        assert hasattr(instance, "update_detection_stats")
 
     def test_get_performance_metrics(self):
         """Test get_performance_metrics method."""
         # TODO: Implement test for get_performance_metrics
         instance = IntelligentConflictDetector()
         # Add test implementation here
-        assert hasattr(instance, 'get_performance_metrics')
-
-
+        assert hasattr(instance, "get_performance_metrics")

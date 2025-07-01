@@ -16,6 +16,7 @@ class TestAPIEndpoints:
         """Create test client."""
         # TODO: Import and configure actual FastAPI app
         from fastapi import FastAPI
+
         app = FastAPI()
         return TestClient(app)
 

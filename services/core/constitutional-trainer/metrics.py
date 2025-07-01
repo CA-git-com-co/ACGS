@@ -223,11 +223,17 @@ class ConstitutionalMetrics:
         }
 
         self.training_sessions_total.labels(
-            status="started", model_type=model_type, constitutional_hash=self.constitutional_hash
+            status="started",
+            model_type=model_type,
+            constitutional_hash=self.constitutional_hash,
         ).inc()
 
-        self.active_training_sessions.labels(constitutional_hash=self.constitutional_hash).set(
-            len([s for s in self.training_sessions.values() if s["status"] == "running"])
+        self.active_training_sessions.labels(
+            constitutional_hash=self.constitutional_hash
+        ).set(
+            len(
+                [s for s in self.training_sessions.values() if s["status"] == "running"]
+            )
         )
 
     def record_training_session_end(
@@ -272,8 +278,12 @@ class ConstitutionalMetrics:
             ).observe(compliance_score)
 
         # Update active sessions count
-        self.active_training_sessions.labels(constitutional_hash=self.constitutional_hash).set(
-            len([s for s in self.training_sessions.values() if s["status"] == "running"])
+        self.active_training_sessions.labels(
+            constitutional_hash=self.constitutional_hash
+        ).set(
+            len(
+                [s for s in self.training_sessions.values() if s["status"] == "running"]
+            )
         )
 
         # Update compliance rate
@@ -283,7 +293,9 @@ class ConstitutionalMetrics:
                 constitutional_hash=self.constitutional_hash
             ).set(avg_compliance)
 
-    def record_constitutional_violation(self, violation_type: str, severity: str, model_id: str):
+    def record_constitutional_violation(
+        self, violation_type: str, severity: str, model_id: str
+    ):
         """Record a constitutional violation."""
         self.constitutional_violations_total.labels(
             violation_type=violation_type,
@@ -292,7 +304,9 @@ class ConstitutionalMetrics:
             constitutional_hash=self.constitutional_hash,
         ).inc()
 
-    def record_critique_revision_cycle(self, model_type: str, cycles: int, success: bool):
+    def record_critique_revision_cycle(
+        self, model_type: str, cycles: int, success: bool
+    ):
         """Record critique-revision cycle metrics."""
         self.critique_revision_cycles.labels(
             model_type=model_type, constitutional_hash=self.constitutional_hash
@@ -301,9 +315,13 @@ class ConstitutionalMetrics:
         self.critique_cycles.append(cycles)
 
         # Update success rate
-        successful_cycles = sum(1 for c in self.critique_cycles if c <= 3)  # Success if ≤3 cycles
+        successful_cycles = sum(
+            1 for c in self.critique_cycles if c <= 3
+        )  # Success if ≤3 cycles
         success_rate = (
-            successful_cycles / len(self.critique_cycles) if self.critique_cycles else 0.0
+            successful_cycles / len(self.critique_cycles)
+            if self.critique_cycles
+            else 0.0
         )
 
         self.critique_revision_success_rate.labels(
@@ -337,7 +355,9 @@ class ConstitutionalMetrics:
             constitutional_hash=self.constitutional_hash,
         ).inc()
 
-    def record_policy_evaluation(self, evaluation_type: str, duration: float, cache_hit: bool):
+    def record_policy_evaluation(
+        self, evaluation_type: str, duration: float, cache_hit: bool
+    ):
         """Record policy evaluation metrics."""
         self.policy_evaluation_duration.labels(
             evaluation_type=evaluation_type,
@@ -360,11 +380,15 @@ class ConstitutionalMetrics:
     def record_model_quality(self, model_id: str, accuracy: float, perplexity: float):
         """Record model quality metrics."""
         self.model_accuracy.labels(
-            model_id=model_id, metric_type="accuracy", constitutional_hash=self.constitutional_hash
+            model_id=model_id,
+            metric_type="accuracy",
+            constitutional_hash=self.constitutional_hash,
         ).set(accuracy)
 
         self.model_perplexity.labels(
-            model_id=model_id, dataset="validation", constitutional_hash=self.constitutional_hash
+            model_id=model_id,
+            dataset="validation",
+            constitutional_hash=self.constitutional_hash,
         ).set(perplexity)
 
     def get_current_metrics(self) -> ConstitutionalTrainingMetrics:
@@ -394,11 +418,15 @@ class ConstitutionalMetrics:
             s["duration"] for s in self.training_sessions.values() if "duration" in s
         ]
         avg_duration = (
-            sum(completed_durations) / len(completed_durations) if completed_durations else 0.0
+            sum(completed_durations) / len(completed_durations)
+            if completed_durations
+            else 0.0
         )
 
         avg_cycles = (
-            sum(self.critique_cycles) / len(self.critique_cycles) if self.critique_cycles else 0.0
+            sum(self.critique_cycles) / len(self.critique_cycles)
+            if self.critique_cycles
+            else 0.0
         )
 
         return ConstitutionalTrainingMetrics(
@@ -435,7 +463,9 @@ class ConstitutionalMetrics:
             constitutional_hash=self.constitutional_hash
         ).set(0)
 
-        self.active_training_sessions.labels(constitutional_hash=self.constitutional_hash).set(0)
+        self.active_training_sessions.labels(
+            constitutional_hash=self.constitutional_hash
+        ).set(0)
 
         self.critique_revision_success_rate.labels(
             constitutional_hash=self.constitutional_hash

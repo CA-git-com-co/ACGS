@@ -114,7 +114,9 @@ class EnhancedDatabaseClient:
             # Initialize raw connection pool for high-performance operations
             await self._initialize_raw_pool()
 
-            logger.info(f"Database client initialized successfully for {self.service_name}")
+            logger.info(
+                f"Database client initialized successfully for {self.service_name}"
+            )
 
         except Exception as e:
             logger.error(f"Failed to initialize database client: {e}")
@@ -124,7 +126,9 @@ class EnhancedDatabaseClient:
         """Initialize raw asyncpg connection pool."""
         try:
             # Parse database URL for asyncpg
-            url_parts = self.database_url.replace("postgresql+asyncpg://", "postgresql://")
+            url_parts = self.database_url.replace(
+                "postgresql+asyncpg://", "postgresql://"
+            )
 
             self._raw_connection_pool = await asyncpg.create_pool(
                 url_parts,
@@ -151,7 +155,9 @@ class EnhancedDatabaseClient:
         async def create_session():
             return self._async_session_factory()
 
-        async with self.resilience_manager.resilient_connection(create_session) as session:
+        async with self.resilience_manager.resilient_connection(
+            create_session
+        ) as session:
             try:
                 yield session
                 await session.commit()
@@ -170,7 +176,9 @@ class EnhancedDatabaseClient:
         async def get_connection():
             return await self._raw_connection_pool.acquire()
 
-        async with self.resilience_manager.resilient_connection(get_connection) as connection:
+        async with self.resilience_manager.resilient_connection(
+            get_connection
+        ) as connection:
             try:
                 yield connection
             finally:
@@ -236,7 +244,9 @@ class EnhancedDatabaseClient:
         """Fetch single record with resilience."""
         async with self.get_raw_connection() as conn:
             if params:
-                row = await conn.fetchrow(query, *params if isinstance(params, list) else params)
+                row = await conn.fetchrow(
+                    query, *params if isinstance(params, list) else params
+                )
             else:
                 row = await conn.fetchrow(query)
 
@@ -267,7 +277,9 @@ class EnhancedDatabaseClient:
         # Fallback to primary connection
         async with self.get_raw_connection() as conn:
             if params:
-                rows = await conn.fetch(query, *params if isinstance(params, list) else params)
+                rows = await conn.fetch(
+                    query, *params if isinstance(params, list) else params
+                )
             else:
                 rows = await conn.fetch(query)
 
@@ -289,14 +301,18 @@ class EnhancedDatabaseClient:
                             await conn.execute(query)
             return True
 
-        return await self.resilience_manager.execute_with_resilience(_execute_transaction)
+        return await self.resilience_manager.execute_with_resilience(
+            _execute_transaction
+        )
 
     async def health_check(self) -> Dict[str, Any]:
         """Perform comprehensive health check."""
         health_status = {
             "service": self.service_name,
             "database_url": (
-                self.database_url.split("@")[1] if "@" in self.database_url else "unknown"
+                self.database_url.split("@")[1]
+                if "@" in self.database_url
+                else "unknown"
             ),
             "status": "unknown",
             "connection_pools": {},

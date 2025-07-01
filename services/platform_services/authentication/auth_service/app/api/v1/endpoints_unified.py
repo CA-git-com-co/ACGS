@@ -84,7 +84,9 @@ async def register_user(
 
     try:
         # Check if username already exists
-        db_user_by_username = await crud_user.get_user_by_username(db, username=user.username)
+        db_user_by_username = await crud_user.get_user_by_username(
+            db, username=user.username
+        )
         if db_user_by_username:
             if UNIFIED_RESPONSE_AVAILABLE:
                 error_response = response_builder.error(
@@ -143,7 +145,8 @@ async def register_user(
             return UnifiedJSONResponse(content=error_response, status_code=500)
         else:
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to register user"
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to register user",
             )
 
 
@@ -172,7 +175,8 @@ async def login_for_access_token(
         ):
             if UNIFIED_RESPONSE_AVAILABLE:
                 error_response = response_builder.error(
-                    message="Incorrect username or password", error_code="INVALID_CREDENTIALS"
+                    message="Incorrect username or password",
+                    error_code="INVALID_CREDENTIALS",
                 )
                 return UnifiedJSONResponse(content=error_response, status_code=401)
             else:
@@ -189,7 +193,9 @@ async def login_for_access_token(
                 )
                 return UnifiedJSONResponse(content=error_response, status_code=400)
             else:
-                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user")
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user"
+                )
 
         # Create access token
         access_token_str, access_jti = security.create_access_token(
@@ -197,8 +203,10 @@ async def login_for_access_token(
         )
 
         # Create refresh token
-        refresh_token_str, refresh_jti, refresh_expires_at = security.create_refresh_token(
-            subject=user_obj.username, user_id=user_obj.id, roles=[user_obj.role]
+        refresh_token_str, refresh_jti, refresh_expires_at = (
+            security.create_refresh_token(
+                subject=user_obj.username, user_id=user_obj.id, roles=[user_obj.role]
+            )
         )
         await crud_refresh_token.create_refresh_token(
             db,
@@ -214,7 +222,9 @@ async def login_for_access_token(
 
         # Set HttpOnly cookies for tokens
         access_token_expires_seconds = settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
-        refresh_token_expires_seconds = settings.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60
+        refresh_token_expires_seconds = (
+            settings.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60
+        )
 
         response.set_cookie(
             key="access_token_cookie",
@@ -256,7 +266,9 @@ async def login_for_access_token(
             )
             return UnifiedJSONResponse(content=success_response)
         else:
-            return Token(access_token=access_token_str, token_type="bearer", refresh_token=None)
+            return Token(
+                access_token=access_token_str, token_type="bearer", refresh_token=None
+            )
 
     except Exception as e:
         if UNIFIED_RESPONSE_AVAILABLE:
@@ -268,7 +280,8 @@ async def login_for_access_token(
             return UnifiedJSONResponse(content=error_response, status_code=500)
         else:
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Authentication failed"
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Authentication failed",
             )
 
 
@@ -316,7 +329,11 @@ async def logout(
                     options={"verify_exp": False},
                 )
                 token_data = security.TokenPayload(**payload)
-                if token_data.type == "refresh" and token_data.jti and token_data.user_id:
+                if (
+                    token_data.type == "refresh"
+                    and token_data.jti
+                    and token_data.user_id
+                ):
                     await crud_refresh_token.revoke_refresh_token(
                         db, jti=token_data.jti, user_id=token_data.user_id
                     )
@@ -338,7 +355,9 @@ async def logout(
             httponly=True,
             samesite="lax",
         )
-        csrf_protect.unset_csrf_cookie(response)  # Deletes CSRF cookie to prevent token reuse
+        csrf_protect.unset_csrf_cookie(
+            response
+        )  # Deletes CSRF cookie to prevent token reuse
 
         if UNIFIED_RESPONSE_AVAILABLE:
             success_response = response_builder.success(
@@ -351,18 +370,22 @@ async def logout(
     except Exception as e:
         if UNIFIED_RESPONSE_AVAILABLE:
             error_response = response_builder.error(
-                message="Logout failed", data={"error_details": str(e)}, error_code="LOGOUT_FAILED"
+                message="Logout failed",
+                data={"error_details": str(e)},
+                error_code="LOGOUT_FAILED",
             )
             return UnifiedJSONResponse(content=error_response, status_code=500)
         else:
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Logout failed"
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Logout failed",
             )
 
 
 @router.get("/me")
 async def read_users_me(
-    current_user: User = Depends(security.get_current_active_user), request: Request = None
+    current_user: User = Depends(security.get_current_active_user),
+    request: Request = None,
 ):
     """Get current user information with unified response format."""
 

@@ -128,7 +128,9 @@ class TestDGMEngine:
         engine.bandit_algorithm.select_arm.assert_called_once()
         engine.performance_monitor.get_current_metrics.assert_called()
 
-    async def test_generate_improvement_proposal_constitutional_violation(self, mock_dependencies):
+    async def test_generate_improvement_proposal_constitutional_violation(
+        self, mock_dependencies
+    ):
         """Test proposal generation with constitutional violation."""
         engine = mock_dependencies
 
@@ -224,9 +226,13 @@ class TestDGMEngine:
             mock_execute.return_value = {"success": True}
 
             with patch.object(engine, "_calculate_improvement_metrics") as mock_calc:
-                mock_calc.return_value = {"overall_improvement": -0.15}  # Negative improvement
+                mock_calc.return_value = {
+                    "overall_improvement": -0.15
+                }  # Negative improvement
 
-                with patch.object(engine, "_perform_automatic_rollback") as mock_rollback:
+                with patch.object(
+                    engine, "_perform_automatic_rollback"
+                ) as mock_rollback:
                     mock_rollback.return_value = None
 
                     result = await engine.execute_improvement(improvement_id, proposal)
@@ -305,7 +311,9 @@ class TestDGMEngine:
                 "confidence": 0.85,
             }
 
-            changes = await engine._generate_changes("performance_optimization", ["gs-service"])
+            changes = await engine._generate_changes(
+                "performance_optimization", ["gs-service"]
+            )
 
         assert "changes" in changes
         assert changes["confidence"] == 0.85
@@ -333,7 +341,9 @@ class TestDGMEngine:
         """Test risk assessment."""
         engine = mock_dependencies
 
-        risk_assessment = await engine._assess_risk("experimental_strategy", ["critical-service"])
+        risk_assessment = await engine._assess_risk(
+            "experimental_strategy", ["critical-service"]
+        )
 
         assert "risk_level" in risk_assessment
         assert "confidence" in risk_assessment
@@ -344,11 +354,21 @@ class TestDGMEngine:
         """Test improvement metrics calculation."""
         engine = mock_dependencies
 
-        performance_before = {"response_time": 150.0, "throughput": 800.0, "error_rate": 0.005}
+        performance_before = {
+            "response_time": 150.0,
+            "throughput": 800.0,
+            "error_rate": 0.005,
+        }
 
-        performance_after = {"response_time": 125.0, "throughput": 950.0, "error_rate": 0.003}
+        performance_after = {
+            "response_time": 125.0,
+            "throughput": 950.0,
+            "error_rate": 0.003,
+        }
 
-        metrics = await engine._calculate_improvement_metrics(performance_before, performance_after)
+        metrics = await engine._calculate_improvement_metrics(
+            performance_before, performance_after
+        )
 
         assert "overall_improvement" in metrics
         assert "response_time_improvement" in metrics
@@ -356,7 +376,9 @@ class TestDGMEngine:
         assert "error_rate_improvement" in metrics
 
         # Verify improvement calculations
-        assert metrics["response_time_improvement"] > 0  # Response time decreased (good)
+        assert (
+            metrics["response_time_improvement"] > 0
+        )  # Response time decreased (good)
         assert metrics["throughput_improvement"] > 0  # Throughput increased (good)
         assert metrics["error_rate_improvement"] > 0  # Error rate decreased (good)
 
@@ -388,11 +410,15 @@ class TestDGMEngine:
 
         with patch.object(engine, "_record_improvement_metrics") as mock_record:
             await engine._record_improvement_metrics(
-                improvement_id, "performance_optimization", {"overall_improvement": 0.12}
+                improvement_id,
+                "performance_optimization",
+                {"overall_improvement": 0.12},
             )
 
             mock_record.assert_called_once_with(
-                improvement_id, "performance_optimization", {"overall_improvement": 0.12}
+                improvement_id,
+                "performance_optimization",
+                {"overall_improvement": 0.12},
             )
 
     @pytest.mark.slow
@@ -410,7 +436,9 @@ class TestDGMEngine:
         # Test that engine handles concurrent requests properly
         import asyncio
 
-        tasks = [engine.generate_improvement_proposal(**proposal) for proposal in proposals]
+        tasks = [
+            engine.generate_improvement_proposal(**proposal) for proposal in proposals
+        ]
 
         results = await asyncio.gather(*tasks, return_exceptions=True)
 

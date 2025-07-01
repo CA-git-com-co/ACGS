@@ -27,7 +27,9 @@ def upgrade() -> None:
         # If this fails on some DBs because the name is different, it might need manual adjustment.
         # However, for SQLite, dropping the column often handles the FK.
         try:
-            batch_op.drop_constraint("policy_rules_principle_id_fkey", type_="foreignkey")
+            batch_op.drop_constraint(
+                "policy_rules_principle_id_fkey", type_="foreignkey"
+            )
         except Exception as e:
             print(
                 f"Could not drop constraint 'policy_rules_principle_id_fkey', possibly does not exist or name differs: {e}"

@@ -112,7 +112,9 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
                     return response
 
             # Perform constitutional validation
-            validation_result = await self._validate_request_constitutional_compliance(request)
+            validation_result = await self._validate_request_constitutional_compliance(
+                request
+            )
 
             # Handle validation failure
             if not validation_result["valid"] and self.enable_strict_validation:
@@ -126,7 +128,9 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
             response = await call_next(request)
 
             # Add constitutional validation headers
-            self._add_constitutional_headers(response, validation_result=validation_result)
+            self._add_constitutional_headers(
+                response, validation_result=validation_result
+            )
 
             # Update metrics
             self._update_metrics(start_time, validation_result["valid"])
@@ -141,14 +145,18 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
             self.circuit_breaker_failures += 1
 
             if self.enable_strict_validation:
-                raise HTTPException(status_code=500, detail="Constitutional validation failed")
+                raise HTTPException(
+                    status_code=500, detail="Constitutional validation failed"
+                )
             else:
                 # Graceful degradation
                 response = await call_next(request)
                 self._add_constitutional_headers(response, error=str(e))
                 return response
 
-    async def _validate_request_constitutional_compliance(self, request: Request) -> dict[str, Any]:
+    async def _validate_request_constitutional_compliance(
+        self, request: Request
+    ) -> dict[str, Any]:
         """
         Validate request constitutional compliance.
 
@@ -171,18 +179,24 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
                 }
 
             # Validate request path against constitutional requirements
-            path_validation = self._validate_path_constitutional_requirements(request.url.path)
+            path_validation = self._validate_path_constitutional_requirements(
+                request.url.path
+            )
             if not path_validation["valid"]:
                 return path_validation
 
             # Validate request method against constitutional requirements
-            method_validation = self._validate_method_constitutional_requirements(request.method)
+            method_validation = self._validate_method_constitutional_requirements(
+                request.method
+            )
             if not method_validation["valid"]:
                 return method_validation
 
             # Enhanced validation for policy operations
             if self._is_policy_operation(request.url.path):
-                policy_validation = await self._validate_policy_operation_compliance(request)
+                policy_validation = await self._validate_policy_operation_compliance(
+                    request
+                )
                 if not policy_validation["valid"]:
                     return policy_validation
 
@@ -225,7 +239,9 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
             "compliance_score": 1.0,
         }
 
-    def _validate_method_constitutional_requirements(self, method: str) -> dict[str, Any]:
+    def _validate_method_constitutional_requirements(
+        self, method: str
+    ) -> dict[str, Any]:
         """Validate request method against constitutional requirements."""
         # All HTTP methods are constitutionally valid for policy operations
         allowed_methods = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"]
@@ -243,7 +259,9 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
             "compliance_score": 1.0,
         }
 
-    async def _validate_policy_operation_compliance(self, request: Request) -> dict[str, Any]:
+    async def _validate_policy_operation_compliance(
+        self, request: Request
+    ) -> dict[str, Any]:
         """Validate policy operation constitutional compliance."""
         try:
             # Check for required constitutional headers
@@ -350,7 +368,9 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
     def get_metrics(self) -> dict[str, Any]:
         """Get middleware performance metrics."""
         avg_latency = (
-            self.total_latency_ms / self.validation_count if self.validation_count > 0 else 0.0
+            self.total_latency_ms / self.validation_count
+            if self.validation_count > 0
+            else 0.0
         )
 
         return {

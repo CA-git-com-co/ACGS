@@ -9,7 +9,12 @@ import time
 from typing import Any, AsyncGenerator, Dict
 
 import httpx
-from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
+from tenacity import (
+    retry,
+    retry_if_exception_type,
+    stop_after_attempt,
+    wait_exponential,
+)
 
 from .model_client import (
     AuthenticationError,
@@ -128,7 +133,10 @@ class ClaudeClient(ModelClient):
             # Make streaming API request
             async with httpx.AsyncClient(timeout=self.timeout) as client:
                 async with client.stream(
-                    "POST", f"{self.base_url}/messages", headers=self.headers, json=payload
+                    "POST",
+                    f"{self.base_url}/messages",
+                    headers=self.headers,
+                    json=payload,
                 ) as response:
 
                     if response.status_code != 200:
@@ -182,7 +190,9 @@ class ClaudeClient(ModelClient):
 
         return payload
 
-    def _parse_response(self, result: Dict[str, Any], start_time: float) -> ModelResponse:
+    def _parse_response(
+        self, result: Dict[str, Any], start_time: float
+    ) -> ModelResponse:
         """Parse API response."""
         content = ""
 
@@ -201,7 +211,8 @@ class ClaudeClient(ModelClient):
             usage={
                 "prompt_tokens": usage.get("input_tokens", 0),
                 "completion_tokens": usage.get("output_tokens", 0),
-                "total_tokens": usage.get("input_tokens", 0) + usage.get("output_tokens", 0),
+                "total_tokens": usage.get("input_tokens", 0)
+                + usage.get("output_tokens", 0),
             },
             finish_reason=result.get("stop_reason", "unknown"),
             response_time=time.time() - start_time,

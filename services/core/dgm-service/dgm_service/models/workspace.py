@@ -31,13 +31,17 @@ class ImprovementWorkspace(Base):
     __tablename__ = "improvement_workspaces"
     __table_args__ = {"schema": "dgm"}
 
-    id = Column(PG_UUID(as_uuid=True), primary_key=True, server_default=func.uuid_generate_v4())
+    id = Column(
+        PG_UUID(as_uuid=True), primary_key=True, server_default=func.uuid_generate_v4()
+    )
     improvement_id = Column(PG_UUID(as_uuid=True), nullable=False, unique=True)
 
     # Workspace metadata
     name = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
-    status = Column(Enum(WorkspaceStatus), nullable=False, default=WorkspaceStatus.CREATED)
+    status = Column(
+        Enum(WorkspaceStatus), nullable=False, default=WorkspaceStatus.CREATED
+    )
 
     # Workspace content
     source_code = Column(JSON, default=dict)  # Code changes
@@ -63,9 +67,14 @@ class ImprovementWorkspace(Base):
     assigned_to = Column(String(255), nullable=True)
 
     # Timestamps
-    created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    created_at = Column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
     updated_at = Column(
-        DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now()
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+        onupdate=func.now(),
     )
     completed_at = Column(DateTime(timezone=True), nullable=True)
 
@@ -98,5 +107,7 @@ class ImprovementWorkspace(Base):
             "assigned_to": self.assigned_to,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
-            "completed_at": self.completed_at.isoformat() if self.completed_at else None,
+            "completed_at": (
+                self.completed_at.isoformat() if self.completed_at else None
+            ),
         }

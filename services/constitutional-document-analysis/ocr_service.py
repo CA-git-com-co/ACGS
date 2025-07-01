@@ -91,7 +91,9 @@ class ConstitutionalOCRService:
     """
 
     def __init__(self, model_endpoint: str = "http://localhost:8666/v1"):
-        self.client = OpenAI(api_key="acgs-constitutional-analysis", base_url=model_endpoint)
+        self.client = OpenAI(
+            api_key="acgs-constitutional-analysis", base_url=model_endpoint
+        )
         self.model_name = "nanonets/Nanonets-OCR-s"
 
     def encode_image(self, image_path: str) -> str:
@@ -99,7 +101,9 @@ class ConstitutionalOCRService:
         with open(image_path, "rb") as image_file:
             return base64.b64encode(image_file.read()).decode("utf-8")
 
-    def create_constitutional_ocr_prompt(self, document_type: str = "constitution") -> str:
+    def create_constitutional_ocr_prompt(
+        self, document_type: str = "constitution"
+    ) -> str:
         """
         Create specialized OCR prompt for constitutional documents
         Based on Nanonets approach but optimized for legal documents
@@ -162,7 +166,9 @@ QUALITY REQUIREMENTS:
                         "content": [
                             {
                                 "type": "image_url",
-                                "image_url": {"url": f"data:image/png;base64,{img_base64}"},
+                                "image_url": {
+                                    "url": f"data:image/png;base64,{img_base64}"
+                                },
                             },
                             {
                                 "type": "text",
@@ -269,7 +275,9 @@ QUALITY REQUIREMENTS:
                 attr_pairs = re.findall(r'(\w+)="([^"]*)"', attr_text)
                 attributes = dict(attr_pairs)
 
-            results.append({"id": i + 1, "content": match.strip(), "attributes": attributes})
+            results.append(
+                {"id": i + 1, "content": match.strip(), "attributes": attributes}
+            )
 
         return results
 
@@ -332,12 +340,12 @@ QUALITY REQUIREMENTS:
 
         # Find checkbox patterns
         checkbox_patterns = [
-            (r'☐', 'unchecked'),
-            (r'☑', 'checked'),
-            (r'☒', 'crossed'),
-            (r'\[ \]', 'unchecked'),
-            (r'\[x\]', 'checked'),
-            (r'\[X\]', 'checked'),
+            (r"☐", "unchecked"),
+            (r"☑", "checked"),
+            (r"☒", "crossed"),
+            (r"\[ \]", "unchecked"),
+            (r"\[x\]", "checked"),
+            (r"\[X\]", "checked"),
         ]
 
         for pattern, state in checkbox_patterns:
@@ -348,12 +356,14 @@ QUALITY REQUIREMENTS:
                 end = min(len(text), match.end() + 50)
                 context = text[start:end].strip()
 
-                checkboxes.append({
-                    'state': state,
-                    'position': match.start(),
-                    'context': context,
-                    'symbol': match.group()
-                })
+                checkboxes.append(
+                    {
+                        "state": state,
+                        "position": match.start(),
+                        "context": context,
+                        "symbol": match.group(),
+                    }
+                )
 
         return checkboxes
 
@@ -389,7 +399,9 @@ QUALITY REQUIREMENTS:
         page_numbers = re.findall(page_pattern, text, re.IGNORECASE)
 
         # Check for signatures (simplified)
-        signatures_detected = bool(re.search(r"signature|signed|seal", text, re.IGNORECASE))
+        signatures_detected = bool(
+            re.search(r"signature|signed|seal", text, re.IGNORECASE)
+        )
 
         # Calculate authenticity score based on various factors
         authenticity_score = 0.98  # Would be calculated based on actual verification

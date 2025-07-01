@@ -150,13 +150,19 @@ class ConservativeLinUCB(MABAlgorithmBase):
         """Calculate upper confidence bound for an arm."""
         try:
             A_inv = inv(arm_stats.A)
-            confidence = self.config.alpha * np.sqrt(context_vector.T @ A_inv @ context_vector)
+            confidence = self.config.alpha * np.sqrt(
+                context_vector.T @ A_inv @ context_vector
+            )
             return float(confidence)
         except np.linalg.LinAlgError:
-            logger.warning(f"Singular matrix for arm {arm_stats.arm_id}, using fallback")
+            logger.warning(
+                f"Singular matrix for arm {arm_stats.arm_id}, using fallback"
+            )
             return self.config.alpha  # Fallback confidence
 
-    def _estimate_reward(self, context_vector: np.ndarray, arm_stats: ArmStatistics) -> float:
+    def _estimate_reward(
+        self, context_vector: np.ndarray, arm_stats: ArmStatistics
+    ) -> float:
         """Estimate expected reward for an arm given context."""
         if arm_stats.n_pulls == 0:
             return 0.0  # No data yet
@@ -168,7 +174,11 @@ class ConservativeLinUCB(MABAlgorithmBase):
             return estimated_reward
         except np.linalg.LinAlgError:
             logger.warning(f"Singular matrix for arm {arm_stats.arm_id}")
-            return arm_stats.total_reward / arm_stats.n_pulls if arm_stats.n_pulls > 0 else 0.0
+            return (
+                arm_stats.total_reward / arm_stats.n_pulls
+                if arm_stats.n_pulls > 0
+                else 0.0
+            )
 
     def _is_arm_safe(self, context_vector: np.ndarray, arm_id: str) -> bool:
         """Check if an arm satisfies conservative constraints."""
@@ -220,13 +230,20 @@ class ConservativeLinUCB(MABAlgorithmBase):
 
         # Filter safe arms
         safe_arms = [
-            arm_id for arm_id in available_arms if self._is_arm_safe(context_vector, arm_id)
+            arm_id
+            for arm_id in available_arms
+            if self._is_arm_safe(context_vector, arm_id)
         ]
 
         if not safe_arms:
-            if self.config.fallback_to_baseline and self.baseline_performance is not None:
+            if (
+                self.config.fallback_to_baseline
+                and self.baseline_performance is not None
+            ):
                 # Fallback to arm with performance closest to baseline
-                logger.warning("No safe arms available, falling back to baseline-like arm")
+                logger.warning(
+                    "No safe arms available, falling back to baseline-like arm"
+                )
                 fallback_arm = self._select_fallback_arm(context_vector, available_arms)
                 if fallback_arm:
                     self.safety_violations += 1
@@ -240,15 +257,21 @@ class ConservativeLinUCB(MABAlgorithmBase):
         for arm_id in safe_arms:
             arm_stats = self.arm_stats[arm_id]
             estimated_reward = self._estimate_reward(context_vector, arm_stats)
-            confidence_bound = self._calculate_confidence_bound(context_vector, arm_stats)
+            confidence_bound = self._calculate_confidence_bound(
+                context_vector, arm_stats
+            )
 
             # Add exploration bonus for constitutional compliance
             constitutional_bonus = 0.0
             if arm_stats.constitutional_scores:
                 avg_constitutional = np.mean(arm_stats.constitutional_scores)
-                constitutional_bonus = self.config.exploration_bonus * avg_constitutional
+                constitutional_bonus = (
+                    self.config.exploration_bonus * avg_constitutional
+                )
 
-            ucb_values[arm_id] = estimated_reward + confidence_bound + constitutional_bonus
+            ucb_values[arm_id] = (
+                estimated_reward + confidence_bound + constitutional_bonus
+            )
 
         # Select arm with highest UCB value
         selected_arm = max(ucb_values.keys(), key=lambda x: ucb_values[x])
@@ -325,7 +348,8 @@ class ConservativeLinUCB(MABAlgorithmBase):
 
         avg_reward = arm_stats.total_reward / arm_stats.n_pulls
         logger.debug(
-            f"Updated arm {arm_id}: pulls={arm_stats.n_pulls}, " f"avg_reward={avg_reward:.3f}"
+            f"Updated arm {arm_id}: pulls={arm_stats.n_pulls}, "
+            f"avg_reward={avg_reward:.3f}"
         )
 
     def _update_baseline_performance(self, reward: float):
@@ -360,7 +384,9 @@ class ConservativeLinUCB(MABAlgorithmBase):
         arm_stats = self.arm_stats[arm_id]
 
         # Calculate average reward
-        avg_reward = arm_stats.total_reward / arm_stats.n_pulls if arm_stats.n_pulls > 0 else 0.0
+        avg_reward = (
+            arm_stats.total_reward / arm_stats.n_pulls if arm_stats.n_pulls > 0 else 0.0
+        )
 
         # Calculate constitutional score statistics
         const_scores = arm_stats.constitutional_scores
@@ -373,7 +399,9 @@ class ConservativeLinUCB(MABAlgorithmBase):
         safety_std = np.std(safety_scores) if safety_scores else 0.0
 
         # Calculate theta norm
-        theta_norm = np.linalg.norm(arm_stats.theta) if arm_stats.theta is not None else 0.0
+        theta_norm = (
+            np.linalg.norm(arm_stats.theta) if arm_stats.theta is not None else 0.0
+        )
 
         return {
             "arm_id": arm_id,
@@ -385,7 +413,11 @@ class ConservativeLinUCB(MABAlgorithmBase):
                 "std": const_std,
                 "count": len(const_scores),
             },
-            "safety_scores": {"mean": safety_mean, "std": safety_std, "count": len(safety_scores)},
+            "safety_scores": {
+                "mean": safety_mean,
+                "std": safety_std,
+                "count": len(safety_scores),
+            },
             "created_at": arm_stats.created_at,
             "theta_norm": theta_norm,
         }
@@ -406,7 +438,9 @@ class ConservativeLinUCB(MABAlgorithmBase):
                 "safety_weight": self.config.safety_weight,
             },
             "performance_trend": {
-                "recent_rewards": (self.baseline_history[-10:] if self.baseline_history else []),
+                "recent_rewards": (
+                    self.baseline_history[-10:] if self.baseline_history else []
+                ),
                 "total_performance_records": len(self.performance_history),
             },
         }
@@ -422,7 +456,8 @@ class ConservativeLinUCB(MABAlgorithmBase):
         return {
             "performance_history": self.performance_history,
             "arm_statistics": {
-                arm_id: self.get_arm_statistics(arm_id) for arm_id in self.arm_stats.keys()
+                arm_id: self.get_arm_statistics(arm_id)
+                for arm_id in self.arm_stats.keys()
             },
             "system_statistics": self.get_system_statistics(),
             "config": self.config.__dict__,

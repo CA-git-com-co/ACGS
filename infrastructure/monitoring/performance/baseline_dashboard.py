@@ -30,11 +30,12 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 app = FastAPI(
     title="ACGS Performance Baseline Dashboard",
     description="Dashboard for monitoring and managing ACGS performance baselines",
-    version="1.0.0"
+    version="1.0.0",
 )
 
 # Templates and static files
 templates = Jinja2Templates(directory="templates")
+
 
 @app.get("/", response_class=HTMLResponse)
 async def dashboard_home(request: Request):
@@ -42,17 +43,23 @@ async def dashboard_home(request: Request):
     try:
         # Load current baseline
         current_baseline = await baseline_collector.load_baseline()
-        baseline_summary = baseline_collector.get_baseline_summary() if current_baseline else {}
-        
-        return templates.TemplateResponse("dashboard.html", {
-            "request": request,
-            "baseline_summary": baseline_summary,
-            "constitutional_hash": CONSTITUTIONAL_HASH,
-            "timestamp": datetime.now(timezone.utc).isoformat()
-        })
+        baseline_summary = (
+            baseline_collector.get_baseline_summary() if current_baseline else {}
+        )
+
+        return templates.TemplateResponse(
+            "dashboard.html",
+            {
+                "request": request,
+                "baseline_summary": baseline_summary,
+                "constitutional_hash": CONSTITUTIONAL_HASH,
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            },
+        )
     except Exception as e:
         logger.error(f"Dashboard error: {e}")
         return HTMLResponse(f"<h1>Dashboard Error</h1><p>{str(e)}</p>", status_code=500)
+
 
 @app.get("/api/baseline/current")
 async def get_current_baseline():
@@ -61,11 +68,12 @@ async def get_current_baseline():
         baseline = await baseline_collector.load_baseline()
         if not baseline:
             raise HTTPException(status_code=404, detail="No baseline found")
-        
+
         return baseline_collector.get_baseline_summary()
     except Exception as e:
         logger.error(f"Error getting current baseline: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.get("/api/baseline/{baseline_id}")
 async def get_baseline(baseline_id: str):
@@ -73,91 +81,112 @@ async def get_baseline(baseline_id: str):
     try:
         baseline = await baseline_collector.load_baseline(baseline_id)
         if not baseline:
-            raise HTTPException(status_code=404, detail=f"Baseline {baseline_id} not found")
-        
+            raise HTTPException(
+                status_code=404, detail=f"Baseline {baseline_id} not found"
+            )
+
         return baseline_collector.get_baseline_summary()
     except Exception as e:
         logger.error(f"Error getting baseline {baseline_id}: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.post("/api/baseline/establish")
 async def establish_new_baseline(duration_hours: int = 1):
     """Establish a new performance baseline."""
     try:
         if duration_hours < 1 or duration_hours > 168:  # Max 1 week
-            raise HTTPException(status_code=400, detail="Duration must be between 1 and 168 hours")
-        
+            raise HTTPException(
+                status_code=400, detail="Duration must be between 1 and 168 hours"
+            )
+
         # Start baseline collection in background
-        asyncio.create_task(baseline_collector.establish_performance_baseline(duration_hours))
-        
+        asyncio.create_task(
+            baseline_collector.establish_performance_baseline(duration_hours)
+        )
+
         return {
             "message": f"Baseline collection started for {duration_hours} hours",
             "duration_hours": duration_hours,
-            "constitutional_hash": CONSTITUTIONAL_HASH
+            "constitutional_hash": CONSTITUTIONAL_HASH,
         }
     except Exception as e:
         logger.error(f"Error establishing baseline: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.get("/api/services/status")
 async def get_services_status():
     """Get current status of all services."""
     try:
         services_status = {}
-        
+
         for service_name, port in baseline_collector.services.items():
             try:
                 # Quick health check
                 import aiohttp
+
                 async with aiohttp.ClientSession() as session:
-                    async with session.get(f"http://localhost:{port}/health", timeout=5) as response:
+                    async with session.get(
+                        f"http://localhost:{port}/health", timeout=5
+                    ) as response:
                         services_status[service_name] = {
                             "port": port,
-                            "status": "healthy" if response.status == 200 else "unhealthy",
+                            "status": (
+                                "healthy" if response.status == 200 else "unhealthy"
+                            ),
                             "response_code": response.status,
-                            "timestamp": datetime.now(timezone.utc).isoformat()
+                            "timestamp": datetime.now(timezone.utc).isoformat(),
                         }
             except Exception as e:
                 services_status[service_name] = {
                     "port": port,
                     "status": "unreachable",
                     "error": str(e),
-                    "timestamp": datetime.now(timezone.utc).isoformat()
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
-        
+
         return {
             "services": services_status,
             "total_services": len(services_status),
-            "healthy_services": sum(1 for s in services_status.values() if s["status"] == "healthy"),
-            "constitutional_hash": CONSTITUTIONAL_HASH
+            "healthy_services": sum(
+                1 for s in services_status.values() if s["status"] == "healthy"
+            ),
+            "constitutional_hash": CONSTITUTIONAL_HASH,
         }
     except Exception as e:
         logger.error(f"Error getting services status: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.get("/api/metrics/live")
 async def get_live_metrics():
     """Get live performance metrics."""
     try:
         live_metrics = {}
-        
+
         for service_name, port in baseline_collector.services.items():
-            metrics = await baseline_collector.measure_service_performance(service_name, port)
+            metrics = await baseline_collector.measure_service_performance(
+                service_name, port
+            )
             live_metrics[service_name] = {
                 "response_time_ms": metrics.get("response_time_ms", 0),
                 "available": metrics.get("available", False),
-                "constitutional_compliance": metrics.get("constitutional_compliance", 1.0),
-                "timestamp": datetime.now(timezone.utc).isoformat()
+                "constitutional_compliance": metrics.get(
+                    "constitutional_compliance", 1.0
+                ),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
-        
+
         return {
             "metrics": live_metrics,
             "constitutional_hash": CONSTITUTIONAL_HASH,
-            "timestamp": datetime.now(timezone.utc).isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
     except Exception as e:
         logger.error(f"Error getting live metrics: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.get("/api/baselines/list")
 async def list_baselines():
@@ -165,34 +194,43 @@ async def list_baselines():
     try:
         baselines_dir = Path("infrastructure/monitoring/performance/baselines")
         baselines = []
-        
+
         if baselines_dir.exists():
             for baseline_file in baselines_dir.glob("baseline_*.json"):
                 try:
                     with open(baseline_file) as f:
                         baseline_data = json.load(f)
-                    
-                    baselines.append({
-                        "baseline_id": baseline_data["baseline_id"],
-                        "version": baseline_data["version"],
-                        "created_at": baseline_data["metadata"]["created_at"],
-                        "duration_hours": baseline_data["metadata"]["measurement_duration_hours"],
-                        "sample_count": baseline_data["metadata"]["sample_count"],
-                        "services_count": len(baseline_data["services"]),
-                        "avg_response_time": baseline_data["system_wide"]["overall_avg_response_time"],
-                        "error_rate": baseline_data["system_wide"]["overall_error_rate"]
-                    })
+
+                    baselines.append(
+                        {
+                            "baseline_id": baseline_data["baseline_id"],
+                            "version": baseline_data["version"],
+                            "created_at": baseline_data["metadata"]["created_at"],
+                            "duration_hours": baseline_data["metadata"][
+                                "measurement_duration_hours"
+                            ],
+                            "sample_count": baseline_data["metadata"]["sample_count"],
+                            "services_count": len(baseline_data["services"]),
+                            "avg_response_time": baseline_data["system_wide"][
+                                "overall_avg_response_time"
+                            ],
+                            "error_rate": baseline_data["system_wide"][
+                                "overall_error_rate"
+                            ],
+                        }
+                    )
                 except Exception as e:
                     logger.warning(f"Error reading baseline file {baseline_file}: {e}")
-        
+
         return {
             "baselines": sorted(baselines, key=lambda x: x["created_at"], reverse=True),
             "total_count": len(baselines),
-            "constitutional_hash": CONSTITUTIONAL_HASH
+            "constitutional_hash": CONSTITUTIONAL_HASH,
         }
     except Exception as e:
         logger.error(f"Error listing baselines: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.get("/api/comparison/{baseline1_id}/{baseline2_id}")
 async def compare_baselines(baseline1_id: str, baseline2_id: str):
@@ -200,50 +238,59 @@ async def compare_baselines(baseline1_id: str, baseline2_id: str):
     try:
         baseline1 = await baseline_collector.load_baseline(baseline1_id)
         baseline2 = await baseline_collector.load_baseline(baseline2_id)
-        
+
         if not baseline1 or not baseline2:
-            raise HTTPException(status_code=404, detail="One or both baselines not found")
-        
+            raise HTTPException(
+                status_code=404, detail="One or both baselines not found"
+            )
+
         comparison = {
             "baseline1": {
                 "id": baseline1.baseline_id,
                 "created_at": baseline1.created_at.isoformat(),
                 "avg_response_time": baseline1.overall_avg_response_time,
                 "error_rate": baseline1.overall_error_rate,
-                "constitutional_compliance": baseline1.overall_constitutional_compliance
+                "constitutional_compliance": baseline1.overall_constitutional_compliance,
             },
             "baseline2": {
                 "id": baseline2.baseline_id,
                 "created_at": baseline2.created_at.isoformat(),
                 "avg_response_time": baseline2.overall_avg_response_time,
                 "error_rate": baseline2.overall_error_rate,
-                "constitutional_compliance": baseline2.overall_constitutional_compliance
+                "constitutional_compliance": baseline2.overall_constitutional_compliance,
             },
             "differences": {
-                "response_time_change_ms": baseline2.overall_avg_response_time - baseline1.overall_avg_response_time,
-                "error_rate_change": baseline2.overall_error_rate - baseline1.overall_error_rate,
-                "compliance_change": baseline2.overall_constitutional_compliance - baseline1.overall_constitutional_compliance
+                "response_time_change_ms": baseline2.overall_avg_response_time
+                - baseline1.overall_avg_response_time,
+                "error_rate_change": baseline2.overall_error_rate
+                - baseline1.overall_error_rate,
+                "compliance_change": baseline2.overall_constitutional_compliance
+                - baseline1.overall_constitutional_compliance,
             },
-            "service_comparisons": {}
+            "service_comparisons": {},
         }
-        
+
         # Compare individual services
         for service_name in baseline1.services.keys():
             if service_name in baseline2.services:
                 service1 = baseline1.services[service_name]
                 service2 = baseline2.services[service_name]
-                
+
                 comparison["service_comparisons"][service_name] = {
-                    "response_time_change_ms": service2.avg_response_time - service1.avg_response_time,
-                    "error_rate_change": service2.error_rate_percent - service1.error_rate_percent,
+                    "response_time_change_ms": service2.avg_response_time
+                    - service1.avg_response_time,
+                    "error_rate_change": service2.error_rate_percent
+                    - service1.error_rate_percent,
                     "uptime_change": service2.uptime_percent - service1.uptime_percent,
-                    "compliance_change": service2.constitutional_compliance_rate - service1.constitutional_compliance_rate
+                    "compliance_change": service2.constitutional_compliance_rate
+                    - service1.constitutional_compliance_rate,
                 }
-        
+
         return comparison
     except Exception as e:
         logger.error(f"Error comparing baselines: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.get("/health")
 async def health_check():
@@ -252,8 +299,9 @@ async def health_check():
         "status": "healthy",
         "service": "acgs-baseline-dashboard",
         "constitutional_hash": CONSTITUTIONAL_HASH,
-        "timestamp": datetime.now(timezone.utc).isoformat()
+        "timestamp": datetime.now(timezone.utc).isoformat(),
     }
+
 
 # Create dashboard template
 dashboard_template = """
@@ -419,24 +467,21 @@ dashboard_template = """
 </html>
 """
 
+
 # Create templates directory and save template
 def create_dashboard_template():
     """Create dashboard template file."""
     templates_dir = Path("templates")
     templates_dir.mkdir(exist_ok=True)
-    
+
     template_file = templates_dir / "dashboard.html"
-    with open(template_file, 'w') as f:
+    with open(template_file, "w") as f:
         f.write(dashboard_template)
+
 
 if __name__ == "__main__":
     # Create template
     create_dashboard_template()
-    
+
     # Start dashboard server
-    uvicorn.run(
-        app,
-        host="0.0.0.0",
-        port=8094,
-        log_level="info"
-    )
+    uvicorn.run(app, host="0.0.0.0", port=8094, log_level="info")

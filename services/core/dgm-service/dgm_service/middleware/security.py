@@ -71,10 +71,17 @@ class SecurityMiddleware(BaseHTTPMiddleware):
 
         # Add custom security headers
         response.headers["X-Service-Name"] = "dgm-service"
-        response.headers["X-Response-Time"] = str(round((time.time() - start_time) * 1000, 2))
+        response.headers["X-Response-Time"] = str(
+            round((time.time() - start_time) * 1000, 2)
+        )
 
         # Remove sensitive headers that might leak information
-        sensitive_headers = ["Server", "X-Powered-By", "X-AspNet-Version", "X-AspNetMvc-Version"]
+        sensitive_headers = [
+            "Server",
+            "X-Powered-By",
+            "X-AspNet-Version",
+            "X-AspNetMvc-Version",
+        ]
 
         for header in sensitive_headers:
             if header in response.headers:
@@ -162,7 +169,9 @@ class SecurityMiddleware(BaseHTTPMiddleware):
 
         # Check for suspicious referers
         referer = security_info.get("referer", "").lower()
-        if referer and any(domain in referer for domain in ["malware", "phishing", "spam"]):
+        if referer and any(
+            domain in referer for domain in ["malware", "phishing", "spam"]
+        ):
             return True
 
         # Check for multiple forwarded IPs (potential proxy abuse)

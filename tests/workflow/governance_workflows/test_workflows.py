@@ -16,7 +16,7 @@ class TestWorkflows:
         return {
             "auth_service": AsyncMock(),
             "policy_service": AsyncMock(),
-            "governance_service": AsyncMock()
+            "governance_service": AsyncMock(),
         }
 
     @pytest.mark.asyncio
@@ -27,7 +27,7 @@ class TestWorkflows:
             "validate_input",
             "check_permissions",
             "create_policy",
-            "notify_stakeholders"
+            "notify_stakeholders",
         ]
 
         for step in workflow_steps:

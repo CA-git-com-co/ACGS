@@ -20,7 +20,7 @@ from .schemas import ConstitutionalSynthesisInput
 from services.shared.security_validation import (
     validate_user_input,
     validate_policy_input,
-    validate_governance_input
+    validate_governance_input,
 )
 
 logger = logging.getLogger(__name__)
@@ -204,8 +204,8 @@ async def synthesize_with_mab(
         }
 
         # Execute MAB-optimized synthesis
-        synthesis_output, integration_metadata = await mab_service.synthesize_with_mab_optimization(
-            synthesis_input, context
+        synthesis_output, integration_metadata = (
+            await mab_service.synthesize_with_mab_optimization(synthesis_input, context)
         )
 
         return {

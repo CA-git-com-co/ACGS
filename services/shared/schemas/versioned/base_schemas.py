@@ -90,7 +90,9 @@ class VersionedRequest(BaseModel):
     """
 
     data: Any
-    requested_version: Optional[str] = Field(None, description="Explicitly requested API version")
+    requested_version: Optional[str] = Field(
+        None, description="Explicitly requested API version"
+    )
     client_version: Optional[str] = Field(None, description="Client SDK version")
     compatibility_mode: bool = Field(
         False, description="Enable compatibility mode for version mismatches"
@@ -232,16 +234,26 @@ class CommonFields:
     """Common field definitions used across different schema versions."""
 
     # Timestamp fields
-    created_at_v1 = Field(..., description="Creation timestamp (v1.x format)", alias="created_at")
+    created_at_v1 = Field(
+        ..., description="Creation timestamp (v1.x format)", alias="created_at"
+    )
 
-    created_at_v2 = Field(..., description="Creation timestamp (v2.x format)", alias="createdAt")
+    created_at_v2 = Field(
+        ..., description="Creation timestamp (v2.x format)", alias="createdAt"
+    )
 
-    updated_at_v1 = Field(..., description="Update timestamp (v1.x format)", alias="updated_at")
+    updated_at_v1 = Field(
+        ..., description="Update timestamp (v1.x format)", alias="updated_at"
+    )
 
-    updated_at_v2 = Field(..., description="Update timestamp (v2.x format)", alias="updatedAt")
+    updated_at_v2 = Field(
+        ..., description="Update timestamp (v2.x format)", alias="updatedAt"
+    )
 
     # ID fields
-    user_id_v1 = Field(..., description="User identifier (v1.x format)", alias="user_id")
+    user_id_v1 = Field(
+        ..., description="User identifier (v1.x format)", alias="user_id"
+    )
 
     user_id_v2 = Field(..., description="User identifier (v2.x format)", alias="userId")
 

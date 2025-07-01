@@ -84,7 +84,9 @@ class SecurityAuditor:
         }
 
         for req_file in requirements_files:
-            logger.info(f"Analyzing licenses in: {req_file.relative_to(self.project_root)}")
+            logger.info(
+                f"Analyzing licenses in: {req_file.relative_to(self.project_root)}"
+            )
 
             try:
                 # Use pip-licenses to analyze the requirements file
@@ -115,12 +117,17 @@ class SecurityAuditor:
                         package_name = package.get("Name", "Unknown")
 
                         # Check for GPL conflicts
-                        if "GPL" in license_name.upper() or "GNU" in license_name.upper():
+                        if (
+                            "GPL" in license_name.upper()
+                            or "GNU" in license_name.upper()
+                        ):
                             license_results["gpl_conflicts"].append(
                                 {
                                     "package": package_name,
                                     "license": license_name,
-                                    "file": str(req_file.relative_to(self.project_root)),
+                                    "file": str(
+                                        req_file.relative_to(self.project_root)
+                                    ),
                                 }
                             )
 
@@ -158,7 +165,9 @@ class SecurityAuditor:
         requirements_files = self.find_requirements_files()
 
         for req_file in requirements_files:
-            logger.info(f"Scanning vulnerabilities in: {req_file.relative_to(self.project_root)}")
+            logger.info(
+                f"Scanning vulnerabilities in: {req_file.relative_to(self.project_root)}"
+            )
 
             try:
                 # Use safety to scan for vulnerabilities
@@ -185,7 +194,9 @@ class SecurityAuditor:
                             vulnerability = {
                                 "package": vuln.get("package_name", "Unknown"),
                                 "version": vuln.get("installed_version", "Unknown"),
-                                "vulnerability_id": vuln.get("vulnerability_id", "Unknown"),
+                                "vulnerability_id": vuln.get(
+                                    "vulnerability_id", "Unknown"
+                                ),
                                 "severity": severity,
                                 "description": vuln.get("advisory", "No description"),
                                 "file": str(req_file.relative_to(self.project_root)),
@@ -207,9 +218,14 @@ class SecurityAuditor:
         """Determine vulnerability severity based on available data."""
         advisory = vulnerability.get("advisory", "").lower()
 
-        if any(word in advisory for word in ["critical", "remote code execution", "rce"]):
+        if any(
+            word in advisory for word in ["critical", "remote code execution", "rce"]
+        ):
             return "CRITICAL"
-        elif any(word in advisory for word in ["high", "privilege escalation", "sql injection"]):
+        elif any(
+            word in advisory
+            for word in ["high", "privilege escalation", "sql injection"]
+        ):
             return "HIGH"
         elif any(word in advisory for word in ["medium", "denial of service", "dos"]):
             return "MEDIUM"
@@ -352,9 +368,15 @@ class SecurityAuditor:
 def main():
     """Main execution function."""
     parser = argparse.ArgumentParser(description="ACGS-1 Security Audit Tool")
-    parser.add_argument("--full-audit", action="store_true", help="Run complete security audit")
-    parser.add_argument("--license-only", action="store_true", help="Run license audit only")
-    parser.add_argument("--cve-only", action="store_true", help="Run CVE assessment only")
+    parser.add_argument(
+        "--full-audit", action="store_true", help="Run complete security audit"
+    )
+    parser.add_argument(
+        "--license-only", action="store_true", help="Run license audit only"
+    )
+    parser.add_argument(
+        "--cve-only", action="store_true", help="Run CVE assessment only"
+    )
     parser.add_argument(
         "--project-root", type=Path, default=Path.cwd(), help="Project root directory"
     )

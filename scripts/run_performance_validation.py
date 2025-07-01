@@ -30,14 +30,20 @@ except ImportError as e:
 
 def main():
     """Main function for performance validation runner."""
-    parser = argparse.ArgumentParser(description="Performance Benchmark Validation Runner")
-    parser.add_argument('--output', type=str, help='Output file for validation report')
-    parser.add_argument('--constitutional-hash', type=str, default="cdd01ef066bc6cf2",
-                       help='Constitutional hash for verification')
-    parser.add_argument('--samples', type=int, default=50000,
-                       help='Number of test samples to generate')
-    parser.add_argument('--verbose', action='store_true',
-                       help='Enable verbose output')
+    parser = argparse.ArgumentParser(
+        description="Performance Benchmark Validation Runner"
+    )
+    parser.add_argument("--output", type=str, help="Output file for validation report")
+    parser.add_argument(
+        "--constitutional-hash",
+        type=str,
+        default="cdd01ef066bc6cf2",
+        help="Constitutional hash for verification",
+    )
+    parser.add_argument(
+        "--samples", type=int, default=50000, help="Number of test samples to generate"
+    )
+    parser.add_argument("--verbose", action="store_true", help="Enable verbose output")
 
     args = parser.parse_args()
 
@@ -59,27 +65,29 @@ def main():
         validation_report = validator.run_complete_validation()
 
         # Check for errors
-        if 'error' in validation_report:
+        if "error" in validation_report:
             print(f"❌ Validation failed: {validation_report['error']}")
             sys.exit(1)
 
         # Save report if output file specified
         if args.output:
             output_file = Path(args.output)
-            with open(output_file, 'w') as f:
+            with open(output_file, "w") as f:
                 json.dump(validation_report, f, indent=2, default=str)
             print(f"\n📄 Validation report saved to: {output_file}")
         else:
             # Generate default output file
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            output_file = project_root / f"performance_validation_report_{timestamp}.json"
-            with open(output_file, 'w') as f:
+            output_file = (
+                project_root / f"performance_validation_report_{timestamp}.json"
+            )
+            with open(output_file, "w") as f:
                 json.dump(validation_report, f, indent=2, default=str)
             print(f"\n📄 Validation report saved to: {output_file}")
 
         # Check overall validation status
-        validation_summary = validation_report.get('validation_summary', {})
-        all_targets_met = validation_summary.get('all_targets_met', False)
+        validation_summary = validation_report.get("validation_summary", {})
+        all_targets_met = validation_summary.get("all_targets_met", False)
 
         if all_targets_met:
             print("\n🎉 SUCCESS: All performance targets met!")
@@ -90,9 +98,9 @@ def main():
             print("❌ Review validation results before production deployment")
 
             # Print specific failures
-            validation_results = validation_report.get('validation_results', {})
+            validation_results = validation_report.get("validation_results", {})
             for metric, result in validation_results.items():
-                if not result.get('target_met', False):
+                if not result.get("target_met", False):
                     print(f"   - {metric}: Target not met")
 
             sys.exit(1)
@@ -101,11 +109,12 @@ def main():
         print(f"❌ Performance validation failed with error: {e}")
         if args.verbose:
             import traceback
+
             traceback.print_exc()
         sys.exit(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
 """
 ACGS-1 Performance Validation Runner

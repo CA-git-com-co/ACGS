@@ -78,9 +78,13 @@ class OCRClient:
         """
         self.host = host or os.environ.get("OCR_SERVICE_HOST", "localhost")
         self.port = port or int(os.environ.get("OCR_SERVICE_PORT", "8666"))
-        self.health_port = health_port or int(os.environ.get("OCR_SERVICE_HEALTH_PORT", "8667"))
+        self.health_port = health_port or int(
+            os.environ.get("OCR_SERVICE_HEALTH_PORT", "8667")
+        )
         self.timeout = timeout
-        self.model = model or os.environ.get("OCR_SERVICE_MODEL", "nanonets/Nanonets-OCR-s")
+        self.model = model or os.environ.get(
+            "OCR_SERVICE_MODEL", "nanonets/Nanonets-OCR-s"
+        )
 
         # API endpoints
         self.endpoint = f"http://{self.host}:{self.port}/v1/chat/completions"
@@ -101,7 +105,9 @@ class OCRClient:
             if response.status_code == 200:
                 return True, None
             else:
-                error_msg = f"Health check failed with status code: {response.status_code}"
+                error_msg = (
+                    f"Health check failed with status code: {response.status_code}"
+                )
                 logger.warning(error_msg)
                 return False, error_msg
         except requests.exceptions.ConnectionError as e:
@@ -316,7 +322,9 @@ class OCRClient:
         """
         if document_type not in self.DOCUMENT_TYPES:
             valid_types = ", ".join(self.DOCUMENT_TYPES.keys())
-            error_msg = f"Invalid document type '{document_type}'. Valid types: {valid_types}"
+            error_msg = (
+                f"Invalid document type '{document_type}'. Valid types: {valid_types}"
+            )
             logger.error(error_msg)
             raise OCRRequestException(error_msg)
 
@@ -332,7 +340,8 @@ if __name__ == "__main__":
 
     # Configure console logging when run directly
     logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
 
     if len(sys.argv) < 2:

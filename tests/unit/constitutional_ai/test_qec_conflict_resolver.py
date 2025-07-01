@@ -4,18 +4,22 @@ Unit tests for services.core.constitutional-ai.ac_service.app.services.qec_confl
 
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
-from services.core.constitutional-ai.ac_service.app.services.qec_conflict_resolver import ConflictAnalysis, PatchResult, QECConflictResolver, ConstitutionalPrinciple
-
+from services.core.constitutional_ai.ac_service.app.services.qec_conflict_resolver import (
+    ConflictAnalysis,
+    PatchResult,
+    QECConflictResolver,
+    ConstitutionalPrinciple,
+)
 
 
 class TestConflictAnalysis:
     """Test suite for ConflictAnalysis."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -24,12 +28,12 @@ class TestConflictAnalysis:
 
 class TestPatchResult:
     """Test suite for PatchResult."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -38,12 +42,12 @@ class TestPatchResult:
 
 class TestQECConflictResolver:
     """Test suite for QECConflictResolver."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -54,20 +58,18 @@ class TestQECConflictResolver:
         # TODO: Implement test for prioritize_conflicts
         instance = QECConflictResolver()
         # Add test implementation here
-        assert hasattr(instance, 'prioritize_conflicts')
+        assert hasattr(instance, "prioritize_conflicts")
 
 
 class TestConstitutionalPrinciple:
     """Test suite for ConstitutionalPrinciple."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
         pass
-
-

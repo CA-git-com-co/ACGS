@@ -39,7 +39,9 @@ class ACServiceClient:
         headers = get_auth_headers(auth_token)
 
         try:
-            response = await self.client.get(f"/principles/{principle_id}", headers=headers)
+            response = await self.client.get(
+                f"/principles/{principle_id}", headers=headers
+            )
             response.raise_for_status()  # Raise an exception for 4XX or 5XX status codes
             data = response.json()
             return ACPrinciple(**data)
@@ -49,7 +51,9 @@ class ACServiceClient:
             )
             return None
         except httpx.RequestError as e:
-            print(f"Request error fetching principle {principle_id} from AC Service: {str(e)}")
+            print(
+                f"Request error fetching principle {principle_id} from AC Service: {str(e)}"
+            )
             return None
         except Exception as e:  # Catch other potential errors like JSON decoding
             print(f"Unexpected error fetching principle {principle_id}: {str(e)}")
@@ -68,7 +72,9 @@ class ACServiceClient:
         try:
             response = await self.client.get("/principles/", headers=headers)
             response.raise_for_status()
-            data = response.json()  # AC service returns {"principles": [...], "total": ...}
+            data = (
+                response.json()
+            )  # AC service returns {"principles": [...], "total": ...}
             return [ACPrinciple(**p) for p in data.get("principles", [])]
         except httpx.HTTPStatusError as e:
             print(
@@ -127,7 +133,9 @@ class ACServiceClient:
             print(f"Request error fetching principles for context {context}: {str(e)}")
             return []
         except Exception as e:
-            print(f"Unexpected error fetching principles for context {context}: {str(e)}")
+            print(
+                f"Unexpected error fetching principles for context {context}: {str(e)}"
+            )
             return []
 
     async def get_principles_by_category(
@@ -139,7 +147,9 @@ class ACServiceClient:
             headers["Authorization"] = f"Bearer {auth_token}"
 
         try:
-            response = await self.client.get(f"/principles/category/{category}", headers=headers)
+            response = await self.client.get(
+                f"/principles/category/{category}", headers=headers
+            )
             response.raise_for_status()
             data = response.json()
             return [ACPrinciple(**p) for p in data.get("principles", [])]
@@ -152,7 +162,9 @@ class ACServiceClient:
             print(f"Request error fetching principles by category {category}: {str(e)}")
             return []
         except Exception as e:
-            print(f"Unexpected error fetching principles by category {category}: {str(e)}")
+            print(
+                f"Unexpected error fetching principles by category {category}: {str(e)}"
+            )
             return []
 
     async def search_principles_by_keywords(
@@ -225,12 +237,18 @@ if __name__ == "__main__":
         #     print("\nNo principles found or error fetching them.")
 
         await ac_service_client.close()
-        print("\nNote: Actual data fetching depends on running ac_service and its data.")
-        print("If ac_service is not running or has no data, 'None' or empty lists are expected.")
+        print(
+            "\nNote: Actual data fetching depends on running ac_service and its data."
+        )
+        print(
+            "If ac_service is not running or has no data, 'None' or empty lists are expected."
+        )
 
     # To run this test, ensure ac_service is running.
     # You can try: `python -m gs_service.app.services.ac_client` from the root directory
     # However, due to relative imports (e.g. ..schemas), it's better to run tests via a test runner
     # or a script that adjusts Python path. For now, it's illustrative.
     # asyncio.run(test_ac_client())
-    print("AC Service client defined. Run test_ac_client() with a running AC service to test.")
+    print(
+        "AC Service client defined. Run test_ac_client() with a running AC service to test."
+    )

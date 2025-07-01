@@ -36,7 +36,10 @@ app = FastAPI(
 
 # Add secure CORS middleware with environment-based configuration
 import os
-cors_origins = os.getenv("BACKEND_CORS_ORIGINS", "http://localhost:3000,http://localhost:8080").split(",")
+
+cors_origins = os.getenv(
+    "BACKEND_CORS_ORIGINS", "http://localhost:3000,http://localhost:8080"
+).split(",")
 cors_origins = [origin.strip() for origin in cors_origins if origin.strip()]
 
 app.add_middleware(
@@ -46,12 +49,12 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=[
         "Accept",
-        "Accept-Language", 
+        "Accept-Language",
         "Content-Language",
         "Content-Type",
         "Authorization",
         "X-Request-ID",
-        "X-Constitutional-Hash"
+        "X-Constitutional-Hash",
     ],
     expose_headers=["X-Request-ID", "X-Response-Time", "X-Compliance-Score"],
 )
@@ -59,21 +62,23 @@ app.add_middleware(
 # In-memory blockchain for audit trail
 blockchain = []
 
+
 @app.middleware("http")
 async def add_security_headers(request, call_next):
     """Add security headers including constitutional hash."""
     response = await call_next(request)
-    
+
     # Core security headers
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["X-XSS-Protection"] = "1; mode=block"
-    
+
     # ACGS-1 specific headers
     response.headers["X-ACGS-Security"] = "enabled"
     response.headers["X-Constitutional-Hash"] = "cdd01ef066bc6cf2"
-    
+
     return response
+
 
 @app.get("/", status_code=status.HTTP_200_OK)
 async def root(request: Request):
@@ -90,16 +95,17 @@ async def root(request: Request):
             "Blockchain-based Audit Trail Verification",
             "AC Service Integration",
             "Performance Optimization",
-            "Comprehensive Error Handling"
+            "Comprehensive Error Handling",
         ],
-        "status": "operational"
+        "status": "operational",
     }
+
 
 @app.get("/health", status_code=status.HTTP_200_OK)
 async def health_check():
     """Health check endpoint."""
     uptime_seconds = time.time() - service_start_time
-    
+
     return {
         "status": "healthy",
         "service": SERVICE_NAME,
@@ -110,14 +116,15 @@ async def health_check():
             "z3_solver": "operational",
             "crypto_validator": "operational",
             "audit_trail": "operational",
-            "ac_service_integration": "operational"
+            "ac_service_integration": "operational",
         },
         "performance_metrics": {
             "uptime_seconds": uptime_seconds,
             "target_response_time": "<25ms",
-            "availability_target": ">99.9%"
-        }
+            "availability_target": ">99.9%",
+        },
     }
+
 
 @app.post("/api/v1/crypto/validate-signature")
 async def validate_signature(request: Request):
@@ -125,10 +132,12 @@ async def validate_signature(request: Request):
     # Placeholder for cryptographic signature validation
     return {"status": "signature_valid"}
 
+
 @app.get("/api/v1/blockchain/audit-trail")
 async def get_audit_trail():
     """Blockchain audit trail"""
     return {"audit_trail": blockchain}
+
 
 @app.post("/api/v1/blockchain/add-audit-entry")
 async def add_audit_entry(request: Request):
@@ -140,12 +149,13 @@ async def add_audit_entry(request: Request):
     block = {
         "timestamp": time.time(),
         "data": entry,
-        "previous_hash": blockchain[-1]["hash"] if blockchain else "0"
+        "previous_hash": blockchain[-1]["hash"] if blockchain else "0",
     }
     block_string = str(block)
     block["hash"] = hashlib.sha256(block_string.encode()).hexdigest()
     blockchain.append(block)
     return {"status": "entry_added", "block": block}
+
 
 @app.get("/api/v1/performance/metrics")
 async def get_performance_metrics():
@@ -153,11 +163,13 @@ async def get_performance_metrics():
     # Placeholder for performance metrics
     return {"metrics": {}}
 
+
 @app.get("/api/v1/validation/error-reports")
 async def get_error_reports():
     """Error handling reports"""
     # Placeholder for error reports
     return {"reports": []}
+
 
 @app.get("/api/v1/integration/ac-service")
 async def get_ac_service_integration_status():
@@ -165,14 +177,15 @@ async def get_ac_service_integration_status():
     # Placeholder for AC service integration status
     return {"status": "operational", "compliance_rate": 0.98}
 
+
 @app.post("/api/v1/z3/solve")
 async def solve_z3(request: Request):
     """Z3 SMT solver endpoint"""
     # Placeholder for Z3 SMT solver
     # This is a simple example. A real implementation would take a more
     # complex input and generate the Z3 script dynamically.
-    x = Int('x')
-    y = Int('y')
+    x = Int("x")
+    y = Int("y")
     s = Solver()
     s.add(x + y == 20)
     s.add(x > 10)
@@ -182,7 +195,9 @@ async def solve_z3(request: Request):
     else:
         return {"status": "unsat"}
 
+
 if __name__ == "__main__":
     import uvicorn
+
     logger.info(f"Starting {SERVICE_NAME} on port {SERVICE_PORT}")
     uvicorn.run(app, host="0.0.0.0", port=SERVICE_PORT)

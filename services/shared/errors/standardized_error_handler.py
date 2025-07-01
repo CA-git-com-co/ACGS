@@ -82,7 +82,9 @@ class StandardizedErrorResponse(BaseModel):
 class ErrorHandler:
     """Centralized error handler for ACGS-1 services."""
 
-    def __init__(self, service_name: str, service_code: ServiceCode, version: str = "1.0.0"):
+    def __init__(
+        self, service_name: str, service_code: ServiceCode, version: str = "1.0.0"
+    ):
         """Initialize error handler for specific service."""
         self.service_name = service_name
         self.service_code = service_code
@@ -149,7 +151,9 @@ class ErrorHandler:
 
         for error_config in common_errors:
             try:
-                self.error_catalog.register_error(service=self.service_code, **error_config)
+                self.error_catalog.register_error(
+                    service=self.service_code, **error_config
+                )
             except ValueError:
                 # Error already registered
                 pass
@@ -215,7 +219,10 @@ class ErrorHandler:
         # Add exception details to context
         error_context = context or {}
         error_context.update(
-            {"exception_type": type(exception).__name__, "exception_message": str(exception)}
+            {
+                "exception_type": type(exception).__name__,
+                "exception_message": str(exception),
+            }
         )
 
         # Create error response
@@ -240,7 +247,9 @@ class ErrorHandler:
         # Get HTTP status code
         http_status = self._get_http_status_for_error(error_code)
 
-        return JSONResponse(status_code=http_status, content=error_response.model_dump())
+        return JSONResponse(
+            status_code=http_status, content=error_response.model_dump()
+        )
 
     def _map_exception_to_error_code(self, exception: Exception) -> str:
         """Map exception type to standardized error code."""
@@ -256,7 +265,9 @@ class ErrorHandler:
         }
 
         exception_type = type(exception)
-        return exception_mapping.get(exception_type, f"{self.service_code.value}_INTERNAL_001")
+        return exception_mapping.get(
+            exception_type, f"{self.service_code.value}_INTERNAL_001"
+        )
 
     def _get_http_status_for_error(self, error_code: str) -> int:
         """Get HTTP status code for error code."""

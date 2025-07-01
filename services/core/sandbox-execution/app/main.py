@@ -31,11 +31,11 @@ sandbox_manager = None
 async def lifespan(app: FastAPI):
     """Application lifespan manager."""
     global sandbox_manager
-    
+
     # Startup
     logger.info(f"Starting {settings.SERVICE_NAME} v{settings.SERVICE_VERSION}")
     sandbox_manager = SandboxManager()
-    
+
     # Verify Docker is available
     try:
         sandbox_manager.docker_client.ping()
@@ -43,9 +43,9 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.error(f"Docker connection failed: {e}")
         raise RuntimeError("Docker is not available - cannot start sandbox service")
-    
+
     yield
-    
+
     # Shutdown
     if sandbox_manager:
         sandbox_manager.close()
@@ -78,7 +78,11 @@ async def http_exception_handler(request: Request, exc: HTTPException):
         content={
             "error": exc.detail,
             "status_code": exc.status_code,
-            "timestamp": str(request.state.timestamp) if hasattr(request.state, "timestamp") else None,
+            "timestamp": (
+                str(request.state.timestamp)
+                if hasattr(request.state, "timestamp")
+                else None
+            ),
         },
     )
 
@@ -101,11 +105,11 @@ async def add_process_time_header(request: Request, call_next):
     """Add processing time header to responses."""
     start_time = time.time()
     request.state.timestamp = start_time
-    
+
     response = await call_next(request)
     process_time = time.time() - start_time
     response.headers["X-Process-Time"] = str(process_time)
-    
+
     return response
 
 
@@ -145,9 +149,9 @@ async def health_check():
             "docker": False,
             "disk_space": False,
             "memory": False,
-        }
+        },
     }
-    
+
     # Check Docker connectivity
     try:
         if sandbox_manager:
@@ -155,31 +159,33 @@ async def health_check():
             health_status["checks"]["docker"] = True
     except Exception as e:
         logger.warning(f"Docker health check failed: {e}")
-    
+
     # Check disk space (simplified)
     try:
         import shutil
+
         disk_usage = shutil.disk_usage("/tmp")
         free_gb = disk_usage.free / (1024**3)
         health_status["checks"]["disk_space"] = free_gb > 1.0  # At least 1GB free
         health_status["disk_free_gb"] = round(free_gb, 2)
     except Exception as e:
         logger.warning(f"Disk space check failed: {e}")
-    
+
     # Check memory (simplified)
     try:
         import psutil
+
         memory = psutil.virtual_memory()
         health_status["checks"]["memory"] = memory.percent < 90  # Less than 90% used
         health_status["memory_usage_percent"] = memory.percent
     except Exception as e:
         logger.warning(f"Memory check failed: {e}")
-    
+
     # Overall health status
     all_checks_pass = all(health_status["checks"].values())
     if not all_checks_pass:
         health_status["status"] = "degraded"
-    
+
     status_code = 200 if all_checks_pass else 503
     return JSONResponse(content=health_status, status_code=status_code)
 
@@ -190,15 +196,17 @@ async def get_metrics():
     metrics = {
         "service": settings.SERVICE_NAME,
         "metrics": {
-            "active_containers": len(sandbox_manager.active_containers) if sandbox_manager else 0,
+            "active_containers": (
+                len(sandbox_manager.active_containers) if sandbox_manager else 0
+            ),
             "total_executions": 0,  # Would come from database
             "successful_executions": 0,
             "failed_executions": 0,
             "avg_execution_time_ms": 0.0,
         },
-        "docker_info": {}
+        "docker_info": {},
     }
-    
+
     # Get Docker system info
     try:
         if sandbox_manager:
@@ -212,7 +220,7 @@ async def get_metrics():
             }
     except Exception as e:
         logger.warning(f"Failed to get Docker info: {e}")
-    
+
     return metrics
 
 
@@ -242,7 +250,7 @@ async def get_supported_environments():
             "default_memory_limit_mb": 256,
         },
     }
-    
+
     return {
         "environments": environments,
         "security_features": [
@@ -258,7 +266,7 @@ async def get_supported_environments():
 
 if __name__ == "__main__":
     import uvicorn
-    
+
     uvicorn.run(
         "main:app",
         host=settings.HOST,

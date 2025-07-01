@@ -108,7 +108,9 @@ class AsyncProcessingManager:
         self.register_handler("governance_workflow", self._handle_governance_workflow)
 
         # Performance monitoring
-        self.register_handler("performance_monitoring", self._handle_performance_monitoring)
+        self.register_handler(
+            "performance_monitoring", self._handle_performance_monitoring
+        )
 
         # Data export/import
         self.register_handler("data_export", self._handle_data_export)
@@ -153,7 +155,9 @@ class AsyncProcessingManager:
         queue_name = f"jobs:{priority.name.lower()}"
         await self.redis_client.lpush(queue_name, job_id)
 
-        logger.info(f"Job submitted: {job_id} ({job_type}) with priority {priority.name}")
+        logger.info(
+            f"Job submitted: {job_id} ({job_type}) with priority {priority.name}"
+        )
         return job_id
 
     async def get_job_status(self, job_id: str) -> Optional[AsyncJob]:
@@ -252,7 +256,9 @@ class AsyncProcessingManager:
 
             # Execute job with timeout
             start_time = time.time()
-            result = await asyncio.wait_for(handler(job.payload), timeout=job.timeout_seconds)
+            result = await asyncio.wait_for(
+                handler(job.payload), timeout=job.timeout_seconds
+            )
             processing_time = time.time() - start_time
 
             # Update job status to completed
@@ -270,7 +276,9 @@ class AsyncProcessingManager:
             if job.callback_url:
                 await self._send_callback(job)
 
-            logger.info(f"Job {job_id} completed successfully in {processing_time:.2f}s")
+            logger.info(
+                f"Job {job_id} completed successfully in {processing_time:.2f}s"
+            )
 
         except asyncio.TimeoutError:
             await self._handle_job_failure(job, "Job timed out")
@@ -298,7 +306,9 @@ class AsyncProcessingManager:
             await self.redis_client.lpush(queue_name, job.job_id)
 
             self.metrics["jobs_retried"] += 1
-            logger.info(f"Job {job.job_id} queued for retry {job.retry_count}/{job.max_retries}")
+            logger.info(
+                f"Job {job.job_id} queued for retry {job.retry_count}/{job.max_retries}"
+            )
         else:
             # Mark as failed
             job.status = JobStatus.FAILED
@@ -343,7 +353,9 @@ class AsyncProcessingManager:
                     "status": job.status.value,
                     "result": job.metadata.get("result"),
                     "processing_time": job.metadata.get("processing_time"),
-                    "completed_at": (job.completed_at.isoformat() if job.completed_at else None),
+                    "completed_at": (
+                        job.completed_at.isoformat() if job.completed_at else None
+                    ),
                 }
 
                 async with session.post(
@@ -354,7 +366,9 @@ class AsyncProcessingManager:
                     if response.status == 200:
                         logger.info(f"Callback sent successfully for job {job.job_id}")
                     else:
-                        logger.warning(f"Callback failed for job {job.job_id}: {response.status}")
+                        logger.warning(
+                            f"Callback failed for job {job.job_id}: {response.status}"
+                        )
 
         except Exception as e:
             logger.error(f"Failed to send callback for job {job.job_id}: {e}")
@@ -390,7 +404,9 @@ class AsyncProcessingManager:
         }
 
     # Default job handlers
-    async def _handle_constitutional_compliance(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+    async def _handle_constitutional_compliance(
+        self, payload: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Handle constitutional compliance checking jobs."""
         # Simulate constitutional compliance check
         await asyncio.sleep(0.1)  # Simulate processing time
@@ -410,7 +426,9 @@ class AsyncProcessingManager:
             "synthesis_time": 0.5,
         }
 
-    async def _handle_governance_workflow(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+    async def _handle_governance_workflow(
+        self, payload: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Handle governance workflow processing jobs."""
         # Simulate workflow processing
         await asyncio.sleep(0.2)
@@ -420,7 +438,9 @@ class AsyncProcessingManager:
             "execution_time": 0.2,
         }
 
-    async def _handle_performance_monitoring(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+    async def _handle_performance_monitoring(
+        self, payload: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Handle performance monitoring jobs."""
         # Simulate performance monitoring
         await asyncio.sleep(0.1)

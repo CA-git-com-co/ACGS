@@ -149,7 +149,9 @@ class WeightedConsensusEngine:
             elif strategy == ConsensusStrategy.SUPERMAJORITY:
                 result = self._supermajority_consensus(model_votes)
             else:
-                return self._create_error_result(f"Unknown strategy: {strategy}", start_time)
+                return self._create_error_result(
+                    f"Unknown strategy: {strategy}", start_time
+                )
 
             # Apply tie-breaking if needed
             if self._is_tie(result, model_votes):
@@ -246,7 +248,9 @@ class WeightedConsensusEngine:
             confidence_sum += weight * confidence
 
         if not decision_scores:
-            return ConsensusResult("unknown", 0.0, ConsensusStrategy.WEIGHTED_AVERAGE, 0.0, [], [])
+            return ConsensusResult(
+                "unknown", 0.0, ConsensusStrategy.WEIGHTED_AVERAGE, 0.0, [], []
+            )
 
         # Normalize scores
         if total_weight > 0:
@@ -277,14 +281,19 @@ class WeightedConsensusEngine:
             decision_counts[decision] = decision_counts.get(decision, 0) + 1
 
         if not decision_counts:
-            return ConsensusResult("unknown", 0.0, ConsensusStrategy.MAJORITY_VOTE, 0.0, [], [])
+            return ConsensusResult(
+                "unknown", 0.0, ConsensusStrategy.MAJORITY_VOTE, 0.0, [], []
+            )
 
         # Find majority decision
         max_count = max(decision_counts.values())
         majority_decisions = [d for d, c in decision_counts.items() if c == max_count]
 
         # Check if we have a clear majority
-        if max_count > total_votes * self.majority_threshold and len(majority_decisions) == 1:
+        if (
+            max_count > total_votes * self.majority_threshold
+            and len(majority_decisions) == 1
+        ):
             final_decision = majority_decisions[0]
             confidence = max_count / total_votes
         else:
@@ -312,7 +321,9 @@ class WeightedConsensusEngine:
             weight = vote.weight
 
             # Weight by both model weight and confidence
-            weighted_confidence = weight * confidence * confidence  # Square confidence for emphasis
+            weighted_confidence = (
+                weight * confidence * confidence
+            )  # Square confidence for emphasis
 
             if decision not in decision_scores:
                 decision_scores[decision] = 0.0
@@ -326,7 +337,9 @@ class WeightedConsensusEngine:
             )
 
         # Normalize and find best decision
-        normalized_scores = {k: v / total_confidence for k, v in decision_scores.items()}
+        normalized_scores = {
+            k: v / total_confidence for k, v in decision_scores.items()
+        }
         best_decision = max(normalized_scores.items(), key=lambda x: x[1])
 
         return ConsensusResult(
@@ -378,7 +391,9 @@ class WeightedConsensusEngine:
             decision_counts[decision] = decision_counts.get(decision, 0) + 1
 
         if not decision_counts:
-            return ConsensusResult("unknown", 0.0, ConsensusStrategy.SUPERMAJORITY, 0.0, [], [])
+            return ConsensusResult(
+                "unknown", 0.0, ConsensusStrategy.SUPERMAJORITY, 0.0, [], []
+            )
 
         # Check for supermajority
         for decision, count in decision_counts.items():
@@ -435,7 +450,9 @@ class WeightedConsensusEngine:
 
         elif strategy == TieBreakingStrategy.CONSTITUTIONAL_PRIORITY:
             # Choose decision with highest constitutional score
-            constitutional_votes = [v for v in votes if v.constitutional_score is not None]
+            constitutional_votes = [
+                v for v in votes if v.constitutional_score is not None
+            ]
             if constitutional_votes:
                 best_constitutional_vote = max(
                     constitutional_votes, key=lambda v: v.constitutional_score
@@ -445,7 +462,9 @@ class WeightedConsensusEngine:
 
         return result
 
-    def _calculate_agreement_score(self, votes: list[ModelVote], final_decision: str) -> float:
+    def _calculate_agreement_score(
+        self, votes: list[ModelVote], final_decision: str
+    ) -> float:
         """Calculate agreement score for the final decision."""
         if not votes:
             return 0.0
@@ -453,7 +472,9 @@ class WeightedConsensusEngine:
         agreeing_votes = sum(1 for vote in votes if vote.decision == final_decision)
         return agreeing_votes / len(votes)
 
-    def _create_error_result(self, error_message: str, start_time: float) -> ConsensusResult:
+    def _create_error_result(
+        self, error_message: str, start_time: float
+    ) -> ConsensusResult:
         """Create error result for failed consensus calculations."""
         return ConsensusResult(
             final_decision="error",
@@ -468,7 +489,9 @@ class WeightedConsensusEngine:
 
     def get_performance_metrics(self) -> dict[str, Any]:
         """Get consensus engine performance metrics."""
-        success_rate = (self.successful_consensus / max(1, self.total_consensus_calculations)) * 100
+        success_rate = (
+            self.successful_consensus / max(1, self.total_consensus_calculations)
+        ) * 100
         tie_breaking_rate = (
             self.tie_breaking_events / max(1, self.total_consensus_calculations)
         ) * 100
@@ -480,7 +503,9 @@ class WeightedConsensusEngine:
             "success_rate_percentage": success_rate,
             "tie_breaking_rate_percentage": tie_breaking_rate,
             "supported_strategies": [strategy.value for strategy in ConsensusStrategy],
-            "supported_tie_breaking": [strategy.value for strategy in TieBreakingStrategy],
+            "supported_tie_breaking": [
+                strategy.value for strategy in TieBreakingStrategy
+            ],
         }
 
 

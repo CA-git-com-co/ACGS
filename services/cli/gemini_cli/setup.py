@@ -17,7 +17,7 @@ else:
 requirements_path = Path(__file__).parent / "requirements.txt"
 if requirements_path.exists():
     requirements = [
-        line.strip() 
+        line.strip()
         for line in requirements_path.read_text().splitlines()
         if line.strip() and not line.startswith("#")
     ]
@@ -33,7 +33,13 @@ setup(
     author="ACGS Team",
     author_email="team@acgs.ai",
     url="https://github.com/your-org/acgs-2",
-    packages=["gemini_cli", "gemini_cli.commands", "gemini_cli.formatters", "gemini_cli.tools", "gemini_cli.mcp_servers"],
+    packages=[
+        "gemini_cli",
+        "gemini_cli.commands",
+        "gemini_cli.formatters",
+        "gemini_cli.tools",
+        "gemini_cli.mcp_servers",
+    ],
     package_dir={"gemini_cli": "."},
     include_package_data=True,
     install_requires=requirements,

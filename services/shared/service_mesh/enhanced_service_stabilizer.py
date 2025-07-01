@@ -252,7 +252,9 @@ class EnhancedServiceStabilizer:
 
         try:
             # Perform health check
-            response = await self.http_client.get(config.health_url, timeout=config.timeout)
+            response = await self.http_client.get(
+                config.health_url, timeout=config.timeout
+            )
 
             response_time = (time.time() - start_time) * 1000
 
@@ -266,7 +268,9 @@ class EnhancedServiceStabilizer:
                 # Parse health details if available
                 try:
                     health_data = response.json()
-                    health.performance_metrics = health_data.get("performance_metrics", {})
+                    health.performance_metrics = health_data.get(
+                        "performance_metrics", {}
+                    )
                     health.dependencies_healthy = self._check_dependencies(health_data)
                 except:
                     pass
@@ -297,7 +301,9 @@ class EnhancedServiceStabilizer:
         # Store in history
         self.health_history[service_type].append(health)
         if len(self.health_history[service_type]) > 1000:
-            self.health_history[service_type] = self.health_history[service_type][-1000:]
+            self.health_history[service_type] = self.health_history[service_type][
+                -1000:
+            ]
 
         # Check alert conditions
         await self._check_alert_conditions(service_type, health)
@@ -315,7 +321,9 @@ class EnhancedServiceStabilizer:
             for status in dependencies.values()
         )
 
-    async def _update_service_metrics(self, service_type: ServiceType, health: ServiceHealth):
+    async def _update_service_metrics(
+        self, service_type: ServiceType, health: ServiceHealth
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -360,7 +368,9 @@ class EnhancedServiceStabilizer:
                 {
                     "service": service_type.value,
                     "timestamp": datetime.utcnow().isoformat(),
-                    "consecutive_failures": self.service_health[service_type].consecutive_failures,
+                    "consecutive_failures": self.service_health[
+                        service_type
+                    ].consecutive_failures,
                 },
             )
 
@@ -489,11 +499,17 @@ class EnhancedServiceStabilizer:
             recommendations.append("Consider scaling up service instances")
             recommendations.append("Review database query performance")
 
-        if health.error_rate_percent > self.config.alert_thresholds["error_rate_percent"]:
+        if (
+            health.error_rate_percent
+            > self.config.alert_thresholds["error_rate_percent"]
+        ):
             recommendations.append("Investigate error logs for root cause")
             recommendations.append("Consider circuit breaker activation")
 
-        if health.availability_percent < self.config.alert_thresholds["availability_percent"]:
+        if (
+            health.availability_percent
+            < self.config.alert_thresholds["availability_percent"]
+        ):
             recommendations.append("Enable auto-failover mechanisms")
             recommendations.append("Add redundant service instances")
 
@@ -563,13 +579,19 @@ class EnhancedServiceStabilizer:
         # ensures: Correct function execution
         # sha256: func_hash
         """Clean up metrics older than retention period."""
-        cutoff_time = datetime.utcnow() - timedelta(hours=self.config.metrics_retention_hours)
+        cutoff_time = datetime.utcnow() - timedelta(
+            hours=self.config.metrics_retention_hours
+        )
 
         for service_type in self.health_history.keys():
             history = self.health_history[service_type]
-            self.health_history[service_type] = [h for h in history if h.last_check > cutoff_time]
+            self.health_history[service_type] = [
+                h for h in history if h.last_check > cutoff_time
+            ]
 
-    async def _check_alert_conditions(self, service_type: ServiceType, health: ServiceHealth):
+    async def _check_alert_conditions(
+        self, service_type: ServiceType, health: ServiceHealth
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -588,7 +610,10 @@ class EnhancedServiceStabilizer:
             )
 
         # Error rate alert
-        if health.error_rate_percent > self.config.alert_thresholds["error_rate_percent"]:
+        if (
+            health.error_rate_percent
+            > self.config.alert_thresholds["error_rate_percent"]
+        ):
             alerts.append(
                 {
                     "type": "error_rate",
@@ -599,7 +624,10 @@ class EnhancedServiceStabilizer:
             )
 
         # Availability alert
-        if health.availability_percent < self.config.alert_thresholds["availability_percent"]:
+        if (
+            health.availability_percent
+            < self.config.alert_thresholds["availability_percent"]
+        ):
             alerts.append(
                 {
                     "type": "availability",
@@ -631,7 +659,9 @@ class EnhancedServiceStabilizer:
         """Register an alert callback."""
         self.alert_callbacks.append(callback)
 
-    def get_service_health(self, service_type: ServiceType | None = None) -> dict[str, Any]:
+    def get_service_health(
+        self, service_type: ServiceType | None = None
+    ) -> dict[str, Any]:
         """Get service health information."""
         if service_type:
             health = self.service_health.get(service_type)
@@ -669,14 +699,18 @@ class EnhancedServiceStabilizer:
         if not self.service_health:
             return {"status": "unknown", "message": "No services monitored"}
 
-        healthy_services = sum(1 for h in self.service_health.values() if h.status == "healthy")
+        healthy_services = sum(
+            1 for h in self.service_health.values() if h.status == "healthy"
+        )
         total_services = len(self.service_health)
 
         avg_response_time = (
-            sum(h.response_time_ms for h in self.service_health.values()) / total_services
+            sum(h.response_time_ms for h in self.service_health.values())
+            / total_services
         )
         avg_availability = (
-            sum(h.availability_percent for h in self.service_health.values()) / total_services
+            sum(h.availability_percent for h in self.service_health.values())
+            / total_services
         )
 
         # Determine overall status

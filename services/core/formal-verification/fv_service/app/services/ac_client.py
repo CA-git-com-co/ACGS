@@ -59,7 +59,9 @@ class ACServiceClient:
         headers = get_auth_headers(auth_token)
 
         try:
-            response = await self.client.get(f"/principles/{principle_id}", headers=headers)
+            response = await self.client.get(
+                f"/principles/{principle_id}", headers=headers
+            )
             response.raise_for_status()
             data = response.json()
             return ACPrinciple(**data)
@@ -69,10 +71,14 @@ class ACServiceClient:
             )
             return None
         except httpx.RequestError as e:
-            print(f"AC Client: Request error fetching principle {principle_id}: {str(e)}")
+            print(
+                f"AC Client: Request error fetching principle {principle_id}: {str(e)}"
+            )
             return None
         except Exception as e:
-            print(f"AC Client: Unexpected error fetching principle {principle_id}: {str(e)}")
+            print(
+                f"AC Client: Unexpected error fetching principle {principle_id}: {str(e)}"
+            )
             return None
 
     async def list_principles_by_ids(

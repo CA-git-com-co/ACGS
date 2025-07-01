@@ -239,7 +239,9 @@ class CircuitBreaker:
 
             self._notify_state_change(old_state, CircuitBreakerState.CLOSED)
 
-    def _notify_state_change(self, old_state: CircuitBreakerState, new_state: CircuitBreakerState):
+    def _notify_state_change(
+        self, old_state: CircuitBreakerState, new_state: CircuitBreakerState
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -311,7 +313,9 @@ class CircuitBreaker:
             "timeout": self.timeout,
             "last_failure_time": self.last_failure_time,
             "time_since_last_failure": (
-                current_time - self.last_failure_time if self.last_failure_time > 0 else None
+                current_time - self.last_failure_time
+                if self.last_failure_time > 0
+                else None
             ),
             "time_in_current_state": current_time - self.last_state_change,
             "metrics": {
@@ -391,7 +395,10 @@ class CircuitBreakerManager:
         Returns:
             Status information for all circuit breakers
         """
-        return {name: breaker.get_status() for name, breaker in self.circuit_breakers.items()}
+        return {
+            name: breaker.get_status()
+            for name, breaker in self.circuit_breakers.items()
+        }
 
     def reset_all(self):
         # requires: Valid input parameters
@@ -408,7 +415,11 @@ class CircuitBreakerManager:
         Returns:
             List of service names with unhealthy circuit breakers
         """
-        return [name for name, breaker in self.circuit_breakers.items() if not breaker.is_healthy()]
+        return [
+            name
+            for name, breaker in self.circuit_breakers.items()
+            if not breaker.is_healthy()
+        ]
 
 
 # Global circuit breaker manager

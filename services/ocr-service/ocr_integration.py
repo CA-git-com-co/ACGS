@@ -18,7 +18,10 @@ from datetime import datetime
 import requests
 
 try:
-    from .advanced_document_processor import AdvancedDocumentProcessor, ProcessedDocument
+    from .advanced_document_processor import (
+        AdvancedDocumentProcessor,
+        ProcessedDocument,
+    )
 except ImportError:
     from advanced_document_processor import AdvancedDocumentProcessor, ProcessedDocument
 
@@ -52,7 +55,9 @@ class EnhancedOCRIntegration:
         # Enhanced prompt templates for different document types
         self.prompt_templates = self._initialize_prompt_templates()
 
-        logger.info(f"Enhanced OCR integration initialized with endpoint: {self.endpoint}")
+        logger.info(
+            f"Enhanced OCR integration initialized with endpoint: {self.endpoint}"
+        )
         logger.info("Advanced document processing capabilities enabled")
 
     def _initialize_prompt_templates(self) -> Dict[str, str]:
@@ -61,16 +66,26 @@ class EnhancedOCRIntegration:
 
         return {
             "general": base_nanonets_prompt,
-            "constitutional": base_nanonets_prompt + "\n\nThis is a constitutional document. Pay special attention to articles, amendments, legal structure, signatures, and official authentication markers.",
-            "legal": base_nanonets_prompt + "\n\nThis is a legal document. Extract all legal terms, citations, signatures, seals, and formal authentication elements precisely.",
-            "policy": base_nanonets_prompt + "\n\nThis is a policy document. Focus on rules, procedures, implementation guidelines, tables, approval signatures, and governance structures.",
-            "governance_form": base_nanonets_prompt + "\n\nThis is a governance form. Extract all fields, checkboxes, signatures, and tabular data with proper formatting.",
-            "official_document": base_nanonets_prompt + "\n\nThis is an official document. Pay special attention to watermarks, official seals, signatures, and authentication markers.",
-            "technical": base_nanonets_prompt + "\n\nThis is a technical document. Focus on equations, formulas, technical diagrams, tables, and structured data.",
-            "form": base_nanonets_prompt + "\n\nThis is a form document. Extract all form fields, checkboxes, signatures, and maintain the form structure.",
-            "receipt": base_nanonets_prompt + "\n\nThis is a receipt. Extract vendor, date, items, prices, total, and any signatures or stamps.",
-            "invoice": base_nanonets_prompt + "\n\nThis is an invoice. Extract invoice number, date, vendor, line items, total amount, and payment terms.",
-            "contract": base_nanonets_prompt + "\n\nThis is a contract. Focus on parties, terms, conditions, signatures, dates, and legal clauses.",
+            "constitutional": base_nanonets_prompt
+            + "\n\nThis is a constitutional document. Pay special attention to articles, amendments, legal structure, signatures, and official authentication markers.",
+            "legal": base_nanonets_prompt
+            + "\n\nThis is a legal document. Extract all legal terms, citations, signatures, seals, and formal authentication elements precisely.",
+            "policy": base_nanonets_prompt
+            + "\n\nThis is a policy document. Focus on rules, procedures, implementation guidelines, tables, approval signatures, and governance structures.",
+            "governance_form": base_nanonets_prompt
+            + "\n\nThis is a governance form. Extract all fields, checkboxes, signatures, and tabular data with proper formatting.",
+            "official_document": base_nanonets_prompt
+            + "\n\nThis is an official document. Pay special attention to watermarks, official seals, signatures, and authentication markers.",
+            "technical": base_nanonets_prompt
+            + "\n\nThis is a technical document. Focus on equations, formulas, technical diagrams, tables, and structured data.",
+            "form": base_nanonets_prompt
+            + "\n\nThis is a form document. Extract all form fields, checkboxes, signatures, and maintain the form structure.",
+            "receipt": base_nanonets_prompt
+            + "\n\nThis is a receipt. Extract vendor, date, items, prices, total, and any signatures or stamps.",
+            "invoice": base_nanonets_prompt
+            + "\n\nThis is an invoice. Extract invoice number, date, vendor, line items, total amount, and payment terms.",
+            "contract": base_nanonets_prompt
+            + "\n\nThis is a contract. Focus on parties, terms, conditions, signatures, dates, and legal clauses.",
         }
 
     def check_health(self) -> bool:
@@ -177,7 +192,9 @@ class EnhancedOCRIntegration:
             Dictionary containing the analysis results with structured elements
         """
         # Get the appropriate prompt for the document type
-        prompt = self.prompt_templates.get(analysis_type, self.prompt_templates["general"])
+        prompt = self.prompt_templates.get(
+            analysis_type, self.prompt_templates["general"]
+        )
 
         # Extract raw text using OCR
         ocr_result = self.extract_text(image_data, prompt)
@@ -209,13 +226,14 @@ class EnhancedOCRIntegration:
                 **processed_doc.metadata,
                 "analysis_type": analysis_type,
                 "processing_timestamp": datetime.now().isoformat(),
-            }
+            },
         }
 
         return enhanced_result
 
-    def extract_structured_elements(self, image_data: Union[str, Path, bytes],
-                                   document_type: str = "general") -> ProcessedDocument:
+    def extract_structured_elements(
+        self, image_data: Union[str, Path, bytes], document_type: str = "general"
+    ) -> ProcessedDocument:
         """
         Extract structured elements from a document and return ProcessedDocument object.
 
@@ -226,18 +244,24 @@ class EnhancedOCRIntegration:
         Returns:
             ProcessedDocument with all extracted structured elements
         """
-        prompt = self.prompt_templates.get(document_type, self.prompt_templates["general"])
+        prompt = self.prompt_templates.get(
+            document_type, self.prompt_templates["general"]
+        )
         ocr_result = self.extract_text(image_data, prompt)
 
         if not ocr_result.get("success", False):
-            raise OCRServiceException(f"OCR extraction failed: {ocr_result.get('error', 'Unknown error')}")
+            raise OCRServiceException(
+                f"OCR extraction failed: {ocr_result.get('error', 'Unknown error')}"
+            )
 
         raw_text = ocr_result["text"]
         processed_doc = self.document_processor.process_document(raw_text)
 
         return processed_doc
 
-    def get_document_authenticity_score(self, image_data: Union[str, Path, bytes]) -> Dict[str, Any]:
+    def get_document_authenticity_score(
+        self, image_data: Union[str, Path, bytes]
+    ) -> Dict[str, Any]:
         """
         Analyze document authenticity based on signatures, watermarks, and other markers.
 
@@ -247,7 +271,9 @@ class EnhancedOCRIntegration:
         Returns:
             Dictionary with authenticity analysis
         """
-        processed_doc = self.extract_structured_elements(image_data, "official_document")
+        processed_doc = self.extract_structured_elements(
+            image_data, "official_document"
+        )
 
         authenticity_factors = {
             "has_signatures": len(processed_doc.signatures) > 0,
@@ -286,13 +312,21 @@ if __name__ == "__main__":
     import sys
 
     if len(sys.argv) < 2:
-        print("Usage: python ocr_integration.py <image_path> [analysis_type] [--structured]")
-        print("Analysis types: general, constitutional, legal, policy, governance_form, etc.")
+        print(
+            "Usage: python ocr_integration.py <image_path> [analysis_type] [--structured]"
+        )
+        print(
+            "Analysis types: general, constitutional, legal, policy, governance_form, etc."
+        )
         print("Use --structured flag to get detailed structured element extraction")
         sys.exit(1)
 
     image_path = sys.argv[1]
-    analysis_type = sys.argv[2] if len(sys.argv) > 2 and not sys.argv[2].startswith('--') else "general"
+    analysis_type = (
+        sys.argv[2]
+        if len(sys.argv) > 2 and not sys.argv[2].startswith("--")
+        else "general"
+    )
     structured_mode = "--structured" in sys.argv
 
     ocr = EnhancedOCRIntegration()
@@ -322,7 +356,7 @@ if __name__ == "__main__":
             print("=== ENHANCED OCR ANALYSIS ===")
             print(f"Analysis Type: {analysis_type}")
             print(f"Confidence Score: {result.get('confidence_score', 'N/A')}")
-            structured_elements = result.get('structured_elements', {})
+            structured_elements = result.get("structured_elements", {})
             print(f"Structured Elements Found: {sum(structured_elements.values())}")
             print("\n=== FULL ANALYSIS RESULT ===")
             print(json.dumps(result, indent=2, default=str))

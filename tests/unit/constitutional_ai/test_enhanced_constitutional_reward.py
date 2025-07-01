@@ -4,18 +4,22 @@ Unit tests for services.core.constitutional-ai.ac_service.app.services.enhanced_
 
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
-from services.core.constitutional-ai.ac_service.app.services.enhanced_constitutional_reward import ConstitutionalDimension, ConstitutionalEvaluation, ConstitutionalRewardConfig, EnhancedConstitutionalReward
-
+from services.core.constitutional_ai.ac_service.app.services.enhanced_constitutional_reward import (
+    ConstitutionalDimension,
+    ConstitutionalEvaluation,
+    ConstitutionalRewardConfig,
+    EnhancedConstitutionalReward,
+)
 
 
 class TestConstitutionalDimension:
     """Test suite for ConstitutionalDimension."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -24,12 +28,12 @@ class TestConstitutionalDimension:
 
 class TestConstitutionalEvaluation:
     """Test suite for ConstitutionalEvaluation."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -38,12 +42,12 @@ class TestConstitutionalEvaluation:
 
 class TestConstitutionalRewardConfig:
     """Test suite for ConstitutionalRewardConfig."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -52,12 +56,12 @@ class TestConstitutionalRewardConfig:
 
 class TestEnhancedConstitutionalReward:
     """Test suite for EnhancedConstitutionalReward."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -68,6 +72,4 @@ class TestEnhancedConstitutionalReward:
         # TODO: Implement test for get_performance_metrics
         instance = EnhancedConstitutionalReward()
         # Add test implementation here
-        assert hasattr(instance, 'get_performance_metrics')
-
-
+        assert hasattr(instance, "get_performance_metrics")

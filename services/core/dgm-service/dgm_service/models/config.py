@@ -18,7 +18,9 @@ class SystemConfiguration(Base):
     __tablename__ = "system_configurations"
     __table_args__ = {"schema": "dgm"}
 
-    id = Column(PG_UUID(as_uuid=True), primary_key=True, server_default=func.uuid_generate_v4())
+    id = Column(
+        PG_UUID(as_uuid=True), primary_key=True, server_default=func.uuid_generate_v4()
+    )
 
     # Configuration key-value
     key = Column(String(255), nullable=False, unique=True, index=True)
@@ -35,9 +37,14 @@ class SystemConfiguration(Base):
     constitutional_hash = Column(String(64), nullable=False, default="cdd01ef066bc6cf2")
 
     # Timestamps
-    created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    created_at = Column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
     updated_at = Column(
-        DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now()
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+        onupdate=func.now(),
     )
 
     def __repr__(self):

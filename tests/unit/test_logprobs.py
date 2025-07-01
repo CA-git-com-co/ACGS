@@ -33,7 +33,9 @@ def _test_individual_generations(output: dict, server_type: str):
     tokens = output["tokens"]
     assert isinstance(logprobs, list), f"{server_type}: 'logprobs' is not a list"
     assert isinstance(tokens, list), f"{server_type}: 'tokens' is not a list"
-    assert len(logprobs) == len(tokens), f"{server_type}: Length of 'logprobs' and 'tokens' do not match"
+    assert len(logprobs) == len(
+        tokens
+    ), f"{server_type}: Length of 'logprobs' and 'tokens' do not match"
     assert (
         len(tokens) == output["num_generated_tokens"]
     ), f"{server_type}: Length of tokens does not match num_generated_tokens"
@@ -45,14 +47,14 @@ def test_cross_model_logprobs_consistency():
     Starts (if available) TRTLLM, Nemo, and VLLM servers, then sends the same prompt
     with top_logprobs=1. It then compares the logprobs for each token across the models.
     """
-    model_type = os.getenv('NEMO_SKILLS_TEST_MODEL_TYPE')
+    model_type = os.getenv("NEMO_SKILLS_TEST_MODEL_TYPE")
     if not model_type:
         pytest.skip("Define NEMO_SKILLS_TEST_MODEL_TYPE to run this test")
-    prompt_template = 'llama3-instruct' if model_type == 'llama' else 'qwen-instruct'
+    prompt_template = "llama3-instruct" if model_type == "llama" else "qwen-instruct"
 
     model_info = [
-        ("trtllm", os.getenv('NEMO_SKILLS_TEST_TRTLLM_MODEL')),
-        ("vllm", os.getenv('NEMO_SKILLS_TEST_HF_MODEL')),
+        ("trtllm", os.getenv("NEMO_SKILLS_TEST_TRTLLM_MODEL")),
+        ("vllm", os.getenv("NEMO_SKILLS_TEST_HF_MODEL")),
     ]
 
     outputs_map = {}
@@ -102,7 +104,9 @@ def test_cross_model_logprobs_consistency():
         outputs_map[other_server_type]
     ), f"Length of outputs do not match between {server_type} and {other_server_type}: {len(outputs_map[server_type])} vs {len(outputs_map[other_server_type])}"
     if model_type == "llama":
-        pytest.skip("Skipping logprobs comparison for LLAMA model as they do not match between TRTLLM and VLLM")
+        pytest.skip(
+            "Skipping logprobs comparison for LLAMA model as they do not match between TRTLLM and VLLM"
+        )
     for (token, logprob), (other_token, other_logprob) in zip(
         outputs_map[server_type], outputs_map[other_server_type]
     ):

@@ -27,6 +27,7 @@ from typing import Any, Dict, List, Optional
 try:
     import matplotlib.pyplot as plt
     import matplotlib.dates as mdates
+
     MATPLOTLIB_AVAILABLE = True
 except ImportError:
     MATPLOTLIB_AVAILABLE = False
@@ -34,77 +35,77 @@ except ImportError:
 
 class IntegrationTestReportGenerator:
     """Generates comprehensive integration test reports."""
-    
+
     def __init__(self, output_dir: str = "./reports"):
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(exist_ok=True)
-        
+
     def generate_report(
         self,
         test_results: Dict[str, Any],
         formats: List[str] = ["json", "html", "markdown"],
         include_metrics: bool = True,
-        include_charts: bool = False
+        include_charts: bool = False,
     ) -> Dict[str, str]:
         """Generate test reports in specified formats."""
-        
+
         generated_files = {}
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        
+
         # Generate JSON report
         if "json" in formats:
             json_file = self.output_dir / f"integration_test_report_{timestamp}.json"
             self._generate_json_report(test_results, json_file)
             generated_files["json"] = str(json_file)
-            
+
         # Generate HTML report
         if "html" in formats:
             html_file = self.output_dir / f"integration_test_report_{timestamp}.html"
             self._generate_html_report(test_results, html_file, include_metrics)
             generated_files["html"] = str(html_file)
-            
+
         # Generate Markdown report
         if "markdown" in formats:
             md_file = self.output_dir / f"integration_test_report_{timestamp}.md"
             self._generate_markdown_report(test_results, md_file, include_metrics)
             generated_files["markdown"] = str(md_file)
-            
+
         # Generate performance charts
         if include_charts and MATPLOTLIB_AVAILABLE:
             charts_dir = self.output_dir / f"charts_{timestamp}"
             charts_dir.mkdir(exist_ok=True)
             chart_files = self._generate_performance_charts(test_results, charts_dir)
             generated_files["charts"] = chart_files
-            
+
         return generated_files
-        
+
     def _generate_json_report(self, test_results: Dict[str, Any], output_file: Path):
         """Generate JSON format report."""
-        
+
         enhanced_results = {
             **test_results,
             "report_metadata": {
                 "generated_at": datetime.utcnow().isoformat(),
                 "generator_version": "1.0.0",
-                "report_type": "constitutional_trainer_integration"
-            }
+                "report_type": "constitutional_trainer_integration",
+            },
         }
-        
-        with open(output_file, 'w') as f:
+
+        with open(output_file, "w") as f:
             json.dump(enhanced_results, f, indent=2, default=str)
-            
+
     def _generate_html_report(
-        self, 
-        test_results: Dict[str, Any], 
+        self,
+        test_results: Dict[str, Any],
         output_file: Path,
-        include_metrics: bool = True
+        include_metrics: bool = True,
     ):
         """Generate HTML format report."""
-        
+
         summary = test_results.get("summary", {})
         performance = test_results.get("performance", {})
         test_cases = test_results.get("test_cases", [])
-        
+
         html_content = f"""
 <!DOCTYPE html>
 <html lang="en">
@@ -201,22 +202,22 @@ class IntegrationTestReportGenerator:
 """
 
         for test_case in test_cases:
-            status = test_case.get('status', 'unknown')
+            status = test_case.get("status", "unknown")
             status_class = f"status-{status}"
-            
+
             html_content += f"""
     <div class="test-case {status_class}">
         <h3>{test_case.get('name', 'Unknown Test')}</h3>
         <p><strong>Status:</strong> {status.upper()}</p>
         <p><strong>Duration:</strong> {test_case.get('duration', 0):.2f} seconds</p>
 """
-            
-            if 'response_time_ms' in test_case:
+
+            if "response_time_ms" in test_case:
                 html_content += f"<p><strong>Response Time:</strong> {test_case['response_time_ms']:.2f} ms</p>"
-                
-            if 'error' in test_case:
+
+            if "error" in test_case:
                 html_content += f"<p><strong>Error:</strong> {test_case['error']}</p>"
-                
+
             html_content += "</div>"
 
         html_content += """
@@ -224,21 +225,21 @@ class IntegrationTestReportGenerator:
 </html>
 """
 
-        with open(output_file, 'w') as f:
+        with open(output_file, "w") as f:
             f.write(html_content)
-            
+
     def _generate_markdown_report(
-        self, 
-        test_results: Dict[str, Any], 
+        self,
+        test_results: Dict[str, Any],
         output_file: Path,
-        include_metrics: bool = True
+        include_metrics: bool = True,
     ):
         """Generate Markdown format report."""
-        
+
         summary = test_results.get("summary", {})
         performance = test_results.get("performance", {})
         test_cases = test_results.get("test_cases", [])
-        
+
         md_content = f"""# Constitutional Trainer Integration Test Report
 
 **Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}  
@@ -267,64 +268,66 @@ class IntegrationTestReportGenerator:
 """
 
         md_content += "## Test Cases\n\n"
-        
+
         for test_case in test_cases:
-            status = test_case.get('status', 'unknown')
-            status_emoji = {'passed': '✅', 'failed': '❌', 'error': '⚠️'}.get(status, '❓')
-            
+            status = test_case.get("status", "unknown")
+            status_emoji = {"passed": "✅", "failed": "❌", "error": "⚠️"}.get(
+                status, "❓"
+            )
+
             md_content += f"""### {status_emoji} {test_case.get('name', 'Unknown Test')}
 
 - **Status:** {status.upper()}
 - **Duration:** {test_case.get('duration', 0):.2f} seconds
 """
-            
-            if 'response_time_ms' in test_case:
-                md_content += f"- **Response Time:** {test_case['response_time_ms']:.2f} ms\n"
-                
-            if 'error' in test_case:
+
+            if "response_time_ms" in test_case:
+                md_content += (
+                    f"- **Response Time:** {test_case['response_time_ms']:.2f} ms\n"
+                )
+
+            if "error" in test_case:
                 md_content += f"- **Error:** {test_case['error']}\n"
-                
+
             md_content += "\n"
 
-        with open(output_file, 'w') as f:
+        with open(output_file, "w") as f:
             f.write(md_content)
-            
+
     def _generate_performance_charts(
-        self, 
-        test_results: Dict[str, Any], 
-        charts_dir: Path
+        self, test_results: Dict[str, Any], charts_dir: Path
     ) -> List[str]:
         """Generate performance charts."""
-        
+
         if not MATPLOTLIB_AVAILABLE:
             return []
-            
+
         chart_files = []
         test_cases = test_results.get("test_cases", [])
-        
+
         # Response time chart
         response_times = []
         test_names = []
-        
+
         for test_case in test_cases:
-            if 'response_time_ms' in test_case:
-                response_times.append(test_case['response_time_ms'])
-                test_names.append(test_case.get('name', 'Unknown'))
-                
+            if "response_time_ms" in test_case:
+                response_times.append(test_case["response_time_ms"])
+                test_names.append(test_case.get("name", "Unknown"))
+
         if response_times:
             plt.figure(figsize=(12, 6))
             plt.bar(test_names, response_times)
-            plt.title('Response Times by Test Case')
-            plt.xlabel('Test Case')
-            plt.ylabel('Response Time (ms)')
-            plt.xticks(rotation=45, ha='right')
+            plt.title("Response Times by Test Case")
+            plt.xlabel("Test Case")
+            plt.ylabel("Response Time (ms)")
+            plt.xticks(rotation=45, ha="right")
             plt.tight_layout()
-            
-            chart_file = charts_dir / 'response_times.png'
+
+            chart_file = charts_dir / "response_times.png"
             plt.savefig(chart_file)
             plt.close()
             chart_files.append(str(chart_file))
-            
+
         return chart_files
 
 
@@ -333,82 +336,78 @@ def main():
     parser = argparse.ArgumentParser(
         description="Generate Constitutional Trainer integration test reports"
     )
-    
+
+    parser.add_argument("--input-file", type=str, help="Input JSON test results file")
+
     parser.add_argument(
-        '--input-file', 
+        "--output-dir",
         type=str,
-        help='Input JSON test results file'
+        default="./reports",
+        help="Output directory for reports (default: ./reports)",
     )
-    
+
     parser.add_argument(
-        '--output-dir',
-        type=str,
-        default='./reports',
-        help='Output directory for reports (default: ./reports)'
+        "--format",
+        choices=["json", "html", "markdown", "all"],
+        default="all",
+        help="Report format (default: all)",
     )
-    
+
     parser.add_argument(
-        '--format',
-        choices=['json', 'html', 'markdown', 'all'],
-        default='all',
-        help='Report format (default: all)'
-    )
-    
-    parser.add_argument(
-        '--include-metrics',
-        action='store_true',
+        "--include-metrics",
+        action="store_true",
         default=True,
-        help='Include detailed performance metrics'
+        help="Include detailed performance metrics",
     )
-    
+
     parser.add_argument(
-        '--include-charts',
-        action='store_true',
-        help='Generate performance charts (requires matplotlib)'
+        "--include-charts",
+        action="store_true",
+        help="Generate performance charts (requires matplotlib)",
     )
-    
+
     args = parser.parse_args()
-    
+
     # Load test results
     if args.input_file:
         if not os.path.exists(args.input_file):
             print(f"Error: Input file not found: {args.input_file}")
             sys.exit(1)
-            
-        with open(args.input_file, 'r') as f:
+
+        with open(args.input_file, "r") as f:
             test_results = json.load(f)
     else:
         # Look for recent test results
         pattern = "constitutional_trainer_integration_report_*.json"
         import glob
-        
+
         files = glob.glob(pattern)
         if not files:
             print("Error: No test results file specified and no recent results found")
             sys.exit(1)
-            
+
         latest_file = max(files, key=os.path.getctime)
         print(f"Using latest test results: {latest_file}")
-        
-        with open(latest_file, 'r') as f:
+
+        with open(latest_file, "r") as f:
             test_results = json.load(f)
-    
+
     # Determine formats
-    if args.format == 'all':
-        formats = ['json', 'html', 'markdown']
+    if args.format == "all":
+        formats = ["json", "html", "markdown"]
     else:
         formats = [args.format]
-    
+
     # Generate reports
     generator = IntegrationTestReportGenerator(args.output_dir)
-    
+
     generated_files = generator.generate_report(
         test_results,
         formats=formats,
         include_metrics=args.include_metrics,
-        include_charts=args.include_charts
+        include_charts=args.include_charts,
     )
-    
+
     print("Generated reports:")
     for format_type, file_path in generated_files.items():
         if isinstance(file_path, list):

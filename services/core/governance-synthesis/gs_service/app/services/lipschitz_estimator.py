@@ -57,7 +57,9 @@ class LipschitzEstimationConfig:
     empirical_adjustment_factor: float = 1.2  # Safety factor for empirical estimates
     bounded_evolution_enabled: bool = True  # Enable bounded evolution constraints
     lipschitz_validation_threshold: float = 0.8  # Threshold for Lipschitz validation
-    discrepancy_resolution_mode: str = "conservative"  # "conservative", "adaptive", "theoretical"
+    discrepancy_resolution_mode: str = (
+        "conservative"  # "conservative", "adaptive", "theoretical"
+    )
 
 
 @dataclass
@@ -282,7 +284,9 @@ class LipschitzEstimator:
             principle1, principle2 = test_principles[idx1], test_principles[idx2]
 
             # Compute input distance
-            input_distance = self.distance_func.combined_distance(principle1, principle2)
+            input_distance = self.distance_func.combined_distance(
+                principle1, principle2
+            )
 
             if input_distance < 1e-6:  # Skip nearly identical inputs
                 continue
@@ -316,7 +320,9 @@ class LipschitzEstimator:
         """
 
         try:
-            response = await self.llm_service.generate_text(prompt, max_tokens=500, temperature=0.1)
+            response = await self.llm_service.generate_text(
+                prompt, max_tokens=500, temperature=0.1
+            )
             return response.strip()
         except Exception as e:
             logger.error(f"LLM generation failed: {e}")
@@ -419,7 +425,9 @@ class LipschitzEstimator:
             validation_passed=validation_passed,
         )
 
-    async def validate_metric_properties(self, test_principles: list[str]) -> dict[str, Any]:
+    async def validate_metric_properties(
+        self, test_principles: list[str]
+    ) -> dict[str, Any]:
         """Validate that distance function satisfies metric properties."""
         validator = MetricSpaceValidator()
 
@@ -438,7 +446,8 @@ class LipschitzEstimator:
         return {
             "triangle_inequality": triangle_result,
             "symmetry": symmetry_result,
-            "is_valid_metric": triangle_result["is_metric"] and symmetry_result["is_symmetric"],
+            "is_valid_metric": triangle_result["is_metric"]
+            and symmetry_result["is_symmetric"],
         }
 
 

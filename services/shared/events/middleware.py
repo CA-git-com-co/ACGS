@@ -131,7 +131,9 @@ class MetricsMiddleware(EventMiddleware):
 
             # Keep only last 1000 processing times
             if len(self.metrics["processing_times"]) > 1000:
-                self.metrics["processing_times"] = self.metrics["processing_times"][-1000:]
+                self.metrics["processing_times"] = self.metrics["processing_times"][
+                    -1000:
+                ]
 
             return event
 
@@ -314,7 +316,9 @@ class RateLimitingMiddleware(EventMiddleware):
 
             # Check rate limit
             if len(self.event_times) >= self.max_events_per_second:
-                logger.warning(f"Rate limit exceeded, dropping event {event.metadata.event_id}")
+                logger.warning(
+                    f"Rate limit exceeded, dropping event {event.metadata.event_id}"
+                )
                 return None
 
             # Add current timestamp

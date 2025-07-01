@@ -247,8 +247,12 @@ class BackgroundProcessor:
                     "status": task.status.value,
                     "priority": task.priority.value,
                     "created_at": task.created_at.isoformat(),
-                    "started_at": (task.started_at.isoformat() if task.started_at else None),
-                    "completed_at": (task.completed_at.isoformat() if task.completed_at else None),
+                    "started_at": (
+                        task.started_at.isoformat() if task.started_at else None
+                    ),
+                    "completed_at": (
+                        task.completed_at.isoformat() if task.completed_at else None
+                    ),
                     "retry_count": task.retry_count,
                     "max_retries": task.max_retries,
                     "result": task.result,
@@ -265,7 +269,9 @@ class BackgroundProcessor:
                         "status": task.status.value,
                         "priority": task.priority.value,
                         "created_at": task.created_at.isoformat(),
-                        "started_at": (task.started_at.isoformat() if task.started_at else None),
+                        "started_at": (
+                            task.started_at.isoformat() if task.started_at else None
+                        ),
                         "completed_at": (
                             task.completed_at.isoformat() if task.completed_at else None
                         ),
@@ -298,7 +304,9 @@ class BackgroundProcessor:
 
             # Cancel Celery task if available
             if CELERY_AVAILABLE and "celery_task_id" in task.metadata:
-                celery_result = AsyncResult(task.metadata["celery_task_id"], app=self.celery_app)
+                celery_result = AsyncResult(
+                    task.metadata["celery_task_id"], app=self.celery_app
+                )
                 celery_result.revoke(terminate=True)
 
             # Update task status
@@ -670,7 +678,10 @@ class BackgroundProcessor:
 
             for task in self.task_history:
                 # Remove tasks older than 24 hours
-                if task.completed_at and (current_time - task.completed_at).total_seconds() > 86400:
+                if (
+                    task.completed_at
+                    and (current_time - task.completed_at).total_seconds() > 86400
+                ):
                     old_tasks.append(task)
 
             for task in old_tasks:
@@ -687,7 +698,9 @@ class BackgroundProcessor:
         try:
             # Calculate average execution time
             completed_tasks = [
-                task for task in self.task_history if task.completed_at and task.started_at
+                task
+                for task in self.task_history
+                if task.completed_at and task.started_at
             ]
 
             if completed_tasks:
@@ -695,7 +708,9 @@ class BackgroundProcessor:
                     (task.completed_at - task.started_at).total_seconds()
                     for task in completed_tasks
                 )
-                self.task_metrics["average_execution_time"] = total_time / len(completed_tasks)
+                self.task_metrics["average_execution_time"] = total_time / len(
+                    completed_tasks
+                )
 
         except Exception as e:
             logger.error(f"Task metrics update failed: {e}")
@@ -728,28 +743,36 @@ class BackgroundProcessor:
         await asyncio.sleep(3)
         return {"validation_complete": True, "evolution_id": evolution_id}
 
-    async def _security_assessment_task(self, assessment_data: dict[str, Any]) -> dict[str, Any]:
+    async def _security_assessment_task(
+        self, assessment_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """Default security assessment task."""
         logger.info("Executing security assessment")
         # Simulate security assessment work
         await asyncio.sleep(1)
         return {"assessment_complete": True, "threat_level": "low"}
 
-    async def _threat_mitigation_task(self, threat_data: dict[str, Any]) -> dict[str, Any]:
+    async def _threat_mitigation_task(
+        self, threat_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """Default threat mitigation task."""
         logger.info("Executing threat mitigation")
         # Simulate mitigation work
         await asyncio.sleep(2)
         return {"mitigation_complete": True, "threat_mitigated": True}
 
-    async def _policy_compilation_task(self, policy_data: dict[str, Any]) -> dict[str, Any]:
+    async def _policy_compilation_task(
+        self, policy_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """Default policy compilation task."""
         logger.info("Executing policy compilation")
         # Simulate compilation work
         await asyncio.sleep(1)
         return {"compilation_complete": True, "policies_compiled": True}
 
-    async def _policy_validation_task(self, validation_data: dict[str, Any]) -> dict[str, Any]:
+    async def _policy_validation_task(
+        self, validation_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """Default policy validation task."""
         logger.info("Executing policy validation")
         # Simulate validation work

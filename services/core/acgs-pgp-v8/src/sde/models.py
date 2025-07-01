@@ -86,9 +86,7 @@ class ErrorClassification:
     def __post_init__(self):
         """Initialize classification after creation."""
         if not self.error_id:
-            self.error_id = (
-                f"err_{int(datetime.now().timestamp())}_{hash(self.error_message) % 10000:04d}"
-            )
+            self.error_id = f"err_{int(datetime.now().timestamp())}_{hash(self.error_message) % 10000:04d}"
 
     def is_critical(self) -> bool:
         """Check if error is critical severity."""
@@ -175,9 +173,7 @@ class RecoveryRecommendation:
     def __post_init__(self):
         """Initialize recommendation after creation."""
         if not self.recommendation_id:
-            self.recommendation_id = (
-                f"rec_{int(datetime.now().timestamp())}_{hash(self.description) % 10000:04d}"
-            )
+            self.recommendation_id = f"rec_{int(datetime.now().timestamp())}_{hash(self.description) % 10000:04d}"
 
     def is_safe_to_execute(self) -> bool:
         """Check if recommendation is safe to execute automatically."""
@@ -192,7 +188,8 @@ class RecoveryRecommendation:
         priority_factors = [
             self.success_probability,
             1.0 if self.constitutional_compliance else 0.0,
-            1.0 - (self.estimated_recovery_time_minutes / 120.0),  # Prefer faster recovery
+            1.0
+            - (self.estimated_recovery_time_minutes / 120.0),  # Prefer faster recovery
             1.0 if self.risk_level == ErrorSeverity.LOW else 0.5,
         ]
 
@@ -234,7 +231,9 @@ class DiagnosticResult(BaseModel):
     # Error analysis
     errors_detected: list[ErrorClassification] = Field(default_factory=list)
     error_count: int = Field(default=0, description="Total number of errors")
-    critical_error_count: int = Field(default=0, description="Number of critical errors")
+    critical_error_count: int = Field(
+        default=0, description="Number of critical errors"
+    )
 
     # Recovery recommendations
     recommendations: list[RecoveryRecommendation] = Field(default_factory=list)
@@ -252,12 +251,20 @@ class DiagnosticResult(BaseModel):
 
     # Diagnostic metadata
     diagnostic_timestamp: datetime = Field(default_factory=datetime.now)
-    diagnostic_duration_ms: float = Field(default=0.0, description="Diagnostic duration")
-    constitutional_hash: str = Field(default="cdd01ef066bc6cf2", description="Constitution hash")
+    diagnostic_duration_ms: float = Field(
+        default=0.0, description="Diagnostic duration"
+    )
+    constitutional_hash: str = Field(
+        default="cdd01ef066bc6cf2", description="Constitution hash"
+    )
 
     # Audit trail
-    audit_trail: list[str] = Field(default_factory=list, description="Diagnostic audit trail")
-    metadata: dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
+    audit_trail: list[str] = Field(
+        default_factory=list, description="Diagnostic audit trail"
+    )
+    metadata: dict[str, Any] = Field(
+        default_factory=dict, description="Additional metadata"
+    )
 
     class Config:
         arbitrary_types_allowed = True
@@ -301,7 +308,9 @@ class DiagnosticResult(BaseModel):
             ErrorSeverity.INFO: 0.9,
         }
 
-        health_scores = [severity_weights.get(err.severity, 0.5) for err in self.errors_detected]
+        health_scores = [
+            severity_weights.get(err.severity, 0.5) for err in self.errors_detected
+        ]
         self.overall_health_score = sum(health_scores) / len(health_scores)
 
         # Calculate constitutional compliance score
@@ -317,7 +326,9 @@ class DiagnosticResult(BaseModel):
 
     def get_priority_errors(self) -> list[ErrorClassification]:
         """Get errors sorted by priority score."""
-        return sorted(self.errors_detected, key=lambda err: err.get_priority_score(), reverse=True)
+        return sorted(
+            self.errors_detected, key=lambda err: err.get_priority_score(), reverse=True
+        )
 
     def get_priority_recommendations(self) -> list[RecoveryRecommendation]:
         """Get recommendations sorted by execution priority."""
@@ -352,24 +363,36 @@ class DiagnosticMetrics(BaseModel):
 
     # Error detection metrics
     total_errors_detected: int = Field(default=0, description="Total errors detected")
-    critical_errors_detected: int = Field(default=0, description="Critical errors detected")
+    critical_errors_detected: int = Field(
+        default=0, description="Critical errors detected"
+    )
     false_positive_rate: float = Field(default=0.0, description="False positive rate")
 
     # Recovery metrics
-    total_recommendations: int = Field(default=0, description="Total recommendations generated")
+    total_recommendations: int = Field(
+        default=0, description="Total recommendations generated"
+    )
     successful_recoveries: int = Field(default=0, description="Successful recoveries")
-    auto_recovery_rate: float = Field(default=0.0, description="Automatic recovery rate")
+    auto_recovery_rate: float = Field(
+        default=0.0, description="Automatic recovery rate"
+    )
 
     # Performance metrics
-    average_diagnostic_time_ms: float = Field(default=0.0, description="Average diagnostic time")
+    average_diagnostic_time_ms: float = Field(
+        default=0.0, description="Average diagnostic time"
+    )
     average_health_score: float = Field(default=0.0, description="Average health score")
-    average_compliance_score: float = Field(default=0.0, description="Average compliance score")
+    average_compliance_score: float = Field(
+        default=0.0, description="Average compliance score"
+    )
 
     # Constitutional compliance
     constitutional_violations_detected: int = Field(
         default=0, description="Constitutional violations"
     )
-    constitutional_hash: str = Field(default="cdd01ef066bc6cf2", description="Constitution hash")
+    constitutional_hash: str = Field(
+        default="cdd01ef066bc6cf2", description="Constitution hash"
+    )
 
     last_updated: datetime = Field(
         default_factory=datetime.now, description="Last update timestamp"

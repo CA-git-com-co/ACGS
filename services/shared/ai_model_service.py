@@ -22,6 +22,7 @@ try:
 except ImportError:
     from utils import get_config
     from deepseek_r1_pilot import DeepSeekR1PilotManager, PilotConfiguration
+
     try:
         from prompt_framework import get_constitutional_prompt, PromptRole
     except ImportError:
@@ -45,7 +46,7 @@ class ModelProvider(Enum):
     XAI = "xai"
     CEREBRAS = "cerebras"
     TENCENT = "tencent"  # Hunyuan models
-    VLLM = "vllm"       # vLLM self-hosted models
+    VLLM = "vllm"  # vLLM self-hosted models
 
 
 class ModelRole(Enum):
@@ -108,8 +109,10 @@ class AIModelService:
         self.deepseek_pilot = DeepSeekR1PilotManager()
 
         logger.info(f"AIModelService initialized with {len(self.models)} models")
-        logger.info(f"DeepSeek R1 pilot: {'enabled' if self.deepseek_pilot.config.enabled else 'disabled'} "
-                   f"({self.deepseek_pilot.config.traffic_percentage}% traffic)")
+        logger.info(
+            f"DeepSeek R1 pilot: {'enabled' if self.deepseek_pilot.config.enabled else 'disabled'} "
+            f"({self.deepseek_pilot.config.traffic_percentage}% traffic)"
+        )
 
     def _load_model_configurations(self) -> dict[str, ModelConfig]:
         """Load model configurations from centralized config."""
@@ -258,7 +261,7 @@ class AIModelService:
                 role=ModelRole.CONSTITUTIONAL,
                 enabled=True,
             )
-            
+
             # Alternative vLLM endpoint configuration
             models["hunyuan_a13b_vllm"] = ModelConfig(
                 provider=ModelProvider.VLLM,
@@ -266,7 +269,9 @@ class AIModelService:
                 max_tokens=2048,
                 temperature=0.2,
                 api_key=None,
-                endpoint=self.config.get_ai_endpoint("vllm", "http://localhost:8000/v1"),
+                endpoint=self.config.get_ai_endpoint(
+                    "vllm", "http://localhost:8000/v1"
+                ),
                 role=ModelRole.MULTILINGUAL,
                 enabled=True,
             )
@@ -322,21 +327,33 @@ class AIModelService:
         # Apply constitutional prompt framework if requested
         final_prompt = prompt
         if use_constitutional_prompt and get_constitutional_prompt:
-            constitutional_system_prompt = get_constitutional_prompt(constitutional_role or "constitutional_validator")
+            constitutional_system_prompt = get_constitutional_prompt(
+                constitutional_role or "constitutional_validator"
+            )
             if constitutional_system_prompt:
-                final_prompt = f"{constitutional_system_prompt}\n\n# User Query\n{prompt}"
-                logger.info(f"Applied constitutional prompt framework for role: {constitutional_role or 'constitutional_validator'}")
+                final_prompt = (
+                    f"{constitutional_system_prompt}\n\n# User Query\n{prompt}"
+                )
+                logger.info(
+                    f"Applied constitutional prompt framework for role: {constitutional_role or 'constitutional_validator'}"
+                )
 
         # Generate text based on provider
         try:
             if model_config.provider == ModelProvider.GOOGLE:
                 return await self._generate_google(final_prompt, model_config, **kwargs)
             elif model_config.provider == ModelProvider.HUGGINGFACE:
-                return await self._generate_huggingface(final_prompt, model_config, **kwargs)
+                return await self._generate_huggingface(
+                    final_prompt, model_config, **kwargs
+                )
             elif model_config.provider == ModelProvider.OPENROUTER:
-                return await self._generate_openrouter(final_prompt, model_config, **kwargs)
+                return await self._generate_openrouter(
+                    final_prompt, model_config, **kwargs
+                )
             elif model_config.provider == ModelProvider.CEREBRAS:
-                return await self._generate_cerebras(final_prompt, model_config, **kwargs)
+                return await self._generate_cerebras(
+                    final_prompt, model_config, **kwargs
+                )
             else:
                 # For other providers, use mock response for now
                 return await self._generate_mock(final_prompt, model_config, **kwargs)
@@ -355,7 +372,9 @@ class AIModelService:
         # Fallback to primary model
         return self.models["primary"]
 
-    async def _generate_google(self, prompt: str, config: ModelConfig, **kwargs) -> ModelResponse:
+    async def _generate_google(
+        self, prompt: str, config: ModelConfig, **kwargs
+    ) -> ModelResponse:
         """Generate text using Google Gemini API."""
         if not config.api_key:
             raise ValueError("Google API key not configured")
@@ -446,7 +465,9 @@ class AIModelService:
                         model_id=config.model_id,
                         provider=config.provider.value,
                         tokens_used=tokens_used,
-                        finish_reason=result["choices"][0].get("finish_reason", "completed"),
+                        finish_reason=result["choices"][0].get(
+                            "finish_reason", "completed"
+                        ),
                         metadata={
                             "provider": "openrouter",
                             "model_type": (
@@ -459,7 +480,9 @@ class AIModelService:
                     )
                 else:
                     error_text = await response.text()
-                    raise Exception(f"OpenRouter API error: {response.status_code} - {error_text}")
+                    raise Exception(
+                        f"OpenRouter API error: {response.status_code} - {error_text}"
+                    )
 
         except Exception as e:
             logger.warning(f"OpenRouter API call failed for {config.model_id}: {e}")
@@ -475,7 +498,9 @@ class AIModelService:
                 metadata={"provider": "openrouter", "fallback": True, "error": str(e)},
             )
 
-    async def _generate_cerebras(self, prompt: str, config: ModelConfig, **kwargs) -> ModelResponse:
+    async def _generate_cerebras(
+        self, prompt: str, config: ModelConfig, **kwargs
+    ) -> ModelResponse:
         """Generate text using Cerebras API."""
         if not config.api_key:
             raise ValueError("Cerebras API key not configured")
@@ -514,7 +539,9 @@ class AIModelService:
                         model_id=config.model_id,
                         provider=config.provider.value,
                         tokens_used=tokens_used,
-                        finish_reason=result["choices"][0].get("finish_reason", "completed"),
+                        finish_reason=result["choices"][0].get(
+                            "finish_reason", "completed"
+                        ),
                         metadata={
                             "provider": "cerebras",
                             "model_type": "cerebras_inference",
@@ -522,10 +549,14 @@ class AIModelService:
                         },
                     )
                 else:
-                    raise Exception(f"Cerebras API error: {response.status_code} - {response.text}")
+                    raise Exception(
+                        f"Cerebras API error: {response.status_code} - {response.text}"
+                    )
 
         except Exception as e:
-            logger.warning(f"Cerebras API call failed: {e}, falling back to mock response")
+            logger.warning(
+                f"Cerebras API call failed: {e}, falling back to mock response"
+            )
             # Fallback to mock response for development
             await asyncio.sleep(0.05)  # Simulate fast Cerebras inference
 
@@ -573,8 +604,9 @@ class AIModelService:
             for name, config in self.models.items()
         }
 
-    async def generate_with_pilot(self, prompt: str, model_name: str = "primary",
-                                 request_id: str = None, **kwargs) -> ModelResponse:
+    async def generate_with_pilot(
+        self, prompt: str, model_name: str = "primary", request_id: str = None, **kwargs
+    ) -> ModelResponse:
         """
         Generate AI response with DeepSeek R1 pilot A/B testing.
 
@@ -594,7 +626,9 @@ class AIModelService:
         try:
             # Process through DeepSeek R1 pilot with A/B testing
             if self.deepseek_pilot.config.enabled:
-                pilot_response = await self.deepseek_pilot.process_request(request_data, request_id)
+                pilot_response = await self.deepseek_pilot.process_request(
+                    request_data, request_id
+                )
 
                 # Convert pilot response to ModelResponse format
                 if "choices" in pilot_response and pilot_response["choices"]:
@@ -612,7 +646,7 @@ class AIModelService:
                             "request_id": request_id,
                             "constitutional_hash": self.deepseek_pilot.config.constitutional_hash,
                             "cost_optimized": True,
-                        }
+                        },
                     )
 
             # Fallback to standard model generation

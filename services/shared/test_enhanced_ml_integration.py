@@ -19,8 +19,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -48,7 +47,9 @@ async def test_production_ml_optimizer_integration():
         assert status["system_status"] == "not_fitted"
 
         logger.info(f"  ✅ Online learning status: {status['system_status']}")
-        logger.info(f"  ✅ Constitutional hash verified: {status['constitutional_hash_verified']}")
+        logger.info(
+            f"  ✅ Constitutional hash verified: {status['constitutional_hash_verified']}"
+        )
 
         return optimizer
 
@@ -75,25 +76,28 @@ async def main():
 
         # Generate test data
         import numpy as np
+
         X_test = np.random.randn(50, 10)
         y_test = np.random.randn(50)
 
         # Test incremental update
         result = optimizer.update_model_incrementally(X_test, y_test)
 
-        assert 'online_metrics' in result
-        assert 'constitutional_hash' in result
-        assert result['constitutional_hash'] == "cdd01ef066bc6cf2"
+        assert "online_metrics" in result
+        assert "constitutional_hash" in result
+        assert result["constitutional_hash"] == "cdd01ef066bc6cf2"
 
-        logger.info(f"  ✅ Incremental update completed: {result['online_metrics'].total_updates} updates")
+        logger.info(
+            f"  ✅ Incremental update completed: {result['online_metrics'].total_updates} updates"
+        )
         logger.info("✅ Incremental learning tests passed\n")
 
         # Test 3: Test online learning status
         logger.info("🧪 Testing online learning status...")
 
         final_status = optimizer.get_online_learning_status()
-        assert final_status['system_status'] == 'operational'
-        assert final_status['constitutional_hash_verified'] is True
+        assert final_status["system_status"] == "operational"
+        assert final_status["constitutional_hash_verified"] is True
 
         logger.info(f"  ✅ Final status: {final_status['system_status']}")
         logger.info("✅ Online learning status tests passed\n")
@@ -113,6 +117,7 @@ async def main():
     except Exception as e:
         logger.error(f"❌ Test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 

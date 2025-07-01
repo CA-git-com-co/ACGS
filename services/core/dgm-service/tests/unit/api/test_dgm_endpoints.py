@@ -11,7 +11,11 @@ from uuid import uuid4
 
 import httpx
 import pytest
-from dgm_service.api.v1.models import ImprovementRequest, ImprovementResponse, PerformanceReport
+from dgm_service.api.v1.models import (
+    ImprovementRequest,
+    ImprovementResponse,
+    PerformanceReport,
+)
 from dgm_service.main import app
 from fastapi import status
 from fastapi.testclient import TestClient
@@ -64,7 +68,9 @@ class TestDGMEndpoints:
             "constraints": {"max_risk_level": "medium", "max_execution_time": 300},
         }
 
-        response = await async_test_client.post("/api/v1/dgm/improve", json=request_data)
+        response = await async_test_client.post(
+            "/api/v1/dgm/improve", json=request_data
+        )
 
         assert response.status_code == status.HTTP_200_OK
 
@@ -83,14 +89,20 @@ class TestDGMEndpoints:
         invalid_request = {
             "target_services": [],  # Empty list should be invalid
             "priority": "invalid_priority",  # Invalid priority
-            "constraints": {"max_execution_time": -100},  # Negative time should be invalid
+            "constraints": {
+                "max_execution_time": -100
+            },  # Negative time should be invalid
         }
 
-        response = await async_test_client.post("/api/v1/dgm/improve", json=invalid_request)
+        response = await async_test_client.post(
+            "/api/v1/dgm/improve", json=invalid_request
+        )
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
-    async def test_execute_improvement_success(self, async_test_client, mock_dgm_dependencies):
+    async def test_execute_improvement_success(
+        self, async_test_client, mock_dgm_dependencies
+    ):
         """Test successful improvement execution."""
         improvement_id = str(uuid4())
 
@@ -127,7 +139,9 @@ class TestDGMEndpoints:
         # Verify execution was called
         dgm_engine.execute_improvement.assert_called_once()
 
-    async def test_execute_improvement_not_found(self, async_test_client, mock_dgm_dependencies):
+    async def test_execute_improvement_not_found(
+        self, async_test_client, mock_dgm_dependencies
+    ):
         """Test execution of non-existent improvement."""
         improvement_id = str(uuid4())
 
@@ -139,7 +153,9 @@ class TestDGMEndpoints:
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
-    async def test_get_improvement_status(self, async_test_client, mock_dgm_dependencies):
+    async def test_get_improvement_status(
+        self, async_test_client, mock_dgm_dependencies
+    ):
         """Test improvement status retrieval."""
         improvement_id = str(uuid4())
 
@@ -151,10 +167,15 @@ class TestDGMEndpoints:
             "status": "completed",
             "created_at": datetime.utcnow().isoformat(),
             "completed_at": (datetime.utcnow() + timedelta(minutes=5)).isoformat(),
-            "performance_metrics": {"overall_improvement": 0.12, "execution_time": 45.2},
+            "performance_metrics": {
+                "overall_improvement": 0.12,
+                "execution_time": 45.2,
+            },
         }
 
-        response = await async_test_client.get(f"/api/v1/dgm/improvements/{improvement_id}")
+        response = await async_test_client.get(
+            f"/api/v1/dgm/improvements/{improvement_id}"
+        )
 
         assert response.status_code == status.HTTP_200_OK
 
@@ -187,7 +208,9 @@ class TestDGMEndpoints:
             "per_page": 10,
         }
 
-        response = await async_test_client.get("/api/v1/dgm/improvements?page=1&per_page=10")
+        response = await async_test_client.get(
+            "/api/v1/dgm/improvements?page=1&per_page=10"
+        )
 
         assert response.status_code == status.HTTP_200_OK
 
@@ -217,7 +240,10 @@ class TestDGMEndpoints:
             "can_rollback": True,
         }
 
-        rollback_request = {"reason": "Performance degradation detected", "force": False}
+        rollback_request = {
+            "reason": "Performance degradation detected",
+            "force": False,
+        }
 
         response = await async_test_client.post(
             f"/api/v1/dgm/rollback/{improvement_id}", json=rollback_request
@@ -229,10 +255,14 @@ class TestDGMEndpoints:
         assert response_data["success"] is True
         assert response_data["rollback_time"] == 15.3
 
-    async def test_get_performance_metrics(self, async_test_client, mock_dgm_dependencies):
+    async def test_get_performance_metrics(
+        self, async_test_client, mock_dgm_dependencies
+    ):
         """Test performance metrics retrieval."""
         # Mock performance monitor
-        performance_monitor = mock_dgm_dependencies["get_performance_monitor"].return_value
+        performance_monitor = mock_dgm_dependencies[
+            "get_performance_monitor"
+        ].return_value
         performance_monitor.query_metrics.return_value = {
             "data_points": [
                 {
@@ -251,7 +281,9 @@ class TestDGMEndpoints:
             "aggregation": "avg",
         }
 
-        response = await async_test_client.get("/api/v1/dgm/metrics", params=query_params)
+        response = await async_test_client.get(
+            "/api/v1/dgm/metrics", params=query_params
+        )
 
         assert response.status_code == status.HTTP_200_OK
 
@@ -260,10 +292,14 @@ class TestDGMEndpoints:
         assert "summary" in response_data
         assert response_data["summary"]["average"] == 125.5
 
-    async def test_get_performance_report(self, async_test_client, mock_dgm_dependencies):
+    async def test_get_performance_report(
+        self, async_test_client, mock_dgm_dependencies
+    ):
         """Test performance report generation."""
         # Mock performance monitor
-        performance_monitor = mock_dgm_dependencies["get_performance_monitor"].return_value
+        performance_monitor = mock_dgm_dependencies[
+            "get_performance_monitor"
+        ].return_value
         performance_monitor.generate_report.return_value = {
             "period_start": (datetime.utcnow() - timedelta(days=7)).isoformat(),
             "period_end": datetime.utcnow().isoformat(),
@@ -291,7 +327,9 @@ class TestDGMEndpoints:
         assert "trends" in response_data
         assert response_data["metrics"]["response_time"]["avg"] == 125.0
 
-    async def test_get_bandit_statistics(self, async_test_client, mock_dgm_dependencies):
+    async def test_get_bandit_statistics(
+        self, async_test_client, mock_dgm_dependencies
+    ):
         """Test bandit algorithm statistics retrieval."""
         # Mock DGM engine
         dgm_engine = mock_dgm_dependencies["get_dgm_engine"].return_value
@@ -344,7 +382,9 @@ class TestDGMEndpoints:
 
             assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-    async def test_insufficient_permissions(self, async_test_client, mock_dgm_dependencies):
+    async def test_insufficient_permissions(
+        self, async_test_client, mock_dgm_dependencies
+    ):
         """Test access with insufficient permissions."""
         # Mock user with limited permissions
         mock_dgm_dependencies["get_current_user"].return_value = {
@@ -374,11 +414,15 @@ class TestDGMEndpoints:
 
             assert response.status_code == status.HTTP_429_TOO_MANY_REQUESTS
 
-    async def test_internal_server_error_handling(self, async_test_client, mock_dgm_dependencies):
+    async def test_internal_server_error_handling(
+        self, async_test_client, mock_dgm_dependencies
+    ):
         """Test internal server error handling."""
         # Mock DGM engine failure
         dgm_engine = mock_dgm_dependencies["get_dgm_engine"].return_value
-        dgm_engine.generate_improvement_proposal.side_effect = Exception("Internal error")
+        dgm_engine.generate_improvement_proposal.side_effect = Exception(
+            "Internal error"
+        )
 
         response = await async_test_client.post(
             "/api/v1/dgm/improve", json={"target_services": ["gs-service"]}
@@ -386,7 +430,9 @@ class TestDGMEndpoints:
 
         assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
 
-    async def test_request_validation_edge_cases(self, async_test_client, mock_dgm_dependencies):
+    async def test_request_validation_edge_cases(
+        self, async_test_client, mock_dgm_dependencies
+    ):
         """Test request validation edge cases."""
         # Test with maximum allowed values
         large_request = {
@@ -398,7 +444,9 @@ class TestDGMEndpoints:
                 "max_execution_time": 3600,  # 1 hour
                 "rollback_threshold": -0.5,
             },
-            "metadata": {"key_" + str(i): f"value_{i}" for i in range(20)},  # Large metadata
+            "metadata": {
+                "key_" + str(i): f"value_{i}" for i in range(20)
+            },  # Large metadata
         }
 
         # Mock successful processing
@@ -409,11 +457,15 @@ class TestDGMEndpoints:
             "expected_improvement": 0.25,
         }
 
-        response = await async_test_client.post("/api/v1/dgm/improve", json=large_request)
+        response = await async_test_client.post(
+            "/api/v1/dgm/improve", json=large_request
+        )
 
         assert response.status_code == status.HTTP_200_OK
 
-    async def test_concurrent_requests_handling(self, async_test_client, mock_dgm_dependencies):
+    async def test_concurrent_requests_handling(
+        self, async_test_client, mock_dgm_dependencies
+    ):
         """Test handling of concurrent API requests."""
         import asyncio
 
@@ -429,7 +481,8 @@ class TestDGMEndpoints:
         request_data = {"target_services": ["gs-service"], "priority": "medium"}
 
         tasks = [
-            async_test_client.post("/api/v1/dgm/improve", json=request_data) for _ in range(10)
+            async_test_client.post("/api/v1/dgm/improve", json=request_data)
+            for _ in range(10)
         ]
 
         responses = await asyncio.gather(*tasks)

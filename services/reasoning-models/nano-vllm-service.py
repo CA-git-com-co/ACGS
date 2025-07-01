@@ -40,6 +40,7 @@ import structlog
 # Import our Nano-vLLM components
 try:
     from nano_vllm_adapter import NanoVLLMAdapter, create_nano_vllm_adapter
+
     ADAPTER_AVAILABLE = True
 except ImportError as e:
     print(f"Warning: Nano-vLLM adapter not available: {e}")
@@ -52,12 +53,14 @@ try:
         NanoVLLMReasoningService,
         ReasoningRequest,
         ConstitutionalDomain,
-        create_nano_vllm_reasoning_service
+        create_nano_vllm_reasoning_service,
     )
+
     INTEGRATION_AVAILABLE = True
 except ImportError as e:
     print(f"Warning: Nano-vLLM integration not available: {e}")
     INTEGRATION_AVAILABLE = False
+
     # Create dummy classes
     class NanoVLLMReasoningService:
         pass
@@ -76,12 +79,13 @@ except ImportError as e:
     async def create_nano_vllm_reasoning_service(*args, **kwargs):
         return None
 
+
 NANO_VLLM_AVAILABLE = ADAPTER_AVAILABLE and INTEGRATION_AVAILABLE
 
 # Configure logging
 logging.basicConfig(
     level=getattr(logging, os.getenv("LOG_LEVEL", "INFO")),
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = structlog.get_logger(__name__)
 
@@ -93,14 +97,17 @@ reasoning_service: Optional[NanoVLLMReasoningService] = None
 # Request/Response Models
 # =============================================================================
 
+
 class ChatMessage(BaseModel):
     """OpenAI-compatible chat message."""
+
     role: str = Field(..., description="Message role: system, user, or assistant")
     content: str = Field(..., description="Message content")
 
 
 class ChatCompletionRequest(BaseModel):
     """OpenAI-compatible chat completion request."""
+
     model: str = Field(default="nano-vllm", description="Model identifier")
     messages: List[ChatMessage] = Field(..., description="List of chat messages")
     max_tokens: int = Field(default=512, description="Maximum tokens to generate")
@@ -111,9 +118,12 @@ class ChatCompletionRequest(BaseModel):
 
 class ConstitutionalReasoningRequest(BaseModel):
     """Constitutional reasoning request."""
+
     content: str = Field(..., description="Content to analyze")
     domain: str = Field(..., description="Constitutional domain")
-    context: Dict[str, Any] = Field(default_factory=dict, description="Additional context")
+    context: Dict[str, Any] = Field(
+        default_factory=dict, description="Additional context"
+    )
     reasoning_depth: str = Field(default="standard", description="Reasoning depth")
     require_citations: bool = Field(default=True, description="Require citations")
     max_tokens: int = Field(default=2048, description="Maximum tokens")
@@ -121,6 +131,7 @@ class ConstitutionalReasoningRequest(BaseModel):
 
 class HealthResponse(BaseModel):
     """Health check response."""
+
     status: str = Field(..., description="Service status")
     healthy: bool = Field(..., description="Health status")
     timestamp: float = Field(..., description="Check timestamp")
@@ -132,26 +143,29 @@ class HealthResponse(BaseModel):
 # Application Lifecycle
 # =============================================================================
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan manager."""
     global reasoning_service
-    
+
     logger.info("Starting Nano-vLLM service...")
-    
+
     # Initialize reasoning service
     if NANO_VLLM_AVAILABLE:
         try:
-            reasoning_service = await create_nano_vllm_reasoning_service(enable_fallback=True)
+            reasoning_service = await create_nano_vllm_reasoning_service(
+                enable_fallback=True
+            )
             logger.info("Nano-vLLM reasoning service initialized")
         except Exception as e:
             logger.error(f"Failed to initialize reasoning service: {e}")
             reasoning_service = None
     else:
         logger.warning("Nano-vLLM not available, service will return mock responses")
-    
+
     yield
-    
+
     # Cleanup
     logger.info("Shutting down Nano-vLLM service...")
     if reasoning_service:
@@ -167,7 +181,7 @@ app = FastAPI(
     title="ACGS-1 Nano-vLLM Reasoning Service",
     description="Lightweight vLLM alternative for constitutional AI reasoning",
     version="1.0.0",
-    lifespan=lifespan
+    lifespan=lifespan,
 )
 
 # Add CORS middleware
@@ -184,6 +198,7 @@ app.add_middleware(
 # Health and Status Endpoints
 # =============================================================================
 
+
 @app.get("/health", response_model=HealthResponse)
 async def health_check():
     """Health check endpoint."""
@@ -194,22 +209,16 @@ async def health_check():
                 status="healthy" if health.get("healthy", False) else "unhealthy",
                 healthy=health.get("healthy", False),
                 timestamp=time.time(),
-                models=health.get("models", {})
+                models=health.get("models", {}),
             )
         else:
             return HealthResponse(
-                status="no_service",
-                healthy=False,
-                timestamp=time.time(),
-                models={}
+                status="no_service", healthy=False, timestamp=time.time(), models={}
             )
     except Exception as e:
         logger.error(f"Health check failed: {e}")
         return HealthResponse(
-            status="error",
-            healthy=False,
-            timestamp=time.time(),
-            models={}
+            status="error", healthy=False, timestamp=time.time(), models={}
         )
 
 
@@ -224,14 +233,15 @@ async def root():
             "health": "/health",
             "chat_completions": "/v1/chat/completions",
             "constitutional_reasoning": "/v1/constitutional/reasoning",
-            "docs": "/docs"
-        }
+            "docs": "/docs",
+        },
     }
 
 
 # =============================================================================
 # OpenAI-Compatible Endpoints
 # =============================================================================
+
 
 @app.post("/v1/chat/completions")
 async def chat_completions(request: ChatCompletionRequest):
@@ -249,36 +259,38 @@ async def chat_completions(request: ChatCompletionRequest):
                         "index": 0,
                         "message": {
                             "role": "assistant",
-                            "content": f"Mock response to: {request.messages[-1].content[:50]}... (Nano-vLLM service not available)"
+                            "content": f"Mock response to: {request.messages[-1].content[:50]}... (Nano-vLLM service not available)",
                         },
-                        "finish_reason": "stop"
+                        "finish_reason": "stop",
                     }
                 ],
                 "usage": {
                     "prompt_tokens": 50,
                     "completion_tokens": 20,
-                    "total_tokens": 70
-                }
+                    "total_tokens": 70,
+                },
             }
-        
+
         # Use the first available adapter for chat completion
         if reasoning_service.adapters:
             adapter = next(iter(reasoning_service.adapters.values()))
-            
+
             # Convert messages to dict format
-            messages = [{"role": msg.role, "content": msg.content} for msg in request.messages]
-            
+            messages = [
+                {"role": msg.role, "content": msg.content} for msg in request.messages
+            ]
+
             response = await adapter.chat_completion(
                 messages=messages,
                 max_tokens=request.max_tokens,
                 temperature=request.temperature,
-                top_p=request.top_p
+                top_p=request.top_p,
             )
-            
+
             return response
         else:
             raise HTTPException(status_code=503, detail="No reasoning models available")
-            
+
     except Exception as e:
         logger.error(f"Chat completion failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -287,6 +299,7 @@ async def chat_completions(request: ChatCompletionRequest):
 # =============================================================================
 # Constitutional Reasoning Endpoints
 # =============================================================================
+
 
 @app.post("/v1/constitutional/reasoning")
 async def constitutional_reasoning(request: ConstitutionalReasoningRequest):
@@ -301,19 +314,19 @@ async def constitutional_reasoning(request: ConstitutionalReasoningRequest):
                     "Transparency": 0.8,
                     "Fairness": 0.8,
                     "Privacy": 0.8,
-                    "Accountability": 0.8
+                    "Accountability": 0.8,
                 },
                 "citations": [],
                 "model_used": "mock",
-                "processing_time_ms": 100.0
+                "processing_time_ms": 100.0,
             }
-        
+
         # Convert domain string to enum
         try:
             domain = ConstitutionalDomain(request.domain.lower())
         except ValueError:
             domain = ConstitutionalDomain.GOVERNANCE
-        
+
         # Create reasoning request
         reasoning_req = ReasoningRequest(
             content=request.content,
@@ -321,12 +334,12 @@ async def constitutional_reasoning(request: ConstitutionalReasoningRequest):
             context=request.context,
             reasoning_depth=request.reasoning_depth,
             require_citations=request.require_citations,
-            max_tokens=request.max_tokens
+            max_tokens=request.max_tokens,
         )
-        
+
         # Perform reasoning
         response = await reasoning_service.constitutional_reasoning(reasoning_req)
-        
+
         return {
             "reasoning_chain": response.reasoning_chain,
             "conclusion": response.conclusion,
@@ -334,9 +347,9 @@ async def constitutional_reasoning(request: ConstitutionalReasoningRequest):
             "constitutional_compliance": response.constitutional_compliance,
             "citations": response.citations,
             "model_used": response.model_used.value,
-            "processing_time_ms": response.processing_time_ms
+            "processing_time_ms": response.processing_time_ms,
         }
-        
+
     except Exception as e:
         logger.error(f"Constitutional reasoning failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -347,14 +360,16 @@ async def ensemble_reasoning(request: ConstitutionalReasoningRequest):
     """Ensemble constitutional reasoning endpoint."""
     try:
         if not reasoning_service:
-            raise HTTPException(status_code=503, detail="Reasoning service not available")
-        
+            raise HTTPException(
+                status_code=503, detail="Reasoning service not available"
+            )
+
         # Convert domain string to enum
         try:
             domain = ConstitutionalDomain(request.domain.lower())
         except ValueError:
             domain = ConstitutionalDomain.GOVERNANCE
-        
+
         # Create reasoning request
         reasoning_req = ReasoningRequest(
             content=request.content,
@@ -362,12 +377,12 @@ async def ensemble_reasoning(request: ConstitutionalReasoningRequest):
             context=request.context,
             reasoning_depth=request.reasoning_depth,
             require_citations=request.require_citations,
-            max_tokens=request.max_tokens
+            max_tokens=request.max_tokens,
         )
-        
+
         # Perform ensemble reasoning
         response = await reasoning_service.ensemble_reasoning(reasoning_req)
-        
+
         return {
             "reasoning_chain": response.reasoning_chain,
             "conclusion": response.conclusion,
@@ -376,9 +391,9 @@ async def ensemble_reasoning(request: ConstitutionalReasoningRequest):
             "citations": response.citations,
             "model_used": response.model_used.value,
             "processing_time_ms": response.processing_time_ms,
-            "ensemble": True
+            "ensemble": True,
         }
-        
+
     except Exception as e:
         logger.error(f"Ensemble reasoning failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -387,6 +402,7 @@ async def ensemble_reasoning(request: ConstitutionalReasoningRequest):
 # =============================================================================
 # Main Application
 # =============================================================================
+
 
 def signal_handler(signum, frame):
     """Handle shutdown signals."""
@@ -398,14 +414,14 @@ if __name__ == "__main__":
     # Set up signal handlers
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
-    
+
     # Configuration
     host = os.getenv("HOST", "0.0.0.0")
     port = int(os.getenv("PORT", "8000"))
     workers = int(os.getenv("WORKERS", "1"))
-    
+
     logger.info(f"Starting Nano-vLLM service on {host}:{port}")
-    
+
     # Run the application
     uvicorn.run(
         "nano-vllm-service:app",
@@ -413,5 +429,5 @@ if __name__ == "__main__":
         port=port,
         workers=workers,
         log_level=os.getenv("LOG_LEVEL", "info").lower(),
-        access_log=True
+        access_log=True,
     )

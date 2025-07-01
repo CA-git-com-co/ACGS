@@ -21,10 +21,10 @@ from pathlib import Path
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
+
 
 class QECSFTFrameworkValidator:
     """Validates the QEC-SFT framework under production conditions."""
@@ -39,13 +39,13 @@ class QECSFTFrameworkValidator:
             "syndrome_diagnostics": {},
             "theoretical_validation": {},
             "performance_metrics": {},
-            "production_readiness": {}
+            "production_readiness": {},
         }
 
         # QEC-SFT Framework parameters
         self.hilbert_dimension = 512  # Semantic space dimension
-        self.stabilizer_count = 64    # Number of stabilizer operators
-        self.syndrome_threshold = 0.1 # Error detection threshold
+        self.stabilizer_count = 64  # Number of stabilizer operators
+        self.syndrome_threshold = 0.1  # Error detection threshold
 
     async def validate_qec_sft_framework(self) -> Dict[str, Any]:
         """Validate the complete QEC-SFT framework."""
@@ -100,7 +100,7 @@ class QECSFTFrameworkValidator:
             "orthogonality_preservation": {},
             "semantic_coherence": {},
             "constitutional_embedding": {},
-            "performance_metrics": {}
+            "performance_metrics": {},
         }
 
         # 1. Dimension Validation
@@ -114,13 +114,15 @@ class QECSFTFrameworkValidator:
             test_vectors.append(vector)
 
         # Validate dimensions
-        dimensions_consistent = all(len(v) == self.hilbert_dimension for v in test_vectors)
+        dimensions_consistent = all(
+            len(v) == self.hilbert_dimension for v in test_vectors
+        )
 
         hilbert_results["dimension_validation"] = {
             "expected_dimension": self.hilbert_dimension,
             "actual_dimensions": [len(v) for v in test_vectors],
             "consistency_check": dimensions_consistent,
-            "constitutional_compliance": True
+            "constitutional_compliance": True,
         }
 
         # 2. Orthogonality Preservation
@@ -128,7 +130,7 @@ class QECSFTFrameworkValidator:
 
         orthogonality_scores = []
         for i in range(len(test_vectors)):
-            for j in range(i+1, len(test_vectors)):
+            for j in range(i + 1, len(test_vectors)):
                 dot_product = np.dot(test_vectors[i], test_vectors[j])
                 norm_i = np.linalg.norm(test_vectors[i])
                 norm_j = np.linalg.norm(test_vectors[j])
@@ -138,26 +140,34 @@ class QECSFTFrameworkValidator:
                     orthogonality_scores.append(abs(cosine_similarity))
 
         avg_orthogonality = np.mean(orthogonality_scores) if orthogonality_scores else 0
-        orthogonality_preserved = avg_orthogonality < 0.3  # Threshold for near-orthogonality
+        orthogonality_preserved = (
+            avg_orthogonality < 0.3
+        )  # Threshold for near-orthogonality
 
         hilbert_results["orthogonality_preservation"] = {
             "average_cosine_similarity": avg_orthogonality,
             "orthogonality_threshold": 0.3,
             "orthogonality_preserved": orthogonality_preserved,
-            "test_pairs": len(orthogonality_scores)
+            "test_pairs": len(orthogonality_scores),
         }
 
         # 3. Semantic Coherence
         logger.info("🧠 Testing semantic coherence")
 
         # Test semantic relationships
-        constitutional_vector = self._generate_semantic_vector("constitutional_governance")
+        constitutional_vector = self._generate_semantic_vector(
+            "constitutional_governance"
+        )
         policy_vector = self._generate_semantic_vector("policy_enforcement")
         random_vector = self._generate_semantic_vector("random_concept_xyz")
 
         # Constitutional concepts should be more similar than random concepts
-        const_policy_similarity = self._cosine_similarity(constitutional_vector, policy_vector)
-        const_random_similarity = self._cosine_similarity(constitutional_vector, random_vector)
+        const_policy_similarity = self._cosine_similarity(
+            constitutional_vector, policy_vector
+        )
+        const_random_similarity = self._cosine_similarity(
+            constitutional_vector, random_vector
+        )
 
         semantic_coherence = const_policy_similarity > const_random_similarity
 
@@ -165,7 +175,8 @@ class QECSFTFrameworkValidator:
             "constitutional_policy_similarity": const_policy_similarity,
             "constitutional_random_similarity": const_random_similarity,
             "coherence_maintained": semantic_coherence,
-            "coherence_ratio": const_policy_similarity / max(const_random_similarity, 0.001)
+            "coherence_ratio": const_policy_similarity
+            / max(const_random_similarity, 0.001),
         }
 
         # 4. Constitutional Embedding
@@ -181,7 +192,7 @@ class QECSFTFrameworkValidator:
             "hash_vector_norm": hash_norm,
             "embedding_threshold": 0.5,
             "hash_properly_embedded": hash_embedded,
-            "embedding_dimension": len(hash_vector)
+            "embedding_dimension": len(hash_vector),
         }
 
         # 5. Performance Metrics
@@ -200,7 +211,7 @@ class QECSFTFrameworkValidator:
             "vector_generation_ops_per_sec": operations_per_second,
             "target_ops_per_sec": 10000,
             "performance_adequate": operations_per_second > 1000,
-            "benchmark_duration_ms": (end_time - start_time) * 1000
+            "benchmark_duration_ms": (end_time - start_time) * 1000,
         }
 
         logger.info(f"🌌 Hilbert space validation: {operations_per_second:.0f} ops/sec")
@@ -248,7 +259,7 @@ class QECSFTFrameworkValidator:
             "stabilizer_generation": {},
             "execution_performance": {},
             "error_correction": {},
-            "constitutional_stabilizers": {}
+            "constitutional_stabilizers": {},
         }
 
         # 1. Stabilizer Generation
@@ -269,7 +280,7 @@ class QECSFTFrameworkValidator:
             "target_count": self.stabilizer_count,
             "average_norm": avg_norm,
             "norm_consistency": norm_consistency,
-            "generation_successful": len(stabilizers) == self.stabilizer_count
+            "generation_successful": len(stabilizers) == self.stabilizer_count,
         }
 
         # 2. Execution Performance
@@ -294,7 +305,7 @@ class QECSFTFrameworkValidator:
             "stabilizers_per_second": stabilizers_per_second,
             "target_performance": 1000,  # Target: 1000 stabilizers/sec
             "performance_adequate": stabilizers_per_second > 100,
-            "corrected_states_count": len(corrected_states)
+            "corrected_states_count": len(corrected_states),
         }
 
         # 3. Error Correction Capability
@@ -316,7 +327,7 @@ class QECSFTFrameworkValidator:
             "corrected_fidelity": corrected_fidelity,
             "correction_improvement": correction_improvement,
             "correction_effective": correction_improvement > 0.05,
-            "noise_level": 0.1
+            "noise_level": 0.1,
         }
 
         # 4. Constitutional Stabilizers
@@ -326,15 +337,19 @@ class QECSFTFrameworkValidator:
         constitutional_state = self._generate_semantic_vector(self.constitutional_hash)
 
         # Test constitutional preservation
-        preserved_state = self._apply_stabilizer(constitutional_state, constitutional_stabilizer)
-        preservation_fidelity = self._cosine_similarity(constitutional_state, preserved_state)
+        preserved_state = self._apply_stabilizer(
+            constitutional_state, constitutional_stabilizer
+        )
+        preservation_fidelity = self._cosine_similarity(
+            constitutional_state, preserved_state
+        )
 
         stabilizer_results["constitutional_stabilizers"] = {
             "constitutional_hash": self.constitutional_hash,
             "preservation_fidelity": preservation_fidelity,
             "preservation_threshold": 0.95,
             "constitutional_preserved": preservation_fidelity > 0.95,
-            "stabilizer_norm": np.linalg.norm(constitutional_stabilizer)
+            "stabilizer_norm": np.linalg.norm(constitutional_stabilizer),
         }
 
         logger.info(f"🔧 Stabilizer execution: {stabilizers_per_second:.0f} ops/sec")
@@ -375,7 +390,9 @@ class QECSFTFrameworkValidator:
 
         return stabilizer
 
-    def _apply_stabilizer(self, state: np.ndarray, stabilizer: np.ndarray) -> np.ndarray:
+    def _apply_stabilizer(
+        self, state: np.ndarray, stabilizer: np.ndarray
+    ) -> np.ndarray:
         """Apply a stabilizer operator to a quantum state."""
         # Simplified stabilizer application
         # In full QEC, this would involve complex matrix operations
@@ -393,8 +410,9 @@ class QECSFTFrameworkValidator:
 
         return corrected_state
 
-    def _apply_error_correction(self, noisy_state: np.ndarray,
-                               stabilizers: List[np.ndarray]) -> np.ndarray:
+    def _apply_error_correction(
+        self, noisy_state: np.ndarray, stabilizers: List[np.ndarray]
+    ) -> np.ndarray:
         """Apply error correction using multiple stabilizers."""
         corrected_state = noisy_state.copy()
 
@@ -412,7 +430,7 @@ class QECSFTFrameworkValidator:
             "error_detection": {},
             "syndrome_classification": {},
             "diagnostic_accuracy": {},
-            "performance_metrics": {}
+            "performance_metrics": {},
         }
 
         # 1. Error Detection
@@ -428,21 +446,25 @@ class QECSFTFrameworkValidator:
             syndrome = self._compute_syndrome(corrupted_state, clean_state)
             error_detected = syndrome > self.syndrome_threshold
 
-            detection_results.append({
-                "error_type": error_type,
-                "syndrome_value": syndrome,
-                "error_detected": error_detected,
-                "detection_threshold": self.syndrome_threshold
-            })
+            detection_results.append(
+                {
+                    "error_type": error_type,
+                    "syndrome_value": syndrome,
+                    "error_detected": error_detected,
+                    "detection_threshold": self.syndrome_threshold,
+                }
+            )
 
-        detection_rate = sum(1 for r in detection_results if r["error_detected"]) / len(detection_results)
+        detection_rate = sum(1 for r in detection_results if r["error_detected"]) / len(
+            detection_results
+        )
 
         syndrome_results["error_detection"] = {
             "detection_results": detection_results,
             "detection_rate": detection_rate,
             "target_detection_rate": 0.9,
             "detection_adequate": detection_rate >= 0.8,
-            "syndrome_threshold": self.syndrome_threshold
+            "syndrome_threshold": self.syndrome_threshold,
         }
 
         # 2. Syndrome Classification
@@ -454,20 +476,24 @@ class QECSFTFrameworkValidator:
             classified_type = self._classify_syndrome(corrupted_state, clean_state)
             correct_classification = classified_type == error_type
 
-            classification_results.append({
-                "actual_error": error_type,
-                "classified_error": classified_type,
-                "correct_classification": correct_classification
-            })
+            classification_results.append(
+                {
+                    "actual_error": error_type,
+                    "classified_error": classified_type,
+                    "correct_classification": correct_classification,
+                }
+            )
 
-        classification_accuracy = sum(1 for r in classification_results if r["correct_classification"]) / len(classification_results)
+        classification_accuracy = sum(
+            1 for r in classification_results if r["correct_classification"]
+        ) / len(classification_results)
 
         syndrome_results["syndrome_classification"] = {
             "classification_results": classification_results,
             "classification_accuracy": classification_accuracy,
             "target_accuracy": 0.85,
             "classification_adequate": classification_accuracy >= 0.7,
-            "error_types_tested": len(error_types)
+            "error_types_tested": len(error_types),
         }
 
         # 3. Diagnostic Accuracy
@@ -487,25 +513,35 @@ class QECSFTFrameworkValidator:
                 expected_diagnosis = "no_error"
 
             syndrome = self._compute_syndrome(error_state, test_state)
-            actual_diagnosis = "error_present" if syndrome > self.syndrome_threshold else "no_error"
+            actual_diagnosis = (
+                "error_present" if syndrome > self.syndrome_threshold else "no_error"
+            )
 
-            diagnostic_tests.append({
-                "test_id": i,
-                "expected_diagnosis": expected_diagnosis,
-                "actual_diagnosis": actual_diagnosis,
-                "syndrome_value": syndrome,
-                "correct_diagnosis": expected_diagnosis == actual_diagnosis
-            })
+            diagnostic_tests.append(
+                {
+                    "test_id": i,
+                    "expected_diagnosis": expected_diagnosis,
+                    "actual_diagnosis": actual_diagnosis,
+                    "syndrome_value": syndrome,
+                    "correct_diagnosis": expected_diagnosis == actual_diagnosis,
+                }
+            )
 
-        diagnostic_accuracy = sum(1 for t in diagnostic_tests if t["correct_diagnosis"]) / len(diagnostic_tests)
+        diagnostic_accuracy = sum(
+            1 for t in diagnostic_tests if t["correct_diagnosis"]
+        ) / len(diagnostic_tests)
 
         syndrome_results["diagnostic_accuracy"] = {
             "diagnostic_tests": len(diagnostic_tests),
             "diagnostic_accuracy": diagnostic_accuracy,
             "target_accuracy": 0.9,
             "accuracy_adequate": diagnostic_accuracy >= 0.85,
-            "false_positive_rate": self._calculate_false_positive_rate(diagnostic_tests),
-            "false_negative_rate": self._calculate_false_negative_rate(diagnostic_tests)
+            "false_positive_rate": self._calculate_false_positive_rate(
+                diagnostic_tests
+            ),
+            "false_negative_rate": self._calculate_false_negative_rate(
+                diagnostic_tests
+            ),
         }
 
         # 4. Performance Metrics
@@ -526,10 +562,12 @@ class QECSFTFrameworkValidator:
             "syndromes_per_second": syndromes_per_second,
             "target_performance": 5000,
             "performance_adequate": syndromes_per_second > 1000,
-            "benchmark_duration_ms": (end_time - start_time) * 1000
+            "benchmark_duration_ms": (end_time - start_time) * 1000,
         }
 
-        logger.info(f"🔍 Syndrome diagnostics: {syndromes_per_second:.0f} syndromes/sec")
+        logger.info(
+            f"🔍 Syndrome diagnostics: {syndromes_per_second:.0f} syndromes/sec"
+        )
         return syndrome_results
 
     def _introduce_error(self, state: np.ndarray, error_type: str) -> np.ndarray:
@@ -579,21 +617,29 @@ class QECSFTFrameworkValidator:
 
     def _calculate_false_positive_rate(self, diagnostic_tests: List[Dict]) -> float:
         """Calculate false positive rate from diagnostic tests."""
-        false_positives = sum(1 for t in diagnostic_tests
-                             if t["expected_diagnosis"] == "no_error" and
-                                t["actual_diagnosis"] == "error_present")
-        total_negatives = sum(1 for t in diagnostic_tests
-                             if t["expected_diagnosis"] == "no_error")
+        false_positives = sum(
+            1
+            for t in diagnostic_tests
+            if t["expected_diagnosis"] == "no_error"
+            and t["actual_diagnosis"] == "error_present"
+        )
+        total_negatives = sum(
+            1 for t in diagnostic_tests if t["expected_diagnosis"] == "no_error"
+        )
 
         return false_positives / max(total_negatives, 1)
 
     def _calculate_false_negative_rate(self, diagnostic_tests: List[Dict]) -> float:
         """Calculate false negative rate from diagnostic tests."""
-        false_negatives = sum(1 for t in diagnostic_tests
-                             if t["expected_diagnosis"] == "error_present" and
-                                t["actual_diagnosis"] == "no_error")
-        total_positives = sum(1 for t in diagnostic_tests
-                             if t["expected_diagnosis"] == "error_present")
+        false_negatives = sum(
+            1
+            for t in diagnostic_tests
+            if t["expected_diagnosis"] == "error_present"
+            and t["actual_diagnosis"] == "no_error"
+        )
+        total_positives = sum(
+            1 for t in diagnostic_tests if t["expected_diagnosis"] == "error_present"
+        )
 
         return false_negatives / max(total_positives, 1)
 
@@ -605,7 +651,7 @@ class QECSFTFrameworkValidator:
             "quantum_properties": {},
             "error_correction_theory": {},
             "semantic_preservation": {},
-            "constitutional_invariance": {}
+            "constitutional_invariance": {},
         }
 
         # 1. Quantum Properties Validation
@@ -629,7 +675,7 @@ class QECSFTFrameworkValidator:
             "superposition_norm": np.linalg.norm(superposition),
             "linearity_preserved": abs(norm_linear - 1.0) < 0.1,
             "entanglement_measure": entanglement_measure,
-            "quantum_properties_valid": True
+            "quantum_properties_valid": True,
         }
 
         # 2. Error Correction Theory Validation
@@ -647,10 +693,9 @@ class QECSFTFrameworkValidator:
             stabilizers = [self._generate_stabilizer_operator(i) for i in range(5)]
             corrected_state = self._apply_error_correction(noisy_state, stabilizers)
 
-            fidelity_improvement = (
-                self._cosine_similarity(original_state, corrected_state) -
-                self._cosine_similarity(original_state, noisy_state)
-            )
+            fidelity_improvement = self._cosine_similarity(
+                original_state, corrected_state
+            ) - self._cosine_similarity(original_state, noisy_state)
             correction_effectiveness.append(fidelity_improvement)
 
         avg_correction = np.mean(correction_effectiveness)
@@ -661,7 +706,7 @@ class QECSFTFrameworkValidator:
             "correction_effectiveness": correction_effectiveness,
             "average_correction": avg_correction,
             "theoretical_minimum": 0.05,
-            "theory_validated": theory_validated
+            "theory_validated": theory_validated,
         }
 
         # 3. Semantic Preservation
@@ -673,7 +718,7 @@ class QECSFTFrameworkValidator:
         corrected_similarities = {}
 
         for i, concept1 in enumerate(concepts):
-            for j, concept2 in enumerate(concepts[i+1:], i+1):
+            for j, concept2 in enumerate(concepts[i + 1 :], i + 1):
                 vec1 = self._generate_semantic_vector(concept1)
                 vec2 = self._generate_semantic_vector(concept2)
 
@@ -705,7 +750,7 @@ class QECSFTFrameworkValidator:
             "preservation_scores": preservation_scores,
             "average_preservation": avg_preservation,
             "preservation_threshold": 0.9,
-            "preservation_adequate": avg_preservation > 0.85
+            "preservation_adequate": avg_preservation > 0.85,
         }
 
         # 4. Constitutional Invariance
@@ -715,7 +760,7 @@ class QECSFTFrameworkValidator:
             self.constitutional_hash,
             "constitutional_governance",
             "democratic_principles",
-            "rule_of_law"
+            "rule_of_law",
         ]
 
         invariance_scores = []
@@ -740,20 +785,22 @@ class QECSFTFrameworkValidator:
             "average_invariance": avg_invariance,
             "invariance_threshold": 0.95,
             "constitutional_preserved": constitutional_preserved,
-            "constitutional_hash": self.constitutional_hash
+            "constitutional_hash": self.constitutional_hash,
         }
 
         logger.info(f"🧮 Theoretical validation: {avg_invariance:.3f} invariance")
         return theoretical_results
 
-    def _create_entangled_semantic_state(self, state1: np.ndarray, state2: np.ndarray) -> np.ndarray:
+    def _create_entangled_semantic_state(
+        self, state1: np.ndarray, state2: np.ndarray
+    ) -> np.ndarray:
         """Create an entangled semantic state from two input states."""
         # Simplified semantic entanglement
         entangled = np.concatenate([state1, state2])
 
         # Add correlation component
-        correlation = np.outer(state1, state2).flatten()[:len(state1)]
-        entangled[:len(state1)] += 0.1 * correlation
+        correlation = np.outer(state1, state2).flatten()[: len(state1)]
+        entangled[: len(state1)] += 0.1 * correlation
 
         # Normalize
         norm = np.linalg.norm(entangled)
@@ -775,7 +822,9 @@ class QECSFTFrameworkValidator:
 
         return entanglement
 
-    def _add_controlled_noise(self, state: np.ndarray, noise_level: float) -> np.ndarray:
+    def _add_controlled_noise(
+        self, state: np.ndarray, noise_level: float
+    ) -> np.ndarray:
         """Add controlled noise to a state."""
         noise = np.random.normal(0, noise_level, len(state))
         noisy_state = state + noise
@@ -795,7 +844,7 @@ class QECSFTFrameworkValidator:
             "throughput_metrics": {},
             "latency_metrics": {},
             "scalability_metrics": {},
-            "resource_utilization": {}
+            "resource_utilization": {},
         }
 
         # Throughput testing
@@ -816,7 +865,7 @@ class QECSFTFrameworkValidator:
             "operations_per_second": throughput,
             "target_throughput": 1000,
             "throughput_adequate": throughput > 500,
-            "operations_completed": operations_completed
+            "operations_completed": operations_completed,
         }
 
         # Latency testing
@@ -837,10 +886,12 @@ class QECSFTFrameworkValidator:
             "p99_latency_ms": p99_latency,
             "target_latency_ms": 5.0,
             "latency_adequate": p99_latency < 10.0,
-            "latency_samples": len(latencies)
+            "latency_samples": len(latencies),
         }
 
-        logger.info(f"⚡ QEC-SFT performance: {throughput:.0f} ops/sec, {p99_latency:.2f}ms P99")
+        logger.info(
+            f"⚡ QEC-SFT performance: {throughput:.0f} ops/sec, {p99_latency:.2f}ms P99"
+        )
         return performance_results
 
     async def _assess_production_readiness(self) -> Dict[str, Any]:
@@ -859,7 +910,7 @@ class QECSFTFrameworkValidator:
             "overall_score": 0.0,
             "production_ready": False,
             "recommendations": [],
-            "constitutional_compliance": True
+            "constitutional_compliance": True,
         }
 
         # Score each component
@@ -867,12 +918,16 @@ class QECSFTFrameworkValidator:
 
         # Hilbert space score
         hilbert_performance = hilbert_results.get("performance_metrics", {})
-        hilbert_score = 85 if hilbert_performance.get("performance_adequate", False) else 60
+        hilbert_score = (
+            85 if hilbert_performance.get("performance_adequate", False) else 60
+        )
         scores["semantic_hilbert_space"] = hilbert_score
 
         # Stabilizer execution score
         stabilizer_performance = stabilizer_results.get("execution_performance", {})
-        stabilizer_score = 90 if stabilizer_performance.get("performance_adequate", False) else 70
+        stabilizer_score = (
+            90 if stabilizer_performance.get("performance_adequate", False) else 70
+        )
         scores["stabilizer_execution"] = stabilizer_score
 
         # Syndrome diagnostics score
@@ -882,12 +937,16 @@ class QECSFTFrameworkValidator:
 
         # Theoretical validation score
         theoretical_preservation = theoretical_results.get("semantic_preservation", {})
-        theoretical_score = 92 if theoretical_preservation.get("preservation_adequate", False) else 75
+        theoretical_score = (
+            92 if theoretical_preservation.get("preservation_adequate", False) else 75
+        )
         scores["theoretical_validation"] = theoretical_score
 
         # Performance score
         performance_throughput = performance_results.get("throughput_metrics", {})
-        performance_score = 87 if performance_throughput.get("throughput_adequate", False) else 70
+        performance_score = (
+            87 if performance_throughput.get("throughput_adequate", False) else 70
+        )
         scores["performance_metrics"] = performance_score
 
         readiness_assessment["component_scores"] = scores
@@ -915,7 +974,9 @@ class QECSFTFrameworkValidator:
                 "Enhance syndrome diagnostic accuracy and reduce false positive/negative rates"
             )
 
-        logger.info(f"🎯 Production readiness: {overall_score:.1f}% ({'READY' if readiness_assessment['production_ready'] else 'NOT READY'})")
+        logger.info(
+            f"🎯 Production readiness: {overall_score:.1f}% ({'READY' if readiness_assessment['production_ready'] else 'NOT READY'})"
+        )
         return readiness_assessment
 
     async def _save_validation_report(self):
@@ -925,10 +986,11 @@ class QECSFTFrameworkValidator:
         report_path = Path("reports/qec_sft_validation_report.json")
         report_path.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(report_path, 'w') as f:
+        with open(report_path, "w") as f:
             json.dump(self.validation_results, f, indent=2, default=str)
 
         logger.info(f"💾 Validation report saved to {report_path}")
+
 
 async def main():
     """Main function to run QEC-SFT framework validation."""
@@ -937,32 +999,35 @@ async def main():
     try:
         results = await validator.validate_qec_sft_framework()
 
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("ACGS QEC-SFT FRAMEWORK VALIDATION RESULTS")
-        print("="*60)
+        print("=" * 60)
         print(f"Constitutional Hash: {results['constitutional_hash']}")
 
-        readiness = results['production_readiness']
+        readiness = results["production_readiness"]
         print(f"Overall Score: {readiness['overall_score']:.1f}%")
-        print(f"Production Ready: {'✅ YES' if readiness['production_ready'] else '❌ NO'}")
+        print(
+            f"Production Ready: {'✅ YES' if readiness['production_ready'] else '❌ NO'}"
+        )
 
         print("\nComponent Scores:")
-        for component, score in readiness['component_scores'].items():
+        for component, score in readiness["component_scores"].items():
             status = "✅" if score >= 80 else "⚠️" if score >= 70 else "❌"
             print(f"  {component}: {score}% {status}")
 
-        if readiness['recommendations']:
+        if readiness["recommendations"]:
             print("\nRecommendations:")
-            for rec in readiness['recommendations']:
+            for rec in readiness["recommendations"]:
                 print(f"  • {rec}")
 
-        print("="*60)
+        print("=" * 60)
 
-        return 0 if readiness['production_ready'] else 1
+        return 0 if readiness["production_ready"] else 1
 
     except Exception as e:
         print(f"\n❌ QEC-SFT validation failed: {e}")
         return 1
+
 
 if __name__ == "__main__":
     exit_code = asyncio.run(main())

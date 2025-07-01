@@ -4,18 +4,26 @@ Unit tests for services.core.governance-synthesis.gs_service.app.services.policy
 
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
-from services.core.governance-synthesis.gs_service.app.services.policy_validator import ValidationLevel, PolicyType, PolicyValidationRequest, ConflictDetectionResult, ComplianceCheckResult, ConstitutionalValidationResult, PolicyValidationResponse, PolicyValidationEngine
-
+from services.core.governance_synthesis.gs_service.app.services.policy_validator import (
+    ValidationLevel,
+    PolicyType,
+    PolicyValidationRequest,
+    ConflictDetectionResult,
+    ComplianceCheckResult,
+    ConstitutionalValidationResult,
+    PolicyValidationResponse,
+    PolicyValidationEngine,
+)
 
 
 class TestValidationLevel:
     """Test suite for ValidationLevel."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -24,12 +32,12 @@ class TestValidationLevel:
 
 class TestPolicyType:
     """Test suite for PolicyType."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -38,12 +46,12 @@ class TestPolicyType:
 
 class TestPolicyValidationRequest:
     """Test suite for PolicyValidationRequest."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -52,12 +60,12 @@ class TestPolicyValidationRequest:
 
 class TestConflictDetectionResult:
     """Test suite for ConflictDetectionResult."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -66,12 +74,12 @@ class TestConflictDetectionResult:
 
 class TestComplianceCheckResult:
     """Test suite for ComplianceCheckResult."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -80,12 +88,12 @@ class TestComplianceCheckResult:
 
 class TestConstitutionalValidationResult:
     """Test suite for ConstitutionalValidationResult."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -94,12 +102,12 @@ class TestConstitutionalValidationResult:
 
 class TestPolicyValidationResponse:
     """Test suite for PolicyValidationResponse."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -108,12 +116,12 @@ class TestPolicyValidationResponse:
 
 class TestPolicyValidationEngine:
     """Test suite for PolicyValidationEngine."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -124,6 +132,4 @@ class TestPolicyValidationEngine:
         # TODO: Implement test for get_metrics
         instance = PolicyValidationEngine()
         # Add test implementation here
-        assert hasattr(instance, 'get_metrics')
-
-
+        assert hasattr(instance, "get_metrics")

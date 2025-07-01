@@ -233,7 +233,9 @@ class APIKeyManager:
                     return None
 
                 # Decrypt the key
-                decrypted_key = self._fernet.decrypt(record.encrypted_key.encode()).decode()
+                decrypted_key = self._fernet.decrypt(
+                    record.encrypted_key.encode()
+                ).decode()
 
                 # Update usage statistics
                 await session.execute(
@@ -256,7 +258,9 @@ class APIKeyManager:
             self.logger.error(f"Failed to retrieve API key {key_name}: {str(e)}")
             return None
 
-    async def get_api_key_with_fallback(self, key_name: str, env_var_name: str) -> str | None:
+    async def get_api_key_with_fallback(
+        self, key_name: str, env_var_name: str
+    ) -> str | None:
         """
         Get API key with environment variable fallback
 
@@ -342,7 +346,9 @@ class APIKeyManager:
         """
         try:
             async with get_async_session() as session:
-                result = await session.execute(select(APIKeyRecord).where(APIKeyRecord.is_active))
+                result = await session.execute(
+                    select(APIKeyRecord).where(APIKeyRecord.is_active)
+                )
                 records = result.scalars().all()
 
                 keys_info = []
@@ -357,12 +363,16 @@ class APIKeyManager:
                             "created_at": record.created_at.isoformat(),
                             "updated_at": record.updated_at.isoformat(),
                             "expires_at": (
-                                record.expires_at.isoformat() if record.expires_at else None
+                                record.expires_at.isoformat()
+                                if record.expires_at
+                                else None
                             ),
                             "rotation_count": int(record.rotation_count),
                             "usage_count": int(record.usage_count),
                             "last_used_at": (
-                                record.last_used_at.isoformat() if record.last_used_at else None
+                                record.last_used_at.isoformat()
+                                if record.last_used_at
+                                else None
                             ),
                             "metadata": metadata,
                         }
@@ -386,7 +396,9 @@ class APIKeyManager:
         """
         try:
             async with get_async_session() as session:
-                await session.execute(delete(APIKeyRecord).where(APIKeyRecord.key_name == key_name))
+                await session.execute(
+                    delete(APIKeyRecord).where(APIKeyRecord.key_name == key_name)
+                )
                 await session.commit()
 
                 # Clear cache

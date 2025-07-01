@@ -27,7 +27,9 @@ try:
 
     # Add the correct path to services/shared
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    shared_path = os.path.join(current_dir, "..", "..", "..", "..", "..", "services", "shared")
+    shared_path = os.path.join(
+        current_dir, "..", "..", "..", "..", "..", "services", "shared"
+    )
     sys.path.insert(0, os.path.abspath(shared_path))
 
     from services.shared.security_middleware import (
@@ -48,8 +50,9 @@ try:
         get_multimodal_service,
         MultimodalRequest,
         RequestType,
-        ContentType
+        ContentType,
     )
+
     MULTIMODAL_AI_AVAILABLE = True
     print("✅ Multimodal AI service integration loaded successfully")
 except ImportError as e:
@@ -62,8 +65,9 @@ try:
         get_constitutional_prompt,
         get_prompt_manager,
         PromptRole,
-        SafetyLevel
+        SafetyLevel,
     )
+
     PROMPT_FRAMEWORK_AVAILABLE = True
     print("✅ Constitutional prompt framework loaded successfully")
 except ImportError as e:
@@ -76,8 +80,9 @@ try:
         get_safety_validator,
         get_ethics_framework,
         validate_constitutional_safety,
-        evaluate_constitutional_ethics
+        evaluate_constitutional_ethics,
     )
+
     SAFETY_FRAMEWORK_AVAILABLE = True
     print("✅ Constitutional safety framework loaded successfully")
 except ImportError as e:
@@ -88,8 +93,9 @@ except ImportError as e:
 try:
     from services.shared.constitutional_tool_orchestrator import (
         get_tool_orchestrator,
-        orchestrate_constitutional_query
+        orchestrate_constitutional_query,
     )
+
     TOOL_ORCHESTRATOR_AVAILABLE = True
     print("✅ Constitutional tool orchestrator loaded successfully")
 except ImportError as e:
@@ -126,6 +132,7 @@ try:
         ConstitutionalComplianceError,
         SecurityValidationError,
     )
+
     ERROR_HANDLING_AVAILABLE = True
     print("✅ Standardized error handling middleware loaded successfully")
 except ImportError as e:
@@ -155,7 +162,9 @@ try:
     ENHANCED_SERVICES_AVAILABLE = True
     logger.info("Enhanced constitutional compliance services imported successfully")
 except ImportError as e:
-    logger.warning(f"Enhanced services not available: {e}. Running with basic compliance.")
+    logger.warning(
+        f"Enhanced services not available: {e}. Running with basic compliance."
+    )
     ENHANCED_SERVICES_AVAILABLE = False
 
 # Global service instances
@@ -225,10 +234,13 @@ else:
 # Apply comprehensive security middleware
 try:
     from services.shared.security_middleware import apply_production_security_middleware
+
     apply_production_security_middleware(app, "ac_service")
     logger.info("✅ Production security middleware applied")
 except ImportError:
-    logger.warning("⚠️ Production security middleware not available, using basic security")
+    logger.warning(
+        "⚠️ Production security middleware not available, using basic security"
+    )
 
     @app.middleware("http")
     async def add_security_headers(request, call_next):
@@ -242,7 +254,9 @@ except ImportError:
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
 
         # HSTS (HTTP Strict Transport Security)
-        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
+        response.headers["Strict-Transport-Security"] = (
+            "max-age=31536000; includeSubDomains; preload"
+        )
 
         # Content Security Policy (CSP) - Enhanced for XSS protection
         csp_policy = (
@@ -349,7 +363,9 @@ allowed_hosts = [host.strip() for host in allowed_hosts if host.strip()]
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=allowed_hosts)
 
 # Add CORS middleware with secure production settings
-cors_origins = os.getenv("BACKEND_CORS_ORIGINS", "http://localhost:3000,http://localhost:8080").split(",")
+cors_origins = os.getenv(
+    "BACKEND_CORS_ORIGINS", "http://localhost:3000,http://localhost:8080"
+).split(",")
 cors_origins = [origin.strip() for origin in cors_origins if origin.strip()]
 
 app.add_middleware(
@@ -359,12 +375,12 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=[
         "Accept",
-        "Accept-Language", 
+        "Accept-Language",
         "Content-Language",
         "Content-Type",
         "Authorization",
         "X-Request-ID",
-        "X-Constitutional-Hash"
+        "X-Constitutional-Hash",
     ],
     expose_headers=["X-Request-ID", "X-Response-Time", "X-Compliance-Score"],
 )
@@ -398,7 +414,10 @@ async def metrics():
     else:
         from fastapi.responses import PlainTextResponse
         from prometheus_client import CONTENT_TYPE_LATEST, REGISTRY, generate_latest
-        return PlainTextResponse(generate_latest(REGISTRY), media_type=CONTENT_TYPE_LATEST)
+
+        return PlainTextResponse(
+            generate_latest(REGISTRY), media_type=CONTENT_TYPE_LATEST
+        )
 
 
 @app.middleware("http")
@@ -631,18 +650,18 @@ async def get_prompt_framework_schemas():
     """Get available constitutional prompt schemas."""
     if not PROMPT_FRAMEWORK_AVAILABLE:
         return {"error": "Prompt framework not available", "schemas": {}}
-    
+
     try:
         prompt_manager = get_prompt_manager()
         schemas = prompt_manager.get_all_schemas()
-        
+
         return {
             "prompt_framework": "constitutional",
             "version": "1.0.0",
             "schemas": schemas,
             "available_roles": [role.value for role in PromptRole],
             "constitutional_hash": "cdd01ef066bc6cf2",
-            "total_schemas": len(schemas)
+            "total_schemas": len(schemas),
         }
     except Exception as e:
         logger.error(f"Failed to get prompt schemas: {e}")
@@ -654,17 +673,19 @@ async def validate_with_prompt_framework(request: dict[str, Any]):
     """Validate content using structured constitutional prompt framework."""
     if not PROMPT_FRAMEWORK_AVAILABLE:
         return {"error": "Prompt framework not available"}
-    
+
     try:
         content = request.get("content", "")
         prompt_role = request.get("role", "constitutional_validator")
-        
+
         # Get the constitutional prompt for the specified role
         constitutional_prompt = get_constitutional_prompt(prompt_role)
-        
+
         if not constitutional_prompt:
-            return {"error": f"No constitutional prompt available for role: {prompt_role}"}
-        
+            return {
+                "error": f"No constitutional prompt available for role: {prompt_role}"
+            }
+
         # Simulate constitutional validation with structured prompting
         validation_query = f"""
         Please analyze the following content for constitutional compliance:
@@ -680,7 +701,7 @@ async def validate_with_prompt_framework(request: dict[str, Any]):
         
         Provide a structured analysis with compliance score and recommendations.
         """
-        
+
         # In a real implementation, this would use the AI model service
         # with the constitutional prompt as system context
         mock_analysis = {
@@ -690,10 +711,10 @@ async def validate_with_prompt_framework(request: dict[str, Any]):
             "content_length": len(content),
             "analysis": {
                 "democratic_participation": {"score": 0.85, "compliant": True},
-                "transparency": {"score": 0.78, "compliant": True}, 
+                "transparency": {"score": 0.78, "compliant": True},
                 "rights_protection": {"score": 0.92, "compliant": True},
                 "separation_of_powers": {"score": 0.88, "compliant": True},
-                "legal_compliance": {"score": 0.91, "compliant": True}
+                "legal_compliance": {"score": 0.91, "compliant": True},
             },
             "overall_compliance_score": 0.87,
             "overall_compliant": True,
@@ -701,19 +722,19 @@ async def validate_with_prompt_framework(request: dict[str, Any]):
             "constitutional_hash": "cdd01ef066bc6cf2",
             "recommendations": [
                 "Consider strengthening transparency mechanisms",
-                "Ensure stakeholder consultation processes are clearly defined"
+                "Ensure stakeholder consultation processes are clearly defined",
             ],
-            "timestamp": time.time()
+            "timestamp": time.time(),
         }
-        
+
         return mock_analysis
-        
+
     except Exception as e:
         logger.error(f"Prompt framework validation failed: {e}")
         return {
             "error": "Validation failed",
             "details": str(e),
-            "timestamp": time.time()
+            "timestamp": time.time(),
         }
 
 
@@ -722,21 +743,23 @@ async def validate_constitutional_safety_endpoint(request: dict[str, Any]):
     """Validate content using constitutional safety framework."""
     if not SAFETY_FRAMEWORK_AVAILABLE:
         return {"error": "Constitutional safety framework not available"}
-    
+
     try:
         content = request.get("content", "")
         context = request.get("context", {})
-        
+
         # Perform safety validation
         is_safe, violations = validate_constitutional_safety(content, context)
-        
+
         # Perform ethics evaluation
-        ethics_evaluation = evaluate_constitutional_ethics({
-            "content": content,
-            "action": request.get("action", "analyze"),
-            "context": context
-        })
-        
+        ethics_evaluation = evaluate_constitutional_ethics(
+            {
+                "content": content,
+                "action": request.get("action", "analyze"),
+                "context": context,
+            }
+        )
+
         return {
             "validation_id": f"SAFETY-{int(time.time())}",
             "content_safe": is_safe,
@@ -748,22 +771,22 @@ async def validate_constitutional_safety_endpoint(request: dict[str, Any]):
                     "risk_level": v.risk_level.value,
                     "pattern": v.pattern_matched,
                     "confidence": v.confidence_score,
-                    "mitigation_required": v.mitigation_required
+                    "mitigation_required": v.mitigation_required,
                 }
                 for v in violations
             ],
             "ethics_evaluation": ethics_evaluation,
             "constitutional_hash": "cdd01ef066bc6cf2",
             "framework_version": "1.0.0",
-            "timestamp": time.time()
+            "timestamp": time.time(),
         }
-        
+
     except Exception as e:
         logger.error(f"Safety validation failed: {e}")
         return {
             "error": "Safety validation failed",
             "details": str(e),
-            "timestamp": time.time()
+            "timestamp": time.time(),
         }
 
 
@@ -772,29 +795,29 @@ async def orchestrated_constitutional_analysis(request: dict[str, Any]):
     """Perform orchestrated constitutional analysis using multiple tools."""
     if not TOOL_ORCHESTRATOR_AVAILABLE:
         return {"error": "Tool orchestrator not available"}
-    
+
     try:
         query = request.get("query", "")
         context = request.get("context", {})
-        
+
         # Perform orchestrated analysis
         analysis_result = await orchestrate_constitutional_query(query, context)
-        
+
         return {
             "analysis_id": f"ORCH-{int(time.time())}",
             "query_processed": query,
             "orchestration_results": analysis_result,
             "constitutional_hash": "cdd01ef066bc6cf2",
             "framework_version": "1.0.0",
-            "timestamp": time.time()
+            "timestamp": time.time(),
         }
-        
+
     except Exception as e:
         logger.error(f"Orchestrated analysis failed: {e}")
         return {
             "error": "Orchestrated analysis failed",
             "details": str(e),
-            "timestamp": time.time()
+            "timestamp": time.time(),
         }
 
 
@@ -808,7 +831,7 @@ async def get_framework_status():
             "tool_orchestrator": TOOL_ORCHESTRATOR_AVAILABLE,
             "multimodal_ai": MULTIMODAL_AI_AVAILABLE,
             "security_middleware": SECURITY_MIDDLEWARE_AVAILABLE,
-            "audit_logging": AUDIT_LOGGING_AVAILABLE
+            "audit_logging": AUDIT_LOGGING_AVAILABLE,
         },
         "constitutional_hash": "cdd01ef066bc6cf2",
         "service_version": "3.0.0",
@@ -819,18 +842,18 @@ async def get_framework_status():
             "tool_orchestration": TOOL_ORCHESTRATOR_AVAILABLE,
             "ethical_compliance": SAFETY_FRAMEWORK_AVAILABLE,
             "constitutional_validation": True,
-            "multimodal_support": MULTIMODAL_AI_AVAILABLE
+            "multimodal_support": MULTIMODAL_AI_AVAILABLE,
         },
         "prompt_guide_implementation": {
             "model_identity": "✅ Implemented",
-            "personality_tone": "✅ Implemented", 
+            "personality_tone": "✅ Implemented",
             "safety_ethics": "✅ Implemented",
             "search_tool_orchestration": "✅ Implemented",
             "copyright_quoting": "✅ Implemented",
             "user_style_overrides": "✅ Implemented",
-            "maintenance_versioning": "✅ Implemented"
+            "maintenance_versioning": "✅ Implemented",
         },
-        "timestamp": time.time()
+        "timestamp": time.time(),
     }
 
 
@@ -929,7 +952,9 @@ def _advanced_constitutional_check(policy) -> dict[str, Any]:
         "legal framework",
     ]
 
-    score = sum(1 for indicator in constitutional_indicators if indicator in policy_text)
+    score = sum(
+        1 for indicator in constitutional_indicators if indicator in policy_text
+    )
     confidence = min(0.98, 0.7 + (score * 0.035))
 
     return {
@@ -969,7 +994,9 @@ def _advanced_accountability_check(policy) -> dict[str, Any]:
         "review",
     ]
 
-    score = sum(1 for indicator in accountability_indicators if indicator in policy_text)
+    score = sum(
+        1 for indicator in accountability_indicators if indicator in policy_text
+    )
     confidence = min(0.92, 0.6 + (score * 0.04))
 
     return {
@@ -1080,43 +1107,55 @@ async def validate_content_simple(request: ContentValidationRequest):
                 "type": "threat_pattern",
                 "pattern": pattern,
                 "message": f"Detected threat pattern: {pattern}",
-                "severity": "high"
+                "severity": "high",
             }
-            for pattern in threat_patterns if pattern in content.lower()
+            for pattern in threat_patterns
+            if pattern in content.lower()
         ]
 
         # Constitutional compliance check
         constitutional_violations = []
-        if "ignore constitutional" in content.lower() or "bypass constitutional" in content.lower():
-            constitutional_violations.append({
-                "type": "constitutional_violation",
-                "violation": "bypass_attempt",
-                "message": "Constitutional bypass attempt detected",
-                "severity": "critical"
-            })
+        if (
+            "ignore constitutional" in content.lower()
+            or "bypass constitutional" in content.lower()
+        ):
+            constitutional_violations.append(
+                {
+                    "type": "constitutional_violation",
+                    "violation": "bypass_attempt",
+                    "message": "Constitutional bypass attempt detected",
+                    "severity": "critical",
+                }
+            )
 
         if "unrestricted access" in content.lower():
-            constitutional_violations.append({
-                "type": "constitutional_violation", 
-                "violation": "unrestricted_access",
-                "message": "Unrestricted access violation",
-                "severity": "high"
-            })
+            constitutional_violations.append(
+                {
+                    "type": "constitutional_violation",
+                    "violation": "unrestricted_access",
+                    "message": "Unrestricted access violation",
+                    "severity": "high",
+                }
+            )
 
         if "void constitutional" in content.lower():
-            constitutional_violations.append({
-                "type": "constitutional_violation",
-                "violation": "nullification_attempt", 
-                "message": "Constitutional nullification attempt",
-                "severity": "critical"
-            })
+            constitutional_violations.append(
+                {
+                    "type": "constitutional_violation",
+                    "violation": "nullification_attempt",
+                    "message": "Constitutional nullification attempt",
+                    "severity": "critical",
+                }
+            )
 
         # Determine validation result
         is_compliant = not (threats_detected or constitutional_violations)
         all_violations = threats_detected + constitutional_violations
         compliance_score = max(0.0, 1.0 - (len(all_violations) * 0.2))
-        severity = _calculate_average_severity(all_violations) if all_violations else "low"
-        
+        severity = (
+            _calculate_average_severity(all_violations) if all_violations else "low"
+        )
+
         # Generate recommendations
         recommendations = []
         if threats_detected:
@@ -1138,14 +1177,16 @@ async def validate_content_simple(request: ContentValidationRequest):
     except Exception as e:
         logger.error(f"Content validation failed: {e}")
         return ContentValidationResponse(
-            content=content if 'content' in locals() else "",
+            content=content if "content" in locals() else "",
             is_compliant=False,
             compliance_score=0.0,
-            validation_results=[{
-                "type": "system_error",
-                "message": f"Validation failed: {str(e)}",
-                "severity": "critical"
-            }],
+            validation_results=[
+                {
+                    "type": "system_error",
+                    "message": f"Validation failed: {str(e)}",
+                    "severity": "critical",
+                }
+            ],
             severity="critical",
             recommendations=["Please contact system administrator"],
         )
@@ -1156,34 +1197,35 @@ async def validate_constitutional_compliance(request: ConstitutionalComplianceRe
     """Enhanced constitutional compliance validation with sophisticated algorithms."""
     try:
         # Import the refactored validation service
-        from .services.constitutional_validation_service import ConstitutionalValidationService
-        
+        from .services.constitutional_validation_service import (
+            ConstitutionalValidationService,
+        )
+
         # Create validation service instance
         validation_service = ConstitutionalValidationService(
             audit_logger=audit_logger,
             violation_detector=violation_detector,
-            fv_client=fv_client
+            fv_client=fv_client,
         )
-        
+
         # Perform validation using the refactored service
         result = await validation_service.validate_constitutional_compliance(request)
-        
+
         return result
-        
+
     except Exception as e:
         logger.error(f"Constitutional compliance validation failed: {e}")
-        
+
         if ERROR_HANDLING_AVAILABLE:
             raise ConstitutionalComplianceError(
-                f"Validation failed: {str(e)}",
-                violations=["system_error"]
+                f"Validation failed: {str(e)}", violations=["system_error"]
             )
         else:
             return {
                 "validation_id": f"ERROR-{int(time.time())}",
                 "overall_compliant": False,
                 "error": str(e),
-                "timestamp": time.time()
+                "timestamp": time.time(),
             }
 
 
@@ -1207,7 +1249,9 @@ async def validate_constitutional_compliance_advanced(request: dict[str, Any]):
 
     # Add advanced analysis
     advanced_analysis = {
-        "constitutional_fidelity_score": _calculate_constitutional_fidelity(base_result),
+        "constitutional_fidelity_score": _calculate_constitutional_fidelity(
+            base_result
+        ),
         "risk_assessment": _assess_constitutional_risk(base_result),
         "compliance_trends": _analyze_compliance_trends(base_result),
         "stakeholder_impact": _assess_stakeholder_impact(request.get("policy", {})),
@@ -1413,7 +1457,9 @@ async def calculate_compliance_score(request: dict[str, Any]):
 
     # Calculate improvement potential
     max_possible_score = sum(r["weight"] for r in validation_result["results"])
-    detailed_score["improvement_potential"] = max_possible_score - detailed_score["overall_score"]
+    detailed_score["improvement_potential"] = (
+        max_possible_score - detailed_score["overall_score"]
+    )
 
     return {
         "policy_id": policy.get("policy_id", "unknown"),
@@ -1540,7 +1586,11 @@ if MULTIMODAL_AI_AVAILABLE:
             multimodal_request = MultimodalRequest(
                 request_id=f"mm_{int(time.time())}_{hashlib.md5(str(request).encode()).hexdigest()[:8]}",
                 request_type=RequestType.CONSTITUTIONAL_VALIDATION,
-                content_type=ContentType.TEXT_AND_IMAGE if request.get("image_url") or request.get("image_data") else ContentType.TEXT_ONLY,
+                content_type=(
+                    ContentType.TEXT_AND_IMAGE
+                    if request.get("image_url") or request.get("image_data")
+                    else ContentType.TEXT_ONLY
+                ),
                 text_content=request.get("text_content"),
                 image_url=request.get("image_url"),
                 image_data=request.get("image_data"),
@@ -1548,8 +1598,8 @@ if MULTIMODAL_AI_AVAILABLE:
                 constitutional_context={
                     "service": "constitutional_ai",
                     "endpoint": "multimodal_analyze",
-                    "constitutional_hash": "cdd01ef066bc6cf2"
-                }
+                    "constitutional_hash": "cdd01ef066bc6cf2",
+                },
             )
 
             # Process request
@@ -1570,9 +1620,9 @@ if MULTIMODAL_AI_AVAILABLE:
                     "cost_estimate": response.metrics.cost_estimate,
                     "quality_score": response.metrics.quality_score,
                     "cache_hit": response.metrics.cache_hit,
-                    "cache_level": response.metrics.cache_level
+                    "cache_level": response.metrics.cache_level,
                 },
-                "timestamp": response.timestamp
+                "timestamp": response.timestamp,
             }
 
         except Exception as e:
@@ -1581,7 +1631,7 @@ if MULTIMODAL_AI_AVAILABLE:
                 "error": "Multimodal analysis failed",
                 "details": str(e),
                 "constitutional_compliance": False,
-                "timestamp": time.time()
+                "timestamp": time.time(),
             }
 
     @app.post("/api/v1/multimodal/moderate")
@@ -1593,22 +1643,30 @@ if MULTIMODAL_AI_AVAILABLE:
             multimodal_request = MultimodalRequest(
                 request_id=f"mod_{int(time.time())}_{hashlib.md5(str(request).encode()).hexdigest()[:8]}",
                 request_type=RequestType.CONTENT_MODERATION,
-                content_type=ContentType.TEXT_AND_IMAGE if request.get("image_url") or request.get("image_data") else ContentType.TEXT_ONLY,
+                content_type=(
+                    ContentType.TEXT_AND_IMAGE
+                    if request.get("image_url") or request.get("image_data")
+                    else ContentType.TEXT_ONLY
+                ),
                 text_content=request.get("text_content"),
                 image_url=request.get("image_url"),
                 image_data=request.get("image_data"),
-                priority=request.get("priority", "high"),  # Moderation is typically high priority
+                priority=request.get(
+                    "priority", "high"
+                ),  # Moderation is typically high priority
                 constitutional_context={
                     "service": "constitutional_ai",
                     "endpoint": "multimodal_moderate",
-                    "constitutional_hash": "cdd01ef066bc6cf2"
-                }
+                    "constitutional_hash": "cdd01ef066bc6cf2",
+                },
             )
 
             response = await multimodal_service.process_request(multimodal_request)
 
             # Determine moderation action
-            moderation_action = "approve" if response.constitutional_compliance else "review"
+            moderation_action = (
+                "approve" if response.constitutional_compliance else "review"
+            )
             if len(response.violations) > 2:
                 moderation_action = "reject"
 
@@ -1623,10 +1681,10 @@ if MULTIMODAL_AI_AVAILABLE:
                 "model_used": response.model_used.value,
                 "performance_metrics": {
                     "response_time_ms": response.metrics.response_time_ms,
-                    "cache_hit": response.metrics.cache_hit
+                    "cache_hit": response.metrics.cache_hit,
                 },
                 "constitutional_hash": response.constitutional_hash,
-                "timestamp": response.timestamp
+                "timestamp": response.timestamp,
             }
 
         except Exception as e:
@@ -1636,7 +1694,7 @@ if MULTIMODAL_AI_AVAILABLE:
                 "details": str(e),
                 "moderation_action": "review",  # Safe default
                 "constitutional_compliance": False,
-                "timestamp": time.time()
+                "timestamp": time.time(),
             }
 
     @app.get("/api/v1/multimodal/metrics")
@@ -1650,7 +1708,7 @@ if MULTIMODAL_AI_AVAILABLE:
                 "multimodal_metrics": metrics,
                 "constitutional_hash": "cdd01ef066bc6cf2",
                 "service_status": "operational",
-                "timestamp": time.time()
+                "timestamp": time.time(),
             }
 
         except Exception as e:
@@ -1659,7 +1717,7 @@ if MULTIMODAL_AI_AVAILABLE:
                 "error": "Failed to get multimodal metrics",
                 "details": str(e),
                 "service_status": "error",
-                "timestamp": time.time()
+                "timestamp": time.time(),
             }
 
 else:

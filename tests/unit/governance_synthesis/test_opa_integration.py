@@ -4,18 +4,25 @@ Unit tests for services.core.governance-synthesis.gs_service.app.core.opa_integr
 
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
-from services.core.governance-synthesis.gs_service.app.core.opa_integration import PolicyDecisionRequest, PolicyDecisionResponse, PolicyValidationResult, BatchPolicyDecision, OPAIntegrationError, PolicyDecisionCache, OPAClient
-
+from services.core.governance_synthesis.gs_service.app.core.opa_integration import (
+    PolicyDecisionRequest,
+    PolicyDecisionResponse,
+    PolicyValidationResult,
+    BatchPolicyDecision,
+    OPAIntegrationError,
+    PolicyDecisionCache,
+    OPAClient,
+)
 
 
 class TestPolicyDecisionRequest:
     """Test suite for PolicyDecisionRequest."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -24,12 +31,12 @@ class TestPolicyDecisionRequest:
 
 class TestPolicyDecisionResponse:
     """Test suite for PolicyDecisionResponse."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -38,12 +45,12 @@ class TestPolicyDecisionResponse:
 
 class TestPolicyValidationResult:
     """Test suite for PolicyValidationResult."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -52,12 +59,12 @@ class TestPolicyValidationResult:
 
 class TestBatchPolicyDecision:
     """Test suite for BatchPolicyDecision."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -66,12 +73,12 @@ class TestBatchPolicyDecision:
 
 class TestOPAIntegrationError:
     """Test suite for OPAIntegrationError."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -80,12 +87,12 @@ class TestOPAIntegrationError:
 
 class TestPolicyDecisionCache:
     """Test suite for PolicyDecisionCache."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -96,17 +103,17 @@ class TestPolicyDecisionCache:
         # TODO: Implement test for get_stats
         instance = PolicyDecisionCache()
         # Add test implementation here
-        assert hasattr(instance, 'get_stats')
+        assert hasattr(instance, "get_stats")
 
 
 class TestOPAClient:
     """Test suite for OPAClient."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -117,6 +124,4 @@ class TestOPAClient:
         # TODO: Implement test for get_metrics
         instance = OPAClient()
         # Add test implementation here
-        assert hasattr(instance, 'get_metrics')
-
-
+        assert hasattr(instance, "get_metrics")

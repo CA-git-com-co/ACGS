@@ -45,11 +45,13 @@ sys.path.insert(0, str(project_root))
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.FileHandler(project_root / 'logs' / 'security_middleware_deployment.log'),
-        logging.StreamHandler()
-    ]
+        logging.FileHandler(
+            project_root / "logs" / "security_middleware_deployment.log"
+        ),
+        logging.StreamHandler(),
+    ],
 )
 logger = logging.getLogger(__name__)
 
@@ -59,43 +61,44 @@ CORE_SERVICES = {
         "port": 8001,
         "path": "services/core/constitutional-ai/ac_service",
         "main_file": "app/main.py",
-        "description": "Constitutional AI Service"
+        "description": "Constitutional AI Service",
     },
     "integrity_service": {
         "port": 8002,
         "path": "services/platform/integrity/integrity_service",
         "main_file": "app/main.py",
-        "description": "Integrity Service with cryptographic operations"
+        "description": "Integrity Service with cryptographic operations",
     },
     "fv_service": {
         "port": 8003,
         "path": "services/core/formal-verification/fv_service",
         "main_file": "main.py",
-        "description": "Formal Verification Service"
+        "description": "Formal Verification Service",
     },
     "gs_service": {
         "port": 8004,
         "path": "services/core/governance-synthesis/gs_service",
         "main_file": "app/main.py",
-        "description": "Governance Synthesis Service"
+        "description": "Governance Synthesis Service",
     },
     "pgc_service": {
         "port": 8005,
         "path": "services/core/policy-governance/pgc_service",
         "main_file": "app/main.py",
-        "description": "Policy Governance Compliance Service"
+        "description": "Policy Governance Compliance Service",
     },
     "ec_service": {
         "port": 8006,
         "path": "services/core/self-evolving-ai",
         "main_file": "app/main.py",
-        "description": "Error Correction Service"
-    }
+        "description": "Error Correction Service",
+    },
 }
+
 
 class SecurityMiddlewareDeployer:
     """Deploy enhanced security middleware across all ACGS services."""
-    
+
     def __init__(self):
         self.project_root = project_root
         self.deployment_report = {
@@ -108,66 +111,73 @@ class SecurityMiddlewareDeployer:
             "performance_targets": {
                 "response_time_ms": 500,
                 "uptime_percentage": 99.5,
-                "security_score": 90.0
-            }
+                "security_score": 90.0,
+            },
         }
-    
+
     async def deploy_security_middleware(self) -> Dict:
         """Deploy security middleware to all core services."""
         logger.info("🚀 Starting Enhanced Security Middleware Deployment")
         logger.info(f"📊 Target: Improve compliance score from 47.37% to >70%")
         logger.info(f"🎯 Address 226 high-severity security findings")
-        
+
         try:
             # 1. Validate environment
             await self._validate_environment()
-            
+
             # 2. Deploy to each service
             for service_name, config in CORE_SERVICES.items():
                 logger.info(f"🔧 Deploying security middleware to {service_name}")
                 result = await self._deploy_to_service(service_name, config)
                 self.deployment_report["services"][service_name] = result
-            
+
             # 3. Validate deployment
             await self._validate_deployment()
-            
+
             # 4. Test security features
             await self._test_security_features()
-            
+
             # 5. Generate final report
             self.deployment_report["overall_status"] = "completed"
             await self._generate_deployment_report()
-            
+
             logger.info("✅ Security middleware deployment completed successfully")
             return self.deployment_report
-            
+
         except Exception as e:
             logger.error(f"❌ Security middleware deployment failed: {e}")
             self.deployment_report["overall_status"] = "failed"
             self.deployment_report["error"] = str(e)
             await self._generate_deployment_report()
             raise
-    
+
     async def _validate_environment(self):
         """Validate deployment environment."""
         logger.info("🔍 Validating deployment environment")
-        
+
         # Check if Redis is available for rate limiting
         try:
             import redis
-            r = redis.Redis(host='localhost', port=6379, decode_responses=True)
+
+            r = redis.Redis(host="localhost", port=6379, decode_responses=True)
             r.ping()
             logger.info("✅ Redis connection validated")
         except Exception as e:
-            logger.warning(f"⚠️ Redis not available: {e}. Rate limiting will be disabled.")
-        
+            logger.warning(
+                f"⚠️ Redis not available: {e}. Rate limiting will be disabled."
+            )
+
         # Check if shared security components exist
-        shared_security_path = self.project_root / "services" / "shared" / "security_middleware.py"
+        shared_security_path = (
+            self.project_root / "services" / "shared" / "security_middleware.py"
+        )
         if not shared_security_path.exists():
-            raise FileNotFoundError(f"Security middleware not found: {shared_security_path}")
-        
+            raise FileNotFoundError(
+                f"Security middleware not found: {shared_security_path}"
+            )
+
         logger.info("✅ Environment validation completed")
-    
+
     async def _deploy_to_service(self, service_name: str, config: Dict) -> Dict:
         """Deploy security middleware to a specific service."""
         service_result = {
@@ -175,37 +185,43 @@ class SecurityMiddlewareDeployer:
             "port": config["port"],
             "security_features": [],
             "performance_impact": {},
-            "errors": []
+            "errors": [],
         }
-        
+
         try:
             service_path = self.project_root / config["path"]
             main_file_path = service_path / config["main_file"]
-            
+
             if not main_file_path.exists():
                 service_result["status"] = "skipped"
-                service_result["errors"].append(f"Main file not found: {main_file_path}")
+                service_result["errors"].append(
+                    f"Main file not found: {main_file_path}"
+                )
                 logger.warning(f"⚠️ Skipping {service_name}: main file not found")
                 return service_result
-            
+
             # Read current main.py content
-            with open(main_file_path, 'r') as f:
+            with open(main_file_path, "r") as f:
                 content = f.read()
-            
+
             # Check if security middleware is already imported
             if "apply_production_security_middleware" in content:
-                logger.info(f"✅ {service_name}: Security middleware already integrated")
+                logger.info(
+                    f"✅ {service_name}: Security middleware already integrated"
+                )
                 service_result["status"] = "already_deployed"
             else:
                 # Add security middleware integration
-                await self._integrate_security_middleware(main_file_path, content, service_name)
+                await self._integrate_security_middleware(
+                    main_file_path, content, service_name
+                )
                 service_result["status"] = "deployed"
                 logger.info(f"✅ {service_name}: Security middleware integrated")
-            
+
             # Record security features
             service_result["security_features"] = [
                 "HTTPS enforcement with HSTS",
-                "XSS protection with CSP headers", 
+                "XSS protection with CSP headers",
                 "CSRF protection with token validation",
                 "Authorization bypass protection",
                 "SQL injection detection",
@@ -213,9 +229,9 @@ class SecurityMiddlewareDeployer:
                 "Rate limiting with Redis backend",
                 "Comprehensive security headers (OWASP)",
                 "Threat detection and analysis",
-                "Audit logging for security events"
+                "Audit logging for security events",
             ]
-            
+
             return service_result
 
         except Exception as e:
@@ -224,7 +240,9 @@ class SecurityMiddlewareDeployer:
             logger.error(f"❌ Failed to deploy to {service_name}: {e}")
             return service_result
 
-    async def _integrate_security_middleware(self, main_file_path: Path, content: str, service_name: str):
+    async def _integrate_security_middleware(
+        self, main_file_path: Path, content: str, service_name: str
+    ):
         """Integrate security middleware into service main.py file."""
         logger.info(f"🔧 Integrating security middleware into {service_name}")
 
@@ -240,12 +258,12 @@ except ImportError:
 """
 
         # Find the right place to add imports (after existing imports)
-        lines = content.split('\n')
+        lines = content.split("\n")
         import_index = 0
 
         # Find last import statement
         for i, line in enumerate(lines):
-            if line.strip().startswith('import ') or line.strip().startswith('from '):
+            if line.strip().startswith("import ") or line.strip().startswith("from "):
                 import_index = i + 1
 
         # Insert import statement
@@ -261,7 +279,9 @@ if SECURITY_MIDDLEWARE_AVAILABLE:
     logger.info("✅ Enhanced security middleware applied")
 else:
     logger.warning("⚠️ Running without enhanced security middleware")
-""".format(service_name=service_name)
+""".format(
+            service_name=service_name
+        )
 
         # Find app creation and add security middleware after it
         for i, line in enumerate(lines):
@@ -270,16 +290,16 @@ else:
                 j = i
                 paren_count = 0
                 while j < len(lines):
-                    paren_count += lines[j].count('(') - lines[j].count(')')
-                    if paren_count == 0 and ')' in lines[j]:
+                    paren_count += lines[j].count("(") - lines[j].count(")")
+                    if paren_count == 0 and ")" in lines[j]:
                         lines.insert(j + 1, security_application)
                         break
                     j += 1
                 break
 
         # Write updated content back to file
-        updated_content = '\n'.join(lines)
-        with open(main_file_path, 'w') as f:
+        updated_content = "\n".join(lines)
+        with open(main_file_path, "w") as f:
             f.write(updated_content)
 
         logger.info(f"✅ Security middleware integrated into {service_name}")
@@ -296,8 +316,11 @@ else:
             try:
                 # Test basic connectivity
                 import aiohttp
+
                 async with aiohttp.ClientSession() as session:
-                    async with session.get(f"http://localhost:{port}/health", timeout=5) as response:
+                    async with session.get(
+                        f"http://localhost:{port}/health", timeout=5
+                    ) as response:
                         if response.status == 200:
                             # Check for security headers
                             security_headers = [
@@ -305,7 +328,7 @@ else:
                                 "X-Frame-Options",
                                 "X-XSS-Protection",
                                 "Strict-Transport-Security",
-                                "Content-Security-Policy"
+                                "Content-Security-Policy",
                             ]
 
                             present_headers = []
@@ -317,20 +340,22 @@ else:
                                 "status": "healthy",
                                 "port": port,
                                 "security_headers": present_headers,
-                                "security_score": len(present_headers) / len(security_headers) * 100
+                                "security_score": len(present_headers)
+                                / len(security_headers)
+                                * 100,
                             }
                         else:
                             validation_results[service_name] = {
                                 "status": "unhealthy",
                                 "port": port,
-                                "error": f"HTTP {response.status}"
+                                "error": f"HTTP {response.status}",
                             }
 
             except Exception as e:
                 validation_results[service_name] = {
                     "status": "unreachable",
                     "port": port,
-                    "error": str(e)
+                    "error": str(e),
                 }
                 logger.warning(f"⚠️ Could not validate {service_name}: {e}")
 
@@ -346,7 +371,7 @@ else:
             "xss_protection": False,
             "csrf_protection": False,
             "rate_limiting": False,
-            "security_headers": False
+            "security_headers": False,
         }
 
         # Test one service as representative (auth service)
@@ -354,9 +379,12 @@ else:
 
         try:
             import aiohttp
+
             async with aiohttp.ClientSession() as session:
                 # Test security headers
-                async with session.get(f"http://localhost:{test_port}/health") as response:
+                async with session.get(
+                    f"http://localhost:{test_port}/health"
+                ) as response:
                     if "X-Content-Type-Options" in response.headers:
                         security_tests["security_headers"] = True
 
@@ -365,7 +393,7 @@ else:
                 try:
                     async with session.get(
                         f"http://localhost:{test_port}/api/test?param={malicious_payload}",
-                        timeout=5
+                        timeout=5,
                     ) as response:
                         if response.status == 403:
                             security_tests["sql_injection_protection"] = True
@@ -376,7 +404,9 @@ else:
                 rate_limit_triggered = False
                 for i in range(20):
                     try:
-                        async with session.get(f"http://localhost:{test_port}/health", timeout=1) as response:
+                        async with session.get(
+                            f"http://localhost:{test_port}/health", timeout=1
+                        ) as response:
                             if response.status == 429:
                                 rate_limit_triggered = True
                                 break
@@ -396,16 +426,24 @@ else:
         security_score = (passed_tests / total_tests) * 100
 
         self.deployment_report["security_score"] = security_score
-        logger.info(f"🔒 Security score: {security_score:.1f}% ({passed_tests}/{total_tests} tests passed)")
+        logger.info(
+            f"🔒 Security score: {security_score:.1f}% ({passed_tests}/{total_tests} tests passed)"
+        )
 
     async def _generate_deployment_report(self):
         """Generate comprehensive deployment report."""
-        report_path = self.project_root / "reports" / "security" / f"security_middleware_deployment_{int(time.time())}.json"
+        report_path = (
+            self.project_root
+            / "reports"
+            / "security"
+            / f"security_middleware_deployment_{int(time.time())}.json"
+        )
         report_path.parent.mkdir(parents=True, exist_ok=True)
 
         # Add summary statistics
         successful_deployments = sum(
-            1 for service in self.deployment_report["services"].values()
+            1
+            for service in self.deployment_report["services"].values()
             if service["status"] in ["deployed", "already_deployed"]
         )
         total_services = len(CORE_SERVICES)
@@ -424,17 +462,17 @@ else:
                 "Rate limiting with Redis backend configured",
                 "Comprehensive OWASP security headers deployed",
                 "Threat detection and analysis enabled",
-                "Audit logging for security events active"
+                "Audit logging for security events active",
             ],
             "compliance_improvement": {
                 "previous_score": 47.37,
                 "target_score": 70.0,
-                "expected_improvement": "22.63 percentage points"
-            }
+                "expected_improvement": "22.63 percentage points",
+            },
         }
 
         # Write report
-        with open(report_path, 'w') as f:
+        with open(report_path, "w") as f:
             json.dump(self.deployment_report, f, indent=2)
 
         logger.info(f"📊 Deployment report saved: {report_path}")
@@ -444,9 +482,13 @@ else:
         logger.info("🔒 SECURITY MIDDLEWARE DEPLOYMENT SUMMARY")
         logger.info("=" * 60)
         logger.info(f"✅ Services deployed: {successful_deployments}/{total_services}")
-        logger.info(f"🎯 Deployment success rate: {(successful_deployments / total_services) * 100:.1f}%")
+        logger.info(
+            f"🎯 Deployment success rate: {(successful_deployments / total_services) * 100:.1f}%"
+        )
         if "security_score" in self.deployment_report:
-            logger.info(f"🔒 Security score: {self.deployment_report['security_score']:.1f}%")
+            logger.info(
+                f"🔒 Security score: {self.deployment_report['security_score']:.1f}%"
+            )
         logger.info(f"📈 Expected compliance improvement: 47.37% → 70%+")
         logger.info("=" * 60)
 

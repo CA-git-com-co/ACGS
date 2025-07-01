@@ -27,7 +27,9 @@ def upgrade() -> None:
     users_columns = [col["name"] for col in inspector.get_columns("users")]
 
     if "full_name" not in users_columns:
-        op.add_column("users", sa.Column("full_name", sa.String(length=255), nullable=True))
+        op.add_column(
+            "users", sa.Column("full_name", sa.String(length=255), nullable=True)
+        )
 
     if "created_at" not in users_columns:
         op.add_column(
@@ -54,10 +56,14 @@ def upgrade() -> None:
     # Check if refresh_tokens table exists
     table_names = inspector.get_table_names()
     if "refresh_tokens" in table_names:
-        refresh_tokens_columns = [col["name"] for col in inspector.get_columns("refresh_tokens")]
+        refresh_tokens_columns = [
+            col["name"] for col in inspector.get_columns("refresh_tokens")
+        ]
 
         if "jti" not in refresh_tokens_columns:
-            op.add_column("refresh_tokens", sa.Column("jti", sa.String(length=36), nullable=True))
+            op.add_column(
+                "refresh_tokens", sa.Column("jti", sa.String(length=36), nullable=True)
+            )
 
         if "is_revoked" not in refresh_tokens_columns:
             op.add_column(
@@ -91,7 +97,9 @@ def downgrade() -> None:
     # Check if refresh_tokens table exists
     table_names = inspector.get_table_names()
     if "refresh_tokens" in table_names:
-        refresh_tokens_columns = [col["name"] for col in inspector.get_columns("refresh_tokens")]
+        refresh_tokens_columns = [
+            col["name"] for col in inspector.get_columns("refresh_tokens")
+        ]
 
         if "is_revoked" in refresh_tokens_columns:
             op.drop_column("refresh_tokens", "is_revoked")

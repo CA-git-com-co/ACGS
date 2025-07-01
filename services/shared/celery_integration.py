@@ -107,7 +107,9 @@ if CELERY_AVAILABLE and Task:
             """Handle task failure."""
             logger.error(f"Task {task_id} failed: {exc}")
             # Update task status in Redis
-            asyncio.create_task(self._update_task_status(task_id, TaskStatus.FAILED, str(exc)))
+            asyncio.create_task(
+                self._update_task_status(task_id, TaskStatus.FAILED, str(exc))
+            )
 
         def on_success(self, retval, task_id, args, kwargs):
             # requires: Valid input parameters
@@ -118,7 +120,9 @@ if CELERY_AVAILABLE and Task:
             # Update task status in Redis
             asyncio.create_task(self._update_task_status(task_id, TaskStatus.COMPLETED))
 
-        async def _update_task_status(self, task_id: str, status: TaskStatus, error: str = None):
+        async def _update_task_status(
+            self, task_id: str, status: TaskStatus, error: str = None
+        ):
             # requires: Valid input parameters
             # ensures: Correct function execution
             # sha256: func_hash
@@ -130,7 +134,9 @@ if CELERY_AVAILABLE and Task:
                     "updated_at": datetime.now(timezone.utc).isoformat(),
                     "error": error,
                 }
-                await redis_client.set_json(f"task_status:{task_id}", status_data, ttl=3600)
+                await redis_client.set_json(
+                    f"task_status:{task_id}", status_data, ttl=3600
+                )
             except Exception as e:
                 logger.error(f"Failed to update task status: {e}")
 
@@ -142,8 +148,12 @@ else:
 
 if CELERY_AVAILABLE:
 
-    @celery_app.task(base=ACGSTask, bind=True, name="acgs.validation.execute_parallel_task")
-    def execute_parallel_validation_task(self, task_data: dict[str, Any]) -> dict[str, Any]:
+    @celery_app.task(
+        base=ACGSTask, bind=True, name="acgs.validation.execute_parallel_task"
+    )
+    def execute_parallel_validation_task(
+        self, task_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """Execute a parallel validation task."""
         try:
             # Reconstruct task from data
@@ -317,7 +327,9 @@ class CeleryTaskManager:
                     task_id=task_id,
                     validator_id=f"celery_worker_{task_id[:8]}",
                     result=result_data.get("result", {}),
-                    confidence_score=result_data.get("result", {}).get("confidence_score", 0.0),
+                    confidence_score=result_data.get("result", {}).get(
+                        "confidence_score", 0.0
+                    ),
                     execution_time_ms=result_data.get("execution_time_ms", 0.0),
                 )
                 validation_results.append(validation_result)
@@ -379,7 +391,9 @@ if CELERY_AVAILABLE:
 
             time.sleep(1)  # Check every second
 
-        logger.info(f"Batch {batch_id} monitoring complete: {completed}/{total} successful")
+        logger.info(
+            f"Batch {batch_id} monitoring complete: {completed}/{total} successful"
+        )
 
 
 # Global task manager instance
@@ -392,7 +406,9 @@ async def initialize_celery_integration():
     # sha256: func_hash
     """Initialize Celery integration."""
     if not CELERY_AVAILABLE:
-        logger.warning("Celery not available - parallel processing will use local execution")
+        logger.warning(
+            "Celery not available - parallel processing will use local execution"
+        )
         return False
 
     try:

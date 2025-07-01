@@ -11,30 +11,105 @@ ACGS-2 is a comprehensive governance system implementing constitutional AI proce
 ## Getting Started
 
 ### Prerequisites
-- Python 3.9+
-- Required dependencies (see requirements.txt)
+- **Python 3.10+** (Python 3.11 or 3.12 recommended)
+- **Git** for version control
+- **uv** (recommended) or **pip** for package management
+- **Redis** (for caching and session storage)
+- **PostgreSQL** (for persistent data storage)
 
 ### Installation
+
+#### Option 1: Using uv (Recommended)
 ```bash
-git clone <repository-url>
+# Clone the repository
+git clone https://github.com/CA-git-com-co/ACGS.git
 cd ACGS-2
+
+# Create virtual environment and install dependencies
+uv venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+uv pip install -e .
+
+# Install development dependencies
+uv pip install -e .[dev,test]
+```
+
+#### Option 2: Using pip
+```bash
+# Clone the repository
+git clone https://github.com/CA-git-com-co/ACGS.git
+cd ACGS-2
+
+# Create virtual environment
+python3 -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
 pip install -r requirements-test.txt
 ```
 
 ### Environment Configuration
-Copy `config/services/backups/.env` as a template and set the required API keys
-via environment variables. The file is excluded from version control, so
-configure keys locally or through your CI/CD secrets.
+1. Copy the environment template:
+   ```bash
+   cp config/test.env .env
+   ```
+
+2. Set required environment variables in `.env`:
+   ```bash
+   # Database Configuration
+   DATABASE_URL=postgresql://user:password@localhost:5432/acgs_db
+   REDIS_URL=redis://localhost:6379/0
+
+   # API Keys (obtain from respective providers)
+   OPENAI_API_KEY=your_openai_key_here
+   ANTHROPIC_API_KEY=your_anthropic_key_here
+   GOOGLE_API_KEY=your_google_key_here
+   GROQ_API_KEY=your_groq_key_here
+
+   # Security
+   JWT_SECRET_KEY=your_jwt_secret_here
+   ENCRYPTION_KEY=your_encryption_key_here
+   ```
+
+3. **Note**: The `.env` file is excluded from version control for security. Configure keys locally or through your CI/CD secrets.
 
 ### Running Tests
+
+#### Basic Test Execution
 ```bash
 # Run all tests
-python -m pytest
+pytest
 
-# Run with coverage
-python -m pytest --cov=services --cov-report=html
-# Generate JSON coverage report
-python -m pytest --cov=services --cov-report=json:coverage.json
+# Run tests with verbose output
+pytest -v
+
+# Run specific test file
+pytest tests/unit/test_constitutional_ai.py
+
+# Run tests matching a pattern
+pytest -k "test_policy"
+```
+
+#### Coverage Analysis
+```bash
+# Run tests with coverage report
+pytest --cov=services --cov-report=html --cov-report=term-missing
+
+# Generate JSON coverage report for CI/CD
+pytest --cov=services --cov-report=json:coverage.json
+
+# Set coverage threshold (fail if below 80%)
+pytest --cov=services --cov-fail-under=80
+```
+
+#### Performance and Load Testing
+```bash
+# Run performance tests
+pytest tests/performance/ -m "not slow"
+
+# Run load tests (requires additional setup)
+pytest tests/load/ --maxfail=1
 ```
 
 ### Generating Local Artifacts
@@ -50,29 +125,272 @@ python -m pytest --cov=services --cov-report=json:coverage.json
 
 ## Development
 
-### Code Quality
-- Follow the code quality guidelines in `docs/code_quality_guidelines.md`
-- Use pre-commit hooks: `pre-commit install`
-- Run tests before committing
+### Code Quality Standards
+We maintain high code quality through automated tooling and standards:
 
-### Testing
-- Maintain 80% test coverage
-- Write unit tests for all public functions
-- Include integration tests for component interactions
+- **Linting**: Use Ruff for fast, comprehensive linting
+- **Formatting**: Black for consistent code formatting
+- **Type Checking**: MyPy for static type analysis
+- **Security**: Bandit for security vulnerability scanning
+- **Pre-commit Hooks**: Automated checks before each commit
 
-### Security
-- All inputs must be validated using the security validation module
-- Follow secure coding practices
-- Regular security audits required
+```bash
+# Install pre-commit hooks
+pre-commit install
+
+# Run all quality checks
+python scripts/lint.py --check-only
+
+# Apply automatic fixes
+python scripts/lint.py --fix
+```
+
+### Testing Standards
+Comprehensive testing ensures system reliability:
+
+- **Target Coverage**: 80% minimum test coverage
+- **Unit Tests**: Test individual components in isolation
+- **Integration Tests**: Test service interactions
+- **End-to-End Tests**: Test complete workflows
+- **Performance Tests**: Validate latency and throughput targets
+- **Security Tests**: Verify security controls
+
+```bash
+# Run comprehensive test suite
+python scripts/test_runner.py --coverage
+
+# Run specific test types
+python scripts/test_runner.py --type unit
+python scripts/test_runner.py --type integration
+python scripts/test_runner.py --type performance
+```
+
+### Security Requirements
+Security is paramount in ACGS-2:
+
+- **Input Validation**: All inputs validated using security validation module
+- **Authentication**: JWT-based authentication with proper key management
+- **Authorization**: Role-based access control (RBAC)
+- **Encryption**: Data encrypted at rest and in transit
+- **Audit Logging**: Comprehensive audit trails for all operations
+- **Constitutional Compliance**: All operations must pass constitutional validation
+
+```bash
+# Run security tests
+python scripts/test_runner.py --type security
+
+# Generate security report
+python scripts/comprehensive_security_scan.py
+```
+
+## Usage Examples
+
+### Basic Constitutional AI Validation
+```python
+import asyncio
+from services.core.constitutional_ai.ac_service.app.services.constitutional_validation_service import ConstitutionalValidationService
+
+async def validate_policy():
+    validator = ConstitutionalValidationService()
+
+    policy = {
+        "action": "data_access",
+        "resource": "user_data",
+        "context": {"user_role": "admin"}
+    }
+
+    result = await validator.validate_constitutional_compliance(policy)
+    print(f"Validation result: {result.is_compliant}")
+    print(f"Compliance score: {result.compliance_score}")
+
+# Run the example
+asyncio.run(validate_policy())
+```
+
+### Policy Governance Query
+```python
+import asyncio
+from services.core.policy_governance.pgc_service.app.core.policy_manager import PolicyManager
+
+async def query_policy():
+    manager = PolicyManager()
+
+    query = {
+        "action": "read",
+        "resource": "sensitive_data",
+        "subject": {"role": "analyst", "clearance": "secret"}
+    }
+
+    decision = await manager.evaluate_policy(query)
+    print(f"Policy decision: {decision.allow}")
+    print(f"Applied rules: {decision.applied_rules}")
+
+# Run the example
+asyncio.run(query_policy())
+```
+
+### WINA Performance Optimization
+```python
+from services.shared.wina.core import WINAProcessor
+
+# Initialize WINA processor
+processor = WINAProcessor(
+    threshold_config={
+        "activation_threshold": 0.7,
+        "gating_threshold": 0.5
+    }
+)
+
+# Process neuron activations
+activations = processor.analyze_activations(input_data)
+optimized_weights = processor.compute_wina_weights(activations)
+
+print(f"Optimization complete. Performance gain: {optimized_weights.performance_gain}")
+```
+
+## API Documentation
+
+### Core Services
+
+#### Constitutional AI Service (Port 8002)
+- **Health Check**: `GET /health`
+- **Validate Policy**: `POST /api/v1/constitutional/validate`
+- **Constitutional Analysis**: `POST /api/v1/constitutional/analyze`
+
+#### Policy Governance Service (Port 8010)
+- **Health Check**: `GET /health`
+- **Policy Query**: `POST /api/v1/policy/query`
+- **Policy Management**: `POST /api/v1/policy/manage`
+
+#### Authentication Service (Port 8016)
+- **Health Check**: `GET /health`
+- **Login**: `POST /api/v1/auth/login`
+- **Token Validation**: `POST /api/v1/auth/validate`
+
+### Service Discovery
+All services register with the service discovery mechanism and can be accessed through:
+- Direct port access (development)
+- Service mesh routing (production)
+- Load balancer endpoints (scaled deployment)
 
 ## Performance Targets
-- Sub-5ms P99 latency for WINA operations
-- O(1) lookup performance for cached operations
-- 80%+ cache hit rates
-- Support for 1000+ concurrent operations
+
+ACGS-2 is designed for high-performance operation:
+
+- **Latency**: Sub-5ms P99 latency for WINA operations
+- **Throughput**: Support for 1000+ concurrent operations
+- **Caching**: 80%+ cache hit rates for policy decisions
+- **Lookup Performance**: O(1) lookup for cached constitutional compliance
+- **Memory Usage**: <80% of allocated resources under normal load
+- **CPU Usage**: <70% average CPU utilization
+
+### Performance Monitoring
+```bash
+# Monitor real-time performance
+python scripts/acgs_monitoring_dashboard.py
+
+# Run performance benchmarks
+python scripts/test_runner.py --type performance
+
+# Generate performance report
+python scripts/comprehensive_load_test.py --report
+```
 
 ## Contributing
-1. Create feature branch
+
+We welcome contributions to ACGS-2! Please follow these guidelines:
+
+### Getting Started
+1. **Fork the repository** and create a feature branch
+2. **Set up development environment** following the installation guide above
+3. **Install pre-commit hooks**: `pre-commit install`
+4. **Run tests** to ensure everything works: `python scripts/test_runner.py`
+5. **Make your changes** following our coding standards
+6. **Write tests** for new functionality
+7. **Update documentation** as needed
+8. **Submit a pull request** with a clear description
+
+### Development Workflow
+```bash
+# Create feature branch
+git checkout -b feature/your-feature-name
+
+# Make changes and test
+python scripts/lint.py --fix
+python scripts/test_runner.py --coverage
+
+# Commit with conventional commit format
+git commit -m "feat: add new constitutional validation feature"
+
+# Push and create PR
+git push origin feature/your-feature-name
+```
+
+### Code Review Process
+- All changes require review from at least one maintainer
+- Automated tests must pass
+- Code coverage must not decrease below 80%
+- Security scans must pass
+- Documentation must be updated for user-facing changes
+
+## Troubleshooting
+
+### Common Issues
+
+#### Import Errors
+If you encounter import errors with hyphenated module names:
+```bash
+# Fix import statements
+python scripts/code_hygiene.py --fix
+```
+
+#### Test Failures
+```bash
+# Clean test environment
+python scripts/test_cleanup.py --remove-placeholders
+
+# Run specific failing test
+pytest tests/unit/test_specific_module.py -v
+```
+
+#### Performance Issues
+```bash
+# Check system resources
+python scripts/acgs_monitoring_dashboard.py
+
+# Run performance diagnostics
+python scripts/comprehensive_load_test.py --diagnose
+```
+
+#### Service Startup Issues
+```bash
+# Validate service configuration
+python validate_service_startup.py
+
+# Check service health
+python scripts/check_service_health.py
+```
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Support
+
+- **Documentation**: See `docs/` directory for detailed documentation
+- **Issues**: Report bugs and feature requests via GitHub Issues
+- **Discussions**: Join our GitHub Discussions for questions and ideas
+- **Security**: Report security vulnerabilities to security@acgs.ai
+
+## Acknowledgments
+
+- Constitutional AI research community
+- Open source contributors
+- ACGS development team
+
+---
+
+**Note**: This is an active research and development project. APIs and interfaces may change as the system evolves.
 2. Implement changes with tests
 3. Ensure all quality checks pass
 4. Submit pull request

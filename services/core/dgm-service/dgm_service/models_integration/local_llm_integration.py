@@ -160,7 +160,9 @@ Always provide structured, evidence-based responses with clear reasoning.
                 response_text = await self._simulate_llm_response(request)
                 tokens_used = len(response_text.split()) * 1.3  # Rough token estimate
             else:
-                raise NotImplementedError(f"Provider {self.config.provider} not implemented")
+                raise NotImplementedError(
+                    f"Provider {self.config.provider} not implemented"
+                )
 
             return LLMResponse(
                 text=response_text,
@@ -225,7 +227,10 @@ Always provide structured, evidence-based responses with clear reasoning.
         }
 
     async def generate_improvement_suggestions(
-        self, system_description: str, performance_metrics: Dict[str, float], constraints: List[str]
+        self,
+        system_description: str,
+        performance_metrics: Dict[str, float],
+        constraints: List[str],
     ) -> List[Dict[str, Any]]:
         """Generate improvement suggestions for the DGM system."""
         prompt = f"""
@@ -333,7 +338,9 @@ Format as JSON array with each suggestion containing:
 
 # Factory function for creating LLM manager
 def create_local_llm_manager(
-    model_name: str = "Menlo_Jan-nano", provider: LLMProvider = LLMProvider.LLAMA_CPP, **kwargs
+    model_name: str = "Menlo_Jan-nano",
+    provider: LLMProvider = LLMProvider.LLAMA_CPP,
+    **kwargs,
 ) -> LocalLLMManager:
     """Create a local LLM manager with default configuration."""
     config = LLMConfig(

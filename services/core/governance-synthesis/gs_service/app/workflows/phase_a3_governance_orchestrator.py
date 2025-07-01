@@ -372,7 +372,9 @@ class PhaseA3GovernanceOrchestrator:
             ),
         ]
 
-        logger.info("Initialized workflow templates for all 5 core governance workflows")
+        logger.info(
+            "Initialized workflow templates for all 5 core governance workflows"
+        )
 
     async def create_workflow(
         self,
@@ -431,7 +433,9 @@ class PhaseA3GovernanceOrchestrator:
             metadata={
                 "template_version": "1.0",
                 "total_steps": len(workflow_steps),
-                "estimated_duration_seconds": sum(step.timeout_seconds for step in workflow_steps),
+                "estimated_duration_seconds": sum(
+                    step.timeout_seconds for step in workflow_steps
+                ),
             },
         )
 
@@ -489,7 +493,9 @@ class PhaseA3GovernanceOrchestrator:
 
                 if not success:
                     workflow.status = WorkflowStatus.FAILED
-                    logger.error(f"Workflow {workflow.workflow_id} failed at step {step.name}")
+                    logger.error(
+                        f"Workflow {workflow.workflow_id} failed at step {step.name}"
+                    )
                     return
 
                 # Check if workflow should continue
@@ -514,7 +520,9 @@ class PhaseA3GovernanceOrchestrator:
             workflow.status = WorkflowStatus.FAILED
             logger.error(f"Workflow {workflow.workflow_id} execution failed: {e}")
 
-    async def _execute_step(self, workflow: WorkflowInstance, step: WorkflowStep) -> bool:
+    async def _execute_step(
+        self, workflow: WorkflowInstance, step: WorkflowStep
+    ) -> bool:
         """Execute a single workflow step."""
         step.status = WorkflowStepStatus.RUNNING
         step.started_at = datetime.now(timezone.utc)
@@ -543,7 +551,9 @@ class PhaseA3GovernanceOrchestrator:
                 step.status = WorkflowStepStatus.COMPLETED
                 step.output_data = result.get("data", {})
 
-                logger.info(f"Step {step.name} completed in {step.execution_time_ms:.2f}ms")
+                logger.info(
+                    f"Step {step.name} completed in {step.execution_time_ms:.2f}ms"
+                )
                 return True
             else:
                 step.status = WorkflowStepStatus.FAILED
@@ -573,7 +583,9 @@ class PhaseA3GovernanceOrchestrator:
             1 for step in workflow.steps if step.status == WorkflowStepStatus.COMPLETED
         )
         total_steps = len(workflow.steps)
-        progress_percentage = (completed_steps / total_steps * 100) if total_steps > 0 else 0
+        progress_percentage = (
+            (completed_steps / total_steps * 100) if total_steps > 0 else 0
+        )
 
         # Get current step info
         current_step = None
@@ -598,8 +610,12 @@ class PhaseA3GovernanceOrchestrator:
                 else None
             ),
             "created_at": workflow.created_at.isoformat(),
-            "started_at": (workflow.started_at.isoformat() if workflow.started_at else None),
-            "completed_at": (workflow.completed_at.isoformat() if workflow.completed_at else None),
+            "started_at": (
+                workflow.started_at.isoformat() if workflow.started_at else None
+            ),
+            "completed_at": (
+                workflow.completed_at.isoformat() if workflow.completed_at else None
+            ),
             "total_execution_time_ms": workflow.total_execution_time_ms,
             "created_by": workflow.created_by,
             "priority": workflow.priority,

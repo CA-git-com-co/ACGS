@@ -16,6 +16,7 @@ from typing import Any, Dict, List, Optional
 
 class ModelType(Enum):
     """Available AI models."""
+
     FLASH_LITE = "google/gemini-2.5-flash-lite-preview-06-17"
     FLASH_FULL = "google/gemini-2.5-flash-preview-06-17"
     DEEPSEEK_R1 = "deepseek/deepseek-r1-0528:free"
@@ -23,6 +24,7 @@ class ModelType(Enum):
 
 class RequestType(Enum):
     """Types of multimodal requests."""
+
     QUICK_ANALYSIS = "quick_analysis"
     DETAILED_ANALYSIS = "detailed_analysis"
     CONSTITUTIONAL_VALIDATION = "constitutional_validation"
@@ -34,6 +36,7 @@ class RequestType(Enum):
 
 class ContentType(Enum):
     """Types of content in requests."""
+
     TEXT_ONLY = "text_only"
     IMAGE_ONLY = "image_only"
     TEXT_AND_IMAGE = "text_and_image"
@@ -42,6 +45,7 @@ class ContentType(Enum):
 @dataclass
 class ModelMetrics:
     """Performance metrics for a model response."""
+
     response_time_ms: float
     token_count: int
     cost_estimate: float
@@ -54,6 +58,7 @@ class ModelMetrics:
 @dataclass
 class MultimodalRequest:
     """Request for multimodal AI processing."""
+
     request_id: str
     request_type: RequestType
     content_type: ContentType
@@ -62,21 +67,26 @@ class MultimodalRequest:
     image_data: Optional[str] = None  # Base64 encoded
     priority: str = "medium"  # low, medium, high
     constitutional_context: Optional[Dict[str, Any]] = None
-    
+
     def __post_init__(self):
         """Validate request after initialization."""
         if self.content_type == ContentType.TEXT_ONLY and not self.text_content:
             raise ValueError("Text content required for TEXT_ONLY requests")
-        elif self.content_type == ContentType.IMAGE_ONLY and not (self.image_url or self.image_data):
+        elif self.content_type == ContentType.IMAGE_ONLY and not (
+            self.image_url or self.image_data
+        ):
             raise ValueError("Image URL or data required for IMAGE_ONLY requests")
         elif self.content_type == ContentType.TEXT_AND_IMAGE:
             if not self.text_content or not (self.image_url or self.image_data):
-                raise ValueError("Both text and image required for TEXT_AND_IMAGE requests")
+                raise ValueError(
+                    "Both text and image required for TEXT_AND_IMAGE requests"
+                )
 
 
 @dataclass
 class MultimodalResponse:
     """Response from multimodal AI processing."""
+
     request_id: str
     model_used: ModelType
     response_content: str
@@ -88,7 +98,7 @@ class MultimodalResponse:
     warnings: List[str] = None
     timestamp: str = None
     cache_info: Optional[Dict[str, Any]] = None
-    
+
     def __post_init__(self):
         """Set defaults after initialization."""
         if self.violations is None:

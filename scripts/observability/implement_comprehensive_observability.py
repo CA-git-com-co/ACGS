@@ -28,52 +28,59 @@ sys.path.insert(0, str(project_root))
 
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class ObservabilityMetric:
     """Observability metric tracking."""
+
     name: str
     current_value: float
     target_value: float
     unit: str
     status: str
 
+
 class ComprehensiveObservabilityImplementor:
     """Implements comprehensive observability for ACGS-2."""
-    
+
     def __init__(self):
         self.project_root = project_root
-        
+
         # Observability components
         self.observability_components = {
             "distributed_tracing": {
                 "tools": ["jaeger", "opentelemetry"],
                 "coverage_target": 95,
-                "latency_target_ms": 100
+                "latency_target_ms": 100,
             },
             "business_metrics": {
-                "dashboards": ["governance_metrics", "performance_metrics", "user_metrics"],
+                "dashboards": [
+                    "governance_metrics",
+                    "performance_metrics",
+                    "user_metrics",
+                ],
                 "update_frequency_seconds": 30,
-                "retention_days": 90
+                "retention_days": 90,
             },
             "log_aggregation": {
                 "tools": ["elasticsearch", "logstash", "kibana"],
                 "log_levels": ["ERROR", "WARN", "INFO"],
-                "retention_days": 30
+                "retention_days": 30,
             },
             "alerting": {
                 "mttd_target_minutes": 5,
                 "alert_channels": ["slack", "email", "pagerduty"],
-                "escalation_levels": 3
-            }
+                "escalation_levels": 3,
+            },
         }
-        
+
         # Observability metrics
         self.observability_metrics: List[ObservabilityMetric] = []
-        
+
     async def implement_comprehensive_observability(self) -> Dict[str, Any]:
         """Implement comprehensive observability infrastructure."""
         logger.info("👁️ Implementing comprehensive observability...")
-        
+
         observability_results = {
             "distributed_tracing_deployed": False,
             "business_metrics_implemented": False,
@@ -83,93 +90,83 @@ class ComprehensiveObservabilityImplementor:
             "observability_coverage_percentage": 0.0,
             "components_implemented": 0,
             "errors": [],
-            "success": True
+            "success": True,
         }
-        
+
         try:
             # Deploy distributed tracing
             tracing_results = await self._deploy_distributed_tracing()
             observability_results.update(tracing_results)
-            
+
             # Implement business metrics dashboards
             metrics_results = await self._implement_business_metrics()
             observability_results.update(metrics_results)
-            
+
             # Configure log aggregation and analysis
             logging_results = await self._configure_log_aggregation()
             observability_results.update(logging_results)
-            
+
             # Deploy alerting and anomaly detection
             alerting_results = await self._deploy_alerting_system()
             observability_results.update(alerting_results)
-            
+
             # Implement real-time monitoring
             monitoring_results = await self._implement_realtime_monitoring()
             observability_results.update(monitoring_results)
-            
+
             # Calculate observability metrics
             metrics_calculation = await self._calculate_observability_metrics()
             observability_results.update(metrics_calculation)
-            
+
             # Generate observability report
             await self._generate_observability_report(observability_results)
-            
+
             logger.info("✅ Comprehensive observability implementation completed")
             return observability_results
-            
+
         except Exception as e:
             logger.error(f"❌ Comprehensive observability implementation failed: {e}")
             observability_results["success"] = False
             observability_results["errors"].append(str(e))
             return observability_results
-    
+
     async def _deploy_distributed_tracing(self) -> Dict[str, Any]:
         """Deploy distributed tracing infrastructure."""
         logger.info("🔍 Deploying distributed tracing...")
-        
+
         try:
             # Create OpenTelemetry configuration
             otel_config = {
-                "service": {
-                    "name": "acgs-2",
-                    "version": "1.0.0"
-                },
+                "service": {"name": "acgs-2", "version": "1.0.0"},
                 "exporters": {
                     "jaeger": {
                         "endpoint": "http://localhost:14268/api/traces",
-                        "timeout": "30s"
+                        "timeout": "30s",
                     },
                     "prometheus": {
                         "endpoint": "http://localhost:9090/api/v1/write",
-                        "timeout": "30s"
-                    }
+                        "timeout": "30s",
+                    },
                 },
-                "processors": {
-                    "batch": {
-                        "timeout": "1s",
-                        "send_batch_size": 1024
-                    }
-                },
+                "processors": {"batch": {"timeout": "1s", "send_batch_size": 1024}},
                 "receivers": {
                     "otlp": {
                         "protocols": {
-                            "grpc": {
-                                "endpoint": "0.0.0.0:4317"
-                            },
-                            "http": {
-                                "endpoint": "0.0.0.0:4318"
-                            }
+                            "grpc": {"endpoint": "0.0.0.0:4317"},
+                            "http": {"endpoint": "0.0.0.0:4318"},
                         }
                     }
-                }
+                },
             }
-            
+
             # Write OpenTelemetry configuration
-            otel_config_path = self.project_root / "config" / "observability" / "otel-config.yaml"
+            otel_config_path = (
+                self.project_root / "config" / "observability" / "otel-config.yaml"
+            )
             otel_config_path.parent.mkdir(parents=True, exist_ok=True)
-            with open(otel_config_path, 'w') as f:
+            with open(otel_config_path, "w") as f:
                 yaml.dump(otel_config, f, default_flow_style=False)
-            
+
             # Create distributed tracing instrumentation
             tracing_instrumentation = '''#!/usr/bin/env python3
 """
@@ -276,12 +273,14 @@ def trace_operation(operation_name: str):
         return wrapper
     return decorator
 '''
-            
+
             # Write tracing instrumentation
-            tracing_path = self.project_root / "services" / "shared" / "distributed_tracing.py"
-            with open(tracing_path, 'w') as f:
+            tracing_path = (
+                self.project_root / "services" / "shared" / "distributed_tracing.py"
+            )
+            with open(tracing_path, "w") as f:
                 f.write(tracing_instrumentation)
-            
+
             # Create Jaeger deployment configuration
             jaeger_config = {
                 "version": "3.8",
@@ -292,34 +291,25 @@ def trace_operation(operation_name: str):
                             "16686:16686",  # Jaeger UI
                             "14268:14268",  # Jaeger collector
                             "6831:6831/udp",  # Jaeger agent
-                            "6832:6832/udp"   # Jaeger agent
+                            "6832:6832/udp",  # Jaeger agent
                         ],
-                        "environment": [
-                            "COLLECTOR_ZIPKIN_HOST_PORT=:9411"
-                        ],
-                        "networks": ["acgs-network"]
+                        "environment": ["COLLECTOR_ZIPKIN_HOST_PORT=:9411"],
+                        "networks": ["acgs-network"],
                     }
                 },
-                "networks": {
-                    "acgs-network": {
-                        "external": True
-                    }
-                }
+                "networks": {"acgs-network": {"external": True}},
             }
-            
+
             # Write Jaeger configuration
             jaeger_config_path = self.project_root / "docker" / "jaeger-compose.yml"
             jaeger_config_path.parent.mkdir(parents=True, exist_ok=True)
-            with open(jaeger_config_path, 'w') as f:
+            with open(jaeger_config_path, "w") as f:
                 yaml.dump(jaeger_config, f, default_flow_style=False)
-            
+
             logger.info("✅ Distributed tracing deployed")
-            
-            return {
-                "distributed_tracing_deployed": True,
-                "components_implemented": 1
-            }
-            
+
+            return {"distributed_tracing_deployed": True, "components_implemented": 1}
+
         except Exception as e:
             logger.error(f"Distributed tracing deployment failed: {e}")
             raise
@@ -335,53 +325,55 @@ def trace_operation(operation_name: str):
                     "constitutional_compliance_score": {
                         "query": "avg(constitutional_compliance_score)",
                         "target": 0.95,
-                        "alert_threshold": 0.90
+                        "alert_threshold": 0.90,
                     },
                     "policy_evaluation_success_rate": {
                         "query": "rate(policy_evaluations_successful_total[5m])",
                         "target": 0.99,
-                        "alert_threshold": 0.95
+                        "alert_threshold": 0.95,
                     },
                     "governance_decision_latency": {
                         "query": "histogram_quantile(0.95, governance_decision_duration_seconds)",
                         "target": 2.0,
-                        "alert_threshold": 5.0
-                    }
+                        "alert_threshold": 5.0,
+                    },
                 },
                 "performance_metrics": {
                     "request_rate": {
                         "query": "rate(http_requests_total[5m])",
                         "target": 1000,
-                        "alert_threshold": 1500
+                        "alert_threshold": 1500,
                     },
                     "response_time_p95": {
                         "query": "histogram_quantile(0.95, http_request_duration_seconds_bucket)",
                         "target": 2.0,
-                        "alert_threshold": 5.0
+                        "alert_threshold": 5.0,
                     },
                     "error_rate": {
-                        "query": "rate(http_requests_total{status=~\"5..\"}[5m])",
+                        "query": 'rate(http_requests_total{status=~"5.."}[5m])',
                         "target": 0.01,
-                        "alert_threshold": 0.05
-                    }
+                        "alert_threshold": 0.05,
+                    },
                 },
                 "user_metrics": {
                     "active_users": {
                         "query": "count(increase(user_sessions_total[1h]))",
                         "target": 100,
-                        "alert_threshold": 50
+                        "alert_threshold": 50,
                     },
                     "user_satisfaction_score": {
                         "query": "avg(user_satisfaction_rating)",
                         "target": 4.0,
-                        "alert_threshold": 3.5
-                    }
-                }
+                        "alert_threshold": 3.5,
+                    },
+                },
             }
 
             # Write business metrics configuration
-            metrics_config_path = self.project_root / "config" / "observability" / "business_metrics.json"
-            with open(metrics_config_path, 'w') as f:
+            metrics_config_path = (
+                self.project_root / "config" / "observability" / "business_metrics.json"
+            )
+            with open(metrics_config_path, "w") as f:
                 json.dump(business_metrics_config, f, indent=2)
 
             # Create Grafana dashboard for business metrics
@@ -400,7 +392,7 @@ def trace_operation(operation_name: str):
                             "targets": [
                                 {
                                     "expr": "avg(constitutional_compliance_score)",
-                                    "legendFormat": "Compliance Score"
+                                    "legendFormat": "Compliance Score",
                                 }
                             ],
                             "fieldConfig": {
@@ -411,11 +403,11 @@ def trace_operation(operation_name: str):
                                         "steps": [
                                             {"color": "red", "value": 0},
                                             {"color": "yellow", "value": 0.9},
-                                            {"color": "green", "value": 0.95}
+                                            {"color": "green", "value": 0.95},
                                         ]
-                                    }
+                                    },
                                 }
-                            }
+                            },
                         },
                         {
                             "id": 2,
@@ -424,9 +416,9 @@ def trace_operation(operation_name: str):
                             "targets": [
                                 {
                                     "expr": "rate(policy_evaluations_successful_total[5m])",
-                                    "legendFormat": "Success Rate"
+                                    "legendFormat": "Success Rate",
                                 }
-                            ]
+                            ],
                         },
                         {
                             "id": 3,
@@ -435,9 +427,9 @@ def trace_operation(operation_name: str):
                             "targets": [
                                 {
                                     "expr": "histogram_quantile(0.95, governance_decision_duration_seconds)",
-                                    "legendFormat": "P95 Latency"
+                                    "legendFormat": "P95 Latency",
                                 }
-                            ]
+                            ],
                         },
                         {
                             "id": 4,
@@ -450,9 +442,9 @@ def trace_operation(operation_name: str):
                                     "targets": [
                                         {
                                             "expr": "rate(http_requests_total[5m])",
-                                            "legendFormat": "Requests/sec"
+                                            "legendFormat": "Requests/sec",
                                         }
-                                    ]
+                                    ],
                                 },
                                 {
                                     "title": "Response Time P95",
@@ -460,27 +452,29 @@ def trace_operation(operation_name: str):
                                     "targets": [
                                         {
                                             "expr": "histogram_quantile(0.95, http_request_duration_seconds_bucket)",
-                                            "legendFormat": "P95 Response Time"
+                                            "legendFormat": "P95 Response Time",
                                         }
-                                    ]
-                                }
-                            ]
-                        }
-                    ]
+                                    ],
+                                },
+                            ],
+                        },
+                    ],
                 }
             }
 
             # Write Grafana dashboard
-            dashboard_path = self.project_root / "config" / "observability" / "grafana_business_dashboard.json"
-            with open(dashboard_path, 'w') as f:
+            dashboard_path = (
+                self.project_root
+                / "config"
+                / "observability"
+                / "grafana_business_dashboard.json"
+            )
+            with open(dashboard_path, "w") as f:
                 json.dump(grafana_dashboard, f, indent=2)
 
             logger.info("✅ Business metrics dashboards implemented")
 
-            return {
-                "business_metrics_implemented": True,
-                "components_implemented": 1
-            }
+            return {"business_metrics_implemented": True, "components_implemented": 1}
 
         except Exception as e:
             logger.error(f"Business metrics implementation failed: {e}")
@@ -500,11 +494,11 @@ def trace_operation(operation_name: str):
                         "environment": [
                             "discovery.type=single-node",
                             "xpack.security.enabled=false",
-                            "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+                            "ES_JAVA_OPTS=-Xms1g -Xmx1g",
                         ],
                         "ports": ["9200:9200"],
                         "volumes": ["elasticsearch_data:/usr/share/elasticsearch/data"],
-                        "networks": ["acgs-network"]
+                        "networks": ["acgs-network"],
                     },
                     "logstash": {
                         "image": "docker.elastic.co/logstash/logstash:8.8.0",
@@ -513,7 +507,7 @@ def trace_operation(operation_name: str):
                         ],
                         "ports": ["5044:5044"],
                         "depends_on": ["elasticsearch"],
-                        "networks": ["acgs-network"]
+                        "networks": ["acgs-network"],
                     },
                     "kibana": {
                         "image": "docker.elastic.co/kibana/kibana:8.8.0",
@@ -522,26 +516,20 @@ def trace_operation(operation_name: str):
                         ],
                         "ports": ["5601:5601"],
                         "depends_on": ["elasticsearch"],
-                        "networks": ["acgs-network"]
-                    }
+                        "networks": ["acgs-network"],
+                    },
                 },
-                "volumes": {
-                    "elasticsearch_data": {}
-                },
-                "networks": {
-                    "acgs-network": {
-                        "external": True
-                    }
-                }
+                "volumes": {"elasticsearch_data": {}},
+                "networks": {"acgs-network": {"external": True}},
             }
 
             # Write ELK configuration
             elk_config_path = self.project_root / "docker" / "elk-compose.yml"
-            with open(elk_config_path, 'w') as f:
+            with open(elk_config_path, "w") as f:
                 yaml.dump(elk_config, f, default_flow_style=False)
 
             # Create Logstash configuration
-            logstash_config = '''input {
+            logstash_config = """input {
   beats {
     port => 5044
   }
@@ -597,19 +585,18 @@ output {
     codec => rubydebug
   }
 }
-'''
+"""
 
             # Write Logstash configuration
-            logstash_config_path = self.project_root / "config" / "observability" / "logstash.conf"
-            with open(logstash_config_path, 'w') as f:
+            logstash_config_path = (
+                self.project_root / "config" / "observability" / "logstash.conf"
+            )
+            with open(logstash_config_path, "w") as f:
                 f.write(logstash_config)
 
             logger.info("✅ Log aggregation configured")
 
-            return {
-                "log_aggregation_configured": True,
-                "components_implemented": 1
-            }
+            return {"log_aggregation_configured": True, "components_implemented": 1}
 
         except Exception as e:
             logger.error(f"Log aggregation configuration failed: {e}")
@@ -633,8 +620,8 @@ output {
                                 "labels": {"severity": "warning"},
                                 "annotations": {
                                     "summary": "High response time detected",
-                                    "description": "95th percentile response time is above 5 seconds"
-                                }
+                                    "description": "95th percentile response time is above 5 seconds",
+                                },
                             },
                             {
                                 "alert": "ConstitutionalComplianceFailure",
@@ -643,8 +630,8 @@ output {
                                 "labels": {"severity": "critical"},
                                 "annotations": {
                                     "summary": "Constitutional compliance failure",
-                                    "description": "Constitutional compliance score dropped below 90%"
-                                }
+                                    "description": "Constitutional compliance score dropped below 90%",
+                                },
                             },
                             {
                                 "alert": "PolicyEvaluationFailureRate",
@@ -653,8 +640,8 @@ output {
                                 "labels": {"severity": "warning"},
                                 "annotations": {
                                     "summary": "High policy evaluation failure rate",
-                                    "description": "Policy evaluation failure rate is above 5%"
-                                }
+                                    "description": "Policy evaluation failure rate is above 5%",
+                                },
                             },
                             {
                                 "alert": "TracingDataLoss",
@@ -663,17 +650,19 @@ output {
                                 "labels": {"severity": "warning"},
                                 "annotations": {
                                     "summary": "Tracing data loss detected",
-                                    "description": "No tracing spans received in the last 5 minutes"
-                                }
-                            }
-                        ]
+                                    "description": "No tracing spans received in the last 5 minutes",
+                                },
+                            },
+                        ],
                     }
                 ]
             }
 
             # Write observability alert rules
-            alert_rules_path = self.project_root / "config" / "observability" / "alert_rules.yml"
-            with open(alert_rules_path, 'w') as f:
+            alert_rules_path = (
+                self.project_root / "config" / "observability" / "alert_rules.yml"
+            )
+            with open(alert_rules_path, "w") as f:
                 yaml.dump(observability_alerts, f, default_flow_style=False)
 
             # Create anomaly detection script
@@ -821,17 +810,16 @@ if __name__ == "__main__":
 '''
 
             # Write anomaly detection script
-            anomaly_script_path = self.project_root / "scripts" / "observability" / "anomaly_detection.py"
-            with open(anomaly_script_path, 'w') as f:
+            anomaly_script_path = (
+                self.project_root / "scripts" / "observability" / "anomaly_detection.py"
+            )
+            with open(anomaly_script_path, "w") as f:
                 f.write(anomaly_detection_script)
             os.chmod(anomaly_script_path, 0o755)
 
             logger.info("✅ Alerting system deployed")
 
-            return {
-                "alerting_system_deployed": True,
-                "components_implemented": 1
-            }
+            return {"alerting_system_deployed": True, "components_implemented": 1}
 
         except Exception as e:
             logger.error(f"Alerting system deployment failed: {e}")
@@ -1047,8 +1035,13 @@ if __name__ == "__main__":
 '''
 
             # Write real-time monitoring script
-            realtime_script_path = self.project_root / "scripts" / "observability" / "realtime_monitoring.py"
-            with open(realtime_script_path, 'w') as f:
+            realtime_script_path = (
+                self.project_root
+                / "scripts"
+                / "observability"
+                / "realtime_monitoring.py"
+            )
+            with open(realtime_script_path, "w") as f:
                 f.write(realtime_monitor_script)
             os.chmod(realtime_script_path, 0o755)
 
@@ -1056,7 +1049,7 @@ if __name__ == "__main__":
 
             return {
                 "realtime_monitoring_implemented": True,
-                "components_implemented": 1
+                "components_implemented": 1,
             }
 
         except Exception as e:
@@ -1078,7 +1071,11 @@ if __name__ == "__main__":
             alert_processing_minutes = 1.0  # 1 minute for alert processing
             notification_delivery_minutes = 0.5  # 30 seconds for notification
 
-            estimated_mttd_minutes = monitoring_interval_minutes + alert_processing_minutes + notification_delivery_minutes
+            estimated_mttd_minutes = (
+                monitoring_interval_minutes
+                + alert_processing_minutes
+                + notification_delivery_minutes
+            )
             mttd_target_achieved = estimated_mttd_minutes < 5.0
 
             # Create observability metrics
@@ -1088,29 +1085,29 @@ if __name__ == "__main__":
                     current_value=95.0,
                     target_value=95.0,
                     unit="percentage",
-                    status="achieved"
+                    status="achieved",
                 ),
                 ObservabilityMetric(
                     name="business_metrics_dashboards",
                     current_value=3.0,
                     target_value=3.0,
                     unit="count",
-                    status="achieved"
+                    status="achieved",
                 ),
                 ObservabilityMetric(
                     name="log_aggregation_coverage",
                     current_value=100.0,
                     target_value=100.0,
                     unit="percentage",
-                    status="achieved"
+                    status="achieved",
                 ),
                 ObservabilityMetric(
                     name="mttd_minutes",
                     current_value=estimated_mttd_minutes,
                     target_value=5.0,
                     unit="minutes",
-                    status="achieved" if mttd_target_achieved else "needs_improvement"
-                )
+                    status="achieved" if mttd_target_achieved else "needs_improvement",
+                ),
             ]
 
             self.observability_metrics = metrics
@@ -1121,7 +1118,7 @@ if __name__ == "__main__":
             return {
                 "observability_coverage_percentage": coverage_percentage,
                 "mttd_target_achieved": mttd_target_achieved,
-                "estimated_mttd_minutes": estimated_mttd_minutes
+                "estimated_mttd_minutes": estimated_mttd_minutes,
             }
 
         except Exception as e:
@@ -1137,11 +1134,13 @@ if __name__ == "__main__":
             "observability_implementation_summary": results,
             "observability_components": self.observability_components,
             "target_achievements": {
-                "distributed_tracing": results.get("distributed_tracing_deployed", False),
+                "distributed_tracing": results.get(
+                    "distributed_tracing_deployed", False
+                ),
                 "business_metrics": results.get("business_metrics_implemented", False),
                 "log_aggregation": results.get("log_aggregation_configured", False),
                 "alerting_system": results.get("alerting_system_deployed", False),
-                "mttd_under_5_minutes": results.get("mttd_target_achieved", False)
+                "mttd_under_5_minutes": results.get("mttd_target_achieved", False),
             },
             "observability_metrics": [
                 {
@@ -1149,7 +1148,7 @@ if __name__ == "__main__":
                     "current_value": metric.current_value,
                     "target_value": metric.target_value,
                     "unit": metric.unit,
-                    "status": metric.status
+                    "status": metric.status,
                 }
                 for metric in self.observability_metrics
             ],
@@ -1158,7 +1157,7 @@ if __name__ == "__main__":
                 "business_metrics_dashboards": "Governance, performance, and user metrics dashboards",
                 "log_aggregation": "ELK stack for centralized log collection and analysis",
                 "real_time_alerting": "Prometheus alerting with anomaly detection",
-                "mttd_optimization": "Sub-5 minute mean time to detection"
+                "mttd_optimization": "Sub-5 minute mean time to detection",
             },
             "infrastructure_components": [
                 "docker/jaeger-compose.yml",
@@ -1166,23 +1165,23 @@ if __name__ == "__main__":
                 "config/observability/otel-config.yaml",
                 "config/observability/business_metrics.json",
                 "config/observability/logstash.conf",
-                "config/observability/alert_rules.yml"
+                "config/observability/alert_rules.yml",
             ],
             "monitoring_scripts": [
                 "scripts/observability/anomaly_detection.py",
                 "scripts/observability/realtime_monitoring.py",
-                "services/shared/distributed_tracing.py"
+                "services/shared/distributed_tracing.py",
             ],
             "next_steps": [
                 "Deploy observability infrastructure to production",
                 "Configure service instrumentation with OpenTelemetry",
                 "Set up alerting notification channels",
                 "Establish observability runbooks and procedures",
-                "Train team on observability tools and dashboards"
-            ]
+                "Train team on observability tools and dashboards",
+            ],
         }
 
-        with open(report_path, 'w') as f:
+        with open(report_path, "w") as f:
             json.dump(report, f, indent=2)
 
         logger.info(f"📊 Observability report saved to: {report_path}")
@@ -1192,7 +1191,7 @@ async def main():
     """Main comprehensive observability implementation function."""
     logging.basicConfig(
         level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
 
     implementor = ComprehensiveObservabilityImplementor()
@@ -1201,23 +1200,27 @@ async def main():
     if results["success"]:
         print("✅ Comprehensive observability implementation completed successfully!")
         print(f"📊 Components implemented: {results['components_implemented']}")
-        print(f"📊 Observability coverage: {results['observability_coverage_percentage']:.1f}%")
+        print(
+            f"📊 Observability coverage: {results['observability_coverage_percentage']:.1f}%"
+        )
         print(f"📊 Estimated MTTD: {results['estimated_mttd_minutes']:.1f} minutes")
 
         # Check target achievements
-        if results.get('mttd_target_achieved', False):
+        if results.get("mttd_target_achieved", False):
             print("🎯 TARGET ACHIEVED: Mean time to detection (MTTD) <5 minutes!")
         else:
-            print(f"⚠️  MTTD target: {results['estimated_mttd_minutes']:.1f} minutes (target: <5 minutes)")
+            print(
+                f"⚠️  MTTD target: {results['estimated_mttd_minutes']:.1f} minutes (target: <5 minutes)"
+            )
 
         # Check individual components
-        if results.get('distributed_tracing_deployed', False):
+        if results.get("distributed_tracing_deployed", False):
             print("✅ Distributed tracing deployed")
-        if results.get('business_metrics_implemented', False):
+        if results.get("business_metrics_implemented", False):
             print("✅ Business metrics dashboards implemented")
-        if results.get('log_aggregation_configured', False):
+        if results.get("log_aggregation_configured", False):
             print("✅ Log aggregation configured")
-        if results.get('alerting_system_deployed', False):
+        if results.get("alerting_system_deployed", False):
             print("✅ Alerting system deployed")
 
         print("\n🎯 COMPREHENSIVE OBSERVABILITY FEATURES IMPLEMENTED:")
@@ -1228,7 +1231,7 @@ async def main():
         print("✅ Mean time to detection (MTTD) <5 minutes")
     else:
         print("❌ Comprehensive observability implementation failed!")
-        for error in results['errors']:
+        for error in results["errors"]:
             print(f"   - {error}")
         sys.exit(1)
 

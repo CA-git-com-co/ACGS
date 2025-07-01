@@ -98,7 +98,9 @@ class TestConstitutionalTrainerAPI:
         assert "constitutional_compliance_score" in response.text
 
     @patch("main.verify_token")
-    def test_start_training_unauthorized(self, mock_verify_token, client, sample_training_request):
+    def test_start_training_unauthorized(
+        self, mock_verify_token, client, sample_training_request
+    ):
         """Test training start with invalid authentication."""
         mock_verify_token.side_effect = Exception("Invalid token")
 
@@ -161,7 +163,9 @@ class TestConstitutionalTrainerAPI:
         }
 
         response = client.post(
-            "/api/v1/train", json=invalid_request, headers={"Authorization": "Bearer valid-token"}
+            "/api/v1/train",
+            json=invalid_request,
+            headers={"Authorization": "Bearer valid-token"},
         )
 
         assert response.status_code == 422  # Validation error
@@ -220,7 +224,8 @@ class TestConstitutionalValidator:
 
         # Test with content that should pass local validation
         is_compliant, score, violations = await validator._validate_locally(
-            "This is a helpful and harmless response about AI ethics.", {"prompt": "Test prompt"}
+            "This is a helpful and harmless response about AI ethics.",
+            {"prompt": "Test prompt"},
         )
 
         assert isinstance(is_compliant, bool)
@@ -245,7 +250,9 @@ class TestConstitutionalValidator:
             results = await validator.batch_validate(responses, contexts)
 
             assert len(results) == len(responses)
-            assert all(isinstance(result, tuple) and len(result) == 3 for result in results)
+            assert all(
+                isinstance(result, tuple) and len(result) == 3 for result in results
+            )
             assert mock_validate.call_count == len(responses)
 
     @pytest.mark.asyncio
@@ -274,7 +281,9 @@ class TestConstitutionalTrainer:
         """Constitutional trainer instance."""
         with patch("constitutional_trainer.AutoModelForCausalLM.from_pretrained"):
             with patch("constitutional_trainer.AutoTokenizer.from_pretrained"):
-                return ConstitutionalTrainer("microsoft/DialoGPT-small", constitutional_config)
+                return ConstitutionalTrainer(
+                    "microsoft/DialoGPT-small", constitutional_config
+                )
 
     @pytest.mark.asyncio
     async def test_critique_revision_cycle(self, trainer):
@@ -338,7 +347,9 @@ class TestPrivacyEngine:
 
     def test_privacy_budget_tracking(self, privacy_engine):
         """Test privacy budget tracking."""
-        with patch.object(privacy_engine.privacy_engine, "get_epsilon", return_value=4.0):
+        with patch.object(
+            privacy_engine.privacy_engine, "get_epsilon", return_value=4.0
+        ):
             privacy_spent = privacy_engine.get_privacy_spent()
 
             assert privacy_spent["epsilon"] == 4.0
@@ -365,7 +376,9 @@ class TestPrivacyEngine:
 
     def test_constitutional_privacy_compliance(self, privacy_engine):
         """Test constitutional privacy compliance validation."""
-        compliance_check = privacy_engine.validate_constitutional_privacy_compliance(None)
+        compliance_check = privacy_engine.validate_constitutional_privacy_compliance(
+            None
+        )
 
         assert "constitutional_hash" in compliance_check
         assert compliance_check["constitutional_hash"] == CONSTITUTIONAL_HASH
@@ -459,7 +472,10 @@ class TestEndToEndIntegration:
         # Test CORS preflight
         options_response = client.options(
             "/api/v1/train",
-            headers={"Origin": "http://localhost:3000", "Access-Control-Request-Method": "POST"},
+            headers={
+                "Origin": "http://localhost:3000",
+                "Access-Control-Request-Method": "POST",
+            },
         )
 
         # Should handle CORS appropriately

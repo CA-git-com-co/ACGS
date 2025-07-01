@@ -42,7 +42,9 @@ class ModelWeightInfo:
     layer_type: str  # 'attention', 'mlp', 'embedding', etc.
     matrix_type: str  # 'W_k', 'W_gate', 'W_q', 'W_v', etc.
     original_shape: tuple[int, ...]
-    extraction_timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    extraction_timestamp: datetime = field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
 
 
 @dataclass
@@ -157,7 +159,9 @@ class MockModelWeightExtractor(ModelWeightExtractor):
             )
             weight_infos.append(weight_info)
 
-        logger.info(f"Extracted {len(weight_infos)} weight matrices for {model_identifier}")
+        logger.info(
+            f"Extracted {len(weight_infos)} weight matrices for {model_identifier}"
+        )
         return weight_infos
 
     def get_supported_models(self) -> list[str]:
@@ -300,7 +304,9 @@ class WINAModelIntegrator:
             )
 
             # Check cache first
-            cache_key = f"{model_identifier}_{model_type}_{hash(tuple(target_layers or []))}"
+            cache_key = (
+                f"{model_identifier}_{model_type}_{hash(tuple(target_layers or []))}"
+            )
             if not force_recompute and cache_key in self._transformation_cache:
                 logger.info(f"Using cached WINA optimization for {model_identifier}")
                 return self._transformation_cache[cache_key]
@@ -310,7 +316,9 @@ class WINAModelIntegrator:
             if not extractor:
                 raise WINAError(f"Unsupported model type: {model_type}")
 
-            weight_infos = await extractor.extract_weights(model_identifier, target_layers)
+            weight_infos = await extractor.extract_weights(
+                model_identifier, target_layers
+            )
             logger.info(f"Extracted {len(weight_infos)} weight matrices")
 
             # Apply SVD transformations
@@ -542,7 +550,9 @@ class WINAModelIntegrator:
                         "wina_gflops_reduction": result.gflops_reduction,
                         "wina_accuracy_preservation": result.accuracy_preservation,
                         "wina_optimization_time": result.optimization_time,
-                        "wina_layers_optimized": result.performance_metrics["layers_optimized"],
+                        "wina_layers_optimized": result.performance_metrics[
+                            "layers_optimized"
+                        ],
                         "wina_constitutional_compliance": (
                             1.0 if result.constitutional_compliance else 0.0
                         ),
@@ -642,7 +652,9 @@ class WINAModelIntegrator:
             return {"message": "No optimizations performed yet"}
 
         gflops_reductions = [r.gflops_reduction for r in self._optimization_history]
-        accuracy_preservations = [r.accuracy_preservation for r in self._optimization_history]
+        accuracy_preservations = [
+            r.accuracy_preservation for r in self._optimization_history
+        ]
         optimization_times = [r.optimization_time for r in self._optimization_history]
 
         return {

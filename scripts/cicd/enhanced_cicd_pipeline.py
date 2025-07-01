@@ -34,10 +34,10 @@ sys.path.insert(0, str(project_root))
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
+
 
 class EnhancedCICDPipeline:
     """Enhanced CI/CD Pipeline with security integration and enterprise features."""
@@ -57,32 +57,32 @@ class EnhancedCICDPipeline:
                     "auto_deploy": True,
                     "approval_required": False,
                     "health_check_timeout": 300,
-                    "rollback_enabled": True
+                    "rollback_enabled": True,
                 },
                 "staging": {
                     "auto_deploy": True,
                     "approval_required": False,
                     "health_check_timeout": 600,
-                    "rollback_enabled": True
+                    "rollback_enabled": True,
                 },
                 "production": {
                     "auto_deploy": False,
                     "approval_required": True,
                     "health_check_timeout": 900,
-                    "rollback_enabled": True
-                }
+                    "rollback_enabled": True,
+                },
             },
             "quality_gates": {
                 "test_coverage_threshold": 80.0,
                 "security_scan_required": True,
                 "performance_test_required": True,
                 "constitutional_compliance_required": True,
-                "code_quality_threshold": "A"
+                "code_quality_threshold": "A",
             },
             "deployment_targets": {
                 "staging_time_limit_minutes": 10,
                 "production_time_limit_minutes": 30,
-                "rollback_time_limit_minutes": 5
+                "rollback_time_limit_minutes": 5,
             },
             "services": [
                 "auth-service",
@@ -90,8 +90,8 @@ class EnhancedCICDPipeline:
                 "policy-governance",
                 "governance-synthesis",
                 "integrity-service",
-                "formal-verification"
-            ]
+                "formal-verification",
+            ],
         }
 
     async def implement_enhanced_cicd(self) -> Dict[str, Any]:
@@ -109,7 +109,7 @@ class EnhancedCICDPipeline:
             "rollback_capabilities_enabled": False,
             "monitoring_integration_enabled": False,
             "success": True,
-            "errors": []
+            "errors": [],
         }
 
         try:
@@ -151,10 +151,13 @@ class EnhancedCICDPipeline:
 
             implementation_results["end_time"] = datetime.now(timezone.utc)
             implementation_results["duration_seconds"] = (
-                implementation_results["end_time"] - implementation_results["start_time"]
+                implementation_results["end_time"]
+                - implementation_results["start_time"]
             ).total_seconds()
 
-            logger.info("✅ Enhanced CI/CD Pipeline implementation completed successfully")
+            logger.info(
+                "✅ Enhanced CI/CD Pipeline implementation completed successfully"
+            )
             return implementation_results
 
         except Exception as e:
@@ -177,9 +180,7 @@ class EnhancedCICDPipeline:
                 "push": {
                     "branches": ["main", "master", "develop", "feature/*", "hotfix/*"]
                 },
-                "pull_request": {
-                    "branches": ["main", "master", "develop"]
-                },
+                "pull_request": {"branches": ["main", "master", "develop"]},
                 "workflow_dispatch": {
                     "inputs": {
                         "environment": {
@@ -187,16 +188,16 @@ class EnhancedCICDPipeline:
                             "required": True,
                             "default": "staging",
                             "type": "choice",
-                            "options": ["development", "staging", "production"]
+                            "options": ["development", "staging", "production"],
                         },
                         "skip_tests": {
                             "description": "Skip tests (emergency only)",
                             "required": False,
                             "default": False,
-                            "type": "boolean"
-                        }
+                            "type": "boolean",
+                        },
                     }
-                }
+                },
             },
             "permissions": {
                 "contents": "read",
@@ -204,14 +205,14 @@ class EnhancedCICDPipeline:
                 "security-events": "write",
                 "actions": "read",
                 "id-token": "write",
-                "deployments": "write"
+                "deployments": "write",
             },
             "env": {
                 "REGISTRY": "ghcr.io",
                 "IMAGE_NAME": "${{ github.repository }}",
                 "CONSTITUTIONAL_HASH": self.constitutional_hash,
                 "COVERAGE_THRESHOLD": "80",
-                "DEPLOYMENT_TIMEOUT": "600"
+                "DEPLOYMENT_TIMEOUT": "600",
             },
             "jobs": {
                 "security-validation": {
@@ -219,13 +220,10 @@ class EnhancedCICDPipeline:
                     "name": "Security Validation & Constitutional Compliance",
                     "outputs": {
                         "security-passed": "${{ steps.security-check.outputs.passed }}",
-                        "constitutional-compliant": "${{ steps.constitutional-check.outputs.compliant }}"
+                        "constitutional-compliant": "${{ steps.constitutional-check.outputs.compliant }}",
                     },
                     "steps": [
-                        {
-                            "name": "Checkout code",
-                            "uses": "actions/checkout@v4"
-                        },
+                        {"name": "Checkout code", "uses": "actions/checkout@v4"},
                         {
                             "name": "Run security hardening validation",
                             "id": "security-check",
@@ -238,7 +236,7 @@ class EnhancedCICDPipeline:
                                     echo "⚠️ Security hardening tests not found"
                                     echo "passed=false" >> $GITHUB_OUTPUT
                                 fi
-                            """
+                            """,
                         },
                         {
                             "name": "Validate constitutional compliance",
@@ -255,16 +253,16 @@ class EnhancedCICDPipeline:
                                     echo "compliant=false" >> $GITHUB_OUTPUT
                                     exit 1
                                 fi
-                            """
-                        }
-                    ]
+                            """,
+                        },
+                    ],
                 }
-            }
+            },
         }
 
         # Save main workflow
         main_workflow_path = self.workflows_dir / "enhanced-cicd.yml"
-        with open(main_workflow_path, 'w') as f:
+        with open(main_workflow_path, "w") as f:
             yaml.dump(main_workflow, f, default_flow_style=False, sort_keys=False)
 
         logger.info(f"✅ Created enhanced CI/CD workflow: {main_workflow_path}")
@@ -280,31 +278,33 @@ class EnhancedCICDPipeline:
                     "required": True,
                     "timeout_minutes": 15,
                     "tools": ["bandit", "safety", "semgrep"],
-                    "fail_on_high_severity": True
+                    "fail_on_high_severity": True,
                 },
                 "test_coverage": {
                     "enabled": True,
-                    "threshold": self.config["quality_gates"]["test_coverage_threshold"],
+                    "threshold": self.config["quality_gates"][
+                        "test_coverage_threshold"
+                    ],
                     "required": True,
-                    "exclude_patterns": ["tests/*", "scripts/*"]
+                    "exclude_patterns": ["tests/*", "scripts/*"],
                 },
                 "performance_tests": {
                     "enabled": True,
                     "required": True,
                     "latency_threshold_ms": 5,
-                    "throughput_threshold_rps": 100
+                    "throughput_threshold_rps": 100,
                 },
                 "constitutional_compliance": {
                     "enabled": True,
                     "required": True,
                     "hash_validation": self.constitutional_hash,
-                    "governance_validation": True
+                    "governance_validation": True,
                 },
                 "code_quality": {
                     "enabled": True,
                     "tools": ["pylint", "mypy", "black"],
-                    "threshold": self.config["quality_gates"]["code_quality_threshold"]
-                }
+                    "threshold": self.config["quality_gates"]["code_quality_threshold"],
+                },
             }
         }
 
@@ -312,7 +312,7 @@ class EnhancedCICDPipeline:
         quality_gates_path = self.scripts_dir / "quality_gates_config.yml"
         quality_gates_path.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(quality_gates_path, 'w') as f:
+        with open(quality_gates_path, "w") as f:
             yaml.dump(quality_gates_config, f, default_flow_style=False)
 
         logger.info(f"✅ Created quality gates configuration: {quality_gates_path}")
@@ -330,34 +330,36 @@ class EnhancedCICDPipeline:
                     "auto_deploy": env_config["auto_deploy"],
                     "approval_required": env_config["approval_required"],
                     "health_check_timeout": env_config["health_check_timeout"],
-                    "rollback_enabled": env_config["rollback_enabled"]
+                    "rollback_enabled": env_config["rollback_enabled"],
                 },
                 "services": self.config["services"],
                 "monitoring": {
                     "enabled": True,
                     "metrics_collection": True,
                     "alerting": True,
-                    "dashboard_url": f"https://monitoring.acgs.com/{env_name}"
+                    "dashboard_url": f"https://monitoring.acgs.com/{env_name}",
                 },
                 "security": {
                     "security_scan_required": True,
                     "constitutional_validation_required": True,
-                    "vulnerability_scan_required": True
-                }
+                    "vulnerability_scan_required": True,
+                },
             }
 
             # Save deployment configuration
             config_path = self.scripts_dir / f"deployment_config_{env_name}.yml"
-            with open(config_path, 'w') as f:
+            with open(config_path, "w") as f:
                 yaml.dump(deployment_config, f, default_flow_style=False)
 
-            logger.info(f"✅ Created deployment configuration for {env_name}: {config_path}")
+            logger.info(
+                f"✅ Created deployment configuration for {env_name}: {config_path}"
+            )
 
     async def _implement_rollback_capabilities(self):
         """Implement automated rollback capabilities."""
         logger.info("Implementing automated rollback capabilities")
 
-        rollback_script = f'''#!/bin/bash
+        rollback_script = f"""#!/bin/bash
 # ACGS Enhanced Rollback Script
 # Constitutional Hash: {self.constitutional_hash}
 
@@ -439,11 +441,11 @@ validate_constitutional_compliance
 perform_rollback "$ENVIRONMENT" "$ROLLBACK_VERSION"
 
 echo "🎉 Rollback completed for $ENVIRONMENT"
-'''
+"""
 
         # Save rollback script
         rollback_script_path = self.scripts_dir / "enhanced_rollback.sh"
-        with open(rollback_script_path, 'w') as f:
+        with open(rollback_script_path, "w") as f:
             f.write(rollback_script)
 
         # Make executable
@@ -462,28 +464,28 @@ echo "🎉 Rollback completed for $ENVIRONMENT"
                     "deployment_success_rate": {
                         "enabled": True,
                         "threshold": 95.0,
-                        "alert_on_failure": True
+                        "alert_on_failure": True,
                     },
                     "deployment_duration": {
                         "enabled": True,
                         "threshold_minutes": 10,
-                        "alert_on_timeout": True
+                        "alert_on_timeout": True,
                     },
                     "rollback_frequency": {
                         "enabled": True,
                         "threshold_per_day": 3,
-                        "alert_on_excess": True
+                        "alert_on_excess": True,
                     },
                     "test_coverage": {
                         "enabled": True,
                         "threshold": 80.0,
-                        "alert_on_drop": True
+                        "alert_on_drop": True,
                     },
                     "security_scan_failures": {
                         "enabled": True,
                         "threshold": 0,
-                        "alert_immediately": True
-                    }
+                        "alert_immediately": True,
+                    },
                 },
                 "alerting": {
                     "channels": ["slack", "email", "webhook"],
@@ -491,27 +493,27 @@ echo "🎉 Rollback completed for $ENVIRONMENT"
                         "critical": "immediate",
                         "high": "5_minutes",
                         "medium": "30_minutes",
-                        "low": "24_hours"
-                    }
+                        "low": "24_hours",
+                    },
                 },
                 "dashboards": {
                     "cicd_overview": {
                         "enabled": True,
                         "url": "https://monitoring.acgs.com/cicd",
-                        "refresh_interval": "30s"
+                        "refresh_interval": "30s",
                     },
                     "deployment_pipeline": {
                         "enabled": True,
                         "url": "https://monitoring.acgs.com/deployments",
-                        "refresh_interval": "10s"
-                    }
-                }
+                        "refresh_interval": "10s",
+                    },
+                },
             }
         }
 
         # Save monitoring configuration
         monitoring_config_path = self.scripts_dir / "monitoring_config.yml"
-        with open(monitoring_config_path, 'w') as f:
+        with open(monitoring_config_path, "w") as f:
             yaml.dump(monitoring_config, f, default_flow_style=False)
 
         logger.info(f"✅ Created monitoring configuration: {monitoring_config_path}")
@@ -520,7 +522,7 @@ echo "🎉 Rollback completed for $ENVIRONMENT"
         """Create deployment scripts with security validation."""
         logger.info("Creating secure deployment scripts")
 
-        secure_deploy_script = f'''#!/bin/bash
+        secure_deploy_script = f"""#!/bin/bash
 # ACGS Enhanced Secure Deployment Script
 # Constitutional Hash: {self.constitutional_hash}
 
@@ -614,11 +616,11 @@ deploy_with_security() {{
 deploy_with_security "$ENVIRONMENT" "$IMAGE_TAG"
 
 echo "🎉 Secure deployment completed for $ENVIRONMENT"
-'''
+"""
 
         # Save secure deployment script
         secure_deploy_path = self.scripts_dir / "secure_deploy.sh"
-        with open(secure_deploy_path, 'w') as f:
+        with open(secure_deploy_path, "w") as f:
             f.write(secure_deploy_script)
 
         # Make executable
@@ -626,32 +628,41 @@ echo "🎉 Secure deployment completed for $ENVIRONMENT"
 
         logger.info(f"✅ Created secure deployment script: {secure_deploy_path}")
 
+
 # Global instance
 enhanced_cicd_pipeline = EnhancedCICDPipeline()
+
 
 async def main():
     """Main function to implement enhanced CI/CD pipeline."""
     try:
         results = await enhanced_cicd_pipeline.implement_enhanced_cicd()
 
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("ACGS ENHANCED CI/CD PIPELINE IMPLEMENTATION")
-        print("="*60)
+        print("=" * 60)
         print(f"Status: {'SUCCESS' if results['success'] else 'FAILED'}")
         print(f"Constitutional Hash: {results['constitutional_hash']}")
         print(f"Pipelines Created: {results['pipelines_created']}")
         print(f"Quality Gates: {results['quality_gates_implemented']}")
         print(f"Deployment Configs: {results['deployment_configs_created']}")
-        print(f"Security Integration: {'✅' if results['security_integration_enabled'] else '❌'}")
-        print(f"Rollback Capabilities: {'✅' if results['rollback_capabilities_enabled'] else '❌'}")
-        print(f"Monitoring Integration: {'✅' if results['monitoring_integration_enabled'] else '❌'}")
-        print("="*60)
+        print(
+            f"Security Integration: {'✅' if results['security_integration_enabled'] else '❌'}"
+        )
+        print(
+            f"Rollback Capabilities: {'✅' if results['rollback_capabilities_enabled'] else '❌'}"
+        )
+        print(
+            f"Monitoring Integration: {'✅' if results['monitoring_integration_enabled'] else '❌'}"
+        )
+        print("=" * 60)
 
-        return 0 if results['success'] else 1
+        return 0 if results["success"] else 1
 
     except Exception as e:
         print(f"\n❌ Enhanced CI/CD Pipeline implementation failed: {e}")
         return 1
+
 
 if __name__ == "__main__":
     exit_code = asyncio.run(main())

@@ -4,18 +4,25 @@ Unit tests for services.core.constitutional-ai.ac_service.app.core.constitutiona
 
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
-from services.core.constitutional-ai.ac_service.app.core.constitutional_council_scalability import CoEvolutionMode, VotingStrategy, ScalabilityConfig, CoEvolutionMetrics, RapidAmendmentHandler, AsyncVotingManager, ConstitutionalCouncilScalabilityFramework
-
+from services.core.constitutional_ai.ac_service.app.core.constitutional_council_scalability import (
+    CoEvolutionMode,
+    VotingStrategy,
+    ScalabilityConfig,
+    CoEvolutionMetrics,
+    RapidAmendmentHandler,
+    AsyncVotingManager,
+    ConstitutionalCouncilScalabilityFramework,
+)
 
 
 class TestCoEvolutionMode:
     """Test suite for CoEvolutionMode."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -24,12 +31,12 @@ class TestCoEvolutionMode:
 
 class TestVotingStrategy:
     """Test suite for VotingStrategy."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -38,12 +45,12 @@ class TestVotingStrategy:
 
 class TestScalabilityConfig:
     """Test suite for ScalabilityConfig."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -52,12 +59,12 @@ class TestScalabilityConfig:
 
 class TestCoEvolutionMetrics:
     """Test suite for CoEvolutionMetrics."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -66,12 +73,12 @@ class TestCoEvolutionMetrics:
 
 class TestRapidAmendmentHandler:
     """Test suite for RapidAmendmentHandler."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -80,12 +87,12 @@ class TestRapidAmendmentHandler:
 
 class TestAsyncVotingManager:
     """Test suite for AsyncVotingManager."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -94,15 +101,13 @@ class TestAsyncVotingManager:
 
 class TestConstitutionalCouncilScalabilityFramework:
     """Test suite for ConstitutionalCouncilScalabilityFramework."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
         pass
-
-

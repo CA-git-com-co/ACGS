@@ -40,18 +40,22 @@ import structlog
 from .nano_vllm_adapter import NanoVLLMAdapter, ModelConfig, create_nano_vllm_adapter
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = structlog.get_logger(__name__)
 
 
 class ReasoningModelType(Enum):
     """Enumeration of available reasoning models."""
+
     NVIDIA_ACERREASON = "nvidia/Llama-3.1-Nemotron-70B-Instruct-HF"
     MICROSOFT_PHI4 = "microsoft/Phi-4"
 
 
 class ConstitutionalDomain(Enum):
     """Constitutional domains for specialized reasoning."""
+
     PRIVACY = "privacy"
     TRANSPARENCY = "transparency"
     FAIRNESS = "fairness"
@@ -63,6 +67,7 @@ class ConstitutionalDomain(Enum):
 @dataclass
 class ReasoningRequest:
     """Request structure for reasoning models."""
+
     content: str
     domain: ConstitutionalDomain
     context: Dict[str, Any]
@@ -74,6 +79,7 @@ class ReasoningRequest:
 @dataclass
 class ReasoningResponse:
     """Response structure from reasoning models."""
+
     reasoning_chain: List[str]
     conclusion: str
     confidence_score: float
@@ -86,17 +92,17 @@ class ReasoningResponse:
 class NanoVLLMReasoningService:
     """
     Advanced reasoning service using Nano-vLLM with multiple models.
-    
+
     Provides constitutional reasoning capabilities for the ACGS-1 system
     using NVIDIA AceReason-Nemotron and Microsoft Phi-4-mini-reasoning
     with lightweight Nano-vLLM deployment.
     """
-    
+
     def __init__(self, enable_fallback: bool = True):
         self.enable_fallback = enable_fallback
         self.adapters: Dict[ReasoningModelType, NanoVLLMAdapter] = {}
         self.fallback_service = None
-        
+
         # Model configurations
         self.model_configs = {
             ReasoningModelType.NVIDIA_ACERREASON: {
@@ -110,21 +116,24 @@ class NanoVLLMReasoningService:
                 "gpu_memory_utilization": 0.9,
             },
             ReasoningModelType.MICROSOFT_PHI4: {
-                "specialties": [ConstitutionalDomain.ETHICS, ConstitutionalDomain.FAIRNESS],
+                "specialties": [
+                    ConstitutionalDomain.ETHICS,
+                    ConstitutionalDomain.FAIRNESS,
+                ],
                 "max_context": 16384,
                 "reasoning_strength": 0.90,
                 "tensor_parallel_size": 1,
                 "gpu_memory_utilization": 0.6,
             },
         }
-        
+
         self.constitutional_principles = self._load_constitutional_principles()
         self.reasoning_templates = self._load_reasoning_templates()
-    
+
     async def initialize(self):
         """Initialize all Nano-vLLM adapters."""
         logger.info("Initializing Nano-vLLM reasoning service")
-        
+
         for model_type, config in self.model_configs.items():
             try:
                 adapter = create_nano_vllm_adapter(
@@ -132,33 +141,34 @@ class NanoVLLMReasoningService:
                     tensor_parallel_size=config["tensor_parallel_size"],
                     gpu_memory_utilization=config["gpu_memory_utilization"],
                 )
-                
+
                 await adapter.initialize()
                 self.adapters[model_type] = adapter
                 logger.info(f"Initialized {model_type.value}")
-                
+
             except Exception as e:
                 logger.error(f"Failed to initialize {model_type.value}: {str(e)}")
                 if not self.enable_fallback:
                     raise
-        
+
         # Initialize fallback service if enabled and no adapters loaded
         if self.enable_fallback and not self.adapters:
             logger.warning("No Nano-vLLM adapters available, initializing fallback")
             await self._initialize_fallback()
-        
+
         logger.info("Nano-vLLM reasoning service initialization complete")
-    
+
     async def _initialize_fallback(self):
         """Initialize fallback to original vLLM service if needed."""
         try:
             # Import original vLLM service
             from .vllm_integration import VLLMReasoningService
+
             self.fallback_service = VLLMReasoningService()
             logger.info("Fallback vLLM service initialized")
         except Exception as e:
             logger.error(f"Failed to initialize fallback service: {str(e)}")
-    
+
     def _load_constitutional_principles(self) -> Dict[str, Any]:
         """Load constitutional principles for reasoning context."""
         return {
@@ -167,7 +177,13 @@ class NanoVLLMReasoningService:
                     "name": "Transparency",
                     "description": "All governance decisions must be transparent and auditable",
                     "weight": 0.25,
-                    "keywords": ["transparent", "open", "auditable", "visible", "clear"],
+                    "keywords": [
+                        "transparent",
+                        "open",
+                        "auditable",
+                        "visible",
+                        "clear",
+                    ],
                 },
                 {
                     "name": "Fairness",
@@ -179,7 +195,13 @@ class NanoVLLMReasoningService:
                     "name": "Privacy",
                     "description": "User privacy and data rights must be protected",
                     "weight": 0.25,
-                    "keywords": ["privacy", "protect", "consent", "rights", "confidential"],
+                    "keywords": [
+                        "privacy",
+                        "protect",
+                        "consent",
+                        "rights",
+                        "confidential",
+                    ],
                 },
                 {
                     "name": "Accountability",
@@ -191,7 +213,7 @@ class NanoVLLMReasoningService:
             "constitutional_hash": "cdd01ef066bc6cf2",
             "version": "2.0",
         }
-    
+
     def _load_reasoning_templates(self) -> Dict[str, str]:
         """Load reasoning templates for different domains."""
         return {
@@ -277,10 +299,12 @@ REQUIRED OUTPUT FORMAT:
 Begin governance decision analysis:
 """,
         }
-    
-    async def select_optimal_model(self, request: ReasoningRequest) -> ReasoningModelType:
+
+    async def select_optimal_model(
+        self, request: ReasoningRequest
+    ) -> ReasoningModelType:
         """Select the optimal model based on domain and requirements."""
-        
+
         # Check model specialties
         for model_type, config in self.model_configs.items():
             if request.domain in config["specialties"]:
@@ -288,74 +312,92 @@ Begin governance decision analysis:
                 if model_type in self.adapters:
                     health = await self.adapters[model_type].health_check()
                     if health.get("healthy", False):
-                        logger.info(f"Selected {model_type.value} for {request.domain.value} domain")
+                        logger.info(
+                            f"Selected {model_type.value} for {request.domain.value} domain"
+                        )
                         return model_type
-        
+
         # Fallback to NVIDIA AceReason for general constitutional reasoning
         if ReasoningModelType.NVIDIA_ACERREASON in self.adapters:
-            health = await self.adapters[ReasoningModelType.NVIDIA_ACERREASON].health_check()
+            health = await self.adapters[
+                ReasoningModelType.NVIDIA_ACERREASON
+            ].health_check()
             if health.get("healthy", False):
-                logger.info(f"Using NVIDIA AceReason as fallback for {request.domain.value}")
+                logger.info(
+                    f"Using NVIDIA AceReason as fallback for {request.domain.value}"
+                )
                 return ReasoningModelType.NVIDIA_ACERREASON
-        
+
         # Final fallback to Microsoft Phi-4
         if ReasoningModelType.MICROSOFT_PHI4 in self.adapters:
-            health = await self.adapters[ReasoningModelType.MICROSOFT_PHI4].health_check()
+            health = await self.adapters[
+                ReasoningModelType.MICROSOFT_PHI4
+            ].health_check()
             if health.get("healthy", False):
-                logger.info(f"Using Microsoft Phi-4 as final fallback for {request.domain.value}")
+                logger.info(
+                    f"Using Microsoft Phi-4 as final fallback for {request.domain.value}"
+                )
                 return ReasoningModelType.MICROSOFT_PHI4
-        
+
         raise RuntimeError("No reasoning models available")
-    
-    async def constitutional_reasoning(self, request: ReasoningRequest) -> ReasoningResponse:
+
+    async def constitutional_reasoning(
+        self, request: ReasoningRequest
+    ) -> ReasoningResponse:
         """
         Perform constitutional reasoning using Nano-vLLM models.
-        
+
         Args:
             request: ReasoningRequest with content and context
-            
+
         Returns:
             ReasoningResponse with analysis and recommendations
         """
         start_time = time.time()
-        
+
         try:
             # Try Nano-vLLM first
             if self.adapters:
                 selected_model = await self.select_optimal_model(request)
                 adapter = self.adapters[selected_model]
-                
+
                 # Prepare reasoning prompt
                 template_key = self._get_template_key(request.domain)
                 prompt = self._build_reasoning_prompt(request, template_key)
-                
+
                 # Execute reasoning with Nano-vLLM
                 messages = [{"role": "user", "content": prompt}]
                 response = await adapter.chat_completion(
                     messages=messages,
                     max_tokens=request.max_tokens,
                     temperature=0.1,
-                    top_p=0.9
+                    top_p=0.9,
                 )
-                
+
                 # Parse and validate response
-                parsed_response = self._parse_nano_vllm_response(response, selected_model)
-                
+                parsed_response = self._parse_nano_vllm_response(
+                    response, selected_model
+                )
+
             else:
                 # Fallback to original vLLM service
                 if self.fallback_service:
                     logger.warning("Using fallback vLLM service")
-                    parsed_response = await self.fallback_service.constitutional_reasoning(request)
+                    parsed_response = (
+                        await self.fallback_service.constitutional_reasoning(request)
+                    )
                 else:
                     raise RuntimeError("No reasoning services available")
-            
+
             # Calculate processing time
             processing_time = (time.time() - start_time) * 1000
             parsed_response.processing_time_ms = processing_time
-            
-            logger.info(f"Constitutional reasoning completed in {processing_time:.2f}ms")
+
+            logger.info(
+                f"Constitutional reasoning completed in {processing_time:.2f}ms"
+            )
             return parsed_response
-            
+
         except Exception as e:
             logger.error(f"Constitutional reasoning failed: {str(e)}")
             # Return error response
@@ -381,7 +423,9 @@ Begin governance decision analysis:
         }
         return domain_templates.get(domain, "constitutional_analysis")
 
-    def _build_reasoning_prompt(self, request: ReasoningRequest, template_key: str) -> str:
+    def _build_reasoning_prompt(
+        self, request: ReasoningRequest, template_key: str
+    ) -> str:
         """Build reasoning prompt from template and request."""
         template = self.reasoning_templates[template_key]
 
@@ -552,7 +596,10 @@ Begin governance decision analysis:
         responses = []
 
         # Try to get responses from multiple models
-        for model_type in [ReasoningModelType.NVIDIA_ACERREASON, ReasoningModelType.MICROSOFT_PHI4]:
+        for model_type in [
+            ReasoningModelType.NVIDIA_ACERREASON,
+            ReasoningModelType.MICROSOFT_PHI4,
+        ]:
             if model_type in self.adapters:
                 try:
                     # Create individual request
@@ -562,7 +609,8 @@ Begin governance decision analysis:
                         context=request.context,
                         reasoning_depth=request.reasoning_depth,
                         require_citations=request.require_citations,
-                        max_tokens=request.max_tokens // 2,  # Split tokens between models
+                        max_tokens=request.max_tokens
+                        // 2,  # Split tokens between models
                     )
 
                     # Get response from this model
@@ -570,7 +618,9 @@ Begin governance decision analysis:
                     responses.append(response)
 
                 except Exception as e:
-                    logger.warning(f"Ensemble model {model_type.value} failed: {str(e)}")
+                    logger.warning(
+                        f"Ensemble model {model_type.value} failed: {str(e)}"
+                    )
 
         if not responses:
             raise RuntimeError("No models available for ensemble reasoning")
@@ -582,7 +632,9 @@ Begin governance decision analysis:
         logger.info(f"Ensemble reasoning completed with {len(responses)} models")
         return combined_response
 
-    def _combine_ensemble_responses(self, responses: List[ReasoningResponse]) -> ReasoningResponse:
+    def _combine_ensemble_responses(
+        self, responses: List[ReasoningResponse]
+    ) -> ReasoningResponse:
         """Combine multiple reasoning responses into a single ensemble response."""
         if not responses:
             raise ValueError("No responses to combine")
@@ -601,7 +653,9 @@ Begin governance decision analysis:
         combined_compliance = {}
         for principle in self.constitutional_principles["core_principles"]:
             principle_name = principle["name"]
-            scores = [r.constitutional_compliance.get(principle_name, 0.75) for r in responses]
+            scores = [
+                r.constitutional_compliance.get(principle_name, 0.75) for r in responses
+            ]
             combined_compliance[principle_name] = sum(scores) / len(scores)
 
         # Combine conclusions
@@ -616,7 +670,9 @@ Begin governance decision analysis:
         combined_citations = []
         for response in responses:
             combined_citations.extend(response.citations)
-        combined_citations = list(set(combined_citations))[:10]  # Remove duplicates, limit to 10
+        combined_citations = list(set(combined_citations))[
+            :10
+        ]  # Remove duplicates, limit to 10
 
         return ReasoningResponse(
             reasoning_chain=combined_reasoning,
@@ -634,7 +690,7 @@ Begin governance decision analysis:
             "service": "nano-vllm-reasoning",
             "healthy": True,
             "models": {},
-            "fallback_available": self.fallback_service is not None
+            "fallback_available": self.fallback_service is not None,
         }
 
         for model_type, adapter in self.adapters.items():
@@ -646,7 +702,7 @@ Begin governance decision analysis:
             except Exception as e:
                 health_status["models"][model_type.value] = {
                     "healthy": False,
-                    "error": str(e)
+                    "error": str(e),
                 }
                 health_status["healthy"] = False
 
@@ -668,7 +724,9 @@ Begin governance decision analysis:
 
 
 # Factory function for easy instantiation
-async def create_nano_vllm_reasoning_service(enable_fallback: bool = True) -> NanoVLLMReasoningService:
+async def create_nano_vllm_reasoning_service(
+    enable_fallback: bool = True,
+) -> NanoVLLMReasoningService:
     """Create and initialize a Nano-vLLM reasoning service."""
     service = NanoVLLMReasoningService(enable_fallback=enable_fallback)
     await service.initialize()
@@ -689,8 +747,8 @@ async def main():
             context={
                 "stakeholders": ["users", "administrators", "developers"],
                 "current_policy": "optional encryption",
-                "compliance_requirements": ["GDPR", "CCPA"]
-            }
+                "compliance_requirements": ["GDPR", "CCPA"],
+            },
         )
 
         # Perform reasoning

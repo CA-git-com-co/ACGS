@@ -17,46 +17,46 @@ import pytest
 
 # tuple of dataset name, available splits and prepared sft files
 DATASETS = [
-    ('aime25', ['test']),
-    ('math-500', ['test']),
-    ('aime24', ['test']),
-    ('amc23', ['test']),
-    ('omni-math', ['test']),
-    ('algebra222', ['test']),
-    ('arena-hard', ['test']),
-    ('mt-bench', ['test']),
-    ('asdiv', ['test']),
-    ('gsm-plus', ['test', 'test_rounded']),
-    ('gsm8k', ['train', 'test']),
-    ('hle', ['math', 'text']),
-    ('human-eval', ['test']),
+    ("aime25", ["test"]),
+    ("math-500", ["test"]),
+    ("aime24", ["test"]),
+    ("amc23", ["test"]),
+    ("omni-math", ["test"]),
+    ("algebra222", ["test"]),
+    ("arena-hard", ["test"]),
+    ("mt-bench", ["test"]),
+    ("asdiv", ["test"]),
+    ("gsm-plus", ["test", "test_rounded"]),
+    ("gsm8k", ["train", "test"]),
+    ("hle", ["math", "text"]),
+    ("human-eval", ["test"]),
     (
-        'livecodebench',
+        "livecodebench",
         [
-            'test_v5_2408_2502',
-            'test_v5_2410_2502',
-            'test_v5_2410_2504',
-            'test_v6_2408_2502',
-            'test_v6_2410_2502',
-            'test_v6_2410_2504',
+            "test_v5_2408_2502",
+            "test_v5_2410_2502",
+            "test_v5_2410_2504",
+            "test_v6_2408_2502",
+            "test_v6_2410_2502",
+            "test_v6_2410_2504",
         ],
     ),
-    ('ifeval', ['test']),
-    ('math', ['train', 'test']),
-    ('math-odyssey', ['test']),
-    ('mawps', ['test']),
-    ('mbpp', ['test']),
-    ('mmlu', ['test', 'dev', 'val']),
-    ('svamp', ['test']),
-    ('answer-judge', ['test']),
-    ('mmlu-pro', ['test']),
-    ('mmlu-redux', ['test']),
-    ('gpqa', ['diamond', 'main', 'extended']),
-    ('minerva_math', ['test']),
-    ('olympiadbench', ['test']),
-    ('gaokao2023en', ['test']),
-    ('college_math', ['test']),
-    ('comp-math-24-25', ['test']),
+    ("ifeval", ["test"]),
+    ("math", ["train", "test"]),
+    ("math-odyssey", ["test"]),
+    ("mawps", ["test"]),
+    ("mbpp", ["test"]),
+    ("mmlu", ["test", "dev", "val"]),
+    ("svamp", ["test"]),
+    ("answer-judge", ["test"]),
+    ("mmlu-pro", ["test"]),
+    ("mmlu-redux", ["test"]),
+    ("gpqa", ["diamond", "main", "extended"]),
+    ("minerva_math", ["test"]),
+    ("olympiadbench", ["test"]),
+    ("gaokao2023en", ["test"]),
+    ("college_math", ["test"]),
+    ("comp-math-24-25", ["test"]),
 ]
 
 
@@ -70,8 +70,12 @@ def test_dataset_init_defaults():
     for dataset, _ in DATASETS:
         try:
             dataset_module = importlib.import_module(f"nemo_skills.dataset.{dataset}")
-            assert hasattr(dataset_module, 'PROMPT_CONFIG'), f"{dataset} is missing PROMPT_CONFIG attribute"
-            assert hasattr(dataset_module, 'DATASET_GROUP'), f"{dataset} is missing DATASET_GROUP attribute"
+            assert hasattr(
+                dataset_module, "PROMPT_CONFIG"
+            ), f"{dataset} is missing PROMPT_CONFIG attribute"
+            assert hasattr(
+                dataset_module, "DATASET_GROUP"
+            ), f"{dataset} is missing DATASET_GROUP attribute"
         except ImportError:
             pytest.skip(f"Dataset module {dataset} not available - skipping")
         assert dataset_module.DATASET_GROUP in [

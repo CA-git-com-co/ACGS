@@ -199,7 +199,9 @@ async def test_stakeholder_engagement():
         # Test 3: Check engagement status
         logger.info("Testing engagement status retrieval...")
 
-        updated_status = await engagement_service.get_engagement_status(test_amendment.id)
+        updated_status = await engagement_service.get_engagement_status(
+            test_amendment.id
+        )
         if updated_status:
             logger.info(
                 f"Updated engagement status: {updated_status.engaged_stakeholders}/{updated_status.total_stakeholders} stakeholders engaged ({updated_status.engagement_rate:.1%})"
@@ -235,14 +237,24 @@ async def test_stakeholder_engagement():
         print("STAKEHOLDER ENGAGEMENT SYSTEM TEST SUMMARY")
         print("=" * 60)
         print(f"Amendment ID: {test_amendment.id}")
-        print(f"Total Stakeholders: {updated_status.total_stakeholders if updated_status else 0}")
+        print(
+            f"Total Stakeholders: {updated_status.total_stakeholders if updated_status else 0}"
+        )
         print(
             f"Engaged Stakeholders: {updated_status.engaged_stakeholders if updated_status else 0}"
         )
-        print(f"Engagement Rate: {updated_status.engagement_rate:.1%}" if updated_status else "0%")
-        print(f"Notifications Sent: {updated_status.notifications_sent if updated_status else 0}")
+        print(
+            f"Engagement Rate: {updated_status.engagement_rate:.1%}"
+            if updated_status
+            else "0%"
+        )
+        print(
+            f"Notifications Sent: {updated_status.notifications_sent if updated_status else 0}"
+        )
         print(f"Feedback Received: {len(all_feedback)}")
-        print(f"Feedback by Role: {updated_status.feedback_by_role if updated_status else {}}")
+        print(
+            f"Feedback by Role: {updated_status.feedback_by_role if updated_status else {}}"
+        )
         print("=" * 60)
 
 

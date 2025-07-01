@@ -104,7 +104,9 @@ class ServiceMetrics:
 
         logger.info(f"Service metrics initialized for {service_name}")
 
-    def record_request(self, endpoint: str, method: str, status_code: int, duration: float):
+    def record_request(
+        self, endpoint: str, method: str, status_code: int, duration: float
+    ):
         """
         Record request metrics.
 
@@ -122,14 +124,18 @@ class ServiceMetrics:
         ).observe(duration)
 
         # Record request count
-        self.request_counter.labels(endpoint=endpoint, method=method, status=status).inc()
+        self.request_counter.labels(
+            endpoint=endpoint, method=method, status=status
+        ).inc()
 
         # Record errors for 4xx and 5xx status codes
         if status_code >= 400:
             error_type = "client_error" if status_code < 500 else "server_error"
             self.error_counter.labels(error_type=error_type, endpoint=endpoint).inc()
 
-    def record_constitutional_validation(self, validation_type: str, result: str, score: float):
+    def record_constitutional_validation(
+        self, validation_type: str, result: str, score: float
+    ):
         """
         Record constitutional validation metrics.
 
@@ -189,7 +195,9 @@ class ServiceMetrics:
                 sample.value for sample in self.request_counter.collect()[0].samples
             )
 
-            total_errors = sum(sample.value for sample in self.error_counter.collect()[0].samples)
+            total_errors = sum(
+                sample.value for sample in self.error_counter.collect()[0].samples
+            )
 
             error_rate = total_errors / total_requests if total_requests > 0 else 0.0
 
@@ -337,7 +345,9 @@ class PerformanceMonitor:
         # Calculate system-wide metrics
         system_error_rate = total_errors / total_requests if total_requests > 0 else 0.0
         avg_compliance = (
-            sum(compliance_scores) / len(compliance_scores) if compliance_scores else 0.0
+            sum(compliance_scores) / len(compliance_scores)
+            if compliance_scores
+            else 0.0
         )
         system_uptime = healthy_services / total_services if total_services > 0 else 0.0
 

@@ -4,18 +4,24 @@ Unit tests for services.core.governance-synthesis.gs_service.app.wina.models
 
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
-from services.core.governance-synthesis.gs_service.app.wina.models import NeuronActivationInput, AnalyzedNeuronActivation, WINAWeightOutput, BatchWINAWeightOutput, GatingThresholdConfig, GatingDecision
-
+from services.core.governance_synthesis.gs_service.app.wina.models import (
+    NeuronActivationInput,
+    AnalyzedNeuronActivation,
+    WINAWeightOutput,
+    BatchWINAWeightOutput,
+    GatingThresholdConfig,
+    GatingDecision,
+)
 
 
 class TestNeuronActivationInput:
     """Test suite for NeuronActivationInput."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -24,12 +30,12 @@ class TestNeuronActivationInput:
 
 class TestAnalyzedNeuronActivation:
     """Test suite for AnalyzedNeuronActivation."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -38,12 +44,12 @@ class TestAnalyzedNeuronActivation:
 
 class TestWINAWeightOutput:
     """Test suite for WINAWeightOutput."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -52,12 +58,12 @@ class TestWINAWeightOutput:
 
 class TestBatchWINAWeightOutput:
     """Test suite for BatchWINAWeightOutput."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -66,12 +72,12 @@ class TestBatchWINAWeightOutput:
 
 class TestGatingThresholdConfig:
     """Test suite for GatingThresholdConfig."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -80,15 +86,13 @@ class TestGatingThresholdConfig:
 
 class TestGatingDecision:
     """Test suite for GatingDecision."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
         pass
-
-

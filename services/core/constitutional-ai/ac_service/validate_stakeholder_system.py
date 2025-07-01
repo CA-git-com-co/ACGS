@@ -92,7 +92,9 @@ def validate_stakeholder_service():
             "StakeholderNotificationService.get_stakeholder_feedback",
         ]
 
-        missing_methods = [method for method in required_methods if method not in methods_found]
+        missing_methods = [
+            method for method in required_methods if method not in methods_found
+        ]
 
         if missing_methods:
             print(f"❌ Missing methods: {missing_methods}")
@@ -177,7 +179,9 @@ def validate_constitutional_council_integration():
 
         # Check for stakeholder service initialization
         if "self.stakeholder_service = StakeholderNotificationService" not in content:
-            print("❌ Missing stakeholder service initialization in Constitutional Council")
+            print(
+                "❌ Missing stakeholder service initialization in Constitutional Council"
+            )
             return False
 
         print("✓ Constitutional Council integration is correct")
@@ -206,7 +210,10 @@ def validate_main_app_integration():
             print("❌ Missing stakeholder engagement router in main app")
             return False
 
-        if "app.include_router" not in content or "stakeholder_engagement_router" not in content:
+        if (
+            "app.include_router" not in content
+            or "stakeholder_engagement_router" not in content
+        ):
             print("❌ Stakeholder engagement router not included in main app")
             return False
 
@@ -269,7 +276,9 @@ def run_validation():
         print("\n🎉 ALL VALIDATIONS PASSED!")
         print("Stakeholder Engagement System is properly implemented and integrated.")
         print("\nKey Features Implemented:")
-        print("- Multi-channel notification system (email, dashboard, webhook, websocket)")
+        print(
+            "- Multi-channel notification system (email, dashboard, webhook, websocket)"
+        )
         print("- Role-based stakeholder management (4 stakeholder roles)")
         print("- Real-time feedback collection and tracking")
         print("- Integration with Constitutional Council StateGraph")
@@ -277,7 +286,9 @@ def run_validation():
         print("- WebSocket support for real-time updates")
         print("- Comprehensive status tracking and reporting")
     else:
-        print(f"\n⚠️  {total - passed} validation(s) failed. Please review the issues above.")
+        print(
+            f"\n⚠️  {total - passed} validation(s) failed. Please review the issues above."
+        )
 
     print("=" * 60)
 

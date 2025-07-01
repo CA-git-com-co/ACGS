@@ -36,10 +36,14 @@ try:
     # sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
     # So we can use src.backend.shared
     from services.shared.database import Base as SharedBase
-    from services.shared import models # This import is crucial to ensure models are registered
+    from services.shared import (
+        models,
+    )  # This import is crucial to ensure models are registered
 
     target_metadata = SharedBase.metadata
-    print(f"Successfully imported Base.metadata from services.shared.database. Number of tables: {len(target_metadata.tables)}")
+    print(
+        f"Successfully imported Base.metadata from services.shared.database. Number of tables: {len(target_metadata.tables)}"
+    )
     table_names = list(target_metadata.tables.keys())
     print(f"Tables found in src.backend.shared.models.Base.metadata: {table_names}")
 
@@ -49,12 +53,14 @@ except ImportError as e:
     print(f"Python path: {sys.path}")
     # Fallback to empty metadata if import fails, to allow some Alembic commands to run
     from sqlalchemy.ext.declarative import declarative_base
+
     Base = declarative_base()
     target_metadata = Base.metadata
     print("Using empty metadata as fallback due to import error.")
 except Exception as e:
     print(f"An unexpected error occurred during model import: {e}")
     from sqlalchemy.ext.declarative import declarative_base
+
     Base = declarative_base()
     target_metadata = Base.metadata
     print("Using empty metadata as fallback due to unexpected error.")
@@ -78,6 +84,7 @@ if config.config_file_name is not None:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
+
 def get_url():
     """
     Constructs the database URL from environment variables.
@@ -93,16 +100,19 @@ def get_url():
         if ini_url and ini_url != "postgresql://user:pass@host/dbname":
             db_url = ini_url
         else:
-            raise ValueError("DATABASE_URL environment variable is not set and alembic.ini has no valid fallback. Alembic requires this to connect to the database.")
-    
+            raise ValueError(
+                "DATABASE_URL environment variable is not set and alembic.ini has no valid fallback. Alembic requires this to connect to the database."
+            )
+
     # Alembic uses synchronous drivers. If DATABASE_URL is for asyncpg, convert it.
     if db_url.startswith("postgresql+asyncpg"):
         db_url = db_url.replace("postgresql+asyncpg", "postgresql", 1)
-    elif db_url.startswith("sqlite+aiosqlite"): # For potential SQLite testing
+    elif db_url.startswith("sqlite+aiosqlite"):  # For potential SQLite testing
         db_url = db_url.replace("sqlite+aiosqlite", "sqlite", 1)
     # Add other replacements here if needed for other async drivers
-    
+
     return db_url
+
 
 # Set the sqlalchemy.url in the Alembic config object
 # This is crucial for Alembic to know where your database is.
@@ -145,14 +155,16 @@ def run_migrations_online() -> None:
 
     """
     connectable = engine_from_config(
-        config.get_section(config.config_ini_section, {}), # Uses sqlalchemy.url from config
+        config.get_section(
+            config.config_ini_section, {}
+        ),  # Uses sqlalchemy.url from config
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, 
+            connection=connection,
             target_metadata=target_metadata,
             # include_schemas=True, # if using multiple schemas
             # compare_type=True, # Detect column type changes

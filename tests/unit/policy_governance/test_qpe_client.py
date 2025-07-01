@@ -4,18 +4,32 @@ Unit tests for services.core.policy-governance.pgc_service.app.services.qpe_clie
 
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
-from services.core.policy-governance.pgc_service.app.services.qpe_client import State, CollapseReason, QuantumPolicy, MeasureResponse, RegisterResponse, ObserveResponse, QPEClient, MockQPEStub, MockResponse, MockResponse, MockResponse, MockResponse, MockResponse, MockResponse
-
+from services.core.policy_governance.pgc_service.app.services.qpe_client import (
+    State,
+    CollapseReason,
+    QuantumPolicy,
+    MeasureResponse,
+    RegisterResponse,
+    ObserveResponse,
+    QPEClient,
+    MockQPEStub,
+    MockResponse,
+    MockResponse,
+    MockResponse,
+    MockResponse,
+    MockResponse,
+    MockResponse,
+)
 
 
 class TestState:
     """Test suite for State."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -24,12 +38,12 @@ class TestState:
 
 class TestCollapseReason:
     """Test suite for CollapseReason."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -38,12 +52,12 @@ class TestCollapseReason:
 
 class TestQuantumPolicy:
     """Test suite for QuantumPolicy."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -52,12 +66,12 @@ class TestQuantumPolicy:
 
 class TestMeasureResponse:
     """Test suite for MeasureResponse."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -66,12 +80,12 @@ class TestMeasureResponse:
 
 class TestRegisterResponse:
     """Test suite for RegisterResponse."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -80,12 +94,12 @@ class TestRegisterResponse:
 
 class TestObserveResponse:
     """Test suite for ObserveResponse."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -94,12 +108,12 @@ class TestObserveResponse:
 
 class TestQPEClient:
     """Test suite for QPEClient."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -110,17 +124,17 @@ class TestQPEClient:
         # TODO: Implement test for get_metrics
         instance = QPEClient()
         # Add test implementation here
-        assert hasattr(instance, 'get_metrics')
+        assert hasattr(instance, "get_metrics")
 
 
 class TestMockQPEStub:
     """Test suite for MockQPEStub."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -129,12 +143,12 @@ class TestMockQPEStub:
 
 class TestMockResponse:
     """Test suite for MockResponse."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -143,12 +157,12 @@ class TestMockResponse:
 
 class TestMockResponse:
     """Test suite for MockResponse."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -157,12 +171,12 @@ class TestMockResponse:
 
 class TestMockResponse:
     """Test suite for MockResponse."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -171,12 +185,12 @@ class TestMockResponse:
 
 class TestMockResponse:
     """Test suite for MockResponse."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -185,12 +199,12 @@ class TestMockResponse:
 
 class TestMockResponse:
     """Test suite for MockResponse."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -199,15 +213,13 @@ class TestMockResponse:
 
 class TestMockResponse:
     """Test suite for MockResponse."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
         pass
-
-

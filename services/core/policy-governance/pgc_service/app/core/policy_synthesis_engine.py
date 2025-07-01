@@ -179,7 +179,9 @@ class PolicySynthesisEngine:
                 await self.multi_model_manager.initialize()
 
                 # Initialize constitutional analyzer
-                self.constitutional_analyzer = await get_enhanced_constitutional_analyzer()
+                self.constitutional_analyzer = (
+                    await get_enhanced_constitutional_analyzer()
+                )
 
                 logger.info("Enhanced components initialized successfully")
             else:
@@ -244,7 +246,9 @@ class PolicySynthesisEngine:
         return EnhancedSynthesisRequest(
             title=legacy_request.get("title", "Untitled Policy"),
             description=legacy_request.get("description", ""),
-            constitutional_principles=legacy_request.get("constitutional_principles", []),
+            constitutional_principles=legacy_request.get(
+                "constitutional_principles", []
+            ),
             domain_context=legacy_request.get("context", {}),
             risk_strategy=risk_strategy,
             enable_chain_of_thought=True,
@@ -276,16 +280,22 @@ class PolicySynthesisEngine:
                 elements = self._decompose_principle(principle, request)
                 decomposed_elements.extend(elements)
 
-                reasoning_chain.append(f"Decomposed into {len(elements)} actionable elements")
+                reasoning_chain.append(
+                    f"Decomposed into {len(elements)} actionable elements"
+                )
 
             # Step 3: Scope and severity analysis
             scope_analysis = self._analyze_scope(request, relevant_principles)
             severity_assessment = self._assess_severity(request, relevant_principles)
 
             # Step 4: Extract invariant conditions
-            invariant_conditions = self._extract_invariants(relevant_principles, request)
+            invariant_conditions = self._extract_invariants(
+                relevant_principles, request
+            )
 
-            reasoning_chain.append(f"Identified {len(invariant_conditions)} invariant conditions")
+            reasoning_chain.append(
+                f"Identified {len(invariant_conditions)} invariant conditions"
+            )
             reasoning_chain.append(f"Scope: {scope_analysis}")
             reasoning_chain.append(f"Severity: {severity_assessment}")
 
@@ -374,7 +384,9 @@ class PolicySynthesisEngine:
         return ConstitutionalPrincipleDecomposition(
             principle_id=f"BASIC-{int(time.time())}",
             principle_text=f"Basic analysis for: {request.title}",
-            decomposed_elements=[f"Apply standard governance rules to: {request.description}"],
+            decomposed_elements=[
+                f"Apply standard governance rules to: {request.description}"
+            ],
             scope_analysis="general",
             severity_assessment="medium",
             invariant_conditions=["Maintain constitutional compliance"],
@@ -427,7 +439,9 @@ class PolicySynthesisEngine:
                 invariants.append("Must treat all parties fairly and without bias")
 
         # Always include constitutional compliance
-        invariants.append(f"Must comply with constitutional hash: {self.constitutional_hash}")
+        invariants.append(
+            f"Must comply with constitutional hash: {self.constitutional_hash}"
+        )
 
         return list(set(invariants))  # Remove duplicates
 
@@ -444,8 +458,12 @@ class PolicySynthesisEngine:
             # Retrieve relevant constitutional context
             relevant_context = {
                 "constitutional_principles": self.constitutional_corpus["principles"],
-                "historical_precedents": self.constitutional_corpus.get("historical_decisions", []),
-                "domain_ontologies": self.constitutional_corpus.get("ontology_schemas", []),
+                "historical_precedents": self.constitutional_corpus.get(
+                    "historical_decisions", []
+                ),
+                "domain_ontologies": self.constitutional_corpus.get(
+                    "ontology_schemas", []
+                ),
                 "constitutional_hash": self.constitutional_hash,
             }
 
@@ -492,7 +510,9 @@ class PolicySynthesisEngine:
 
         return await handler(enhanced_context)
 
-    async def _enhanced_standard_synthesis(self, context: dict[str, Any]) -> dict[str, Any]:
+    async def _enhanced_standard_synthesis(
+        self, context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Enhanced standard synthesis with constitutional awareness."""
         await asyncio.sleep(0.1)  # Simulate faster processing with enhanced context
 
@@ -528,7 +548,9 @@ class PolicySynthesisEngine:
             ],
         }
 
-    async def _enhanced_validation_synthesis_impl(self, context: dict[str, Any]) -> dict[str, Any]:
+    async def _enhanced_validation_synthesis_impl(
+        self, context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Enhanced validation synthesis with constitutional compliance."""
         await asyncio.sleep(0.3)  # Simulate additional validation processing
 
@@ -545,7 +567,9 @@ class PolicySynthesisEngine:
                 "basic_validation": "passed",
                 "enhanced_validation": "passed",
                 "constitutional_check": "compliant",
-                "rag_validation": ("passed" if rag_context.get("rag_enabled") else "skipped"),
+                "rag_validation": (
+                    "passed" if rag_context.get("rag_enabled") else "skipped"
+                ),
                 "invariant_compliance": "verified",
             },
             "constitutional_elements": constitutional_analysis.decomposed_elements,
@@ -592,7 +616,9 @@ class PolicySynthesisEngine:
                 "constitutional_check": "compliant",
                 "multi_model_consensus": "achieved",
                 "consensus_agreement": consensus_score,
-                "rag_validation": ("passed" if rag_context.get("rag_enabled") else "skipped"),
+                "rag_validation": (
+                    "passed" if rag_context.get("rag_enabled") else "skipped"
+                ),
                 "chain_of_thought_validation": "passed",
             },
             "constitutional_elements": constitutional_analysis.decomposed_elements,
@@ -637,7 +663,9 @@ class PolicySynthesisEngine:
                 "multi_model_consensus": "achieved",
                 "human_review": "approved",
                 "expert_validation": "passed",
-                "rag_validation": ("passed" if rag_context.get("rag_enabled") else "skipped"),
+                "rag_validation": (
+                    "passed" if rag_context.get("rag_enabled") else "skipped"
+                ),
             },
             "constitutional_elements": constitutional_analysis.decomposed_elements,
             "reasoning_chain": constitutional_analysis.reasoning_chain,
@@ -720,9 +748,13 @@ class PolicySynthesisEngine:
             if overall_score >= 0.95:
                 recommendations.append("All validation stages passed successfully")
             elif overall_score >= 0.85:
-                recommendations.append("Most validation stages passed - minor issues detected")
+                recommendations.append(
+                    "Most validation stages passed - minor issues detected"
+                )
             else:
-                recommendations.append("Significant validation issues detected - review required")
+                recommendations.append(
+                    "Significant validation issues detected - review required"
+                )
 
             if failed_stages:
                 recommendations.append(f"Failed stages: {', '.join(failed_stages)}")
@@ -838,7 +870,9 @@ class PolicySynthesisEngine:
                 issues.append("Constitutional hash mismatch")
 
             # Check if constitutional elements are addressed
-            constitutional_elements = synthesis_result.get("constitutional_elements", [])
+            constitutional_elements = synthesis_result.get(
+                "constitutional_elements", []
+            )
             if len(constitutional_elements) >= 3:
                 score += 0.3
             elif len(constitutional_elements) >= 1:
@@ -920,7 +954,9 @@ class PolicySynthesisEngine:
             for element in constitutional_analysis.decomposed_elements:
                 principle_keywords.extend(element.lower().split()[:3])
 
-            keyword_matches = sum(1 for keyword in principle_keywords if keyword in policy_content)
+            keyword_matches = sum(
+                1 for keyword in principle_keywords if keyword in policy_content
+            )
             keyword_ratio = keyword_matches / max(len(principle_keywords), 1)
 
             if keyword_ratio >= 0.6:
@@ -986,7 +1022,9 @@ class PolicySynthesisEngine:
             if ENHANCED_COMPONENTS_AVAILABLE:
                 try:
                     # In production, this would call the actual SMT solver
-                    smt_result = await self._mock_smt_verification(policy_rules, proof_obligations)
+                    smt_result = await self._mock_smt_verification(
+                        policy_rules, proof_obligations
+                    )
 
                     if smt_result.get("satisfiable", False):
                         score += 0.6
@@ -1102,11 +1140,15 @@ class PolicySynthesisEngine:
 
         # Calculate final accuracy score
         base_confidence = synthesis_result.get("confidence_score", 0.0)
-        constitutional_alignment = synthesis_result.get("constitutional_alignment_score", 0.0)
+        constitutional_alignment = synthesis_result.get(
+            "constitutional_alignment_score", 0.0
+        )
         validation_score = validation_result.overall_score
 
         final_accuracy = (
-            base_confidence * 0.3 + constitutional_alignment * 0.4 + validation_score * 0.3
+            base_confidence * 0.3
+            + constitutional_alignment * 0.4
+            + validation_score * 0.3
         )
 
         # Determine success status (relaxed criteria for testing)
@@ -1162,7 +1204,8 @@ class PolicySynthesisEngine:
 
             # Update processing time (exponential moving average)
             self.synthesis_metrics["avg_processing_time_ms"] = (
-                self.synthesis_metrics["avg_processing_time_ms"] * 0.9 + processing_time * 0.1
+                self.synthesis_metrics["avg_processing_time_ms"] * 0.9
+                + processing_time * 0.1
             )
 
             # Update success rate
@@ -1193,7 +1236,9 @@ class PolicySynthesisEngine:
                 self.synthesis_metrics["rag_usage"] += 1
 
             # Update validation pipeline success
-            validation_score = result.get("validation_pipeline", {}).get("overall_score", 0.0)
+            validation_score = result.get("validation_pipeline", {}).get(
+                "overall_score", 0.0
+            )
             self.synthesis_metrics["validation_pipeline_success"] = (
                 self.synthesis_metrics.get("validation_pipeline_success", 0.0) * 0.9
                 + validation_score * 0.1
@@ -1228,7 +1273,9 @@ class PolicySynthesisEngine:
         """Legacy standard synthesis method."""
         # Convert to enhanced request if needed
         if isinstance(request, dict):
-            enhanced_request = self._convert_to_enhanced_request(request, RiskStrategy.STANDARD)
+            enhanced_request = self._convert_to_enhanced_request(
+                request, RiskStrategy.STANDARD
+            )
         else:
             enhanced_request = request
 
@@ -1246,7 +1293,9 @@ class PolicySynthesisEngine:
 
         return await self._enhanced_standard_synthesis(context)
 
-    async def _enhanced_validation_synthesis(self, request: dict[str, Any]) -> dict[str, Any]:
+    async def _enhanced_validation_synthesis(
+        self, request: dict[str, Any]
+    ) -> dict[str, Any]:
         """Legacy enhanced validation synthesis method."""
         # Convert to enhanced request if needed
         if isinstance(request, dict):
@@ -1270,7 +1319,9 @@ class PolicySynthesisEngine:
 
         return await self._enhanced_validation_synthesis_impl(context)
 
-    async def _multi_model_consensus_synthesis(self, request: dict[str, Any]) -> dict[str, Any]:
+    async def _multi_model_consensus_synthesis(
+        self, request: dict[str, Any]
+    ) -> dict[str, Any]:
         """Legacy multi-model consensus synthesis method."""
         # Convert to enhanced request if needed
         if isinstance(request, dict):
@@ -1298,7 +1349,9 @@ class PolicySynthesisEngine:
         """Legacy human review synthesis method."""
         # Convert to enhanced request if needed
         if isinstance(request, dict):
-            enhanced_request = self._convert_to_enhanced_request(request, RiskStrategy.HUMAN_REVIEW)
+            enhanced_request = self._convert_to_enhanced_request(
+                request, RiskStrategy.HUMAN_REVIEW
+            )
         else:
             enhanced_request = request
 
@@ -1350,7 +1403,9 @@ class PolicySynthesisEngine:
             else:
                 enhanced_request = synthesis_request
 
-            logger.info(f"Starting enhanced policy synthesis with strategy: {risk_strategy.value}")
+            logger.info(
+                f"Starting enhanced policy synthesis with strategy: {risk_strategy.value}"
+            )
 
             # Phase 1: Chain-of-thought constitutional analysis
             constitutional_analysis = await self._perform_chain_of_thought_analysis(
@@ -1383,7 +1438,9 @@ class PolicySynthesisEngine:
             processing_time = (time.time() - start_time) * 1000
 
             # Update enhanced metrics
-            await self._update_enhanced_metrics(final_result, processing_time, enhanced_request)
+            await self._update_enhanced_metrics(
+                final_result, processing_time, enhanced_request
+            )
 
             # Add performance metadata
             final_result.update(
@@ -1409,7 +1466,9 @@ class PolicySynthesisEngine:
                         "constitutional_alignment": final_result.get(
                             "constitutional_alignment_score", 0.0
                         )
-                        >= self.performance_targets["constitutional_alignment_threshold"],
+                        >= self.performance_targets[
+                            "constitutional_alignment_threshold"
+                        ],
                     },
                 }
             )

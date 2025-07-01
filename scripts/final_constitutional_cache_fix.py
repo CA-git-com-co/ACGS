@@ -23,8 +23,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -32,35 +31,40 @@ logger = logging.getLogger(__name__)
 async def comprehensive_cache_invalidation():
     """Perform comprehensive cache invalidation."""
     logger.info("🧹 Performing comprehensive cache invalidation...")
-    
+
     try:
         # Method 1: Redis FLUSHALL
         import subprocess
-        result = subprocess.run(['redis-cli', 'FLUSHALL'], capture_output=True, text=True)
+
+        result = subprocess.run(
+            ["redis-cli", "FLUSHALL"], capture_output=True, text=True
+        )
         if result.returncode == 0:
             logger.info("✅ Redis FLUSHALL completed successfully")
         else:
             logger.warning(f"⚠️ Redis FLUSHALL failed: {result.stderr}")
-        
+
         # Method 2: Clear multi-level cache programmatically
         from services.shared.multi_level_cache import MultiLevelCacheManager
+
         config = {"constitutional_hash": "cdd01ef066bc6cf2"}
         cache_manager = MultiLevelCacheManager(config=config)
         await cache_manager.initialize()
-        
+
         # Clear all cache levels
         await cache_manager.clear_all_caches()
         logger.info("✅ Multi-level cache cleared programmatically")
-        
+
         # Method 3: Clear constitutional cache
         from services.shared.constitutional_cache import ConstitutionalCache
+
         const_cache = ConstitutionalCache()
         await const_cache.initialize()
         await const_cache.invalidate_cache()
         logger.info("✅ Constitutional cache cleared")
-        
+
         return True
-        
+
     except Exception as e:
         logger.error(f"❌ Cache invalidation failed: {e}")
         return False
@@ -69,28 +73,33 @@ async def comprehensive_cache_invalidation():
 async def verify_constitutional_compliance_fix():
     """Verify that the constitutional compliance fix is working."""
     logger.info("🔍 Verifying constitutional compliance fix...")
-    
+
     try:
-        from services.shared.multimodal_ai_service import get_multimodal_service, MultimodalRequest, RequestType, ContentType
-        
+        from services.shared.multimodal_ai_service import (
+            get_multimodal_service,
+            MultimodalRequest,
+            RequestType,
+            ContentType,
+        )
+
         service = await get_multimodal_service()
-        
+
         # Test the specific democratic content
         test_content = "Citizens have the right to participate in democratic processes and transparent governance."
-        
+
         # Create a unique request to avoid any cache hits
         request = MultimodalRequest(
             request_id=f"final_verification_{int(time.time())}",
             request_type=RequestType.CONSTITUTIONAL_VALIDATION,
             content_type=ContentType.TEXT_ONLY,
             text_content=test_content,
-            priority="high"
+            priority="high",
         )
-        
+
         response = await service.process_request(request)
-        
+
         success = response.constitutional_compliance == True
-        
+
         if success:
             logger.info("✅ Constitutional compliance verification PASSED")
             logger.info(f"   Content: {test_content[:50]}...")
@@ -100,11 +109,13 @@ async def verify_constitutional_compliance_fix():
             logger.info(f"   Constitutional Hash: {response.constitutional_hash}")
         else:
             logger.error("❌ Constitutional compliance verification FAILED")
-            logger.error(f"   Expected: True, Actual: {response.constitutional_compliance}")
+            logger.error(
+                f"   Expected: True, Actual: {response.constitutional_compliance}"
+            )
             logger.error(f"   Confidence: {response.confidence_score:.3f}")
-        
+
         return success
-        
+
     except Exception as e:
         logger.error(f"❌ Constitutional compliance verification failed: {e}")
         return False
@@ -113,48 +124,50 @@ async def verify_constitutional_compliance_fix():
 async def run_integration_test():
     """Run the DeepSeek R1 integration test."""
     logger.info("🚀 Running DeepSeek R1 integration test...")
-    
+
     try:
         import subprocess
         import json
-        
+
         # Run the integration test
         result = subprocess.run(
-            ['python', 'scripts/test_deepseek_r1_integration.py'],
-            cwd='/home/ubuntu/ACGS',
+            ["python", "scripts/test_deepseek_r1_integration.py"],
+            cwd="/home/ubuntu/ACGS",
             capture_output=True,
             text=True,
-            timeout=120
+            timeout=120,
         )
-        
+
         if result.returncode == 0:
             # Parse the output to extract success rate
-            output_lines = result.stdout.split('\n')
+            output_lines = result.stdout.split("\n")
             success_rate = None
             constitutional_compliance = None
-            
+
             for line in output_lines:
-                if 'Success Rate:' in line:
-                    success_rate = line.split('Success Rate:')[1].strip()
-                elif 'Constitutional Compliance:' in line and 'accuracy' in line:
+                if "Success Rate:" in line:
+                    success_rate = line.split("Success Rate:")[1].strip()
+                elif "Constitutional Compliance:" in line and "accuracy" in line:
                     constitutional_compliance = line.strip()
-            
+
             logger.info("✅ Integration test completed successfully")
             logger.info(f"   Success Rate: {success_rate}")
             logger.info(f"   {constitutional_compliance}")
-            
+
             # Check if we achieved 100% success rate
-            if success_rate and '100.0%' in success_rate:
+            if success_rate and "100.0%" in success_rate:
                 logger.info("🎉 ACHIEVED 100% SUCCESS RATE!")
                 return True
             else:
                 logger.warning(f"⚠️ Success rate not 100%: {success_rate}")
                 return False
         else:
-            logger.error(f"❌ Integration test failed with return code {result.returncode}")
+            logger.error(
+                f"❌ Integration test failed with return code {result.returncode}"
+            )
             logger.error(f"   Error output: {result.stderr}")
             return False
-            
+
     except Exception as e:
         logger.error(f"❌ Integration test execution failed: {e}")
         return False
@@ -164,36 +177,36 @@ async def main():
     """Main execution function."""
     logger.info("🏛️ Final Constitutional Compliance Cache Fix")
     logger.info("=" * 70)
-    
+
     start_time = time.time()
-    
+
     # Step 1: Comprehensive cache invalidation
     logger.info("\n📋 Step 1: Comprehensive Cache Invalidation")
     cache_success = await comprehensive_cache_invalidation()
-    
+
     if not cache_success:
         logger.error("❌ Cache invalidation failed - aborting")
         return 1
-    
+
     # Step 2: Verify constitutional compliance fix
     logger.info("\n📋 Step 2: Verify Constitutional Compliance Fix")
     compliance_success = await verify_constitutional_compliance_fix()
-    
+
     if not compliance_success:
         logger.error("❌ Constitutional compliance verification failed - aborting")
         return 1
-    
+
     # Step 3: Run integration test
     logger.info("\n📋 Step 3: Run Integration Test")
     test_success = await run_integration_test()
-    
+
     total_time = time.time() - start_time
-    
+
     # Final results
     logger.info("\n" + "=" * 70)
     logger.info("🎯 FINAL RESULTS")
     logger.info("=" * 70)
-    
+
     if test_success:
         logger.info("🎉 SUCCESS! 100% Production Readiness Achieved!")
         logger.info("✅ All integration tests passing (7/7)")
@@ -204,7 +217,7 @@ async def main():
         logger.info("✅ Enhanced compliance algorithm working correctly")
         logger.info("✅ Cache invalidation strategy implemented")
         logger.info(f"⏱️ Total time: {total_time:.2f} seconds")
-        
+
         logger.info("\n🚀 ACGS-PGP System Status: PRODUCTION READY")
         return 0
     else:

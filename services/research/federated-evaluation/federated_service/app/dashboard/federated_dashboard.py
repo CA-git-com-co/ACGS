@@ -86,7 +86,9 @@ def create_dashboard_layout():
                                 [
                                     dbc.CardBody(
                                         [
-                                            html.H4("Active Nodes", className="card-title"),
+                                            html.H4(
+                                                "Active Nodes", className="card-title"
+                                            ),
                                             html.H2(
                                                 id="active-nodes-count",
                                                 children="0",
@@ -109,7 +111,9 @@ def create_dashboard_layout():
                                 [
                                     dbc.CardBody(
                                         [
-                                            html.H4("Privacy Budget", className="card-title"),
+                                            html.H4(
+                                                "Privacy Budget", className="card-title"
+                                            ),
                                             html.H2(
                                                 id="privacy-budget-remaining",
                                                 children="0%",
@@ -132,7 +136,9 @@ def create_dashboard_layout():
                                 [
                                     dbc.CardBody(
                                         [
-                                            html.H4("Success Rate", className="card-title"),
+                                            html.H4(
+                                                "Success Rate", className="card-title"
+                                            ),
                                             html.H2(
                                                 id="success-rate",
                                                 children="0%",
@@ -186,7 +192,9 @@ def create_dashboard_layout():
                             dbc.Card(
                                 [
                                     dbc.CardHeader("Evaluation Performance Over Time"),
-                                    dbc.CardBody([dcc.Graph(id="performance-timeline")]),
+                                    dbc.CardBody(
+                                        [dcc.Graph(id="performance-timeline")]
+                                    ),
                                 ]
                             )
                         ],
@@ -214,7 +222,9 @@ def create_dashboard_layout():
                             dbc.Card(
                                 [
                                     dbc.CardHeader("Privacy Budget Usage"),
-                                    dbc.CardBody([dcc.Graph(id="privacy-budget-chart")]),
+                                    dbc.CardBody(
+                                        [dcc.Graph(id="privacy-budget-chart")]
+                                    ),
                                 ]
                             )
                         ],

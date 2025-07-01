@@ -74,7 +74,9 @@ async def test_db_engine():
 @pytest.fixture
 async def test_db_session(test_db_engine) -> AsyncGenerator[AsyncSession, None]:
     """Create test database session."""
-    async_session = sessionmaker(test_db_engine, class_=AsyncSession, expire_on_commit=False)
+    async_session = sessionmaker(
+        test_db_engine, class_=AsyncSession, expire_on_commit=False
+    )
 
     async with async_session() as session:
         yield session
@@ -280,7 +282,9 @@ def mock_openai_client():
     mock_client.chat.completions.create.return_value = MagicMock(
         choices=[
             MagicMock(
-                message=MagicMock(content='{"improvement_type": "performance", "confidence": 0.85}')
+                message=MagicMock(
+                    content='{"improvement_type": "performance", "confidence": 0.85}'
+                )
             )
         ]
     )
@@ -292,7 +296,9 @@ def mock_anthropic_client():
     """Mock Anthropic client for testing."""
     mock_client = AsyncMock()
     mock_client.messages.create.return_value = MagicMock(
-        content=[MagicMock(text='{"analysis": "code_optimization", "risk_level": "low"}')]
+        content=[
+            MagicMock(text='{"analysis": "code_optimization", "risk_level": "low"}')
+        ]
     )
     return mock_client
 
@@ -364,5 +370,8 @@ def pytest_collection_modifyitems(config, items):
             item.add_marker(pytest.mark.e2e)
 
         # Add slow marker for tests that might be slow
-        if any(keyword in item.name.lower() for keyword in ["performance", "load", "stress"]):
+        if any(
+            keyword in item.name.lower()
+            for keyword in ["performance", "load", "stress"]
+        ):
             item.add_marker(pytest.mark.slow)

@@ -50,7 +50,9 @@ class ConstitutionalPrivacyEngine:
         try:
             errors = ModuleValidator.validate(self.model, strict=False)
             if errors:
-                logger.warning(f"Model validation warnings for differential privacy: {errors}")
+                logger.warning(
+                    f"Model validation warnings for differential privacy: {errors}"
+                )
                 # Fix common issues automatically
                 self._fix_model_for_privacy()
 
@@ -65,7 +67,9 @@ class ConstitutionalPrivacyEngine:
         try:
             # Replace unsupported layers
             ModuleValidator.fix(self.model)
-            logger.info("Model automatically fixed for differential privacy compatibility")
+            logger.info(
+                "Model automatically fixed for differential privacy compatibility"
+            )
         except Exception as e:
             logger.warning(f"Automatic model fixing failed: {e}")
 
@@ -90,14 +94,16 @@ class ConstitutionalPrivacyEngine:
             )
 
             # Make model, optimizer, and data loader private
-            model, optimizer, data_loader = self.privacy_engine.make_private_with_epsilon(
-                module=model,
-                optimizer=optimizer,
-                data_loader=data_loader,
-                epochs=self.config.num_epochs,
-                target_epsilon=self.target_epsilon,
-                target_delta=self.target_delta,
-                max_grad_norm=self.max_grad_norm,
+            model, optimizer, data_loader = (
+                self.privacy_engine.make_private_with_epsilon(
+                    module=model,
+                    optimizer=optimizer,
+                    data_loader=data_loader,
+                    epochs=self.config.num_epochs,
+                    target_epsilon=self.target_epsilon,
+                    target_delta=self.target_delta,
+                    max_grad_norm=self.max_grad_norm,
+                )
             )
 
             # Log privacy parameters
@@ -190,7 +196,9 @@ class ConstitutionalPrivacyEngine:
         # Determine status
         if budget_status["budget_utilization"] >= budget_status["critical_threshold"]:
             budget_status["status"] = "critical"
-            budget_status["message"] = "Privacy budget critically low - training should be halted"
+            budget_status["message"] = (
+                "Privacy budget critically low - training should be halted"
+            )
         elif budget_status["budget_utilization"] >= budget_status["warning_threshold"]:
             budget_status["status"] = "warning"
             budget_status["message"] = "Privacy budget running low - monitor closely"
@@ -200,7 +208,9 @@ class ConstitutionalPrivacyEngine:
 
         return budget_status
 
-    def validate_constitutional_privacy_compliance(self, training_data: Any) -> Dict[str, Any]:
+    def validate_constitutional_privacy_compliance(
+        self, training_data: Any
+    ) -> Dict[str, Any]:
         """Validate that privacy measures comply with constitutional requirements."""
 
         compliance_check = {
@@ -277,7 +287,9 @@ class ConstitutionalPrivacyEngine:
         return metrics
 
     def create_batch_memory_manager(
-        self, data_loader: torch.utils.data.DataLoader, max_physical_batch_size: int = 32
+        self,
+        data_loader: torch.utils.data.DataLoader,
+        max_physical_batch_size: int = 32,
     ) -> BatchMemoryManager:
         """Create batch memory manager for large logical batch sizes."""
 
@@ -339,7 +351,10 @@ class ConstitutionalPrivacyEngine:
                         "constitutional_hash": self.constitutional_hash,
                     }
 
-            return {"accountant_type": "unknown", "constitutional_hash": self.constitutional_hash}
+            return {
+                "accountant_type": "unknown",
+                "constitutional_hash": self.constitutional_hash,
+            }
 
         except Exception as e:
             logger.error(f"Failed to get privacy accountant state: {e}")
@@ -363,7 +378,10 @@ class ConstitutionalPrivacyEngine:
                 # Log the reset event
                 self.log_privacy_event(
                     "accountant_reset",
-                    {"reason": "manual_reset", "constitutional_hash": self.constitutional_hash},
+                    {
+                        "reason": "manual_reset",
+                        "constitutional_hash": self.constitutional_hash,
+                    },
                 )
 
         except Exception as e:

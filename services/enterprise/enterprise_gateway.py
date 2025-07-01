@@ -124,7 +124,9 @@ class EnterpriseResourceManager:
                 quota = ResourceQuota(
                     tenant_id=row["tenant_id"],
                     max_requests_per_minute=config.get("max_requests_per_minute", 1000),
-                    max_concurrent_connections=config.get("max_concurrent_connections", 100),
+                    max_concurrent_connections=config.get(
+                        "max_concurrent_connections", 100
+                    ),
                     max_storage_gb=config.get("max_storage_gb", 100),
                     max_governance_actions_per_hour=config.get(
                         "max_governance_actions_per_hour", 500
@@ -175,13 +177,19 @@ class EnterpriseResourceManager:
     async def acquire_connection(self, tenant_id: str):
         """Acquire connection for tenant"""
         self.connection_pools[tenant_id] = self.connection_pools.get(tenant_id, 0) + 1
-        active_connections.labels(tenant_id=tenant_id).set(self.connection_pools[tenant_id])
+        active_connections.labels(tenant_id=tenant_id).set(
+            self.connection_pools[tenant_id]
+        )
 
     async def release_connection(self, tenant_id: str):
         """Release connection for tenant"""
         if tenant_id in self.connection_pools:
-            self.connection_pools[tenant_id] = max(0, self.connection_pools[tenant_id] - 1)
-            active_connections.labels(tenant_id=tenant_id).set(self.connection_pools[tenant_id])
+            self.connection_pools[tenant_id] = max(
+                0, self.connection_pools[tenant_id] - 1
+            )
+            active_connections.labels(tenant_id=tenant_id).set(
+                self.connection_pools[tenant_id]
+            )
 
     async def get_resource_usage(self, tenant_id: str) -> dict[str, float]:
         """Get current resource usage for tenant"""
@@ -218,7 +226,9 @@ class EnterpriseResourceManager:
                 usage["governance_actions_last_hour"] = int(governance_result or 0)
 
             # Cache for 5 minutes
-            await self.redis_client.setex(f"resource_usage:{tenant_id}", 300, json.dumps(usage))
+            await self.redis_client.setex(
+                f"resource_usage:{tenant_id}", 300, json.dumps(usage)
+            )
 
         return usage
 
@@ -245,7 +255,9 @@ class EnterpriseLoadBalancer:
                 self.service_health[service_name][endpoint] = True
                 self.service_load[service_name][endpoint] = 0.0
 
-    async def get_best_endpoint(self, service_name: str, tenant_priority: int = 5) -> str | None:
+    async def get_best_endpoint(
+        self, service_name: str, tenant_priority: int = 5
+    ) -> str | None:
         """Get best endpoint for service based on health and load"""
         if service_name not in self.service_endpoints:
             return None
@@ -265,7 +277,10 @@ class EnterpriseLoadBalancer:
 
     async def update_service_load(self, service_name: str, endpoint: str, load: float):
         """Update service load metrics"""
-        if service_name in self.service_load and endpoint in self.service_load[service_name]:
+        if (
+            service_name in self.service_load
+            and endpoint in self.service_load[service_name]
+        ):
             self.service_load[service_name][endpoint] = load
 
     async def health_check_service(self, service_name: str, endpoint: str) -> bool:
@@ -336,12 +351,18 @@ class EnterpriseAPIGateway:
             tenant_id = request.headers.get("X-Tenant-ID", "default")
 
             # Check rate limits
-            if not await self.resource_manager.check_rate_limit(tenant_id, request.url.path):
-                return JSONResponse(status_code=429, content={"error": "Rate limit exceeded"})
+            if not await self.resource_manager.check_rate_limit(
+                tenant_id, request.url.path
+            ):
+                return JSONResponse(
+                    status_code=429, content={"error": "Rate limit exceeded"}
+                )
 
             # Check connection limits
             if not await self.resource_manager.check_connection_limit(tenant_id):
-                return JSONResponse(status_code=503, content={"error": "Connection limit exceeded"})
+                return JSONResponse(
+                    status_code=503, content={"error": "Connection limit exceeded"}
+                )
 
             # Acquire connection
             await self.resource_manager.acquire_connection(tenant_id)
@@ -436,7 +457,9 @@ class EnterpriseAPIGateway:
                 return JSONResponse(
                     content=(
                         response.json()
-                        if response.headers.get("content-type", "").startswith("application/json")
+                        if response.headers.get("content-type", "").startswith(
+                            "application/json"
+                        )
                         else response.text
                     ),
                     status_code=response.status_code,

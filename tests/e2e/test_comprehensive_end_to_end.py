@@ -35,12 +35,16 @@ import aiohttp
 from playwright.async_api import async_playwright, Page, Browser
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
+
 
 @dataclass
 class E2ETestMetrics:
     """Comprehensive test metrics for performance and compliance validation."""
+
     start_time: float
     end_time: float
     total_duration: float
@@ -51,19 +55,22 @@ class E2ETestMetrics:
     constitutional_compliance_score: float
     security_validation_score: float
 
+
 @dataclass
 class ServiceEndpoint:
     """Service endpoint configuration."""
+
     name: str
     port: int
     base_url: str
     health_endpoint: str
     key_endpoints: List[str]
 
+
 class ACGSEndToEndTestSuite:
     """
     Comprehensive end-to-end test suite for ACGS-1 Constitutional Governance System.
-    
+
     This test suite validates the complete governance workflow including:
     - Service orchestration and communication
     - Blockchain program deployment and interaction
@@ -83,35 +90,83 @@ class ACGSEndToEndTestSuite:
             success_rate=0,
             failed_tests=[],
             constitutional_compliance_score=0,
-            security_validation_score=0
+            security_validation_score=0,
         )
-        
+
         # Service configuration
         self.services = {
-            "auth": ServiceEndpoint("auth_service", 8000, "http://localhost:8000", "/health", ["/auth/login", "/auth/register"]),
-            "ac": ServiceEndpoint("ac_service", 8001, "http://localhost:8001", "/health", ["/api/v1/principles", "/api/v1/constitutional-council"]),
-            "integrity": ServiceEndpoint("integrity_service", 8002, "http://localhost:8002", "/health", ["/api/v1/integrity", "/api/v1/audit"]),
-            "fv": ServiceEndpoint("fv_service", 8003, "http://localhost:8003", "/health", ["/api/v1/verify", "/api/v1/validation"]),
-            "gs": ServiceEndpoint("gs_service", 8004, "http://localhost:8004", "/health", ["/api/v1/synthesize", "/api/v1/policies"]),
-            "pgc": ServiceEndpoint("pgc_service", 8005, "http://localhost:8005", "/health", ["/api/v1/compliance", "/api/v1/enforcement"]),
-            "ec": ServiceEndpoint("ec_service", 8006, "http://localhost:8006", "/health", ["/api/v1/evolution", "/api/v1/optimization"]),
-            "dgm": ServiceEndpoint("dgm_service", 8007, "http://localhost:8007", "/health", ["/api/v1/self-evolution", "/api/v1/bandit"])
+            "auth": ServiceEndpoint(
+                "auth_service",
+                8000,
+                "http://localhost:8000",
+                "/health",
+                ["/auth/login", "/auth/register"],
+            ),
+            "ac": ServiceEndpoint(
+                "ac_service",
+                8001,
+                "http://localhost:8001",
+                "/health",
+                ["/api/v1/principles", "/api/v1/constitutional-council"],
+            ),
+            "integrity": ServiceEndpoint(
+                "integrity_service",
+                8002,
+                "http://localhost:8002",
+                "/health",
+                ["/api/v1/integrity", "/api/v1/audit"],
+            ),
+            "fv": ServiceEndpoint(
+                "fv_service",
+                8003,
+                "http://localhost:8003",
+                "/health",
+                ["/api/v1/verify", "/api/v1/validation"],
+            ),
+            "gs": ServiceEndpoint(
+                "gs_service",
+                8004,
+                "http://localhost:8004",
+                "/health",
+                ["/api/v1/synthesize", "/api/v1/policies"],
+            ),
+            "pgc": ServiceEndpoint(
+                "pgc_service",
+                8005,
+                "http://localhost:8005",
+                "/health",
+                ["/api/v1/compliance", "/api/v1/enforcement"],
+            ),
+            "ec": ServiceEndpoint(
+                "ec_service",
+                8006,
+                "http://localhost:8006",
+                "/health",
+                ["/api/v1/evolution", "/api/v1/optimization"],
+            ),
+            "dgm": ServiceEndpoint(
+                "dgm_service",
+                8007,
+                "http://localhost:8007",
+                "/health",
+                ["/api/v1/self-evolution", "/api/v1/bandit"],
+            ),
         }
-        
+
         # Test configuration
         self.test_config = {
             "max_response_time_ms": 500,
             "max_blockchain_cost_sol": 0.01,
             "min_success_rate": 0.9,
             "constitutional_hash": "cdd01ef066bc6cf2",
-            "test_timeout_seconds": 300
+            "test_timeout_seconds": 300,
         }
-        
+
         # Test data
         self.test_users = []
         self.test_policies = []
         self.test_proposals = []
-        
+
         # Browser instance for frontend testing
         self.browser: Optional[Browser] = None
         self.page: Optional[Page] = None
@@ -119,37 +174,37 @@ class ACGSEndToEndTestSuite:
     async def setup_test_environment(self) -> bool:
         """
         Set up the complete test environment including services, blockchain, and frontend.
-        
+
         # requires: System resources available, network connectivity
         # ensures: All services running, blockchain deployed, frontend accessible
         # sha256: setup_env_v3.0
         """
         logger.info("🚀 Setting up ACGS-1 comprehensive test environment...")
-        
+
         try:
             # Phase 1: Validate service health
             if not await self._validate_service_health():
                 logger.error("❌ Service health validation failed")
                 return False
-            
+
             # Phase 2: Initialize blockchain programs
             if not await self._initialize_blockchain():
                 logger.error("❌ Blockchain initialization failed")
                 return False
-            
+
             # Phase 3: Setup frontend automation
             if not await self._setup_frontend_automation():
                 logger.error("❌ Frontend automation setup failed")
                 return False
-            
+
             # Phase 4: Create test data
             if not await self._create_test_data():
                 logger.error("❌ Test data creation failed")
                 return False
-            
+
             logger.info("✅ Test environment setup completed successfully")
             return True
-            
+
         except Exception as e:
             logger.error(f"❌ Test environment setup failed: {str(e)}")
             return False
@@ -157,73 +212,83 @@ class ACGSEndToEndTestSuite:
     async def _validate_service_health(self) -> bool:
         """Validate health of all core services."""
         logger.info("🏥 Validating service health...")
-        
+
         healthy_services = 0
         total_services = len(self.services)
-        
+
         for service_name, service in self.services.items():
             try:
                 start_time = time.time()
-                response = requests.get(f"{service.base_url}{service.health_endpoint}", timeout=5)
+                response = requests.get(
+                    f"{service.base_url}{service.health_endpoint}", timeout=5
+                )
                 response_time = (time.time() - start_time) * 1000
-                
+
                 self.metrics.service_response_times[service_name] = response_time
-                
+
                 if response.status_code == 200:
                     logger.info(f"  ✅ {service_name}: Healthy ({response_time:.2f}ms)")
                     healthy_services += 1
                 else:
                     logger.error(f"  ❌ {service_name}: HTTP {response.status_code}")
                     self.metrics.failed_tests.append(f"Service health: {service_name}")
-                    
+
             except Exception as e:
                 logger.error(f"  ❌ {service_name}: {str(e)}")
                 self.metrics.failed_tests.append(f"Service health: {service_name}")
-        
+
         success_rate = healthy_services / total_services
-        logger.info(f"Service health: {healthy_services}/{total_services} ({success_rate:.1%})")
-        
+        logger.info(
+            f"Service health: {healthy_services}/{total_services} ({success_rate:.1%})"
+        )
+
         return success_rate >= self.test_config["min_success_rate"]
 
     async def _initialize_blockchain(self) -> bool:
         """Initialize Solana blockchain programs."""
         logger.info("⛓️ Initializing blockchain programs...")
-        
+
         try:
             # This would typically involve:
             # 1. Deploy programs to devnet
             # 2. Initialize governance accounts
             # 3. Set up constitutional principles
             # 4. Validate program deployment
-            
+
             # For now, we'll simulate blockchain initialization
             # In a real implementation, this would use Anchor/Solana Web3.js
-            
+
             blockchain_operations = [
                 "deploy_quantumagi_core",
-                "deploy_appeals_program", 
+                "deploy_appeals_program",
                 "deploy_logging_program",
                 "initialize_governance",
-                "setup_constitutional_principles"
+                "setup_constitutional_principles",
             ]
-            
+
             for operation in blockchain_operations:
                 start_time = time.time()
                 # Simulate blockchain operation
                 await asyncio.sleep(0.1)  # Simulate network delay
                 operation_time = time.time() - start_time
-                
+
                 # Simulate cost (in SOL)
                 simulated_cost = 0.005  # 0.005 SOL per operation
                 self.metrics.blockchain_costs[operation] = simulated_cost
-                
-                logger.info(f"  ✅ {operation}: {operation_time*1000:.2f}ms, {simulated_cost:.6f} SOL")
-            
+
+                logger.info(
+                    f"  ✅ {operation}: {operation_time*1000:.2f}ms, {simulated_cost:.6f} SOL"
+                )
+
             total_cost = sum(self.metrics.blockchain_costs.values())
-            logger.info(f"Blockchain initialization completed: {total_cost:.6f} SOL total")
-            
-            return total_cost <= self.test_config["max_blockchain_cost_sol"] * 5  # Allow 5x for setup
-            
+            logger.info(
+                f"Blockchain initialization completed: {total_cost:.6f} SOL total"
+            )
+
+            return (
+                total_cost <= self.test_config["max_blockchain_cost_sol"] * 5
+            )  # Allow 5x for setup
+
         except Exception as e:
             logger.error(f"❌ Blockchain initialization failed: {str(e)}")
             return False
@@ -231,21 +296,21 @@ class ACGSEndToEndTestSuite:
     async def _setup_frontend_automation(self) -> bool:
         """Setup Playwright browser automation for frontend testing."""
         logger.info("🌐 Setting up frontend automation...")
-        
+
         try:
             playwright = await async_playwright().start()
             self.browser = await playwright.chromium.launch(headless=True)
             self.page = await self.browser.new_page()
-            
+
             # Navigate to governance dashboard
             await self.page.goto("http://localhost:3000")  # Assuming Next.js dev server
-            
+
             # Wait for page to load
             await self.page.wait_for_load_state("networkidle")
-            
+
             logger.info("✅ Frontend automation setup completed")
             return True
-            
+
         except Exception as e:
             logger.error(f"❌ Frontend automation setup failed: {str(e)}")
             return False
@@ -253,34 +318,44 @@ class ACGSEndToEndTestSuite:
     async def _create_test_data(self) -> bool:
         """Create test users, policies, and proposals."""
         logger.info("📊 Creating test data...")
-        
+
         try:
             # Create test users with different roles
             self.test_users = [
                 {"username": "admin_user", "role": "admin", "email": "admin@acgs.test"},
-                {"username": "council_member", "role": "council", "email": "council@acgs.test"},
-                {"username": "citizen_user", "role": "citizen", "email": "citizen@acgs.test"}
+                {
+                    "username": "council_member",
+                    "role": "council",
+                    "email": "council@acgs.test",
+                },
+                {
+                    "username": "citizen_user",
+                    "role": "citizen",
+                    "email": "citizen@acgs.test",
+                },
             ]
-            
+
             # Create test policies
             self.test_policies = [
                 {
                     "title": "Privacy Protection Policy",
                     "domain": "privacy",
                     "principles": ["transparency", "user_consent", "data_minimization"],
-                    "complexity": "medium"
+                    "complexity": "medium",
                 },
                 {
-                    "title": "AI Ethics Guidelines", 
+                    "title": "AI Ethics Guidelines",
                     "domain": "ethics",
                     "principles": ["fairness", "accountability", "human_oversight"],
-                    "complexity": "high"
-                }
+                    "complexity": "high",
+                },
             ]
-            
-            logger.info(f"✅ Created {len(self.test_users)} test users and {len(self.test_policies)} test policies")
+
+            logger.info(
+                f"✅ Created {len(self.test_users)} test users and {len(self.test_policies)} test policies"
+            )
             return True
-            
+
         except Exception as e:
             logger.error(f"❌ Test data creation failed: {str(e)}")
             return False
@@ -345,27 +420,37 @@ class ACGSEndToEndTestSuite:
                 return False
 
             # Step 2: Create constitutional principles
-            principles_created = await self._create_constitutional_principles(auth_token)
+            principles_created = await self._create_constitutional_principles(
+                auth_token
+            )
             if not principles_created:
                 return False
 
             # Step 3: Policy synthesis
-            policy_synthesized = await self._synthesize_policy(auth_token, self.test_policies[0])
+            policy_synthesized = await self._synthesize_policy(
+                auth_token, self.test_policies[0]
+            )
             if not policy_synthesized:
                 return False
 
             # Step 4: Multi-model validation
-            validation_passed = await self._validate_policy_multi_model(auth_token, policy_synthesized)
+            validation_passed = await self._validate_policy_multi_model(
+                auth_token, policy_synthesized
+            )
             if not validation_passed:
                 return False
 
             # Step 5: Stakeholder consensus
-            consensus_achieved = await self._build_stakeholder_consensus(auth_token, policy_synthesized)
+            consensus_achieved = await self._build_stakeholder_consensus(
+                auth_token, policy_synthesized
+            )
             if not consensus_achieved:
                 return False
 
             # Step 6: Policy deployment
-            deployment_success = await self._deploy_policy_to_blockchain(auth_token, policy_synthesized)
+            deployment_success = await self._deploy_policy_to_blockchain(
+                auth_token, policy_synthesized
+            )
             if not deployment_success:
                 return False
 
@@ -385,7 +470,7 @@ class ACGSEndToEndTestSuite:
             register_response = requests.post(
                 f"{self.services['auth'].base_url}/auth/register",
                 json=user_data,
-                timeout=5
+                timeout=5,
             )
 
             # Login user
@@ -393,24 +478,32 @@ class ACGSEndToEndTestSuite:
                 f"{self.services['auth'].base_url}/auth/login",
                 data={
                     "username": user_data["username"],
-                    "password": "test_password_123"  # Default test password
+                    "password": "test_password_123",  # Default test password
                 },
-                timeout=5
+                timeout=5,
             )
 
             response_time = (time.time() - start_time) * 1000
-            self.metrics.service_response_times[f"auth_login_{user_data['username']}"] = response_time
+            self.metrics.service_response_times[
+                f"auth_login_{user_data['username']}"
+            ] = response_time
 
             if login_response.status_code == 200:
                 token_data = login_response.json()
-                logger.info(f"  ✅ User {user_data['username']} authenticated ({response_time:.2f}ms)")
+                logger.info(
+                    f"  ✅ User {user_data['username']} authenticated ({response_time:.2f}ms)"
+                )
                 return token_data.get("access_token")
             else:
-                logger.error(f"  ❌ Authentication failed for {user_data['username']}: HTTP {login_response.status_code}")
+                logger.error(
+                    f"  ❌ Authentication failed for {user_data['username']}: HTTP {login_response.status_code}"
+                )
                 return None
 
         except Exception as e:
-            logger.error(f"❌ Authentication error for {user_data['username']}: {str(e)}")
+            logger.error(
+                f"❌ Authentication error for {user_data['username']}: {str(e)}"
+            )
             return None
 
     async def _create_constitutional_principles(self, auth_token: str) -> bool:
@@ -424,20 +517,20 @@ class ACGSEndToEndTestSuite:
                         "name": "Transparency",
                         "description": "All governance decisions must be transparent and auditable",
                         "category": "governance",
-                        "priority": "high"
+                        "priority": "high",
                     },
                     {
                         "name": "Fairness",
                         "description": "Policies must treat all stakeholders fairly and equitably",
                         "category": "ethics",
-                        "priority": "high"
+                        "priority": "high",
                     },
                     {
                         "name": "Accountability",
                         "description": "Decision makers must be accountable for their actions",
                         "category": "governance",
-                        "priority": "high"
-                    }
+                        "priority": "high",
+                    },
                 ]
             }
 
@@ -445,24 +538,30 @@ class ACGSEndToEndTestSuite:
                 f"{self.services['ac'].base_url}/api/v1/principles",
                 json=principles_data,
                 headers={"Authorization": f"Bearer {auth_token}"},
-                timeout=10
+                timeout=10,
             )
 
             response_time = (time.time() - start_time) * 1000
             self.metrics.service_response_times["create_principles"] = response_time
 
             if response.status_code in [200, 201]:
-                logger.info(f"  ✅ Constitutional principles created ({response_time:.2f}ms)")
+                logger.info(
+                    f"  ✅ Constitutional principles created ({response_time:.2f}ms)"
+                )
                 return True
             else:
-                logger.error(f"  ❌ Principles creation failed: HTTP {response.status_code}")
+                logger.error(
+                    f"  ❌ Principles creation failed: HTTP {response.status_code}"
+                )
                 return False
 
         except Exception as e:
             logger.error(f"❌ Principles creation error: {str(e)}")
             return False
 
-    async def _synthesize_policy(self, auth_token: str, policy_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    async def _synthesize_policy(
+        self, auth_token: str, policy_data: Dict[str, Any]
+    ) -> Optional[Dict[str, Any]]:
         """Synthesize policy using GS service."""
         try:
             start_time = time.time()
@@ -476,15 +575,15 @@ class ACGSEndToEndTestSuite:
                     "legal_compliance",
                     "technical_feasibility",
                     "user_acceptance",
-                    "cost_effectiveness"
-                ]
+                    "cost_effectiveness",
+                ],
             }
 
             response = requests.post(
                 f"{self.services['gs'].base_url}/api/v1/synthesize",
                 json=synthesis_request,
                 headers={"Authorization": f"Bearer {auth_token}"},
-                timeout=15
+                timeout=15,
             )
 
             response_time = (time.time() - start_time) * 1000
@@ -495,14 +594,18 @@ class ACGSEndToEndTestSuite:
                 logger.info(f"  ✅ Policy synthesized ({response_time:.2f}ms)")
                 return synthesized_policy
             else:
-                logger.error(f"  ❌ Policy synthesis failed: HTTP {response.status_code}")
+                logger.error(
+                    f"  ❌ Policy synthesis failed: HTTP {response.status_code}"
+                )
                 return None
 
         except Exception as e:
             logger.error(f"❌ Policy synthesis error: {str(e)}")
             return None
 
-    async def _validate_policy_multi_model(self, auth_token: str, policy: Dict[str, Any]) -> bool:
+    async def _validate_policy_multi_model(
+        self, auth_token: str, policy: Dict[str, Any]
+    ) -> bool:
         """Validate policy using multi-model consensus."""
         try:
             start_time = time.time()
@@ -511,35 +614,43 @@ class ACGSEndToEndTestSuite:
                 "policy_content": policy.get("content", ""),
                 "validation_models": ["gpt-4", "claude-3", "gemini-pro"],
                 "consensus_threshold": 0.8,
-                "constitutional_hash": self.test_config["constitutional_hash"]
+                "constitutional_hash": self.test_config["constitutional_hash"],
             }
 
             response = requests.post(
                 f"{self.services['ac'].base_url}/api/v1/validate/multi-model",
                 json=validation_request,
                 headers={"Authorization": f"Bearer {auth_token}"},
-                timeout=20
+                timeout=20,
             )
 
             response_time = (time.time() - start_time) * 1000
-            self.metrics.service_response_times["multi_model_validation"] = response_time
+            self.metrics.service_response_times["multi_model_validation"] = (
+                response_time
+            )
 
             if response.status_code == 200:
                 validation_result = response.json()
                 consensus_score = validation_result.get("consensus_score", 0)
                 self.metrics.constitutional_compliance_score = consensus_score
 
-                logger.info(f"  ✅ Multi-model validation completed ({response_time:.2f}ms, consensus: {consensus_score:.2f})")
+                logger.info(
+                    f"  ✅ Multi-model validation completed ({response_time:.2f}ms, consensus: {consensus_score:.2f})"
+                )
                 return consensus_score >= 0.8
             else:
-                logger.error(f"  ❌ Multi-model validation failed: HTTP {response.status_code}")
+                logger.error(
+                    f"  ❌ Multi-model validation failed: HTTP {response.status_code}"
+                )
                 return False
 
         except Exception as e:
             logger.error(f"❌ Multi-model validation error: {str(e)}")
             return False
 
-    async def _build_stakeholder_consensus(self, auth_token: str, policy: Dict[str, Any]) -> bool:
+    async def _build_stakeholder_consensus(
+        self, auth_token: str, policy: Dict[str, Any]
+    ) -> bool:
         """Build stakeholder consensus for policy."""
         try:
             start_time = time.time()
@@ -548,31 +659,37 @@ class ACGSEndToEndTestSuite:
                 "policy_id": policy.get("id", "test_policy_001"),
                 "stakeholder_groups": ["citizens", "experts", "council_members"],
                 "voting_mechanism": "weighted",
-                "consensus_threshold": 0.67
+                "consensus_threshold": 0.67,
             }
 
             response = requests.post(
                 f"{self.services['gs'].base_url}/api/v1/consensus/build",
                 json=consensus_request,
                 headers={"Authorization": f"Bearer {auth_token}"},
-                timeout=15
+                timeout=15,
             )
 
             response_time = (time.time() - start_time) * 1000
             self.metrics.service_response_times["stakeholder_consensus"] = response_time
 
             if response.status_code in [200, 202]:
-                logger.info(f"  ✅ Stakeholder consensus building initiated ({response_time:.2f}ms)")
+                logger.info(
+                    f"  ✅ Stakeholder consensus building initiated ({response_time:.2f}ms)"
+                )
                 return True
             else:
-                logger.error(f"  ❌ Consensus building failed: HTTP {response.status_code}")
+                logger.error(
+                    f"  ❌ Consensus building failed: HTTP {response.status_code}"
+                )
                 return False
 
         except Exception as e:
             logger.error(f"❌ Consensus building error: {str(e)}")
             return False
 
-    async def _deploy_policy_to_blockchain(self, auth_token: str, policy: Dict[str, Any]) -> bool:
+    async def _deploy_policy_to_blockchain(
+        self, auth_token: str, policy: Dict[str, Any]
+    ) -> bool:
         """Deploy policy to Solana blockchain."""
         try:
             start_time = time.time()
@@ -581,7 +698,7 @@ class ACGSEndToEndTestSuite:
                 "policy_content": policy.get("content", ""),
                 "policy_hash": policy.get("hash", ""),
                 "governance_authority": "test_authority",
-                "deployment_target": "devnet"
+                "deployment_target": "devnet",
             }
 
             # Simulate blockchain deployment cost
@@ -595,7 +712,9 @@ class ACGSEndToEndTestSuite:
             self.metrics.service_response_times["blockchain_deployment"] = response_time
 
             if estimated_cost <= self.test_config["max_blockchain_cost_sol"]:
-                logger.info(f"  ✅ Policy deployed to blockchain ({response_time:.2f}ms, {estimated_cost:.6f} SOL)")
+                logger.info(
+                    f"  ✅ Policy deployed to blockchain ({response_time:.2f}ms, {estimated_cost:.6f} SOL)"
+                )
                 return True
             else:
                 logger.error(f"  ❌ Deployment cost too high: {estimated_cost:.6f} SOL")
@@ -612,9 +731,18 @@ class ACGSEndToEndTestSuite:
         try:
             # Test compliance checking against constitutional principles
             compliance_tests = [
-                {"content": "Policy respects user privacy and data rights", "expected": True},
-                {"content": "Policy allows unrestricted data collection", "expected": False},
-                {"content": "Policy ensures transparent decision making", "expected": True}
+                {
+                    "content": "Policy respects user privacy and data rights",
+                    "expected": True,
+                },
+                {
+                    "content": "Policy allows unrestricted data collection",
+                    "expected": False,
+                },
+                {
+                    "content": "Policy ensures transparent decision making",
+                    "expected": True,
+                },
             ]
 
             compliance_scores = []
@@ -625,13 +753,13 @@ class ACGSEndToEndTestSuite:
                 compliance_request = {
                     "content": test_case["content"],
                     "constitutional_hash": self.test_config["constitutional_hash"],
-                    "validation_depth": "comprehensive"
+                    "validation_depth": "comprehensive",
                 }
 
                 response = requests.post(
                     f"{self.services['ac'].base_url}/api/v1/compliance/validate",
                     json=compliance_request,
-                    timeout=10
+                    timeout=10,
                 )
 
                 response_time = (time.time() - start_time) * 1000
@@ -645,18 +773,26 @@ class ACGSEndToEndTestSuite:
                     expected_result = test_case["expected"]
 
                     if is_compliant == expected_result:
-                        logger.info(f"  ✅ Compliance test passed: {compliance_score:.2f} ({response_time:.2f}ms)")
+                        logger.info(
+                            f"  ✅ Compliance test passed: {compliance_score:.2f} ({response_time:.2f}ms)"
+                        )
                     else:
-                        logger.error(f"  ❌ Compliance test failed: expected {expected_result}, got {is_compliant}")
+                        logger.error(
+                            f"  ❌ Compliance test failed: expected {expected_result}, got {is_compliant}"
+                        )
                         return False
                 else:
-                    logger.error(f"  ❌ Compliance validation failed: HTTP {response.status_code}")
+                    logger.error(
+                        f"  ❌ Compliance validation failed: HTTP {response.status_code}"
+                    )
                     return False
 
             avg_compliance = sum(compliance_scores) / len(compliance_scores)
             self.metrics.constitutional_compliance_score = avg_compliance
 
-            logger.info(f"✅ Constitutional compliance validation completed (avg score: {avg_compliance:.2f})")
+            logger.info(
+                f"✅ Constitutional compliance validation completed (avg score: {avg_compliance:.2f})"
+            )
             return avg_compliance >= 0.8
 
         except Exception as e:
@@ -670,9 +806,21 @@ class ACGSEndToEndTestSuite:
         try:
             # Test policy enforcement scenarios
             enforcement_scenarios = [
-                {"action": "data_access", "policy": "privacy_policy", "expected": "allowed"},
-                {"action": "unauthorized_access", "policy": "security_policy", "expected": "denied"},
-                {"action": "policy_update", "policy": "governance_policy", "expected": "requires_approval"}
+                {
+                    "action": "data_access",
+                    "policy": "privacy_policy",
+                    "expected": "allowed",
+                },
+                {
+                    "action": "unauthorized_access",
+                    "policy": "security_policy",
+                    "expected": "denied",
+                },
+                {
+                    "action": "policy_update",
+                    "policy": "governance_policy",
+                    "expected": "requires_approval",
+                },
             ]
 
             enforcement_success = 0
@@ -684,13 +832,13 @@ class ACGSEndToEndTestSuite:
                     "action": scenario["action"],
                     "policy_context": scenario["policy"],
                     "user_context": {"role": "citizen", "permissions": ["read"]},
-                    "enforcement_mode": "strict"
+                    "enforcement_mode": "strict",
                 }
 
                 response = requests.post(
                     f"{self.services['pgc'].base_url}/api/v1/enforcement/evaluate",
                     json=enforcement_request,
-                    timeout=5
+                    timeout=5,
                 )
 
                 response_time = (time.time() - start_time) * 1000
@@ -700,15 +848,23 @@ class ACGSEndToEndTestSuite:
                     enforcement_decision = result.get("decision", "")
 
                     if enforcement_decision == scenario["expected"]:
-                        logger.info(f"  ✅ Enforcement test passed: {scenario['action']} -> {enforcement_decision} ({response_time:.2f}ms)")
+                        logger.info(
+                            f"  ✅ Enforcement test passed: {scenario['action']} -> {enforcement_decision} ({response_time:.2f}ms)"
+                        )
                         enforcement_success += 1
                     else:
-                        logger.error(f"  ❌ Enforcement test failed: expected {scenario['expected']}, got {enforcement_decision}")
+                        logger.error(
+                            f"  ❌ Enforcement test failed: expected {scenario['expected']}, got {enforcement_decision}"
+                        )
                 else:
-                    logger.error(f"  ❌ Enforcement evaluation failed: HTTP {response.status_code}")
+                    logger.error(
+                        f"  ❌ Enforcement evaluation failed: HTTP {response.status_code}"
+                    )
 
             success_rate = enforcement_success / len(enforcement_scenarios)
-            logger.info(f"✅ Policy enforcement testing completed ({success_rate:.1%} success rate)")
+            logger.info(
+                f"✅ Policy enforcement testing completed ({success_rate:.1%} success rate)"
+            )
 
             return success_rate >= 0.8
 
@@ -726,22 +882,26 @@ class ACGSEndToEndTestSuite:
                 "policy_id": "test_policy_001",
                 "violation_type": "procedural",
                 "evidence": ["evidence_1", "evidence_2"],
-                "appellant": "citizen_user"
+                "appellant": "citizen_user",
             }
 
             start_time = time.time()
             response = requests.post(
                 f"{self.services['integrity'].base_url}/api/v1/appeals/submit",
                 json=appeal_request,
-                timeout=10
+                timeout=10,
             )
             response_time = (time.time() - start_time) * 1000
 
             if response.status_code in [200, 201]:
-                logger.info(f"  ✅ Appeal submitted successfully ({response_time:.2f}ms)")
+                logger.info(
+                    f"  ✅ Appeal submitted successfully ({response_time:.2f}ms)"
+                )
                 return True
             else:
-                logger.error(f"  ❌ Appeal submission failed: HTTP {response.status_code}")
+                logger.error(
+                    f"  ❌ Appeal submission failed: HTTP {response.status_code}"
+                )
                 return False
 
         except Exception as e:
@@ -758,22 +918,26 @@ class ACGSEndToEndTestSuite:
                 "emergency_type": "security_breach",
                 "severity": "high",
                 "immediate_action_required": True,
-                "authority": "emergency_council"
+                "authority": "emergency_council",
             }
 
             start_time = time.time()
             response = requests.post(
                 f"{self.services['ec'].base_url}/api/v1/emergency/initiate",
                 json=emergency_request,
-                timeout=5
+                timeout=5,
             )
             response_time = (time.time() - start_time) * 1000
 
             if response.status_code in [200, 202]:
-                logger.info(f"  ✅ Emergency governance initiated ({response_time:.2f}ms)")
+                logger.info(
+                    f"  ✅ Emergency governance initiated ({response_time:.2f}ms)"
+                )
                 return response_time <= self.test_config["max_response_time_ms"]
             else:
-                logger.error(f"  ❌ Emergency governance failed: HTTP {response.status_code}")
+                logger.error(
+                    f"  ❌ Emergency governance failed: HTTP {response.status_code}"
+                )
                 return False
 
         except Exception as e:
@@ -809,7 +973,9 @@ class ACGSEndToEndTestSuite:
             member_count = await council_members.count()
 
             if member_count > 0:
-                logger.info(f"  ✅ Constitutional council interface loaded ({member_count} members)")
+                logger.info(
+                    f"  ✅ Constitutional council interface loaded ({member_count} members)"
+                )
             else:
                 logger.warning("  ⚠️ No council members displayed")
 
@@ -832,7 +998,9 @@ class ACGSEndToEndTestSuite:
                     slow_services.append(f"{service}: {response_time:.2f}ms")
 
             if slow_services:
-                logger.warning(f"  ⚠️ Slow services detected: {', '.join(slow_services)}")
+                logger.warning(
+                    f"  ⚠️ Slow services detected: {', '.join(slow_services)}"
+                )
             else:
                 logger.info("  ✅ All services meet response time targets")
 
@@ -841,9 +1009,13 @@ class ACGSEndToEndTestSuite:
             cost_per_operation = total_cost / max(len(self.metrics.blockchain_costs), 1)
 
             if cost_per_operation <= self.test_config["max_blockchain_cost_sol"]:
-                logger.info(f"  ✅ Blockchain costs within target: {cost_per_operation:.6f} SOL per operation")
+                logger.info(
+                    f"  ✅ Blockchain costs within target: {cost_per_operation:.6f} SOL per operation"
+                )
             else:
-                logger.warning(f"  ⚠️ High blockchain costs: {cost_per_operation:.6f} SOL per operation")
+                logger.warning(
+                    f"  ⚠️ High blockchain costs: {cost_per_operation:.6f} SOL per operation"
+                )
 
             # Calculate overall success rate
             total_tests = len(self.metrics.failed_tests) + 10  # Approximate total tests
@@ -852,14 +1024,18 @@ class ACGSEndToEndTestSuite:
 
             logger.info(f"📈 Performance Summary:")
             logger.info(f"  Success Rate: {self.metrics.success_rate:.1%}")
-            logger.info(f"  Avg Response Time: {sum(self.metrics.service_response_times.values()) / len(self.metrics.service_response_times):.2f}ms")
+            logger.info(
+                f"  Avg Response Time: {sum(self.metrics.service_response_times.values()) / len(self.metrics.service_response_times):.2f}ms"
+            )
             logger.info(f"  Total Blockchain Cost: {total_cost:.6f} SOL")
-            logger.info(f"  Constitutional Compliance: {self.metrics.constitutional_compliance_score:.2f}")
+            logger.info(
+                f"  Constitutional Compliance: {self.metrics.constitutional_compliance_score:.2f}"
+            )
 
             return (
-                self.metrics.success_rate >= self.test_config["min_success_rate"] and
-                cost_per_operation <= self.test_config["max_blockchain_cost_sol"] and
-                len(slow_services) == 0
+                self.metrics.success_rate >= self.test_config["min_success_rate"]
+                and cost_per_operation <= self.test_config["max_blockchain_cost_sol"]
+                and len(slow_services) == 0
             )
 
         except Exception as e:
@@ -900,7 +1076,8 @@ class ACGSEndToEndTestSuite:
             "metrics": asdict(self.metrics),
             "configuration": self.test_config,
             "summary": {
-                "overall_success": self.metrics.success_rate >= self.test_config["min_success_rate"],
+                "overall_success": self.metrics.success_rate
+                >= self.test_config["min_success_rate"],
                 "performance_targets_met": all(
                     rt <= self.test_config["max_response_time_ms"]
                     for rt in self.metrics.service_response_times.values()
@@ -909,8 +1086,9 @@ class ACGSEndToEndTestSuite:
                     cost <= self.test_config["max_blockchain_cost_sol"]
                     for cost in self.metrics.blockchain_costs.values()
                 ),
-                "constitutional_compliance": self.metrics.constitutional_compliance_score >= 0.8
-            }
+                "constitutional_compliance": self.metrics.constitutional_compliance_score
+                >= 0.8,
+            },
         }
 
         # Save report to file
@@ -971,7 +1149,9 @@ class ACGSEndToEndTestSuite:
             if overall_success:
                 logger.info("🎉 ALL TESTS PASSED! ACGS-1 is production-ready!")
                 logger.info(f"✅ Success Rate: {self.metrics.success_rate:.1%}")
-                logger.info(f"✅ Constitutional Compliance: {self.metrics.constitutional_compliance_score:.2f}")
+                logger.info(
+                    f"✅ Constitutional Compliance: {self.metrics.constitutional_compliance_score:.2f}"
+                )
                 logger.info(f"✅ Total Duration: {self.metrics.total_duration:.2f}s")
             else:
                 logger.error("⚠️ Some tests failed. Review the detailed report.")
@@ -1011,18 +1191,30 @@ async def test_acgs_comprehensive_end_to_end():
     success = await test_suite.run_comprehensive_test_suite()
 
     # Assert test success for pytest
-    assert success, f"Comprehensive E2E test failed. Check logs for details. Failed tests: {test_suite.metrics.failed_tests}"
+    assert (
+        success
+    ), f"Comprehensive E2E test failed. Check logs for details. Failed tests: {test_suite.metrics.failed_tests}"
 
     # Additional assertions for key metrics
-    assert test_suite.metrics.success_rate >= 0.9, f"Success rate too low: {test_suite.metrics.success_rate:.1%}"
-    assert test_suite.metrics.constitutional_compliance_score >= 0.8, f"Constitutional compliance too low: {test_suite.metrics.constitutional_compliance_score:.2f}"
+    assert (
+        test_suite.metrics.success_rate >= 0.9
+    ), f"Success rate too low: {test_suite.metrics.success_rate:.1%}"
+    assert (
+        test_suite.metrics.constitutional_compliance_score >= 0.8
+    ), f"Constitutional compliance too low: {test_suite.metrics.constitutional_compliance_score:.2f}"
 
     # Performance assertions
-    avg_response_time = sum(test_suite.metrics.service_response_times.values()) / len(test_suite.metrics.service_response_times)
-    assert avg_response_time <= 500, f"Average response time too high: {avg_response_time:.2f}ms"
+    avg_response_time = sum(test_suite.metrics.service_response_times.values()) / len(
+        test_suite.metrics.service_response_times
+    )
+    assert (
+        avg_response_time <= 500
+    ), f"Average response time too high: {avg_response_time:.2f}ms"
 
     total_blockchain_cost = sum(test_suite.metrics.blockchain_costs.values())
-    assert total_blockchain_cost <= 0.05, f"Total blockchain cost too high: {total_blockchain_cost:.6f} SOL"
+    assert (
+        total_blockchain_cost <= 0.05
+    ), f"Total blockchain cost too high: {total_blockchain_cost:.6f} SOL"
 
 
 # Standalone Execution

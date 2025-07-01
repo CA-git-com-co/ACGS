@@ -47,7 +47,9 @@ class APIPerformanceTester:
         for i in range(10):
             try:
                 start_time = time.time()
-                async with session.get(url, timeout=aiohttp.ClientTimeout(total=5)) as response:
+                async with session.get(
+                    url, timeout=aiohttp.ClientTimeout(total=5)
+                ) as response:
                     await response.text()
                     response_time = (time.time() - start_time) * 1000  # Convert to ms
                     response_times.append(response_time)
@@ -92,7 +94,9 @@ class APIPerformanceTester:
         for i in range(20):
             try:
                 start_time = time.time()
-                async with session.get(url, timeout=aiohttp.ClientTimeout(total=5)) as response:
+                async with session.get(
+                    url, timeout=aiohttp.ClientTimeout(total=5)
+                ) as response:
                     await response.text()
                     response_time = (time.time() - start_time) * 1000
                     response_times.append(response_time)
@@ -140,7 +144,9 @@ class APIPerformanceTester:
         async def single_request():
             try:
                 start_time = time.time()
-                async with session.get(url, timeout=aiohttp.ClientTimeout(total=10)) as response:
+                async with session.get(
+                    url, timeout=aiohttp.ClientTimeout(total=10)
+                ) as response:
                     await response.text()
                     return (time.time() - start_time) * 1000, response.status == 200
             except Exception:
@@ -163,7 +169,9 @@ class APIPerformanceTester:
                 "service": service,
                 "concurrent_requests": concurrent_requests,
                 "successful_requests": successful_requests,
-                "success_rate": round(successful_requests / concurrent_requests * 100, 2),
+                "success_rate": round(
+                    successful_requests / concurrent_requests * 100, 2
+                ),
                 "avg_response_time_ms": round(statistics.mean(response_times), 2),
                 "median_response_time_ms": round(statistics.median(response_times), 2),
                 "p95_response_time_ms": (
@@ -200,9 +208,13 @@ class APIPerformanceTester:
             load_test_results = []
             for service, port in self.services.items():
                 # Only test services that are responding
-                health_result = next((r for r in health_results if r["service"] == service), None)
+                health_result = next(
+                    (r for r in health_results if r["service"] == service), None
+                )
                 if health_result and health_result.get("success_rate", 0) > 0:
-                    load_result = await self.run_concurrent_load_test(session, service, port)
+                    load_result = await self.run_concurrent_load_test(
+                        session, service, port
+                    )
                     load_test_results.append(load_result)
 
             self.results = {
@@ -219,20 +231,28 @@ class APIPerformanceTester:
         """Generate performance summary."""
         available_services = [r for r in health_results if r.get("success_rate", 0) > 0]
         avg_response_times = [
-            r["avg_response_time_ms"] for r in available_services if "avg_response_time_ms" in r
+            r["avg_response_time_ms"]
+            for r in available_services
+            if "avg_response_time_ms" in r
         ]
 
         load_test_summary = {}
         if load_results:
-            successful_load_tests = [r for r in load_results if r.get("success_rate", 0) > 80]
+            successful_load_tests = [
+                r for r in load_results if r.get("success_rate", 0) > 80
+            ]
             if successful_load_tests:
                 load_test_summary = {
                     "avg_concurrent_response_time_ms": round(
-                        statistics.mean([r["avg_response_time_ms"] for r in successful_load_tests]),
+                        statistics.mean(
+                            [r["avg_response_time_ms"] for r in successful_load_tests]
+                        ),
                         2,
                     ),
                     "avg_requests_per_second": round(
-                        statistics.mean([r["requests_per_second"] for r in successful_load_tests]),
+                        statistics.mean(
+                            [r["requests_per_second"] for r in successful_load_tests]
+                        ),
                         2,
                     ),
                     "services_passing_load_test": len(successful_load_tests),
@@ -242,7 +262,9 @@ class APIPerformanceTester:
             "total_services_tested": len(self.services),
             "available_services": len(available_services),
             "avg_health_response_time_ms": (
-                round(statistics.mean(avg_response_times), 2) if avg_response_times else 0
+                round(statistics.mean(avg_response_times), 2)
+                if avg_response_times
+                else 0
             ),
             "fastest_service_ms": min(avg_response_times) if avg_response_times else 0,
             "slowest_service_ms": max(avg_response_times) if avg_response_times else 0,
@@ -284,7 +306,9 @@ class APIPerformanceTester:
         # Load balancer results
         lb_result = self.results["load_balancer_result"]
         if "avg_response_time_ms" in lb_result:
-            status = "✅ OPERATIONAL" if lb_result["success_rate"] > 50 else "⚠️  DEGRADED"
+            status = (
+                "✅ OPERATIONAL" if lb_result["success_rate"] > 50 else "⚠️  DEGRADED"
+            )
             print(
                 f"{'LOAD BALANCER':>12} (:{lb_result['port']}) | {lb_result['avg_response_time_ms']:>6.1f}ms | {status}"
             )

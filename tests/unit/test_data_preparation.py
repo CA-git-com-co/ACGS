@@ -31,9 +31,9 @@ def test_multiple_files():
     output_file = f"/tmp/nemo-skills-tests/data/processed_multifile_output.jsonl"
     docker_rm_and_mkdir(output_file)
     run_cmd(
-        cluster='test-local',
-        config_dir=Path(__file__).parent / 'gpu-tests',
-        log_dir='/tmp/nemo-skills-tests/test_multiple_files',
+        cluster="test-local",
+        config_dir=Path(__file__).parent / "gpu-tests",
+        log_dir="/tmp/nemo-skills-tests/test_multiple_files",
         ctx=wrap_arguments(
             f"python -m nemo_skills.training.prepare_data "
             f"    ++input_files='tests/data/output-rs*.test' "
@@ -66,9 +66,9 @@ def test_exclude_keys():
     output_file = f"/tmp/nemo-skills-tests/data/processed_compact_output.jsonl"
     docker_rm_and_mkdir(output_file)
     run_cmd(
-        cluster='test-local',
-        config_dir=Path(__file__).parent / 'gpu-tests',
-        log_dir='/tmp/nemo-skills-tests/test_exclude_keys',
+        cluster="test-local",
+        config_dir=Path(__file__).parent / "gpu-tests",
+        log_dir="/tmp/nemo-skills-tests/test_exclude_keys",
         ctx=wrap_arguments(
             f"python -m nemo_skills.training.prepare_data "
             f"    ++input_files='tests/data/output-rs*.test' "
@@ -93,16 +93,18 @@ def test_exclude_keys():
 
     # Verify SHA-256 hash format and length
     assert len(output_sha256) == 64, "SHA-256 hash should be 64 characters long"
-    assert all(c in '0123456789abcdef' for c in output_sha256), "SHA-256 hash should be hexadecimal"
+    assert all(
+        c in "0123456789abcdef" for c in output_sha256
+    ), "SHA-256 hash should be hexadecimal"
 
 
 def test_code_sft_data():
     output_file = f"/tmp/nemo-skills-tests/data/code_processed_output.jsonl"
     docker_rm_and_mkdir(output_file)
     run_cmd(
-        cluster='test-local',
-        config_dir=Path(__file__).parent / 'gpu-tests',
-        log_dir='/tmp/nemo-skills-tests/test_code_sft_data',
+        cluster="test-local",
+        config_dir=Path(__file__).parent / "gpu-tests",
+        log_dir="/tmp/nemo-skills-tests/test_code_sft_data",
         ctx=wrap_arguments(
             f"python -m nemo_skills.training.prepare_data "
             f"    --config-name=code_sft "
@@ -120,16 +122,18 @@ def test_code_sft_data():
 
     # Verify SHA-256 hash format and length
     assert len(output_sha256) == 64, "SHA-256 hash should be 64 characters long"
-    assert all(c in '0123456789abcdef' for c in output_sha256), "SHA-256 hash should be hexadecimal"
+    assert all(
+        c in "0123456789abcdef" for c in output_sha256
+    ), "SHA-256 hash should be hexadecimal"
 
 
 def test_openmathinstruct2():
     output_file = f"/tmp/nemo-skills-tests/data/openmathinstruct2-sft.jsonl"
     docker_rm_and_mkdir(output_file)
     run_cmd(
-        cluster='test-local',
-        config_dir=Path(__file__).parent / 'gpu-tests',
-        log_dir='/tmp/nemo-skills-tests/test_openmathinstruct2',
+        cluster="test-local",
+        config_dir=Path(__file__).parent / "gpu-tests",
+        log_dir="/tmp/nemo-skills-tests/test_openmathinstruct2",
         ctx=wrap_arguments(
             f"python -m nemo_skills.training.prepare_data "
             f"    ++preprocessed_dataset_files='tests/data/openmathinstruct2.test' "
@@ -152,15 +156,17 @@ def test_openmathinstruct2():
 
     # Verify SHA-256 hash format and length
     assert len(output_sha256) == 64, "SHA-256 hash should be 64 characters long"
-    assert all(c in '0123456789abcdef' for c in output_sha256), "SHA-256 hash should be hexadecimal"
+    assert all(
+        c in "0123456789abcdef" for c in output_sha256
+    ), "SHA-256 hash should be hexadecimal"
 
 
 def test_aggregate_answers_fill():
     output_dir = "/tmp/nemo-skills-tests/test_majority_filling"
     run_cmd(
-        cluster='test-local',
-        config_dir=Path(__file__).parent / 'gpu-tests',
-        log_dir='/tmp/nemo-skills-tests/test_aggregate_answers',
+        cluster="test-local",
+        config_dir=Path(__file__).parent / "gpu-tests",
+        log_dir="/tmp/nemo-skills-tests/test_aggregate_answers",
         ctx=wrap_arguments(
             f"python -m nemo_skills.evaluation.aggregate_answers "
             f"    ++input_dir='tests/data' "
@@ -176,15 +182,17 @@ def test_aggregate_answers_fill():
 
     # Verify SHA-256 hash format and length
     assert len(output_sha256) == 64, "SHA-256 hash should be 64 characters long"
-    assert all(c in '0123456789abcdef' for c in output_sha256), "SHA-256 hash should be hexadecimal"
+    assert all(
+        c in "0123456789abcdef" for c in output_sha256
+    ), "SHA-256 hash should be hexadecimal"
 
 
 def test_aggregate_answers_extract():
     output_dir = "/tmp/nemo-skills-tests/test_majority_filling"
     run_cmd(
-        cluster='test-local',
-        config_dir=Path(__file__).parent / 'gpu-tests',
-        log_dir='/tmp/nemo-skills-tests/test_aggregate_answers',
+        cluster="test-local",
+        config_dir=Path(__file__).parent / "gpu-tests",
+        log_dir="/tmp/nemo-skills-tests/test_aggregate_answers",
         ctx=wrap_arguments(
             f"python -m nemo_skills.evaluation.aggregate_answers "
             f"    ++input_dir='tests/data' "
@@ -202,4 +210,6 @@ def test_aggregate_answers_extract():
 
     # Verify SHA-256 hash format and length
     assert len(output_sha256) == 64, "SHA-256 hash should be 64 characters long"
-    assert all(c in '0123456789abcdef' for c in output_sha256), "SHA-256 hash should be hexadecimal"
+    assert all(
+        c in "0123456789abcdef" for c in output_sha256
+    ), "SHA-256 hash should be hexadecimal"

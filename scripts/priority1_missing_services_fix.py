@@ -28,19 +28,19 @@ import httpx
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
+
 class MissingServicesFixer:
     """Missing Services Comprehensive Fixer"""
-    
+
     def __init__(self):
         self.gs_service_url = "http://localhost:8004"
         self.pgc_service_url = "http://localhost:8005"
         self.constitutional_hash = "cdd01ef066bc6cf2"
-        
+
     def create_simplified_gs_main(self) -> str:
         """Create simplified gs-service main.py"""
         return '''"""
@@ -210,7 +210,7 @@ if __name__ == "__main__":
     logger.info(f"🚀 Starting {SERVICE_NAME} on port {SERVICE_PORT}")
     uvicorn.run(app, **config)
 '''
-    
+
     def create_simplified_pgc_main(self) -> str:
         """Create simplified pgc-service main.py"""
         return '''"""
@@ -404,132 +404,140 @@ if __name__ == "__main__":
     logger.info(f"🚀 Starting {SERVICE_NAME} on port {SERVICE_PORT}")
     uvicorn.run(app, **config)
 '''
-    
+
     async def fix_gs_service(self) -> Dict[str, Any]:
         """Fix gs-service (port 8004)"""
         logger.info("🔧 Fixing gs-service...")
-        
+
         fix_result = {
             "service": "gs_service",
             "backup_created": False,
             "simplified_main_created": False,
             "service_restarted": False,
             "validation_passed": False,
-            "errors": []
+            "errors": [],
         }
-        
+
         try:
             # Create backup and simplified main.py
             gs_main_path = "services/core/governance-synthesis/gs_service/app/main.py"
             backup_path = f"{gs_main_path}.backup.{int(time.time())}"
-            
+
             if os.path.exists(gs_main_path):
-                with open(gs_main_path, 'r') as f:
+                with open(gs_main_path, "r") as f:
                     content = f.read()
-                with open(backup_path, 'w') as f:
+                with open(backup_path, "w") as f:
                     f.write(content)
                 fix_result["backup_created"] = True
                 logger.info(f"✅ GS backup created: {backup_path}")
-            
+
             # Create simplified main.py
             simplified_content = self.create_simplified_gs_main()
-            with open(gs_main_path, 'w') as f:
+            with open(gs_main_path, "w") as f:
                 f.write(simplified_content)
             fix_result["simplified_main_created"] = True
             logger.info("✅ GS simplified main.py created")
-            
+
             # Restart service
             os.system("pkill -f 'gs_service'")
             await asyncio.sleep(2)
-            
-            os.system("cd services/core/governance-synthesis/gs_service && python3 -m app.main &")
+
+            os.system(
+                "cd services/core/governance-synthesis/gs_service && python3 -m app.main &"
+            )
             await asyncio.sleep(5)
-            
+
             fix_result["service_restarted"] = True
             logger.info("✅ GS service restarted")
-            
+
             # Validate
             validation = await self.validate_service(self.gs_service_url, "gs_service")
             fix_result["validation_passed"] = validation["success"]
-            
+
             if not validation["success"]:
                 fix_result["errors"].extend(validation["errors"])
-            
+
         except Exception as e:
             error_msg = f"GS service fix failed: {e}"
             fix_result["errors"].append(error_msg)
             logger.error(error_msg)
-        
+
         return fix_result
-    
+
     async def fix_pgc_service(self) -> Dict[str, Any]:
         """Fix pgc-service (port 8005)"""
         logger.info("🔧 Fixing pgc-service...")
-        
+
         fix_result = {
             "service": "pgc_service",
             "backup_created": False,
             "simplified_main_created": False,
             "service_restarted": False,
             "validation_passed": False,
-            "errors": []
+            "errors": [],
         }
-        
+
         try:
             # Create backup and simplified main.py
             pgc_main_path = "services/core/policy-governance/pgc_service/app/main.py"
             backup_path = f"{pgc_main_path}.backup.{int(time.time())}"
-            
+
             if os.path.exists(pgc_main_path):
-                with open(pgc_main_path, 'r') as f:
+                with open(pgc_main_path, "r") as f:
                     content = f.read()
-                with open(backup_path, 'w') as f:
+                with open(backup_path, "w") as f:
                     f.write(content)
                 fix_result["backup_created"] = True
                 logger.info(f"✅ PGC backup created: {backup_path}")
-            
+
             # Create simplified main.py
             simplified_content = self.create_simplified_pgc_main()
-            with open(pgc_main_path, 'w') as f:
+            with open(pgc_main_path, "w") as f:
                 f.write(simplified_content)
             fix_result["simplified_main_created"] = True
             logger.info("✅ PGC simplified main.py created")
-            
+
             # Restart service
             os.system("pkill -f 'pgc_service'")
             await asyncio.sleep(2)
-            
-            os.system("cd services/core/policy-governance/pgc_service && python3 -m app.main &")
+
+            os.system(
+                "cd services/core/policy-governance/pgc_service && python3 -m app.main &"
+            )
             await asyncio.sleep(5)
-            
+
             fix_result["service_restarted"] = True
             logger.info("✅ PGC service restarted")
-            
+
             # Validate
-            validation = await self.validate_service(self.pgc_service_url, "pgc_service")
+            validation = await self.validate_service(
+                self.pgc_service_url, "pgc_service"
+            )
             fix_result["validation_passed"] = validation["success"]
-            
+
             if not validation["success"]:
                 fix_result["errors"].extend(validation["errors"])
-            
+
         except Exception as e:
             error_msg = f"PGC service fix failed: {e}"
             fix_result["errors"].append(error_msg)
             logger.error(error_msg)
-        
+
         return fix_result
-    
-    async def validate_service(self, service_url: str, service_name: str) -> Dict[str, Any]:
+
+    async def validate_service(
+        self, service_url: str, service_name: str
+    ) -> Dict[str, Any]:
         """Validate that a service is working correctly"""
         logger.info(f"✅ Validating {service_name}...")
-        
+
         validation = {
             "success": False,
             "tests_passed": 0,
             "total_tests": 3,
-            "errors": []
+            "errors": [],
         }
-        
+
         # Test 1: Health check
         try:
             async with httpx.AsyncClient(timeout=10.0) as client:
@@ -538,10 +546,12 @@ if __name__ == "__main__":
                     validation["tests_passed"] += 1
                     logger.info(f"✅ {service_name} health check passed")
                 else:
-                    validation["errors"].append(f"{service_name} health check failed: {response.status_code}")
+                    validation["errors"].append(
+                        f"{service_name} health check failed: {response.status_code}"
+                    )
         except Exception as e:
             validation["errors"].append(f"{service_name} health check error: {e}")
-        
+
         # Test 2: Metrics endpoint
         try:
             async with httpx.AsyncClient(timeout=10.0) as client:
@@ -550,100 +560,117 @@ if __name__ == "__main__":
                     validation["tests_passed"] += 1
                     logger.info(f"✅ {service_name} metrics endpoint passed")
                 else:
-                    validation["errors"].append(f"{service_name} metrics failed: {response.status_code}")
+                    validation["errors"].append(
+                        f"{service_name} metrics failed: {response.status_code}"
+                    )
         except Exception as e:
             validation["errors"].append(f"{service_name} metrics error: {e}")
-        
+
         # Test 3: Constitutional hash header
         try:
             async with httpx.AsyncClient(timeout=10.0) as client:
                 response = await client.get(f"{service_url}/health")
-                if response.headers.get("x-constitutional-hash") == self.constitutional_hash:
+                if (
+                    response.headers.get("x-constitutional-hash")
+                    == self.constitutional_hash
+                ):
                     validation["tests_passed"] += 1
                     logger.info(f"✅ {service_name} constitutional hash passed")
                 else:
-                    validation["errors"].append(f"{service_name} constitutional hash missing or incorrect")
+                    validation["errors"].append(
+                        f"{service_name} constitutional hash missing or incorrect"
+                    )
         except Exception as e:
-            validation["errors"].append(f"{service_name} constitutional hash test error: {e}")
-        
-        validation["success"] = validation["tests_passed"] >= 2  # At least 2/3 tests must pass
-        
+            validation["errors"].append(
+                f"{service_name} constitutional hash test error: {e}"
+            )
+
+        validation["success"] = (
+            validation["tests_passed"] >= 2
+        )  # At least 2/3 tests must pass
+
         return validation
-    
+
     async def run_comprehensive_missing_services_fix(self) -> Dict[str, Any]:
         """Run comprehensive fix for missing services"""
         logger.info("🚀 Starting comprehensive missing services fix...")
-        
+
         results = {
             "fix_applied": datetime.now(timezone.utc).isoformat(),
             "constitutional_hash": self.constitutional_hash,
             "gs_service_fix": {},
             "pgc_service_fix": {},
-            "overall_success": False
+            "overall_success": False,
         }
-        
+
         # Fix gs-service
         results["gs_service_fix"] = await self.fix_gs_service()
-        
+
         # Fix pgc-service
         results["pgc_service_fix"] = await self.fix_pgc_service()
-        
+
         # Determine overall success
         gs_success = results["gs_service_fix"]["validation_passed"]
         pgc_success = results["pgc_service_fix"]["validation_passed"]
-        
+
         results["overall_success"] = gs_success and pgc_success
-        
+
         return results
+
 
 async def main():
     """Main execution function"""
     fixer = MissingServicesFixer()
-    
+
     try:
         results = await fixer.run_comprehensive_missing_services_fix()
-        
+
         # Save results
         with open("priority1_missing_services_fix_results.json", "w") as f:
             json.dump(results, f, indent=2, default=str)
-        
+
         # Print summary
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("PRIORITY 1: MISSING SERVICES FIX RESULTS")
-        print("="*80)
+        print("=" * 80)
         print(f"Overall Success: {'YES' if results['overall_success'] else 'NO'}")
         print(f"Constitutional Hash: {results['constitutional_hash']}")
         print(f"Fix Applied: {results['fix_applied']}")
-        print("="*80)
-        
+        print("=" * 80)
+
         # Print GS service results
         gs_fix = results["gs_service_fix"]
         print(f"\nGS SERVICE (port 8004):")
         print(f"  Backup Created: {'YES' if gs_fix['backup_created'] else 'NO'}")
-        print(f"  Simplified Main Created: {'YES' if gs_fix['simplified_main_created'] else 'NO'}")
+        print(
+            f"  Simplified Main Created: {'YES' if gs_fix['simplified_main_created'] else 'NO'}"
+        )
         print(f"  Service Restarted: {'YES' if gs_fix['service_restarted'] else 'NO'}")
         print(f"  Validation Passed: {'YES' if gs_fix['validation_passed'] else 'NO'}")
-        
+
         # Print PGC service results
         pgc_fix = results["pgc_service_fix"]
         print(f"\nPGC SERVICE (port 8005):")
         print(f"  Backup Created: {'YES' if pgc_fix['backup_created'] else 'NO'}")
-        print(f"  Simplified Main Created: {'YES' if pgc_fix['simplified_main_created'] else 'NO'}")
+        print(
+            f"  Simplified Main Created: {'YES' if pgc_fix['simplified_main_created'] else 'NO'}"
+        )
         print(f"  Service Restarted: {'YES' if pgc_fix['service_restarted'] else 'NO'}")
         print(f"  Validation Passed: {'YES' if pgc_fix['validation_passed'] else 'NO'}")
-        
-        print("="*80)
-        
-        if results['overall_success']:
+
+        print("=" * 80)
+
+        if results["overall_success"]:
             print("✅ Missing services fix completed successfully!")
             return 0
         else:
             print("❌ Missing services fix encountered issues")
             return 1
-            
+
     except Exception as e:
         logger.error(f"Missing services fix failed: {e}")
         return 1
+
 
 if __name__ == "__main__":
     exit(asyncio.run(main()))

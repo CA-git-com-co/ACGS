@@ -333,10 +333,8 @@ def get_dataset_from_preds(
     prediction_ids = set(predictions.keys())
     if prediction_ids - dataset_ids:
         raise ValueError(
-
-                "Some prediction IDs not found in dataset!"
-                f"\nMissing IDs:\n{' '.join(prediction_ids - dataset_ids)}"
-
+            "Some prediction IDs not found in dataset!"
+            f"\nMissing IDs:\n{' '.join(prediction_ids - dataset_ids)}"
         )
     if instance_ids:
         dataset = [i for i in dataset if i[KEY_INSTANCE_ID] in instance_ids]

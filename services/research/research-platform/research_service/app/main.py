@@ -102,11 +102,17 @@ app.include_router(
     tags=["Experiment Tracking"],
 )
 
-app.include_router(data_collection_router, prefix="/api/v1/data", tags=["Data Collection"])
+app.include_router(
+    data_collection_router, prefix="/api/v1/data", tags=["Data Collection"]
+)
 
-app.include_router(analysis_router, prefix="/api/v1/analysis", tags=["Statistical Analysis"])
+app.include_router(
+    analysis_router, prefix="/api/v1/analysis", tags=["Statistical Analysis"]
+)
 
-app.include_router(automation_router, prefix="/api/v1/automation", tags=["Research Automation"])
+app.include_router(
+    automation_router, prefix="/api/v1/automation", tags=["Research Automation"]
+)
 
 app.include_router(
     reproducibility_router, prefix="/api/v1/reproducibility", tags=["Reproducibility"]
@@ -136,7 +142,9 @@ if __name__ == "__main__":
 
     uvicorn.run(
         "main:app",
-        host=os.getenv("HOST", "127.0.0.1"),  # Secure by default, configurable for production
+        host=os.getenv(
+            "HOST", "127.0.0.1"
+        ),  # Secure by default, configurable for production
         port=int(os.getenv("PORT", "8007")),
         reload=os.getenv("RELOAD", "true").lower() == "true",
         log_level=os.getenv("LOG_LEVEL", "info"),

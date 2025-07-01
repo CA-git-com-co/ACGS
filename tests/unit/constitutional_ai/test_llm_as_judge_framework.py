@@ -4,18 +4,24 @@ Unit tests for services.core.constitutional-ai.ac_service.app.services.llm_as_ju
 
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
-from services.core.constitutional-ai.ac_service.app.services.llm_as_judge_framework import EvaluationDimension, JudgeModel, EvaluationRubric, SemanticValidationResult, LLMJudgeConfig, LLMAsJudgeFramework
-
+from services.core.constitutional_ai.ac_service.app.services.llm_as_judge_framework import (
+    EvaluationDimension,
+    JudgeModel,
+    EvaluationRubric,
+    SemanticValidationResult,
+    LLMJudgeConfig,
+    LLMAsJudgeFramework,
+)
 
 
 class TestEvaluationDimension:
     """Test suite for EvaluationDimension."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -24,12 +30,12 @@ class TestEvaluationDimension:
 
 class TestJudgeModel:
     """Test suite for JudgeModel."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -38,12 +44,12 @@ class TestJudgeModel:
 
 class TestEvaluationRubric:
     """Test suite for EvaluationRubric."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -52,12 +58,12 @@ class TestEvaluationRubric:
 
 class TestSemanticValidationResult:
     """Test suite for SemanticValidationResult."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -66,12 +72,12 @@ class TestSemanticValidationResult:
 
 class TestLLMJudgeConfig:
     """Test suite for LLMJudgeConfig."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -80,12 +86,12 @@ class TestLLMJudgeConfig:
 
 class TestLLMAsJudgeFramework:
     """Test suite for LLMAsJudgeFramework."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -96,6 +102,4 @@ class TestLLMAsJudgeFramework:
         # TODO: Implement test for get_performance_metrics
         instance = LLMAsJudgeFramework()
         # Add test implementation here
-        assert hasattr(instance, 'get_performance_metrics')
-
-
+        assert hasattr(instance, "get_performance_metrics")

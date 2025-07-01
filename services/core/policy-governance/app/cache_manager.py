@@ -102,7 +102,9 @@ class PGCCacheManager:
         cache_key = f"policy_rules:{policy_id}"
         rules_ttl = ttl or CACHE_TTL_POLICIES["governance_rules"]
 
-        return await self.redis_client.set(cache_key, rules_data, ttl=rules_ttl, prefix="rules")
+        return await self.redis_client.set(
+            cache_key, rules_data, ttl=rules_ttl, prefix="rules"
+        )
 
     async def get_policy_rules(self, policy_id: str) -> dict[str, Any] | None:
         """Get cached policy rules."""
@@ -176,7 +178,9 @@ class PGCCacheManager:
             "policy_name": policy_name,
         }
 
-        return await self.redis_client.set(cache_key, policy_data, ttl=opa_ttl, prefix="opa")
+        return await self.redis_client.set(
+            cache_key, policy_data, ttl=opa_ttl, prefix="opa"
+        )
 
     async def get_opa_policy(self, policy_name: str) -> dict[str, Any] | None:
         """Get cached OPA policy content."""
@@ -302,12 +306,16 @@ def cache_pgc_result(ttl: int | None = None, cache_type: str = "compliance_check
     )
 
 
-def generate_compliance_cache_key(policy_id: str, validation_params: dict[str, Any]) -> str:
+def generate_compliance_cache_key(
+    policy_id: str, validation_params: dict[str, Any]
+) -> str:
     """Generate cache key for compliance checks."""
     key_data = {
         "policy_id": policy_id,
         "validation_params": validation_params,
-        "timestamp": datetime.utcnow().strftime("%Y-%m-%d-%H"),  # Hour-level granularity
+        "timestamp": datetime.utcnow().strftime(
+            "%Y-%m-%d-%H"
+        ),  # Hour-level granularity
     }
 
     key_str = json.dumps(key_data, sort_keys=True)

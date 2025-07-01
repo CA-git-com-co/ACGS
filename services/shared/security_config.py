@@ -76,21 +76,29 @@ class SecurityConfigManager:
         self.thresholds.rate_limit_requests_per_minute = int(
             os.getenv("RATE_LIMIT_REQUESTS_PER_MINUTE", "100")
         )
-        self.thresholds.rate_limit_burst_size = int(os.getenv("RATE_LIMIT_BURST_SIZE", "20"))
+        self.thresholds.rate_limit_burst_size = int(
+            os.getenv("RATE_LIMIT_BURST_SIZE", "20")
+        )
         self.thresholds.max_failed_attempts = int(os.getenv("MAX_FAILED_ATTEMPTS", "5"))
         self.thresholds.block_duration_minutes = int(
             os.getenv("RATE_LIMIT_BLOCK_DURATION_MINUTES", "15")
         )
 
         # Request validation configuration
-        self.thresholds.max_request_size_mb = int(os.getenv("MAX_REQUEST_SIZE_MB", "10"))
+        self.thresholds.max_request_size_mb = int(
+            os.getenv("MAX_REQUEST_SIZE_MB", "10")
+        )
 
         # Authentication configuration
-        self.thresholds.jwt_expiry_minutes = int(os.getenv("JWT_ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
+        self.thresholds.jwt_expiry_minutes = int(
+            os.getenv("JWT_ACCESS_TOKEN_EXPIRE_MINUTES", "30")
+        )
         self.thresholds.refresh_token_expiry_days = int(
             os.getenv("JWT_REFRESH_TOKEN_EXPIRE_DAYS", "7")
         )
-        self.thresholds.password_min_length = int(os.getenv("PASSWORD_MIN_LENGTH", "12"))
+        self.thresholds.password_min_length = int(
+            os.getenv("PASSWORD_MIN_LENGTH", "12")
+        )
 
         # Cryptographic configuration
         self.crypto_config.jwt_algorithm = os.getenv("JWT_ALGORITHM", "HS256")
@@ -165,7 +173,9 @@ class SecurityUtils:
             salt = SecurityUtils.generate_salt()
 
         # Use PBKDF2 for password hashing
-        key = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt, 100000)  # iterations
+        key = hashlib.pbkdf2_hmac(
+            "sha256", password.encode("utf-8"), salt, 100000
+        )  # iterations
 
         return base64.b64encode(key).decode("utf-8"), salt
 
@@ -174,7 +184,9 @@ class SecurityUtils:
         """Verify a password against its hash."""
         key = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt, 100000)
 
-        return hmac.compare_digest(base64.b64encode(key).decode("utf-8"), hashed_password)
+        return hmac.compare_digest(
+            base64.b64encode(key).decode("utf-8"), hashed_password
+        )
 
     @staticmethod
     def sanitize_input(text: str) -> str:
@@ -224,7 +236,9 @@ class SecurityUtils:
         weak_patterns = ["123", "abc", "password", "admin", "user"]
         for pattern in weak_patterns:
             if pattern.lower() in password.lower():
-                issues.append(f"Password should not contain common patterns like '{pattern}'")
+                issues.append(
+                    f"Password should not contain common patterns like '{pattern}'"
+                )
 
         return len(issues) == 0, issues
 

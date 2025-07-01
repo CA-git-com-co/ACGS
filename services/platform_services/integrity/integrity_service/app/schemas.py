@@ -18,8 +18,12 @@ class PolicyRuleBase(BaseModel):
         max_length=50,
         description="Policy framework: Datalog, Rego, JSON, YAML",
     )
-    principle_text: str | None = Field(None, description="Human-readable principle description")
-    pgp_signature: str | None = Field(None, description="PGP signature for integrity verification")
+    principle_text: str | None = Field(
+        None, description="Human-readable principle description"
+    )
+    pgp_signature: str | None = Field(
+        None, description="PGP signature for integrity verification"
+    )
     source_file: str | None = Field(
         None, max_length=500, description="Source file path for provenance"
     )
@@ -71,7 +75,9 @@ class AuditLogBase(BaseModel):
         ..., description="Name of the service generating the log (e.g., 'ac_service')"
     )
     action: str = Field(..., description="Action performed (e.g., 'CREATE_PRINCIPLE')")
-    user_id: str | None = Field(None, description="Identifier of the user performing the action")
+    user_id: str | None = Field(
+        None, description="Identifier of the user performing the action"
+    )
     details: dict[str, Any] | None = Field(None, description="Event-specific data")
 
 
@@ -101,7 +107,9 @@ class AppealBase(BaseModel):
     appeal_reason: str = Field(..., description="Reason for the appeal")
     evidence: str | None = Field(None, description="Supporting evidence for the appeal")
     requested_remedy: str = Field(..., description="What remedy is being requested")
-    appellant_contact: str | None = Field(None, description="Contact information for the appellant")
+    appellant_contact: str | None = Field(
+        None, description="Contact information for the appellant"
+    )
 
 
 class AppealCreate(AppealBase):
@@ -124,7 +132,9 @@ class Appeal(AppealBase):
     submitted_at: datetime
     resolved_at: datetime | None = None
     assigned_reviewer_id: str | None = None
-    escalation_level: int = 1  # 1=ombudsperson, 2=technical, 3=council_subcommittee, 4=full_council
+    escalation_level: int = (
+        1  # 1=ombudsperson, 2=technical, 3=council_subcommittee, 4=full_council
+    )
 
     class Config:
         from_attributes = True
@@ -136,13 +146,19 @@ class AppealList(BaseModel):
 
 
 class DisputeResolutionBase(BaseModel):
-    appeal_id: int = Field(..., description="ID of the appeal this dispute resolution is for")
+    appeal_id: int = Field(
+        ..., description="ID of the appeal this dispute resolution is for"
+    )
     resolution_method: str = Field(
         ...,
         description="Method of resolution: ombudsperson, technical_review, council_subcommittee, full_council",
     )
-    panel_composition: list[str] | None = Field(None, description="Composition of the review panel")
-    timeline_days: int = Field(default=30, description="Expected timeline for resolution in days")
+    panel_composition: list[str] | None = Field(
+        None, description="Composition of the review panel"
+    )
+    timeline_days: int = Field(
+        default=30, description="Expected timeline for resolution in days"
+    )
 
 
 class DisputeResolutionCreate(DisputeResolutionBase):
@@ -154,9 +170,15 @@ class DisputeResolutionUpdate(BaseModel):
         None,
         description="Resolution status: initiated, in_progress, completed, escalated",
     )
-    findings: str | None = Field(None, description="Findings from the dispute resolution process")
-    recommendations: list[str] | None = Field(None, description="Recommendations from the panel")
-    final_decision: str | None = Field(None, description="Final decision on the dispute")
+    findings: str | None = Field(
+        None, description="Findings from the dispute resolution process"
+    )
+    recommendations: list[str] | None = Field(
+        None, description="Recommendations from the panel"
+    )
+    final_decision: str | None = Field(
+        None, description="Final decision on the dispute"
+    )
 
 
 class DisputeResolution(DisputeResolutionBase):
@@ -223,7 +245,9 @@ class User(BaseModel):
 class CryptoKeyBase(BaseModel):
     key_type: str = Field(..., description="Key type (RSA, ECDSA, Ed25519)")
     key_size: int = Field(..., description="Key size in bits")
-    key_purpose: str = Field(..., description="Key purpose (signing, encryption, timestamping)")
+    key_purpose: str = Field(
+        ..., description="Key purpose (signing, encryption, timestamping)"
+    )
     expires_at: datetime | None = Field(None, description="Key expiration date")
 
 
@@ -238,7 +262,9 @@ class CryptoKey(CryptoKeyBase):
     is_active: bool = Field(..., description="Whether key is active")
     created_at: datetime
     revoked_at: datetime | None = None
-    parent_key_id: str | None = Field(None, description="Previous key in rotation chain")
+    parent_key_id: str | None = Field(
+        None, description="Previous key in rotation chain"
+    )
     rotation_reason: str | None = Field(None, description="Reason for key rotation")
     hsm_key_reference: str | None = Field(None, description="HSM key reference")
 
@@ -283,7 +309,9 @@ class MerkleTreeNode(BaseModel):
     right_child_hash: str | None = None
     level: int = Field(..., description="Tree level (0 = leaf)")
     batch_id: str = Field(..., description="Batch identifier")
-    audit_log_ids: list[int] | None = Field(None, description="Audit log IDs for leaf nodes")
+    audit_log_ids: list[int] | None = Field(
+        None, description="Audit log IDs for leaf nodes"
+    )
     created_at: datetime
 
     class Config:
@@ -291,7 +319,9 @@ class MerkleTreeNode(BaseModel):
 
 
 class MerkleTreeBuild(BaseModel):
-    data_hashes: list[str] = Field(..., description="List of SHA3-256 hashes to build tree from")
+    data_hashes: list[str] = Field(
+        ..., description="List of SHA3-256 hashes to build tree from"
+    )
     batch_id: str = Field(..., description="Batch identifier")
 
 
@@ -310,7 +340,9 @@ class MerkleProof(BaseModel):
 
 class MerkleProofVerification(BaseModel):
     data_hash: str = Field(..., description="Original data hash")
-    proof_elements: list[dict[str, str]] = Field(..., description="Merkle proof elements")
+    proof_elements: list[dict[str, str]] = Field(
+        ..., description="Merkle proof elements"
+    )
     root_hash: str = Field(..., description="Expected root hash")
 
 
@@ -326,7 +358,9 @@ class TimestampRequest(BaseModel):
 
 
 class TimestampResponse(BaseModel):
-    timestamp_token: str = Field(..., description="Base64-encoded RFC 3161 timestamp token")
+    timestamp_token: str = Field(
+        ..., description="Base64-encoded RFC 3161 timestamp token"
+    )
     timestamp_value: datetime = Field(..., description="Extracted timestamp value")
     tsa_url: str = Field(..., description="Timestamp Authority URL")
     hash_algorithm: str = Field(..., description="Hash algorithm used")
@@ -340,7 +374,9 @@ class TimestampVerification(BaseModel):
 
 class TimestampVerificationResult(BaseModel):
     is_valid: bool = Field(..., description="Whether timestamp is valid")
-    timestamp_value: datetime | None = Field(None, description="Extracted timestamp value")
+    timestamp_value: datetime | None = Field(
+        None, description="Extracted timestamp value"
+    )
     tsa_url: str | None = Field(None, description="Timestamp Authority URL")
 
 
@@ -350,10 +386,16 @@ class IntegrityReport(BaseModel):
     entity_type: str = Field(..., description="Type of entity (audit_log, policy_rule)")
     entity_id: int = Field(..., description="Entity ID")
     content_hash: str = Field(..., description="SHA3-256 hash of content")
-    signature_verified: bool = Field(..., description="Digital signature verification status")
+    signature_verified: bool = Field(
+        ..., description="Digital signature verification status"
+    )
     timestamp_verified: bool = Field(..., description="Timestamp verification status")
     merkle_verified: bool = Field(..., description="Merkle proof verification status")
-    chain_integrity: bool = Field(..., description="Chain integrity status (for audit logs)")
+    chain_integrity: bool = Field(
+        ..., description="Chain integrity status (for audit logs)"
+    )
     overall_integrity: bool = Field(..., description="Overall integrity status")
-    verification_details: dict[str, Any] = Field(..., description="Detailed verification results")
+    verification_details: dict[str, Any] = Field(
+        ..., description="Detailed verification results"
+    )
     verified_at: datetime = Field(..., description="Verification timestamp")

@@ -92,7 +92,9 @@ async def synthesize_policy(
     """
     try:
         # Generate unique request ID
-        request_id = f"synthesis_{uuid.uuid4().hex[:8]}_{int(datetime.utcnow().timestamp())}"
+        request_id = (
+            f"synthesis_{uuid.uuid4().hex[:8]}_{int(datetime.utcnow().timestamp())}"
+        )
 
         # Convert API request to internal request format
         synthesis_request = PolicySynthesisRequest(
@@ -125,12 +127,16 @@ async def synthesize_policy(
             ),
         )
 
-        logger.info(f"Policy synthesis completed: {request_id}, success: {response.success}")
+        logger.info(
+            f"Policy synthesis completed: {request_id}, success: {response.success}"
+        )
         return response
 
     except Exception as e:
         logger.error(f"Policy synthesis failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Policy synthesis failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Policy synthesis failed: {str(e)}"
+        )
 
 
 @router.get("/performance", response_model=ModelPerformanceResponse)
@@ -162,7 +168,9 @@ async def get_model_performance() -> ModelPerformanceResponse:
 
     except Exception as e:
         logger.error(f"Failed to get model performance: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to get model performance: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to get model performance: {str(e)}"
+        )
 
 
 @router.get("/health", response_model=ModelHealthResponse)
@@ -191,7 +199,9 @@ async def get_model_health() -> ModelHealthResponse:
             success_rate = model_metrics.get("success_rate", 0.0)
             circuit_breaker_open = model_metrics.get("circuit_breaker_open", False)
 
-            circuit_breaker_status[model_name] = "open" if circuit_breaker_open else "closed"
+            circuit_breaker_status[model_name] = (
+                "open" if circuit_breaker_open else "closed"
+            )
 
             if success_rate >= 0.8 and not circuit_breaker_open:
                 healthy_models.append(model_name)
@@ -200,7 +210,9 @@ async def get_model_health() -> ModelHealthResponse:
 
         # Calculate overall health score
         total_models = len(healthy_models) + len(unhealthy_models)
-        overall_health_score = len(healthy_models) / total_models if total_models > 0 else 0.0
+        overall_health_score = (
+            len(healthy_models) / total_models if total_models > 0 else 0.0
+        )
 
         # Check if reliability targets are met
         overall_metrics = metrics.get("overall", {})
@@ -216,7 +228,9 @@ async def get_model_health() -> ModelHealthResponse:
 
     except Exception as e:
         logger.error(f"Failed to get model health: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to get model health: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to get model health: {str(e)}"
+        )
 
 
 @router.get("/models/config", response_model=ModelSpecializationConfig)
@@ -236,7 +250,9 @@ async def get_model_configuration() -> ModelSpecializationConfig:
 
     except Exception as e:
         logger.error(f"Failed to get model configuration: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to get model configuration: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to get model configuration: {str(e)}"
+        )
 
 
 @router.post("/models/reset-circuit-breakers")
@@ -269,7 +285,9 @@ async def reset_circuit_breakers() -> JSONResponse:
 
     except Exception as e:
         logger.error(f"Failed to reset circuit breakers: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to reset circuit breakers: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to reset circuit breakers: {str(e)}"
+        )
 
 
 async def _log_synthesis_metrics(
@@ -305,7 +323,11 @@ async def get_synthesis_status() -> JSONResponse:
 
         status = {
             "service": "multi_model_synthesis",
-            "status": ("healthy" if (langgraph_available and models_initialized) else "degraded"),
+            "status": (
+                "healthy"
+                if (langgraph_available and models_initialized)
+                else "degraded"
+            ),
             "langgraph_available": langgraph_available,
             "models_initialized": models_initialized,
             "model_count": len(manager.model_clients),

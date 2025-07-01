@@ -63,7 +63,9 @@ async def health_check(service_client: ACGSServiceClient = Depends(get_service_c
 
         # Return appropriate HTTP status
         status_code = (
-            status.HTTP_200_OK if all_dependencies_healthy else status.HTTP_503_SERVICE_UNAVAILABLE
+            status.HTTP_200_OK
+            if all_dependencies_healthy
+            else status.HTTP_503_SERVICE_UNAVAILABLE
         )
 
         return JSONResponse(content=response.dict(), status_code=status_code)
@@ -106,14 +108,16 @@ async def readiness_probe():
 
         if not db_healthy:
             raise HTTPException(
-                status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Database not available"
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Database not available",
             )
 
         return {"status": "ready", "timestamp": datetime.utcnow()}
 
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=f"Service not ready: {str(e)}"
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"Service not ready: {str(e)}",
         )
 
 
@@ -192,7 +196,11 @@ async def _get_memory_stats() -> Dict[str, Any]:
         process = psutil.Process()
         memory_info = process.memory_info()
 
-        return {"rss": memory_info.rss, "vms": memory_info.vms, "percent": process.memory_percent()}
+        return {
+            "rss": memory_info.rss,
+            "vms": memory_info.vms,
+            "percent": process.memory_percent(),
+        }
     except ImportError:
         return {"status": "psutil not available"}
     except Exception:

@@ -89,7 +89,11 @@ class APIResponse(BaseModel):
         # ensures: Correct function execution
         # sha256: func_hash
         """Ensure error is provided when status is error."""
-        if hasattr(info, "data") and info.data.get("status") == APIStatus.ERROR and v is None:
+        if (
+            hasattr(info, "data")
+            and info.data.get("status") == APIStatus.ERROR
+            and v is None
+        ):
             raise ValueError("Error details required when status is error")
         return v
 
@@ -100,7 +104,11 @@ class APIResponse(BaseModel):
         # ensures: Correct function execution
         # sha256: func_hash
         """Ensure data is provided when status is success."""
-        if hasattr(info, "data") and info.data.get("status") == APIStatus.SUCCESS and v is None:
+        if (
+            hasattr(info, "data")
+            and info.data.get("status") == APIStatus.SUCCESS
+            and v is None
+        ):
             # Allow empty data for success responses
             return {}
         return v
@@ -202,7 +210,9 @@ class ConstitutionalComplianceInfo(BaseModel):
     compliance_score: float = Field(ge=0.0, le=1.0)
     violations: list[str] = Field(default_factory=list)
     recommendations: list[str] = Field(default_factory=list)
-    validation_timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    validation_timestamp: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
 
 
 class PerformanceMetrics(BaseModel):

@@ -8,6 +8,7 @@ import re
 import json
 from datetime import datetime, timezone
 
+
 class EnhancedBusinessRuleValidator:
     """Enhanced validator with comprehensive edge case handling."""
 
@@ -24,7 +25,7 @@ class EnhancedBusinessRuleValidator:
             "is_valid": True,
             "errors": [],
             "warnings": [],
-            "sanitized_proposal": proposal.copy()
+            "sanitized_proposal": proposal.copy(),
         }
 
         # Enhanced title validation
@@ -41,7 +42,9 @@ class EnhancedBusinessRuleValidator:
         # Enhanced description validation
         description = proposal.get("description", "")
         if not description or not isinstance(description, str):
-            self.validation_errors.append("Description is required and must be a string")
+            self.validation_errors.append(
+                "Description is required and must be a string"
+            )
         elif len(description.strip()) < 10:
             self.validation_errors.append("Description must be at least 10 characters")
         elif len(description) > 5000:
@@ -49,33 +52,52 @@ class EnhancedBusinessRuleValidator:
 
         # Status validation with edge cases
         status = proposal.get("status", "")
-        valid_statuses = ["draft", "submitted", "under_review", "approved", "rejected", "withdrawn"]
+        valid_statuses = [
+            "draft",
+            "submitted",
+            "under_review",
+            "approved",
+            "rejected",
+            "withdrawn",
+        ]
         if status not in valid_statuses:
-            self.validation_errors.append(f"Status must be one of: {', '.join(valid_statuses)}")
+            self.validation_errors.append(
+                f"Status must be one of: {', '.join(valid_statuses)}"
+            )
 
         # Priority validation
         priority = proposal.get("priority", "")
         valid_priorities = ["low", "medium", "high", "critical"]
         if priority not in valid_priorities:
-            self.validation_errors.append(f"Priority must be one of: {', '.join(valid_priorities)}")
+            self.validation_errors.append(
+                f"Priority must be one of: {', '.join(valid_priorities)}"
+            )
 
         # Date validation
         submitted_at = proposal.get("submitted_at")
         if submitted_at:
             try:
                 if isinstance(submitted_at, str):
-                    datetime.fromisoformat(submitted_at.replace('Z', '+00:00'))
+                    datetime.fromisoformat(submitted_at.replace("Z", "+00:00"))
                 elif not isinstance(submitted_at, datetime):
-                    self.validation_errors.append("submitted_at must be a valid datetime or ISO string")
+                    self.validation_errors.append(
+                        "submitted_at must be a valid datetime or ISO string"
+                    )
             except ValueError:
-                self.validation_errors.append("submitted_at must be a valid ISO datetime string")
+                self.validation_errors.append(
+                    "submitted_at must be a valid ISO datetime string"
+                )
 
         # Approval validation edge cases
         if status == "approved":
             if not proposal.get("approved_by"):
-                self.validation_errors.append("Approved proposals must have approved_by field")
+                self.validation_errors.append(
+                    "Approved proposals must have approved_by field"
+                )
             if not proposal.get("approved_at"):
-                self.validation_errors.append("Approved proposals must have approved_at timestamp")
+                self.validation_errors.append(
+                    "Approved proposals must have approved_at timestamp"
+                )
 
         # Sanitize proposal
         if "title" in result["sanitized_proposal"]:
@@ -98,7 +120,7 @@ class EnhancedBusinessRuleValidator:
             "is_valid": True,
             "errors": [],
             "warnings": [],
-            "sanitized_policy": policy.copy()
+            "sanitized_policy": policy.copy(),
         }
 
         # Policy ID validation
@@ -107,15 +129,17 @@ class EnhancedBusinessRuleValidator:
             self.validation_errors.append("Policy ID is required")
         elif not isinstance(policy_id, str):
             self.validation_errors.append("Policy ID must be a string")
-        elif not re.match(r'^[A-Z]{3}-\d{4}$', policy_id):
+        elif not re.match(r"^[A-Z]{3}-\d{4}$", policy_id):
             self.warnings.append("Policy ID should follow format: ABC-1234")
 
         # Version validation
         version = policy.get("version", "")
         if not version:
             self.validation_errors.append("Policy version is required")
-        elif not re.match(r'^\d+\.\d+\.\d+$', str(version)):
-            self.validation_errors.append("Version must follow semantic versioning (x.y.z)")
+        elif not re.match(r"^\d+\.\d+\.\d+$", str(version)):
+            self.validation_errors.append(
+                "Version must follow semantic versioning (x.y.z)"
+            )
 
         # Content validation
         content = policy.get("content")
@@ -131,11 +155,15 @@ class EnhancedBusinessRuleValidator:
         if effective_date:
             try:
                 if isinstance(effective_date, str):
-                    parsed_date = datetime.fromisoformat(effective_date.replace('Z', '+00:00'))
+                    parsed_date = datetime.fromisoformat(
+                        effective_date.replace("Z", "+00:00")
+                    )
                     if parsed_date < datetime.now(timezone.utc):
                         self.warnings.append("Effective date is in the past")
             except ValueError:
-                self.validation_errors.append("effective_date must be a valid ISO datetime string")
+                self.validation_errors.append(
+                    "effective_date must be a valid ISO datetime string"
+                )
 
         result["errors"] = self.validation_errors.copy()
         result["warnings"] = self.warnings.copy()
@@ -143,7 +171,9 @@ class EnhancedBusinessRuleValidator:
 
         return result
 
-    def validate_constitutional_compliance(self, document: Dict[str, Any]) -> Dict[str, Any]:
+    def validate_constitutional_compliance(
+        self, document: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Validate constitutional compliance with edge case handling."""
         self.validation_errors.clear()
         self.warnings.clear()
@@ -152,7 +182,7 @@ class EnhancedBusinessRuleValidator:
             "is_valid": True,
             "errors": [],
             "warnings": [],
-            "compliance_score": 0.0
+            "compliance_score": 0.0,
         }
 
         # Constitutional hash validation
@@ -161,27 +191,41 @@ class EnhancedBusinessRuleValidator:
             self.validation_errors.append("Constitutional hash is required")
         elif not isinstance(const_hash, str):
             self.validation_errors.append("Constitutional hash must be a string")
-        elif not re.match(r'^[a-f0-9]{16}$', const_hash):
-            self.validation_errors.append("Constitutional hash must be 16 hexadecimal characters")
+        elif not re.match(r"^[a-f0-9]{16}$", const_hash):
+            self.validation_errors.append(
+                "Constitutional hash must be 16 hexadecimal characters"
+            )
 
         # Compliance level validation
         compliance_level = document.get("compliance_level", "")
         valid_levels = ["full", "partial", "non_compliant", "pending", "under_review"]
         if compliance_level not in valid_levels:
-            self.validation_errors.append(f"Compliance level must be one of: {', '.join(valid_levels)}")
+            self.validation_errors.append(
+                f"Compliance level must be one of: {', '.join(valid_levels)}"
+            )
 
         # Required fields validation
-        required_fields = ["constitutional_hash", "compliance_level", "validation_timestamp"]
+        required_fields = [
+            "constitutional_hash",
+            "compliance_level",
+            "validation_timestamp",
+        ]
         missing_fields = [field for field in required_fields if not document.get(field)]
         if missing_fields:
-            self.validation_errors.append(f"Missing required fields: {', '.join(missing_fields)}")
+            self.validation_errors.append(
+                f"Missing required fields: {', '.join(missing_fields)}"
+            )
 
         # High compliance validation
         if compliance_level == "full":
             if not document.get("approved_by"):
-                self.validation_errors.append("Full compliance documents must have approved_by field")
+                self.validation_errors.append(
+                    "Full compliance documents must have approved_by field"
+                )
             if not document.get("approval_timestamp"):
-                self.validation_errors.append("Full compliance documents must have approval_timestamp")
+                self.validation_errors.append(
+                    "Full compliance documents must have approval_timestamp"
+                )
 
         # Calculate compliance score
         score = 0.0
@@ -203,16 +247,20 @@ class EnhancedBusinessRuleValidator:
 
         return result
 
+
 # Global validator instance
 enhanced_validator = EnhancedBusinessRuleValidator()
+
 
 def validate_governance_proposal(proposal: Dict[str, Any]) -> Dict[str, Any]:
     """Main function for validating governance proposals."""
     return enhanced_validator.validate_governance_proposal(proposal)
 
+
 def validate_policy_document(policy: Dict[str, Any]) -> Dict[str, Any]:
     """Main function for validating policy documents."""
     return enhanced_validator.validate_policy_document(policy)
+
 
 def validate_constitutional_compliance(document: Dict[str, Any]) -> Dict[str, Any]:
     """Main function for validating constitutional compliance."""

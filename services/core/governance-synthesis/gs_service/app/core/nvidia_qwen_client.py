@@ -58,7 +58,9 @@ class NVIDIAQwenClient:
     deep reasoning and analysis capabilities.
     """
 
-    def __init__(self, api_key: str, base_url: str = "https://integrate.api.nvidia.com/v1"):
+    def __init__(
+        self, api_key: str, base_url: str = "https://integrate.api.nvidia.com/v1"
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -226,7 +228,9 @@ considering multiple perspectives and potential edge cases.
         Returns:
             QwenReasoningResponse with compliance analysis and reasoning
         """
-        principles_text = "\n".join([f"- {principle}" for principle in constitutional_principles])
+        principles_text = "\n".join(
+            [f"- {principle}" for principle in constitutional_principles]
+        )
 
         prompt = f"""
 CONSTITUTIONAL COMPLIANCE ANALYSIS
@@ -286,7 +290,10 @@ Please format your response as JSON with the following structure:
             QwenReasoningResponse with conflict resolution and reasoning
         """
         policies_text = "\n\n".join(
-            [f"Policy {i+1}:\n{policy}" for i, policy in enumerate(conflicting_policies)]
+            [
+                f"Policy {i+1}:\n{policy}"
+                for i, policy in enumerate(conflicting_policies)
+            ]
         )
 
         prompt = f"""

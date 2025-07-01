@@ -9,7 +9,9 @@ dummy_agent_mod = ModuleType("agent")
 dummy_agent_mod.Agent = object
 dummy_models_pkg = ModuleType("models")
 dummy_models_pkg.__path__ = []  # mark as package
-sys.modules["services.platform_services.authentication.auth_service.app.models"] = dummy_models_pkg
+sys.modules["services.platform_services.authentication.auth_service.app.models"] = (
+    dummy_models_pkg
+)
 sys.modules[
     "services.platform_services.authentication.auth_service.app.models.agent"
 ] = dummy_agent_mod
@@ -27,6 +29,7 @@ mod = runpy.run_module(
     run_name="agent_auth",
 )
 AgentAuthenticationMiddleware = mod["AgentAuthenticationMiddleware"]
+
 
 class FakeRedis:
     def __init__(self):
@@ -57,6 +60,7 @@ class FakeRedis:
     async def close(self):
         pass
 
+
 @pytest.mark.asyncio
 async def test_agent_rate_limit_exceeded():
     redis = FakeRedis()
@@ -68,6 +72,7 @@ async def test_agent_rate_limit_exceeded():
     assert await mw._check_rate_limits(agent, req) is True
     assert await mw._check_rate_limits(agent, req) is True
     assert await mw._check_rate_limits(agent, req) is False
+
 
 @pytest.mark.asyncio
 async def test_rate_limit_reset_after_window():

@@ -143,7 +143,9 @@ class DGMPerformanceOptimizer:
             results["duration_seconds"] = optimization_duration
             results["status"] = "completed"
 
-            logger.info(f"✅ Database optimization completed in {optimization_duration:.2f}s")
+            logger.info(
+                f"✅ Database optimization completed in {optimization_duration:.2f}s"
+            )
 
         except Exception as e:
             results["status"] = "failed"
@@ -160,7 +162,9 @@ class DGMPerformanceOptimizer:
         try:
             async with self.db_manager.get_session() as session:
                 # Enable pg_stat_statements extension
-                await session.execute(text("CREATE EXTENSION IF NOT EXISTS pg_stat_statements"))
+                await session.execute(
+                    text("CREATE EXTENSION IF NOT EXISTS pg_stat_statements")
+                )
 
                 # Reset statistics
                 await session.execute(text("SELECT pg_stat_statements_reset()"))
@@ -321,7 +325,9 @@ class DGMPerformanceOptimizer:
                 for index_sql in indexes:
                     try:
                         await session.execute(text(index_sql))
-                        logger.info(f"✅ Created index: {index_sql.split('idx_')[1].split()[0]}")
+                        logger.info(
+                            f"✅ Created index: {index_sql.split('idx_')[1].split()[0]}"
+                        )
                     except Exception as e:
                         logger.warning(f"⚠️ Index creation warning: {e}")
 
@@ -439,7 +445,9 @@ class DGMPerformanceOptimizer:
                     )
                 )
 
-                cache_ratios = [row[0] for row in result.fetchall() if row[0] is not None]
+                cache_ratios = [
+                    row[0] for row in result.fetchall() if row[0] is not None
+                ]
                 if cache_ratios:
                     metrics.cache_hit_ratio = sum(cache_ratios) / len(cache_ratios)
 
@@ -590,15 +598,21 @@ class DGMPerformanceOptimizer:
 
         if before.avg_query_time > 0:
             improvements["avg_query_time_improvement"] = (
-                (before.avg_query_time - after.avg_query_time) / before.avg_query_time * 100
+                (before.avg_query_time - after.avg_query_time)
+                / before.avg_query_time
+                * 100
             )
 
         if before.slow_query_count > 0:
             improvements["slow_query_reduction"] = (
-                (before.slow_query_count - after.slow_query_count) / before.slow_query_count * 100
+                (before.slow_query_count - after.slow_query_count)
+                / before.slow_query_count
+                * 100
             )
 
-        improvements["cache_hit_ratio_change"] = after.cache_hit_ratio - before.cache_hit_ratio
+        improvements["cache_hit_ratio_change"] = (
+            after.cache_hit_ratio - before.cache_hit_ratio
+        )
 
         return improvements
 
@@ -632,7 +646,10 @@ class DGMPerformanceOptimizer:
 
             # Connection recommendations
             if current_metrics.connection_count > 0:
-                utilization = current_metrics.active_connections / current_metrics.connection_count
+                utilization = (
+                    current_metrics.active_connections
+                    / current_metrics.connection_count
+                )
                 if utilization > self.config.connection_pool_threshold:
                     recommendations.append(
                         f"High connection utilization ({utilization:.2%}). "
@@ -711,8 +728,13 @@ class DGMPerformanceOptimizer:
                 "index_usage": index_usage,
                 "slow_queries": slow_queries,
                 "recommendations": recommendations,
-                "optimization_history": self.optimization_history[-5:],  # Last 5 optimizations
-                "constitutional_compliance": {"hash": "cdd01ef066bc6cf2", "validated": True},
+                "optimization_history": self.optimization_history[
+                    -5:
+                ],  # Last 5 optimizations
+                "constitutional_compliance": {
+                    "hash": "cdd01ef066bc6cf2",
+                    "validated": True,
+                },
             }
 
             return report

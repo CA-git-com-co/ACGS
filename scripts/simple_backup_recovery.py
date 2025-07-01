@@ -13,7 +13,9 @@ from pathlib import Path
 import psutil
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -184,7 +186,9 @@ class SimpleBackupSystem:
             return {
                 "status": "success",
                 "services_checked": len(service_states),
-                "running_services": sum(1 for s in service_states.values() if s["running"]),
+                "running_services": sum(
+                    1 for s in service_states.values() if s["running"]
+                ),
                 "timestamp": datetime.now().isoformat(),
             }
 

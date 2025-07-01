@@ -27,9 +27,11 @@ from typing import Dict, List, Optional
 from dataclasses import dataclass, asdict
 import argparse
 
+
 @dataclass
 class BuildConfig:
     """Build configuration settings."""
+
     latex_engine: str = "pdflatex"
     venue_optimization: Optional[str] = None
     run_tests: bool = True
@@ -39,9 +41,11 @@ class BuildConfig:
     verbose: bool = False
     clean_first: bool = True
 
+
 @dataclass
 class BuildResult:
     """Result of a build step."""
+
     step_name: str
     success: bool
     duration: float
@@ -49,9 +53,10 @@ class BuildResult:
     warnings: List[str]
     errors: List[str]
 
+
 class BuildOrchestrator:
     """Orchestrates the complete build process."""
-    
+
     def __init__(self, config: BuildConfig):
         """Initialize the build orchestrator."""
         self.config = config
@@ -59,62 +64,62 @@ class BuildOrchestrator:
         self.build_dir = self.base_dir / "build"
         self.results: List[BuildResult] = []
         self.start_time = time.time()
-        
+
         # Ensure build directory exists
         self.build_dir.mkdir(exist_ok=True)
-    
+
     def log(self, message: str, level: str = "INFO"):
         """Log a message with timestamp."""
         if self.config.verbose or level in ["ERROR", "WARNING"]:
             timestamp = time.strftime("%H:%M:%S")
             print(f"[{timestamp}] {level}: {message}")
-    
+
     def run_command(self, cmd: List[str], step_name: str) -> BuildResult:
         """Run a command and track the result."""
         self.log(f"Starting {step_name}")
         start_time = time.time()
-        
+
         try:
             result = subprocess.run(
                 cmd,
                 cwd=self.base_dir,
                 capture_output=True,
                 text=True,
-                timeout=600  # 10 minute timeout
+                timeout=600,  # 10 minute timeout
             )
-            
+
             duration = time.time() - start_time
             success = result.returncode == 0
-            
+
             # Parse output for files, warnings, errors
             output_files = []
             warnings = []
             errors = []
-            
+
             if result.stdout:
-                lines = result.stdout.split('\n')
+                lines = result.stdout.split("\n")
                 for line in lines:
-                    if 'warning' in line.lower():
+                    if "warning" in line.lower():
                         warnings.append(line.strip())
-                    elif 'error' in line.lower():
+                    elif "error" in line.lower():
                         errors.append(line.strip())
-                    elif any(ext in line for ext in ['.pdf', '.tar.gz', '.whl', '.md']):
+                    elif any(ext in line for ext in [".pdf", ".tar.gz", ".whl", ".md"]):
                         output_files.append(line.strip())
-            
+
             if result.stderr and not success:
-                errors.extend(result.stderr.split('\n'))
-            
+                errors.extend(result.stderr.split("\n"))
+
             build_result = BuildResult(
                 step_name=step_name,
                 success=success,
                 duration=duration,
                 output_files=output_files,
                 warnings=warnings,
-                errors=errors
+                errors=errors,
             )
-            
+
             self.results.append(build_result)
-            
+
             if success:
                 self.log(f"✅ {step_name} completed in {duration:.2f}s")
             else:
@@ -122,9 +127,9 @@ class BuildOrchestrator:
                 if errors:
                     for error in errors[:3]:  # Show first 3 errors
                         self.log(f"  {error}", "ERROR")
-            
+
             return build_result
-            
+
         except subprocess.TimeoutExpired:
             duration = time.time() - start_time
             build_result = BuildResult(
@@ -133,12 +138,12 @@ class BuildOrchestrator:
                 duration=duration,
                 output_files=[],
                 warnings=[],
-                errors=[f"{step_name} timed out after {duration:.0f}s"]
+                errors=[f"{step_name} timed out after {duration:.0f}s"],
             )
             self.results.append(build_result)
             self.log(f"❌ {step_name} timed out", "ERROR")
             return build_result
-        
+
         except Exception as e:
             duration = time.time() - start_time
             build_result = BuildResult(
@@ -147,79 +152,81 @@ class BuildOrchestrator:
                 duration=duration,
                 output_files=[],
                 warnings=[],
-                errors=[str(e)]
+                errors=[str(e)],
             )
             self.results.append(build_result)
             self.log(f"❌ {step_name} failed: {e}", "ERROR")
             return build_result
-    
+
     def clean_build_artifacts(self) -> BuildResult:
         """Clean previous build artifacts."""
         if not self.config.clean_first:
             return BuildResult("clean", True, 0, [], [], [])
-        
-        return self.run_command([
-            sys.executable, "compiler.py", "clean"
-        ], "Clean Build Artifacts")
-    
+
+        return self.run_command(
+            [sys.executable, "compiler.py", "clean"], "Clean Build Artifacts"
+        )
+
     def compile_latex(self) -> BuildResult:
         """Compile LaTeX paper."""
         cmd = [sys.executable, "latex_compiler.py"]
-        
+
         if self.config.venue_optimization:
             cmd.extend(["--optimize", self.config.venue_optimization])
-        
+
         if self.config.verbose:
             cmd.append("--verbose")
-        
+
         return self.run_command(cmd, "LaTeX Compilation")
-    
+
     def run_tests(self) -> BuildResult:
         """Run test suite."""
         if not self.config.run_tests:
             return BuildResult("tests", True, 0, [], [], [])
-        
-        return self.run_command([
-            sys.executable, "-m", "pytest", "tests/unit/", "-x", "--tb=short"
-        ], "Unit Tests")
-    
+
+        return self.run_command(
+            [sys.executable, "-m", "pytest", "tests/unit/", "-x", "--tb=short"],
+            "Unit Tests",
+        )
+
     def run_linting(self) -> BuildResult:
         """Run code linting."""
         if not self.config.run_linting:
             return BuildResult("linting", True, 0, [], [], [])
-        
-        return self.run_command([
-            "flake8", "quality_assurance", "cli", "web", "--count", "--statistics"
-        ], "Code Linting")
-    
+
+        return self.run_command(
+            ["flake8", "quality_assurance", "cli", "web", "--count", "--statistics"],
+            "Code Linting",
+        )
+
     def build_package(self) -> BuildResult:
         """Build Python package."""
         if not self.config.create_package:
             return BuildResult("package", True, 0, [], [], [])
-        
-        return self.run_command([
-            sys.executable, "compiler.py", "package"
-        ], "Package Build")
-    
+
+        return self.run_command(
+            [sys.executable, "compiler.py", "package"], "Package Build"
+        )
+
     def generate_documentation(self) -> BuildResult:
         """Generate documentation."""
         if not self.config.generate_docs:
             return BuildResult("docs", True, 0, [], [], [])
-        
-        return self.run_command([
-            sys.executable, "compiler.py", "docs"
-        ], "Documentation Generation")
-    
+
+        return self.run_command(
+            [sys.executable, "compiler.py", "docs"], "Documentation Generation"
+        )
+
     def validate_build(self) -> BuildResult:
         """Validate the complete build."""
-        return self.run_command([
-            sys.executable, "compiler.py", "validate"
-        ], "Build Validation")
-    
+        return self.run_command(
+            [sys.executable, "compiler.py", "validate"], "Build Validation"
+        )
+
     def run_full_build(self) -> Dict[str, BuildResult]:
         """Run the complete build process."""
         self.log("🚀 Starting Academic Submission System build")
-        
+
         build_steps = [
             ("clean", self.clean_build_artifacts),
             ("latex", self.compile_latex),
@@ -229,43 +236,47 @@ class BuildOrchestrator:
             ("docs", self.generate_documentation),
             ("validate", self.validate_build),
         ]
-        
+
         results = {}
-        
+
         for step_name, step_function in build_steps:
             result = step_function()
             results[step_name] = result
-            
+
             # Stop on critical failures (except for linting and tests in quick mode)
             if not result.success:
                 if step_name in ["latex", "package"] or (
                     step_name in ["tests", "linting"] and not self.config.run_tests
                 ):
-                    self.log(f"❌ Critical step {step_name} failed, stopping build", "ERROR")
+                    self.log(
+                        f"❌ Critical step {step_name} failed, stopping build", "ERROR"
+                    )
                     break
                 else:
-                    self.log(f"⚠️ Non-critical step {step_name} failed, continuing", "WARNING")
-        
+                    self.log(
+                        f"⚠️ Non-critical step {step_name} failed, continuing", "WARNING"
+                    )
+
         total_duration = time.time() - self.start_time
         successful_steps = sum(1 for r in results.values() if r.success)
         total_steps = len(results)
-        
+
         self.log(f"🏁 Build completed in {total_duration:.2f}s")
         self.log(f"📊 Success rate: {successful_steps}/{total_steps} steps")
-        
+
         if successful_steps == total_steps:
             self.log("✅ Build successful!")
         else:
             self.log("❌ Build completed with issues", "WARNING")
-        
+
         return results
-    
+
     def generate_build_report(self, results: Dict[str, BuildResult]) -> str:
         """Generate a comprehensive build report."""
         total_duration = time.time() - self.start_time
         successful_steps = sum(1 for r in results.values() if r.success)
         total_steps = len(results)
-        
+
         report_lines = [
             "# Academic Submission System Build Report",
             f"Generated: {time.strftime('%Y-%m-%d %H:%M:%S')}",
@@ -282,30 +293,34 @@ class BuildOrchestrator:
             f"- **Total Duration**: {total_duration:.2f} seconds",
             f"- **Successful Steps**: {successful_steps}/{total_steps}",
             f"- **Overall Status**: {'✅ SUCCESS' if successful_steps == total_steps else '❌ PARTIAL FAILURE'}",
-            ""
+            "",
         ]
-        
+
         # Step details
         for step_name, result in results.items():
             status = "✅ SUCCESS" if result.success else "❌ FAILED"
-            report_lines.extend([
-                f"### {step_name.title()}",
-                f"- **Status**: {status}",
-                f"- **Duration**: {result.duration:.2f} seconds",
-                f"- **Output Files**: {len(result.output_files)}",
-                f"- **Warnings**: {len(result.warnings)}",
-                f"- **Errors**: {len(result.errors)}",
-                ""
-            ])
-            
+            report_lines.extend(
+                [
+                    f"### {step_name.title()}",
+                    f"- **Status**: {status}",
+                    f"- **Duration**: {result.duration:.2f} seconds",
+                    f"- **Output Files**: {len(result.output_files)}",
+                    f"- **Warnings**: {len(result.warnings)}",
+                    f"- **Errors**: {len(result.errors)}",
+                    "",
+                ]
+            )
+
             if result.output_files:
                 report_lines.append("**Output Files:**")
                 for file_path in result.output_files[:10]:  # Limit to 10 files
                     report_lines.append(f"- {file_path}")
                 if len(result.output_files) > 10:
-                    report_lines.append(f"- ... and {len(result.output_files) - 10} more")
+                    report_lines.append(
+                        f"- ... and {len(result.output_files) - 10} more"
+                    )
                 report_lines.append("")
-            
+
             if result.warnings:
                 report_lines.append("**Warnings:**")
                 for warning in result.warnings[:5]:  # Limit to 5 warnings
@@ -313,7 +328,7 @@ class BuildOrchestrator:
                 if len(result.warnings) > 5:
                     report_lines.append(f"- ... and {len(result.warnings) - 5} more")
                 report_lines.append("")
-            
+
             if result.errors:
                 report_lines.append("**Errors:**")
                 for error in result.errors[:5]:  # Limit to 5 errors
@@ -321,35 +336,32 @@ class BuildOrchestrator:
                 if len(result.errors) > 5:
                     report_lines.append(f"- ... and {len(result.errors) - 5} more")
                 report_lines.append("")
-        
+
         # Build artifacts summary
         all_output_files = []
         for result in results.values():
             all_output_files.extend(result.output_files)
-        
+
         if all_output_files:
-            report_lines.extend([
-                "## Build Artifacts",
-                ""
-            ])
-            
+            report_lines.extend(["## Build Artifacts", ""])
+
             # Group by type
-            pdfs = [f for f in all_output_files if f.endswith('.pdf')]
-            packages = [f for f in all_output_files if f.endswith(('.tar.gz', '.whl'))]
-            docs = [f for f in all_output_files if f.endswith('.md')]
-            
+            pdfs = [f for f in all_output_files if f.endswith(".pdf")]
+            packages = [f for f in all_output_files if f.endswith((".tar.gz", ".whl"))]
+            docs = [f for f in all_output_files if f.endswith(".md")]
+
             if pdfs:
                 report_lines.append("**PDF Documents:**")
                 for pdf in pdfs:
                     report_lines.append(f"- {pdf}")
                 report_lines.append("")
-            
+
             if packages:
                 report_lines.append("**Python Packages:**")
                 for pkg in packages:
                     report_lines.append(f"- {pkg}")
                 report_lines.append("")
-            
+
             if docs:
                 report_lines.append("**Documentation:**")
                 for doc in docs[:5]:  # Limit to 5 docs
@@ -357,89 +369,75 @@ class BuildOrchestrator:
                 if len(docs) > 5:
                     report_lines.append(f"- ... and {len(docs) - 5} more")
                 report_lines.append("")
-        
+
         return "\n".join(report_lines)
-    
+
     def save_build_metadata(self, results: Dict[str, BuildResult]):
         """Save build metadata as JSON."""
         metadata = {
-            "build_time": time.strftime('%Y-%m-%d %H:%M:%S'),
+            "build_time": time.strftime("%Y-%m-%d %H:%M:%S"),
             "total_duration": time.time() - self.start_time,
             "config": asdict(self.config),
             "results": {name: asdict(result) for name, result in results.items()},
-            "success": all(r.success for r in results.values())
+            "success": all(r.success for r in results.values()),
         }
-        
+
         metadata_file = self.build_dir / "build_metadata.json"
-        with open(metadata_file, 'w') as f:
+        with open(metadata_file, "w") as f:
             json.dump(metadata, f, indent=2)
-        
+
         self.log(f"Build metadata saved to {metadata_file}")
+
 
 def main():
     """Main entry point for the build script."""
     parser = argparse.ArgumentParser(
         description="Academic Submission System Build Script",
-        formatter_class=argparse.RawDescriptionHelpFormatter
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    
+
     parser.add_argument(
-        "--quick", "-q",
+        "--quick",
+        "-q",
         action="store_true",
-        help="Quick build (skip tests and linting)"
+        help="Quick build (skip tests and linting)",
     )
-    
+
+    parser.add_argument("--latex-only", action="store_true", help="Compile LaTeX only")
+
     parser.add_argument(
-        "--latex-only",
-        action="store_true",
-        help="Compile LaTeX only"
+        "--package-only", action="store_true", help="Build Python package only"
     )
-    
+
     parser.add_argument(
-        "--package-only",
-        action="store_true",
-        help="Build Python package only"
+        "--release", action="store_true", help="Release build with all checks"
     )
-    
-    parser.add_argument(
-        "--release",
-        action="store_true",
-        help="Release build with all checks"
-    )
-    
+
     parser.add_argument(
         "--engine",
         choices=["pdflatex", "xelatex", "lualatex"],
         default="pdflatex",
-        help="LaTeX engine to use"
+        help="LaTeX engine to use",
     )
-    
+
     parser.add_argument(
-        "--venue",
-        choices=["arxiv", "ieee", "acm"],
-        help="Optimize for specific venue"
+        "--venue", choices=["arxiv", "ieee", "acm"], help="Optimize for specific venue"
     )
-    
+
     parser.add_argument(
-        "--verbose", "-v",
-        action="store_true",
-        help="Enable verbose output"
+        "--verbose", "-v", action="store_true", help="Enable verbose output"
     )
-    
+
     parser.add_argument(
-        "--no-clean",
-        action="store_true",
-        help="Don't clean before building"
+        "--no-clean", action="store_true", help="Don't clean before building"
     )
-    
+
     parser.add_argument(
-        "--report", "-r",
-        action="store_true",
-        help="Generate build report"
+        "--report", "-r", action="store_true", help="Generate build report"
     )
-    
+
     args = parser.parse_args()
-    
+
     # Configure build
     config = BuildConfig(
         latex_engine=args.engine,
@@ -449,18 +447,18 @@ def main():
         generate_docs=not args.latex_only and not args.package_only,
         create_package=not args.latex_only,
         verbose=args.verbose,
-        clean_first=not args.no_clean
+        clean_first=not args.no_clean,
     )
-    
+
     if args.release:
         config.run_tests = True
         config.run_linting = True
         config.generate_docs = True
         config.create_package = True
-    
+
     # Run build
     orchestrator = BuildOrchestrator(config)
-    
+
     if args.latex_only:
         result = orchestrator.compile_latex()
         results = {"latex": result}
@@ -469,7 +467,7 @@ def main():
         results = {"package": result}
     else:
         results = orchestrator.run_full_build()
-    
+
     # Generate report if requested
     if args.report:
         report = orchestrator.generate_build_report(results)
@@ -477,13 +475,14 @@ def main():
         with open(report_file, "w") as f:
             f.write(report)
         print(f"Build report saved to {report_file}")
-    
+
     # Save metadata
     orchestrator.save_build_metadata(results)
-    
+
     # Exit with appropriate code
     all_successful = all(result.success for result in results.values())
     sys.exit(0 if all_successful else 1)
+
 
 if __name__ == "__main__":
     main()

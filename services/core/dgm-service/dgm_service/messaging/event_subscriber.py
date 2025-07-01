@@ -62,7 +62,9 @@ class EventSubscriber:
 
             # Create wrapper handler for event processing
             async def event_handler(
-                subject: str, data: Dict[str, Any], headers: Optional[Dict[str, str]] = None
+                subject: str,
+                data: Dict[str, Any],
+                headers: Optional[Dict[str, str]] = None,
             ):
                 await self._process_event(event_type, handler, data, headers)
 
@@ -168,7 +170,9 @@ class EventSubscriber:
         )
         return success_count == len(constitutional_events)
 
-    async def subscribe_to_bandit(self, handler: Callable, queue_group: str = "dgm-bandit") -> bool:
+    async def subscribe_to_bandit(
+        self, handler: Callable, queue_group: str = "dgm-bandit"
+    ) -> bool:
         """Subscribe to all bandit algorithm events."""
         bandit_events = [
             EventType.BANDIT_ARM_SELECTED,
@@ -183,7 +187,9 @@ class EventSubscriber:
             if await self.subscribe_to_event(event_type, handler, queue_group):
                 success_count += 1
 
-        self.logger.info(f"Subscribed to {success_count}/{len(bandit_events)} bandit events")
+        self.logger.info(
+            f"Subscribed to {success_count}/{len(bandit_events)} bandit events"
+        )
         return success_count == len(bandit_events)
 
     async def subscribe_to_pattern(
@@ -197,9 +203,13 @@ class EventSubscriber:
         try:
             # Create wrapper handler for pattern processing
             async def pattern_handler(
-                subject: str, data: Dict[str, Any], headers: Optional[Dict[str, str]] = None
+                subject: str,
+                data: Dict[str, Any],
+                headers: Optional[Dict[str, str]] = None,
             ):
-                await self._process_pattern_event(subject_pattern, handler, subject, data, headers)
+                await self._process_pattern_event(
+                    subject_pattern, handler, subject, data, headers
+                )
 
             # Subscribe to NATS pattern
             success = await self.nats_client.subscribe(
@@ -253,7 +263,9 @@ class EventSubscriber:
             await handler(event_type, event_data, event_metadata)
 
             self.metrics["messages_processed"] += 1
-            self.logger.debug(f"Processed {event_type.value} event: {event_metadata['event_id']}")
+            self.logger.debug(
+                f"Processed {event_type.value} event: {event_metadata['event_id']}"
+            )
 
         except Exception as e:
             self.metrics["messages_failed"] += 1
@@ -289,7 +301,9 @@ class EventSubscriber:
             await handler(subject, event_data, event_metadata)
 
             self.metrics["messages_processed"] += 1
-            self.logger.debug(f"Processed pattern event on {subject}: {event_metadata['event_id']}")
+            self.logger.debug(
+                f"Processed pattern event on {subject}: {event_metadata['event_id']}"
+            )
 
         except Exception as e:
             self.metrics["messages_failed"] += 1
@@ -304,7 +318,9 @@ class EventSubscriber:
         try:
             # Log error details
             event_id = data.get("event_id", "unknown")
-            self.logger.error(f"Processing error for {identifier} event {event_id}: {error}")
+            self.logger.error(
+                f"Processing error for {identifier} event {event_id}: {error}"
+            )
 
             # TODO: Implement sophisticated error handling:
             # 1. Retry with exponential backoff

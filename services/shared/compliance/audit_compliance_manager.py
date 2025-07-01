@@ -226,7 +226,10 @@ class AuditComplianceManager:
                 validation_logic="gdpr_lawful_basis is not None",
                 severity="HIGH",
                 remediation_guidance="Specify lawful basis for data processing",
-                applicable_events=[AuditEventType.DATA_ACCESS, AuditEventType.DATA_MODIFICATION],
+                applicable_events=[
+                    AuditEventType.DATA_ACCESS,
+                    AuditEventType.DATA_MODIFICATION,
+                ],
             ),
             ComplianceRule(
                 rule_id="GDPR_002",
@@ -252,7 +255,10 @@ class AuditComplianceManager:
                 validation_logic="data_classification == 'financial' and user_id is not None",
                 severity="CRITICAL",
                 remediation_guidance="Ensure proper authorization for financial data access",
-                applicable_events=[AuditEventType.DATA_ACCESS, AuditEventType.DATA_MODIFICATION],
+                applicable_events=[
+                    AuditEventType.DATA_ACCESS,
+                    AuditEventType.DATA_MODIFICATION,
+                ],
             )
         ]
 
@@ -383,7 +389,10 @@ class AuditComplianceManager:
         if data_classification == DataClassification.FINANCIAL:
             frameworks.append(ComplianceFramework.SOX)
 
-        if constitutional_impact or data_classification == DataClassification.CONSTITUTIONAL:
+        if (
+            constitutional_impact
+            or data_classification == DataClassification.CONSTITUTIONAL
+        ):
             frameworks.append(ComplianceFramework.CONSTITUTIONAL_GOVERNANCE)
 
         return frameworks
@@ -394,7 +403,9 @@ class AuditComplianceManager:
 
         signature = self.signing_key.sign(
             content,
-            padding.PSS(mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH),
+            padding.PSS(
+                mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH
+            ),
             hashes.SHA256(),
         )
 
@@ -421,7 +432,10 @@ class AuditComplianceManager:
             self.verification_key.verify(
                 signature,
                 content,
-                padding.PSS(mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH),
+                padding.PSS(
+                    mgf=padding.MGF1(hashes.SHA256()),
+                    salt_length=padding.PSS.MAX_LENGTH,
+                ),
                 hashes.SHA256(),
             )
 
@@ -441,7 +455,9 @@ class AuditComplianceManager:
         for event in self.audit_events:
             # Verify event signature
             if not self.verify_event_signature(event):
-                logger.error(f"Signature verification failed for event {event.event_id}")
+                logger.error(
+                    f"Signature verification failed for event {event.event_id}"
+                )
                 return False
 
             # Verify chain hash
@@ -473,7 +489,8 @@ class AuditComplianceManager:
                             severity=rule.severity,
                             description=f"Violation of {rule.title}: {rule.description}",
                             remediation_required=rule.severity in ["HIGH", "CRITICAL"],
-                            remediation_deadline=datetime.now(timezone.utc) + timedelta(days=30),
+                            remediation_deadline=datetime.now(timezone.utc)
+                            + timedelta(days=30),
                             status="OPEN",
                         )
 
@@ -488,7 +505,9 @@ class AuditComplianceManager:
                             event_id=event.event_id,
                         )
 
-    def _evaluate_compliance_rule(self, rule: ComplianceRule, event: AuditEvent) -> bool:
+    def _evaluate_compliance_rule(
+        self, rule: ComplianceRule, event: AuditEvent
+    ) -> bool:
         """Evaluate compliance rule against event (simplified implementation)."""
         # This is a simplified rule evaluation
         # In production, use a proper rule engine like OPA
@@ -524,13 +543,16 @@ class AuditComplianceManager:
         relevant_violations = [
             violation
             for violation in self.violations
-            if violation.framework == framework and start_date <= violation.timestamp <= end_date
+            if violation.framework == framework
+            and start_date <= violation.timestamp <= end_date
         ]
 
         # Calculate compliance metrics
         total_events = len(relevant_events)
         total_violations = len(relevant_violations)
-        compliance_rate = ((total_events - total_violations) / max(total_events, 1)) * 100
+        compliance_rate = (
+            (total_events - total_violations) / max(total_events, 1)
+        ) * 100
 
         # Group violations by severity
         violations_by_severity = {}
@@ -609,7 +631,9 @@ class AuditComplianceManager:
                 self._anonymize_ip(event.ip_address) if event.ip_address else None
             )
             anonymized_event.data_subject_id = (
-                self._hash_identifier(event.data_subject_id) if event.data_subject_id else None
+                self._hash_identifier(event.data_subject_id)
+                if event.data_subject_id
+                else None
             )
 
             # Anonymize details that might contain PII
@@ -635,7 +659,10 @@ class AuditComplianceManager:
         anonymized = {}
 
         for key, value in details.items():
-            if any(pii_field in key.lower() for pii_field in ["email", "name", "phone", "address"]):
+            if any(
+                pii_field in key.lower()
+                for pii_field in ["email", "name", "phone", "address"]
+            ):
                 anonymized[key] = "[ANONYMIZED]"
             else:
                 anonymized[key] = value
@@ -647,7 +674,9 @@ class AuditComplianceManager:
 audit_compliance_manager = None
 
 
-def initialize_audit_compliance_manager(signing_key: Optional[rsa.RSAPrivateKey] = None):
+def initialize_audit_compliance_manager(
+    signing_key: Optional[rsa.RSAPrivateKey] = None,
+):
     """Initialize the global audit compliance manager."""
     global audit_compliance_manager
     audit_compliance_manager = AuditComplianceManager(signing_key)

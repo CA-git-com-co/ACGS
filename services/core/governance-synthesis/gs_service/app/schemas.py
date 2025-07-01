@@ -7,7 +7,9 @@ from pydantic import BaseModel, Field, field_validator
 
 # Schemas for Policy Templates
 class GSTemplateBase(BaseModel):
-    name: str = Field(..., min_length=3, description="Unique name for the policy template")
+    name: str = Field(
+        ..., min_length=3, description="Unique name for the policy template"
+    )
     description: str | None = None
     default_content: str = Field(
         ...,
@@ -49,15 +51,21 @@ class GSTemplateListResponse(BaseModel):
 
 # Schemas for Policies (instantiated from templates or created directly)
 class GSPolicyBase(BaseModel):
-    name: str = Field(..., min_length=3, description="Unique name for the policy instance")
+    name: str = Field(
+        ..., min_length=3, description="Unique name for the policy instance"
+    )
     description: str | None = None
     # Content is the P-IR/Datalog, can be raw or instantiated from a template
-    content: str = Field(..., description="The policy content (e.g., Datalog rules, Rego)")
+    content: str = Field(
+        ..., description="The policy content (e.g., Datalog rules, Rego)"
+    )
     status: str = Field(
         default="draft_pending_synthesis",
         description="Lifecycle status of the policy instance",
     )
-    template_id: int | None = Field(None, description="ID of the PolicyTemplate used, if any")
+    template_id: int | None = Field(
+        None, description="ID of the PolicyTemplate used, if any"
+    )
     # Parameters used to customize the template to produce this policy instance's content
     customization_parameters: dict[str, Any] | None = Field(
         None, description="Parameters used for template customization"
@@ -79,7 +87,9 @@ class GSPolicyCreate(GSPolicyBase):
         # ensures: Correct function execution
         # sha256: func_hash
         info.data if hasattr(info, "data") else {}
-        if (info.data if hasattr(info, "data") else {}).get("template_id") is None and v is None:
+        if (info.data if hasattr(info, "data") else {}).get(
+            "template_id"
+        ) is None and v is None:
             raise ValueError("Either template_id or content must be provided")
         # If template_id is provided, content might be generated, so it can be None initially.
         # If content is provided, it implies direct policy creation.
@@ -118,7 +128,9 @@ class GSPolicyListResponse(BaseModel):
 
 
 # Re-define synthesis request if it now takes a GSPolicy ID
-class SynthesisRequest(BaseModel):  # This was already in gs_service/app/schemas.py (or should be)
+class SynthesisRequest(
+    BaseModel
+):  # This was already in gs_service/app/schemas.py (or should be)
     # If synthesis now operates on a pre-created Policy instance:
     policy_id: int | None = Field(
         None,
@@ -140,8 +152,12 @@ class SynthesisRequest(BaseModel):  # This was already in gs_service/app/schemas
         # ensures: Correct function execution
         # sha256: func_hash
         info.data if hasattr(info, "data") else {}
-        if (info.data if hasattr(info, "data") else {}).get("policy_id") is None and v is None:
-            raise ValueError("Either policy_id or principles must be provided for synthesis")
+        if (info.data if hasattr(info, "data") else {}).get(
+            "policy_id"
+        ) is None and v is None:
+            raise ValueError(
+                "Either policy_id or principles must be provided for synthesis"
+            )
         return v
 
 
@@ -152,7 +168,9 @@ class SynthesisRequest(BaseModel):  # This was already in gs_service/app/schemas
 # the content explicitly listed in section 3.a of the issue is safer.
 
 
-class ACPrinciple(BaseModel):  # From original SynthesisRequest, may or may not be needed elsewhere
+class ACPrinciple(
+    BaseModel
+):  # From original SynthesisRequest, may or may not be needed elsewhere
     id: int
     name: str
     description: str | None = None
@@ -220,18 +238,30 @@ class ConstitutionalSynthesisInput(BaseModel):
     """Input for constitutional synthesis with AC principles integration."""
 
     context: str = Field(..., description="Target context for policy synthesis")
-    category: str | None = Field(None, description="Optional category filter for principles")
-    synthesis_request: str = Field(..., description="Specific synthesis request description")
-    target_format: str = Field("datalog", description="Target format for generated policies")
-    auth_token: str | None = Field(None, description="Authentication token for AC service")
+    category: str | None = Field(
+        None, description="Optional category filter for principles"
+    )
+    synthesis_request: str = Field(
+        ..., description="Specific synthesis request description"
+    )
+    target_format: str = Field(
+        "datalog", description="Target format for generated policies"
+    )
+    auth_token: str | None = Field(
+        None, description="Authentication token for AC service"
+    )
 
 
 class ConstitutionalComplianceInfo(BaseModel):
     """Information about constitutional compliance of generated policies."""
 
-    principle_id: int = Field(..., description="ID of the principle that influenced this rule")
+    principle_id: int = Field(
+        ..., description="ID of the principle that influenced this rule"
+    )
     principle_name: str = Field(..., description="Name of the principle")
-    priority_weight: float | None = Field(None, description="Priority weight of the principle")
+    priority_weight: float | None = Field(
+        None, description="Priority weight of the principle"
+    )
     influence_level: str = Field(
         ..., description="Level of influence (CRITICAL, HIGH, MEDIUM, LOW)"
     )
@@ -244,7 +274,9 @@ class ConstitutionallyCompliantRule(BaseModel):
     """A rule generated with constitutional compliance information."""
 
     rule_content: str = Field(..., description="The generated rule content")
-    rule_format: str = Field(..., description="Format of the rule (datalog, rego, etc.)")
+    rule_format: str = Field(
+        ..., description="Format of the rule (datalog, rego, etc.)"
+    )
     constitutional_compliance: list[ConstitutionalComplianceInfo] = Field(
         ..., description="Constitutional compliance information"
     )
@@ -252,7 +284,9 @@ class ConstitutionallyCompliantRule(BaseModel):
         ...,
         description="Explanation of how the rule satisfies constitutional principles",
     )
-    confidence: float = Field(..., ge=0.0, le=1.0, description="Confidence in the rule generation")
+    confidence: float = Field(
+        ..., ge=0.0, le=1.0, description="Confidence in the rule generation"
+    )
 
 
 class ConstitutionalSynthesisOutput(BaseModel):
@@ -336,8 +370,12 @@ class ECProposal(BaseModel):
     proposal_id: str = Field(..., description="Unique identifier for the EC proposal")
     solution_code: str = Field(..., description="Generated solution code to evaluate")
     generation: int = Field(..., description="Generation number in EC process")
-    parent_ids: list[str] = Field(default_factory=list, description="Parent solution IDs")
-    fitness_context: dict[str, Any] = Field(..., description="Context for fitness evaluation")
+    parent_ids: list[str] = Field(
+        default_factory=list, description="Parent solution IDs"
+    )
+    fitness_context: dict[str, Any] = Field(
+        ..., description="Context for fitness evaluation"
+    )
     metadata: dict[str, Any] | None = Field(None, description="Additional EC metadata")
 
 
@@ -346,11 +384,15 @@ class ECGovernanceDecision(BaseModel):
 
     proposal_id: str = Field(..., description="ID of the evaluated proposal")
     decision: str = Field(..., description="Governance decision (allow/deny/modify)")
-    confidence: float = Field(..., ge=0.0, le=1.0, description="Confidence in the decision")
+    confidence: float = Field(
+        ..., ge=0.0, le=1.0, description="Confidence in the decision"
+    )
     violated_principles: list[str] = Field(
         default_factory=list, description="IDs of violated principles"
     )
-    governance_penalty: float = Field(0.0, description="Penalty score for fitness function")
+    governance_penalty: float = Field(
+        0.0, description="Penalty score for fitness function"
+    )
     explanation: str = Field(..., description="Human-readable explanation of decision")
     enforcement_actions: list[str] = Field(
         default_factory=list, description="Required enforcement actions"
@@ -362,23 +404,33 @@ class ECConstitutionalPromptingInput(BaseModel):
     """Input for constitutional prompting in EC context"""
 
     ec_context: str = Field(..., description="Evolutionary computation context")
-    current_population: list[ECProposal] = Field(..., description="Current EC population")
+    current_population: list[ECProposal] = Field(
+        ..., description="Current EC population"
+    )
     optimization_objective: str = Field(..., description="EC optimization objective")
     constitutional_constraints: list[str] = Field(
         ..., description="Constitutional constraints to apply"
     )
-    generation_guidance: bool = Field(True, description="Whether to provide generation guidance")
+    generation_guidance: bool = Field(
+        True, description="Whether to provide generation guidance"
+    )
 
 
 class ECConstitutionalPromptingOutput(BaseModel):
     """Output from constitutional prompting for EC"""
 
-    prompting_id: str = Field(..., description="Unique identifier for this prompting session")
-    constitutional_guidance: str = Field(..., description="Constitutional guidance for EC system")
+    prompting_id: str = Field(
+        ..., description="Unique identifier for this prompting session"
+    )
+    constitutional_guidance: str = Field(
+        ..., description="Constitutional guidance for EC system"
+    )
     fitness_modifications: dict[str, Any] = Field(
         ..., description="Suggested fitness function modifications"
     )
-    operator_constraints: list[str] = Field(..., description="Constraints for EC operators")
+    operator_constraints: list[str] = Field(
+        ..., description="Constraints for EC operators"
+    )
     population_filters: list[str] = Field(..., description="Population filtering rules")
     synthesis_metadata: dict[str, Any] = Field(
         ..., description="Metadata about the prompting process"
@@ -392,7 +444,9 @@ class ECGovernanceRequest(BaseModel):
     context: str = Field(..., description="Governance context")
     real_time: bool = Field(True, description="Whether this is a real-time evaluation")
     batch_size: int | None = Field(None, description="Batch size for processing")
-    priority: str = Field("normal", description="Processing priority (low/normal/high/critical)")
+    priority: str = Field(
+        "normal", description="Processing priority (low/normal/high/critical)"
+    )
 
 
 class ECGovernanceResponse(BaseModel):
@@ -402,9 +456,15 @@ class ECGovernanceResponse(BaseModel):
     decisions: list[ECGovernanceDecision] = Field(
         ..., description="Governance decisions for each proposal"
     )
-    batch_summary: dict[str, Any] = Field(..., description="Summary statistics for the batch")
-    processing_time_ms: float = Field(..., description="Processing time in milliseconds")
-    constitutional_compliance_rate: float = Field(..., description="Overall compliance rate")
+    batch_summary: dict[str, Any] = Field(
+        ..., description="Summary statistics for the batch"
+    )
+    processing_time_ms: float = Field(
+        ..., description="Processing time in milliseconds"
+    )
+    constitutional_compliance_rate: float = Field(
+        ..., description="Overall compliance rate"
+    )
     recommendations: list[str] = Field(
         default_factory=list, description="Recommendations for EC system"
     )

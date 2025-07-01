@@ -44,9 +44,7 @@ def diff_versus_commit(git_dname, commit):
     """
     # Get diff of tracked files
     diff_cmd = ["git", "-C", git_dname, "diff", commit]
-    result = subprocess.run(
-        diff_cmd, capture_output=True, check=False
-    )
+    result = subprocess.run(diff_cmd, capture_output=True, check=False)
     diff_output = result.stdout.decode()
 
     # Get list of untracked files
@@ -58,9 +56,7 @@ def diff_versus_commit(git_dname, commit):
         "--others",
         "--exclude-standard",
     ]
-    result = subprocess.run(
-        untracked_files_cmd, capture_output=True, check=False
-    )
+    result = subprocess.run(untracked_files_cmd, capture_output=True, check=False)
     untracked_files = result.stdout.decode().splitlines()
 
     # Generate diffs for untracked files

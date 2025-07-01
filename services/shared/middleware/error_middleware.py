@@ -27,7 +27,12 @@ from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.types import ASGIApp
 
-from ..errors.error_catalog import ErrorCategory, ErrorSeverity, ServiceCode, get_error_definition
+from ..errors.error_catalog import (
+    ErrorCategory,
+    ErrorSeverity,
+    ServiceCode,
+    get_error_definition,
+)
 from ..errors.http_status_mapping import (
     get_error_response_headers,
     get_http_status_code,
@@ -136,7 +141,9 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
         try:
             from pydantic import ValidationError
 
-            self.register_exception_handler(ValidationError, self._handle_validation_error)
+            self.register_exception_handler(
+                ValidationError, self._handle_validation_error
+            )
         except ImportError:
             pass
 
@@ -144,7 +151,9 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
         try:
             from sqlalchemy.exc import SQLAlchemyError
 
-            self.register_exception_handler(SQLAlchemyError, self._handle_database_error)
+            self.register_exception_handler(
+                SQLAlchemyError, self._handle_database_error
+            )
         except ImportError:
             pass
 
@@ -152,7 +161,9 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
         try:
             import httpx
 
-            self.register_exception_handler(httpx.RequestError, self._handle_external_service_error)
+            self.register_exception_handler(
+                httpx.RequestError, self._handle_external_service_error
+            )
             self.register_exception_handler(
                 httpx.HTTPStatusError, self._handle_external_service_error
             )
@@ -160,7 +171,9 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
             pass
 
         # Timeout errors
-        self.register_exception_handler(asyncio.TimeoutError, self._handle_timeout_error)
+        self.register_exception_handler(
+            asyncio.TimeoutError, self._handle_timeout_error
+        )
         self.register_exception_handler(TimeoutError, self._handle_timeout_error)
 
     def register_exception_handler(
@@ -229,7 +242,9 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
                 self.active_requests[request_id]["processing_time"] = processing_time
                 del self.active_requests[request_id]
 
-    async def _handle_exception(self, exc: Exception, request: Request) -> ErrorJSONResponse:
+    async def _handle_exception(
+        self, exc: Exception, request: Request
+    ) -> ErrorJSONResponse:
         """Handle exception and create appropriate error response."""
 
         # Set request context
@@ -251,7 +266,9 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
             exc, self.service_name, request.state.request_id
         )
 
-    async def _handle_validation_error(self, exc, request: Request) -> ErrorJSONResponse:
+    async def _handle_validation_error(
+        self, exc, request: Request
+    ) -> ErrorJSONResponse:
         """Handle Pydantic validation errors."""
         validation_errors = []
 
@@ -276,13 +293,17 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
             details={
                 "database_error": True,
                 "error_type": type(exc).__name__,
-                "error_message": str(exc) if self.debug_mode else "Database operation failed",
+                "error_message": (
+                    str(exc) if self.debug_mode else "Database operation failed"
+                ),
             }
         )
 
         return ErrorJSONResponse(error_response, status_code=500)
 
-    async def _handle_external_service_error(self, exc, request: Request) -> ErrorJSONResponse:
+    async def _handle_external_service_error(
+        self, exc, request: Request
+    ) -> ErrorJSONResponse:
         """Handle external service errors."""
         service_name = "unknown"
         error_details = str(exc)
@@ -297,7 +318,9 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
 
         return ErrorJSONResponse(error_response, status_code=503)
 
-    async def _handle_timeout_error(self, exc: Exception, request: Request) -> ErrorJSONResponse:
+    async def _handle_timeout_error(
+        self, exc: Exception, request: Request
+    ) -> ErrorJSONResponse:
         """Handle timeout errors."""
         error_response = self.error_builder.from_error_code(
             "SHARED_SYSTEM_ERROR_002",
@@ -316,9 +339,13 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
         error_details = {"error_id": error_id, "error_type": type(exc).__name__}
 
         if self.debug_mode:
-            error_details.update({"error_message": str(exc), "traceback": traceback.format_exc()})
+            error_details.update(
+                {"error_message": str(exc), "traceback": traceback.format_exc()}
+            )
 
-        error_response = self.error_builder.system_error(error_id=error_id, details=error_details)
+        error_response = self.error_builder.system_error(
+            error_id=error_id, details=error_details
+        )
 
         return ErrorJSONResponse(error_response, status_code=500)
 
@@ -374,11 +401,15 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
         headers = {"Retry-After": "300"}  # 5 minutes
         return ErrorJSONResponse(error_response, status_code=429, headers=headers)
 
-    async def _log_error(self, exc: Exception, request: Request, error_response: ErrorJSONResponse):
+    async def _log_error(
+        self, exc: Exception, request: Request, error_response: ErrorJSONResponse
+    ):
         """Log error with structured context."""
 
         # Extract error details
-        error_data = error_response.body.decode() if hasattr(error_response, "body") else "{}"
+        error_data = (
+            error_response.body.decode() if hasattr(error_response, "body") else "{}"
+        )
 
         log_context = {
             "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -418,7 +449,9 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
 
 
 # Service-specific middleware factories
-def create_auth_error_middleware(app: FastAPI, debug_mode: bool = False) -> ErrorHandlingMiddleware:
+def create_auth_error_middleware(
+    app: FastAPI, debug_mode: bool = False
+) -> ErrorHandlingMiddleware:
     """Create error middleware for Authentication Service."""
     return ErrorHandlingMiddleware(
         app=app,
@@ -428,7 +461,9 @@ def create_auth_error_middleware(app: FastAPI, debug_mode: bool = False) -> Erro
     )
 
 
-def create_ac_error_middleware(app: FastAPI, debug_mode: bool = False) -> ErrorHandlingMiddleware:
+def create_ac_error_middleware(
+    app: FastAPI, debug_mode: bool = False
+) -> ErrorHandlingMiddleware:
     """Create error middleware for Constitutional AI Service."""
     middleware = ErrorHandlingMiddleware(
         app=app,
@@ -443,7 +478,9 @@ def create_ac_error_middleware(app: FastAPI, debug_mode: bool = False) -> ErrorH
     return middleware
 
 
-def create_fv_error_middleware(app: FastAPI, debug_mode: bool = False) -> ErrorHandlingMiddleware:
+def create_fv_error_middleware(
+    app: FastAPI, debug_mode: bool = False
+) -> ErrorHandlingMiddleware:
     """Create error middleware for Formal Verification Service."""
     middleware = ErrorHandlingMiddleware(
         app=app,
@@ -456,7 +493,9 @@ def create_fv_error_middleware(app: FastAPI, debug_mode: bool = False) -> ErrorH
     try:
         import z3
 
-        async def handle_z3_error(exc: Exception, request: Request) -> ErrorJSONResponse:
+        async def handle_z3_error(
+            exc: Exception, request: Request
+        ) -> ErrorJSONResponse:
             error_response = middleware.error_builder.from_error_code(
                 "FV_EXTERNAL_SERVICE_001",
                 details={"z3_error": True, "error_message": str(exc)},
@@ -473,11 +512,17 @@ def create_fv_error_middleware(app: FastAPI, debug_mode: bool = False) -> ErrorH
 
 # Utility functions
 def add_error_middleware_to_app(
-    app: FastAPI, service_name: str, service_version: str = "1.0.0", debug_mode: bool = False
+    app: FastAPI,
+    service_name: str,
+    service_version: str = "1.0.0",
+    debug_mode: bool = False,
 ):
     """Add error handling middleware to FastAPI app."""
     middleware = ErrorHandlingMiddleware(
-        app=app, service_name=service_name, service_version=service_version, debug_mode=debug_mode
+        app=app,
+        service_name=service_name,
+        service_version=service_version,
+        debug_mode=debug_mode,
     )
 
     app.add_middleware(ErrorHandlingMiddleware, **middleware.__dict__)

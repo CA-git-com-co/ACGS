@@ -4,18 +4,57 @@ Unit tests for services.core.governance-synthesis.gs_service.app.schemas
 
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
-from services.core.governance-synthesis.gs_service.app.schemas import GSTemplateBase, GSTemplateCreate, GSTemplateUpdate, GSTemplateResponse, GSTemplateListResponse, GSPolicyBase, GSPolicyCreate, GSPolicyUpdateRequest, GSPolicyResponse, GSPolicyListResponse, SynthesisRequest, ACPrinciple, GeneratedRuleInfo, SynthesisResponse, LLMInterpretationInput, LLMSuggestedAtom, LLMSuggestedRule, LLMStructuredOutput, ConstitutionalSynthesisInput, ConstitutionalComplianceInfo, ConstitutionallyCompliantRule, ConstitutionalSynthesisOutput, PolicyRuleBase, PolicyRuleCreate, PolicyRule, FVPolicyRuleRef, FVVerificationRequest, FVVerificationResult, FVVerificationResponse, ECProposal, ECGovernanceDecision, ECConstitutionalPromptingInput, ECConstitutionalPromptingOutput, ECGovernanceRequest, ECGovernanceResponse, Config, Config, Config, Config
-
+from services.core.governance_synthesis.gs_service.app.schemas import (
+    GSTemplateBase,
+    GSTemplateCreate,
+    GSTemplateUpdate,
+    GSTemplateResponse,
+    GSTemplateListResponse,
+    GSPolicyBase,
+    GSPolicyCreate,
+    GSPolicyUpdateRequest,
+    GSPolicyResponse,
+    GSPolicyListResponse,
+    SynthesisRequest,
+    ACPrinciple,
+    GeneratedRuleInfo,
+    SynthesisResponse,
+    LLMInterpretationInput,
+    LLMSuggestedAtom,
+    LLMSuggestedRule,
+    LLMStructuredOutput,
+    ConstitutionalSynthesisInput,
+    ConstitutionalComplianceInfo,
+    ConstitutionallyCompliantRule,
+    ConstitutionalSynthesisOutput,
+    PolicyRuleBase,
+    PolicyRuleCreate,
+    PolicyRule,
+    FVPolicyRuleRef,
+    FVVerificationRequest,
+    FVVerificationResult,
+    FVVerificationResponse,
+    ECProposal,
+    ECGovernanceDecision,
+    ECConstitutionalPromptingInput,
+    ECConstitutionalPromptingOutput,
+    ECGovernanceRequest,
+    ECGovernanceResponse,
+    Config,
+    Config,
+    Config,
+    Config,
+)
 
 
 class TestGSTemplateBase:
     """Test suite for GSTemplateBase."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -24,12 +63,12 @@ class TestGSTemplateBase:
 
 class TestGSTemplateCreate:
     """Test suite for GSTemplateCreate."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -38,12 +77,12 @@ class TestGSTemplateCreate:
 
 class TestGSTemplateUpdate:
     """Test suite for GSTemplateUpdate."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -52,12 +91,12 @@ class TestGSTemplateUpdate:
 
 class TestGSTemplateResponse:
     """Test suite for GSTemplateResponse."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -66,12 +105,12 @@ class TestGSTemplateResponse:
 
 class TestGSTemplateListResponse:
     """Test suite for GSTemplateListResponse."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -80,12 +119,12 @@ class TestGSTemplateListResponse:
 
 class TestGSPolicyBase:
     """Test suite for GSPolicyBase."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -94,12 +133,12 @@ class TestGSPolicyBase:
 
 class TestGSPolicyCreate:
     """Test suite for GSPolicyCreate."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -110,17 +149,17 @@ class TestGSPolicyCreate:
         # TODO: Implement test for check_content_or_template
         instance = GSPolicyCreate()
         # Add test implementation here
-        assert hasattr(instance, 'check_content_or_template')
+        assert hasattr(instance, "check_content_or_template")
 
 
 class TestGSPolicyUpdateRequest:
     """Test suite for GSPolicyUpdateRequest."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -129,12 +168,12 @@ class TestGSPolicyUpdateRequest:
 
 class TestGSPolicyResponse:
     """Test suite for GSPolicyResponse."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -143,12 +182,12 @@ class TestGSPolicyResponse:
 
 class TestGSPolicyListResponse:
     """Test suite for GSPolicyListResponse."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -157,12 +196,12 @@ class TestGSPolicyListResponse:
 
 class TestSynthesisRequest:
     """Test suite for SynthesisRequest."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -173,17 +212,17 @@ class TestSynthesisRequest:
         # TODO: Implement test for check_policy_id_or_principles
         instance = SynthesisRequest()
         # Add test implementation here
-        assert hasattr(instance, 'check_policy_id_or_principles')
+        assert hasattr(instance, "check_policy_id_or_principles")
 
 
 class TestACPrinciple:
     """Test suite for ACPrinciple."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -192,12 +231,12 @@ class TestACPrinciple:
 
 class TestGeneratedRuleInfo:
     """Test suite for GeneratedRuleInfo."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -206,12 +245,12 @@ class TestGeneratedRuleInfo:
 
 class TestSynthesisResponse:
     """Test suite for SynthesisResponse."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -220,12 +259,12 @@ class TestSynthesisResponse:
 
 class TestLLMInterpretationInput:
     """Test suite for LLMInterpretationInput."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -234,12 +273,12 @@ class TestLLMInterpretationInput:
 
 class TestLLMSuggestedAtom:
     """Test suite for LLMSuggestedAtom."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -248,12 +287,12 @@ class TestLLMSuggestedAtom:
 
 class TestLLMSuggestedRule:
     """Test suite for LLMSuggestedRule."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -262,12 +301,12 @@ class TestLLMSuggestedRule:
 
 class TestLLMStructuredOutput:
     """Test suite for LLMStructuredOutput."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -276,12 +315,12 @@ class TestLLMStructuredOutput:
 
 class TestConstitutionalSynthesisInput:
     """Test suite for ConstitutionalSynthesisInput."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -290,12 +329,12 @@ class TestConstitutionalSynthesisInput:
 
 class TestConstitutionalComplianceInfo:
     """Test suite for ConstitutionalComplianceInfo."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -304,12 +343,12 @@ class TestConstitutionalComplianceInfo:
 
 class TestConstitutionallyCompliantRule:
     """Test suite for ConstitutionallyCompliantRule."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -318,12 +357,12 @@ class TestConstitutionallyCompliantRule:
 
 class TestConstitutionalSynthesisOutput:
     """Test suite for ConstitutionalSynthesisOutput."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -332,12 +371,12 @@ class TestConstitutionalSynthesisOutput:
 
 class TestPolicyRuleBase:
     """Test suite for PolicyRuleBase."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -346,12 +385,12 @@ class TestPolicyRuleBase:
 
 class TestPolicyRuleCreate:
     """Test suite for PolicyRuleCreate."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -360,12 +399,12 @@ class TestPolicyRuleCreate:
 
 class TestPolicyRule:
     """Test suite for PolicyRule."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -374,12 +413,12 @@ class TestPolicyRule:
 
 class TestFVPolicyRuleRef:
     """Test suite for FVPolicyRuleRef."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -388,12 +427,12 @@ class TestFVPolicyRuleRef:
 
 class TestFVVerificationRequest:
     """Test suite for FVVerificationRequest."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -402,12 +441,12 @@ class TestFVVerificationRequest:
 
 class TestFVVerificationResult:
     """Test suite for FVVerificationResult."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -416,12 +455,12 @@ class TestFVVerificationResult:
 
 class TestFVVerificationResponse:
     """Test suite for FVVerificationResponse."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -430,12 +469,12 @@ class TestFVVerificationResponse:
 
 class TestECProposal:
     """Test suite for ECProposal."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -444,12 +483,12 @@ class TestECProposal:
 
 class TestECGovernanceDecision:
     """Test suite for ECGovernanceDecision."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -458,12 +497,12 @@ class TestECGovernanceDecision:
 
 class TestECConstitutionalPromptingInput:
     """Test suite for ECConstitutionalPromptingInput."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -472,12 +511,12 @@ class TestECConstitutionalPromptingInput:
 
 class TestECConstitutionalPromptingOutput:
     """Test suite for ECConstitutionalPromptingOutput."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -486,12 +525,12 @@ class TestECConstitutionalPromptingOutput:
 
 class TestECGovernanceRequest:
     """Test suite for ECGovernanceRequest."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -500,12 +539,12 @@ class TestECGovernanceRequest:
 
 class TestECGovernanceResponse:
     """Test suite for ECGovernanceResponse."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -514,12 +553,12 @@ class TestECGovernanceResponse:
 
 class TestConfig:
     """Test suite for Config."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -528,12 +567,12 @@ class TestConfig:
 
 class TestConfig:
     """Test suite for Config."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -542,12 +581,12 @@ class TestConfig:
 
 class TestConfig:
     """Test suite for Config."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -556,15 +595,13 @@ class TestConfig:
 
 class TestConfig:
     """Test suite for Config."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
         pass
-
-

@@ -95,7 +95,9 @@ class ServiceRegistry:
                 "host": "localhost",
                 "port": 8002,
                 "tags": ["core", "security"],
-                "metadata": {"description": "Cryptographic integrity and verification service"},
+                "metadata": {
+                    "description": "Cryptographic integrity and verification service"
+                },
             },
             {
                 "name": "fv_service",
@@ -236,7 +238,9 @@ class ServiceRegistry:
     def get_healthy_services(self) -> list[ServiceInfo]:
         """Get all healthy services."""
         return [
-            service for service in self.services.values() if service.status == ServiceStatus.HEALTHY
+            service
+            for service in self.services.values()
+            if service.status == ServiceStatus.HEALTHY
         ]
 
     def get_all_services(self) -> dict[str, ServiceInfo]:
@@ -330,7 +334,9 @@ class ServiceRegistry:
                 name: {
                     "status": service.status.value,
                     "last_health_check": (
-                        service.last_health_check.isoformat() if service.last_health_check else None
+                        service.last_health_check.isoformat()
+                        if service.last_health_check
+                        else None
                     ),
                     "failures": service.health_check_failures,
                     "url": service.base_url,
@@ -379,7 +385,9 @@ async def call_service(
             if response.status_code == 200:
                 return response.json()
             else:
-                logger.error(f"Service call failed: {response.status_code} - {response.text}")
+                logger.error(
+                    f"Service call failed: {response.status_code} - {response.text}"
+                )
                 return None
 
     except Exception as e:

@@ -17,6 +17,7 @@ from dataclasses import dataclass
 project_root = Path(__file__).parent
 sys.path.insert(0, str(project_root))
 
+
 @dataclass
 class MajorResolutionResult:
     issue_id: str
@@ -26,6 +27,7 @@ class MajorResolutionResult:
     verification_passed: bool
     remaining_work: List[str]
     details: Dict[str, Any]
+
 
 class MajorIssueResolver:
     def __init__(self):
@@ -40,19 +42,22 @@ class MajorIssueResolver:
             print("❌ Issue analysis results not found. Run issue_analyzer.py first.")
             return []
 
-        with open(issue_file, 'r') as f:
+        with open(issue_file, "r") as f:
             data = json.load(f)
 
         # Filter for major issues
         major_issues = [
-            issue for issue in data.get("prioritized_issues", [])
+            issue
+            for issue in data.get("prioritized_issues", [])
             if issue.get("severity") == "MAJOR"
         ]
 
         print(f"📋 Found {len(major_issues)} major issues to resolve")
         return major_issues
 
-    def resolve_cache_performance_issue(self, issue: Dict[str, Any]) -> MajorResolutionResult:
+    def resolve_cache_performance_issue(
+        self, issue: Dict[str, Any]
+    ) -> MajorResolutionResult:
         """Resolve cache performance optimization issues."""
         start_time = time.time()
         actions_taken = []
@@ -247,10 +252,12 @@ def cache_stats() -> Dict[str, Any]:
 '''
 
             # Save the optimized cache module
-            cache_file = self.project_root / "services" / "shared" / "optimized_cache.py"
+            cache_file = (
+                self.project_root / "services" / "shared" / "optimized_cache.py"
+            )
             cache_file.parent.mkdir(parents=True, exist_ok=True)
 
-            with open(cache_file, 'w') as f:
+            with open(cache_file, "w") as f:
                 f.write(cache_optimization_code)
 
             actions_taken.append("Created optimized cache implementation")
@@ -361,7 +368,7 @@ def test_get_cached_function():
             test_file = self.project_root / "tests" / "unit" / "test_optimized_cache.py"
             test_file.parent.mkdir(parents=True, exist_ok=True)
 
-            with open(test_file, 'w') as f:
+            with open(test_file, "w") as f:
                 f.write(cache_test_code)
 
             actions_taken.append("Created cache performance tests")
@@ -374,7 +381,7 @@ def test_get_cached_function():
                 "Integrate optimized cache into existing services",
                 "Update cache configuration based on production metrics",
                 "Implement cache warming strategies",
-                "Add cache monitoring and alerting"
+                "Add cache monitoring and alerting",
             ]
 
             return MajorResolutionResult(
@@ -387,8 +394,13 @@ def test_get_cached_function():
                 {
                     "cache_module_created": str(cache_file),
                     "test_file_created": str(test_file),
-                    "optimization_features": ["LRU_eviction", "TTL_expiration", "thread_safety", "request_scoping"]
-                }
+                    "optimization_features": [
+                        "LRU_eviction",
+                        "TTL_expiration",
+                        "thread_safety",
+                        "request_scoping",
+                    ],
+                },
             )
 
         except Exception as e:
@@ -399,7 +411,7 @@ def test_get_cached_function():
                 actions_taken,
                 False,
                 [],
-                {"error": str(e)}
+                {"error": str(e)},
             )
 
     def _verify_cache_optimization(self) -> bool:
@@ -430,6 +442,7 @@ def test_get_cached_function():
 
             # Test get_cached function
             call_count = 0
+
             def test_func():
                 nonlocal call_count
                 call_count += 1
@@ -446,7 +459,9 @@ def test_get_cached_function():
         except Exception:
             return False
 
-    def resolve_business_rule_edge_cases(self, issue: Dict[str, Any]) -> MajorResolutionResult:
+    def resolve_business_rule_edge_cases(
+        self, issue: Dict[str, Any]
+    ) -> MajorResolutionResult:
         """Resolve business rule edge case handling issues."""
         start_time = time.time()
         actions_taken = []
@@ -675,10 +690,12 @@ def validate_constitutional_compliance(document: Dict[str, Any]) -> Dict[str, An
 '''
 
             # Save the enhanced business rules module
-            rules_file = self.project_root / "services" / "shared" / "enhanced_business_rules.py"
+            rules_file = (
+                self.project_root / "services" / "shared" / "enhanced_business_rules.py"
+            )
             rules_file.parent.mkdir(parents=True, exist_ok=True)
 
-            with open(rules_file, 'w') as f:
+            with open(rules_file, "w") as f:
                 f.write(enhanced_rules_code)
 
             actions_taken.append("Created enhanced business rule validation")
@@ -690,7 +707,7 @@ def validate_constitutional_compliance(document: Dict[str, Any]) -> Dict[str, An
                 "Integrate enhanced validation into existing workflows",
                 "Add comprehensive logging for validation failures",
                 "Implement validation result caching",
-                "Create validation metrics and monitoring"
+                "Create validation metrics and monitoring",
             ]
 
             return MajorResolutionResult(
@@ -702,8 +719,13 @@ def validate_constitutional_compliance(document: Dict[str, Any]) -> Dict[str, An
                 remaining_work,
                 {
                     "rules_module_created": str(rules_file),
-                    "validation_improvements": ["edge_case_handling", "sanitization", "warnings", "compliance_scoring"]
-                }
+                    "validation_improvements": [
+                        "edge_case_handling",
+                        "sanitization",
+                        "warnings",
+                        "compliance_scoring",
+                    ],
+                },
             )
 
         except Exception as e:
@@ -714,7 +736,7 @@ def validate_constitutional_compliance(document: Dict[str, Any]) -> Dict[str, An
                 actions_taken,
                 False,
                 [],
-                {"error": str(e)}
+                {"error": str(e)},
             )
 
     def _verify_business_rules_enhancement(self) -> bool:
@@ -722,14 +744,17 @@ def validate_constitutional_compliance(document: Dict[str, Any]) -> Dict[str, An
         try:
             # Import the new rules module
             sys.path.insert(0, str(self.project_root / "services" / "shared"))
-            from enhanced_business_rules import validate_governance_proposal, validate_policy_document
+            from enhanced_business_rules import (
+                validate_governance_proposal,
+                validate_policy_document,
+            )
 
             # Test governance proposal validation
             valid_proposal = {
                 "title": "Test Proposal",
                 "description": "This is a valid test proposal with sufficient detail",
                 "status": "draft",
-                "priority": "medium"
+                "priority": "medium",
             }
 
             result = validate_governance_proposal(valid_proposal)
@@ -741,7 +766,7 @@ def validate_constitutional_compliance(document: Dict[str, Any]) -> Dict[str, An
                 "title": "",  # Invalid empty title
                 "description": "Short",  # Too short
                 "status": "invalid",  # Invalid status
-                "priority": "unknown"  # Invalid priority
+                "priority": "unknown",  # Invalid priority
             }
 
             result = validate_governance_proposal(invalid_proposal)
@@ -753,7 +778,7 @@ def validate_constitutional_compliance(document: Dict[str, Any]) -> Dict[str, An
                 "id": "POL-0001",
                 "version": "1.0.0",
                 "content": {"rules": ["rule1", "rule2"]},
-                "effective_date": "2024-12-01T00:00:00Z"
+                "effective_date": "2024-12-01T00:00:00Z",
             }
 
             result = validate_policy_document(valid_policy)
@@ -782,9 +807,15 @@ def validate_constitutional_compliance(document: Dict[str, Any]) -> Dict[str, An
         for issue in major_issues:
             print(f"\n🔧 Resolving: {issue['id']} - {issue['title']}")
 
-            if "performance" in issue["title"].lower() and "cache" in issue["title"].lower():
+            if (
+                "performance" in issue["title"].lower()
+                and "cache" in issue["title"].lower()
+            ):
                 result = self.resolve_cache_performance_issue(issue)
-            elif "business rule" in issue["title"].lower() or "edge case" in issue["title"].lower():
+            elif (
+                "business rule" in issue["title"].lower()
+                or "edge case" in issue["title"].lower()
+            ):
                 result = self.resolve_business_rule_edge_cases(issue)
             else:
                 # Generic resolution for other major issues
@@ -795,16 +826,23 @@ def validate_constitutional_compliance(document: Dict[str, Any]) -> Dict[str, An
                     ["Issue type not yet supported by automated resolution"],
                     False,
                     ["Manual resolution required"],
-                    {"issue_type": issue["category"]}
+                    {"issue_type": issue["category"]},
                 )
 
             self.resolution_results.append(result)
 
             # Log result
-            status_symbol = {"RESOLVED": "✅", "PARTIAL": "🟡", "FAILED": "❌", "SKIPPED": "⊝"}
+            status_symbol = {
+                "RESOLVED": "✅",
+                "PARTIAL": "🟡",
+                "FAILED": "❌",
+                "SKIPPED": "⊝",
+            }
             symbol = status_symbol.get(result.status, "?")
 
-            print(f"{symbol} {result.issue_id}: {result.status} ({result.resolution_time:.3f}s)")
+            print(
+                f"{symbol} {result.issue_id}: {result.status} ({result.resolution_time:.3f}s)"
+            )
             print(f"   Actions: {len(result.actions_taken)}")
             print(f"   Verified: {'✓' if result.verification_passed else '✗'}")
             print(f"   Remaining: {len(result.remaining_work)}")
@@ -821,7 +859,9 @@ def validate_constitutional_compliance(document: Dict[str, Any]) -> Dict[str, An
             "partial": sum(1 for r in self.resolution_results if r.status == "PARTIAL"),
             "failed": failed_count,
             "skipped": sum(1 for r in self.resolution_results if r.status == "SKIPPED"),
-            "resolution_rate": (resolved_count / len(major_issues) * 100) if major_issues else 0,
+            "resolution_rate": (
+                (resolved_count / len(major_issues) * 100) if major_issues else 0
+            ),
             "results": [
                 {
                     "issue_id": r.issue_id,
@@ -830,10 +870,10 @@ def validate_constitutional_compliance(document: Dict[str, Any]) -> Dict[str, An
                     "actions_taken": r.actions_taken,
                     "verification_passed": r.verification_passed,
                     "remaining_work": r.remaining_work,
-                    "details": r.details
+                    "details": r.details,
                 }
                 for r in self.resolution_results
-            ]
+            ],
         }
 
         print("\n" + "=" * 60)
@@ -848,13 +888,14 @@ def validate_constitutional_compliance(document: Dict[str, Any]) -> Dict[str, An
 
         return summary
 
+
 def main():
     resolver = MajorIssueResolver()
     summary = resolver.resolve_major_issues()
 
     # Save results
     output_file = project_root / "major_issue_resolution_results.json"
-    with open(output_file, 'w') as f:
+    with open(output_file, "w") as f:
         json.dump(summary, f, indent=2)
 
     print(f"\nDetailed results saved to: {output_file}")
@@ -864,9 +905,12 @@ def main():
         print(f"\n⚠️  {summary['failed']} major issues failed to resolve!")
         return 1
     elif summary["resolved"] < summary["total_issues"]:
-        print(f"\n⚠️  {summary['total_issues'] - summary['resolved']} major issues need manual attention!")
+        print(
+            f"\n⚠️  {summary['total_issues'] - summary['resolved']} major issues need manual attention!"
+        )
         return 1
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

@@ -8,12 +8,20 @@ import pytest
 # Provide minimal schema stubs to satisfy imports
 schema_stub = types.ModuleType("services.core.constitutional_ai.ac_service.app.schemas")
 
+
 class ConstitutionalComplianceRequest:
-    def __init__(self, policy=None, validation_mode="comprehensive", include_reasoning=False, principles=None):
+    def __init__(
+        self,
+        policy=None,
+        validation_mode="comprehensive",
+        include_reasoning=False,
+        principles=None,
+    ):
         self.policy = policy or {}
         self.validation_mode = validation_mode
         self.include_reasoning = include_reasoning
         self.principles = principles
+
 
 schema_stub.ConstitutionalComplianceRequest = ConstitutionalComplianceRequest
 sys.modules["services.core.constitutional_ai.ac_service.app.schemas"] = schema_stub
@@ -44,7 +52,9 @@ def test_get_rules_to_check_basic(service):
 
 
 def test_get_rules_to_check_principles(service):
-    assert service._get_rules_to_check([{"rule_id": "CONST-004"}], "comprehensive") == ["CONST-004"]
+    assert service._get_rules_to_check([{"rule_id": "CONST-004"}], "comprehensive") == [
+        "CONST-004"
+    ]
 
 
 def test_calculate_average_severity_empty(service):
@@ -59,4 +69,3 @@ def test_calculate_average_severity_mixed(service):
 def test_generate_next_steps_noncompliant(service):
     steps = service._generate_next_steps(False)
     assert steps and steps[0].startswith("Review failed")
-

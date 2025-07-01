@@ -4,11 +4,12 @@ import urllib.request
 import urllib.error
 import sys
 
+
 def test_health_endpoint(service_name: str, port: int) -> bool:
     """Test a single service health endpoint."""
     try:
         url = f"http://localhost:{port}/health"
-        req = urllib.request.Request(url, method='GET')
+        req = urllib.request.Request(url, method="GET")
         with urllib.request.urlopen(req, timeout=10) as response:
             if response.status == 200:
                 print(f"✅ {service_name} health endpoint OK")
@@ -20,6 +21,7 @@ def test_health_endpoint(service_name: str, port: int) -> bool:
         print(f"❌ {service_name} health endpoint error: {e}")
         return False
 
+
 def main():
     """Test all service health endpoints."""
     services = {
@@ -29,7 +31,7 @@ def main():
         "fv_service": 8003,
         "gs_service": 8004,
         "pgc_service": 8005,
-        "ec_service": 8006
+        "ec_service": 8006,
     }
 
     results = []
@@ -48,6 +50,7 @@ def main():
     else:
         print("⚠️ Some services unhealthy")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

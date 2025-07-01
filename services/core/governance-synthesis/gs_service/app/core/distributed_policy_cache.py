@@ -287,7 +287,9 @@ class DistributedPolicyCache:
             return True
         else:
             self.log.pop()
-            logger.warning(f"Failed to achieve consensus for deleting policy {policy_id}")
+            logger.warning(
+                f"Failed to achieve consensus for deleting policy {policy_id}"
+            )
             return False
 
     async def _raft_consensus_loop(self):
@@ -455,7 +457,9 @@ class DistributedPolicyCache:
 
     def _random_election_timeout(self) -> float:
         """Generate random election timeout."""
-        return np.random.uniform(self.config.election_timeout_min, self.config.election_timeout_max)
+        return np.random.uniform(
+            self.config.election_timeout_min, self.config.election_timeout_max
+        )
 
     async def _replicate_log_entry(self, log_entry: LogEntry) -> bool:
         """Replicate log entry to majority of followers."""
@@ -597,7 +601,9 @@ class DistributedPolicyCache:
 
         return None
 
-    async def _fetch_policy_from_leader(self, policy_id: str) -> Optional[Dict[str, Any]]:
+    async def _fetch_policy_from_leader(
+        self, policy_id: str
+    ) -> Optional[Dict[str, Any]]:
         """Fetch policy from leader node."""
         if not self.leader_id or not self.session:
             return None
@@ -620,7 +626,9 @@ class DistributedPolicyCache:
 
         return None
 
-    async def _update_local_cache_from_leader(self, policy_id: str, leader_data: Dict[str, Any]):
+    async def _update_local_cache_from_leader(
+        self, policy_id: str, leader_data: Dict[str, Any]
+    ):
         """Update local cache with data from leader."""
         policy_data = leader_data["policy_data"]
         version = leader_data.get("version", 1)
@@ -646,7 +654,11 @@ class DistributedPolicyCache:
             return False
 
         try:
-            update_data = {"policy_id": policy_id, "policy_data": policy_data, "ttl": ttl}
+            update_data = {
+                "policy_id": policy_id,
+                "policy_data": policy_data,
+                "ttl": ttl,
+            }
 
             async with self.session.post(
                 f"http://{self.leader_id}/cache/policy", json=update_data
@@ -687,7 +699,9 @@ class DistributedPolicyCache:
                 "total_entries": total_entries,
                 "expired_entries": expired_entries,
                 "active_entries": total_entries - expired_entries,
-                "total_access_count": sum(entry.access_count for entry in self.cache.values()),
+                "total_access_count": sum(
+                    entry.access_count for entry in self.cache.values()
+                ),
                 "average_version": (
                     sum(self.version_vector.values()) / len(self.version_vector)
                     if self.version_vector

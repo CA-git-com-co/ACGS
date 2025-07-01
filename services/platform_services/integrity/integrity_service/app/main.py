@@ -44,7 +44,9 @@ try:
 
     # Add the correct path to services/shared
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    shared_path = os.path.join(current_dir, "..", "..", "..", "..", "services", "shared")
+    shared_path = os.path.join(
+        current_dir, "..", "..", "..", "..", "services", "shared"
+    )
     sys.path.insert(0, os.path.abspath(shared_path))
 
     from services.shared.comprehensive_audit_logger import (
@@ -158,7 +160,9 @@ async def add_security_headers(request, call_next):
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
 
     # HSTS (HTTP Strict Transport Security)
-    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
+    response.headers["Strict-Transport-Security"] = (
+        "max-age=31536000; includeSubDomains; preload"
+    )
 
     # Content Security Policy (CSP) - Enhanced for XSS protection
     csp_policy = (
@@ -242,7 +246,9 @@ except ImportError as e:
     logger.warning(f"⚠️ Security middleware not available: {e}")
 
 # Add secure CORS middleware with environment-based configuration
-cors_origins = os.getenv("BACKEND_CORS_ORIGINS", "http://localhost:3000,http://localhost:8080").split(",")
+cors_origins = os.getenv(
+    "BACKEND_CORS_ORIGINS", "http://localhost:3000,http://localhost:8080"
+).split(",")
 cors_origins = [origin.strip() for origin in cors_origins if origin.strip()]
 
 app.add_middleware(
@@ -252,12 +258,12 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=[
         "Accept",
-        "Accept-Language", 
+        "Accept-Language",
         "Content-Language",
         "Content-Type",
         "Authorization",
         "X-Request-ID",
-        "X-Constitutional-Hash"
+        "X-Constitutional-Hash",
     ],
     expose_headers=["X-Request-ID", "X-Response-Time", "X-Compliance-Score"],
 )
@@ -296,7 +302,10 @@ async def metrics():
     else:
         from fastapi.responses import PlainTextResponse
         from prometheus_client import CONTENT_TYPE_LATEST, REGISTRY, generate_latest
-        return PlainTextResponse(generate_latest(REGISTRY), media_type=CONTENT_TYPE_LATEST)
+
+        return PlainTextResponse(
+            generate_latest(REGISTRY), media_type=CONTENT_TYPE_LATEST
+        )
 
 
 # Add production middleware
@@ -555,7 +564,9 @@ if __name__ == "__main__":
 
     # Production-grade server configuration
     config = {
-        "host": os.getenv("HOST", "127.0.0.1"),  # Secure by default, configurable for production
+        "host": os.getenv(
+            "HOST", "127.0.0.1"
+        ),  # Secure by default, configurable for production
         "port": int(os.getenv("PORT", str(SERVICE_PORT))),
         "log_level": os.getenv("LOG_LEVEL", "info"),
         "access_log": os.getenv("ACCESS_LOG", "true").lower() == "true",
@@ -567,5 +578,7 @@ if __name__ == "__main__":
         "lifespan": "on",
     }
 
-    logger.info(f"🚀 Starting ACGS-1 {SERVICE_PHASE} Integrity Service on port {config['port']}")
+    logger.info(
+        f"🚀 Starting ACGS-1 {SERVICE_PHASE} Integrity Service on port {config['port']}"
+    )
     uvicorn.run(app, **config)

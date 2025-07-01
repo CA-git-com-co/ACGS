@@ -37,10 +37,16 @@ class QuantumEnforcementRequest(BaseModel):
     """Request for quantum policy enforcement."""
 
     policy_id: str = Field(..., description="Policy identifier")
-    context: dict[str, Any] = Field(default_factory=dict, description="Evaluation context")
+    context: dict[str, Any] = Field(
+        default_factory=dict, description="Evaluation context"
+    )
     force_collapse: bool = Field(False, description="Force quantum state collapse")
-    observer_id: str | None = Field(None, description="Observer identifier for observer effect")
-    uncertainty_lambda: float | None = Field(None, description="Override uncertainty parameter")
+    observer_id: str | None = Field(
+        None, description="Observer identifier for observer effect"
+    )
+    uncertainty_lambda: float | None = Field(
+        None, description="Override uncertainty parameter"
+    )
 
 
 class QuantumEnforcementResponse(BaseModel):
@@ -65,9 +71,13 @@ class QuantumPolicyRegistration(BaseModel):
     """Request to register a new policy in quantum superposition."""
 
     policy_id: str = Field(..., description="Unique policy identifier")
-    criticality: str = Field("MEDIUM", description="Policy criticality (HIGH, MEDIUM, LOW)")
+    criticality: str = Field(
+        "MEDIUM", description="Policy criticality (HIGH, MEDIUM, LOW)"
+    )
     deadline_hours: int = Field(24, description="Hours until automatic collapse")
-    deterministic_mode: bool = Field(False, description="Use hash-based deterministic collapse")
+    deterministic_mode: bool = Field(
+        False, description="Use hash-based deterministic collapse"
+    )
 
 
 class QuantumObservationRequest(BaseModel):
@@ -75,13 +85,17 @@ class QuantumObservationRequest(BaseModel):
 
     policy_id: str = Field(..., description="Policy to observe")
     observer_id: str = Field(..., description="Stakeholder identifier")
-    observation_reason: str = Field("stakeholder_review", description="Reason for observation")
+    observation_reason: str = Field(
+        "stakeholder_review", description="Reason for observation"
+    )
 
 
 class UncertaintyUpdateRequest(BaseModel):
     """Request to update uncertainty parameter."""
 
-    lambda_value: float = Field(..., ge=0.0, le=1.0, description="Uncertainty parameter λ ∈ [0,1]")
+    lambda_value: float = Field(
+        ..., ge=0.0, le=1.0, description="Uncertainty parameter λ ∈ [0,1]"
+    )
 
 
 @router.post("/quantum/register", response_model=dict[str, Any])
@@ -105,7 +119,9 @@ async def register_quantum_policy(request: QuantumPolicyRegistration):
 
         latency_ms = (time.time() - start_time) * 1000
 
-        logger.info(f"Quantum policy registered: {request.policy_id}, latency={latency_ms:.2f}ms")
+        logger.info(
+            f"Quantum policy registered: {request.policy_id}, latency={latency_ms:.2f}ms"
+        )
 
         return {
             "policy_id": response.policy_id,
@@ -149,7 +165,9 @@ async def quantum_policy_enforcement(request: QuantumEnforcementRequest):
                 observer_id=request.observer_id,
                 observation_reason="enforcement_observation",
             )
-            logger.info(f"Observer effect triggered: {request.policy_id} by {request.observer_id}")
+            logger.info(
+                f"Observer effect triggered: {request.policy_id} by {request.observer_id}"
+            )
 
         # Measure quantum policy state (triggers collapse)
         qpe_start = time.time()
@@ -172,7 +190,9 @@ async def quantum_policy_enforcement(request: QuantumEnforcementRequest):
         else:  # PENDING
             # For pending state, use conservative approach
             allowed = False
-            logger.info(f"Policy {request.policy_id} in PENDING state, defaulting to deny")
+            logger.info(
+                f"Policy {request.policy_id} in PENDING state, defaulting to deny"
+            )
 
         total_latency = (time.time() - start_time) * 1000
 
@@ -219,7 +239,9 @@ async def quantum_policy_enforcement(request: QuantumEnforcementRequest):
         # Fallback to direct OPA evaluation if QPE is unavailable
         logger.warning(f"QPE service unavailable, falling back to direct OPA: {str(e)}")
 
-        fallback_result = await _fallback_opa_evaluation(request.policy_id, request.context)
+        fallback_result = await _fallback_opa_evaluation(
+            request.policy_id, request.context
+        )
 
         return QuantumEnforcementResponse(
             policy_id=request.policy_id,
@@ -292,7 +314,9 @@ async def update_uncertainty_parameter(request: UncertaintyUpdateRequest):
         if request.lambda_value > 0.7:
             effect = "High accuracy mode: prioritizing thorough validation over speed"
         elif request.lambda_value < 0.3:
-            effect = "High speed mode: prioritizing fast processing over exhaustive checks"
+            effect = (
+                "High speed mode: prioritizing fast processing over exhaustive checks"
+            )
         else:
             effect = "Balanced mode: moderate trade-off between accuracy and speed"
 
@@ -340,7 +364,9 @@ async def get_quantum_state(policy_id: str):
                 "weight_pending": quantum_state.weight_pending,
                 "is_collapsed": quantum_state.is_collapsed,
                 "collapsed_state": (
-                    quantum_state.collapsed_state.name if quantum_state.is_collapsed else None
+                    quantum_state.collapsed_state.name
+                    if quantum_state.is_collapsed
+                    else None
                 ),
                 "superposition_entropy": entropy,
             },
@@ -400,7 +426,9 @@ def _verify_constitutional_compliance(entanglement_tag: bytes, policy_id: str) -
     import hashlib
     import hmac
 
-    expected = hmac.new(b"cdd01ef066bc6cf2", policy_id.encode(), hashlib.sha256).digest()
+    expected = hmac.new(
+        b"cdd01ef066bc6cf2", policy_id.encode(), hashlib.sha256
+    ).digest()
 
     return hmac.compare_digest(expected, entanglement_tag)
 

@@ -206,14 +206,26 @@ async def get_governance_workflows():
                 "name": "Policy Creation Workflow",
                 "description": "Standard workflow for creating new policies",
                 "status": "active",
-                "steps": ["draft", "review", "consultation", "approval", "implementation"],
+                "steps": [
+                    "draft",
+                    "review",
+                    "consultation",
+                    "approval",
+                    "implementation",
+                ],
             },
             {
                 "id": "WF-002",
                 "name": "Constitutional Amendment Workflow",
                 "description": "Workflow for constitutional amendments",
                 "status": "active",
-                "steps": ["proposal", "review", "public_consultation", "voting", "ratification"],
+                "steps": [
+                    "proposal",
+                    "review",
+                    "public_consultation",
+                    "voting",
+                    "ratification",
+                ],
             },
             {
                 "id": "WF-003",

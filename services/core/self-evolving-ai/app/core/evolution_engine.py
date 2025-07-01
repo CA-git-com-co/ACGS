@@ -167,7 +167,9 @@ class EvolutionEngine:
         """
         try:
             # Validate evolution request
-            validation_result = await self._validate_evolution_request(evolution_request)
+            validation_result = await self._validate_evolution_request(
+                evolution_request
+            )
             if not validation_result["valid"]:
                 return False, "", validation_result
 
@@ -202,7 +204,9 @@ class EvolutionEngine:
             self.active_evolutions[evolution_request.evolution_id] = evolution_request
 
             # Start evolution process in background
-            asyncio.create_task(self._execute_evolution_cycle(evolution_request.evolution_id))
+            asyncio.create_task(
+                self._execute_evolution_cycle(evolution_request.evolution_id)
+            )
 
             # Update metrics
             self.evolution_metrics["total_evolutions"] += 1
@@ -251,7 +255,9 @@ class EvolutionEngine:
                 }
 
             # Validate approver permissions
-            approval_valid = await self._validate_approver_permissions(approver_id, evolution)
+            approval_valid = await self._validate_approver_permissions(
+                approver_id, evolution
+            )
             if not approval_valid:
                 return False, {"error": "Insufficient permissions for approval"}
 
@@ -277,7 +283,9 @@ class EvolutionEngine:
             logger.error(f"Failed to approve evolution {evolution_id}: {e}")
             return False, {"error": str(e)}
 
-    async def get_evolution_status(self, evolution_id: str) -> tuple[bool, dict[str, Any]]:
+    async def get_evolution_status(
+        self, evolution_id: str
+    ) -> tuple[bool, dict[str, Any]]:
         """
         Get the status of an evolution cycle.
 
@@ -310,7 +318,9 @@ class EvolutionEngine:
                         "status": result.status.value,
                         "success": result.success,
                         "completed_at": (
-                            result.completed_at.isoformat() if result.completed_at else None
+                            result.completed_at.isoformat()
+                            if result.completed_at
+                            else None
                         ),
                         "changes_applied": result.changes_applied,
                         "validation_results": result.validation_results,
@@ -358,7 +368,9 @@ class EvolutionEngine:
                 return False, {"error": "Evolution already rolled back"}
 
             # Execute rollback
-            rollback_success = await self._execute_rollback(evolution_result, rollback_reason)
+            rollback_success = await self._execute_rollback(
+                evolution_result, rollback_reason
+            )
 
             if rollback_success:
                 evolution_result.status = EvolutionStatus.ROLLED_BACK
@@ -409,8 +421,10 @@ class EvolutionEngine:
                 "total_evolutions": total_evolutions,
                 "active_evolutions": len(self.active_evolutions),
                 "successful_evolutions": successful_evolutions,
-                "failed_evolutions": len(self.evolution_history) - successful_evolutions,
-                "success_rate": successful_evolutions / max(len(self.evolution_history), 1),
+                "failed_evolutions": len(self.evolution_history)
+                - successful_evolutions,
+                "success_rate": successful_evolutions
+                / max(len(self.evolution_history), 1),
                 "average_duration_minutes": round(average_duration, 2),
                 "human_approval_required": self.manual_approval_required,
                 "rollback_enabled": self.rollback_enabled,
@@ -527,15 +541,21 @@ class EvolutionEngine:
         try:
             # Verify constitution hash matches Quantumagi deployment
             if self.constitution_hash != "cdd01ef066bc6cf2":
-                raise ValueError(f"Constitution hash mismatch: {self.constitution_hash}")
+                raise ValueError(
+                    f"Constitution hash mismatch: {self.constitution_hash}"
+                )
 
-            logger.info(f"✅ Constitutional compliance validated: {self.constitution_hash}")
+            logger.info(
+                f"✅ Constitutional compliance validated: {self.constitution_hash}"
+            )
 
         except Exception as e:
             logger.error(f"Constitutional compliance validation failed: {e}")
             raise
 
-    async def _validate_evolution_request(self, request: EvolutionRequest) -> dict[str, Any]:
+    async def _validate_evolution_request(
+        self, request: EvolutionRequest
+    ) -> dict[str, Any]:
         """Validate evolution request for safety and compliance."""
         validation_result = {"valid": True, "errors": []}
 
@@ -552,12 +572,18 @@ class EvolutionEngine:
 
             # Constitutional validation
             if request.requires_constitutional_validation:
-                constitutional_check = await self._check_constitutional_compliance(request)
+                constitutional_check = await self._check_constitutional_compliance(
+                    request
+                )
                 if not constitutional_check["compliant"]:
-                    validation_result["errors"].extend(constitutional_check["violations"])
+                    validation_result["errors"].extend(
+                        constitutional_check["violations"]
+                    )
 
             # Security validation
-            security_check = await self.security_manager.validate_evolution_request(request)
+            security_check = await self.security_manager.validate_evolution_request(
+                request
+            )
             if not security_check["secure"]:
                 validation_result["errors"].extend(security_check["security_issues"])
 
@@ -568,7 +594,9 @@ class EvolutionEngine:
             logger.error(f"Evolution request validation failed: {e}")
             return {"valid": False, "errors": [str(e)]}
 
-    async def _check_constitutional_compliance(self, request: EvolutionRequest) -> dict[str, Any]:
+    async def _check_constitutional_compliance(
+        self, request: EvolutionRequest
+    ) -> dict[str, Any]:
         """Check constitutional compliance for evolution request."""
         try:
             # Use AC service for constitutional validation
@@ -670,7 +698,9 @@ class EvolutionEngine:
             validation_result = await self._validate_evolution_results(evolution)
 
             if validation_result["valid"]:
-                await self._complete_evolution(evolution_id, execution_result, validation_result)
+                await self._complete_evolution(
+                    evolution_id, execution_result, validation_result
+                )
             else:
                 await self._fail_evolution(evolution_id, "Validation phase failed")
 
@@ -678,7 +708,9 @@ class EvolutionEngine:
             logger.error(f"Evolution continuation failed for {evolution_id}: {e}")
             await self._fail_evolution(evolution_id, str(e))
 
-    async def _analyze_evolution_impact(self, evolution: EvolutionRequest) -> dict[str, Any]:
+    async def _analyze_evolution_impact(
+        self, evolution: EvolutionRequest
+    ) -> dict[str, Any]:
         """Analyze the potential impact of the evolution."""
         try:
             # Use FV service for formal verification
@@ -707,7 +739,9 @@ class EvolutionEngine:
             logger.error(f"Evolution impact analysis failed: {e}")
             return {"safe_to_proceed": False, "error": str(e)}
 
-    async def _execute_evolution_changes(self, evolution: EvolutionRequest) -> dict[str, Any]:
+    async def _execute_evolution_changes(
+        self, evolution: EvolutionRequest
+    ) -> dict[str, Any]:
         """Execute the actual evolution changes."""
         try:
             # Use GS service for policy synthesis and updates
@@ -737,7 +771,9 @@ class EvolutionEngine:
             logger.error(f"Evolution changes execution failed: {e}")
             return {"success": False, "error": str(e)}
 
-    async def _validate_evolution_results(self, evolution: EvolutionRequest) -> dict[str, Any]:
+    async def _validate_evolution_results(
+        self, evolution: EvolutionRequest
+    ) -> dict[str, Any]:
         """Validate the results of evolution changes."""
         try:
             validation_results = {}
@@ -796,7 +832,9 @@ class EvolutionEngine:
                     }
 
             # Determine overall validity
-            all_valid = all(result.get("valid", False) for result in validation_results.values())
+            all_valid = all(
+                result.get("valid", False) for result in validation_results.values()
+            )
 
             return {
                 "valid": all_valid,
@@ -824,7 +862,9 @@ class EvolutionEngine:
                 success=True,
                 changes_applied=execution_result.get("changes_applied", {}),
                 validation_results=validation_result.get("validation_results", {}),
-                performance_metrics=await self._calculate_performance_metrics(evolution),
+                performance_metrics=await self._calculate_performance_metrics(
+                    evolution
+                ),
                 completed_at=datetime.now(timezone.utc),
                 rollback_available=True,
             )
@@ -904,7 +944,9 @@ class EvolutionEngine:
             logger.error(f"Rollback execution failed: {e}")
             return False
 
-    async def _calculate_performance_metrics(self, evolution: EvolutionRequest) -> dict[str, Any]:
+    async def _calculate_performance_metrics(
+        self, evolution: EvolutionRequest
+    ) -> dict[str, Any]:
         """Calculate performance metrics for completed evolution."""
         try:
             end_time = datetime.now(timezone.utc)
@@ -965,10 +1007,14 @@ class EvolutionEngine:
             elapsed_minutes = (
                 datetime.now(timezone.utc) - evolution.created_at
             ).total_seconds() / 60
-            remaining_minutes = max(0, evolution.estimated_duration_minutes - elapsed_minutes)
+            remaining_minutes = max(
+                0, evolution.estimated_duration_minutes - elapsed_minutes
+            )
 
             if remaining_minutes > 0:
-                completion_time = datetime.now(timezone.utc).timestamp() + (remaining_minutes * 60)
+                completion_time = datetime.now(timezone.utc).timestamp() + (
+                    remaining_minutes * 60
+                )
                 return datetime.fromtimestamp(completion_time, timezone.utc).isoformat()
             else:
                 return "overdue"
@@ -998,10 +1044,16 @@ class EvolutionEngine:
                 current_time = datetime.now(timezone.utc)
 
                 for evolution_id, evolution in list(self.active_evolutions.items()):
-                    elapsed_minutes = (current_time - evolution.created_at).total_seconds() / 60
+                    elapsed_minutes = (
+                        current_time - evolution.created_at
+                    ).total_seconds() / 60
 
-                    if elapsed_minutes > evolution.estimated_duration_minutes * 2:  # 2x overdue
-                        logger.warning(f"Evolution {evolution_id} is significantly overdue")
+                    if (
+                        elapsed_minutes > evolution.estimated_duration_minutes * 2
+                    ):  # 2x overdue
+                        logger.warning(
+                            f"Evolution {evolution_id} is significantly overdue"
+                        )
 
                         # Notify observability framework
                         await self.observability_framework.record_evolution_warning(
@@ -1024,8 +1076,12 @@ class EvolutionEngine:
             # Calculate success rate
             total_completed = len(self.evolution_history)
             if total_completed > 0:
-                successful = sum(1 for result in self.evolution_history if result.success)
-                self.evolution_metrics["human_approval_rate"] = successful / total_completed
+                successful = sum(
+                    1 for result in self.evolution_history if result.success
+                )
+                self.evolution_metrics["human_approval_rate"] = (
+                    successful / total_completed
+                )
 
             # Calculate average duration
             completed_evolutions = [
@@ -1041,9 +1097,9 @@ class EvolutionEngine:
                     if result.performance_metrics
                 ]
                 if durations:
-                    self.evolution_metrics["average_duration_minutes"] = sum(durations) / len(
+                    self.evolution_metrics["average_duration_minutes"] = sum(
                         durations
-                    )
+                    ) / len(durations)
 
         except Exception as e:
             logger.error(f"Failed to update performance metrics: {e}")

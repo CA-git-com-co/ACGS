@@ -338,7 +338,9 @@ class HumanEscalationSystem:
             "principle_ids": conflict.principle_ids,
             "rule_triggered": rule.rule_id,
             "resolution_attempts": (
-                conflict.resolution_details.get("attempts", 0) if conflict.resolution_details else 0
+                conflict.resolution_details.get("attempts", 0)
+                if conflict.resolution_details
+                else 0
             ),
         }
 

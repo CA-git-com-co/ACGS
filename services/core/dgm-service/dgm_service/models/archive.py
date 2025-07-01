@@ -31,26 +31,39 @@ class DGMArchive(Base):
     __tablename__ = "dgm_archive"
     __table_args__ = {"schema": "dgm"}
 
-    id = Column(PG_UUID(as_uuid=True), primary_key=True, server_default=func.uuid_generate_v4())
+    id = Column(
+        PG_UUID(as_uuid=True), primary_key=True, server_default=func.uuid_generate_v4()
+    )
     improvement_id = Column(PG_UUID(as_uuid=True), nullable=False, unique=True)
-    timestamp = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    timestamp = Column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
     description = Column(Text, nullable=False)
     algorithm_changes = Column(JSON)
     performance_before = Column(JSON)
     performance_after = Column(JSON)
     constitutional_compliance_score = Column(Numeric(3, 2), nullable=False)
     compliance_details = Column(JSON)
-    status = Column(Enum(ImprovementStatus), nullable=False, default=ImprovementStatus.PENDING)
+    status = Column(
+        Enum(ImprovementStatus), nullable=False, default=ImprovementStatus.PENDING
+    )
     rollback_data = Column(JSON)
     metadata = Column(JSON)
     created_by = Column(String(255))
-    created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    created_at = Column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
     updated_at = Column(
-        DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now()
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+        onupdate=func.now(),
     )
 
     def __repr__(self):
-        return f"<DGMArchive(improvement_id={self.improvement_id}, status={self.status})>"
+        return (
+            f"<DGMArchive(improvement_id={self.improvement_id}, status={self.status})>"
+        )
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary representation."""
@@ -62,7 +75,9 @@ class DGMArchive(Base):
             "algorithm_changes": self.algorithm_changes,
             "performance_before": self.performance_before,
             "performance_after": self.performance_after,
-            "constitutional_compliance_score": float(self.constitutional_compliance_score),
+            "constitutional_compliance_score": float(
+                self.constitutional_compliance_score
+            ),
             "compliance_details": self.compliance_details,
             "status": self.status.value if self.status else None,
             "rollback_data": self.rollback_data,

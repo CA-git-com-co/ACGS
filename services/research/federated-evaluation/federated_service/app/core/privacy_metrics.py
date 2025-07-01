@@ -84,7 +84,9 @@ class DifferentialPrivacyManager:
             "data_utility_score": 0.0,
         }
 
-        logger.info(f"Initialized Differential Privacy Manager (ε={epsilon}, δ={delta})")
+        logger.info(
+            f"Initialized Differential Privacy Manager (ε={epsilon}, δ={delta})"
+        )
 
     async def initialize(self):
         # requires: Valid input parameters
@@ -112,8 +114,12 @@ class DifferentialPrivacyManager:
         """
         try:
             # Extract privacy parameters
-            epsilon_request = privacy_requirements.get("epsilon", self.privacy_budget.epsilon)
-            mechanism = PrivacyMechanism(privacy_requirements.get("mechanism", "laplace"))
+            epsilon_request = privacy_requirements.get(
+                "epsilon", self.privacy_budget.epsilon
+            )
+            mechanism = PrivacyMechanism(
+                privacy_requirements.get("mechanism", "laplace")
+            )
 
             # Check privacy budget
             if not self._check_privacy_budget(epsilon_request):
@@ -127,8 +133,10 @@ class DifferentialPrivacyManager:
 
             for node_id, node_data in data.items():
                 if isinstance(node_data, dict) and node_data.get("success", False):
-                    private_node_data, noise_added = await self._apply_privacy_mechanism(
-                        node_data, mechanism, epsilon_request
+                    private_node_data, noise_added = (
+                        await self._apply_privacy_mechanism(
+                            node_data, mechanism, epsilon_request
+                        )
                     )
                     private_data[node_id] = private_node_data
                     total_noise += noise_added
@@ -233,7 +241,9 @@ class DifferentialPrivacyManager:
             if delta <= 0:
                 delta = 1e-5  # Default delta
 
-            sigma = self.global_sensitivity * np.sqrt(2 * np.log(1.25 / delta)) / epsilon
+            sigma = (
+                self.global_sensitivity * np.sqrt(2 * np.log(1.25 / delta)) / epsilon
+            )
             return np.random.normal(0, sigma)
         except Exception as e:
             logger.error(f"Failed to generate Gaussian noise: {e}")
@@ -304,7 +314,9 @@ class DifferentialPrivacyManager:
                                 priv_val = float(priv_node[field])
 
                                 if orig_val != 0:
-                                    relative_error = abs(orig_val - priv_val) / abs(orig_val)
+                                    relative_error = abs(orig_val - priv_val) / abs(
+                                        orig_val
+                                    )
                                     utility = max(0.0, 1.0 - relative_error)
                                     total_utility += utility
                                     field_count += 1
@@ -322,7 +334,9 @@ class DifferentialPrivacyManager:
         """Update global privacy metrics."""
         try:
             self.privacy_metrics["total_queries"] += 1
-            self.privacy_metrics["privacy_budget_used"] = self.privacy_budget.used_epsilon
+            self.privacy_metrics["privacy_budget_used"] = (
+                self.privacy_budget.used_epsilon
+            )
 
             # Update average noise
             total_queries = self.privacy_metrics["total_queries"]
@@ -369,7 +383,9 @@ class DifferentialPrivacyManager:
             ],
         }
 
-    async def reset_privacy_budget(self, new_epsilon: float = None, new_delta: float = None):
+    async def reset_privacy_budget(
+        self, new_epsilon: float = None, new_delta: float = None
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash

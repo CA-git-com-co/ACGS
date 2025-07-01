@@ -23,11 +23,16 @@ import httpx
 import pytest
 from fastapi.testclient import TestClient
 
-from services.core.acge.acge_prototype import ACGEPrototype, ACGEConfig, ConstitutionalRequest
+from services.core.acge.acge_prototype import (
+    ACGEPrototype,
+    ACGEConfig,
+    ConstitutionalRequest,
+)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
 
 @dataclass
 class ACGETestConfig:
@@ -54,6 +59,7 @@ class ACGETestConfig:
     pgc_service_endpoint: str = "http://localhost:8005"
     ec_service_endpoint: str = "http://localhost:8006"
 
+
 class ACGETestFramework:
     """Automated testing framework for ACGE."""
 
@@ -67,7 +73,7 @@ class ACGETestFramework:
             "performance_tests": [],
             "integration_tests": [],
             "load_tests": [],
-            "security_tests": []
+            "security_tests": [],
         }
 
         # Test data
@@ -85,11 +91,18 @@ class ACGETestFramework:
                     "decision_type": "policy_approval",
                     "stakeholders": ["citizens", "government", "civil_society"],
                     "impact_scope": "national",
-                    "constitutional_principles_involved": ["democratic_participation", "rule_of_law"]
+                    "constitutional_principles_involved": [
+                        "democratic_participation",
+                        "rule_of_law",
+                    ],
                 },
-                "constitutional_principles": ["democratic_participation", "rule_of_law", "accountability"],
+                "constitutional_principles": [
+                    "democratic_participation",
+                    "rule_of_law",
+                    "accountability",
+                ],
                 "expected_compliance": True,
-                "expected_score_min": 0.95
+                "expected_score_min": 0.95,
             },
             {
                 "name": "constitutional_violation_detection",
@@ -98,11 +111,14 @@ class ACGETestFramework:
                     "stakeholders": ["executive_branch"],
                     "impact_scope": "national",
                     "constitutional_principles_involved": ["separation_of_powers"],
-                    "potential_violations": ["bypassing_legislative_oversight"]
+                    "potential_violations": ["bypassing_legislative_oversight"],
                 },
-                "constitutional_principles": ["separation_of_powers", "checks_and_balances"],
+                "constitutional_principles": [
+                    "separation_of_powers",
+                    "checks_and_balances",
+                ],
                 "expected_compliance": False,
-                "expected_score_max": 0.80
+                "expected_score_max": 0.80,
             },
             {
                 "name": "complex_governance_scenario",
@@ -110,12 +126,19 @@ class ACGETestFramework:
                     "decision_type": "constitutional_amendment",
                     "stakeholders": ["parliament", "citizens", "constitutional_court"],
                     "impact_scope": "constitutional",
-                    "constitutional_principles_involved": ["democratic_legitimacy", "constitutional_supremacy"],
-                    "procedural_requirements": ["supermajority", "public_consultation"]
+                    "constitutional_principles_involved": [
+                        "democratic_legitimacy",
+                        "constitutional_supremacy",
+                    ],
+                    "procedural_requirements": ["supermajority", "public_consultation"],
                 },
-                "constitutional_principles": ["democratic_legitimacy", "constitutional_supremacy", "procedural_fairness"],
+                "constitutional_principles": [
+                    "democratic_legitimacy",
+                    "constitutional_supremacy",
+                    "procedural_fairness",
+                ],
                 "expected_compliance": True,
-                "expected_score_min": 0.90
+                "expected_score_min": 0.90,
             },
             {
                 "name": "edge_case_governance",
@@ -123,13 +146,20 @@ class ACGETestFramework:
                     "decision_type": "crisis_response",
                     "stakeholders": ["emergency_services", "affected_communities"],
                     "impact_scope": "regional",
-                    "constitutional_principles_involved": ["proportionality", "necessity"],
-                    "time_constraints": "immediate_action_required"
+                    "constitutional_principles_involved": [
+                        "proportionality",
+                        "necessity",
+                    ],
+                    "time_constraints": "immediate_action_required",
                 },
-                "constitutional_principles": ["proportionality", "necessity", "human_rights"],
+                "constitutional_principles": [
+                    "proportionality",
+                    "necessity",
+                    "human_rights",
+                ],
                 "expected_compliance": True,
-                "expected_score_min": 0.85
-            }
+                "expected_score_min": 0.85,
+            },
         ]
 
     async def run_comprehensive_test_suite(self) -> Dict[str, Any]:
@@ -140,11 +170,14 @@ class ACGETestFramework:
 
         # Run all test categories
         test_categories = [
-            ("Constitutional Compliance Tests", self._run_constitutional_compliance_tests),
+            (
+                "Constitutional Compliance Tests",
+                self._run_constitutional_compliance_tests,
+            ),
             ("Performance Tests", self._run_performance_tests),
             ("Integration Tests", self._run_integration_tests),
             ("Load Tests", self._run_load_tests),
-            ("Security Tests", self._run_security_tests)
+            ("Security Tests", self._run_security_tests),
         ]
 
         overall_results = {
@@ -152,7 +185,7 @@ class ACGETestFramework:
             "constitutional_hash": self.constitutional_hash,
             "test_categories": {},
             "overall_success": True,
-            "success_criteria_met": {}
+            "success_criteria_met": {},
         }
 
         for category_name, test_function in test_categories:
@@ -169,12 +202,14 @@ class ACGETestFramework:
                 logger.error(f"{category_name} failed: {str(e)}")
                 overall_results["test_categories"][category_name] = {
                     "success": False,
-                    "error": str(e)
+                    "error": str(e),
                 }
                 overall_results["overall_success"] = False
 
         # Evaluate success criteria
-        overall_results["success_criteria_met"] = await self._evaluate_success_criteria(overall_results)
+        overall_results["success_criteria_met"] = await self._evaluate_success_criteria(
+            overall_results
+        )
 
         test_duration = time.time() - test_start
         overall_results["test_duration_seconds"] = test_duration
@@ -193,7 +228,7 @@ class ACGETestFramework:
             "failed_tests": 0,
             "test_details": [],
             "avg_compliance_score": 0.0,
-            "avg_response_time_ms": 0.0
+            "avg_response_time_ms": 0.0,
         }
 
         total_compliance_score = 0.0
@@ -207,15 +242,17 @@ class ACGETestFramework:
                     # Prepare request
                     request_data = {
                         "governance_context": test_case["governance_context"],
-                        "constitutional_principles": test_case["constitutional_principles"],
-                        "compliance_threshold": self.config.constitutional_compliance_threshold
+                        "constitutional_principles": test_case[
+                            "constitutional_principles"
+                        ],
+                        "compliance_threshold": self.config.constitutional_compliance_threshold,
                     }
 
                     # Make request to ACGE
                     response = await client.post(
                         f"{self.config.acge_endpoint}/api/v1/constitutional/analyze",
                         json=request_data,
-                        timeout=self.config.test_timeout_seconds
+                        timeout=self.config.test_timeout_seconds,
                     )
 
                     response_time = (time.time() - test_start) * 1000
@@ -226,23 +263,40 @@ class ACGETestFramework:
 
                         # Validate response structure
                         required_fields = [
-                            "constitutional_compliant", "compliance_score",
-                            "constitutional_reasoning", "processing_time_ms",
-                            "constitutional_hash"
+                            "constitutional_compliant",
+                            "compliance_score",
+                            "constitutional_reasoning",
+                            "processing_time_ms",
+                            "constitutional_hash",
                         ]
 
-                        structure_valid = all(field in result for field in required_fields)
+                        structure_valid = all(
+                            field in result for field in required_fields
+                        )
 
                         # Validate constitutional hash
-                        hash_valid = result.get("constitutional_hash") == self.constitutional_hash
+                        hash_valid = (
+                            result.get("constitutional_hash")
+                            == self.constitutional_hash
+                        )
 
                         # Validate compliance expectations
-                        compliance_valid = self._validate_compliance_expectations(test_case, result)
+                        compliance_valid = self._validate_compliance_expectations(
+                            test_case, result
+                        )
 
                         # Validate response time
-                        response_time_valid = result.get("processing_time_ms", float('inf')) <= self.config.response_time_threshold_ms
+                        response_time_valid = (
+                            result.get("processing_time_ms", float("inf"))
+                            <= self.config.response_time_threshold_ms
+                        )
 
-                        test_passed = structure_valid and hash_valid and compliance_valid and response_time_valid
+                        test_passed = (
+                            structure_valid
+                            and hash_valid
+                            and compliance_valid
+                            and response_time_valid
+                        )
 
                         if test_passed:
                             compliance_results["passed_tests"] += 1
@@ -252,45 +306,57 @@ class ACGETestFramework:
 
                         total_compliance_score += result.get("compliance_score", 0.0)
 
-                        compliance_results["test_details"].append({
-                            "test_name": test_case["name"],
-                            "passed": test_passed,
-                            "compliance_score": result.get("compliance_score", 0.0),
-                            "response_time_ms": response_time,
-                            "constitutional_hash_valid": hash_valid,
-                            "structure_valid": structure_valid,
-                            "compliance_expectations_met": compliance_valid,
-                            "response_time_valid": response_time_valid
-                        })
+                        compliance_results["test_details"].append(
+                            {
+                                "test_name": test_case["name"],
+                                "passed": test_passed,
+                                "compliance_score": result.get("compliance_score", 0.0),
+                                "response_time_ms": response_time,
+                                "constitutional_hash_valid": hash_valid,
+                                "structure_valid": structure_valid,
+                                "compliance_expectations_met": compliance_valid,
+                                "response_time_valid": response_time_valid,
+                            }
+                        )
 
                     else:
                         compliance_results["failed_tests"] += 1
                         compliance_results["success"] = False
-                        compliance_results["test_details"].append({
-                            "test_name": test_case["name"],
-                            "passed": False,
-                            "error": f"HTTP {response.status_code}: {response.text}",
-                            "response_time_ms": response_time
-                        })
+                        compliance_results["test_details"].append(
+                            {
+                                "test_name": test_case["name"],
+                                "passed": False,
+                                "error": f"HTTP {response.status_code}: {response.text}",
+                                "response_time_ms": response_time,
+                            }
+                        )
 
                 except Exception as e:
                     compliance_results["failed_tests"] += 1
                     compliance_results["success"] = False
-                    compliance_results["test_details"].append({
-                        "test_name": test_case["name"],
-                        "passed": False,
-                        "error": str(e),
-                        "response_time_ms": (time.time() - test_start) * 1000
-                    })
+                    compliance_results["test_details"].append(
+                        {
+                            "test_name": test_case["name"],
+                            "passed": False,
+                            "error": str(e),
+                            "response_time_ms": (time.time() - test_start) * 1000,
+                        }
+                    )
 
         # Calculate averages
         if compliance_results["total_tests"] > 0:
-            compliance_results["avg_compliance_score"] = total_compliance_score / compliance_results["total_tests"]
-            compliance_results["avg_response_time_ms"] = total_response_time / compliance_results["total_tests"]
+            compliance_results["avg_compliance_score"] = (
+                total_compliance_score / compliance_results["total_tests"]
+            )
+            compliance_results["avg_response_time_ms"] = (
+                total_response_time / compliance_results["total_tests"]
+            )
 
         return compliance_results
 
-    def _validate_compliance_expectations(self, test_case: Dict[str, Any], result: Dict[str, Any]) -> bool:
+    def _validate_compliance_expectations(
+        self, test_case: Dict[str, Any], result: Dict[str, Any]
+    ) -> bool:
         """Validate compliance expectations for test case."""
 
         expected_compliance = test_case.get("expected_compliance", True)
@@ -321,7 +387,7 @@ class ACGETestFramework:
             "success": True,
             "response_time_tests": [],
             "throughput_tests": [],
-            "resource_utilization_tests": []
+            "resource_utilization_tests": [],
         }
 
         # Response time test
@@ -332,16 +398,16 @@ class ACGETestFramework:
                 test_request = {
                     "governance_context": {
                         "decision_type": "policy_review",
-                        "stakeholders": ["government", "citizens"]
+                        "stakeholders": ["government", "citizens"],
                     },
-                    "constitutional_principles": ["democratic_participation"]
+                    "constitutional_principles": ["democratic_participation"],
                 }
 
                 start_time = time.time()
                 response = await client.post(
                     f"{self.config.acge_endpoint}/api/v1/constitutional/analyze",
                     json=test_request,
-                    timeout=self.config.test_timeout_seconds
+                    timeout=self.config.test_timeout_seconds,
                 )
                 response_time = (time.time() - start_time) * 1000
                 response_times.append(response_time)
@@ -355,8 +421,10 @@ class ACGETestFramework:
             performance_results["response_time_tests"] = {
                 "avg_response_time_ms": avg_response_time,
                 "max_response_time_ms": max_response_time,
-                "target_met": avg_response_time <= self.config.response_time_threshold_ms,
-                "all_requests_under_threshold": max_response_time <= self.config.response_time_threshold_ms
+                "target_met": avg_response_time
+                <= self.config.response_time_threshold_ms,
+                "all_requests_under_threshold": max_response_time
+                <= self.config.response_time_threshold_ms,
             }
 
             if not performance_results["response_time_tests"]["target_met"]:
@@ -370,26 +438,28 @@ class ACGETestFramework:
         integration_results = {
             "success": True,
             "service_integrations": {},
-            "end_to_end_tests": []
+            "end_to_end_tests": [],
         }
 
         # Test integration with each service
         services = [
             ("auth_service", self.config.auth_service_endpoint),
             ("ac_service", self.config.ac_service_endpoint),
-            ("pgc_service", self.config.pgc_service_endpoint)
+            ("pgc_service", self.config.pgc_service_endpoint),
         ]
 
         async with httpx.AsyncClient() as client:
             for service_name, endpoint in services:
                 try:
-                    health_response = await client.get(f"{endpoint}/health", timeout=5.0)
+                    health_response = await client.get(
+                        f"{endpoint}/health", timeout=5.0
+                    )
                     service_available = health_response.status_code == 200
 
                     integration_results["service_integrations"][service_name] = {
                         "available": service_available,
                         "endpoint": endpoint,
-                        "response_time_ms": 0  # Would measure actual integration time
+                        "response_time_ms": 0,  # Would measure actual integration time
                     }
 
                     if not service_available:
@@ -399,7 +469,7 @@ class ACGETestFramework:
                     integration_results["service_integrations"][service_name] = {
                         "available": False,
                         "endpoint": endpoint,
-                        "error": str(e)
+                        "error": str(e),
                     }
                     integration_results["success"] = False
 
@@ -415,16 +485,16 @@ class ACGETestFramework:
             "successful_requests": 0,
             "failed_requests": 0,
             "avg_response_time_ms": 0.0,
-            "throughput_rps": 0.0
+            "throughput_rps": 0.0,
         }
 
         # Simplified load test (would use proper load testing tools in production)
         test_request = {
             "governance_context": {
                 "decision_type": "routine_policy",
-                "stakeholders": ["government"]
+                "stakeholders": ["government"],
             },
-            "constitutional_principles": ["rule_of_law"]
+            "constitutional_principles": ["rule_of_law"],
         }
 
         start_time = time.time()
@@ -438,7 +508,7 @@ class ACGETestFramework:
                     response = await client.post(
                         f"{self.config.acge_endpoint}/api/v1/constitutional/analyze",
                         json=test_request,
-                        timeout=self.config.test_timeout_seconds
+                        timeout=self.config.test_timeout_seconds,
                     )
                     request_time = (time.time() - request_start) * 1000
                     response_times.append(request_time)
@@ -457,13 +527,17 @@ class ACGETestFramework:
         total_time = time.time() - start_time
 
         if response_times:
-            load_results["avg_response_time_ms"] = sum(response_times) / len(response_times)
+            load_results["avg_response_time_ms"] = sum(response_times) / len(
+                response_times
+            )
 
         if total_time > 0:
             load_results["throughput_rps"] = load_results["total_requests"] / total_time
 
         # Check if load test meets criteria
-        success_rate = load_results["successful_requests"] / max(1, load_results["total_requests"])
+        success_rate = load_results["successful_requests"] / max(
+            1, load_results["total_requests"]
+        )
         if success_rate < 0.95:  # 95% success rate required
             load_results["success"] = False
 
@@ -476,7 +550,7 @@ class ACGETestFramework:
             "success": True,
             "constitutional_hash_validation": True,
             "input_validation_tests": [],
-            "authentication_tests": []
+            "authentication_tests": [],
         }
 
         # Test constitutional hash validation
@@ -485,14 +559,14 @@ class ACGETestFramework:
             invalid_request = {
                 "governance_context": {"decision_type": "test"},
                 "constitutional_principles": ["test"],
-                "constitutional_hash": "invalid_hash"
+                "constitutional_hash": "invalid_hash",
             }
 
             try:
                 response = await client.post(
                     f"{self.config.acge_endpoint}/api/v1/constitutional/analyze",
                     json=invalid_request,
-                    timeout=self.config.test_timeout_seconds
+                    timeout=self.config.test_timeout_seconds,
                 )
 
                 # Should either reject or use correct hash
@@ -507,24 +581,34 @@ class ACGETestFramework:
 
         return security_results
 
-    async def _evaluate_success_criteria(self, test_results: Dict[str, Any]) -> Dict[str, bool]:
+    async def _evaluate_success_criteria(
+        self, test_results: Dict[str, Any]
+    ) -> Dict[str, bool]:
         """Evaluate overall success criteria."""
 
         success_criteria = {}
 
         # Constitutional compliance criteria
-        compliance_tests = test_results["test_categories"].get("Constitutional Compliance Tests", {})
+        compliance_tests = test_results["test_categories"].get(
+            "Constitutional Compliance Tests", {}
+        )
         avg_compliance = compliance_tests.get("avg_compliance_score", 0.0)
-        success_criteria["constitutional_compliance_threshold_met"] = avg_compliance >= self.config.constitutional_compliance_threshold
+        success_criteria["constitutional_compliance_threshold_met"] = (
+            avg_compliance >= self.config.constitutional_compliance_threshold
+        )
 
         # Response time criteria
         performance_tests = test_results["test_categories"].get("Performance Tests", {})
         response_time_tests = performance_tests.get("response_time_tests", {})
-        success_criteria["response_time_threshold_met"] = response_time_tests.get("target_met", False)
+        success_criteria["response_time_threshold_met"] = response_time_tests.get(
+            "target_met", False
+        )
 
         # Integration criteria
         integration_tests = test_results["test_categories"].get("Integration Tests", {})
-        success_criteria["integration_tests_passed"] = integration_tests.get("success", False)
+        success_criteria["integration_tests_passed"] = integration_tests.get(
+            "success", False
+        )
 
         # Load test criteria
         load_tests = test_results["test_categories"].get("Load Tests", {})
@@ -535,6 +619,7 @@ class ACGETestFramework:
         success_criteria["security_tests_passed"] = security_tests.get("success", False)
 
         return success_criteria
+
 
 # Test execution
 async def main():
@@ -556,6 +641,8 @@ async def main():
 
     return results
 
+
 if __name__ == "__main__":
     import asyncio
+
     asyncio.run(main())

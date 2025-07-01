@@ -18,7 +18,7 @@ import uvicorn
 app = FastAPI(
     title="ACGS-1 Monitoring Dashboard",
     description="Simple monitoring dashboard for ACGS-1 services",
-    version="1.0.0"
+    version="1.0.0",
 )
 
 app.add_middleware(
@@ -31,33 +31,60 @@ app.add_middleware(
 
 # Service configuration
 SERVICES = {
-    "auth": {"name": "Authentication Service", "port": 8000, "url": "http://localhost:8000"},
-    "ac": {"name": "Constitutional AI Service", "port": 8001, "url": "http://localhost:8001"},
-    "integrity": {"name": "Integrity Service", "port": 8002, "url": "http://localhost:8002"},
-    "fv": {"name": "Formal Verification Service", "port": 8003, "url": "http://localhost:8003"},
-    "gs": {"name": "Governance Synthesis Service", "port": 8004, "url": "http://localhost:8004"},
-    "pgc": {"name": "Policy Governance Service", "port": 8005, "url": "http://localhost:8005"},
-    "ec": {"name": "Evolutionary Computation Service", "port": 8006, "url": "http://localhost:8006"},
+    "auth": {
+        "name": "Authentication Service",
+        "port": 8000,
+        "url": "http://localhost:8000",
+    },
+    "ac": {
+        "name": "Constitutional AI Service",
+        "port": 8001,
+        "url": "http://localhost:8001",
+    },
+    "integrity": {
+        "name": "Integrity Service",
+        "port": 8002,
+        "url": "http://localhost:8002",
+    },
+    "fv": {
+        "name": "Formal Verification Service",
+        "port": 8003,
+        "url": "http://localhost:8003",
+    },
+    "gs": {
+        "name": "Governance Synthesis Service",
+        "port": 8004,
+        "url": "http://localhost:8004",
+    },
+    "pgc": {
+        "name": "Policy Governance Service",
+        "port": 8005,
+        "url": "http://localhost:8005",
+    },
+    "ec": {
+        "name": "Evolutionary Computation Service",
+        "port": 8006,
+        "url": "http://localhost:8006",
+    },
 }
 
 # Global metrics storage
 metrics_data = {
     "services": {},
-    "system": {
-        "start_time": time.time(),
-        "total_requests": 0,
-        "last_update": None
-    }
+    "system": {"start_time": time.time(), "total_requests": 0, "last_update": None},
 }
+
 
 async def check_service_health(service_id: str, service_config: Dict) -> Dict[str, Any]:
     """Check health of a single service"""
     try:
-        async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=5)) as session:
+        async with aiohttp.ClientSession(
+            timeout=aiohttp.ClientTimeout(total=5)
+        ) as session:
             start_time = time.time()
             async with session.get(f"{service_config['url']}/health") as response:
                 response_time = (time.time() - start_time) * 1000  # Convert to ms
-                
+
                 if response.status == 200:
                     health_data = await response.json()
                     return {
@@ -65,7 +92,7 @@ async def check_service_health(service_id: str, service_config: Dict) -> Dict[st
                         "response_time_ms": round(response_time, 2),
                         "http_status": response.status,
                         "details": health_data,
-                        "last_check": datetime.now().isoformat()
+                        "last_check": datetime.now().isoformat(),
                     }
                 else:
                     return {
@@ -73,7 +100,7 @@ async def check_service_health(service_id: str, service_config: Dict) -> Dict[st
                         "response_time_ms": round(response_time, 2),
                         "http_status": response.status,
                         "error": f"HTTP {response.status}",
-                        "last_check": datetime.now().isoformat()
+                        "last_check": datetime.now().isoformat(),
                     }
     except Exception as e:
         return {
@@ -81,27 +108,29 @@ async def check_service_health(service_id: str, service_config: Dict) -> Dict[st
             "response_time_ms": None,
             "http_status": None,
             "error": str(e),
-            "last_check": datetime.now().isoformat()
+            "last_check": datetime.now().isoformat(),
         }
+
 
 async def collect_all_metrics():
     """Collect metrics from all services"""
     tasks = []
     for service_id, service_config in SERVICES.items():
         tasks.append(check_service_health(service_id, service_config))
-    
+
     results = await asyncio.gather(*tasks)
-    
+
     # Update metrics data
     for i, (service_id, service_config) in enumerate(SERVICES.items()):
         metrics_data["services"][service_id] = {
             "name": service_config["name"],
             "port": service_config["port"],
-            "health": results[i]
+            "health": results[i],
         }
-    
+
     metrics_data["system"]["last_update"] = datetime.now().isoformat()
     metrics_data["system"]["total_requests"] += 1
+
 
 @app.get("/")
 async def dashboard():
@@ -334,11 +363,13 @@ async def dashboard():
     """
     return HTMLResponse(content=html_content)
 
+
 @app.get("/api/metrics")
 async def get_metrics():
     """API endpoint to get current metrics"""
     await collect_all_metrics()
     return metrics_data
+
 
 @app.get("/health")
 async def health_check():
@@ -347,8 +378,9 @@ async def health_check():
         "status": "healthy",
         "service": "monitoring_dashboard",
         "version": "1.0.0",
-        "uptime_seconds": time.time() - metrics_data["system"]["start_time"]
+        "uptime_seconds": time.time() - metrics_data["system"]["start_time"],
     }
+
 
 if __name__ == "__main__":
     print("🚀 Starting ACGS-1 Monitoring Dashboard on port 3000")

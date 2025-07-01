@@ -40,21 +40,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.middleware("http")
 async def add_security_headers(request, call_next):
     """Add security headers including constitutional hash."""
     response = await call_next(request)
-    
+
     # Core security headers
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["X-XSS-Protection"] = "1; mode=block"
-    
+
     # ACGS-1 specific headers
     response.headers["X-ACGS-Security"] = "enabled"
     response.headers["X-Constitutional-Hash"] = "cdd01ef066bc6cf2"
-    
+
     return response
+
 
 @app.get("/", status_code=status.HTTP_200_OK)
 async def root(request: Request):
@@ -71,16 +73,17 @@ async def root(request: Request):
             "Governance Policy Synthesis",
             "Multi-Stakeholder Coordination",
             "Democratic Process Management",
-            "Constitutional Compliance Checking"
+            "Constitutional Compliance Checking",
         ],
-        "status": "operational"
+        "status": "operational",
     }
+
 
 @app.get("/health", status_code=status.HTTP_200_OK)
 async def health_check():
     """Health check endpoint."""
     uptime_seconds = time.time() - service_start_time
-    
+
     return {
         "status": "healthy",
         "service": SERVICE_NAME,
@@ -93,20 +96,22 @@ async def health_check():
             "synthesis_engine": "operational",
             "coordination_manager": "operational",
             "democratic_processor": "operational",
-            "compliance_checker": "operational"
+            "compliance_checker": "operational",
         },
         "performance_metrics": {
             "uptime_seconds": uptime_seconds,
             "target_response_time": "<200ms",
-            "availability_target": ">99.9%"
-        }
+            "availability_target": ">99.9%",
+        },
     }
+
 
 @app.post("/api/v1/governance/synthesize")
 async def synthesize_governance_policy(request: Request):
     """Synthesize a governance policy using multi-model consensus."""
     # Placeholder for governance policy synthesis
     return {"status": "policy_synthesized"}
+
 
 @app.get("/api/v1/governance/status")
 async def governance_status():
@@ -119,14 +124,15 @@ async def governance_status():
             "policy_synthesis": True,
             "stakeholder_coordination": True,
             "democratic_processes": True,
-            "constitutional_compliance": True
+            "constitutional_compliance": True,
         },
         "metrics": {
             "policies_synthesized": 0,
             "stakeholder_sessions": 0,
-            "democratic_votes": 0
-        }
+            "democratic_votes": 0,
+        },
     }
+
 
 @app.get("/api/v1/constitutional/validate")
 async def constitutional_validate():
@@ -136,10 +142,12 @@ async def constitutional_validate():
         "validation_status": "valid",
         "service": SERVICE_NAME,
         "timestamp": time.time(),
-        "governance_compliant": True
+        "governance_compliant": True,
     }
+
 
 if __name__ == "__main__":
     import uvicorn
+
     logger.info(f"Starting {SERVICE_NAME} on port {SERVICE_PORT}")
     uvicorn.run(app, host="0.0.0.0", port=SERVICE_PORT)

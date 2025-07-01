@@ -49,7 +49,9 @@ class AnalysisResponse(BaseModel):
 
 
 @router.post("/", response_model=AnalysisResponse)
-async def run_analysis(request: AnalysisRequest, db: AsyncSession = Depends(get_db_session)):
+async def run_analysis(
+    request: AnalysisRequest, db: AsyncSession = Depends(get_db_session)
+):
     """Run statistical analysis on datasets."""
     try:
         # Placeholder implementation

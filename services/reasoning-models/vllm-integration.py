@@ -36,7 +36,9 @@ import requests
 from pydantic import BaseModel, Field
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -104,7 +106,10 @@ class VLLMReasoningService:
             },
             ReasoningModelType.MICROSOFT_PHI4: {
                 "url": "http://localhost:8001",
-                "specialties": [ConstitutionalDomain.ETHICS, ConstitutionalDomain.FAIRNESS],
+                "specialties": [
+                    ConstitutionalDomain.ETHICS,
+                    ConstitutionalDomain.FAIRNESS,
+                ],
                 "max_context": 16384,
                 "reasoning_strength": 0.90,
             },
@@ -121,7 +126,13 @@ class VLLMReasoningService:
                     "name": "Transparency",
                     "description": "All governance decisions must be transparent and auditable",
                     "weight": 0.25,
-                    "keywords": ["transparent", "open", "auditable", "visible", "clear"],
+                    "keywords": [
+                        "transparent",
+                        "open",
+                        "auditable",
+                        "visible",
+                        "clear",
+                    ],
                 },
                 {
                     "name": "Fairness",
@@ -133,7 +144,13 @@ class VLLMReasoningService:
                     "name": "Privacy",
                     "description": "User privacy and data rights must be protected",
                     "weight": 0.25,
-                    "keywords": ["privacy", "protect", "consent", "rights", "confidential"],
+                    "keywords": [
+                        "privacy",
+                        "protect",
+                        "consent",
+                        "rights",
+                        "confidential",
+                    ],
                 },
                 {
                     "name": "Accountability",
@@ -232,7 +249,9 @@ Begin governance decision analysis:
 """,
         }
 
-    async def select_optimal_model(self, request: ReasoningRequest) -> ReasoningModelType:
+    async def select_optimal_model(
+        self, request: ReasoningRequest
+    ) -> ReasoningModelType:
         """Select the optimal model based on domain and requirements."""
 
         # Check model specialties
@@ -240,17 +259,23 @@ Begin governance decision analysis:
             if request.domain in config["specialties"]:
                 # Verify model is available
                 if await self._check_model_availability(model_type):
-                    logger.info(f"Selected {model_type.value} for {request.domain.value} domain")
+                    logger.info(
+                        f"Selected {model_type.value} for {request.domain.value} domain"
+                    )
                     return model_type
 
         # Fallback to NVIDIA AceReason for general constitutional reasoning
         if await self._check_model_availability(ReasoningModelType.NVIDIA_ACERREASON):
-            logger.info(f"Using NVIDIA AceReason as fallback for {request.domain.value}")
+            logger.info(
+                f"Using NVIDIA AceReason as fallback for {request.domain.value}"
+            )
             return ReasoningModelType.NVIDIA_ACERREASON
 
         # Final fallback to Microsoft Phi-4
         if await self._check_model_availability(ReasoningModelType.MICROSOFT_PHI4):
-            logger.info(f"Using Microsoft Phi-4 as final fallback for {request.domain.value}")
+            logger.info(
+                f"Using Microsoft Phi-4 as final fallback for {request.domain.value}"
+            )
             return ReasoningModelType.MICROSOFT_PHI4
 
         raise RuntimeError("No reasoning models available")
@@ -260,13 +285,17 @@ Begin governance decision analysis:
         try:
             config = self.models[model_type]
             async with aiohttp.ClientSession() as session:
-                async with session.get(f"{config['url']}/health", timeout=5) as response:
+                async with session.get(
+                    f"{config['url']}/health", timeout=5
+                ) as response:
                     return response.status == 200
         except Exception as e:
             logger.warning(f"Model {model_type.value} not available: {str(e)}")
             return False
 
-    async def constitutional_reasoning(self, request: ReasoningRequest) -> ReasoningResponse:
+    async def constitutional_reasoning(
+        self, request: ReasoningRequest
+    ) -> ReasoningResponse:
         """
         Perform constitutional reasoning using advanced models.
 
@@ -310,7 +339,9 @@ Begin governance decision analysis:
         }
         return domain_templates.get(domain, "constitutional_analysis")
 
-    def _build_reasoning_prompt(self, request: ReasoningRequest, template_key: str) -> str:
+    def _build_reasoning_prompt(
+        self, request: ReasoningRequest, template_key: str
+    ) -> str:
         """Build reasoning prompt from template and request."""
         template = self.reasoning_templates[template_key]
 
@@ -359,7 +390,9 @@ Begin governance decision analysis:
                         return result
                     else:
                         error_text = await response.text()
-                        raise RuntimeError(f"Model API error: {response.status} - {error_text}")
+                        raise RuntimeError(
+                            f"Model API error: {response.status} - {error_text}"
+                        )
 
         except Exception as e:
             logger.error(f"Error calling {model_type.value}: {str(e)}")
@@ -533,7 +566,10 @@ Begin governance decision analysis:
         # Get responses from available models
         responses = []
 
-        for model_type in [ReasoningModelType.NVIDIA_ACERREASON, ReasoningModelType.MICROSOFT_PHI4]:
+        for model_type in [
+            ReasoningModelType.NVIDIA_ACERREASON,
+            ReasoningModelType.MICROSOFT_PHI4,
+        ]:
             if await self._check_model_availability(model_type):
                 try:
                     # Create individual request
@@ -543,7 +579,8 @@ Begin governance decision analysis:
                         context=request.context,
                         reasoning_depth=request.reasoning_depth,
                         require_citations=request.require_citations,
-                        max_tokens=request.max_tokens // 2,  # Split tokens between models
+                        max_tokens=request.max_tokens
+                        // 2,  # Split tokens between models
                     )
 
                     # Get response from this model
@@ -551,7 +588,9 @@ Begin governance decision analysis:
                     responses.append(response)
 
                 except Exception as e:
-                    logger.warning(f"Ensemble model {model_type.value} failed: {str(e)}")
+                    logger.warning(
+                        f"Ensemble model {model_type.value} failed: {str(e)}"
+                    )
 
         if not responses:
             raise RuntimeError("No models available for ensemble reasoning")
@@ -565,7 +604,9 @@ Begin governance decision analysis:
         )
         return combined_response
 
-    def _combine_ensemble_responses(self, responses: List[ReasoningResponse]) -> ReasoningResponse:
+    def _combine_ensemble_responses(
+        self, responses: List[ReasoningResponse]
+    ) -> ReasoningResponse:
         """Combine multiple reasoning responses into ensemble result."""
 
         # Combine reasoning chains
@@ -579,7 +620,9 @@ Begin governance decision analysis:
         combined_compliance = {}
         for principle in self.constitutional_principles["core_principles"]:
             principle_name = principle["name"]
-            scores = [r.constitutional_compliance.get(principle_name, 0.5) for r in responses]
+            scores = [
+                r.constitutional_compliance.get(principle_name, 0.5) for r in responses
+            ]
             combined_compliance[principle_name] = sum(scores) / len(scores)
 
         # Combine conclusions

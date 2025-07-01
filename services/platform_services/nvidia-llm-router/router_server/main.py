@@ -74,7 +74,9 @@ async def lifespan(app: FastAPI):
     controller_url = os.getenv(
         "LLM_ROUTER_CONTROLLER_URL", "http://nvidia_llm_router_controller:8080"
     )
-    nvidia_api_base = os.getenv("NVIDIA_API_BASE_URL", "https://integrate.api.nvidia.com/v1")
+    nvidia_api_base = os.getenv(
+        "NVIDIA_API_BASE_URL", "https://integrate.api.nvidia.com/v1"
+    )
 
     # Create HTTP session
     session = aiohttp.ClientSession()
@@ -113,7 +115,9 @@ async def get_routing_config() -> dict[str, Any]:
             if response.status == 200:
                 return await response.json()
             else:
-                logger.warning(f"Failed to get config from controller: {response.status}")
+                logger.warning(
+                    f"Failed to get config from controller: {response.status}"
+                )
                 return {}
     except Exception as e:
         logger.error(f"Error getting config from controller: {e}")
@@ -138,7 +142,9 @@ async def select_model(request: ChatCompletionRequest) -> str:
 
     # Complexity-based routing
     if request.complexity:
-        complexity_config = config.get("complexity_routing", {}).get(request.complexity, {})
+        complexity_config = config.get("complexity_routing", {}).get(
+            request.complexity, {}
+        )
         preferred_tier = complexity_config.get("preferred_tier", "standard")
 
         # Get models from preferred tier
@@ -150,10 +156,14 @@ async def select_model(request: ChatCompletionRequest) -> str:
     return os.getenv("FALLBACK_MODEL", "nvidia/llama-3.1-8b-instruct")
 
 
-async def call_nvidia_api(model: str, messages: list[ChatMessage], **kwargs) -> dict[str, Any]:
+async def call_nvidia_api(
+    model: str, messages: list[ChatMessage], **kwargs
+) -> dict[str, Any]:
     """Call NVIDIA API with the selected model"""
     api_key_manager = get_api_key_manager()
-    api_key = await api_key_manager.get_api_key_with_fallback("nvidia_primary", "NVIDIA_API_KEY")
+    api_key = await api_key_manager.get_api_key_with_fallback(
+        "nvidia_primary", "NVIDIA_API_KEY"
+    )
 
     if not api_key:
         raise HTTPException(status_code=500, detail="NVIDIA API key not available")

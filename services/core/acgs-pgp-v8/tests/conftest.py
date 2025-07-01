@@ -212,12 +212,18 @@ class TestMetrics:
 
     def get_average_response_time(self) -> float:
         """Get average response time."""
-        return sum(self.response_times) / len(self.response_times) if self.response_times else 0.0
+        return (
+            sum(self.response_times) / len(self.response_times)
+            if self.response_times
+            else 0.0
+        )
 
     def get_average_cache_hit_rate(self) -> float:
         """Get average cache hit rate."""
         return (
-            sum(self.cache_hit_rates) / len(self.cache_hit_rates) if self.cache_hit_rates else 0.0
+            sum(self.cache_hit_rates) / len(self.cache_hit_rates)
+            if self.cache_hit_rates
+            else 0.0
         )
 
     def get_average_compliance_score(self) -> float:

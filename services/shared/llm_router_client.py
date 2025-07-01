@@ -414,7 +414,9 @@ class LLMRouterClient:
             },
         )
 
-    async def _stream_completion(self, request_data: dict[str, Any]) -> AsyncGenerator[str, None]:
+    async def _stream_completion(
+        self, request_data: dict[str, Any]
+    ) -> AsyncGenerator[str, None]:
         """Handle streaming completion (placeholder for future implementation)"""
         # For now, fall back to non-streaming
         request_data["stream"] = False

@@ -146,7 +146,9 @@ class RedisPerformanceOptimizer:
                 self.metrics.sets += 1
                 self.metrics.total_operations += 1
 
-                logger.debug(f"Cache set: {key} (strategy: {strategy}, ttl: {strategy_ttl})")
+                logger.debug(
+                    f"Cache set: {key} (strategy: {strategy}, ttl: {strategy_ttl})"
+                )
                 return bool(result)
 
         except Exception as e:
@@ -318,7 +320,9 @@ class RedisPerformanceOptimizer:
                     self.metrics.deletes += deleted_count
                     self.metrics.total_operations += 1
 
-                    logger.info(f"Invalidated {deleted_count} keys matching pattern: {pattern}")
+                    logger.info(
+                        f"Invalidated {deleted_count} keys matching pattern: {pattern}"
+                    )
 
         except Exception as e:
             self.metrics.errors += 1
@@ -344,17 +348,29 @@ class RedisPerformanceOptimizer:
                     "redis_info": {
                         "connected_clients": info.get("connected_clients", 0),
                         "used_memory": info.get("used_memory_human", "unknown"),
-                        "used_memory_peak": info.get("used_memory_peak_human", "unknown"),
+                        "used_memory_peak": info.get(
+                            "used_memory_peak_human", "unknown"
+                        ),
                         "keyspace_hits": info.get("keyspace_hits", 0),
                         "keyspace_misses": info.get("keyspace_misses", 0),
-                        "total_commands_processed": info.get("total_commands_processed", 0),
-                        "instantaneous_ops_per_sec": info.get("instantaneous_ops_per_sec", 0),
+                        "total_commands_processed": info.get(
+                            "total_commands_processed", 0
+                        ),
+                        "instantaneous_ops_per_sec": info.get(
+                            "instantaneous_ops_per_sec", 0
+                        ),
                     },
                     "connection_pool": {
                         "max_connections": self.config.max_connections,
-                        "created_connections": getattr(self.pool, "created_connections", 0),
-                        "available_connections": getattr(self.pool, "available_connections", 0),
-                        "in_use_connections": getattr(self.pool, "in_use_connections", 0),
+                        "created_connections": getattr(
+                            self.pool, "created_connections", 0
+                        ),
+                        "available_connections": getattr(
+                            self.pool, "available_connections", 0
+                        ),
+                        "in_use_connections": getattr(
+                            self.pool, "in_use_connections", 0
+                        ),
                     },
                 }
 
@@ -429,13 +445,17 @@ async def get_redis_optimizer() -> RedisPerformanceOptimizer:
 
 
 # Convenience functions for common operations
-async def cache_constitutional_data(key: str, data: Any, ttl: int | None = None) -> bool:
+async def cache_constitutional_data(
+    key: str, data: Any, ttl: int | None = None
+) -> bool:
     """Cache constitutional governance data."""
     optimizer = await get_redis_optimizer()
     return await optimizer.set_with_strategy(key, data, "constitutional", ttl)
 
 
-async def get_constitutional_data(key: str, fallback_func: callable | None = None) -> Any | None:
+async def get_constitutional_data(
+    key: str, fallback_func: callable | None = None
+) -> Any | None:
     """Get constitutional governance data from cache."""
     optimizer = await get_redis_optimizer()
     return await optimizer.get_with_fallback(key, fallback_func, "constitutional")
@@ -447,7 +467,9 @@ async def cache_policy_data(key: str, data: Any, ttl: int | None = None) -> bool
     return await optimizer.set_with_strategy(key, data, "policy", ttl)
 
 
-async def get_policy_data(key: str, fallback_func: callable | None = None) -> Any | None:
+async def get_policy_data(
+    key: str, fallback_func: callable | None = None
+) -> Any | None:
     """Get policy data from cache."""
     optimizer = await get_redis_optimizer()
     return await optimizer.get_with_fallback(key, fallback_func, "policy")

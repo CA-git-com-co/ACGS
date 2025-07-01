@@ -23,19 +23,27 @@ class Stabilizer(BaseModel):
     against Logical Semantic Units for error detection and correction.
     """
 
-    id: str = Field(..., pattern=r"^STAB-[A-Z0-9]{8}$", description="Stabilizer identifier")
+    id: str = Field(
+        ..., pattern=r"^STAB-[A-Z0-9]{8}$", description="Stabilizer identifier"
+    )
     name: str = Field(..., min_length=3, max_length=100, description="Stabilizer name")
-    description: str = Field(default="", max_length=500, description="Stabilizer description")
+    description: str = Field(
+        default="", max_length=500, description="Stabilizer description"
+    )
     image: str = Field(..., description="Docker image for execution")
     version: str = Field(default="1.0.0", description="Stabilizer version")
 
     # Execution configuration
     domains: list[str] = Field(default_factory=list, description="Applicable domains")
     timeout: int = Field(default=30, ge=1, le=300, description="Timeout in seconds")
-    config: dict[str, Any] = Field(default_factory=dict, description="Configuration parameters")
+    config: dict[str, Any] = Field(
+        default_factory=dict, description="Configuration parameters"
+    )
 
     # Error detection patterns
-    error_patterns: list[dict[str, Any]] = Field(default_factory=list, description="Error patterns")
+    error_patterns: list[dict[str, Any]] = Field(
+        default_factory=list, description="Error patterns"
+    )
 
     # Constitutional compliance
     constitutional_compliance: dict[str, Any] = Field(
@@ -48,8 +56,12 @@ class Stabilizer(BaseModel):
     )
 
     # Metadata
-    created_at: datetime = Field(default_factory=datetime.now, description="Creation timestamp")
-    updated_at: datetime = Field(default_factory=datetime.now, description="Update timestamp")
+    created_at: datetime = Field(
+        default_factory=datetime.now, description="Creation timestamp"
+    )
+    updated_at: datetime = Field(
+        default_factory=datetime.now, description="Update timestamp"
+    )
     enabled: bool = Field(default=True, description="Whether stabilizer is enabled")
 
     class Config:
@@ -77,7 +89,9 @@ class Stabilizer(BaseModel):
 
     def validate_constitutional_compliance(self, constitutional_hash: str) -> bool:
         """Validate constitutional compliance requirements."""
-        required_hash = self.constitutional_compliance.get("required_hash", "cdd01ef066bc6cf2")
+        required_hash = self.constitutional_compliance.get(
+            "required_hash", "cdd01ef066bc6cf2"
+        )
         return constitutional_hash == required_hash
 
 
@@ -175,7 +189,9 @@ class SyndromeVector:
         if not correction_pattern:
             return data_bits
 
-        corrected_bits = [data_bits[i] ^ correction_pattern[i] for i in range(len(data_bits))]
+        corrected_bits = [
+            data_bits[i] ^ correction_pattern[i] for i in range(len(data_bits))
+        ]
 
         self.correction_applied = True
         return corrected_bits
@@ -204,31 +220,53 @@ class StabilizerResult(BaseModel):
 
     execution_id: str = Field(..., description="Unique execution identifier")
     status: StabilizerStatus = Field(..., description="Execution status")
-    result_data: dict[str, Any] = Field(default_factory=dict, description="Execution results")
+    result_data: dict[str, Any] = Field(
+        default_factory=dict, description="Execution results"
+    )
 
     # Performance metrics
-    execution_time_ms: float = Field(default=0.0, description="Execution time in milliseconds")
+    execution_time_ms: float = Field(
+        default=0.0, description="Execution time in milliseconds"
+    )
     memory_usage_mb: float = Field(default=0.0, description="Peak memory usage")
     cpu_usage_percent: float = Field(default=0.0, description="CPU usage percentage")
 
     # Error detection and correction
-    syndrome_vector: SyndromeVector | None = Field(default=None, description="Error syndrome")
+    syndrome_vector: SyndromeVector | None = Field(
+        default=None, description="Error syndrome"
+    )
     errors_detected: int = Field(default=0, description="Number of errors detected")
     errors_corrected: int = Field(default=0, description="Number of errors corrected")
 
     # Constitutional compliance
-    constitutional_hash: str = Field(default="cdd01ef066bc6cf2", description="Constitution hash")
-    compliance_score: float = Field(default=0.0, ge=0.0, le=1.0, description="Compliance score")
-    compliance_validated: bool = Field(default=False, description="Compliance validation status")
+    constitutional_hash: str = Field(
+        default="cdd01ef066bc6cf2", description="Constitution hash"
+    )
+    compliance_score: float = Field(
+        default=0.0, ge=0.0, le=1.0, description="Compliance score"
+    )
+    compliance_validated: bool = Field(
+        default=False, description="Compliance validation status"
+    )
 
     # Execution context
-    started_at: datetime = Field(default_factory=datetime.now, description="Execution start time")
-    completed_at: datetime | None = Field(default=None, description="Execution completion time")
-    circuit_breaker_triggered: bool = Field(default=False, description="Circuit breaker status")
+    started_at: datetime = Field(
+        default_factory=datetime.now, description="Execution start time"
+    )
+    completed_at: datetime | None = Field(
+        default=None, description="Execution completion time"
+    )
+    circuit_breaker_triggered: bool = Field(
+        default=False, description="Circuit breaker status"
+    )
 
     # Metadata and logging
-    execution_logs: list[str] = Field(default_factory=list, description="Execution logs")
-    metadata: dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
+    execution_logs: list[str] = Field(
+        default_factory=list, description="Execution logs"
+    )
+    metadata: dict[str, Any] = Field(
+        default_factory=dict, description="Additional metadata"
+    )
 
     class Config:
         arbitrary_types_allowed = True
@@ -286,7 +324,11 @@ class StabilizerResult(BaseModel):
         # Calculate compliance score based on execution quality
         quality_factors = [
             1.0 if self.status == StabilizerStatus.COMPLETED else 0.5,
-            (1.0 if self.errors_detected == 0 else max(0.0, 1.0 - self.errors_detected / 10.0)),
+            (
+                1.0
+                if self.errors_detected == 0
+                else max(0.0, 1.0 - self.errors_detected / 10.0)
+            ),
             1.0 if not self.circuit_breaker_triggered else 0.7,
             min(
                 1.0, max(0.0, 1.0 - self.execution_time_ms / 10000.0)

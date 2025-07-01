@@ -47,7 +47,9 @@ class PolicyQueryResponse(BaseModel):
         None,
         description="List of rules that led to the decision, with details like ID or content.",
     )
-    reason: str | None = Field(None, description="A human-readable explanation for the decision.")
+    reason: str | None = Field(
+        None, description="A human-readable explanation for the decision."
+    )
     error_message: str | None = Field(
         None, description="Any error that occurred during evaluation."
     )

@@ -39,14 +39,18 @@ class OversightReport(BaseModel):
     report_type: str = Field(..., description="Report type")
     time_period: dict[str, str] = Field(..., description="Report time period")
     summary_metrics: dict[str, Any] = Field(..., description="Summary metrics")
-    performance_metrics: list[PerformanceMetrics] = Field(..., description="Performance metrics")
+    performance_metrics: list[PerformanceMetrics] = Field(
+        ..., description="Performance metrics"
+    )
     constitutional_compliance: dict[str, Any] = Field(
         ..., description="Constitutional compliance data"
     )
     wina_optimization_insights: dict[str, Any] = Field(
         ..., description="WINA optimization insights"
     )
-    recommendations: list[str] = Field(default_factory=list, description="Recommendations")
+    recommendations: list[str] = Field(
+        default_factory=list, description="Recommendations"
+    )
     generated_at: str = Field(..., description="Report generation timestamp")
 
 
@@ -54,21 +58,31 @@ class ConstitutionalComplianceReport(BaseModel):
     """Constitutional compliance report model."""
 
     compliance_rate: float = Field(..., description="Overall compliance rate")
-    principle_compliance: dict[str, float] = Field(..., description="Compliance by principle")
+    principle_compliance: dict[str, float] = Field(
+        ..., description="Compliance by principle"
+    )
     violation_summary: dict[str, int] = Field(..., description="Violation summary")
     trend_analysis: dict[str, Any] = Field(..., description="Compliance trend analysis")
-    improvement_recommendations: list[str] = Field(..., description="Improvement recommendations")
+    improvement_recommendations: list[str] = Field(
+        ..., description="Improvement recommendations"
+    )
 
 
 class WINAOptimizationReport(BaseModel):
     """WINA optimization performance report model."""
 
-    optimization_summary: dict[str, Any] = Field(..., description="Optimization summary")
+    optimization_summary: dict[str, Any] = Field(
+        ..., description="Optimization summary"
+    )
     efficiency_metrics: dict[str, float] = Field(..., description="Efficiency metrics")
     gflops_reduction: float = Field(..., description="GFLOPs reduction achieved")
     synthesis_accuracy: float = Field(..., description="Synthesis accuracy")
-    strategy_effectiveness: dict[str, float] = Field(..., description="Strategy effectiveness")
-    performance_trends: list[dict[str, Any]] = Field(..., description="Performance trends")
+    strategy_effectiveness: dict[str, float] = Field(
+        ..., description="Strategy effectiveness"
+    )
+    performance_trends: list[dict[str, Any]] = Field(
+        ..., description="Performance trends"
+    )
 
 
 def get_wina_coordinator() -> WINAECOversightCoordinator:
@@ -125,7 +139,9 @@ async def get_oversight_summary(
 
         try:
             # Get PGC enforcement metrics
-            enforcement_metrics = await pgc_service_client.get_wina_enforcement_metrics()
+            enforcement_metrics = (
+                await pgc_service_client.get_wina_enforcement_metrics()
+            )
         except Exception as e:
             logger.warning(f"Failed to get enforcement metrics: {e}")
             enforcement_metrics = {}
@@ -133,11 +149,17 @@ async def get_oversight_summary(
         # Create summary metrics
         summary_metrics = {
             "total_oversight_operations": 0,  # Would be tracked in coordinator
-            "constitutional_compliance_rate": fidelity_metrics.get("overall_fidelity_score", 0.0),
-            "wina_optimization_rate": wina_metrics.get("optimization_success_rate", 0.0),
+            "constitutional_compliance_rate": fidelity_metrics.get(
+                "overall_fidelity_score", 0.0
+            ),
+            "wina_optimization_rate": wina_metrics.get(
+                "optimization_success_rate", 0.0
+            ),
             "average_processing_time_ms": 0.0,  # Would be calculated from coordinator metrics
             "efficiency_improvement": wina_metrics.get("gflops_reduction", 0.0),
-            "strategy_selection_accuracy": enforcement_metrics.get("strategy_accuracy", 0.0),
+            "strategy_selection_accuracy": enforcement_metrics.get(
+                "strategy_accuracy", 0.0
+            ),
         }
 
         # Create performance metrics
@@ -146,7 +168,9 @@ async def get_oversight_summary(
                 metric_name="Constitutional Compliance Rate",
                 current_value=summary_metrics["constitutional_compliance_rate"],
                 baseline_value=0.85,  # Baseline target
-                improvement_percentage=(summary_metrics["constitutional_compliance_rate"] - 0.85)
+                improvement_percentage=(
+                    summary_metrics["constitutional_compliance_rate"] - 0.85
+                )
                 * 100,
                 trend=(
                     "improving"
@@ -159,9 +183,14 @@ async def get_oversight_summary(
                 metric_name="WINA Optimization Efficiency",
                 current_value=summary_metrics["wina_optimization_rate"],
                 baseline_value=0.70,  # Baseline target
-                improvement_percentage=(summary_metrics["wina_optimization_rate"] - 0.70) * 100,
+                improvement_percentage=(
+                    summary_metrics["wina_optimization_rate"] - 0.70
+                )
+                * 100,
                 trend=(
-                    "improving" if summary_metrics["wina_optimization_rate"] > 0.70 else "declining"
+                    "improving"
+                    if summary_metrics["wina_optimization_rate"] > 0.70
+                    else "declining"
                 ),
                 timestamp=datetime.utcnow().isoformat(),
             ),
@@ -169,9 +198,14 @@ async def get_oversight_summary(
                 metric_name="GFLOPs Reduction",
                 current_value=summary_metrics["efficiency_improvement"],
                 baseline_value=0.40,  # 40% target reduction
-                improvement_percentage=(summary_metrics["efficiency_improvement"] - 0.40) * 100,
+                improvement_percentage=(
+                    summary_metrics["efficiency_improvement"] - 0.40
+                )
+                * 100,
                 trend=(
-                    "improving" if summary_metrics["efficiency_improvement"] > 0.40 else "declining"
+                    "improving"
+                    if summary_metrics["efficiency_improvement"] > 0.40
+                    else "declining"
                 ),
                 timestamp=datetime.utcnow().isoformat(),
             ),
@@ -201,7 +235,9 @@ async def get_oversight_summary(
                 "Enhance constitutional principle integration in oversight decisions"
             )
         if summary_metrics["efficiency_improvement"] < 0.50:
-            recommendations.append("Optimize WINA transformation parameters for better efficiency")
+            recommendations.append(
+                "Optimize WINA transformation parameters for better efficiency"
+            )
         if summary_metrics["strategy_selection_accuracy"] < 0.85:
             recommendations.append("Improve oversight strategy selection algorithms")
 
@@ -226,7 +262,9 @@ async def get_oversight_summary(
 
     except Exception as e:
         logger.error(f"Failed to generate oversight summary: {e}")
-        raise HTTPException(status_code=500, detail=f"Report generation failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Report generation failed: {str(e)}"
+        )
 
 
 @router.get("/constitutional-compliance", response_model=ConstitutionalComplianceReport)
@@ -240,7 +278,9 @@ async def get_constitutional_compliance_report(
     EC oversight operations with trend analysis and recommendations.
     """
     try:
-        logger.info(f"Generating constitutional compliance report for period: {time_period}")
+        logger.info(
+            f"Generating constitutional compliance report for period: {time_period}"
+        )
 
         # Get fidelity metrics from AC service
         fidelity_metrics = await ac_service_client.get_fidelity_metrics()
@@ -335,7 +375,9 @@ async def get_wina_optimization_report(
         optimization_summary = {
             "total_optimizations": wina_metrics.get("total_operations", 0),
             "successful_optimizations": wina_metrics.get("successful_operations", 0),
-            "optimization_success_rate": wina_metrics.get("optimization_success_rate", 0.0),
+            "optimization_success_rate": wina_metrics.get(
+                "optimization_success_rate", 0.0
+            ),
             "average_improvement": wina_metrics.get("average_improvement", 0.0),
         }
 
@@ -393,7 +435,9 @@ async def get_wina_optimization_report(
 
     except Exception as e:
         logger.error(f"Failed to generate WINA optimization report: {e}")
-        raise HTTPException(status_code=500, detail=f"WINA report generation failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"WINA report generation failed: {str(e)}"
+        )
 
 
 @router.get("/health")
@@ -438,4 +482,6 @@ async def reporting_health_check():
 
     except Exception as e:
         logger.error(f"Reporting health check failed: {e}")
-        raise HTTPException(status_code=503, detail=f"Reporting system unhealthy: {str(e)}")
+        raise HTTPException(
+            status_code=503, detail=f"Reporting system unhealthy: {str(e)}"
+        )

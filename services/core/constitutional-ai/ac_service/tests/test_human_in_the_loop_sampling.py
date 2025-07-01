@@ -108,13 +108,17 @@ class TestUncertaintyAssessment:
         # Mock principle retrieval
         with patch.object(hitl_sampler, "_get_principles") as mock_get_principles:
             mock_principles = [
-                Mock(id=1, description="Clear privacy principle with detailed guidelines"),
+                Mock(
+                    id=1, description="Clear privacy principle with detailed guidelines"
+                ),
                 Mock(id=2, description="Security principle"),
             ]
             mock_get_principles.return_value = mock_principles
 
             # Mock conflict detection
-            with patch.object(hitl_sampler.conflict_detector, "detect_conflicts") as mock_detect:
+            with patch.object(
+                hitl_sampler.conflict_detector, "detect_conflicts"
+            ) as mock_detect:
                 mock_detect.return_value = Mock(conflicts_detected=[])
 
                 assessment = await hitl_sampler.assess_uncertainty(
@@ -158,7 +162,10 @@ class TestUncertaintyAssessment:
             )
 
             assert assessment.requires_human_oversight is True
-            assert assessment.overall_uncertainty > hitl_sampler.config.uncertainty_threshold
+            assert (
+                assessment.overall_uncertainty
+                > hitl_sampler.config.uncertainty_threshold
+            )
             assert SamplingTrigger.SAFETY_CRITICAL in assessment.triggers_activated
 
     @pytest.mark.asyncio
@@ -190,7 +197,9 @@ class TestUncertaintyAssessment:
             ]
             mock_get_principles.return_value = mock_principles
 
-            with patch.object(hitl_sampler.conflict_detector, "detect_conflicts") as mock_detect:
+            with patch.object(
+                hitl_sampler.conflict_detector, "detect_conflicts"
+            ) as mock_detect:
                 mock_detect.return_value = Mock(conflicts_detected=[])
 
                 assessment = await hitl_sampler.assess_uncertainty(
@@ -201,7 +210,10 @@ class TestUncertaintyAssessment:
                 )
 
                 assert assessment.requires_human_oversight is False
-                assert assessment.overall_uncertainty < hitl_sampler.config.uncertainty_threshold
+                assert (
+                    assessment.overall_uncertainty
+                    < hitl_sampler.config.uncertainty_threshold
+                )
 
     @pytest.mark.asyncio
     async def test_dimensional_uncertainty_calculation(
@@ -212,15 +224,21 @@ class TestUncertaintyAssessment:
         # sha256: func_hash
         """Test dimensional uncertainty calculation."""
         with patch.object(hitl_sampler, "_get_principles") as mock_get_principles:
-            mock_get_principles.return_value = [Mock(id=1, description="Test principle")]
+            mock_get_principles.return_value = [
+                Mock(id=1, description="Test principle")
+            ]
 
-            with patch.object(hitl_sampler.conflict_detector, "detect_conflicts") as mock_detect:
+            with patch.object(
+                hitl_sampler.conflict_detector, "detect_conflicts"
+            ) as mock_detect:
                 mock_detect.return_value = Mock(conflicts_detected=[])
 
-                dimensional_uncertainties = await hitl_sampler._calculate_dimensional_uncertainties(
-                    db=mock_db,
-                    decision_context=sample_decision_context,
-                    principle_ids=[1],
+                dimensional_uncertainties = (
+                    await hitl_sampler._calculate_dimensional_uncertainties(
+                        db=mock_db,
+                        decision_context=sample_decision_context,
+                        principle_ids=[1],
+                    )
                 )
 
                 # Check all dimensions are present
@@ -305,7 +323,9 @@ class TestAdaptiveLearning:
             )
 
         # Check that thresholds were adjusted to be more conservative
-        assert hitl_sampler.config.uncertainty_threshold <= initial_uncertainty_threshold
+        assert (
+            hitl_sampler.config.uncertainty_threshold <= initial_uncertainty_threshold
+        )
         assert hitl_sampler.config.confidence_threshold >= initial_confidence_threshold
 
     def test_performance_metrics_calculation(self, hitl_sampler):
@@ -416,7 +436,11 @@ class TestSamplingTriggers:
         decision_context = {"stakeholder_conflicts": True}
         dimensional_uncertainties = {
             UncertaintyDimension.STAKEHOLDER: 0.8,  # High stakeholder uncertainty
-            **{dim: 0.5 for dim in UncertaintyDimension if dim != UncertaintyDimension.STAKEHOLDER},
+            **{
+                dim: 0.5
+                for dim in UncertaintyDimension
+                if dim != UncertaintyDimension.STAKEHOLDER
+            },
         }
 
         triggers = await hitl_sampler._identify_sampling_triggers(
@@ -438,7 +462,11 @@ class TestSamplingTriggers:
         decision_context = {"novel_scenario": True}
         dimensional_uncertainties = {
             UncertaintyDimension.PRECEDENT: 0.8,  # High precedent uncertainty
-            **{dim: 0.5 for dim in UncertaintyDimension if dim != UncertaintyDimension.PRECEDENT},
+            **{
+                dim: 0.5
+                for dim in UncertaintyDimension
+                if dim != UncertaintyDimension.PRECEDENT
+            },
         }
 
         triggers = await hitl_sampler._identify_sampling_triggers(

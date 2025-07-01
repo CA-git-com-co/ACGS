@@ -83,7 +83,9 @@ class UserCreateRequest(BaseValidationModel):
         description="Username (alphanumeric, underscore, hyphen only)",
         example="john_doe",
     )
-    email: EmailStr = Field(..., description="Valid email address", example="john.doe@example.com")
+    email: EmailStr = Field(
+        ..., description="Valid email address", example="john.doe@example.com"
+    )
     password: SecretStr = Field(
         ...,
         min_length=8,
@@ -91,7 +93,9 @@ class UserCreateRequest(BaseValidationModel):
         description="Password (minimum 8 characters)",
         example="SecurePass123!",
     )
-    full_name: str | None = Field(None, max_length=255, description="Full name", example="John Doe")
+    full_name: str | None = Field(
+        None, max_length=255, description="Full name", example="John Doe"
+    )
     role: str = Field(
         "user",
         regex=r"^(user|admin|auditor|policy_manager|constitutional_council)$",
@@ -178,7 +182,9 @@ class PolicyCreateRequest(BaseValidationModel):
         description="Policy description",
         example="This policy governs environmental protection standards...",
     )
-    policy_type: PolicyType = Field(..., description="Type of policy", example=PolicyType.STANDARD)
+    policy_type: PolicyType = Field(
+        ..., description="Type of policy", example=PolicyType.STANDARD
+    )
     content: str = Field(
         ...,
         min_length=50,
@@ -265,7 +271,9 @@ class PolicyUpdateRequest(BaseValidationModel):
     content: str | None = Field(
         None, min_length=50, max_length=10000, description="Updated policy content"
     )
-    tags: list[str] | None = Field(None, max_items=10, description="Updated policy tags")
+    tags: list[str] | None = Field(
+        None, max_items=10, description="Updated policy tags"
+    )
     priority: Priority | None = Field(None, description="Updated policy priority")
     status: Status | None = Field(None, description="Updated policy status")
 
@@ -402,7 +410,9 @@ class SearchRequest(BaseValidationModel):
         description="Sort field",
         example="created_at",
     )
-    sort_order: str = Field("desc", regex=r"^(asc|desc)$", description="Sort order", example="desc")
+    sort_order: str = Field(
+        "desc", regex=r"^(asc|desc)$", description="Sort order", example="desc"
+    )
     page: int = Field(1, ge=1, le=1000, description="Page number", example=1)
     size: int = Field(20, ge=1, le=100, description="Items per page", example=20)
 
@@ -486,7 +496,9 @@ class FormalVerificationRequest(BaseValidationModel):
         """Validate properties format."""
         for prop in v:
             if not re.match(r"^[a-z_][a-z0-9_]*$", prop):
-                raise ValueError(f'Property "{prop}" must be lowercase with underscores only')
+                raise ValueError(
+                    f'Property "{prop}" must be lowercase with underscores only'
+                )
         return v
 
 

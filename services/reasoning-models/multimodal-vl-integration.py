@@ -39,7 +39,9 @@ import requests
 from PIL import Image
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -122,7 +124,13 @@ class MultimodalVLService:
         return {
             "visual_transparency": {
                 "description": "Visual information must be clear, accessible, and understandable",
-                "keywords": ["clear", "visible", "readable", "accessible", "transparent"],
+                "keywords": [
+                    "clear",
+                    "visible",
+                    "readable",
+                    "accessible",
+                    "transparent",
+                ],
                 "weight": 0.25,
             },
             "visual_fairness": {
@@ -132,7 +140,13 @@ class MultimodalVLService:
             },
             "information_accuracy": {
                 "description": "Visual information must be accurate and truthful",
-                "keywords": ["accurate", "truthful", "verified", "authentic", "reliable"],
+                "keywords": [
+                    "accurate",
+                    "truthful",
+                    "verified",
+                    "authentic",
+                    "reliable",
+                ],
                 "weight": 0.25,
             },
             "accessibility_compliance": {
@@ -270,9 +284,13 @@ Provide detailed process analysis with constitutional evaluation.
         template = self.analysis_templates[template_key]
         principles_text = json.dumps(self.constitutional_principles, indent=2)
 
-        return template.format(principles=principles_text, text_content=request.text_content)
+        return template.format(
+            principles=principles_text, text_content=request.text_content
+        )
 
-    async def _call_multimodal_model(self, request: MultimodalRequest) -> Dict[str, Any]:
+    async def _call_multimodal_model(
+        self, request: MultimodalRequest
+    ) -> Dict[str, Any]:
         """Call the multimodal vision-language model."""
         prompt = self._build_multimodal_prompt(request)
 
@@ -314,13 +332,17 @@ Provide detailed process analysis with constitutional evaluation.
                         return result
                     else:
                         error_text = await response.text()
-                        raise RuntimeError(f"Model API error: {response.status} - {error_text}")
+                        raise RuntimeError(
+                            f"Model API error: {response.status} - {error_text}"
+                        )
 
         except Exception as e:
             logger.error(f"Error calling multimodal model: {str(e)}")
             raise
 
-    def _parse_multimodal_response(self, api_response: Dict[str, Any]) -> MultimodalResponse:
+    def _parse_multimodal_response(
+        self, api_response: Dict[str, Any]
+    ) -> MultimodalResponse:
         """Parse the multimodal model response."""
         try:
             content = api_response["choices"][0]["text"]
@@ -407,8 +429,16 @@ Provide detailed process analysis with constitutional evaluation.
             patterns = [
                 rf"{principle_name}[:\s]*([0-9]\.[0-9]+)",
                 rf"{principle_key}[:\s]*([0-9]\.[0-9]+)",
-                rf"transparency[:\s]*([0-9]\.[0-9]+)" if "transparency" in principle_key else None,
-                rf"fairness[:\s]*([0-9]\.[0-9]+)" if "fairness" in principle_key else None,
+                (
+                    rf"transparency[:\s]*([0-9]\.[0-9]+)"
+                    if "transparency" in principle_key
+                    else None
+                ),
+                (
+                    rf"fairness[:\s]*([0-9]\.[0-9]+)"
+                    if "fairness" in principle_key
+                    else None
+                ),
             ]
 
             for pattern in patterns:
@@ -515,7 +545,9 @@ Provide detailed process analysis with constitutional evaluation.
         else:
             return 0.5
 
-    async def analyze_multimodal_content(self, request: MultimodalRequest) -> MultimodalResponse:
+    async def analyze_multimodal_content(
+        self, request: MultimodalRequest
+    ) -> MultimodalResponse:
         """
         Perform multimodal constitutional analysis.
 
@@ -540,7 +572,9 @@ Provide detailed process analysis with constitutional evaluation.
         # Set processing time
         response.processing_time_ms = (time.time() - start_time) * 1000
 
-        logger.info(f"Multimodal analysis completed in {response.processing_time_ms:.2f}ms")
+        logger.info(
+            f"Multimodal analysis completed in {response.processing_time_ms:.2f}ms"
+        )
         return response
 
     async def analyze_policy_document(

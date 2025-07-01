@@ -274,17 +274,20 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+
 @app.middleware("http")
 async def add_comprehensive_security_headers(request, call_next):
     """Add comprehensive security and constitutional compliance headers"""
     response = await call_next(request)
-    
+
     # Core security headers
     response.headers["x-content-type-options"] = "nosniff"
     response.headers["x-frame-options"] = "DENY"
     response.headers["x-xss-protection"] = "1; mode=block"
-    response.headers["strict-transport-security"] = "max-age=31536000; includeSubDomains; preload"
-    
+    response.headers["strict-transport-security"] = (
+        "max-age=31536000; includeSubDomains; preload"
+    )
+
     # Content Security Policy
     response.headers["content-security-policy"] = (
         "default-src 'self'; "
@@ -300,17 +303,18 @@ async def add_comprehensive_security_headers(request, call_next):
         "base-uri 'self'; "
         "upgrade-insecure-requests"
     )
-    
+
     # Rate limiting headers
     response.headers["x-ratelimit-limit"] = "60000"
     response.headers["x-ratelimit-remaining"] = "59999"
     response.headers["x-ratelimit-reset"] = str(int(time.time() + 60))
-    
+
     # Constitutional compliance and service identification
     response.headers["x-constitutional-hash"] = "cdd01ef066bc6cf2"
     response.headers["x-acgs-security"] = "enabled"
-    
+
     return response
+
 
 # Apply comprehensive audit logging
 if AUDIT_LOGGING_AVAILABLE:
@@ -348,6 +352,7 @@ add_security_middleware(app)
 # Add compression middleware
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
+
 # Add constitutional hash middleware
 @app.middleware("http")
 async def add_constitutional_headers(request, call_next):
@@ -357,6 +362,7 @@ async def add_constitutional_headers(request, call_next):
     response.headers["x-service-name"] = "evolutionary_computation"
     response.headers["x-service-version"] = "v1"
     return response
+
 
 # Add enhanced Prometheus metrics middleware
 try:
@@ -377,13 +383,19 @@ except ImportError as e:
     app.middleware("http")(metrics_middleware("ec_service"))
 
 # Include API routers
-app.include_router(oversight_router, prefix="/api/v1/oversight", tags=["WINA Oversight"])
+app.include_router(
+    oversight_router, prefix="/api/v1/oversight", tags=["WINA Oversight"]
+)
 app.include_router(wina_oversight_router, prefix="/api/v1", tags=["WINA EC Oversight"])
 app.include_router(
     alphaevolve_router, prefix="/api/v1/alphaevolve", tags=["AlphaEvolve Integration"]
 )
-app.include_router(reporting_router, prefix="/api/v1/reporting", tags=["Reporting & Analytics"])
-app.include_router(monitoring_router, prefix="/api/v1/monitoring", tags=["Performance Monitoring"])
+app.include_router(
+    reporting_router, prefix="/api/v1/reporting", tags=["Reporting & Analytics"]
+)
+app.include_router(
+    monitoring_router, prefix="/api/v1/monitoring", tags=["Performance Monitoring"]
+)
 app.include_router(
     wina_performance_router,
     prefix="/api/v1/wina/performance",
@@ -423,7 +435,9 @@ async def health_check():
     if wina_coordinator:
         try:
             # Check coordinator health
-            coordinator_status = "healthy" if wina_coordinator.enable_wina else "disabled"
+            coordinator_status = (
+                "healthy" if wina_coordinator.enable_wina else "disabled"
+            )
         except Exception as e:
             coordinator_status = f"error: {str(e)}"
 
@@ -435,7 +449,9 @@ async def health_check():
         "constitutional_hash": "cdd01ef066bc6cf2",
         "wina_coordinator": coordinator_status,
         "features": {
-            "wina_optimization": (wina_coordinator.enable_wina if wina_coordinator else False),
+            "wina_optimization": (
+                wina_coordinator.enable_wina if wina_coordinator else False
+            ),
             "constitutional_oversight": True,
             "alphaevolve_integration": True,
             "performance_monitoring": True,
@@ -445,16 +461,26 @@ async def health_check():
         },
         "performance_monitoring": {
             "collector_available": (
-                hasattr(wina_coordinator, "performance_collector") if wina_coordinator else False
+                hasattr(wina_coordinator, "performance_collector")
+                if wina_coordinator
+                else False
             ),
             "monitoring_active": (
-                getattr(wina_coordinator.performance_collector, "monitoring_active", True)
-                if (wina_coordinator and hasattr(wina_coordinator, "performance_collector"))
+                getattr(
+                    wina_coordinator.performance_collector, "monitoring_active", True
+                )
+                if (
+                    wina_coordinator
+                    and hasattr(wina_coordinator, "performance_collector")
+                )
                 else False
             ),
             "monitoring_level": (
                 wina_coordinator.performance_collector.monitoring_level.value
-                if (wina_coordinator and hasattr(wina_coordinator, "performance_collector"))
+                if (
+                    wina_coordinator
+                    and hasattr(wina_coordinator, "performance_collector")
+                )
                 else "unknown"
             ),
         },
@@ -526,8 +552,12 @@ if __name__ == "__main__":
 
     uvicorn.run(
         "app.main:app",
-        host=os.getenv("HOST", "127.0.0.1"),  # Secure by default, configurable for production
-        port=int(os.getenv("PORT", "8006")),  # EC service port (matches documented port mapping)
+        host=os.getenv(
+            "HOST", "127.0.0.1"
+        ),  # Secure by default, configurable for production
+        port=int(
+            os.getenv("PORT", "8006")
+        ),  # EC service port (matches documented port mapping)
         reload=os.getenv("RELOAD", "true").lower() == "true",
         log_level=os.getenv("LOG_LEVEL", "info"),
     )

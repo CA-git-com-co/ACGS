@@ -249,7 +249,9 @@ class CacheManager:
             return 0
 
         except Exception as e:
-            logger.warning(f"Cache pattern invalidation failed for pattern {cache_pattern}: {e}")
+            logger.warning(
+                f"Cache pattern invalidation failed for pattern {cache_pattern}: {e}"
+            )
             return 0
 
     async def get_ttl(self, key: str, prefix: str = "general") -> int:

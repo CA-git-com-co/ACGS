@@ -20,7 +20,9 @@ role_permissions_table = Table(
     "auth_role_permissions",
     Base.metadata,
     Column("role_id", Integer, ForeignKey("auth_roles.id"), primary_key=True),
-    Column("permission_id", Integer, ForeignKey("auth_permissions.id"), primary_key=True),
+    Column(
+        "permission_id", Integer, ForeignKey("auth_permissions.id"), primary_key=True
+    ),
 )
 
 
@@ -40,7 +42,9 @@ class Permission(Base):
         nullable=False,
     )
 
-    roles = relationship("Role", secondary=role_permissions_table, back_populates="permissions")
+    roles = relationship(
+        "Role", secondary=role_permissions_table, back_populates="permissions"
+    )
 
     def __repr__(self):
         # requires: Valid input parameters
@@ -136,9 +140,13 @@ class TokenBlacklist(Base):
     jti = Column(
         String(36), unique=True, nullable=False, index=True
     )  # JWT ID (unique identifier for the token)
-    token_type = Column(String(50), nullable=False)  # e.g., 'access_token', 'refresh_token'
+    token_type = Column(
+        String(50), nullable=False
+    )  # e.g., 'access_token', 'refresh_token'
     user_id = Column(Integer, ForeignKey("auth_users.id"), nullable=False)
-    expires_at = Column(DateTime, nullable=False)  # The original expiry time of the token
+    expires_at = Column(
+        DateTime, nullable=False
+    )  # The original expiry time of the token
     created_at = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
 
     user = relationship("User")

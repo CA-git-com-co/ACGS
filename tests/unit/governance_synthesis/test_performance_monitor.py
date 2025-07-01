@@ -4,18 +4,23 @@ Unit tests for services.core.governance-synthesis.gs_service.app.services.perfor
 
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
-from services.core.governance-synthesis.gs_service.app.services.performance_monitor import PerformanceMetrics, LatencyProfile, PerformanceProfiler, SystemResourceMonitor, PerformanceMonitor
-
+from services.core.governance_synthesis.gs_service.app.services.performance_monitor import (
+    PerformanceMetrics,
+    LatencyProfile,
+    PerformanceProfiler,
+    SystemResourceMonitor,
+    PerformanceMonitor,
+)
 
 
 class TestPerformanceMetrics:
     """Test suite for PerformanceMetrics."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -24,12 +29,12 @@ class TestPerformanceMetrics:
 
 class TestLatencyProfile:
     """Test suite for LatencyProfile."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -38,12 +43,12 @@ class TestLatencyProfile:
 
 class TestPerformanceProfiler:
     """Test suite for PerformanceProfiler."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -54,38 +59,38 @@ class TestPerformanceProfiler:
         # TODO: Implement test for record_latency
         instance = PerformanceProfiler()
         # Add test implementation here
-        assert hasattr(instance, 'record_latency')
+        assert hasattr(instance, "record_latency")
 
     def test_get_latency_profile(self):
         """Test get_latency_profile method."""
         # TODO: Implement test for get_latency_profile
         instance = PerformanceProfiler()
         # Add test implementation here
-        assert hasattr(instance, 'get_latency_profile')
+        assert hasattr(instance, "get_latency_profile")
 
     def test_get_all_profiles(self):
         """Test get_all_profiles method."""
         # TODO: Implement test for get_all_profiles
         instance = PerformanceProfiler()
         # Add test implementation here
-        assert hasattr(instance, 'get_all_profiles')
+        assert hasattr(instance, "get_all_profiles")
 
     def test_get_bottlenecks(self):
         """Test get_bottlenecks method."""
         # TODO: Implement test for get_bottlenecks
         instance = PerformanceProfiler()
         # Add test implementation here
-        assert hasattr(instance, 'get_bottlenecks')
+        assert hasattr(instance, "get_bottlenecks")
 
 
 class TestSystemResourceMonitor:
     """Test suite for SystemResourceMonitor."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -94,12 +99,12 @@ class TestSystemResourceMonitor:
 
 class TestPerformanceMonitor:
     """Test suite for PerformanceMonitor."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -110,6 +115,4 @@ class TestPerformanceMonitor:
         # TODO: Implement test for get_performance_summary
         instance = PerformanceMonitor()
         # Add test implementation here
-        assert hasattr(instance, 'get_performance_summary')
-
-
+        assert hasattr(instance, "get_performance_summary")

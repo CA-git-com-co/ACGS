@@ -43,9 +43,13 @@ SYSTEM_RESOURCE_USAGE = Gauge(
     "system_resource_usage", "System resource usage metrics", ["resource_type"]
 )
 
-CONCURRENT_REQUESTS = Gauge("concurrent_requests", "Number of concurrent requests being processed")
+CONCURRENT_REQUESTS = Gauge(
+    "concurrent_requests", "Number of concurrent requests being processed"
+)
 
-ERROR_RATE = Counter("error_rate_total", "Total number of errors", ["error_type", "endpoint"])
+ERROR_RATE = Counter(
+    "error_rate_total", "Total number of errors", ["error_type", "endpoint"]
+)
 
 THROUGHPUT = Counter(
     "throughput_total", "Total number of requests processed", ["endpoint", "status"]
@@ -90,7 +94,9 @@ class PerformanceProfiler:
         # ensures: Correct function execution
         # sha256: func_hash
         self.max_samples = max_samples
-        self.latency_samples: dict[str, deque] = defaultdict(lambda: deque(maxlen=max_samples))
+        self.latency_samples: dict[str, deque] = defaultdict(
+            lambda: deque(maxlen=max_samples)
+        )
         self.operation_counts: dict[str, int] = defaultdict(int)
         self.bottlenecks: list[dict[str, Any]] = []
         self._lock = threading.Lock()
@@ -257,8 +263,12 @@ class SystemResourceMonitor:
 
         # Network I/O
         network = psutil.net_io_counters()
-        SYSTEM_RESOURCE_USAGE.labels(resource_type="network_bytes_sent").set(network.bytes_sent)
-        SYSTEM_RESOURCE_USAGE.labels(resource_type="network_bytes_recv").set(network.bytes_recv)
+        SYSTEM_RESOURCE_USAGE.labels(resource_type="network_bytes_sent").set(
+            network.bytes_sent
+        )
+        SYSTEM_RESOURCE_USAGE.labels(resource_type="network_bytes_recv").set(
+            network.bytes_recv
+        )
 
         # Check thresholds and alert
         await self._check_thresholds(cpu_percent, memory.percent, disk_percent)
@@ -422,10 +432,14 @@ def performance_monitor_decorator(endpoint: str, operation_type: str = "default"
                 try:
                     result = func(*args, **kwargs)
                     latency_ms = (time.time() - start_time) * 1000
-                    monitor.profiler.record_latency(f"{endpoint}:{operation_type}", latency_ms)
+                    monitor.profiler.record_latency(
+                        f"{endpoint}:{operation_type}", latency_ms
+                    )
                     return result
                 except Exception as e:
-                    ERROR_RATE.labels(error_type=type(e).__name__, endpoint=endpoint).inc()
+                    ERROR_RATE.labels(
+                        error_type=type(e).__name__, endpoint=endpoint
+                    ).inc()
                     raise
 
             return sync_wrapper

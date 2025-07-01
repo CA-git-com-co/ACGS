@@ -24,13 +24,13 @@ from tests.conftest import docker_rm
 
 @pytest.mark.gpu
 def test_vllm_reward():
-    model_path = os.getenv('NEMO_SKILLS_TEST_HF_MODEL')
+    model_path = os.getenv("NEMO_SKILLS_TEST_HF_MODEL")
     if not model_path:
         pytest.skip("Define NEMO_SKILLS_TEST_HF_MODEL to run this test")
-    model_type = os.getenv('NEMO_SKILLS_TEST_MODEL_TYPE')
+    model_type = os.getenv("NEMO_SKILLS_TEST_MODEL_TYPE")
     if not model_type:
         pytest.skip("Define NEMO_SKILLS_TEST_MODEL_TYPE to run this test")
-    prompt_template = 'llama3-instruct' if model_type == 'llama' else 'qwen-instruct'
+    prompt_template = "llama3-instruct" if model_type == "llama" else "qwen-instruct"
 
     input_dir = "/nemo_run/code/tests/data"
     output_dir = f"/tmp/nemo-skills-tests/{model_type}/rm"
@@ -64,4 +64,4 @@ def test_vllm_reward():
     assert len(lines) == 10
     for line in lines:
         data = json.loads(line)
-        assert 'reward_model_score' in data
+        assert "reward_model_score" in data

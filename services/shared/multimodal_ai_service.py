@@ -32,7 +32,14 @@ from pydantic import BaseModel, Field
 
 from services.shared.utils import get_config
 from services.shared.multi_level_cache import get_cache_manager
-from services.shared.ai_types import ModelType, MultimodalRequest, RequestType, ContentType, ModelMetrics, MultimodalResponse
+from services.shared.ai_types import (
+    ModelType,
+    MultimodalRequest,
+    RequestType,
+    ContentType,
+    ModelMetrics,
+    MultimodalResponse,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -41,67 +48,71 @@ logger = logging.getLogger(__name__)
 def _get_ml_optimizer():
     """Lazy import to avoid circular dependency."""
     from services.shared.ml_routing_optimizer import get_ml_optimizer
+
     return get_ml_optimizer
+
 
 def _get_production_ml_optimizer():
     """Lazy import for production ML optimizer."""
     from services.shared.production_ml_optimizer import ProductionMLOptimizer
+
     return ProductionMLOptimizer
 
 
 class ModelRouter:
     """Intelligent routing system for selecting optimal models."""
-    
+
     def __init__(self):
         self.routing_rules = {
             # Cost-optimized operations -> DeepSeek R1 (74% cost reduction)
             RequestType.QUICK_ANALYSIS: ModelType.DEEPSEEK_R1,
             RequestType.CONTENT_MODERATION: ModelType.DEEPSEEK_R1,
-
             # Balanced operations -> Flash Lite
             RequestType.CONSTITUTIONAL_VALIDATION: ModelType.FLASH_LITE,
-
             # High-quality operations -> Full Flash
             RequestType.DETAILED_ANALYSIS: ModelType.FLASH_FULL,
             RequestType.POLICY_ANALYSIS: ModelType.FLASH_FULL,
             RequestType.AUDIT_VALIDATION: ModelType.FLASH_FULL,
         }
-        
+
         self.load_balancing = {
-            ModelType.DEEPSEEK_R1: {"current_load": 0, "max_load": 150},  # Higher capacity for cost-effective model
+            ModelType.DEEPSEEK_R1: {
+                "current_load": 0,
+                "max_load": 150,
+            },  # Higher capacity for cost-effective model
             ModelType.FLASH_LITE: {"current_load": 0, "max_load": 100},
-            ModelType.FLASH_FULL: {"current_load": 0, "max_load": 50}
+            ModelType.FLASH_FULL: {"current_load": 0, "max_load": 50},
         }
 
         # Current load tracking
         self.current_loads = {
             ModelType.DEEPSEEK_R1: 0,
             ModelType.FLASH_LITE: 0,
-            ModelType.FLASH_FULL: 0
+            ModelType.FLASH_FULL: 0,
         }
 
         logger.info("Model Router initialized with load balancing")
-    
+
     def select_model(self, request: MultimodalRequest) -> ModelType:
         """Select optimal model based on request characteristics."""
-        
+
         # Check routing rules first
         if request.request_type in self.routing_rules:
             base_model = self.routing_rules[request.request_type]
             if base_model:
                 return self._apply_load_balancing(base_model, request)
-        
+
         # Smart routing for constitutional validation
         if request.request_type == RequestType.CONSTITUTIONAL_VALIDATION:
             return self._route_constitutional_validation(request)
-        
+
         # Default routing based on priority and content type
         if request.priority in ["critical", "high"]:
             return ModelType.FLASH_FULL
-        
+
         if request.content_type == ContentType.POLICY_DOCUMENT:
             return ModelType.FLASH_FULL
-        
+
         # Default to Flash Lite for efficiency
         return ModelType.FLASH_LITE
 
@@ -119,44 +130,50 @@ class ModelRouter:
     def get_max_load(self, model: ModelType) -> int:
         """Get maximum load capacity for a model."""
         return self.load_balancing.get(model, {}).get("max_load", 0)
-    
+
     def _route_constitutional_validation(self, request: MultimodalRequest) -> ModelType:
         """Smart routing for constitutional validation requests."""
-        
+
         # High-priority constitutional validation -> Full Flash
         if request.priority in ["critical", "high"]:
             return ModelType.FLASH_FULL
-        
+
         # Policy documents -> Full Flash
         if request.content_type == ContentType.POLICY_DOCUMENT:
             return ModelType.FLASH_FULL
-        
+
         # Complex multimodal content -> Full Flash
         if request.content_type == ContentType.TEXT_AND_IMAGE and request.text_content:
             if len(request.text_content) > 1000:  # Long text
                 return ModelType.FLASH_FULL
-        
+
         # Simple content moderation -> Flash Lite
         return ModelType.FLASH_LITE
-    
-    def _apply_load_balancing(self, preferred_model: ModelType, request: MultimodalRequest) -> ModelType:
+
+    def _apply_load_balancing(
+        self, preferred_model: ModelType, request: MultimodalRequest
+    ) -> ModelType:
         """Apply load balancing if preferred model is overloaded."""
-        
+
         current_load = self.load_balancing[preferred_model]["current_load"]
         max_load = self.load_balancing[preferred_model]["max_load"]
-        
+
         if current_load >= max_load:
             # Fallback to alternative model
             if preferred_model == ModelType.FLASH_FULL:
-                logger.warning(f"Flash Full overloaded, falling back to Flash Lite for {request.request_id}")
+                logger.warning(
+                    f"Flash Full overloaded, falling back to Flash Lite for {request.request_id}"
+                )
                 return ModelType.FLASH_LITE
             else:
                 # If Flash Lite is overloaded, queue the request or use Flash Full
-                logger.warning(f"Flash Lite overloaded, upgrading to Flash Full for {request.request_id}")
+                logger.warning(
+                    f"Flash Lite overloaded, upgrading to Flash Full for {request.request_id}"
+                )
                 return ModelType.FLASH_FULL
-        
+
         return preferred_model
-    
+
     def update_load(self, model: ModelType, increment: int = 1):
         """Update current load for a model."""
         self.load_balancing[model]["current_load"] += increment
@@ -166,59 +183,65 @@ class ModelRouter:
 
 class OpenRouterClient:
     """OpenRouter API client for Gemini models."""
-    
+
     def __init__(self, api_key: str):
         self.api_key = api_key
         self.base_url = "https://openrouter.ai/api/v1/chat/completions"
         self.session: Optional[aiohttp.ClientSession] = None
-        
+
         # Model pricing (approximate, per 1M tokens)
         self.pricing = {
             ModelType.FLASH_FULL: {"input": 0.075, "output": 0.30},
             ModelType.FLASH_LITE: {"input": 0.0375, "output": 0.15},  # 50% of full
-            ModelType.DEEPSEEK_R1: {"input": 0.0195, "output": 0.078}  # 74% cost reduction
+            ModelType.DEEPSEEK_R1: {
+                "input": 0.0195,
+                "output": 0.078,
+            },  # 74% cost reduction
         }
-    
+
     async def initialize(self):
         """Initialize the HTTP session."""
         if not self.session:
             timeout = aiohttp.ClientTimeout(total=30)
             self.session = aiohttp.ClientSession(timeout=timeout)
-    
+
     async def close(self):
         """Close the HTTP session."""
         if self.session:
             await self.session.close()
             self.session = None
-    
-    async def make_request(self, model: ModelType, messages: List[Dict], 
-                          request_id: str) -> Dict[str, Any]:
+
+    async def make_request(
+        self, model: ModelType, messages: List[Dict], request_id: str
+    ) -> Dict[str, Any]:
         """Make request to OpenRouter API."""
-        
+
         if not self.session:
             await self.initialize()
-        
+
         headers = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self.api_key}",
             "HTTP-Referer": "https://acgs-pgp.com",
-            "X-Title": "ACGS-PGP Multimodal Service"
+            "X-Title": "ACGS-PGP Multimodal Service",
         }
-        
+
         payload = {
             "model": model.value,
             "messages": messages,
             "temperature": 0.1,  # Low temperature for consistent constitutional validation
             "max_tokens": 4000,
-            "top_p": 0.9
+            "top_p": 0.9,
         }
-        
+
         start_time = time.time()
-        
+
         try:
-            async with self.session.post(self.base_url, headers=headers, json=payload) as response:
+            async with self.session.post(
+                self.base_url, headers=headers, json=payload
+            ) as response:
                 response_time = (time.time() - start_time) * 1000
-                
+
                 if response.status == 200:
                     result = await response.json()
                     result["_response_time_ms"] = response_time
@@ -226,14 +249,18 @@ class OpenRouterClient:
                     return result
                 else:
                     error_text = await response.text()
-                    raise Exception(f"OpenRouter API error {response.status}: {error_text}")
-                    
+                    raise Exception(
+                        f"OpenRouter API error {response.status}: {error_text}"
+                    )
+
         except Exception as e:
             response_time = (time.time() - start_time) * 1000
             logger.error(f"OpenRouter request failed for {request_id}: {e}")
             raise Exception(f"API request failed: {e}")
-    
-    def estimate_cost(self, model: ModelType, input_tokens: int, output_tokens: int) -> float:
+
+    def estimate_cost(
+        self, model: ModelType, input_tokens: int, output_tokens: int
+    ) -> float:
         """Estimate cost for model usage."""
         pricing = self.pricing[model]
         input_cost = (input_tokens / 1_000_000) * pricing["input"]
@@ -243,18 +270,18 @@ class OpenRouterClient:
 
 class MultimodalAIService:
     """Main multimodal AI service for ACGS-PGP system."""
-    
+
     def __init__(self):
         self.config = get_config()
         self.constitutional_hash = "cdd01ef066bc6cf2"
-        
+
         # Initialize components
         self.router = ModelRouter()
         self.openrouter_client: Optional[OpenRouterClient] = None
         self.cache_manager = None
         self.ml_optimizer = None
         self.production_ml_optimizer = None
-        
+
         # Performance tracking
         self.metrics = {
             "total_requests": 0,
@@ -263,34 +290,42 @@ class MultimodalAIService:
             "constitutional_compliance_rate": 0.0,
             "cache_hit_rate": 0.0,
             "cost_savings": 0.0,  # Track cost savings from DeepSeek R1
-            "model_performance": {model: {"avg_response_time": 0.0, "success_rate": 0.0} for model in ModelType}
+            "model_performance": {
+                model: {"avg_response_time": 0.0, "success_rate": 0.0}
+                for model in ModelType
+            },
         }
-        
+
         logger.info("Multimodal AI Service initialized")
-    
+
     async def initialize(self):
         """Initialize async components."""
-        
+
         # Initialize OpenRouter client
         api_key = None
 
         # Try multiple ways to get the API key
-        if hasattr(self.config, 'api_keys') and hasattr(self.config.api_keys, 'openrouter'):
+        if hasattr(self.config, "api_keys") and hasattr(
+            self.config.api_keys, "openrouter"
+        ):
             api_key = self.config.api_keys.openrouter
-        elif hasattr(self.config, 'get'):
+        elif hasattr(self.config, "get"):
             api_key = self.config.get("OPENROUTER_API_KEY")
 
         # Fallback to environment variable
         if not api_key:
             import os
+
             api_key = os.getenv("OPENROUTER_API_KEY")
 
         if not api_key:
-            raise ValueError("OPENROUTER_API_KEY not found in configuration or environment")
-        
+            raise ValueError(
+                "OPENROUTER_API_KEY not found in configuration or environment"
+            )
+
         self.openrouter_client = OpenRouterClient(api_key)
         await self.openrouter_client.initialize()
-        
+
         # Initialize cache manager
         self.cache_manager = await get_cache_manager()
 
@@ -300,10 +335,12 @@ class MultimodalAIService:
 
         # Initialize production ML optimizer (enhanced)
         ProductionMLOptimizerClass = _get_production_ml_optimizer()
-        self.production_ml_optimizer = ProductionMLOptimizerClass(self.constitutional_hash)
+        self.production_ml_optimizer = ProductionMLOptimizerClass(
+            self.constitutional_hash
+        )
 
         logger.info("Multimodal AI Service ready with enhanced ML optimization")
-    
+
     async def close(self):
         """Clean up resources."""
         if self.openrouter_client:
@@ -311,8 +348,9 @@ class MultimodalAIService:
 
         logger.info("Multimodal AI Service closed")
 
-    async def _select_model_with_production_optimizer(self, request: MultimodalRequest,
-                                                    available_models: List[ModelType]) -> Tuple[ModelType, Dict[str, float]]:
+    async def _select_model_with_production_optimizer(
+        self, request: MultimodalRequest, available_models: List[ModelType]
+    ) -> Tuple[ModelType, Dict[str, float]]:
         """Select optimal model using production ML optimizer with enhanced capabilities."""
 
         # Convert request to feature vector for ML prediction
@@ -320,21 +358,24 @@ class MultimodalAIService:
 
         # Use production ML optimizer for model selection
         best_model = None
-        best_score = float('-inf')
+        best_score = float("-inf")
         best_predictions = {}
 
         # Evaluate each available model
         for model_type in available_models:
             try:
                 # Get predictions from production optimizer
-                predictions = self._predict_model_performance(feature_vector, model_type)
+                predictions = self._predict_model_performance(
+                    feature_vector, model_type
+                )
 
                 # Calculate composite score (prioritize constitutional compliance and quality)
                 score = (
-                    predictions.get('constitutional_compliance', 0.5) * 4.0 +  # Highest priority
-                    predictions.get('quality', 0.5) * 3.0 +                   # High priority
-                    -predictions.get('response_time', 1000) / 1000.0 +        # Lower is better
-                    -predictions.get('cost', 1.0) * 2.0                       # Lower is better
+                    predictions.get("constitutional_compliance", 0.5) * 4.0
+                    + predictions.get("quality", 0.5) * 3.0  # Highest priority
+                    + -predictions.get("response_time", 1000) / 1000.0  # High priority
+                    + -predictions.get("cost", 1.0)  # Lower is better
+                    * 2.0  # Lower is better
                 )
 
                 if score > best_score:
@@ -371,7 +412,7 @@ class MultimodalAIService:
             RequestType.CONSTITUTIONAL_VALIDATION: 3,
             RequestType.POLICY_ANALYSIS: 4,
             RequestType.CONTENT_MODERATION: 5,
-            RequestType.AUDIT_VALIDATION: 6
+            RequestType.AUDIT_VALIDATION: 6,
         }
         features.append(request_type_encoding.get(request.request_type, 0))
 
@@ -384,7 +425,7 @@ class MultimodalAIService:
             ContentType.TEXT_ONLY: 1,
             ContentType.TEXT_AND_IMAGE: 2,
             ContentType.POLICY_DOCUMENT: 3,
-            ContentType.MULTIMODAL: 4
+            ContentType.MULTIMODAL: 4,
         }
         features.append(content_type_encoding.get(request.content_type, 1))
 
@@ -397,43 +438,52 @@ class MultimodalAIService:
 
         return np.array(features[:10]).reshape(1, -1)
 
-    def _predict_model_performance(self, feature_vector: np.ndarray, model_type: ModelType) -> Dict[str, float]:
+    def _predict_model_performance(
+        self, feature_vector: np.ndarray, model_type: ModelType
+    ) -> Dict[str, float]:
         """Predict model performance using production ML optimizer."""
 
         # Use production ML optimizer if available
-        if hasattr(self.production_ml_optimizer, 'predict_performance'):
+        if hasattr(self.production_ml_optimizer, "predict_performance"):
             try:
-                return self.production_ml_optimizer.predict_performance(feature_vector, model_type)
+                return self.production_ml_optimizer.predict_performance(
+                    feature_vector, model_type
+                )
             except Exception as e:
                 logger.warning(f"Production ML optimizer prediction failed: {e}")
 
         # Fallback predictions based on model characteristics
         fallback_predictions = {
             ModelType.DEEPSEEK_R1: {
-                'response_time': 800,
-                'cost': 0.2,  # 74% cost reduction
-                'quality': 0.85,
-                'constitutional_compliance': 0.90
+                "response_time": 800,
+                "cost": 0.2,  # 74% cost reduction
+                "quality": 0.85,
+                "constitutional_compliance": 0.90,
             },
             ModelType.FLASH_LITE: {
-                'response_time': 600,
-                'cost': 0.5,
-                'quality': 0.88,
-                'constitutional_compliance': 0.92
+                "response_time": 600,
+                "cost": 0.5,
+                "quality": 0.88,
+                "constitutional_compliance": 0.92,
             },
             ModelType.FLASH_FULL: {
-                'response_time': 1200,
-                'cost': 1.0,
-                'quality': 0.95,
-                'constitutional_compliance': 0.95
-            }
+                "response_time": 1200,
+                "cost": 1.0,
+                "quality": 0.95,
+                "constitutional_compliance": 0.95,
+            },
         }
 
-        return fallback_predictions.get(model_type, fallback_predictions[ModelType.FLASH_LITE])
+        return fallback_predictions.get(
+            model_type, fallback_predictions[ModelType.FLASH_LITE]
+        )
 
-    async def _update_production_ml_optimizer_feedback(self, request: MultimodalRequest,
-                                                     selected_model: ModelType,
-                                                     response: MultimodalResponse):
+    async def _update_production_ml_optimizer_feedback(
+        self,
+        request: MultimodalRequest,
+        selected_model: ModelType,
+        response: MultimodalResponse,
+    ):
         """Update production ML optimizer with performance feedback for continuous learning."""
 
         if not self.production_ml_optimizer:
@@ -442,10 +492,12 @@ class MultimodalAIService:
         try:
             # Extract performance metrics from response
             actual_performance = {
-                'response_time': response.metrics.response_time_ms,
-                'cost': response.metrics.cost_estimate,
-                'quality': response.metrics.quality_score,
-                'constitutional_compliance': 1.0 if response.constitutional_compliance else 0.0
+                "response_time": response.metrics.response_time_ms,
+                "cost": response.metrics.cost_estimate,
+                "quality": response.metrics.quality_score,
+                "constitutional_compliance": (
+                    1.0 if response.constitutional_compliance else 0.0
+                ),
             }
 
             # Create feature vector for this request
@@ -453,30 +505,38 @@ class MultimodalAIService:
 
             # Create training data for incremental learning
             X_feedback = feature_vector
-            y_feedback = np.array([
-                actual_performance['response_time'],
-                actual_performance['cost'],
-                actual_performance['quality'],
-                actual_performance['constitutional_compliance']
-            ])
+            y_feedback = np.array(
+                [
+                    actual_performance["response_time"],
+                    actual_performance["cost"],
+                    actual_performance["quality"],
+                    actual_performance["constitutional_compliance"],
+                ]
+            )
 
             # Update the online learning model with this feedback
-            if hasattr(self.production_ml_optimizer, 'update_model_incrementally'):
+            if hasattr(self.production_ml_optimizer, "update_model_incrementally"):
                 update_result = self.production_ml_optimizer.update_model_incrementally(
                     X_feedback, y_feedback
                 )
 
-                logger.debug(f"Updated production ML optimizer with feedback: "
-                           f"Updates: {update_result['online_metrics'].total_updates}, "
-                           f"Performance: {update_result['online_metrics'].performance_trend[-1] if update_result['online_metrics'].performance_trend else 'N/A'}")
+                logger.debug(
+                    f"Updated production ML optimizer with feedback: "
+                    f"Updates: {update_result['online_metrics'].total_updates}, "
+                    f"Performance: {update_result['online_metrics'].performance_trend[-1] if update_result['online_metrics'].performance_trend else 'N/A'}"
+                )
 
                 # Log any alerts from the update
-                if update_result.get('alerts'):
-                    for alert in update_result['alerts']:
-                        logger.warning(f"ML Optimizer Alert: {alert.alert_type} - {alert.metric_name}")
+                if update_result.get("alerts"):
+                    for alert in update_result["alerts"]:
+                        logger.warning(
+                            f"ML Optimizer Alert: {alert.alert_type} - {alert.metric_name}"
+                        )
 
         except Exception as e:
-            logger.warning(f"Failed to update production ML optimizer with feedback: {e}")
+            logger.warning(
+                f"Failed to update production ML optimizer with feedback: {e}"
+            )
 
     async def process_request(self, request: MultimodalRequest) -> MultimodalResponse:
         """Process a multimodal AI request with intelligent routing and caching."""
@@ -484,7 +544,9 @@ class MultimodalAIService:
         start_time = time.time()
         self.metrics["total_requests"] += 1
 
-        logger.info(f"🔍 Processing request {request.request_id}, type: {request.request_type}")
+        logger.info(
+            f"🔍 Processing request {request.request_id}, type: {request.request_type}"
+        )
 
         try:
             # Generate cache key
@@ -494,25 +556,43 @@ class MultimodalAIService:
             logger.info(f"🔍 Checking cache for key: {cache_key}")
             cached_response = await self._check_cache(cache_key)
             if cached_response:
-                logger.info(f"💾 CACHE HIT for request {request.request_id} - returning cached response")
-                logger.info(f"💾 Cached compliance: {cached_response.constitutional_compliance}, confidence: {cached_response.confidence_score:.3f}")
+                logger.info(
+                    f"💾 CACHE HIT for request {request.request_id} - returning cached response"
+                )
+                logger.info(
+                    f"💾 Cached compliance: {cached_response.constitutional_compliance}, confidence: {cached_response.confidence_score:.3f}"
+                )
                 return cached_response
             else:
-                logger.info(f"🔍 Cache miss for request {request.request_id} - proceeding with API call")
+                logger.info(
+                    f"🔍 Cache miss for request {request.request_id} - proceeding with API call"
+                )
 
             # Select optimal model using enhanced ML optimization
-            available_models = [ModelType.FLASH_LITE, ModelType.FLASH_FULL, ModelType.DEEPSEEK_R1]
+            available_models = [
+                ModelType.FLASH_LITE,
+                ModelType.FLASH_FULL,
+                ModelType.DEEPSEEK_R1,
+            ]
 
             # Use production ML optimizer if available (enhanced capabilities)
             if self.production_ml_optimizer:
-                selected_model, ml_predictions = await self._select_model_with_production_optimizer(
-                    request, available_models
+                selected_model, ml_predictions = (
+                    await self._select_model_with_production_optimizer(
+                        request, available_models
+                    )
                 )
-                logger.info(f"🤖 Production ML optimizer selected {selected_model.value}")
+                logger.info(
+                    f"🤖 Production ML optimizer selected {selected_model.value}"
+                )
                 logger.debug(f"Enhanced ML predictions: {ml_predictions}")
             elif self.ml_optimizer:
-                selected_model, ml_predictions = self.ml_optimizer.select_optimal_model(request, available_models)
-                logger.debug(f"Legacy ML optimizer selected {selected_model.value} with predictions: {ml_predictions}")
+                selected_model, ml_predictions = self.ml_optimizer.select_optimal_model(
+                    request, available_models
+                )
+                logger.debug(
+                    f"Legacy ML optimizer selected {selected_model.value} with predictions: {ml_predictions}"
+                )
             else:
                 selected_model = self.router.select_model(request)
                 logger.debug(f"Rule-based router selected {selected_model.value}")
@@ -568,7 +648,7 @@ class MultimodalAIService:
             request.image_url or "",
             request.image_data or "",
             json.dumps(request.constitutional_context or {}, sort_keys=True),
-            self.constitutional_hash
+            self.constitutional_hash,
         ]
 
         content_string = "|".join(content_parts)
@@ -592,14 +672,15 @@ class MultimodalAIService:
                 cached_data = cache_result["result"]
 
                 # Handle both 'compliant' and 'constitutional_compliance' keys for backward compatibility
-                constitutional_compliance = (
-                    cached_data.get("constitutional_compliance") or
-                    cached_data.get("compliant", False)
-                )
+                constitutional_compliance = cached_data.get(
+                    "constitutional_compliance"
+                ) or cached_data.get("compliant", False)
 
                 response = MultimodalResponse(
                     request_id=cached_data.get("request_id", "cached"),
-                    model_used=ModelType(cached_data.get("model_used", ModelType.FLASH_LITE.value)),
+                    model_used=ModelType(
+                        cached_data.get("model_used", ModelType.FLASH_LITE.value)
+                    ),
                     response_content=cached_data.get("response_content", ""),
                     constitutional_compliance=constitutional_compliance,
                     confidence_score=cached_data.get("confidence_score", 0.0),
@@ -610,13 +691,15 @@ class MultimodalAIService:
                         quality_score=cached_data.get("quality_score", 0),
                         constitutional_compliance=constitutional_compliance,
                         cache_hit=True,
-                        cache_level=cache_result.get("cache_level")
+                        cache_level=cache_result.get("cache_level"),
                     ),
                     constitutional_hash=self.constitutional_hash,
                     violations=cached_data.get("violations", []),
                     warnings=cached_data.get("warnings", []),
-                    timestamp=cached_data.get("timestamp", datetime.now(timezone.utc).isoformat()),
-                    cache_info={"hit": True, "level": cache_result.get("cache_level")}
+                    timestamp=cached_data.get(
+                        "timestamp", datetime.now(timezone.utc).isoformat()
+                    ),
+                    cache_info={"hit": True, "level": cache_result.get("cache_level")},
                 )
 
                 return response
@@ -642,7 +725,7 @@ Always consider:
 3. Ethical AI governance standards
 4. Transparency and accountability principles
 
-Provide clear, factual analysis with specific reasoning for any compliance determinations."""
+Provide clear, factual analysis with specific reasoning for any compliance determinations.""",
         }
 
         # Prepare user message content
@@ -650,27 +733,26 @@ Provide clear, factual analysis with specific reasoning for any compliance deter
 
         # Add text content
         if request.text_content:
-            user_content.append({
-                "type": "text",
-                "text": self._enhance_prompt_for_request_type(request)
-            })
+            user_content.append(
+                {"type": "text", "text": self._enhance_prompt_for_request_type(request)}
+            )
 
         # Add image content
         if request.image_url:
-            user_content.append({
-                "type": "image_url",
-                "image_url": {"url": request.image_url}
-            })
+            user_content.append(
+                {"type": "image_url", "image_url": {"url": request.image_url}}
+            )
         elif request.image_data:
-            user_content.append({
-                "type": "image_url",
-                "image_url": {"url": f"data:image/jpeg;base64,{request.image_data}"}
-            })
+            user_content.append(
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": f"data:image/jpeg;base64,{request.image_data}"
+                    },
+                }
+            )
 
-        user_message = {
-            "role": "user",
-            "content": user_content
-        }
+        user_message = {"role": "user", "content": user_content}
 
         return [system_message, user_message]
 
@@ -738,9 +820,13 @@ Provide thorough analysis with supporting evidence."""
 
 Provide analysis focusing on key points, compliance, and recommendations."""
 
-    async def _process_api_response(self, api_response: Dict[str, Any],
-                                   request: MultimodalRequest, model: ModelType,
-                                   start_time: float) -> MultimodalResponse:
+    async def _process_api_response(
+        self,
+        api_response: Dict[str, Any],
+        request: MultimodalRequest,
+        model: ModelType,
+        start_time: float,
+    ) -> MultimodalResponse:
         """Process API response into structured format."""
 
         response_time = (time.time() - start_time) * 1000
@@ -765,11 +851,17 @@ Provide analysis focusing on key points, compliance, and recommendations."""
         # For constitutional validation requests, analyze the input content, not the response
         if request.request_type == RequestType.CONSTITUTIONAL_VALIDATION:
             input_content = request.text_content or ""
-            logger.info(f"CONSTITUTIONAL_VALIDATION: analyzing input content: {input_content[:50]}...")
+            logger.info(
+                f"CONSTITUTIONAL_VALIDATION: analyzing input content: {input_content[:50]}..."
+            )
             compliance_analysis = self._analyze_constitutional_compliance(input_content)
-            logger.info(f"CONSTITUTIONAL_VALIDATION: result = {compliance_analysis['compliant']}, confidence = {compliance_analysis['confidence']:.3f}")
+            logger.info(
+                f"CONSTITUTIONAL_VALIDATION: result = {compliance_analysis['compliant']}, confidence = {compliance_analysis['confidence']:.3f}"
+            )
         else:
-            logger.info(f"OTHER REQUEST TYPE ({request.request_type}): analyzing response content: {content[:50]}...")
+            logger.info(
+                f"OTHER REQUEST TYPE ({request.request_type}): analyzing response content: {content[:50]}..."
+            )
             compliance_analysis = self._analyze_constitutional_compliance(content)
 
         # Calculate quality score
@@ -782,7 +874,7 @@ Provide analysis focusing on key points, compliance, and recommendations."""
             cost_estimate=cost_estimate,
             quality_score=quality_score,
             constitutional_compliance=compliance_analysis["compliant"],
-            cache_hit=False
+            cache_hit=False,
         )
 
         # Create response
@@ -796,7 +888,7 @@ Provide analysis focusing on key points, compliance, and recommendations."""
             constitutional_hash=self.constitutional_hash,
             violations=compliance_analysis["violations"],
             warnings=compliance_analysis["warnings"],
-            timestamp=datetime.now(timezone.utc).isoformat()
+            timestamp=datetime.now(timezone.utc).isoformat(),
         )
 
         # Record performance for ML optimizer
@@ -809,7 +901,7 @@ Provide analysis focusing on key points, compliance, and recommendations."""
                 cost_estimate=cost_estimate,
                 quality_score=quality_score,
                 constitutional_compliance=compliance_analysis["compliant"],
-                cache_hit=False
+                cache_hit=False,
             )
 
         return response
@@ -822,36 +914,65 @@ Provide analysis focusing on key points, compliance, and recommendations."""
                 "compliant": True,
                 "confidence": 0.5,
                 "violations": [],
-                "warnings": ["Empty content provided"]
+                "warnings": ["Empty content provided"],
             }
 
         content_lower = content.lower()
 
         # Positive constitutional indicators (increase compliance score)
         positive_indicators = [
-            "democratic", "constitution", "rights", "freedom", "liberty",
-            "governance", "transparency", "accountability", "representation",
-            "participation", "citizen", "vote", "election", "due process",
-            "equal protection", "rule of law", "checks and balances"
+            "democratic",
+            "constitution",
+            "rights",
+            "freedom",
+            "liberty",
+            "governance",
+            "transparency",
+            "accountability",
+            "representation",
+            "participation",
+            "citizen",
+            "vote",
+            "election",
+            "due process",
+            "equal protection",
+            "rule of law",
+            "checks and balances",
         ]
 
         # Serious violation keywords (definite non-compliance)
         serious_violations = [
-            "overthrow democracy", "abolish constitution", "eliminate rights",
-            "suppress voting", "authoritarian rule", "dictatorship",
-            "unconstitutional seizure", "illegal surveillance", "rights violation"
+            "overthrow democracy",
+            "abolish constitution",
+            "eliminate rights",
+            "suppress voting",
+            "authoritarian rule",
+            "dictatorship",
+            "unconstitutional seizure",
+            "illegal surveillance",
+            "rights violation",
         ]
 
         # Moderate concern keywords (potential issues)
         moderate_concerns = [
-            "restrict access", "limit participation", "reduce transparency",
-            "centralize power", "bypass oversight", "emergency powers"
+            "restrict access",
+            "limit participation",
+            "reduce transparency",
+            "centralize power",
+            "bypass oversight",
+            "emergency powers",
         ]
 
         # Warning indicators (need review)
         warning_indicators = [
-            "concern", "risk", "potential issue", "review needed",
-            "caution", "consider", "may need", "should evaluate"
+            "concern",
+            "risk",
+            "potential issue",
+            "review needed",
+            "caution",
+            "consider",
+            "may need",
+            "should evaluate",
         ]
 
         violations = []
@@ -883,7 +1004,9 @@ Provide analysis focusing on key points, compliance, and recommendations."""
                 warnings.append(f"Review indicator: {warning}")
 
         # Enhanced compliance determination
-        serious_violation_count = sum(1 for v in violations if "Serious constitutional violation" in v)
+        serious_violation_count = sum(
+            1 for v in violations if "Serious constitutional violation" in v
+        )
 
         if serious_violation_count > 0:
             compliant = False
@@ -910,10 +1033,12 @@ Provide analysis focusing on key points, compliance, and recommendations."""
             "violations": violations,
             "warnings": warnings,
             "positive_indicators": positive_score,
-            "analysis_method": "enhanced_keyword_analysis"
+            "analysis_method": "enhanced_keyword_analysis",
         }
 
-    def _calculate_quality_score(self, content: str, request: MultimodalRequest) -> float:
+    def _calculate_quality_score(
+        self, content: str, request: MultimodalRequest
+    ) -> float:
         """Calculate quality score for response."""
 
         score = 0.5  # Base score
@@ -964,21 +1089,26 @@ Provide analysis focusing on key points, compliance, and recommendations."""
                 "constitutional_hash": response.constitutional_hash,
                 "violations": response.violations,
                 "warnings": response.warnings,
-                "timestamp": response.timestamp
+                "timestamp": response.timestamp,
             }
 
             # Cache with appropriate TTL based on content type
-            await self.cache_manager._cache_validation_result(cache_key, {
-                "result": cache_data,
-                "constitutional_hash": self.constitutional_hash,
-                "confidence_score": response.confidence_score
-            }, response.response_content[:100])  # First 100 chars for bloom filter
+            await self.cache_manager._cache_validation_result(
+                cache_key,
+                {
+                    "result": cache_data,
+                    "constitutional_hash": self.constitutional_hash,
+                    "confidence_score": response.confidence_score,
+                },
+                response.response_content[:100],
+            )  # First 100 chars for bloom filter
 
         except Exception as e:
             logger.warning(f"Failed to cache response for {cache_key}: {e}")
 
-    def _create_error_response(self, request: MultimodalRequest,
-                              error_message: str, start_time: float) -> MultimodalResponse:
+    def _create_error_response(
+        self, request: MultimodalRequest, error_message: str, start_time: float
+    ) -> MultimodalResponse:
         """Create error response."""
 
         response_time = (time.time() - start_time) * 1000
@@ -988,7 +1118,7 @@ Provide analysis focusing on key points, compliance, and recommendations."""
             token_count=0,
             cost_estimate=0.0,
             quality_score=0.0,
-            constitutional_compliance=False
+            constitutional_compliance=False,
         )
 
         return MultimodalResponse(
@@ -1001,7 +1131,7 @@ Provide analysis focusing on key points, compliance, and recommendations."""
             constitutional_hash=self.constitutional_hash,
             violations=[f"Processing error: {error_message}"],
             warnings=[],
-            timestamp=datetime.now(timezone.utc).isoformat()
+            timestamp=datetime.now(timezone.utc).isoformat(),
         )
 
     def _update_metrics(self, response: MultimodalResponse):
@@ -1022,7 +1152,9 @@ Provide analysis focusing on key points, compliance, and recommendations."""
 
         # Update cache hit rate
         if response.metrics.cache_hit:
-            cache_hits = sum(1 for _ in self.metrics["response_times"] if response.metrics.cache_hit)
+            cache_hits = sum(
+                1 for _ in self.metrics["response_times"] if response.metrics.cache_hit
+            )
             self.metrics["cache_hit_rate"] = cache_hits / total_requests
 
     def get_metrics(self) -> Dict[str, Any]:
@@ -1034,15 +1166,27 @@ Provide analysis focusing on key points, compliance, and recommendations."""
             "total_requests": self.metrics["total_requests"],
             "model_usage": dict(self.metrics["model_usage"]),
             "performance": {
-                "avg_response_time_ms": sum(response_times) / len(response_times) if response_times else 0,
+                "avg_response_time_ms": (
+                    sum(response_times) / len(response_times) if response_times else 0
+                ),
                 "min_response_time_ms": min(response_times) if response_times else 0,
                 "max_response_time_ms": max(response_times) if response_times else 0,
-                "p95_response_time_ms": sorted(response_times)[int(len(response_times) * 0.95)] if len(response_times) >= 20 else max(response_times) if response_times else 0,
-                "p99_response_time_ms": sorted(response_times)[int(len(response_times) * 0.99)] if len(response_times) >= 100 else max(response_times) if response_times else 0
+                "p95_response_time_ms": (
+                    sorted(response_times)[int(len(response_times) * 0.95)]
+                    if len(response_times) >= 20
+                    else max(response_times) if response_times else 0
+                ),
+                "p99_response_time_ms": (
+                    sorted(response_times)[int(len(response_times) * 0.99)]
+                    if len(response_times) >= 100
+                    else max(response_times) if response_times else 0
+                ),
             },
             "quality": {
-                "constitutional_compliance_rate": self.metrics["constitutional_compliance_rate"],
-                "cache_hit_rate": self.metrics["cache_hit_rate"]
+                "constitutional_compliance_rate": self.metrics[
+                    "constitutional_compliance_rate"
+                ],
+                "cache_hit_rate": self.metrics["cache_hit_rate"],
             },
             "cost_analysis": {
                 "total_cost_estimate": sum(
@@ -1050,12 +1194,19 @@ Provide analysis focusing on key points, compliance, and recommendations."""
                     for model, count in self.metrics["model_usage"].items()
                 ),
                 "cost_per_request": (
-                    sum(self._calculate_cost_estimate(model, count) for model, count in self.metrics["model_usage"].items()) /
-                    self.metrics["total_requests"]
-                ) if self.metrics["total_requests"] > 0 else 0.0
+                    (
+                        sum(
+                            self._calculate_cost_estimate(model, count)
+                            for model, count in self.metrics["model_usage"].items()
+                        )
+                        / self.metrics["total_requests"]
+                    )
+                    if self.metrics["total_requests"] > 0
+                    else 0.0
+                ),
             },
             "constitutional_hash": self.constitutional_hash,
-            "timestamp": datetime.now(timezone.utc).isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     async def get_service_metrics(self) -> Dict[str, Any]:
@@ -1067,18 +1218,22 @@ Provide analysis focusing on key points, compliance, and recommendations."""
         # Cost per 1M tokens (approximate)
         cost_per_million_tokens = {
             "flash_lite": 0.075,  # $0.075 per 1M tokens
-            "flash_full": 0.30,   # $0.30 per 1M tokens
-            "deepseek_r1": 0.02   # $0.02 per 1M tokens (74% savings)
+            "flash_full": 0.30,  # $0.30 per 1M tokens
+            "deepseek_r1": 0.02,  # $0.02 per 1M tokens (74% savings)
         }
 
         # Estimate average tokens per request (conservative estimate)
         avg_tokens_per_request = 2000
 
         # Handle both string and ModelType objects
-        if hasattr(model_type, 'value'):
-            model_key = model_type.value.lower().replace("google/", "").replace("-", "_")
+        if hasattr(model_type, "value"):
+            model_key = (
+                model_type.value.lower().replace("google/", "").replace("-", "_")
+            )
         else:
-            model_key = str(model_type).lower().replace("modeltype.", "").replace("_", "_")
+            model_key = (
+                str(model_type).lower().replace("modeltype.", "").replace("_", "_")
+            )
 
         # Map model names to cost keys
         if "flash" in model_key and "lite" in model_key:
@@ -1101,34 +1256,39 @@ Provide analysis focusing on key points, compliance, and recommendations."""
             "production_ml_optimizer_enabled": self.production_ml_optimizer is not None,
             "legacy_ml_optimizer_enabled": self.ml_optimizer is not None,
             "constitutional_hash": self.constitutional_hash,
-            "constitutional_hash_verified": self.constitutional_hash == "cdd01ef066bc6cf2"
+            "constitutional_hash_verified": self.constitutional_hash
+            == "cdd01ef066bc6cf2",
         }
 
         # Get production ML optimizer status if available
         if self.production_ml_optimizer:
             try:
-                online_status = self.production_ml_optimizer.get_online_learning_status()
-                status.update({
-                    "online_learning_status": online_status,
-                    "production_optimizer_features": [
-                        "IterativeImputer (MICE) for missing values",
-                        "SMOTE for imbalanced datasets",
-                        "Data drift detection with KS tests",
-                        "Multi-armed bandit optimization",
-                        "Nested cross-validation",
-                        "Bootstrap confidence intervals",
-                        "Online learning with SGDRegressor",
-                        "Model versioning and rollback",
-                        "Real-time performance monitoring"
-                    ]
-                })
+                online_status = (
+                    self.production_ml_optimizer.get_online_learning_status()
+                )
+                status.update(
+                    {
+                        "online_learning_status": online_status,
+                        "production_optimizer_features": [
+                            "IterativeImputer (MICE) for missing values",
+                            "SMOTE for imbalanced datasets",
+                            "Data drift detection with KS tests",
+                            "Multi-armed bandit optimization",
+                            "Nested cross-validation",
+                            "Bootstrap confidence intervals",
+                            "Online learning with SGDRegressor",
+                            "Model versioning and rollback",
+                            "Real-time performance monitoring",
+                        ],
+                    }
+                )
             except Exception as e:
                 status["production_optimizer_error"] = str(e)
 
         # Get legacy ML optimizer status if available
         if self.ml_optimizer:
             try:
-                if hasattr(self.ml_optimizer, 'get_status'):
+                if hasattr(self.ml_optimizer, "get_status"):
                     status["legacy_optimizer_status"] = self.ml_optimizer.get_status()
             except Exception as e:
                 status["legacy_optimizer_error"] = str(e)
@@ -1144,33 +1304,41 @@ Provide analysis focusing on key points, compliance, and recommendations."""
             request_type=RequestType.CONSTITUTIONAL_VALIDATION,
             content_type=ContentType.TEXT_ONLY,
             text_content="Test constitutional compliance analysis",
-            priority="medium"
+            priority="medium",
         )
 
         test_results = {
             "test_timestamp": datetime.now(timezone.utc).isoformat(),
-            "constitutional_hash": self.constitutional_hash
+            "constitutional_hash": self.constitutional_hash,
         }
 
         try:
             # Test model selection with production optimizer
             if self.production_ml_optimizer:
-                available_models = [ModelType.FLASH_LITE, ModelType.FLASH_FULL, ModelType.DEEPSEEK_R1]
-                selected_model, predictions = await self._select_model_with_production_optimizer(
-                    test_request, available_models
+                available_models = [
+                    ModelType.FLASH_LITE,
+                    ModelType.FLASH_FULL,
+                    ModelType.DEEPSEEK_R1,
+                ]
+                selected_model, predictions = (
+                    await self._select_model_with_production_optimizer(
+                        test_request, available_models
+                    )
                 )
 
-                test_results.update({
-                    "production_optimizer_test": {
-                        "success": True,
-                        "selected_model": selected_model.value,
-                        "predictions": predictions
+                test_results.update(
+                    {
+                        "production_optimizer_test": {
+                            "success": True,
+                            "selected_model": selected_model.value,
+                            "predictions": predictions,
+                        }
                     }
-                })
+                )
             else:
                 test_results["production_optimizer_test"] = {
                     "success": False,
-                    "error": "Production ML optimizer not available"
+                    "error": "Production ML optimizer not available",
                 }
 
             # Test feature extraction
@@ -1178,7 +1346,7 @@ Provide analysis focusing on key points, compliance, and recommendations."""
             test_results["feature_extraction_test"] = {
                 "success": True,
                 "feature_vector_shape": feature_vector.shape,
-                "feature_vector": feature_vector.tolist()
+                "feature_vector": feature_vector.tolist(),
             }
 
         except Exception as e:

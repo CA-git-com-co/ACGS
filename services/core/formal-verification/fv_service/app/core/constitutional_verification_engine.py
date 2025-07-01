@@ -58,9 +58,7 @@ class ConstitutionalProperty:
     def __post_init__(self):
         """Calculate checksum for property integrity."""
         if not self.checksum:
-            content = (
-                f"{self.property_id}:{self.formal_specification}:{self.constitutional_principle_id}"
-            )
+            content = f"{self.property_id}:{self.formal_specification}:{self.constitutional_principle_id}"
             self.checksum = hashlib.sha256(content.encode()).hexdigest()[:16]
 
 
@@ -128,7 +126,9 @@ class ConstitutionalVerificationEngine:
             "proofs_generated": 0,
         }
 
-        logger.info("Constitutional verification engine initialized with Z3 integration")
+        logger.info(
+            "Constitutional verification engine initialized with Z3 integration"
+        )
 
     async def verify_constitutional_compliance(
         self,
@@ -147,9 +147,9 @@ class ConstitutionalVerificationEngine:
         Returns:
             Comprehensive verification result with formal proofs
         """
-        verification_id = hashlib.sha256(f"{policy_content}:{time.time()}".encode()).hexdigest()[
-            :12
-        ]
+        verification_id = hashlib.sha256(
+            f"{policy_content}:{time.time()}".encode()
+        ).hexdigest()[:12]
 
         start_time = time.time()
 
@@ -160,7 +160,9 @@ class ConstitutionalVerificationEngine:
 
         try:
             # Step 1: Check verification cache
-            cache_key = self._generate_cache_key(policy_content, constitutional_properties)
+            cache_key = self._generate_cache_key(
+                policy_content, constitutional_properties
+            )
             cached_result = self._check_verification_cache(cache_key)
             if cached_result:
                 self.metrics["cache_hits"] += 1
@@ -170,7 +172,9 @@ class ConstitutionalVerificationEngine:
             formal_policy = await self._parse_policy_to_formal(policy_content)
 
             # Step 3: Generate Z3 constraints from constitutional properties
-            z3_constraints = await self._generate_z3_constraints(constitutional_properties)
+            z3_constraints = await self._generate_z3_constraints(
+                constitutional_properties
+            )
 
             # Step 4: Perform formal verification for each property
             verification_results = []
@@ -188,7 +192,9 @@ class ConstitutionalVerificationEngine:
             # Step 5: Generate comprehensive verification report
             verification_time = (time.time() - start_time) * 1000
 
-            overall_compliant = all(result["verified"] for result in verification_results)
+            overall_compliant = all(
+                result["verified"] for result in verification_results
+            )
             overall_confidence = (
                 sum(result["confidence"] for result in verification_results)
                 / len(verification_results)
@@ -220,20 +226,24 @@ class ConstitutionalVerificationEngine:
                     "z3_solver_calls": len(constitutional_properties),
                 },
                 "checksum_validation": {
-                    "policy_checksum": hashlib.sha256(policy_content.encode()).hexdigest()[:16],
+                    "policy_checksum": hashlib.sha256(
+                        policy_content.encode()
+                    ).hexdigest()[:16],
                     "properties_checksum": self._calculate_properties_checksum(
                         constitutional_properties
                     ),
-                    "result_checksum": hashlib.sha256(str(overall_compliant).encode()).hexdigest()[
-                        :16
-                    ],
+                    "result_checksum": hashlib.sha256(
+                        str(overall_compliant).encode()
+                    ).hexdigest()[:16],
                 },
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
             # Step 8: Cache result and update metrics
             self._cache_verification_result(cache_key, result)
-            self._update_metrics(verification_time, overall_compliant, len(formal_proofs))
+            self._update_metrics(
+                verification_time, overall_compliant, len(formal_proofs)
+            )
 
             logger.info(
                 f"Constitutional verification {verification_id} completed in {verification_time:.2f}ms: "
@@ -323,12 +333,16 @@ class ConstitutionalVerificationEngine:
             if result == z3.unsat:
                 # Property is proven (constraints imply property)
                 proof_steps.append(f"prove property: {property_specification}")
-                proof_steps.append("// Property verified: constraints => property (UNSAT)")
+                proof_steps.append(
+                    "// Property verified: constraints => property (UNSAT)"
+                )
                 proof_steps.append("// QED: Constitutional compliance proven")
 
                 formal_proof = FormalProof(
                     proof_id=proof_id,
-                    property_id=hashlib.sha256(property_specification.encode()).hexdigest()[:8],
+                    property_id=hashlib.sha256(
+                        property_specification.encode()
+                    ).hexdigest()[:8],
                     proof_type=proof_type,
                     verification_level=VerificationLevel.STANDARD,
                     proof_steps=proof_steps,
@@ -344,13 +358,17 @@ class ConstitutionalVerificationEngine:
                 counter_example = str(model)
 
                 proof_steps.append(f"attempt_prove property: {property_specification}")
-                proof_steps.append("// Property NOT verified: counter-example found (SAT)")
+                proof_steps.append(
+                    "// Property NOT verified: counter-example found (SAT)"
+                )
                 proof_steps.append(f"// Counter-example: {counter_example}")
                 proof_steps.append("// Constitutional compliance NOT proven")
 
                 formal_proof = FormalProof(
                     proof_id=proof_id,
-                    property_id=hashlib.sha256(property_specification.encode()).hexdigest()[:8],
+                    property_id=hashlib.sha256(
+                        property_specification.encode()
+                    ).hexdigest()[:8],
                     proof_type=proof_type,
                     verification_level=VerificationLevel.STANDARD,
                     proof_steps=proof_steps,
@@ -370,7 +388,9 @@ class ConstitutionalVerificationEngine:
 
                 formal_proof = FormalProof(
                     proof_id=proof_id,
-                    property_id=hashlib.sha256(property_specification.encode()).hexdigest()[:8],
+                    property_id=hashlib.sha256(
+                        property_specification.encode()
+                    ).hexdigest()[:8],
                     proof_type=proof_type,
                     verification_level=VerificationLevel.STANDARD,
                     proof_steps=proof_steps,
@@ -441,7 +461,9 @@ class ConstitutionalVerificationEngine:
             }
 
         except Exception as e:
-            logger.error(f"Property verification failed for {property.property_id}: {e}")
+            logger.error(
+                f"Property verification failed for {property.property_id}: {e}"
+            )
             return {
                 "property_id": property.property_id,
                 "property_name": property.name,
@@ -461,15 +483,21 @@ class ConstitutionalVerificationEngine:
             "checksum": hashlib.sha256(policy_content.encode()).hexdigest()[:16],
         }
 
-    async def _generate_z3_constraints(self, properties: list[ConstitutionalProperty]) -> list[Any]:
+    async def _generate_z3_constraints(
+        self, properties: list[ConstitutionalProperty]
+    ) -> list[Any]:
         """Generate Z3 constraints from constitutional properties."""
         constraints = []
         for prop in properties:
             try:
-                constraint = await self._convert_to_z3_formula(prop.formal_specification)
+                constraint = await self._convert_to_z3_formula(
+                    prop.formal_specification
+                )
                 constraints.append(constraint)
             except Exception as e:
-                logger.warning(f"Failed to convert property {prop.property_id} to Z3: {e}")
+                logger.warning(
+                    f"Failed to convert property {prop.property_id} to Z3: {e}"
+                )
         return constraints
 
     async def _convert_to_z3_formula(self, specification: str) -> Any:
@@ -494,7 +522,9 @@ class ConstitutionalVerificationEngine:
             "policy_checksum": hashlib.sha256(policy_content.encode()).hexdigest()[:16],
             "verification_summary": {
                 "total_properties": len(verification_results),
-                "verified_properties": sum(1 for r in verification_results if r["verified"]),
+                "verified_properties": sum(
+                    1 for r in verification_results if r["verified"]
+                ),
                 "formal_proofs_count": len(formal_proofs),
             },
             "compliance_level": (
@@ -511,7 +541,9 @@ class ConstitutionalVerificationEngine:
 
         # Calculate certificate checksum
         cert_content = f"{certificate['certificate_id']}:{certificate['compliance_level']}:{certificate['constitutional_hash']}"
-        certificate["certificate_checksum"] = hashlib.sha256(cert_content.encode()).hexdigest()[:16]
+        certificate["certificate_checksum"] = hashlib.sha256(
+            cert_content.encode()
+        ).hexdigest()[:16]
 
         return certificate
 
@@ -520,16 +552,18 @@ class ConstitutionalVerificationEngine:
     ) -> str:
         """Generate cache key for verification result."""
         content_hash = hashlib.sha256(policy_content.encode()).hexdigest()[:8]
-        props_hash = hashlib.sha256(str([p.property_id for p in properties]).encode()).hexdigest()[
-            :8
-        ]
+        props_hash = hashlib.sha256(
+            str([p.property_id for p in properties]).encode()
+        ).hexdigest()[:8]
         return f"{content_hash}:{props_hash}"
 
     def _check_verification_cache(self, cache_key: str) -> dict[str, Any] | None:
         """Check if verification result is cached."""
         return self.verification_cache.get(cache_key)
 
-    def _cache_verification_result(self, cache_key: str, result: dict[str, Any]) -> None:
+    def _cache_verification_result(
+        self, cache_key: str, result: dict[str, Any]
+    ) -> None:
         """Cache verification result."""
         # Implement LRU cache with size limit
         if len(self.verification_cache) >= 1000:
@@ -539,12 +573,16 @@ class ConstitutionalVerificationEngine:
 
         self.verification_cache[cache_key] = result
 
-    def _calculate_properties_checksum(self, properties: list[ConstitutionalProperty]) -> str:
+    def _calculate_properties_checksum(
+        self, properties: list[ConstitutionalProperty]
+    ) -> str:
         """Calculate checksum for list of properties."""
         content = ":".join(prop.checksum for prop in properties)
         return hashlib.sha256(content.encode()).hexdigest()[:16]
 
-    def _update_metrics(self, verification_time: float, success: bool, proofs_count: int) -> None:
+    def _update_metrics(
+        self, verification_time: float, success: bool, proofs_count: int
+    ) -> None:
         """Update performance metrics."""
         self.metrics["total_verifications"] += 1
         if success:
@@ -552,7 +590,8 @@ class ConstitutionalVerificationEngine:
 
         # Update average verification time
         total_time = (
-            self.metrics["average_verification_time_ms"] * (self.metrics["total_verifications"] - 1)
+            self.metrics["average_verification_time_ms"]
+            * (self.metrics["total_verifications"] - 1)
             + verification_time
         )
         self.metrics["average_verification_time_ms"] = (
@@ -571,7 +610,8 @@ class ConstitutionalVerificationEngine:
                 self.metrics["cache_hits"] / max(self.metrics["total_verifications"], 1)
             ),
             "average_proofs_per_verification": (
-                self.metrics["proofs_generated"] / max(self.metrics["total_verifications"], 1)
+                self.metrics["proofs_generated"]
+                / max(self.metrics["total_verifications"], 1)
             ),
         }
 

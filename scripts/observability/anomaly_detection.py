@@ -12,6 +12,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class AnomalyDetector:
     """Statistical anomaly detection for observability metrics."""
 
@@ -20,7 +21,9 @@ class AnomalyDetector:
         self.threshold = threshold
         self.metric_history: Dict[str, List[float]] = {}
 
-    def add_metric_value(self, metric_name: str, value: float, timestamp: datetime = None):
+    def add_metric_value(
+        self, metric_name: str, value: float, timestamp: datetime = None
+    ):
         """Add a new metric value for anomaly detection."""
         if metric_name not in self.metric_history:
             self.metric_history[metric_name] = []
@@ -29,9 +32,13 @@ class AnomalyDetector:
 
         # Keep only the last window_size values
         if len(self.metric_history[metric_name]) > self.window_size:
-            self.metric_history[metric_name] = self.metric_history[metric_name][-self.window_size:]
+            self.metric_history[metric_name] = self.metric_history[metric_name][
+                -self.window_size :
+            ]
 
-    def detect_anomaly(self, metric_name: str, current_value: float) -> Tuple[bool, float]:
+    def detect_anomaly(
+        self, metric_name: str, current_value: float
+    ) -> Tuple[bool, float]:
         """Detect if current value is anomalous using statistical methods."""
         if metric_name not in self.metric_history:
             return False, 0.0
@@ -66,8 +73,9 @@ class AnomalyDetector:
             "std": np.std(history),
             "min": np.min(history),
             "max": np.max(history),
-            "count": len(history)
+            "count": len(history),
         }
+
 
 class ObservabilityAnomalyMonitor:
     """Monitor observability metrics for anomalies."""
@@ -94,11 +102,13 @@ class ObservabilityAnomalyMonitor:
                     "value": value,
                     "z_score": z_score,
                     "timestamp": datetime.now(),
-                    "statistics": self.detector.get_metric_statistics(metric_name)
+                    "statistics": self.detector.get_metric_statistics(metric_name),
                 }
                 anomalies_detected.append(anomaly_info)
                 self._record_alert(metric_name)
-                logger.warning(f"Anomaly detected in {metric_name}: {value} (z-score: {z_score:.2f})")
+                logger.warning(
+                    f"Anomaly detected in {metric_name}: {value} (z-score: {z_score:.2f})"
+                )
 
         return anomalies_detected
 
@@ -116,6 +126,7 @@ class ObservabilityAnomalyMonitor:
         """Record that we alerted for this metric."""
         self.alert_cooldown[metric_name] = datetime.now()
 
+
 def main():
     """Main anomaly monitoring loop."""
     monitor = ObservabilityAnomalyMonitor()
@@ -125,7 +136,7 @@ def main():
         "response_time_p95": 2.5,
         "constitutional_compliance_score": 0.92,
         "policy_evaluation_success_rate": 0.98,
-        "request_rate": 850
+        "request_rate": 850,
     }
 
     anomalies = monitor.monitor_metrics(test_metrics)
@@ -133,9 +144,12 @@ def main():
     if anomalies:
         print(f"🚨 {len(anomalies)} anomalies detected")
         for anomaly in anomalies:
-            print(f"  - {anomaly['metric']}: {anomaly['value']} (z-score: {anomaly['z_score']:.2f})")
+            print(
+                f"  - {anomaly['metric']}: {anomaly['value']} (z-score: {anomaly['z_score']:.2f})"
+            )
     else:
         print("✅ No anomalies detected")
+
 
 if __name__ == "__main__":
     main()

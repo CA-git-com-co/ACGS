@@ -144,11 +144,15 @@ class ServiceInfo:
 
         # Update average response time (exponential moving average)
         alpha = 0.1  # Smoothing factor
-        self.avg_response_time = (alpha * response_time) + ((1 - alpha) * self.avg_response_time)
+        self.avg_response_time = (alpha * response_time) + (
+            (1 - alpha) * self.avg_response_time
+        )
 
         # Update success rate
         self.success_rate = (
-            self.successful_requests / self.total_requests if self.total_requests > 0 else 1.0
+            self.successful_requests / self.total_requests
+            if self.total_requests > 0
+            else 1.0
         )
 
 
@@ -173,7 +177,9 @@ class EnhancedServiceRegistry:
         # HTTP client with connection pooling
         self.http_client = httpx.AsyncClient(
             timeout=httpx.Timeout(10.0, connect=5.0),
-            limits=httpx.Limits(max_connections=connection_pool_size, max_keepalive_connections=20),
+            limits=httpx.Limits(
+                max_connections=connection_pool_size, max_keepalive_connections=20
+            ),
             http2=True,
         )
 
@@ -299,7 +305,9 @@ class EnhancedServiceRegistry:
                 logger.warning(f"Failed to initialize Redis cache: {e}")
 
         # Start background tasks
-        self._health_check_task = asyncio.create_task(self._enhanced_health_check_loop())
+        self._health_check_task = asyncio.create_task(
+            self._enhanced_health_check_loop()
+        )
         self._metrics_task = asyncio.create_task(self._metrics_collection_loop())
 
         logger.info("Enhanced service registry started")
@@ -364,7 +372,9 @@ class EnhancedServiceRegistry:
 
             # Cache result in Redis
             if self.redis_client:
-                await self._cache_service_health(service.name, is_healthy, response_time)
+                await self._cache_service_health(
+                    service.name, is_healthy, response_time
+                )
 
             return is_healthy
 
@@ -446,12 +456,15 @@ class EnhancedServiceRegistry:
         total_time = time.time() - start_time
         self.health_check_metrics["total_checks"] += len(service_names)
         self.health_check_metrics["successful_checks"] += successful_checks
-        self.health_check_metrics["failed_checks"] += len(service_names) - successful_checks
+        self.health_check_metrics["failed_checks"] += (
+            len(service_names) - successful_checks
+        )
 
         # Update average check time (exponential moving average)
         alpha = 0.1
         self.health_check_metrics["avg_check_time"] = (
-            alpha * total_time + (1 - alpha) * self.health_check_metrics["avg_check_time"]
+            alpha * total_time
+            + (1 - alpha) * self.health_check_metrics["avg_check_time"]
         )
 
         return health_status
@@ -501,7 +514,11 @@ class EnhancedServiceRegistry:
                 [s for s in self.services.values() if s.status == ServiceStatus.HEALTHY]
             )
             degraded_services = len(
-                [s for s in self.services.values() if s.status == ServiceStatus.DEGRADED]
+                [
+                    s
+                    for s in self.services.values()
+                    if s.status == ServiceStatus.DEGRADED
+                ]
             )
 
             metrics_data = {
@@ -509,10 +526,16 @@ class EnhancedServiceRegistry:
                 "total_services": total_services,
                 "healthy_services": healthy_services,
                 "degraded_services": degraded_services,
-                "unhealthy_services": total_services - healthy_services - degraded_services,
-                "avg_response_time": sum(s.avg_response_time for s in self.services.values())
+                "unhealthy_services": total_services
+                - healthy_services
+                - degraded_services,
+                "avg_response_time": sum(
+                    s.avg_response_time for s in self.services.values()
+                )
                 / total_services,
-                "overall_success_rate": sum(s.success_rate for s in self.services.values())
+                "overall_success_rate": sum(
+                    s.success_rate for s in self.services.values()
+                )
                 / total_services,
                 "health_check_metrics": self.health_check_metrics,
             }
@@ -525,7 +548,9 @@ class EnhancedServiceRegistry:
         except Exception as e:
             logger.error(f"Failed to collect metrics: {e}")
 
-    def get_healthy_services_with_load_balancing(self, tag: str | None = None) -> list[ServiceInfo]:
+    def get_healthy_services_with_load_balancing(
+        self, tag: str | None = None
+    ) -> list[ServiceInfo]:
         """Get healthy services with load balancing based on performance metrics."""
         services = self.services.values()
 
@@ -534,12 +559,16 @@ class EnhancedServiceRegistry:
 
         # Filter healthy and degraded services
         available_services = [
-            s for s in services if s.status in [ServiceStatus.HEALTHY, ServiceStatus.DEGRADED]
+            s
+            for s in services
+            if s.status in [ServiceStatus.HEALTHY, ServiceStatus.DEGRADED]
         ]
 
         # Sort by performance metrics (response time and success rate)
         available_services.sort(
-            key=lambda s: (s.avg_response_time * (2 - s.success_rate))  # Lower is better
+            key=lambda s: (
+                s.avg_response_time * (2 - s.success_rate)
+            )  # Lower is better
         )
 
         return available_services
@@ -559,7 +588,9 @@ class EnhancedServiceRegistry:
                     any(tag in primary_service.tags for tag in service.tags)
                     and service.name != service_name
                 ):
-                    logger.warning(f"Using fallback service {service.name} for {service_name}")
+                    logger.warning(
+                        f"Using fallback service {service.name} for {service_name}"
+                    )
                     return service
 
         return None
@@ -592,7 +623,9 @@ class EnhancedServiceRegistry:
                 "total_requests": service.total_requests,
                 "circuit_breaker_state": service.circuit_breaker.state.value,
                 "last_health_check": (
-                    service.last_health_check.isoformat() if service.last_health_check else None
+                    service.last_health_check.isoformat()
+                    if service.last_health_check
+                    else None
                 ),
             }
 

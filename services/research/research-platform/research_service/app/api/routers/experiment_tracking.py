@@ -184,7 +184,9 @@ async def list_experiments(
 
 
 @router.get("/{experiment_id}", response_model=ExperimentResponse)
-async def get_experiment(experiment_id: str, db: AsyncSession = Depends(get_db_session)):
+async def get_experiment(
+    experiment_id: str, db: AsyncSession = Depends(get_db_session)
+):
     """Get experiment by ID."""
     try:
         # This would be implemented with proper database queries
@@ -295,7 +297,9 @@ async def save_artifact(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.put("/{experiment_id}/runs/{run_id}/complete", response_model=ExperimentRunResponse)
+@router.put(
+    "/{experiment_id}/runs/{run_id}/complete", response_model=ExperimentRunResponse
+)
 async def complete_experiment_run(
     experiment_id: str,
     run_id: str,

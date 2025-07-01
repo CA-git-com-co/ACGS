@@ -23,14 +23,16 @@ from tests.conftest import docker_rm
 
 @pytest.mark.gpu
 def test_hf_trtllm_conversion():
-    model_path = os.getenv('NEMO_SKILLS_TEST_HF_MODEL')
+    model_path = os.getenv("NEMO_SKILLS_TEST_HF_MODEL")
     if not model_path:
         pytest.skip("Define NEMO_SKILLS_TEST_HF_MODEL to run this test")
-    model_type = os.getenv('NEMO_SKILLS_TEST_MODEL_TYPE')
+    model_type = os.getenv("NEMO_SKILLS_TEST_MODEL_TYPE")
     if not model_type:
         pytest.skip("Define NEMO_SKILLS_TEST_MODEL_TYPE to run this test")
     hf_model_name = (
-        'meta-llama/Meta-Llama-3.1-8B-Instruct' if model_type == 'llama' else 'Qwen/Qwen2.5-Math-7B-Instruct'
+        "meta-llama/Meta-Llama-3.1-8B-Instruct"
+        if model_type == "llama"
+        else "Qwen/Qwen2.5-Math-7B-Instruct"
     )
 
     output_model = f"/tmp/nemo-skills-tests/{model_type}/conversion/hf-to-trtllm/model"
@@ -54,14 +56,16 @@ def test_hf_trtllm_conversion():
 
 @pytest.mark.gpu
 def test_hf_nemo_conversion():
-    model_path = os.getenv('NEMO_SKILLS_TEST_HF_MODEL')
+    model_path = os.getenv("NEMO_SKILLS_TEST_HF_MODEL")
     if not model_path:
         pytest.skip("Define NEMO_SKILLS_TEST_HF_MODEL to run this test")
-    model_type = os.getenv('NEMO_SKILLS_TEST_MODEL_TYPE')
+    model_type = os.getenv("NEMO_SKILLS_TEST_MODEL_TYPE")
     if not model_type:
         pytest.skip("Define NEMO_SKILLS_TEST_MODEL_TYPE to run this test")
     hf_model_name = (
-        'meta-llama/Meta-Llama-3.1-8B-Instruct' if model_type == 'llama' else 'Qwen/Qwen2.5-Math-7B-Instruct'
+        "meta-llama/Meta-Llama-3.1-8B-Instruct"
+        if model_type == "llama"
+        else "Qwen/Qwen2.5-Math-7B-Instruct"
     )
 
     output_model = f"/tmp/nemo-skills-tests/{model_type}/conversion/hf-to-nemo/model"
@@ -86,17 +90,19 @@ def test_hf_nemo_conversion():
 
 @pytest.mark.gpu
 def test_hf_megatron_conversion():
-    model_path = os.getenv('NEMO_SKILLS_TEST_HF_MODEL')
+    model_path = os.getenv("NEMO_SKILLS_TEST_HF_MODEL")
     if not model_path:
         pytest.skip("Define NEMO_SKILLS_TEST_HF_MODEL to run this test")
-    model_type = os.getenv('NEMO_SKILLS_TEST_MODEL_TYPE')
+    model_type = os.getenv("NEMO_SKILLS_TEST_MODEL_TYPE")
     if not model_type:
         pytest.skip("Define NEMO_SKILLS_TEST_MODEL_TYPE to run this test")
     if model_type != "llama":
         pytest.skip("Only llama models are supported in Megatron.")
-    hf_model_name = 'meta-llama/Meta-Llama-3.1-8B-Instruct'
+    hf_model_name = "meta-llama/Meta-Llama-3.1-8B-Instruct"
 
-    output_model = f"/tmp/nemo-skills-tests/{model_type}/conversion/hf-to-megatron/model"
+    output_model = (
+        f"/tmp/nemo-skills-tests/{model_type}/conversion/hf-to-megatron/model"
+    )
     docker_rm([output_model])
 
     cmd = (
@@ -117,14 +123,16 @@ def test_hf_megatron_conversion():
 
 @pytest.mark.gpu
 def test_nemo_hf_conversion():
-    model_path = os.getenv('NEMO_SKILLS_TEST_NEMO_MODEL')
+    model_path = os.getenv("NEMO_SKILLS_TEST_NEMO_MODEL")
     if not model_path:
         pytest.skip("Define NEMO_SKILLS_TEST_NEMO_MODEL to run this test")
-    model_type = os.getenv('NEMO_SKILLS_TEST_MODEL_TYPE')
+    model_type = os.getenv("NEMO_SKILLS_TEST_MODEL_TYPE")
     if not model_type:
         pytest.skip("Define NEMO_SKILLS_TEST_MODEL_TYPE to run this test")
     hf_model_name = (
-        'meta-llama/Meta-Llama-3.1-8B-Instruct' if model_type == 'llama' else 'Qwen/Qwen2.5-Math-7B-Instruct'
+        "meta-llama/Meta-Llama-3.1-8B-Instruct"
+        if model_type == "llama"
+        else "Qwen/Qwen2.5-Math-7B-Instruct"
     )
 
     output_model = f"/tmp/nemo-skills-tests/{model_type}/conversion/nemo-to-hf/model"

@@ -237,7 +237,9 @@ class EnhancedMetricsCollector:
         self.service_name = service_name
         self.start_time = time.time()
 
-    def record_request(self, method: str, endpoint: str, status_code: int, duration: float):
+    def record_request(
+        self, method: str, endpoint: str, status_code: int, duration: float
+    ):
         """Record HTTP request metrics."""
         SERVICE_REQUEST_COUNT.labels(
             service=self.service_name,
@@ -256,21 +258,29 @@ class EnhancedMetricsCollector:
             action_type=action_type, service=self.service_name, status=status
         ).inc()
 
-    def record_policy_enforcement(self, policy_type: str, enforcement_result: str, duration: float):
+    def record_policy_enforcement(
+        self, policy_type: str, enforcement_result: str, duration: float
+    ):
         """Record policy enforcement metrics."""
         POLICY_ENFORCEMENT_DURATION.labels(
             policy_type=policy_type, enforcement_result=enforcement_result
         ).observe(duration)
 
-    def update_compliance_score(self, policy_id: str, validation_type: str, score: float):
+    def update_compliance_score(
+        self, policy_id: str, validation_type: str, score: float
+    ):
         """Update constitutional compliance score."""
         CONSTITUTIONAL_COMPLIANCE_SCORE.labels(
             policy_id=policy_id, validation_type=validation_type
         ).set(score)
 
-    def record_workflow_execution(self, workflow_type: str, status: str, duration: float):
+    def record_workflow_execution(
+        self, workflow_type: str, status: str, duration: float
+    ):
         """Record workflow execution metrics."""
-        WORKFLOW_EXECUTION_TIME.labels(workflow_type=workflow_type, status=status).observe(duration)
+        WORKFLOW_EXECUTION_TIME.labels(
+            workflow_type=workflow_type, status=status
+        ).observe(duration)
 
     def record_security_event(self, event_type: str, severity: str):
         """Record security event."""
@@ -280,43 +290,57 @@ class EnhancedMetricsCollector:
 
     def record_authentication_attempt(self, method: str, result: str, user_type: str):
         """Record authentication attempt."""
-        AUTHENTICATION_ATTEMPTS.labels(method=method, result=result, user_type=user_type).inc()
+        AUTHENTICATION_ATTEMPTS.labels(
+            method=method, result=result, user_type=user_type
+        ).inc()
 
-    def record_database_operation(self, database: str, operation: str, table: str, duration: float):
+    def record_database_operation(
+        self, database: str, operation: str, table: str, duration: float
+    ):
         """Record database operation metrics."""
-        DATABASE_QUERY_DURATION.labels(database=database, operation=operation, table=table).observe(
-            duration
-        )
+        DATABASE_QUERY_DURATION.labels(
+            database=database, operation=operation, table=table
+        ).observe(duration)
 
     def update_database_connections(self, database: str, active_connections: int):
         """Update active database connections."""
-        DATABASE_CONNECTIONS_ACTIVE.labels(database=database, service=self.service_name).set(
-            active_connections
-        )
+        DATABASE_CONNECTIONS_ACTIVE.labels(
+            database=database, service=self.service_name
+        ).set(active_connections)
 
-    def record_cache_operation(self, operation: str, result: str, cache_type: str, duration: float):
+    def record_cache_operation(
+        self, operation: str, result: str, cache_type: str, duration: float
+    ):
         """Record cache operation metrics."""
         CACHE_OPERATIONS_TOTAL.labels(
             operation=operation, result=result, cache_type=cache_type
         ).inc()
 
-        CACHE_RESPONSE_TIME.labels(operation=operation, cache_type=cache_type).observe(duration)
+        CACHE_RESPONSE_TIME.labels(operation=operation, cache_type=cache_type).observe(
+            duration
+        )
 
     def update_cache_hit_ratio(self, cache_type: str, hit_ratio: float):
         """Update cache hit ratio."""
-        CACHE_HIT_RATIO.labels(cache_type=cache_type, service=self.service_name).set(hit_ratio)
+        CACHE_HIT_RATIO.labels(cache_type=cache_type, service=self.service_name).set(
+            hit_ratio
+        )
 
-    def update_resource_usage(self, cpu_percent: float, memory_bytes: int, disk_bytes: int):
+    def update_resource_usage(
+        self, cpu_percent: float, memory_bytes: int, disk_bytes: int
+    ):
         """Update resource usage metrics."""
-        CPU_USAGE_PERCENT.labels(service=self.service_name, instance="default").set(cpu_percent)
-
-        MEMORY_USAGE_BYTES.labels(service=self.service_name, instance="default", type="used").set(
-            memory_bytes
+        CPU_USAGE_PERCENT.labels(service=self.service_name, instance="default").set(
+            cpu_percent
         )
 
-        DISK_USAGE_BYTES.labels(service=self.service_name, instance="default", mount_point="/").set(
-            disk_bytes
-        )
+        MEMORY_USAGE_BYTES.labels(
+            service=self.service_name, instance="default", type="used"
+        ).set(memory_bytes)
+
+        DISK_USAGE_BYTES.labels(
+            service=self.service_name, instance="default", mount_point="/"
+        ).set(disk_bytes)
 
     def record_blockchain_transaction(
         self, transaction_type: str, status: str, program: str, cost_sol: float
@@ -332,9 +356,9 @@ class EnhancedMetricsCollector:
 
     def update_service_health(self, component: str, is_healthy: bool):
         """Update service health status."""
-        SERVICE_HEALTH_STATUS.labels(service=self.service_name, component=component).set(
-            1 if is_healthy else 0
-        )
+        SERVICE_HEALTH_STATUS.labels(
+            service=self.service_name, component=component
+        ).set(1 if is_healthy else 0)
 
     def update_uptime(self):
         """Update service uptime."""
@@ -354,11 +378,13 @@ class EnhancedMetricsCollector:
             model=model, operation=operation, service=self.service_name
         ).observe(duration)
 
-        LLM_TOKEN_USAGE.labels(model=model, token_type="total", service=self.service_name).inc(
-            tokens_used
-        )
+        LLM_TOKEN_USAGE.labels(
+            model=model, token_type="total", service=self.service_name
+        ).inc(tokens_used)
 
-        LLM_RESPONSE_QUALITY_SCORE.labels(model=model, operation=operation).set(quality_score)
+        LLM_RESPONSE_QUALITY_SCORE.labels(model=model, operation=operation).set(
+            quality_score
+        )
 
     def get_metrics(self) -> str:
         """Get all metrics in Prometheus format."""

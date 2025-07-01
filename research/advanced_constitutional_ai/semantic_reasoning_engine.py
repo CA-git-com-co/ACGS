@@ -32,18 +32,20 @@ logger = logging.getLogger(__name__)
 
 class ReasoningMode(Enum):
     """Different modes of constitutional reasoning."""
-    DEDUCTIVE = "deductive"          # Rule-based logical deduction
-    INDUCTIVE = "inductive"          # Pattern-based inference
-    ABDUCTIVE = "abductive"          # Best explanation reasoning
-    ANALOGICAL = "analogical"        # Similarity-based reasoning
-    CAUSAL = "causal"               # Cause-effect reasoning
-    TEMPORAL = "temporal"           # Time-aware reasoning
-    MODAL = "modal"                 # Possibility/necessity reasoning
-    DEONTIC = "deontic"             # Obligation/permission reasoning
+
+    DEDUCTIVE = "deductive"  # Rule-based logical deduction
+    INDUCTIVE = "inductive"  # Pattern-based inference
+    ABDUCTIVE = "abductive"  # Best explanation reasoning
+    ANALOGICAL = "analogical"  # Similarity-based reasoning
+    CAUSAL = "causal"  # Cause-effect reasoning
+    TEMPORAL = "temporal"  # Time-aware reasoning
+    MODAL = "modal"  # Possibility/necessity reasoning
+    DEONTIC = "deontic"  # Obligation/permission reasoning
 
 
 class ConstitutionalDomain(Enum):
     """Constitutional domains for specialized reasoning."""
+
     FAIRNESS = "fairness"
     TRANSPARENCY = "transparency"
     ACCOUNTABILITY = "accountability"
@@ -59,6 +61,7 @@ class ConstitutionalDomain(Enum):
 @dataclass
 class SemanticConcept:
     """Representation of a constitutional concept in semantic space."""
+
     concept_id: str
     name: str
     domain: ConstitutionalDomain
@@ -74,6 +77,7 @@ class SemanticConcept:
 @dataclass
 class ReasoningStep:
     """Individual step in constitutional reasoning process."""
+
     step_id: str
     reasoning_mode: ReasoningMode
     premise: str
@@ -88,6 +92,7 @@ class ReasoningStep:
 @dataclass
 class ConstitutionalReasoning:
     """Complete constitutional reasoning chain."""
+
     reasoning_id: str
     query: str
     domain: ConstitutionalDomain
@@ -120,38 +125,38 @@ class AdvancedSemanticReasoningEngine:
                 "name": "Fairness and Equality",
                 "domain": ConstitutionalDomain.FAIRNESS,
                 "definition": "Equal treatment and non-discrimination in all governance decisions",
-                "related_concepts": ["justice", "equality", "non_discrimination"]
+                "related_concepts": ["justice", "equality", "non_discrimination"],
             },
             "transparency_openness": {
                 "name": "Transparency and Openness",
                 "domain": ConstitutionalDomain.TRANSPARENCY,
                 "definition": "Open, accessible, and understandable governance processes",
-                "related_concepts": ["accountability", "disclosure", "accessibility"]
+                "related_concepts": ["accountability", "disclosure", "accessibility"],
             },
             "privacy_protection": {
                 "name": "Privacy Protection",
                 "domain": ConstitutionalDomain.PRIVACY,
                 "definition": "Protection of personal data and individual privacy rights",
-                "related_concepts": ["data_protection", "confidentiality", "consent"]
+                "related_concepts": ["data_protection", "confidentiality", "consent"],
             },
             "safety_security": {
                 "name": "Safety and Security",
                 "domain": ConstitutionalDomain.SAFETY,
                 "definition": "Protection from harm and ensuring system security",
-                "related_concepts": ["risk_mitigation", "harm_prevention", "security"]
+                "related_concepts": ["risk_mitigation", "harm_prevention", "security"],
             },
             "human_autonomy": {
                 "name": "Human Autonomy",
                 "domain": ConstitutionalDomain.AUTONOMY,
                 "definition": "Preservation of human agency and decision-making authority",
-                "related_concepts": ["agency", "self_determination", "choice"]
+                "related_concepts": ["agency", "self_determination", "choice"],
             },
             "human_dignity": {
                 "name": "Human Dignity",
                 "domain": ConstitutionalDomain.DIGNITY,
                 "definition": "Respect for inherent human worth and dignity",
-                "related_concepts": ["respect", "worth", "inherent_value"]
-            }
+                "related_concepts": ["respect", "worth", "inherent_value"],
+            },
         }
 
         # Generate embeddings for each concept
@@ -169,7 +174,7 @@ class AdvancedSemanticReasoningEngine:
                 related_concepts=concept_data["related_concepts"],
                 constitutional_weight=1.0,
                 temporal_validity=None,
-                cultural_context=None
+                cultural_context=None,
             )
 
         return concepts
@@ -180,33 +185,41 @@ class AdvancedSemanticReasoningEngine:
 
         # Add concept nodes
         for concept_id, concept in self.constitutional_concepts.items():
-            graph.add_node(concept_id,
-                          domain=concept.domain.value,
-                          weight=concept.constitutional_weight)
+            graph.add_node(
+                concept_id,
+                domain=concept.domain.value,
+                weight=concept.constitutional_weight,
+            )
 
         # Add reasoning relationships based on semantic similarity
         concept_ids = list(self.constitutional_concepts.keys())
         for i, concept1_id in enumerate(concept_ids):
-            for j, concept2_id in enumerate(concept_ids[i+1:], i+1):
+            for j, concept2_id in enumerate(concept_ids[i + 1 :], i + 1):
                 concept1 = self.constitutional_concepts[concept1_id]
                 concept2 = self.constitutional_concepts[concept2_id]
 
                 # Calculate semantic similarity
                 similarity = cosine_similarity(
-                    concept1.embedding.reshape(1, -1),
-                    concept2.embedding.reshape(1, -1)
+                    concept1.embedding.reshape(1, -1), concept2.embedding.reshape(1, -1)
                 )[0][0]
 
                 # Add edge if similarity is above threshold
                 if similarity > 0.3:
-                    graph.add_edge(concept1_id, concept2_id,
-                                 similarity=similarity,
-                                 reasoning_type="semantic_similarity")
+                    graph.add_edge(
+                        concept1_id,
+                        concept2_id,
+                        similarity=similarity,
+                        reasoning_type="semantic_similarity",
+                    )
 
         return graph
 
-    async def reason_about_query(self, query: str, domain: ConstitutionalDomain,
-                                reasoning_modes: List[ReasoningMode] = None) -> ConstitutionalReasoning:
+    async def reason_about_query(
+        self,
+        query: str,
+        domain: ConstitutionalDomain,
+        reasoning_modes: List[ReasoningMode] = None,
+    ) -> ConstitutionalReasoning:
         """Perform advanced semantic reasoning about a constitutional query."""
         if reasoning_modes is None:
             reasoning_modes = [ReasoningMode.DEDUCTIVE, ReasoningMode.ANALOGICAL]
@@ -222,8 +235,9 @@ class AdvancedSemanticReasoningEngine:
 
         # Perform reasoning using different modes
         for mode in reasoning_modes:
-            step = await self._perform_reasoning_step(query, query_embedding,
-                                                    relevant_concepts, mode)
+            step = await self._perform_reasoning_step(
+                query, query_embedding, relevant_concepts, mode
+            )
             if step:
                 reasoning_steps.append(step)
 
@@ -248,19 +262,19 @@ class AdvancedSemanticReasoningEngine:
             final_conclusion=final_conclusion,
             overall_confidence=overall_confidence,
             constitutional_compliance=constitutional_compliance,
-            semantic_coherence=semantic_coherence
+            semantic_coherence=semantic_coherence,
         )
 
-    async def _find_relevant_concepts(self, query_embedding: np.ndarray,
-                                    domain: ConstitutionalDomain) -> List[SemanticConcept]:
+    async def _find_relevant_concepts(
+        self, query_embedding: np.ndarray, domain: ConstitutionalDomain
+    ) -> List[SemanticConcept]:
         """Find constitutional concepts most relevant to the query."""
         concept_similarities = []
 
         for concept in self.constitutional_concepts.values():
             # Calculate semantic similarity
             similarity = cosine_similarity(
-                query_embedding.reshape(1, -1),
-                concept.embedding.reshape(1, -1)
+                query_embedding.reshape(1, -1), concept.embedding.reshape(1, -1)
             )[0][0]
 
             # Boost similarity for concepts in the same domain
@@ -273,16 +287,22 @@ class AdvancedSemanticReasoningEngine:
         concept_similarities.sort(key=lambda x: x[1], reverse=True)
         return [concept for concept, _ in concept_similarities[:5]]
 
-    async def _perform_reasoning_step(self, query: str, query_embedding: np.ndarray,
-                                    relevant_concepts: List[SemanticConcept],
-                                    mode: ReasoningMode) -> Optional[ReasoningStep]:
+    async def _perform_reasoning_step(
+        self,
+        query: str,
+        query_embedding: np.ndarray,
+        relevant_concepts: List[SemanticConcept],
+        mode: ReasoningMode,
+    ) -> Optional[ReasoningStep]:
         """Perform a single reasoning step using the specified mode."""
         step_id = f"step_{mode.value}_{datetime.now().strftime('%H%M%S')}"
 
         if mode == ReasoningMode.DEDUCTIVE:
             return await self._deductive_reasoning(step_id, query, relevant_concepts)
         elif mode == ReasoningMode.ANALOGICAL:
-            return await self._analogical_reasoning(step_id, query, query_embedding, relevant_concepts)
+            return await self._analogical_reasoning(
+                step_id, query, query_embedding, relevant_concepts
+            )
         elif mode == ReasoningMode.ABDUCTIVE:
             return await self._abductive_reasoning(step_id, query, relevant_concepts)
         elif mode == ReasoningMode.CAUSAL:
@@ -292,8 +312,9 @@ class AdvancedSemanticReasoningEngine:
 
         return None
 
-    async def _deductive_reasoning(self, step_id: str, query: str,
-                                 concepts: List[SemanticConcept]) -> ReasoningStep:
+    async def _deductive_reasoning(
+        self, step_id: str, query: str, concepts: List[SemanticConcept]
+    ) -> ReasoningStep:
         """Perform deductive reasoning based on constitutional rules."""
         # Find applicable constitutional rules
         applicable_rules = []
@@ -301,12 +322,16 @@ class AdvancedSemanticReasoningEngine:
             if "equality" in concept.related_concepts:
                 applicable_rules.append("All individuals must be treated equally")
             if "transparency" in concept.related_concepts:
-                applicable_rules.append("All decisions must be transparent and explainable")
+                applicable_rules.append(
+                    "All decisions must be transparent and explainable"
+                )
             if "privacy" in concept.related_concepts:
                 applicable_rules.append("Personal data must be protected")
 
         premise = f"Given constitutional rules: {'; '.join(applicable_rules)}"
-        conclusion = f"The query '{query}' must comply with these constitutional requirements"
+        conclusion = (
+            f"The query '{query}' must comply with these constitutional requirements"
+        )
 
         return ReasoningStep(
             step_id=step_id,
@@ -317,24 +342,29 @@ class AdvancedSemanticReasoningEngine:
             evidence=applicable_rules,
             constitutional_basis=[concept.concept_id for concept in concepts],
             semantic_similarity=0.8,
-            timestamp=datetime.now()
+            timestamp=datetime.now(),
         )
 
-    async def _analogical_reasoning(self, step_id: str, query: str,
-                                  query_embedding: np.ndarray,
-                                  concepts: List[SemanticConcept]) -> ReasoningStep:
+    async def _analogical_reasoning(
+        self,
+        step_id: str,
+        query: str,
+        query_embedding: np.ndarray,
+        concepts: List[SemanticConcept],
+    ) -> ReasoningStep:
         """Perform analogical reasoning by finding similar constitutional cases."""
         # Find most similar concept
         best_concept = concepts[0] if concepts else None
 
         if best_concept:
             similarity = cosine_similarity(
-                query_embedding.reshape(1, -1),
-                best_concept.embedding.reshape(1, -1)
+                query_embedding.reshape(1, -1), best_concept.embedding.reshape(1, -1)
             )[0][0]
 
             premise = f"The query is analogous to constitutional concept '{best_concept.name}'"
-            conclusion = f"Therefore, the principles of {best_concept.domain.value} should apply"
+            conclusion = (
+                f"Therefore, the principles of {best_concept.domain.value} should apply"
+            )
 
             return ReasoningStep(
                 step_id=step_id,
@@ -345,22 +375,27 @@ class AdvancedSemanticReasoningEngine:
                 evidence=[best_concept.definition],
                 constitutional_basis=[best_concept.concept_id],
                 semantic_similarity=similarity,
-                timestamp=datetime.now()
+                timestamp=datetime.now(),
             )
 
         return None
 
-    async def _abductive_reasoning(self, step_id: str, query: str,
-                                 concepts: List[SemanticConcept]) -> ReasoningStep:
+    async def _abductive_reasoning(
+        self, step_id: str, query: str, concepts: List[SemanticConcept]
+    ) -> ReasoningStep:
         """Perform abductive reasoning to find best explanation."""
         # Generate possible explanations
         explanations = []
         for concept in concepts:
-            explanation = f"This situation involves {concept.domain.value} considerations"
+            explanation = (
+                f"This situation involves {concept.domain.value} considerations"
+            )
             explanations.append((explanation, concept.constitutional_weight))
 
         # Select best explanation
-        best_explanation = max(explanations, key=lambda x: x[1])[0] if explanations else "Unknown"
+        best_explanation = (
+            max(explanations, key=lambda x: x[1])[0] if explanations else "Unknown"
+        )
 
         premise = f"Considering possible constitutional explanations for '{query}'"
         conclusion = f"The most likely explanation is: {best_explanation}"
@@ -374,18 +409,22 @@ class AdvancedSemanticReasoningEngine:
             evidence=[concept.definition for concept in concepts],
             constitutional_basis=[concept.concept_id for concept in concepts],
             semantic_similarity=0.7,
-            timestamp=datetime.now()
+            timestamp=datetime.now(),
         )
 
-    async def _causal_reasoning(self, step_id: str, query: str,
-                              concepts: List[SemanticConcept]) -> ReasoningStep:
+    async def _causal_reasoning(
+        self, step_id: str, query: str, concepts: List[SemanticConcept]
+    ) -> ReasoningStep:
         """Perform causal reasoning about constitutional implications."""
         # Identify potential causes and effects
         causes = []
         effects = []
 
         for concept in concepts:
-            if concept.domain in [ConstitutionalDomain.SAFETY, ConstitutionalDomain.PRIVACY]:
+            if concept.domain in [
+                ConstitutionalDomain.SAFETY,
+                ConstitutionalDomain.PRIVACY,
+            ]:
                 causes.append(f"Violation of {concept.domain.value}")
                 effects.append("Constitutional harm")
 
@@ -401,11 +440,12 @@ class AdvancedSemanticReasoningEngine:
             evidence=[concept.definition for concept in concepts],
             constitutional_basis=[concept.concept_id for concept in concepts],
             semantic_similarity=0.65,
-            timestamp=datetime.now()
+            timestamp=datetime.now(),
         )
 
-    async def _deontic_reasoning(self, step_id: str, query: str,
-                               concepts: List[SemanticConcept]) -> ReasoningStep:
+    async def _deontic_reasoning(
+        self, step_id: str, query: str, concepts: List[SemanticConcept]
+    ) -> ReasoningStep:
         """Perform deontic reasoning about obligations and permissions."""
         obligations = []
         permissions = []
@@ -420,7 +460,9 @@ class AdvancedSemanticReasoningEngine:
                 prohibitions.append("Must not violate privacy")
 
         premise = f"Constitutional obligations: {'; '.join(obligations)}"
-        conclusion = f"Therefore, the query '{query}' must comply with these obligations"
+        conclusion = (
+            f"Therefore, the query '{query}' must comply with these obligations"
+        )
 
         return ReasoningStep(
             step_id=step_id,
@@ -431,11 +473,15 @@ class AdvancedSemanticReasoningEngine:
             evidence=obligations + prohibitions,
             constitutional_basis=[concept.concept_id for concept in concepts],
             semantic_similarity=0.75,
-            timestamp=datetime.now()
+            timestamp=datetime.now(),
         )
 
-    async def _synthesize_conclusion(self, query: str, reasoning_steps: List[ReasoningStep],
-                                   concepts: List[SemanticConcept]) -> Tuple[str, float]:
+    async def _synthesize_conclusion(
+        self,
+        query: str,
+        reasoning_steps: List[ReasoningStep],
+        concepts: List[SemanticConcept],
+    ) -> Tuple[str, float]:
         """Synthesize final conclusion from all reasoning steps."""
         if not reasoning_steps:
             return "Insufficient information for constitutional analysis", 0.0
@@ -458,34 +504,53 @@ class AdvancedSemanticReasoningEngine:
         )
 
         # Calculate overall confidence
-        overall_confidence = total_weight / len(reasoning_steps) if reasoning_steps else 0.0
+        overall_confidence = (
+            total_weight / len(reasoning_steps) if reasoning_steps else 0.0
+        )
 
         return conclusion, overall_confidence
 
-    async def _assess_constitutional_compliance(self, conclusion: str,
-                                              concepts: List[SemanticConcept]) -> bool:
+    async def _assess_constitutional_compliance(
+        self, conclusion: str, concepts: List[SemanticConcept]
+    ) -> bool:
         """Assess whether the conclusion indicates constitutional compliance."""
         # Simple heuristic - check for positive constitutional indicators
         positive_indicators = [
-            "compliance", "adherence", "respect", "protection",
-            "fairness", "transparency", "safety", "privacy"
+            "compliance",
+            "adherence",
+            "respect",
+            "protection",
+            "fairness",
+            "transparency",
+            "safety",
+            "privacy",
         ]
 
         negative_indicators = [
-            "violation", "breach", "harm", "discrimination",
-            "unfair", "opaque", "unsafe", "privacy violation"
+            "violation",
+            "breach",
+            "harm",
+            "discrimination",
+            "unfair",
+            "opaque",
+            "unsafe",
+            "privacy violation",
         ]
 
         conclusion_lower = conclusion.lower()
 
-        positive_score = sum(1 for indicator in positive_indicators
-                           if indicator in conclusion_lower)
-        negative_score = sum(1 for indicator in negative_indicators
-                           if indicator in conclusion_lower)
+        positive_score = sum(
+            1 for indicator in positive_indicators if indicator in conclusion_lower
+        )
+        negative_score = sum(
+            1 for indicator in negative_indicators if indicator in conclusion_lower
+        )
 
         return positive_score > negative_score
 
-    def _calculate_semantic_coherence(self, reasoning_steps: List[ReasoningStep]) -> float:
+    def _calculate_semantic_coherence(
+        self, reasoning_steps: List[ReasoningStep]
+    ) -> float:
         """Calculate semantic coherence across reasoning steps."""
         if len(reasoning_steps) < 2:
             return 1.0
@@ -494,12 +559,16 @@ class AdvancedSemanticReasoningEngine:
         similarities = []
         for i in range(len(reasoning_steps) - 1):
             step1_text = f"{reasoning_steps[i].premise} {reasoning_steps[i].conclusion}"
-            step2_text = f"{reasoning_steps[i+1].premise} {reasoning_steps[i+1].conclusion}"
+            step2_text = (
+                f"{reasoning_steps[i+1].premise} {reasoning_steps[i+1].conclusion}"
+            )
 
             emb1 = self.sentence_transformer.encode(step1_text)
             emb2 = self.sentence_transformer.encode(step2_text)
 
-            similarity = cosine_similarity(emb1.reshape(1, -1), emb2.reshape(1, -1))[0][0]
+            similarity = cosine_similarity(emb1.reshape(1, -1), emb2.reshape(1, -1))[0][
+                0
+            ]
             similarities.append(similarity)
 
         return np.mean(similarities) if similarities else 0.0

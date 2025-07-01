@@ -86,7 +86,9 @@ class FederatedEvaluationRequest(BaseModel):
     evaluation_criteria: dict[str, Any] = Field(
         ..., description="Evaluation criteria and parameters"
     )
-    target_platforms: list[PlatformType] = Field(..., description="Target platforms for evaluation")
+    target_platforms: list[PlatformType] = Field(
+        ..., description="Target platforms for evaluation"
+    )
     privacy_requirements: dict[str, Any] = Field(
         default_factory=lambda: {"epsilon": 1.0, "mechanism": "laplace"},
         description="Privacy requirements for evaluation",
@@ -266,8 +268,12 @@ PolicyEvaluationRequest = FederatedEvaluationRequest
 class FederatedLearningRequest(BaseModel):
     """Request for federated learning coordination."""
 
-    min_participants: int = Field(..., ge=2, description="Minimum number of participants required")
-    max_participants: int = Field(..., ge=2, description="Maximum number of participants allowed")
+    min_participants: int = Field(
+        ..., ge=2, description="Minimum number of participants required"
+    )
+    max_participants: int = Field(
+        ..., ge=2, description="Maximum number of participants allowed"
+    )
     aggregation_method: AggregationMethod = Field(
         AggregationMethod.FEDERATED_AVERAGING,
         description="Method for aggregating results",
@@ -275,7 +281,9 @@ class FederatedLearningRequest(BaseModel):
     privacy_budget: float = Field(
         1.0, ge=0.1, le=10.0, description="Privacy budget for differential privacy"
     )
-    timeout_seconds: int = Field(300, ge=30, le=3600, description="Timeout for federated operation")
+    timeout_seconds: int = Field(
+        300, ge=30, le=3600, description="Timeout for federated operation"
+    )
 
     model_config = {
         "json_schema_extra": {

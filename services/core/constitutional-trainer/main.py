@@ -23,7 +23,13 @@ from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, Security
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from prometheus_client import CONTENT_TYPE_LATEST, Counter, Gauge, Histogram, generate_latest
+from prometheus_client import (
+    CONTENT_TYPE_LATEST,
+    Counter,
+    Gauge,
+    Histogram,
+    generate_latest,
+)
 from pydantic import BaseModel, Field, validator
 from starlette.responses import Response
 
@@ -62,7 +68,8 @@ CONSTITUTIONAL_COMPLIANCE_SCORE = Gauge(
 )
 
 ACTIVE_TRAINING_SESSIONS = Gauge(
-    "constitutional_training_sessions_active", "Number of active constitutional training sessions"
+    "constitutional_training_sessions_active",
+    "Number of active constitutional training sessions",
 )
 
 
@@ -72,8 +79,12 @@ class ServiceConfig:
 
     def __init__(self):
         self.constitutional_hash = os.getenv("CONSTITUTIONAL_HASH", "cdd01ef066bc6cf2")
-        self.policy_engine_url = os.getenv("POLICY_ENGINE_URL", "http://policy-engine:8001")
-        self.audit_engine_url = os.getenv("AUDIT_ENGINE_URL", "http://audit-engine:8003")
+        self.policy_engine_url = os.getenv(
+            "POLICY_ENGINE_URL", "http://policy-engine:8001"
+        )
+        self.audit_engine_url = os.getenv(
+            "AUDIT_ENGINE_URL", "http://audit-engine:8003"
+        )
         self.redis_url = os.getenv("REDIS_URL", "redis://redis:6379/0")
         self.max_concurrent_sessions = int(os.getenv("MAX_CONCURRENT_SESSIONS", "5"))
         self.compliance_threshold = float(os.getenv("COMPLIANCE_THRESHOLD", "0.95"))
@@ -108,7 +119,9 @@ class TrainingRequest(BaseModel):
     privacy_config: Optional[Dict[str, Any]] = Field(
         default=None, description="Differential privacy configuration"
     )
-    max_training_time: int = Field(default=3600, description="Maximum training time in seconds")
+    max_training_time: int = Field(
+        default=3600, description="Maximum training time in seconds"
+    )
 
     @validator("training_data")
     def validate_training_data(cls, v):
@@ -116,7 +129,9 @@ class TrainingRequest(BaseModel):
             raise ValueError("Training data cannot be empty")
         for item in v:
             if "prompt" not in item or "response" not in item:
-                raise ValueError("Each training item must have 'prompt' and 'response' fields")
+                raise ValueError(
+                    "Each training item must have 'prompt' and 'response' fields"
+                )
         return v
 
 
@@ -317,7 +332,9 @@ async def start_constitutional_training(
             )
 
         # Start background training task
-        background_tasks.add_task(execute_constitutional_training, training_id, request, user)
+        background_tasks.add_task(
+            execute_constitutional_training, training_id, request, user
+        )
 
         # Record metrics
         TRAINING_REQUESTS_TOTAL.labels(
@@ -339,11 +356,15 @@ async def start_constitutional_training(
     except Exception as e:
         logger.error(f"Failed to start training: {e}")
         await session_manager.remove_session(training_id)
-        raise HTTPException(status_code=500, detail=f"Training initialization failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Training initialization failed: {str(e)}"
+        )
 
 
 @app.get("/api/v1/train/{training_id}/status", response_model=TrainingStatus)
-async def get_training_status(training_id: str, user: Dict[str, Any] = Depends(verify_token)):
+async def get_training_status(
+    training_id: str, user: Dict[str, Any] = Depends(verify_token)
+):
     """Get constitutional training status."""
     session_data = await session_manager.get_session(training_id)
 
@@ -351,7 +372,9 @@ async def get_training_status(training_id: str, user: Dict[str, Any] = Depends(v
         raise HTTPException(status_code=404, detail="Training session not found")
 
     # Verify user access
-    if session_data.get("user_id") != user["user_id"] and "admin" not in user.get("groups", []):
+    if session_data.get("user_id") != user["user_id"] and "admin" not in user.get(
+        "groups", []
+    ):
         raise HTTPException(status_code=403, detail="Access denied to training session")
 
     return TrainingStatus(
@@ -366,7 +389,9 @@ async def get_training_status(training_id: str, user: Dict[str, Any] = Depends(v
 
 
 @app.delete("/api/v1/train/{training_id}")
-async def cancel_training(training_id: str, user: Dict[str, Any] = Depends(verify_token)):
+async def cancel_training(
+    training_id: str, user: Dict[str, Any] = Depends(verify_token)
+):
     """Cancel constitutional training session."""
     session_data = await session_manager.get_session(training_id)
 
@@ -374,13 +399,18 @@ async def cancel_training(training_id: str, user: Dict[str, Any] = Depends(verif
         raise HTTPException(status_code=404, detail="Training session not found")
 
     # Verify user access
-    if session_data.get("user_id") != user["user_id"] and "admin" not in user.get("groups", []):
+    if session_data.get("user_id") != user["user_id"] and "admin" not in user.get(
+        "groups", []
+    ):
         raise HTTPException(status_code=403, detail="Access denied to training session")
 
     # Mark session for cancellation
     await session_manager.update_session(
         training_id,
-        {"status": "cancelling", "cancellation_requested": datetime.utcnow().isoformat()},
+        {
+            "status": "cancelling",
+            "cancellation_requested": datetime.utcnow().isoformat(),
+        },
     )
 
     logger.info(f"Training cancellation requested: {training_id}")
@@ -397,7 +427,8 @@ async def execute_constitutional_training(
 
     try:
         await session_manager.update_session(
-            training_id, {"status": "running", "current_phase": "initialization", "progress": 0.1}
+            training_id,
+            {"status": "running", "current_phase": "initialization", "progress": 0.1},
         )
 
         # Initialize constitutional trainer
@@ -419,7 +450,9 @@ async def execute_constitutional_training(
         training_results = await trainer.train_with_constitutional_constraints(
             training_data=request.training_data,
             lora_config=request.lora_config,
-            privacy_config=request.privacy_config if config.enable_differential_privacy else None,
+            privacy_config=(
+                request.privacy_config if config.enable_differential_privacy else None
+            ),
             progress_callback=lambda progress: asyncio.create_task(
                 session_manager.update_session(training_id, {"progress": progress})
             ),
@@ -433,9 +466,9 @@ async def execute_constitutional_training(
 
         # Record completion metrics
         training_duration = time.time() - start_time
-        TRAINING_DURATION.labels(model_type=request.model_name, training_phase="complete").observe(
-            training_duration
-        )
+        TRAINING_DURATION.labels(
+            model_type=request.model_name, training_phase="complete"
+        ).observe(training_duration)
 
         TRAINING_REQUESTS_TOTAL.labels(
             model_type=request.model_name,
@@ -511,6 +544,8 @@ if __name__ == "__main__":
     }
 
     logger.info(f"🚀 Starting Constitutional Trainer Service on {host}:{port}")
-    logger.info(f"🔒 Security: Host binding = {host} ({'SECURE' if host == '127.0.0.1' else 'PRODUCTION'})")
+    logger.info(
+        f"🔒 Security: Host binding = {host} ({'SECURE' if host == '127.0.0.1' else 'PRODUCTION'})"
+    )
 
     uvicorn.run("main:app", **config)

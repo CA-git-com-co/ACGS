@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 app = FastAPI(
     title="ACGS-1 Intelligent Alerting Webhook Server",
     description="Webhook server for intelligent alert processing and automated remediation",
-    version="1.0.0"
+    version="1.0.0",
 )
 
 # Security
@@ -68,7 +68,7 @@ async def health_check():
     return {
         "status": "healthy",
         "timestamp": datetime.now().isoformat(),
-        "service": "acgs-intelligent-alerting-webhook"
+        "service": "acgs-intelligent-alerting-webhook",
     }
 
 
@@ -76,18 +76,18 @@ async def health_check():
 async def receive_prometheus_alerts(
     request: Request,
     background_tasks: BackgroundTasks,
-    credentials: HTTPAuthorizationCredentials = Depends(verify_webhook_token)
+    credentials: HTTPAuthorizationCredentials = Depends(verify_webhook_token),
 ):
     """Receive alerts from Prometheus Alertmanager"""
     try:
         payload = await request.json()
         manager = await get_alert_manager()
-        
+
         # Process alerts in background
         background_tasks.add_task(process_prometheus_alerts, payload, manager)
-        
+
         return {"status": "received", "alerts_count": len(payload.get("alerts", []))}
-    
+
     except Exception as e:
         logger.error(f"Error processing Prometheus alerts: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -97,18 +97,18 @@ async def receive_prometheus_alerts(
 async def receive_critical_alerts(
     request: Request,
     background_tasks: BackgroundTasks,
-    credentials: HTTPAuthorizationCredentials = Depends(verify_webhook_token)
+    credentials: HTTPAuthorizationCredentials = Depends(verify_webhook_token),
 ):
     """Receive critical alerts with immediate processing"""
     try:
         payload = await request.json()
         manager = await get_alert_manager()
-        
+
         # Process critical alerts immediately
         await process_prometheus_alerts(payload, manager, priority="critical")
-        
+
         return {"status": "processed", "priority": "critical"}
-    
+
     except Exception as e:
         logger.error(f"Error processing critical alerts: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -118,20 +118,18 @@ async def receive_critical_alerts(
 async def receive_governance_alerts(
     request: Request,
     background_tasks: BackgroundTasks,
-    credentials: HTTPAuthorizationCredentials = Depends(verify_webhook_token)
+    credentials: HTTPAuthorizationCredentials = Depends(verify_webhook_token),
 ):
     """Receive constitutional governance alerts"""
     try:
         payload = await request.json()
         manager = await get_alert_manager()
-        
+
         # Add governance-specific processing
-        background_tasks.add_task(
-            process_governance_alerts, payload, manager
-        )
-        
+        background_tasks.add_task(process_governance_alerts, payload, manager)
+
         return {"status": "received", "type": "governance"}
-    
+
     except Exception as e:
         logger.error(f"Error processing governance alerts: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -141,18 +139,18 @@ async def receive_governance_alerts(
 async def receive_security_alerts(
     request: Request,
     background_tasks: BackgroundTasks,
-    credentials: HTTPAuthorizationCredentials = Depends(verify_webhook_token)
+    credentials: HTTPAuthorizationCredentials = Depends(verify_webhook_token),
 ):
     """Receive security alerts with immediate escalation"""
     try:
         payload = await request.json()
         manager = await get_alert_manager()
-        
+
         # Process security alerts with high priority
         await process_security_alerts(payload, manager)
-        
+
         return {"status": "processed", "type": "security", "escalated": True}
-    
+
     except Exception as e:
         logger.error(f"Error processing security alerts: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -163,7 +161,7 @@ async def get_active_alerts():
     """Get all active alerts"""
     manager = await get_alert_manager()
     active_alerts = await manager.get_active_alerts()
-    
+
     return {
         "active_alerts": [
             {
@@ -176,11 +174,11 @@ async def get_active_alerts():
                 "timestamp": alert.timestamp.isoformat(),
                 "remediation_attempted": alert.remediation_attempted,
                 "remediation_success": alert.remediation_success,
-                "escalation_level": alert.escalation_level
+                "escalation_level": alert.escalation_level,
             }
             for alert in active_alerts
         ],
-        "count": len(active_alerts)
+        "count": len(active_alerts),
     }
 
 
@@ -189,7 +187,7 @@ async def get_alert_history(hours: int = 24):
     """Get alert history"""
     manager = await get_alert_manager()
     history = await manager.get_alert_history(hours=hours)
-    
+
     return {
         "alert_history": [
             {
@@ -198,12 +196,14 @@ async def get_alert_history(hours: int = 24):
                 "severity": alert.severity.value,
                 "status": alert.status.value,
                 "timestamp": alert.timestamp.isoformat(),
-                "resolution_time": alert.resolution_time.isoformat() if alert.resolution_time else None
+                "resolution_time": (
+                    alert.resolution_time.isoformat() if alert.resolution_time else None
+                ),
             }
             for alert in history
         ],
         "count": len(history),
-        "hours": hours
+        "hours": hours,
     }
 
 
@@ -212,7 +212,7 @@ async def acknowledge_alert(alert_id: str, acknowledged_by: str = "webhook"):
     """Acknowledge an alert"""
     manager = await get_alert_manager()
     success = await manager.acknowledge_alert(alert_id, acknowledged_by)
-    
+
     if success:
         return {"status": "acknowledged", "alert_id": alert_id}
     else:
@@ -224,38 +224,39 @@ async def resolve_alert(alert_id: str, resolution_reason: str = "Manual resoluti
     """Manually resolve an alert"""
     manager = await get_alert_manager()
     await manager._resolve_alert(alert_id, resolution_reason)
-    
+
     return {"status": "resolved", "alert_id": alert_id, "reason": resolution_reason}
 
 
-async def process_prometheus_alerts(payload: Dict[str, Any], manager: IntelligentAlertManager, priority: str = "normal"):
+async def process_prometheus_alerts(
+    payload: Dict[str, Any], manager: IntelligentAlertManager, priority: str = "normal"
+):
     """Process alerts from Prometheus Alertmanager"""
     alerts = payload.get("alerts", [])
-    
+
     for alert_data in alerts:
         try:
             # Extract alert information
             labels = alert_data.get("labels", {})
             annotations = alert_data.get("annotations", {})
             status = alert_data.get("status", "firing")
-            
+
             # Skip resolved alerts for now (could be enhanced later)
             if status == "resolved":
                 continue
-            
+
             # Map Prometheus severity to our AlertSeverity
             severity_map = {
                 "critical": AlertSeverity.CRITICAL,
                 "high": AlertSeverity.HIGH,
                 "warning": AlertSeverity.MEDIUM,
-                "info": AlertSeverity.INFO
+                "info": AlertSeverity.INFO,
             }
-            
+
             severity = severity_map.get(
-                labels.get("severity", "medium").lower(),
-                AlertSeverity.MEDIUM
+                labels.get("severity", "medium").lower(), AlertSeverity.MEDIUM
             )
-            
+
             # Create alert
             alert = await manager.create_alert(
                 name=labels.get("alertname", "Unknown Alert"),
@@ -263,79 +264,83 @@ async def process_prometheus_alerts(payload: Dict[str, Any], manager: Intelligen
                 message=annotations.get("summary", "No summary provided"),
                 source="prometheus",
                 labels=labels,
-                annotations=annotations
+                annotations=annotations,
             )
-            
+
             logger.info(f"Processed Prometheus alert: {alert.id} - {alert.name}")
-            
+
         except Exception as e:
             logger.error(f"Error processing individual alert: {e}")
 
 
-async def process_governance_alerts(payload: Dict[str, Any], manager: IntelligentAlertManager):
+async def process_governance_alerts(
+    payload: Dict[str, Any], manager: IntelligentAlertManager
+):
     """Process constitutional governance specific alerts"""
     alerts = payload.get("alerts", [])
-    
+
     for alert_data in alerts:
         try:
             labels = alert_data.get("labels", {})
             annotations = alert_data.get("annotations", {})
-            
+
             # Add governance-specific context
             labels["component"] = "constitutional_governance"
-            labels["constitutional_hash"] = labels.get("constitutional_hash", "cdd01ef066bc6cf2")
-            
+            labels["constitutional_hash"] = labels.get(
+                "constitutional_hash", "cdd01ef066bc6cf2"
+            )
+
             # Governance alerts are typically critical
             alert = await manager.create_alert(
                 name=f"Governance: {labels.get('alertname', 'Unknown')}",
                 severity=AlertSeverity.CRITICAL,
-                message=annotations.get("summary", "Constitutional governance issue detected"),
+                message=annotations.get(
+                    "summary", "Constitutional governance issue detected"
+                ),
                 source="governance_system",
                 labels=labels,
-                annotations=annotations
+                annotations=annotations,
             )
-            
+
             logger.warning(f"Processed governance alert: {alert.id}")
-            
+
         except Exception as e:
             logger.error(f"Error processing governance alert: {e}")
 
 
-async def process_security_alerts(payload: Dict[str, Any], manager: IntelligentAlertManager):
+async def process_security_alerts(
+    payload: Dict[str, Any], manager: IntelligentAlertManager
+):
     """Process security alerts with immediate escalation"""
     alerts = payload.get("alerts", [])
-    
+
     for alert_data in alerts:
         try:
             labels = alert_data.get("labels", {})
             annotations = alert_data.get("annotations", {})
-            
+
             # Security alerts are always critical
             labels["category"] = "security"
-            
+
             alert = await manager.create_alert(
                 name=f"SECURITY: {labels.get('alertname', 'Unknown')}",
                 severity=AlertSeverity.CRITICAL,
                 message=annotations.get("summary", "Security incident detected"),
                 source="security_system",
                 labels=labels,
-                annotations=annotations
+                annotations=annotations,
             )
-            
+
             # Immediate escalation for security alerts
             await manager._escalate_alert(alert)
-            
+
             logger.critical(f"Processed security alert with escalation: {alert.id}")
-            
+
         except Exception as e:
             logger.error(f"Error processing security alert: {e}")
 
 
 if __name__ == "__main__":
     uvicorn.run(
-        "webhook_server:app",
-        host="0.0.0.0",
-        port=8080,
-        log_level="info",
-        reload=False
+        "webhook_server:app", host="0.0.0.0", port=8080, log_level="info", reload=False
     )

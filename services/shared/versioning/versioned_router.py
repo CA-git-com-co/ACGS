@@ -94,7 +94,9 @@ class VersionedRouter:
         self.enable_metrics = enable_metrics
 
         # Version management
-        self.version_manager = version_manager or VersionManager(service_name=service_name)
+        self.version_manager = version_manager or VersionManager(
+            service_name=service_name
+        )
         self.response_builder = response_builder or VersionedResponseBuilder(
             service_name=service_name
         )
@@ -126,7 +128,11 @@ class VersionedRouter:
         return self.routers[version_str]
 
     def version(
-        self, version: Union[str, APIVersion], path: str, methods: List[str] = None, **route_kwargs
+        self,
+        version: Union[str, APIVersion],
+        path: str,
+        methods: List[str] = None,
+        **route_kwargs,
     ):
         """
         Decorator to register version-specific endpoint handlers.
@@ -147,7 +153,9 @@ class VersionedRouter:
                 endpoint_key = f"{method.upper()}:{path}"
 
                 if endpoint_key not in self.endpoints:
-                    self.endpoints[endpoint_key] = VersionedEndpoint(path, method.upper())
+                    self.endpoints[endpoint_key] = VersionedEndpoint(
+                        path, method.upper()
+                    )
 
                 self.endpoints[endpoint_key].add_handler(version, handler)
 
@@ -176,7 +184,9 @@ class VersionedRouter:
                 endpoint_key = f"{method.upper()}:{path}"
 
                 if endpoint_key not in self.endpoints:
-                    self.endpoints[endpoint_key] = VersionedEndpoint(path, method.upper())
+                    self.endpoints[endpoint_key] = VersionedEndpoint(
+                        path, method.upper()
+                    )
 
                 self.endpoints[endpoint_key].set_fallback_handler(handler)
 
@@ -191,7 +201,9 @@ class VersionedRouter:
         This method is called by the version routing middleware.
         """
         # Get version from request state (set by middleware)
-        version = getattr(request.state, "api_version", self.version_manager.current_version)
+        version = getattr(
+            request.state, "api_version", self.version_manager.current_version
+        )
 
         # Find endpoint
         endpoint_key = f"{request.method}:{request.url.path}"
@@ -211,7 +223,8 @@ class VersionedRouter:
                 handler = endpoint.fallback_handler
             else:
                 raise HTTPException(
-                    status_code=400, detail=f"Version {version} not supported for {endpoint_key}"
+                    status_code=400,
+                    detail=f"Version {version} not supported for {endpoint_key}",
                 )
 
         # Track metrics
@@ -293,7 +306,9 @@ class VersionedRouter:
                             if method.lower() != "head":  # Skip HEAD methods
                                 spec["paths"][path_key][method.lower()] = {
                                     "summary": f"{method} {path_key} ({version_str})",
-                                    "parameters": [{"$ref": "#/components/parameters/ApiVersion"}],
+                                    "parameters": [
+                                        {"$ref": "#/components/parameters/ApiVersion"}
+                                    ],
                                     "responses": {
                                         "200": {"description": "Success"},
                                         "400": {"description": "Bad Request"},
@@ -325,14 +340,18 @@ def create_versioned_router(
         Configured VersionedRouter instance
     """
     # Create version manager
-    version_manager = VersionManager(service_name=service_name, current_version=current_version)
+    version_manager = VersionManager(
+        service_name=service_name, current_version=current_version
+    )
 
     # Register supported versions
     if supported_versions:
         for version_str in supported_versions:
             version_manager.register_version(version_str)
 
-    return VersionedRouter(service_name=service_name, version_manager=version_manager, **kwargs)
+    return VersionedRouter(
+        service_name=service_name, version_manager=version_manager, **kwargs
+    )
 
 
 # Dependency for getting current API version in endpoints

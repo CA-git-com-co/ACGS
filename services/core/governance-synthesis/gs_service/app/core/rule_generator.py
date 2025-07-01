@@ -22,7 +22,9 @@ def _format_atom_to_datalog(atom: LLMSuggestedAtom) -> str:
     return f"{negation_prefix}{atom.predicate_name}({args_str})"
 
 
-def _assemble_datalog_rule(suggested_rule: LLMSuggestedRule, source_principle_id: int) -> str:
+def _assemble_datalog_rule(
+    suggested_rule: LLMSuggestedRule, source_principle_id: int
+) -> str:
     head_str = _format_atom_to_datalog(suggested_rule.head)
 
     body_atoms_str: list[str] = []
@@ -66,7 +68,9 @@ async def generate_rules_from_principles(
             few_shot_examples=few_shot_examples,  # Pass through
         )
 
-        llm_output: LLMStructuredOutput = await query_llm_for_structured_output(llm_input)
+        llm_output: LLMStructuredOutput = await query_llm_for_structured_output(
+            llm_input
+        )
 
         # Log LLM interaction details
         logger.info(
@@ -93,7 +97,9 @@ async def generate_rules_from_principles(
 
         for suggested_rule_structure in llm_output.interpretations:
             # Deterministic assembly from structured suggestion
-            datalog_rule_content = _assemble_datalog_rule(suggested_rule_structure, principle.id)
+            datalog_rule_content = _assemble_datalog_rule(
+                suggested_rule_structure, principle.id
+            )
 
             all_generated_rules.append(
                 GeneratedRuleInfo(

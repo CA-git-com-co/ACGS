@@ -68,8 +68,12 @@ class ConstitutionalQARequest(BaseModel):
     document_context: Dict[str, Any] = Field(
         default_factory=dict, description="Document context including images and text"
     )
-    reasoning_depth: str = Field(default="detailed", description="Depth of reasoning required")
-    citation_required: bool = Field(default=True, description="Whether citations are required")
+    reasoning_depth: str = Field(
+        default="detailed", description="Depth of reasoning required"
+    )
+    citation_required: bool = Field(
+        default=True, description="Whether citations are required"
+    )
 
 
 class DocumentVerificationRequest(BaseModel):
@@ -85,7 +89,9 @@ class DocumentVerificationRequest(BaseModel):
 class ProcessAnalysisRequest(BaseModel):
     """Request model for governance process analysis"""
 
-    process_images: List[str] = Field(..., description="Base64 encoded process diagram images")
+    process_images: List[str] = Field(
+        ..., description="Base64 encoded process diagram images"
+    )
     process_type: str = Field(
         default="governance_workflow", description="Type of process being analyzed"
     )
@@ -177,7 +183,9 @@ async def analyze_document(request: DocumentAnalysisRequest):
 
     except Exception as e:
         logger.error(f"Document analysis failed: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Document analysis failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Document analysis failed: {str(e)}"
+        )
 
 
 @app.post("/api/v1/constitutional/qa")
@@ -222,7 +230,9 @@ async def constitutional_qa(request: ConstitutionalQARequest):
 
     except Exception as e:
         logger.error(f"Constitutional Q&A failed: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Constitutional Q&A failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Constitutional Q&A failed: {str(e)}"
+        )
 
 
 @app.post("/api/v1/document/verify")
@@ -244,9 +254,15 @@ async def verify_document(request: DocumentVerificationRequest):
                     "valid": True,
                     "issuer": "Official Government Authority",
                 },
-                "watermarks": {"detected": ["OFFICIAL COPY", "AUTHENTICATED"], "valid": True},
+                "watermarks": {
+                    "detected": ["OFFICIAL COPY", "AUTHENTICATED"],
+                    "valid": True,
+                },
                 "font_analysis": {"consistent": True, "official_fonts": True},
-                "layout_verification": {"matches_template": True, "template_confidence": 0.98},
+                "layout_verification": {
+                    "matches_template": True,
+                    "template_confidence": 0.98,
+                },
             },
             "tampering_detection": {
                 "evidence_found": False,
@@ -268,7 +284,9 @@ async def verify_document(request: DocumentVerificationRequest):
 
     except Exception as e:
         logger.error(f"Document verification failed: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Document verification failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Document verification failed: {str(e)}"
+        )
 
 
 @app.post("/api/v1/governance/process-analysis")
@@ -299,7 +317,10 @@ async def analyze_governance_process(request: ProcessAnalysisRequest):
                     {
                         "name": "Constitutional Review Board",
                         "role": "reviewer",
-                        "responsibilities": ["Compliance verification", "Legal analysis"],
+                        "responsibilities": [
+                            "Compliance verification",
+                            "Legal analysis",
+                        ],
                     }
                 ],
             },
@@ -331,7 +352,9 @@ async def analyze_governance_process(request: ProcessAnalysisRequest):
 
     except Exception as e:
         logger.error(f"Process analysis failed: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Process analysis failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Process analysis failed: {str(e)}"
+        )
 
 
 # File upload endpoint for easier testing
@@ -368,8 +391,12 @@ async def upload_and_analyze_document(
 
     except Exception as e:
         logger.error(f"File upload and analysis failed: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"File upload and analysis failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"File upload and analysis failed: {str(e)}"
+        )
 
 
 if __name__ == "__main__":
-    uvicorn.run("api_endpoints:app", host="0.0.0.0", port=8003, reload=True, log_level="info")
+    uvicorn.run(
+        "api_endpoints:app", host="0.0.0.0", port=8003, reload=True, log_level="info"
+    )

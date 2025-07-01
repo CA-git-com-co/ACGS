@@ -9,7 +9,12 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Any, AsyncGenerator, Dict, List, Optional
 
-from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
+from tenacity import (
+    retry,
+    retry_if_exception_type,
+    stop_after_attempt,
+    wait_exponential,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -101,7 +106,9 @@ class ModelClient(ABC):
         if len(self.request_times) >= self.rate_limit_requests:
             sleep_time = self.rate_limit_window - (current_time - self.request_times[0])
             if sleep_time > 0:
-                logger.warning(f"Rate limit reached, sleeping for {sleep_time:.2f} seconds")
+                logger.warning(
+                    f"Rate limit reached, sleeping for {sleep_time:.2f} seconds"
+                )
                 await asyncio.sleep(sleep_time)
 
         # Record this request
@@ -152,7 +159,9 @@ class ModelClient(ABC):
             "total_cost": self.total_cost,
             "consecutive_failures": self.consecutive_failures,
             "circuit_breaker_open": self.circuit_open_until > time.time(),
-            "rate_limit_remaining": max(0, self.rate_limit_requests - len(self.request_times)),
+            "rate_limit_remaining": max(
+                0, self.rate_limit_requests - len(self.request_times)
+            ),
         }
 
 

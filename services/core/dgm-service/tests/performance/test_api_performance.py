@@ -36,7 +36,11 @@ class APIPerformanceTest:
             await self.client.aclose()
 
     async def measure_response_time(
-        self, endpoint: str, method: str = "GET", data: Dict = None, headers: Dict = None
+        self,
+        endpoint: str,
+        method: str = "GET",
+        data: Dict = None,
+        headers: Dict = None,
     ) -> Dict:
         """Measure response time for a single request."""
         start_time = time.perf_counter()
@@ -136,7 +140,9 @@ async def test_health_endpoint_performance(api_test):
     assert (
         result["response_time_ms"] < 500
     ), f"Health endpoint too slow: {result['response_time_ms']}ms"
-    assert result["success"], f"Health endpoint failed: {result.get('error', 'Unknown error')}"
+    assert result[
+        "success"
+    ], f"Health endpoint failed: {result.get('error', 'Unknown error')}"
     assert result["status_code"] == 200
 
 
@@ -150,7 +156,9 @@ async def test_status_endpoint_performance(api_test):
     assert (
         result["response_time_ms"] < 500
     ), f"Status endpoint too slow: {result['response_time_ms']}ms"
-    assert result["success"], f"Status endpoint failed: {result.get('error', 'Unknown error')}"
+    assert result[
+        "success"
+    ], f"Status endpoint failed: {result.get('error', 'Unknown error')}"
 
 
 @pytest.mark.performance
@@ -163,7 +171,9 @@ async def test_metrics_endpoint_performance(api_test):
     assert (
         result["response_time_ms"] < 200
     ), f"Metrics endpoint too slow: {result['response_time_ms']}ms"
-    assert result["success"], f"Metrics endpoint failed: {result.get('error', 'Unknown error')}"
+    assert result[
+        "success"
+    ], f"Metrics endpoint failed: {result.get('error', 'Unknown error')}"
 
 
 @pytest.mark.performance
@@ -176,7 +186,9 @@ async def test_performance_report_endpoint(api_test):
     assert (
         result["response_time_ms"] < 1000
     ), f"Performance report too slow: {result['response_time_ms']}ms"
-    assert result["success"], f"Performance report failed: {result.get('error', 'Unknown error')}"
+    assert result[
+        "success"
+    ], f"Performance report failed: {result.get('error', 'Unknown error')}"
 
 
 @pytest.mark.performance
@@ -261,7 +273,9 @@ async def test_sustained_load_performance(api_test):
     overall_avg_response_time = statistics.mean(avg_response_times)
 
     # Validate sustained performance meets SLA
-    assert overall_success_rate >= 99.9, f"Sustained success rate too low: {overall_success_rate}%"
+    assert (
+        overall_success_rate >= 99.9
+    ), f"Sustained success rate too low: {overall_success_rate}%"
     assert (
         overall_avg_response_time < 300
     ), f"Sustained response time too high: {overall_avg_response_time}ms"

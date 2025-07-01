@@ -241,7 +241,9 @@ def test_kubernetes_configuration():
     """Test Kubernetes configuration."""
     print("\n🧪 Testing Kubernetes Configuration...")
 
-    k8s_file = "../../../infrastructure/kubernetes/acgs-lite/constitutional-trainer.yaml"
+    k8s_file = (
+        "../../../infrastructure/kubernetes/acgs-lite/constitutional-trainer.yaml"
+    )
 
     if not os.path.exists(k8s_file):
         print(f"❌ Kubernetes manifest not found: {k8s_file}")

@@ -90,7 +90,9 @@ async def get_authorization_url(
             severity="info",
         )
 
-        return OAuthAuthorizationResponse(authorization_url=authorization_url, state=state)
+        return OAuthAuthorizationResponse(
+            authorization_url=authorization_url, state=state
+        )
 
     except HTTPException:
         await security_audit.log_event(

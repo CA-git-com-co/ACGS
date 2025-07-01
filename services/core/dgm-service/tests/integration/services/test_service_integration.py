@@ -91,7 +91,10 @@ class TestServiceIntegration:
             "apply_improvement": {
                 "success": True,
                 "improvement_id": str(uuid4()),
-                "changes_applied": ["updated_algorithm_parameters", "optimized_query_execution"],
+                "changes_applied": [
+                    "updated_algorithm_parameters",
+                    "optimized_query_execution",
+                ],
                 "execution_time": 42.3,
                 "rollback_checkpoint": "checkpoint_12345",
             },
@@ -103,7 +106,9 @@ class TestServiceIntegration:
         with patch("httpx.AsyncClient.post") as mock_post:
             # Mock token validation
             mock_post.return_value.status_code = 200
-            mock_post.return_value.json.return_value = mock_auth_service["validate_token"]
+            mock_post.return_value.json.return_value = mock_auth_service[
+                "validate_token"
+            ]
 
             # Test token validation
             async with httpx.AsyncClient() as client:
@@ -122,7 +127,9 @@ class TestServiceIntegration:
         """Test permission checking with Auth Service."""
         with patch("httpx.AsyncClient.post") as mock_post:
             mock_post.return_value.status_code = 200
-            mock_post.return_value.json.return_value = mock_auth_service["check_permission"]
+            mock_post.return_value.json.return_value = mock_auth_service[
+                "check_permission"
+            ]
 
             async with httpx.AsyncClient() as client:
                 response = await client.post(
@@ -155,7 +162,9 @@ class TestServiceIntegration:
         """Test integration with Constitutional AI Service."""
         with patch("httpx.AsyncClient.post") as mock_post:
             mock_post.return_value.status_code = 200
-            mock_post.return_value.json.return_value = mock_ac_service["validate_proposal"]
+            mock_post.return_value.json.return_value = mock_ac_service[
+                "validate_proposal"
+            ]
 
             # Test proposal validation
             proposal = {
@@ -170,7 +179,8 @@ class TestServiceIntegration:
 
             async with httpx.AsyncClient() as client:
                 response = await client.post(
-                    "http://ac-service:8001/api/v1/constitutional/validate-proposal", json=proposal
+                    "http://ac-service:8001/api/v1/constitutional/validate-proposal",
+                    json=proposal,
                 )
 
             assert response.status_code == 200
@@ -183,7 +193,9 @@ class TestServiceIntegration:
         """Test execution validation with Constitutional AI Service."""
         with patch("httpx.AsyncClient.post") as mock_post:
             mock_post.return_value.status_code = 200
-            mock_post.return_value.json.return_value = mock_ac_service["validate_execution"]
+            mock_post.return_value.json.return_value = mock_ac_service[
+                "validate_execution"
+            ]
 
             execution_result = {
                 "improvement_id": str(uuid4()),
@@ -212,7 +224,9 @@ class TestServiceIntegration:
         """Test integration with Governance Synthesis Service."""
         with patch("httpx.AsyncClient.get") as mock_get:
             mock_get.return_value.status_code = 200
-            mock_get.return_value.json.return_value = mock_gs_service["get_performance_metrics"]
+            mock_get.return_value.json.return_value = mock_gs_service[
+                "get_performance_metrics"
+            ]
 
             # Test performance metrics retrieval
             async with httpx.AsyncClient() as client:
@@ -230,7 +244,9 @@ class TestServiceIntegration:
         """Test improvement application to Governance Synthesis Service."""
         with patch("httpx.AsyncClient.post") as mock_post:
             mock_post.return_value.status_code = 200
-            mock_post.return_value.json.return_value = mock_gs_service["apply_improvement"]
+            mock_post.return_value.json.return_value = mock_gs_service[
+                "apply_improvement"
+            ]
 
             improvement_request = {
                 "improvement_id": str(uuid4()),
@@ -239,7 +255,10 @@ class TestServiceIntegration:
                     "algorithm_parameters": {"learning_rate": 0.01},
                     "optimization_settings": {"batch_size": 64},
                 },
-                "safety_constraints": {"max_execution_time": 300, "rollback_threshold": -0.05},
+                "safety_constraints": {
+                    "max_execution_time": 300,
+                    "rollback_threshold": -0.05,
+                },
             }
 
             async with httpx.AsyncClient() as client:
@@ -361,7 +380,10 @@ class TestServiceIntegration:
                             "response_time": 0.1,  # Simulated
                         }
                     except Exception as e:
-                        health_results[service_name] = {"healthy": False, "error": str(e)}
+                        health_results[service_name] = {
+                            "healthy": False,
+                            "error": str(e),
+                        }
 
             # Verify all services are healthy
             for service_name, result in health_results.items():

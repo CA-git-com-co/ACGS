@@ -66,7 +66,10 @@ class PermissionChecker:
             "dgm_admin": ["dgm_operator", "dgm_viewer"],
             "dgm_operator": ["dgm_viewer"],
             "dgm_viewer": [],
-            "constitutional_admin": ["constitutional_operator", "constitutional_viewer"],
+            "constitutional_admin": [
+                "constitutional_operator",
+                "constitutional_viewer",
+            ],
             "constitutional_operator": ["constitutional_viewer"],
             "constitutional_viewer": [],
             "system_admin": ["dgm_admin", "constitutional_admin"],
@@ -79,19 +82,27 @@ class PermissionChecker:
 
         # DGM permissions
         rules[DGMPermissions.DGM_READ.value] = PermissionRule(
-            ResourceType.IMPROVEMENT, ActionType.READ, description="Read DGM improvement data"
+            ResourceType.IMPROVEMENT,
+            ActionType.READ,
+            description="Read DGM improvement data",
         )
 
         rules[DGMPermissions.DGM_STATUS.value] = PermissionRule(
-            ResourceType.IMPROVEMENT, ActionType.READ, description="View DGM status and progress"
+            ResourceType.IMPROVEMENT,
+            ActionType.READ,
+            description="View DGM status and progress",
         )
 
         rules[DGMPermissions.DGM_IMPROVE.value] = PermissionRule(
-            ResourceType.IMPROVEMENT, ActionType.CREATE, description="Trigger new improvements"
+            ResourceType.IMPROVEMENT,
+            ActionType.CREATE,
+            description="Trigger new improvements",
         )
 
         rules[DGMPermissions.DGM_CANCEL.value] = PermissionRule(
-            ResourceType.IMPROVEMENT, ActionType.UPDATE, description="Cancel running improvements"
+            ResourceType.IMPROVEMENT,
+            ActionType.UPDATE,
+            description="Cancel running improvements",
         )
 
         rules[DGMPermissions.DGM_ROLLBACK.value] = PermissionRule(
@@ -101,21 +112,29 @@ class PermissionChecker:
         )
 
         rules[DGMPermissions.DGM_ADMIN.value] = PermissionRule(
-            ResourceType.IMPROVEMENT, ActionType.ADMIN, description="Full DGM administrative access"
+            ResourceType.IMPROVEMENT,
+            ActionType.ADMIN,
+            description="Full DGM administrative access",
         )
 
         # Archive permissions
         rules[DGMPermissions.DGM_ARCHIVE_READ.value] = PermissionRule(
-            ResourceType.ARCHIVE, ActionType.READ, description="Read improvement archive"
+            ResourceType.ARCHIVE,
+            ActionType.READ,
+            description="Read improvement archive",
         )
 
         rules[DGMPermissions.DGM_ARCHIVE_WRITE.value] = PermissionRule(
-            ResourceType.ARCHIVE, ActionType.WRITE, description="Modify improvement archive"
+            ResourceType.ARCHIVE,
+            ActionType.WRITE,
+            description="Modify improvement archive",
         )
 
         # Metrics permissions
         rules[DGMPermissions.DGM_METRICS_READ.value] = PermissionRule(
-            ResourceType.METRICS, ActionType.READ, description="Read performance metrics"
+            ResourceType.METRICS,
+            ActionType.READ,
+            description="Read performance metrics",
         )
 
         # Constitutional permissions
@@ -139,20 +158,28 @@ class PermissionChecker:
 
         # Bandit algorithm permissions
         rules[DGMPermissions.BANDIT_READ.value] = PermissionRule(
-            ResourceType.BANDIT, ActionType.READ, description="Read bandit algorithm data"
+            ResourceType.BANDIT,
+            ActionType.READ,
+            description="Read bandit algorithm data",
         )
 
         rules[DGMPermissions.BANDIT_CONFIGURE.value] = PermissionRule(
-            ResourceType.BANDIT, ActionType.UPDATE, description="Configure bandit algorithms"
+            ResourceType.BANDIT,
+            ActionType.UPDATE,
+            description="Configure bandit algorithms",
         )
 
         # System permissions
         rules[DGMPermissions.DGM_CONFIG.value] = PermissionRule(
-            ResourceType.SYSTEM, ActionType.UPDATE, description="Configure DGM system settings"
+            ResourceType.SYSTEM,
+            ActionType.UPDATE,
+            description="Configure DGM system settings",
         )
 
         rules[DGMPermissions.DGM_SYSTEM.value] = PermissionRule(
-            ResourceType.SYSTEM, ActionType.ADMIN, description="System-level DGM operations"
+            ResourceType.SYSTEM,
+            ActionType.ADMIN,
+            description="System-level DGM operations",
         )
 
         # Service permissions
@@ -198,7 +225,9 @@ class PermissionChecker:
             user_roles = [role.name for role in user.roles]
             for role in user_roles:
                 if self._role_has_permission(role, permission):
-                    return self._check_conditions(user, permission, resource_id, context)
+                    return self._check_conditions(
+                        user, permission, resource_id, context
+                    )
 
             return False
 
@@ -350,7 +379,13 @@ class PermissionChecker:
         all_permissions = self.get_user_permissions(user)
 
         # Categorize permissions
-        categories = {"dgm": [], "constitutional": [], "bandit": [], "system": [], "service": []}
+        categories = {
+            "dgm": [],
+            "constitutional": [],
+            "bandit": [],
+            "system": [],
+            "service": [],
+        }
 
         for permission in all_permissions:
             if permission.startswith("dgm:"):

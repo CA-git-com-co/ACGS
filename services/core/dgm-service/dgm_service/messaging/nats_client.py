@@ -170,7 +170,9 @@ class NATSClient:
             except Exception as e:
                 if "stream name already in use" in str(e).lower():
                     await self.js.update_stream(stream_config)
-                    self.logger.info(f"Updated JetStream stream: {self.config.stream_name}")
+                    self.logger.info(
+                        f"Updated JetStream stream: {self.config.stream_name}"
+                    )
                 else:
                     raise
 
@@ -210,7 +212,10 @@ class NATSClient:
             self.logger.error(f"Error during NATS disconnect: {e}")
 
     async def publish(
-        self, subject: str, data: Dict[str, Any], headers: Optional[Dict[str, str]] = None
+        self,
+        subject: str,
+        data: Dict[str, Any],
+        headers: Optional[Dict[str, str]] = None,
     ) -> bool:
         """Publish message to NATS subject."""
         if not self.connected:
@@ -296,7 +301,10 @@ class NATSClient:
                 )
 
                 subscription = await self.js.subscribe(
-                    subject, cb=message_handler, config=consumer_config, queue=queue_group
+                    subject,
+                    cb=message_handler,
+                    config=consumer_config,
+                    queue=queue_group,
                 )
             else:
                 # Core NATS subscription

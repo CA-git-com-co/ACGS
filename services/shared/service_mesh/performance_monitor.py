@@ -382,7 +382,9 @@ class PerformanceMonitor:
         if existing_alert_key in self.active_alerts:
             # Update existing alert if severity increased
             existing_alert = self.active_alerts[existing_alert_key]
-            if self._severity_level(severity) > self._severity_level(existing_alert.severity):
+            if self._severity_level(severity) > self._severity_level(
+                existing_alert.severity
+            ):
                 existing_alert.severity = severity
                 existing_alert.current_value = current_value
                 existing_alert.timestamp = time.time()
@@ -456,7 +458,9 @@ class PerformanceMonitor:
         cutoff_time = time.time() - 300  # Last 5 minutes
 
         for metrics_list in self.metrics_history.values():
-            recent_metrics.extend([m for m in metrics_list if m.timestamp > cutoff_time])
+            recent_metrics.extend(
+                [m for m in metrics_list if m.timestamp > cutoff_time]
+            )
 
         if not recent_metrics:
             return {"status": "no_recent_data"}
@@ -465,7 +469,9 @@ class PerformanceMonitor:
         avg_response_time = statistics.mean(
             [m.response_time_ms for m in recent_metrics if m.response_time_ms > 0]
         )
-        avg_availability = statistics.mean([m.availability_percent for m in recent_metrics])
+        avg_availability = statistics.mean(
+            [m.availability_percent for m in recent_metrics]
+        )
         avg_error_rate = statistics.mean([m.error_rate_percent for m in recent_metrics])
         total_connections = sum([m.concurrent_connections for m in recent_metrics])
 
@@ -510,7 +516,9 @@ class PerformanceMonitor:
             "active_alerts": len(self.active_alerts),
             "severity_breakdown": severity_counts,
             "recent_alerts": len(
-                [a for a in self.alert_history if time.time() - a.timestamp < 3600]  # Last hour
+                [
+                    a for a in self.alert_history if time.time() - a.timestamp < 3600
+                ]  # Last hour
             ),
             "total_alerts_today": len(
                 [
@@ -581,7 +589,9 @@ class AlertingSystem:
         # ensures: Correct function execution
         # sha256: func_hash
         """Handle incoming alert."""
-        alert_key = f"{alert.service_type}:{alert.instance_id}:{alert.metric_type.value}"
+        alert_key = (
+            f"{alert.service_type}:{alert.instance_id}:{alert.metric_type.value}"
+        )
 
         # Check if alert is suppressed
         if self._is_alert_suppressed(alert_key):
@@ -642,7 +652,9 @@ def console_alert_handler(alert: PerformanceAlert):
     if alert.instance_id:
         print(f"Instance: {alert.instance_id}")
     print(f"Message: {alert.message}")
-    print(f"Time: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(alert.timestamp))}")
+    print(
+        f"Time: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(alert.timestamp))}"
+    )
     print("-" * 50)
 
 

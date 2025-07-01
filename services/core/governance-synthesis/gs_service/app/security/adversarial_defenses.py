@@ -192,7 +192,9 @@ class AdversarialDefenseSystem:
         detection_results.append(semantic_result)
 
         # Layer 3: Constitutional manipulation detection
-        manipulation_result = await self._detect_constitutional_manipulation(input_text, context)
+        manipulation_result = await self._detect_constitutional_manipulation(
+            input_text, context
+        )
         detection_results.append(manipulation_result)
 
         # Layer 4: Consensus validation
@@ -229,7 +231,9 @@ class AdversarialDefenseSystem:
                 self.defense_metrics["jailbreaks_blocked"] += 1
 
         processing_time = (time.time() - start_time) * 1000
-        logger.info(f"Adversarial detection completed in {processing_time:.2f}ms: {is_adversarial}")
+        logger.info(
+            f"Adversarial detection completed in {processing_time:.2f}ms: {is_adversarial}"
+        )
 
         return is_adversarial, event
 
@@ -250,7 +254,10 @@ class AdversarialDefenseSystem:
 
                 activations[feature_id] = activation
 
-                if activation > feature.activation_threshold and activation > max_activation:
+                if (
+                    activation > feature.activation_threshold
+                    and activation > max_activation
+                ):
                     max_activation = activation
                     triggered_feature = feature_id
 
@@ -287,11 +294,14 @@ class AdversarialDefenseSystem:
             min_similarity = 1.0
             drifted_principle = None
 
-            for principle, baseline in self.semantic_baselines["constitutional_principles"].items():
+            for principle, baseline in self.semantic_baselines[
+                "constitutional_principles"
+            ].items():
                 # Simulate semantic similarity calculation
                 text_embedding = np.random.randn(256)  # Mock embedding
                 similarity = np.dot(text_embedding, baseline["embedding"]) / (
-                    np.linalg.norm(text_embedding) * np.linalg.norm(baseline["embedding"])
+                    np.linalg.norm(text_embedding)
+                    * np.linalg.norm(baseline["embedding"])
                 )
 
                 if similarity < baseline["threshold"] and similarity < min_similarity:
@@ -323,7 +333,9 @@ class AdversarialDefenseSystem:
                 "error": str(e),
             }
 
-    async def _detect_constitutional_manipulation(self, input_text: str, context: dict) -> dict:
+    async def _detect_constitutional_manipulation(
+        self, input_text: str, context: dict
+    ) -> dict:
         """Detect attempts to manipulate constitutional principles"""
         try:
             # Check for manipulation patterns
@@ -360,7 +372,8 @@ class AdversarialDefenseSystem:
                         if (
                             negation in input_text.lower()
                             and abs(
-                                input_text.lower().find(negation) - input_text.lower().find(term)
+                                input_text.lower().find(negation)
+                                - input_text.lower().find(term)
                             )
                             < 50
                         ):
@@ -406,7 +419,10 @@ class AdversarialDefenseSystem:
                 score = abs(hash(model_hash) % 100) / 100.0
 
                 # Apply specialization bias
-                if validator["specialization"] == "security" and "security" in input_text.lower():
+                if (
+                    validator["specialization"] == "security"
+                    and "security" in input_text.lower()
+                ):
                     score *= 1.2
                 elif validator["specialization"] == "constitutional" and any(
                     term in input_text.lower()
@@ -423,7 +439,9 @@ class AdversarialDefenseSystem:
             # High disagreement or low consensus indicates potential attack
             is_detected = consensus_score < 0.4 or disagreement > 0.3
             attack_type = AttackType.CONSENSUS_MANIPULATION if is_detected else None
-            confidence = max(0.4 - consensus_score, disagreement) if is_detected else 0.0
+            confidence = (
+                max(0.4 - consensus_score, disagreement) if is_detected else 0.0
+            )
 
             return {
                 "method": "consensus_validation",
@@ -447,7 +465,9 @@ class AdversarialDefenseSystem:
                 "error": str(e),
             }
 
-    def _aggregate_detection_results(self, results: list[dict]) -> tuple[bool, AttackType, float]:
+    def _aggregate_detection_results(
+        self, results: list[dict]
+    ) -> tuple[bool, AttackType, float]:
         """Aggregate detection results from multiple layers"""
         detected_attacks = [r for r in results if r.get("detected", False)]
 
@@ -463,7 +483,9 @@ class AdversarialDefenseSystem:
 
         return True, best_detection.get("attack_type"), avg_confidence
 
-    def _classify_severity(self, confidence: float, attack_type: AttackType | None) -> str:
+    def _classify_severity(
+        self, confidence: float, attack_type: AttackType | None
+    ) -> str:
         """Classify attack severity based on confidence and type"""
         if not attack_type:
             return "none"
@@ -616,7 +638,9 @@ class AdversarialDefenseSystem:
 adversarial_defense_system = AdversarialDefenseSystem()
 
 
-async def detect_and_mitigate_attack(input_text: str, context: dict[str, Any]) -> tuple[bool, dict]:
+async def detect_and_mitigate_attack(
+    input_text: str, context: dict[str, Any]
+) -> tuple[bool, dict]:
     """
     Main interface for adversarial detection and mitigation
 

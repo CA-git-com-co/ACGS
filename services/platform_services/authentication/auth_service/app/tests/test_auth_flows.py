@@ -232,11 +232,15 @@ async def test_refresh_token_success(client: AsyncClient):
     await client.post(f"{API_V1_AUTH_PREFIX}/token", data=login_payload)
     initial_access_cookie_value = client.cookies.get("access_token_cookie")
     initial_refresh_cookie_value = client.cookies.get("refresh_token_cookie")
-    csrf_token = client.cookies.get("csrf_access_token")  # As per CsrfSettings cookie_key
+    csrf_token = client.cookies.get(
+        "csrf_access_token"
+    )  # As per CsrfSettings cookie_key
     assert csrf_token is not None
 
     headers = {"X-CSRF-TOKEN": csrf_token}  # As per CsrfSettings header_name
-    refresh_response = await client.post(f"{API_V1_AUTH_PREFIX}/token/refresh", headers=headers)
+    refresh_response = await client.post(
+        f"{API_V1_AUTH_PREFIX}/token/refresh", headers=headers
+    )
 
     assert refresh_response.status_code == status.HTTP_200_OK
     refresh_data = refresh_response.json()
@@ -247,7 +251,9 @@ async def test_refresh_token_success(client: AsyncClient):
     new_refresh_cookie_value = client.cookies.get("refresh_token_cookie")
     assert new_access_cookie_value != initial_access_cookie_value
     assert new_refresh_cookie_value != initial_refresh_cookie_value
-    assert "csrf_access_token" in refresh_response.cookies  # New CSRF cookie should be set
+    assert (
+        "csrf_access_token" in refresh_response.cookies
+    )  # New CSRF cookie should be set
 
 
 async def test_refresh_token_no_csrf_header(client: AsyncClient):
@@ -266,7 +272,9 @@ async def test_refresh_token_no_csrf_header(client: AsyncClient):
 
     # Attempt refresh without X-CSRF-TOKEN header
     refresh_response = await client.post(f"{API_V1_AUTH_PREFIX}/token/refresh")
-    assert refresh_response.status_code == status.HTTP_403_FORBIDDEN  # CSRF validation failure
+    assert (
+        refresh_response.status_code == status.HTTP_403_FORBIDDEN
+    )  # CSRF validation failure
     assert (
         "Missing CSRF Token" in refresh_response.json()["detail"]
     )  # Or similar message from fastapi-csrf-protect
@@ -293,7 +301,9 @@ async def test_refresh_token_no_refresh_cookie(client: AsyncClient):
     )
 
     headers = {"X-CSRF-TOKEN": csrf_token}
-    refresh_response = await client.post(f"{API_V1_AUTH_PREFIX}/token/refresh", headers=headers)
+    refresh_response = await client.post(
+        f"{API_V1_AUTH_PREFIX}/token/refresh", headers=headers
+    )
     assert refresh_response.status_code == status.HTTP_401_UNAUTHORIZED
     assert "Refresh token missing" in refresh_response.json()["detail"]
 
@@ -321,7 +331,9 @@ async def test_logout_success(client: AsyncClient):
     # Check cookies are cleared (httpx client updates its cookie jar based on Set-Cookie headers)
     assert client.cookies.get("access_token_cookie") is None
     assert (
-        client.cookies.get("refresh_token_cookie", path=f"{API_V1_AUTH_PREFIX}/token/refresh")
+        client.cookies.get(
+            "refresh_token_cookie", path=f"{API_V1_AUTH_PREFIX}/token/refresh"
+        )
         is None
     )
     assert client.cookies.get("csrf_access_token") is None
@@ -355,7 +367,9 @@ async def test_logout_no_csrf_header(client: AsyncClient):
     }
     await client.post(f"{API_V1_AUTH_PREFIX}/token", data=login_payload)
 
-    logout_response = await client.post(f"{API_V1_AUTH_PREFIX}/logout")  # No CSRF header
+    logout_response = await client.post(
+        f"{API_V1_AUTH_PREFIX}/logout"
+    )  # No CSRF header
     assert logout_response.status_code == status.HTTP_403_FORBIDDEN
     assert "Missing CSRF Token" in logout_response.json()["detail"]
 

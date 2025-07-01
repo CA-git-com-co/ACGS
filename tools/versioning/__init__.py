@@ -17,7 +17,7 @@ from .rollback_manager import RollbackManager, RollbackPlan
 
 __all__ = [
     "APIDiffAnalyzer",
-    "DiffReport", 
+    "DiffReport",
     "ChangeType",
     "MigrationGenerator",
     "MigrationScript",
@@ -26,7 +26,7 @@ __all__ = [
     "VersionHealthChecker",
     "HealthStatus",
     "RollbackManager",
-    "RollbackPlan"
+    "RollbackPlan",
 ]
 
 __version__ = "1.0.0"

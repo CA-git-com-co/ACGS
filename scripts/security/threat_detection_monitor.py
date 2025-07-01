@@ -13,6 +13,7 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
+
 class ThreatDetectionMonitor:
     """Advanced threat detection and response system."""
 
@@ -51,7 +52,8 @@ class ThreatDetectionMonitor:
 
         # Count events in window
         recent_events = [
-            event_time for event_time in self.event_history[event_key]
+            event_time
+            for event_time in self.event_history[event_key]
             if event_time >= window_start
         ]
 
@@ -79,7 +81,9 @@ class ThreatDetectionMonitor:
 
     def apply_rate_limit(self, ip_address, config):
         """Apply rate limiting to IP address."""
-        logger.info(f"Applied rate limit to {ip_address}: {config['limit_requests_per_minute']} req/min")
+        logger.info(
+            f"Applied rate limit to {ip_address}: {config['limit_requests_per_minute']} req/min"
+        )
 
     def alert_security_team(self, rule, source_ip, user_id, config):
         """Send alert to security team."""
@@ -89,6 +93,7 @@ class ThreatDetectionMonitor:
 
         logger.critical(alert_message)
         # In production, integrate with actual alerting systems
+
 
 def main():
     """Main threat detection monitoring loop."""
@@ -107,6 +112,7 @@ def main():
     monitor.analyze_event("failed_login", "192.168.1.100")  # Should trigger block
 
     print("✅ Threat detection simulation completed")
+
 
 if __name__ == "__main__":
     main()

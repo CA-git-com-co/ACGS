@@ -354,7 +354,9 @@ async def verify_schema(db_manager: DatabaseManager | None = None) -> dict:
 
             # Check constitutional hash configuration
             config_result = await session.execute(
-                text("SELECT value FROM configuration_settings WHERE key = 'constitutional_hash'")
+                text(
+                    "SELECT value FROM configuration_settings WHERE key = 'constitutional_hash'"
+                )
             )
             config_hash = config_result.scalar()
 

@@ -33,7 +33,9 @@ class ValidationError(Exception):
 class ValidationResult:
     """Result of validation operation."""
 
-    def __init__(self, is_valid: bool, errors: list[str] = None, warnings: list[str] = None):
+    def __init__(
+        self, is_valid: bool, errors: list[str] = None, warnings: list[str] = None
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -97,7 +99,9 @@ def validate_email(email: str) -> str:
     """
     email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
     if not re.match(email_pattern, email):
-        raise ValidationError(f"Invalid email format: {email}", field="email", value=email)
+        raise ValidationError(
+            f"Invalid email format: {email}", field="email", value=email
+        )
     return email.lower()
 
 
@@ -174,7 +178,9 @@ def validate_password(password: str) -> ValidationResult:
     return result
 
 
-def validate_json_data(data: Any, required_fields: list[str] = None) -> ValidationResult:
+def validate_json_data(
+    data: Any, required_fields: list[str] = None
+) -> ValidationResult:
     """
     Validate JSON data structure.
 
@@ -219,13 +225,19 @@ def validate_pagination_params(
         ValidationError: If parameters are invalid
     """
     if page < 1:
-        raise ValidationError("Page number must be greater than 0", field="page", value=page)
+        raise ValidationError(
+            "Page number must be greater than 0", field="page", value=page
+        )
 
     if size < 1:
-        raise ValidationError("Page size must be greater than 0", field="size", value=size)
+        raise ValidationError(
+            "Page size must be greater than 0", field="size", value=size
+        )
 
     if size > max_size:
-        raise ValidationError(f"Page size cannot exceed {max_size}", field="size", value=size)
+        raise ValidationError(
+            f"Page size cannot exceed {max_size}", field="size", value=size
+        )
 
     return {"page": page, "size": size}
 
@@ -286,7 +298,9 @@ def validate_response(data: Any) -> dict[str, Any]:
     if hasattr(data, "__dict__"):
         return data.__dict__
 
-    raise ValidationError(f"Invalid response data type: {type(data)}", field="response", value=data)
+    raise ValidationError(
+        f"Invalid response data type: {type(data)}", field="response", value=data
+    )
 
 
 def validate_service_name(service_name: str) -> str:

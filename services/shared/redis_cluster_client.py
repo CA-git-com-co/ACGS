@@ -137,7 +137,10 @@ class RedisClusterClient:
                 serialized = pickle.dumps(value)
 
             # Compress if enabled and data is large enough
-            if self.config.use_compression and len(serialized) > self.config.compression_threshold:
+            if (
+                self.config.use_compression
+                and len(serialized) > self.config.compression_threshold
+            ):
                 import gzip
 
                 serialized = gzip.compress(serialized)
@@ -297,26 +300,34 @@ class RedisClusterClient:
         cache_key = self._generate_key(key, prefix)
 
         try:
-            result = await self._execute_with_retry(self._cluster.expire, cache_key, ttl)
+            result = await self._execute_with_retry(
+                self._cluster.expire, cache_key, ttl
+            )
             return result
 
         except Exception as e:
             logger.error(f"Failed to set expiration for key {cache_key}: {e}")
             return False
 
-    async def increment(self, key: str, amount: int = 1, prefix: str = None) -> Optional[int]:
+    async def increment(
+        self, key: str, amount: int = 1, prefix: str = None
+    ) -> Optional[int]:
         """Increment numeric value."""
         cache_key = self._generate_key(key, prefix)
 
         try:
-            result = await self._execute_with_retry(self._cluster.incrby, cache_key, amount)
+            result = await self._execute_with_retry(
+                self._cluster.incrby, cache_key, amount
+            )
             return result
 
         except Exception as e:
             logger.error(f"Failed to increment key {cache_key}: {e}")
             return None
 
-    async def hash_set(self, key: str, field: str, value: Any, prefix: str = None) -> bool:
+    async def hash_set(
+        self, key: str, field: str, value: Any, prefix: str = None
+    ) -> bool:
         """Set field in hash."""
         cache_key = self._generate_key(key, prefix)
 
@@ -352,14 +363,18 @@ class RedisClusterClient:
         cache_key = self._generate_key(key, prefix)
 
         try:
-            result = await self._execute_with_retry(self._cluster.hdel, cache_key, field)
+            result = await self._execute_with_retry(
+                self._cluster.hdel, cache_key, field
+            )
             return result > 0
 
         except Exception as e:
             logger.error(f"Failed to delete hash field {cache_key}:{field}: {e}")
             return False
 
-    async def list_push(self, key: str, value: Any, prefix: str = None, left: bool = True) -> int:
+    async def list_push(
+        self, key: str, value: Any, prefix: str = None, left: bool = True
+    ) -> int:
         """Push value to list."""
         cache_key = self._generate_key(key, prefix)
 
@@ -381,7 +396,9 @@ class RedisClusterClient:
             logger.error(f"Failed to push to list {cache_key}: {e}")
             return 0
 
-    async def list_pop(self, key: str, prefix: str = None, left: bool = True) -> Optional[Any]:
+    async def list_pop(
+        self, key: str, prefix: str = None, left: bool = True
+    ) -> Optional[Any]:
         """Pop value from list."""
         cache_key = self._generate_key(key, prefix)
 
@@ -412,7 +429,11 @@ class RedisClusterClient:
 
             # Calculate hit rate
             total_cache_ops = self.metrics["hits"] + self.metrics["misses"]
-            hit_rate = (self.metrics["hits"] / total_cache_ops * 100) if total_cache_ops > 0 else 0
+            hit_rate = (
+                (self.metrics["hits"] / total_cache_ops * 100)
+                if total_cache_ops > 0
+                else 0
+            )
 
             return {
                 "service": self.service_name,

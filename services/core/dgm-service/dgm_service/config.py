@@ -23,7 +23,8 @@ class Settings(BaseSettings):
     # Security Configuration
     SECRET_KEY: str = Field(..., env="SECRET_KEY")
     ALLOWED_ORIGINS: List[str] = Field(
-        default=["http://localhost:3000", "http://localhost:8000"], env="ALLOWED_ORIGINS"
+        default=["http://localhost:3000", "http://localhost:8000"],
+        env="ALLOWED_ORIGINS",
     )
     ALLOWED_HOSTS: List[str] = Field(
         default=["localhost", "127.0.0.1", "0.0.0.0"], env="ALLOWED_HOSTS"
@@ -41,13 +42,21 @@ class Settings(BaseSettings):
     REDIS_MAX_CONNECTIONS: int = Field(default=100, env="REDIS_MAX_CONNECTIONS")
     REDIS_RETRY_ON_TIMEOUT: bool = Field(default=True, env="REDIS_RETRY_ON_TIMEOUT")
     REDIS_SOCKET_TIMEOUT: int = Field(default=5, env="REDIS_SOCKET_TIMEOUT")
-    REDIS_SOCKET_CONNECT_TIMEOUT: int = Field(default=5, env="REDIS_SOCKET_CONNECT_TIMEOUT")
-    REDIS_HEALTH_CHECK_INTERVAL: int = Field(default=30, env="REDIS_HEALTH_CHECK_INTERVAL")
+    REDIS_SOCKET_CONNECT_TIMEOUT: int = Field(
+        default=5, env="REDIS_SOCKET_CONNECT_TIMEOUT"
+    )
+    REDIS_HEALTH_CHECK_INTERVAL: int = Field(
+        default=30, env="REDIS_HEALTH_CHECK_INTERVAL"
+    )
 
     # ACGS Service URLs
-    AUTH_SERVICE_URL: str = Field(default="http://localhost:8000", env="AUTH_SERVICE_URL")
+    AUTH_SERVICE_URL: str = Field(
+        default="http://localhost:8000", env="AUTH_SERVICE_URL"
+    )
     AC_SERVICE_URL: str = Field(default="http://localhost:8001", env="AC_SERVICE_URL")
-    INTEGRITY_SERVICE_URL: str = Field(default="http://localhost:8002", env="INTEGRITY_SERVICE_URL")
+    INTEGRITY_SERVICE_URL: str = Field(
+        default="http://localhost:8002", env="INTEGRITY_SERVICE_URL"
+    )
     FV_SERVICE_URL: str = Field(default="http://localhost:8003", env="FV_SERVICE_URL")
     GS_SERVICE_URL: str = Field(default="http://localhost:8004", env="GS_SERVICE_URL")
     PGC_SERVICE_URL: str = Field(default="http://localhost:8005", env="PGC_SERVICE_URL")
@@ -65,11 +74,15 @@ class Settings(BaseSettings):
     ARCHIVE_RETENTION_DAYS: int = Field(default=365, env="ARCHIVE_RETENTION_DAYS")
 
     # Performance Monitoring
-    PERFORMANCE_MONITORING_ENABLED: bool = Field(default=True, env="PERFORMANCE_MONITORING_ENABLED")
+    PERFORMANCE_MONITORING_ENABLED: bool = Field(
+        default=True, env="PERFORMANCE_MONITORING_ENABLED"
+    )
     PERFORMANCE_METRICS_INTERVAL: int = Field(
         default=60, env="PERFORMANCE_METRICS_INTERVAL"
     )  # seconds
-    PERFORMANCE_ALERT_THRESHOLD: float = Field(default=0.95, env="PERFORMANCE_ALERT_THRESHOLD")
+    PERFORMANCE_ALERT_THRESHOLD: float = Field(
+        default=0.95, env="PERFORMANCE_ALERT_THRESHOLD"
+    )
 
     # Foundation Model Configuration
     OPENAI_API_KEY: Optional[str] = Field(default=None, env="OPENAI_API_KEY")
@@ -81,7 +94,9 @@ class Settings(BaseSettings):
     BANDIT_ALGORITHM: str = Field(
         default="ucb", env="BANDIT_ALGORITHM"
     )  # ucb, epsilon_greedy, thompson
-    BANDIT_EXPLORATION_PARAMETER: float = Field(default=2.0, env="BANDIT_EXPLORATION_PARAMETER")
+    BANDIT_EXPLORATION_PARAMETER: float = Field(
+        default=2.0, env="BANDIT_EXPLORATION_PARAMETER"
+    )
     BANDIT_DECAY_RATE: float = Field(default=0.99, env="BANDIT_DECAY_RATE")
 
     # Monitoring and Observability
@@ -112,7 +127,9 @@ class Settings(BaseSettings):
     def validate_compliance_threshold(cls, v):
         """Validate compliance threshold is between 0 and 1."""
         if not 0 <= v <= 1:
-            raise ValueError("Constitutional compliance threshold must be between 0 and 1")
+            raise ValueError(
+                "Constitutional compliance threshold must be between 0 and 1"
+            )
         return v
 
     @validator("SAFETY_EXPLORATION_RATE")

@@ -84,7 +84,9 @@ class CompatibilityTransformer(ResponseTransformer):
                 try:
                     transformed_data[field] = transformer(transformed_data[field])
                 except Exception as e:
-                    logger.warning(f"Custom transformation failed for field {field}: {e}")
+                    logger.warning(
+                        f"Custom transformation failed for field {field}: {e}"
+                    )
 
         return transformed_data
 
@@ -153,10 +155,14 @@ class VersionedResponseBuilder:
             and request_version != target_version
             and data is not None
         ):
-            transformed_data = self._transform_data(data, request_version, target_version)
+            transformed_data = self._transform_data(
+                data, request_version, target_version
+            )
 
         # Create base response
-        response = APIResponse(status=status, data=transformed_data, error=error, metadata=metadata)
+        response = APIResponse(
+            status=status, data=transformed_data, error=error, metadata=metadata
+        )
 
         return response
 
@@ -263,7 +269,9 @@ class V2ToV1Transformer(CompatibilityTransformer):
 
 # Factory function for creating response builders
 def create_versioned_response_builder(
-    service_name: str, service_version: str = "3.0.0", register_default_transformers: bool = True
+    service_name: str,
+    service_version: str = "3.0.0",
+    register_default_transformers: bool = True,
 ) -> VersionedResponseBuilder:
     """
     Factory function to create a versioned response builder with default transformers.

@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from uuid import uuid4
 
 import pytest
@@ -13,9 +13,11 @@ import enum
 
 Base = declarative_base()
 
+
 class ComplianceLevel(enum.Enum):
     COMPLIANT = "compliant"
     EXEMPLARY = "exemplary"
+
 
 class ConstitutionalComplianceLog(Base):
     __tablename__ = "logs"
@@ -23,17 +25,20 @@ class ConstitutionalComplianceLog(Base):
     improvement_id = Column(String, nullable=True)
     compliance_level = Column(Enum(ComplianceLevel), nullable=False)
     compliance_score = Column(Float, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     violations = Column(String)
+
 
 app = FastAPI()
 
 _db_session: AsyncSession | None = None
 
+
 async def get_db_session_override():
     if _db_session is None:
         raise RuntimeError("DB session not set")
     yield _db_session
+
 
 @app.get("/api/v1/constitutional/compliance/history")
 async def get_compliance_history(
@@ -44,24 +49,40 @@ async def get_compliance_history(
 ):
     try:
         stmt = select(ConstitutionalComplianceLog).where(
-            ConstitutionalComplianceLog.created_at >= datetime.utcnow() - timedelta(days=days)
+            ConstitutionalComplianceLog.created_at
+            >= datetime.now(timezone.utc) - timedelta(days=days)
         )
         if improvement_id:
-            stmt = stmt.where(ConstitutionalComplianceLog.improvement_id == improvement_id)
+            stmt = stmt.where(
+                ConstitutionalComplianceLog.improvement_id == improvement_id
+            )
         if min_score is not None:
             stmt = stmt.where(ConstitutionalComplianceLog.compliance_score >= min_score)
         result = await db.execute(stmt)
         logs = result.scalars().all()
         total_validations = len(logs)
-        average_score = sum(l.compliance_score for l in logs) / total_validations if total_validations else 0.0
-        return {"period_days": days, "total_validations": total_validations, "average_score": average_score}
+        average_score = (
+            sum(l.compliance_score for l in logs) / total_validations
+            if total_validations
+            else 0.0
+        )
+        return {
+            "period_days": days,
+            "total_validations": total_validations,
+            "average_score": average_score,
+        }
     except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+        )
+
 
 @pytest_asyncio.fixture
 async def db_session():
     engine = create_async_engine(
-        "sqlite+aiosqlite:///:memory:", connect_args={"check_same_thread": False}, poolclass=StaticPool
+        "sqlite+aiosqlite:///:memory:",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
     )
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
@@ -69,6 +90,7 @@ async def db_session():
     async with async_session() as session:
         yield session
     await engine.dispose()
+
 
 @pytest_asyncio.fixture
 async def client(db_session: AsyncSession):
@@ -79,6 +101,7 @@ async def client(db_session: AsyncSession):
         yield c
     app.dependency_overrides.clear()
 
+
 @pytest.mark.asyncio
 async def test_compliance_history_returns_data(client, db_session: AsyncSession):
     improvement_id = str(uuid4())
@@ -86,7 +109,7 @@ async def test_compliance_history_returns_data(client, db_session: AsyncSession)
         improvement_id=improvement_id,
         compliance_level=ComplianceLevel.COMPLIANT,
         compliance_score=0.9,
-        created_at=datetime.utcnow(),
+        created_at=datetime.now(timezone.utc),
     )
     db_session.add(log)
     await db_session.commit()

@@ -144,7 +144,10 @@ class IntrusionDetectionSystem:
         minute_ago = current_time - 60
 
         # Clean old entries
-        while self.request_counts[ip_address] and self.request_counts[ip_address][0] < minute_ago:
+        while (
+            self.request_counts[ip_address]
+            and self.request_counts[ip_address][0] < minute_ago
+        ):
             self.request_counts[ip_address].popleft()
 
         # Add current request
@@ -180,14 +183,19 @@ class IntrusionDetectionSystem:
         self.failed_login_attempts[ip_address].append(current_time)
 
         # Check if brute force threshold exceeded
-        if len(self.failed_login_attempts[ip_address]) > self.max_failed_logins_per_hour:
+        if (
+            len(self.failed_login_attempts[ip_address])
+            > self.max_failed_logins_per_hour
+        ):
             return SecurityThreat(
                 threat_type="brute_force_attack",
                 severity="high",
                 description=f"Brute force attack detected: {len(self.failed_login_attempts[ip_address])} failed logins in 1 hour",
                 ip_address=ip_address,
                 user_id=user_id,
-                metadata={"failed_attempts": len(self.failed_login_attempts[ip_address])},
+                metadata={
+                    "failed_attempts": len(self.failed_login_attempts[ip_address])
+                },
             )
 
         return None

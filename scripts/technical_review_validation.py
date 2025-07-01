@@ -77,7 +77,9 @@ class TechnicalReviewValidator:
             ]
 
             # Estimate LLM Lipschitz constant
-            llm_result = await estimator.estimate_llm_lipschitz_constant(test_principles)
+            llm_result = await estimator.estimate_llm_lipschitz_constant(
+                test_principles
+            )
 
             self.results["lipschitz_validation"] = {
                 "estimated_constant": llm_result.estimated_constant,
@@ -126,15 +128,21 @@ class TechnicalReviewValidator:
                 "AI systems must be fair",
             ]
 
-            metric_validation = await estimator.validate_metric_properties(test_principles)
+            metric_validation = await estimator.validate_metric_properties(
+                test_principles
+            )
 
             self.results["metric_validation"] = metric_validation
 
             if metric_validation["is_valid_metric"]:
-                self.fixes_validated.append("Distance function satisfies metric properties")
+                self.fixes_validated.append(
+                    "Distance function satisfies metric properties"
+                )
                 logger.info("✅ Distance function is a valid metric")
             else:
-                triangle_violations = metric_validation["triangle_inequality"]["violation_rate"]
+                triangle_violations = metric_validation["triangle_inequality"][
+                    "violation_rate"
+                ]
                 symmetry_violations = metric_validation["symmetry"]["violation_rate"]
 
                 if triangle_violations > 0:
@@ -206,7 +214,9 @@ class TechnicalReviewValidator:
                 self.fixes_validated.append(
                     "Arithmetic domain correctly excludes fairness evaluation"
                 )
-                logger.info("✅ Arithmetic domain correctly excludes fairness evaluation")
+                logger.info(
+                    "✅ Arithmetic domain correctly excludes fairness evaluation"
+                )
             else:
                 self.issues_found.append(
                     "Arithmetic domain incorrectly includes fairness evaluation"
@@ -214,10 +224,14 @@ class TechnicalReviewValidator:
 
             # Validate that hiring domain correctly applies fairness evaluation
             if hiring_result["fairness_applicable"]:
-                self.fixes_validated.append("Hiring domain correctly includes fairness evaluation")
+                self.fixes_validated.append(
+                    "Hiring domain correctly includes fairness evaluation"
+                )
                 logger.info("✅ Hiring domain correctly includes fairness evaluation")
             else:
-                self.issues_found.append("Hiring domain incorrectly excludes fairness evaluation")
+                self.issues_found.append(
+                    "Hiring domain incorrectly excludes fairness evaluation"
+                )
 
         except Exception as e:
             logger.error(f"Fairness validation failed: {e}")
@@ -256,12 +270,18 @@ class TechnicalReviewValidator:
                 self.fixes_validated.append(
                     "Verification properly differentiates positive/negative cases"
                 )
-                logger.info("✅ Verification properly differentiates positive/negative cases")
+                logger.info(
+                    "✅ Verification properly differentiates positive/negative cases"
+                )
             else:
                 if positive_rate < 0.8:
-                    self.issues_found.append(f"Low positive case pass rate: {positive_rate:.2f}")
+                    self.issues_found.append(
+                        f"Low positive case pass rate: {positive_rate:.2f}"
+                    )
                 if negative_rate < 0.8:
-                    self.issues_found.append(f"Low negative case pass rate: {negative_rate:.2f}")
+                    self.issues_found.append(
+                        f"Low negative case pass rate: {negative_rate:.2f}"
+                    )
 
         except Exception as e:
             logger.error(f"Verification completeness validation failed: {e}")
@@ -325,7 +345,9 @@ class TechnicalReviewValidator:
 
         # Calculate overall validation score
         validation_score = (
-            total_fixes / (total_fixes + total_issues) if (total_fixes + total_issues) > 0 else 0
+            total_fixes / (total_fixes + total_issues)
+            if (total_fixes + total_issues) > 0
+            else 0
         )
 
         report = {
@@ -333,7 +355,9 @@ class TechnicalReviewValidator:
                 "total_fixes_validated": total_fixes,
                 "total_issues_remaining": total_issues,
                 "validation_score": validation_score,
-                "overall_status": ("PASSED" if validation_score >= 0.8 else "NEEDS_IMPROVEMENT"),
+                "overall_status": (
+                    "PASSED" if validation_score >= 0.8 else "NEEDS_IMPROVEMENT"
+                ),
             },
             "fixes_validated": self.fixes_validated,
             "issues_remaining": self.issues_found,
@@ -353,7 +377,9 @@ class TechnicalReviewValidator:
             )
 
         if any("metric" in issue.lower() for issue in self.issues_found):
-            recommendations.append("Replace cosine similarity with proper metric distance function")
+            recommendations.append(
+                "Replace cosine similarity with proper metric distance function"
+            )
 
         if any("verification" in issue.lower() for issue in self.issues_found):
             recommendations.append(
@@ -408,7 +434,9 @@ async def main():
             print(f"  • {rec}")
 
     # Save detailed report
-    report_path = Path(__file__).parent.parent / "technical_review_validation_report.json"
+    report_path = (
+        Path(__file__).parent.parent / "technical_review_validation_report.json"
+    )
     with open(report_path, "w") as f:
         json.dump(report, f, indent=2)
 

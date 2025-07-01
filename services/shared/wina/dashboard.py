@@ -127,12 +127,16 @@ class WINADashboard:
                     "performance_targets_met", False
                 ),
                 "gflops_reduction": {
-                    "current": overall_performance.get("gflops_reduction_achieved", 0.0),
+                    "current": overall_performance.get(
+                        "gflops_reduction_achieved", 0.0
+                    ),
                     "target_min": 0.4,
                     "target_max": 0.7,
                     "status": (
                         "optimal"
-                        if 0.4 <= overall_performance.get("gflops_reduction_achieved", 0.0) <= 0.7
+                        if 0.4
+                        <= overall_performance.get("gflops_reduction_achieved", 0.0)
+                        <= 0.7
                         else "needs_attention"
                     ),
                 },
@@ -146,11 +150,16 @@ class WINADashboard:
                     ),
                 },
                 "constitutional_compliance": {
-                    "current": overall_performance.get("constitutional_compliance_rate", 0.95),
+                    "current": overall_performance.get(
+                        "constitutional_compliance_rate", 0.95
+                    ),
                     "target": 0.90,
                     "status": (
                         "compliant"
-                        if overall_performance.get("constitutional_compliance_rate", 0.95) >= 0.90
+                        if overall_performance.get(
+                            "constitutional_compliance_rate", 0.95
+                        )
+                        >= 0.90
                         else "non_compliant"
                     ),
                 },
@@ -177,12 +186,16 @@ class WINADashboard:
                 "neuron_activation": real_time_metrics.get("neuron_activation", {}),
                 "svd_transformation": real_time_metrics.get("svd_transformation", {}),
                 "dynamic_gating": real_time_metrics.get("dynamic_gating", {}),
-                "constitutional_compliance": real_time_metrics.get("constitutional_compliance", {}),
-                "learning_feedback": real_time_metrics.get("learning_feedback", {}),
-                "integration_performance": real_time_metrics.get("integration_performance", {}),
-                "efficiency_score": real_time_metrics.get("overall_performance", {}).get(
-                    "efficiency_score", 0.0
+                "constitutional_compliance": real_time_metrics.get(
+                    "constitutional_compliance", {}
                 ),
+                "learning_feedback": real_time_metrics.get("learning_feedback", {}),
+                "integration_performance": real_time_metrics.get(
+                    "integration_performance", {}
+                ),
+                "efficiency_score": real_time_metrics.get(
+                    "overall_performance", {}
+                ).get("efficiency_score", 0.0),
             }
 
         except Exception as e:
@@ -196,7 +209,9 @@ class WINADashboard:
 
             for component in WINAComponentType:
                 # Get recent component metrics
-                component_metrics = self.performance_collector.component_metrics.get(component, [])
+                component_metrics = self.performance_collector.component_metrics.get(
+                    component, []
+                )
                 recent_metrics = [
                     m
                     for m in component_metrics
@@ -206,12 +221,12 @@ class WINADashboard:
                 ]
 
                 if recent_metrics:
-                    success_rate = sum(1 for m in recent_metrics if m.get("success", True)) / len(
-                        recent_metrics
-                    )
-                    avg_duration = sum(m.get("duration_ms", 0) for m in recent_metrics) / len(
-                        recent_metrics
-                    )
+                    success_rate = sum(
+                        1 for m in recent_metrics if m.get("success", True)
+                    ) / len(recent_metrics)
+                    avg_duration = sum(
+                        m.get("duration_ms", 0) for m in recent_metrics
+                    ) / len(recent_metrics)
 
                     status = "healthy"
                     if success_rate < 0.95:
@@ -264,8 +279,12 @@ class WINADashboard:
             ]
 
             # Categorize alerts by severity
-            critical_alerts = [a for a in recent_alerts if a.get("severity") == "critical"]
-            warning_alerts = [a for a in recent_alerts if a.get("severity") == "warning"]
+            critical_alerts = [
+                a for a in recent_alerts if a.get("severity") == "critical"
+            ]
+            warning_alerts = [
+                a for a in recent_alerts if a.get("severity") == "warning"
+            ]
 
             # Get active alerts (last 1 hour)
             active_alerts = [
@@ -285,7 +304,9 @@ class WINADashboard:
                 "active_alerts": len(active_alerts),
                 "recent_alerts": active_alerts[-self.alert_display_limit :],
                 "alert_trend": (
-                    "increasing" if len(active_alerts) > len(recent_alerts) / 24 else "stable"
+                    "increasing"
+                    if len(active_alerts) > len(recent_alerts) / 24
+                    else "stable"
                 ),
             }
 
@@ -302,7 +323,9 @@ class WINADashboard:
             chart_data["gflops_reduction_chart"] = await self._get_gflops_chart_data()
 
             # Accuracy retention over time
-            chart_data["accuracy_retention_chart"] = await self._get_accuracy_chart_data()
+            chart_data["accuracy_retention_chart"] = (
+                await self._get_accuracy_chart_data()
+            )
 
             # Component performance distribution
             chart_data["component_performance_chart"] = (
@@ -313,7 +336,9 @@ class WINADashboard:
             chart_data["system_health_chart"] = await self._get_system_health_chart()
 
             # Integration latency trends
-            chart_data["integration_latency_chart"] = await self._get_integration_latency_chart()
+            chart_data["integration_latency_chart"] = (
+                await self._get_integration_latency_chart()
+            )
 
             return chart_data
 
@@ -350,7 +375,9 @@ class WINADashboard:
                 "target_min": 0.4,
                 "target_max": 0.7,
                 "current": data[-1] if data else 0.0,
-                "trend": ("improving" if len(data) > 1 and data[-1] > data[0] else "stable"),
+                "trend": (
+                    "improving" if len(data) > 1 and data[-1] > data[0] else "stable"
+                ),
             }
 
         except Exception as e:
@@ -385,7 +412,9 @@ class WINADashboard:
                 "data": data,
                 "target": 0.95,
                 "current": data[-1] if data else 0.95,
-                "trend": ("improving" if len(data) > 1 and data[-1] > data[0] else "stable"),
+                "trend": (
+                    "improving" if len(data) > 1 and data[-1] > data[0] else "stable"
+                ),
             }
 
         except Exception as e:
@@ -398,7 +427,9 @@ class WINADashboard:
             component_data = []
 
             for component in WINAComponentType:
-                component_metrics = self.performance_collector.component_metrics.get(component, [])
+                component_metrics = self.performance_collector.component_metrics.get(
+                    component, []
+                )
                 recent_metrics = [
                     m
                     for m in component_metrics
@@ -408,12 +439,12 @@ class WINADashboard:
                 ]
 
                 if recent_metrics:
-                    avg_duration = sum(m.get("duration_ms", 0) for m in recent_metrics) / len(
-                        recent_metrics
-                    )
-                    success_rate = sum(1 for m in recent_metrics if m.get("success", True)) / len(
-                        recent_metrics
-                    )
+                    avg_duration = sum(
+                        m.get("duration_ms", 0) for m in recent_metrics
+                    ) / len(recent_metrics)
+                    success_rate = sum(
+                        1 for m in recent_metrics if m.get("success", True)
+                    ) / len(recent_metrics)
 
                     component_data.append(
                         {
@@ -501,7 +532,9 @@ class WINADashboard:
             latency_trends = []
             for pair_key, metrics in integration_pairs.items():
                 if len(metrics) >= 2:
-                    avg_latency = sum(m.integration_latency_ms for m in metrics) / len(metrics)
+                    avg_latency = sum(m.integration_latency_ms for m in metrics) / len(
+                        metrics
+                    )
                     latest_latency = metrics[-1].integration_latency_ms
                     earliest_latency = metrics[0].integration_latency_ms
 
@@ -582,7 +615,9 @@ class WINADashboard:
                 "system_health_score": system_health_score,
                 "indicators": {
                     "wina_optimization": {
-                        "status": overall_performance.get("optimization_status", "unknown"),
+                        "status": overall_performance.get(
+                            "optimization_status", "unknown"
+                        ),
                         "score": performance_health,
                     },
                     "system_stability": {
@@ -616,7 +651,9 @@ class WINADashboard:
             end_time = datetime.now(timezone.utc)
             start_time = end_time - timedelta(hours=24)
 
-            report = await self.performance_collector.get_performance_report(start_time, end_time)
+            report = await self.performance_collector.get_performance_report(
+                start_time, end_time
+            )
 
             return {
                 "performance_trends": report.trends,
@@ -633,7 +670,9 @@ class WINADashboard:
                     "current": report.overall_accuracy_retention,
                     "target": "≥95%",
                     "status": (
-                        "on_target" if report.overall_accuracy_retention >= 0.95 else "below_target"
+                        "on_target"
+                        if report.overall_accuracy_retention >= 0.95
+                        else "below_target"
                     ),
                 },
                 "operations_trend": {
@@ -694,7 +733,9 @@ class WINADashboard:
             ]
 
             if len(recent_alerts) > 5:
-                recommendations.append("Multiple recent alerts detected. Review system stability.")
+                recommendations.append(
+                    "Multiple recent alerts detected. Review system stability."
+                )
 
             # Component-specific recommendations
             neuron_activation = real_time_metrics.get("neuron_activation", {})
@@ -770,14 +811,17 @@ class WINADashboard:
             except ValueError:
                 raise ValueError(f"Invalid component type: {component_type}")
 
-            component_metrics = self.performance_collector.component_metrics.get(component_enum, [])
+            component_metrics = self.performance_collector.component_metrics.get(
+                component_enum, []
+            )
 
             # Get recent metrics (last hour)
             current_time = datetime.now(timezone.utc)
             recent_metrics = [
                 m
                 for m in component_metrics
-                if current_time - m.get("timestamp", datetime.min.replace(tzinfo=timezone.utc))
+                if current_time
+                - m.get("timestamp", datetime.min.replace(tzinfo=timezone.utc))
                 < timedelta(hours=1)
             ]
 
@@ -789,9 +833,9 @@ class WINADashboard:
                 }
 
             # Calculate statistics
-            success_rate = sum(1 for m in recent_metrics if m.get("success", True)) / len(
-                recent_metrics
-            )
+            success_rate = sum(
+                1 for m in recent_metrics if m.get("success", True)
+            ) / len(recent_metrics)
             avg_duration = sum(m.get("duration_ms", 0) for m in recent_metrics) / len(
                 recent_metrics
             )

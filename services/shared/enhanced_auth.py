@@ -159,7 +159,9 @@ class User:
 
     # Security features
     mfa_enabled: bool = False
-    password_changed_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    password_changed_at: datetime = field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
     failed_login_attempts: int = 0
 
     def to_dict(self) -> dict[str, Any]:
@@ -187,7 +189,11 @@ class User:
             role=UserRole(data["role"]),
             is_active=data["is_active"],
             created_at=datetime.fromisoformat(data["created_at"]),
-            last_login=(datetime.fromisoformat(data["last_login"]) if data["last_login"] else None),
+            last_login=(
+                datetime.fromisoformat(data["last_login"])
+                if data["last_login"]
+                else None
+            ),
             mfa_enabled=data.get("mfa_enabled", False),
             password_changed_at=datetime.fromisoformat(data["password_changed_at"]),
             failed_login_attempts=data.get("failed_login_attempts", 0),
@@ -422,7 +428,9 @@ class EnhancedAuthService:
 
                 if user_data:
                     # Cache for future use
-                    await self._cache_user(username, user_data["user"], user_data["password_hash"])
+                    await self._cache_user(
+                        username, user_data["user"], user_data["password_hash"]
+                    )
 
             if not user_data:
                 self._update_auth_metrics(time.time() - start_time, False)
@@ -441,8 +449,12 @@ class EnhancedAuthService:
 
                 # Lock account if too many failures
                 if user.failed_login_attempts >= self.max_login_attempts:
-                    user.locked_until = datetime.now(timezone.utc) + self.lockout_duration
-                    logger.warning(f"Account {username} locked due to too many failed attempts")
+                    user.locked_until = (
+                        datetime.now(timezone.utc) + self.lockout_duration
+                    )
+                    logger.warning(
+                        f"Account {username} locked due to too many failed attempts"
+                    )
 
                 await self._cache_user(username, user, user_data["password_hash"])
                 self._update_auth_metrics(time.time() - start_time, False)
@@ -492,7 +504,9 @@ class EnhancedAuthService:
 
         return None
 
-    async def _create_session(self, user: User, ip_address: str, user_agent: str) -> UserSession:
+    async def _create_session(
+        self, user: User, ip_address: str, user_agent: str
+    ) -> UserSession:
         """Create a new user session."""
         session_id = secrets.token_urlsafe(32)
 
@@ -532,7 +546,9 @@ class EnhancedAuthService:
         if expires_delta:
             expire = datetime.now(timezone.utc) + expires_delta
         else:
-            expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+            expire = datetime.now(timezone.utc) + timedelta(
+                minutes=ACCESS_TOKEN_EXPIRE_MINUTES
+            )
 
         # Generate unique JWT ID
         jti = secrets.token_urlsafe(16)
@@ -651,8 +667,12 @@ class EnhancedAuthService:
             else 1.0
         )
 
-        cache_total = self.auth_metrics["cache_hits"] + self.auth_metrics["cache_misses"]
-        cache_hit_rate = self.auth_metrics["cache_hits"] / cache_total if cache_total > 0 else 0.0
+        cache_total = (
+            self.auth_metrics["cache_hits"] + self.auth_metrics["cache_misses"]
+        )
+        cache_hit_rate = (
+            self.auth_metrics["cache_hits"] / cache_total if cache_total > 0 else 0.0
+        )
 
         return {
             "total_authentications": total_auths,
@@ -842,7 +862,9 @@ class ServiceAuthManager:
         if permissions is None:
             permissions = ["internal_service"]
 
-        expire = datetime.now(timezone.utc) + timedelta(minutes=SERVICE_TOKEN_EXPIRE_MINUTES)
+        expire = datetime.now(timezone.utc) + timedelta(
+            minutes=SERVICE_TOKEN_EXPIRE_MINUTES
+        )
         jti = secrets.token_urlsafe(16)
 
         payload = {

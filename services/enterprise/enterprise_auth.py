@@ -103,7 +103,9 @@ class SAMLAuthProvider:
                         {"saml": "urn:oasis:names:tc:SAML:2.0:assertion"},
                     )
                 ]
-                attributes[attr_name] = attr_values[0] if len(attr_values) == 1 else attr_values
+                attributes[attr_name] = (
+                    attr_values[0] if len(attr_values) == 1 else attr_values
+                )
 
             # Map attributes to user fields
             user_data = {}
@@ -232,7 +234,9 @@ class EnterpriseAuthManager:
             name=user_data.get("name", user_data.get("email")),
             tenant_id=tenant_id,
             roles=self._map_enterprise_roles(user_data.get("roles", [])),
-            permissions=self._get_constitutional_permissions(user_data.get("roles", [])),
+            permissions=self._get_constitutional_permissions(
+                user_data.get("roles", [])
+            ),
             constitutional_clearance_level=self._determine_clearance_level(
                 user_data.get("roles", [])
             ),
@@ -267,7 +271,9 @@ class EnterpriseAuthManager:
             name=user_info.get("name", user_info.get("email")),
             tenant_id=tenant_id,
             roles=self._map_enterprise_roles(user_info.get("roles", [])),
-            permissions=self._get_constitutional_permissions(user_info.get("roles", [])),
+            permissions=self._get_constitutional_permissions(
+                user_info.get("roles", [])
+            ),
             constitutional_clearance_level=self._determine_clearance_level(
                 user_info.get("roles", [])
             ),
@@ -331,7 +337,9 @@ class EnterpriseAuthManager:
                 }
             )
         elif "governance_reviewer" in roles:
-            permissions.update({"can_review_policies": True, "max_governance_actions_per_hour": 50})
+            permissions.update(
+                {"can_review_policies": True, "max_governance_actions_per_hour": 50}
+            )
 
         return permissions
 

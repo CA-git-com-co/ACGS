@@ -13,7 +13,9 @@ from datetime import datetime
 from pathlib import Path
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -22,7 +24,9 @@ class GovernanceWorkflowImplementer:
 
     def __init__(self):
         self.project_root = Path("/home/dislove/ACGS-1")
-        self.pgc_service_path = self.project_root / "services/core/policy-governance/pgc_service"
+        self.pgc_service_path = (
+            self.project_root / "services/core/policy-governance/pgc_service"
+        )
 
         # Governance workflows to implement
         self.workflows = [
@@ -89,7 +93,9 @@ class GovernanceWorkflowImplementer:
                     "end_time": datetime.now().isoformat(),
                     "execution_time_seconds": execution_time,
                     "overall_success": self.evaluate_implementation_success(results),
-                    "implementation_summary": self.generate_implementation_summary(results),
+                    "implementation_summary": self.generate_implementation_summary(
+                        results
+                    ),
                 }
             )
 
@@ -763,7 +769,9 @@ async def get_policy_synthesis_engine() -> PolicySynthesisEngine:
         endpoints_tested = []
         for workflow in self.workflows:
             endpoint = f"/api/v1/governance/{workflow.replace('_', '-')}"
-            endpoints_tested.append({"endpoint": endpoint, "implemented": True, "tested": True})
+            endpoints_tested.append(
+                {"endpoint": endpoint, "implemented": True, "tested": True}
+            )
 
         return {
             "success": True,
@@ -777,7 +785,9 @@ async def get_policy_synthesis_engine() -> PolicySynthesisEngine:
         phases = results.get("implementation_phases", {})
 
         # Check if critical phases succeeded
-        governance_success = phases.get("governance_endpoints", {}).get("success", False)
+        governance_success = phases.get("governance_endpoints", {}).get(
+            "success", False
+        )
         synthesis_success = phases.get("policy_synthesis", {}).get("success", False)
         testing_success = phases.get("endpoint_testing", {}).get("success", False)
 

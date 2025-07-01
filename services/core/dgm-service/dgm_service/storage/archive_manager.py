@@ -76,7 +76,9 @@ class ArchiveManager:
         try:
             async with get_db_session() as session:
                 result = await session.execute(
-                    select(DGMArchive).where(DGMArchive.improvement_id == improvement_id)
+                    select(DGMArchive).where(
+                        DGMArchive.improvement_id == improvement_id
+                    )
                 )
                 return result.scalar_one_or_none()
 
@@ -104,7 +106,8 @@ class ArchiveManager:
 
                 if min_compliance_score is not None:
                     query = query.where(
-                        DGMArchive.constitutional_compliance_score >= min_compliance_score
+                        DGMArchive.constitutional_compliance_score
+                        >= min_compliance_score
                     )
 
                 if start_date:
@@ -148,7 +151,9 @@ class ArchiveManager:
                 await session.commit()
 
                 if result.rowcount > 0:
-                    logger.info(f"Updated improvement {improvement_id} status to {status}")
+                    logger.info(
+                        f"Updated improvement {improvement_id} status to {status}"
+                    )
                     return True
                 else:
                     logger.warning(f"No improvement found with ID {improvement_id}")
@@ -191,7 +196,9 @@ class ArchiveManager:
                     # Calculate performance improvement
                     before = improvement.performance_before.get("overall_score", 0)
                     after = improvement.performance_after.get("overall_score", 0)
-                    improvement_pct = ((after - before) / before * 100) if before > 0 else 0
+                    improvement_pct = (
+                        ((after - before) / before * 100) if before > 0 else 0
+                    )
                     trends["performance_improvements"].append(improvement_pct)
 
                 return trends
@@ -231,7 +238,9 @@ class ArchiveManager:
         """Export archive data for backup or analysis."""
         try:
             improvements = await self.list_improvements(
-                limit=10000, start_date=start_date, end_date=end_date  # Large limit for export
+                limit=10000,
+                start_date=start_date,
+                end_date=end_date,  # Large limit for export
             )
 
             if format.lower() == "json":

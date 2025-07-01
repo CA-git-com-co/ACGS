@@ -335,7 +335,9 @@ async def get_audit_trail(
 
 @app.post("/api/v1/compliance/generate-report")
 async def generate_compliance_report(
-    report_type: str = Query(..., description="Type of report: soc2, gdpr, constitutional, or all"),
+    report_type: str = Query(
+        ..., description="Type of report: soc2, gdpr, constitutional, or all"
+    ),
     period_days: int = Query(default=30, description="Report period in days"),
 ):
     """Generate comprehensive compliance report"""

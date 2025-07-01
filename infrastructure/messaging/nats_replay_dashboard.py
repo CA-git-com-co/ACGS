@@ -29,11 +29,12 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 app = FastAPI(
     title="ACGS NATS Event Replay Dashboard",
     description="Dashboard for managing NATS event persistence and replay",
-    version="1.0.0"
+    version="1.0.0",
 )
 
 # Templates
 templates = Jinja2Templates(directory="templates")
+
 
 @app.on_event("startup")
 async def startup_event():
@@ -44,6 +45,7 @@ async def startup_event():
     except Exception as e:
         logger.error(f"Failed to start NATS Persistence Manager: {e}")
 
+
 @app.on_event("shutdown")
 async def shutdown_event():
     """Cleanup on shutdown."""
@@ -53,28 +55,35 @@ async def shutdown_event():
     except Exception as e:
         logger.error(f"Error stopping NATS Persistence Manager: {e}")
 
+
 @app.get("/", response_class=HTMLResponse)
 async def dashboard_home(request: Request):
     """Main dashboard page."""
     try:
         # Get system status
         persistence_summary = persistence_manager.get_persistence_summary()
-        
+
         # Get stream information
         streams_info = {}
         for stream_name in persistence_manager.stream_configs.keys():
-            streams_info[stream_name] = await persistence_manager.get_stream_info(stream_name)
-        
-        return templates.TemplateResponse("nats_dashboard.html", {
-            "request": request,
-            "persistence_summary": persistence_summary,
-            "streams_info": streams_info,
-            "constitutional_hash": CONSTITUTIONAL_HASH,
-            "timestamp": datetime.now(timezone.utc).isoformat()
-        })
+            streams_info[stream_name] = await persistence_manager.get_stream_info(
+                stream_name
+            )
+
+        return templates.TemplateResponse(
+            "nats_dashboard.html",
+            {
+                "request": request,
+                "persistence_summary": persistence_summary,
+                "streams_info": streams_info,
+                "constitutional_hash": CONSTITUTIONAL_HASH,
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            },
+        )
     except Exception as e:
         logger.error(f"Dashboard error: {e}")
         return HTMLResponse(f"<h1>Dashboard Error</h1><p>{str(e)}</p>", status_code=500)
+
 
 @app.get("/api/streams")
 async def get_streams():
@@ -82,42 +91,52 @@ async def get_streams():
     try:
         streams_info = {}
         for stream_name in persistence_manager.stream_configs.keys():
-            streams_info[stream_name] = await persistence_manager.get_stream_info(stream_name)
-        
+            streams_info[stream_name] = await persistence_manager.get_stream_info(
+                stream_name
+            )
+
         return {
             "streams": streams_info,
             "total_streams": len(streams_info),
             "constitutional_hash": CONSTITUTIONAL_HASH,
-            "timestamp": datetime.now(timezone.utc).isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
     except Exception as e:
         logger.error(f"Error getting streams: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.get("/api/streams/{stream_name}")
 async def get_stream_info(stream_name: str):
     """Get detailed information about a specific stream."""
     try:
         if stream_name not in persistence_manager.stream_configs:
-            raise HTTPException(status_code=404, detail=f"Stream {stream_name} not found")
-        
+            raise HTTPException(
+                status_code=404, detail=f"Stream {stream_name} not found"
+            )
+
         stream_info = await persistence_manager.get_stream_info(stream_name)
-        
+
         return {
             "stream_info": stream_info,
             "stream_config": {
                 "name": persistence_manager.stream_configs[stream_name].name,
                 "subjects": persistence_manager.stream_configs[stream_name].subjects,
-                "retention": persistence_manager.stream_configs[stream_name].retention.value,
-                "max_age_days": persistence_manager.stream_configs[stream_name].max_age.days,
+                "retention": persistence_manager.stream_configs[
+                    stream_name
+                ].retention.value,
+                "max_age_days": persistence_manager.stream_configs[
+                    stream_name
+                ].max_age.days,
                 "max_bytes": persistence_manager.stream_configs[stream_name].max_bytes,
-                "max_msgs": persistence_manager.stream_configs[stream_name].max_msgs
+                "max_msgs": persistence_manager.stream_configs[stream_name].max_msgs,
             },
-            "constitutional_hash": CONSTITUTIONAL_HASH
+            "constitutional_hash": CONSTITUTIONAL_HASH,
         }
     except Exception as e:
         logger.error(f"Error getting stream info for {stream_name}: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.post("/api/replay/start")
 async def start_replay(
@@ -128,18 +147,22 @@ async def start_replay(
     end_sequence: Optional[int] = Form(None),
     replay_speed: float = Form(1.0),
     filter_subjects: Optional[str] = Form(None),
-    replay_to_original: bool = Form(True)
+    replay_to_original: bool = Form(True),
 ):
     """Start a new event replay."""
     try:
         if stream_name not in persistence_manager.stream_configs:
-            raise HTTPException(status_code=404, detail=f"Stream {stream_name} not found")
-        
+            raise HTTPException(
+                status_code=404, detail=f"Stream {stream_name} not found"
+            )
+
         # Parse filter subjects
         filter_subjects_list = []
         if filter_subjects:
-            filter_subjects_list = [s.strip() for s in filter_subjects.split(",") if s.strip()]
-        
+            filter_subjects_list = [
+                s.strip() for s in filter_subjects.split(",") if s.strip()
+            ]
+
         # Create replay configuration
         replay_config = ReplayConfiguration(
             replay_id=f"replay_{int(datetime.now().timestamp())}_{stream_name}",
@@ -150,12 +173,12 @@ async def start_replay(
             end_sequence=end_sequence,
             replay_speed=replay_speed,
             filter_subjects=filter_subjects_list,
-            replay_to_original_subjects=replay_to_original
+            replay_to_original_subjects=replay_to_original,
         )
-        
+
         # Start replay
         replay_id = await persistence_manager.start_replay(replay_config)
-        
+
         return {
             "replay_id": replay_id,
             "message": f"Replay started successfully",
@@ -164,28 +187,30 @@ async def start_replay(
                 "start_time": start_time,
                 "end_time": end_time,
                 "replay_speed": replay_speed,
-                "filter_subjects": filter_subjects_list
+                "filter_subjects": filter_subjects_list,
             },
-            "constitutional_hash": CONSTITUTIONAL_HASH
+            "constitutional_hash": CONSTITUTIONAL_HASH,
         }
     except Exception as e:
         logger.error(f"Error starting replay: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.post("/api/replay/{replay_id}/stop")
 async def stop_replay(replay_id: str):
     """Stop an active replay."""
     try:
         await persistence_manager.stop_replay(replay_id)
-        
+
         return {
             "message": f"Replay {replay_id} stopped successfully",
             "replay_id": replay_id,
-            "constitutional_hash": CONSTITUTIONAL_HASH
+            "constitutional_hash": CONSTITUTIONAL_HASH,
         }
     except Exception as e:
         logger.error(f"Error stopping replay {replay_id}: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.get("/api/replays")
 async def get_active_replays():
@@ -196,86 +221,95 @@ async def get_active_replays():
             active_replays[replay_id] = {
                 "replay_id": config.replay_id,
                 "stream_name": config.stream_name,
-                "start_time": config.start_time.isoformat() if config.start_time else None,
+                "start_time": (
+                    config.start_time.isoformat() if config.start_time else None
+                ),
                 "end_time": config.end_time.isoformat() if config.end_time else None,
                 "replay_speed": config.replay_speed,
                 "filter_subjects": config.filter_subjects,
-                "constitutional_hash": config.constitutional_hash
+                "constitutional_hash": config.constitutional_hash,
             }
-        
+
         return {
             "active_replays": active_replays,
             "total_active": len(active_replays),
             "constitutional_hash": CONSTITUTIONAL_HASH,
-            "timestamp": datetime.now(timezone.utc).isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
     except Exception as e:
         logger.error(f"Error getting active replays: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.post("/api/streams/{stream_name}/backup")
 async def backup_stream(stream_name: str, backup_path: Optional[str] = None):
     """Backup a stream to file."""
     try:
         if stream_name not in persistence_manager.stream_configs:
-            raise HTTPException(status_code=404, detail=f"Stream {stream_name} not found")
-        
+            raise HTTPException(
+                status_code=404, detail=f"Stream {stream_name} not found"
+            )
+
         if not backup_path:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             backup_path = f"backups/nats/{stream_name}_backup_{timestamp}.jsonl"
-        
+
         await persistence_manager.backup_stream(stream_name, backup_path)
-        
+
         return {
             "message": f"Stream {stream_name} backed up successfully",
             "backup_path": backup_path,
             "stream_name": stream_name,
-            "constitutional_hash": CONSTITUTIONAL_HASH
+            "constitutional_hash": CONSTITUTIONAL_HASH,
         }
     except Exception as e:
         logger.error(f"Error backing up stream {stream_name}: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.post("/api/streams/{stream_name}/restore")
 async def restore_stream(stream_name: str, backup_path: str = Form(...)):
     """Restore a stream from backup file."""
     try:
         if stream_name not in persistence_manager.stream_configs:
-            raise HTTPException(status_code=404, detail=f"Stream {stream_name} not found")
-        
+            raise HTTPException(
+                status_code=404, detail=f"Stream {stream_name} not found"
+            )
+
         await persistence_manager.restore_stream(stream_name, backup_path)
-        
+
         return {
             "message": f"Stream {stream_name} restored successfully",
             "backup_path": backup_path,
             "stream_name": stream_name,
-            "constitutional_hash": CONSTITUTIONAL_HASH
+            "constitutional_hash": CONSTITUTIONAL_HASH,
         }
     except Exception as e:
         logger.error(f"Error restoring stream {stream_name}: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @app.get("/api/events/publish")
 async def publish_test_event(
     subject: str = "acgs.events.test",
     event_type: str = "test_event",
-    source_service: str = "dashboard"
+    source_service: str = "dashboard",
 ):
     """Publish a test event for testing purposes."""
     try:
         test_data = {
             "message": "Test event from dashboard",
             "timestamp": datetime.now(timezone.utc).isoformat(),
-            "test_id": f"test_{int(datetime.now().timestamp())}"
+            "test_id": f"test_{int(datetime.now().timestamp())}",
         }
-        
+
         event_metadata = await persistence_manager.publish_event(
             subject=subject,
             event_data=test_data,
             event_type=event_type,
-            source_service=source_service
+            source_service=source_service,
         )
-        
+
         return {
             "message": "Test event published successfully",
             "event_metadata": {
@@ -283,24 +317,25 @@ async def publish_test_event(
                 "subject": event_metadata.subject,
                 "event_type": event_metadata.event_type,
                 "stream_name": event_metadata.stream_name,
-                "sequence_number": event_metadata.sequence_number
+                "sequence_number": event_metadata.sequence_number,
             },
-            "constitutional_hash": CONSTITUTIONAL_HASH
+            "constitutional_hash": CONSTITUTIONAL_HASH,
         }
     except Exception as e:
         logger.error(f"Error publishing test event: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.get("/api/status")
 async def get_system_status():
     """Get system status and health information."""
     try:
         persistence_summary = persistence_manager.get_persistence_summary()
-        
+
         # Get stream statistics
         total_messages = 0
         total_bytes = 0
-        
+
         for stream_name in persistence_manager.stream_configs.keys():
             try:
                 stream_info = await persistence_manager.get_stream_info(stream_name)
@@ -308,7 +343,7 @@ async def get_system_status():
                 total_bytes += stream_info.get("bytes", 0)
             except:
                 pass
-        
+
         return {
             "system_status": {
                 "connected": persistence_summary["connected"],
@@ -316,14 +351,15 @@ async def get_system_status():
                 "configured_streams": persistence_summary["configured_streams"],
                 "total_messages": total_messages,
                 "total_bytes": total_bytes,
-                "constitutional_hash": persistence_summary["constitutional_hash"]
+                "constitutional_hash": persistence_summary["constitutional_hash"],
             },
             "health": "healthy" if persistence_summary["connected"] else "unhealthy",
-            "timestamp": datetime.now(timezone.utc).isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
     except Exception as e:
         logger.error(f"Error getting system status: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.get("/health")
 async def health_check():
@@ -332,8 +368,9 @@ async def health_check():
         "status": "healthy",
         "service": "acgs-nats-replay-dashboard",
         "constitutional_hash": CONSTITUTIONAL_HASH,
-        "timestamp": datetime.now(timezone.utc).isoformat()
+        "timestamp": datetime.now(timezone.utc).isoformat(),
     }
+
 
 # Create dashboard template
 dashboard_template = """
@@ -561,23 +598,20 @@ dashboard_template = """
 </html>
 """
 
+
 def create_dashboard_template():
     """Create dashboard template file."""
     templates_dir = Path("templates")
     templates_dir.mkdir(exist_ok=True)
-    
+
     template_file = templates_dir / "nats_dashboard.html"
-    with open(template_file, 'w') as f:
+    with open(template_file, "w") as f:
         f.write(dashboard_template)
+
 
 if __name__ == "__main__":
     # Create template
     create_dashboard_template()
-    
+
     # Start dashboard server
-    uvicorn.run(
-        app,
-        host="0.0.0.0",
-        port=8098,
-        log_level="info"
-    )
+    uvicorn.run(app, host="0.0.0.0", port=8098, log_level="info")

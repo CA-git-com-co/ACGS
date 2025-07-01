@@ -66,7 +66,10 @@ class TestACGSConfig:
         assert config.get("environment") == "production"
         assert config.get("debug") is True
         assert config.get_service_url("auth") == "https://auth.example.com"
-        assert config.get("jwt_secret_key") == "test-secret-key-32-characters-minimum-length-required"
+        assert (
+            config.get("jwt_secret_key")
+            == "test-secret-key-32-characters-minimum-length-required"
+        )
         assert config.is_test_mode() is True
         assert config.is_production() is True
 
@@ -158,8 +161,13 @@ JWT_SECRET_KEY=test-file-secret-32-characters-minimum-length-required
                     config = ACGSConfig(env_file=f.name)
 
                     assert config.get("environment") == "testing"
-                    assert config.get_service_url("auth") == "http://test.example.com:8000"
-                    assert config.get("jwt_secret_key") == "test-file-secret-32-characters-minimum-length-required"
+                    assert (
+                        config.get_service_url("auth") == "http://test.example.com:8000"
+                    )
+                    assert (
+                        config.get("jwt_secret_key")
+                        == "test-file-secret-32-characters-minimum-length-required"
+                    )
                 finally:
                     os.unlink(f.name)
 

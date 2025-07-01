@@ -20,64 +20,64 @@ from typing import Dict, List, Optional
 
 # Setup logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
+
 class CriticalDeploymentFixer:
     """Fix critical deployment issues for ACGS-1 services."""
-    
+
     def __init__(self):
         self.workspace_root = Path("/mnt/persist/workspace")
         self.services = {
             "auth_service": 8000,
-            "ac_service": 8001, 
+            "ac_service": 8001,
             "integrity_service": 8002,
             "fv_service": 8003,
             "gs_service": 8004,
             "pgc_service": 8005,
             "ec_service": 8006,
-            "dgm_service": 8007
+            "dgm_service": 8007,
         }
         self.fix_report = {
             "timestamp": time.time(),
             "fixes_applied": [],
             "issues_resolved": [],
             "remaining_issues": [],
-            "service_status": {}
+            "service_status": {},
         }
-    
+
     def print_status(self, message: str, level: str = "INFO"):
         """Print colored status message."""
         colors = {
             "INFO": "\033[0;34m[INFO]\033[0m",
-            "SUCCESS": "\033[0;32m[SUCCESS]\033[0m", 
+            "SUCCESS": "\033[0;32m[SUCCESS]\033[0m",
             "WARNING": "\033[1;33m[WARNING]\033[0m",
-            "ERROR": "\033[0;31m[ERROR]\033[0m"
+            "ERROR": "\033[0;31m[ERROR]\033[0m",
         }
         print(f"{colors.get(level, '[INFO]')} {message}")
         logger.info(f"{level}: {message}")
-    
+
     def fix_integrity_service_dns(self) -> bool:
         """Fix Integrity Service DNS resolution issues."""
         self.print_status("Step 1: Fixing Integrity Service DNS Resolution", "INFO")
-        
+
         try:
             # Create environment configuration for integrity service
             env_config = {
                 "DATABASE_URL": "postgresql+asyncpg://acgs_user:acgs_password@localhost:5432/acgs_db",
                 "POSTGRES_HOST": "localhost",
-                "POSTGRES_PORT": "5432", 
+                "POSTGRES_PORT": "5432",
                 "POSTGRES_DB": "acgs_db",
                 "POSTGRES_USER": "acgs_user",
                 "POSTGRES_PASSWORD": "acgs_password",
                 "REDIS_URL": "redis://localhost:6379/2",
                 "INTEGRITY_SERVICE_PORT": "8002",
                 "LOG_LEVEL": "INFO",
-                "ENVIRONMENT": "development"
+                "ENVIRONMENT": "development",
             }
-            
+
             # Write environment configuration
             env_file = self.workspace_root / ".env.integrity"
             with open(env_file, "w") as f:
@@ -85,26 +85,32 @@ class CriticalDeploymentFixer:
                 f.write(f"# Updated: {time.strftime('%Y-%m-%d %H:%M:%S')}\n\n")
                 for key, value in env_config.items():
                     f.write(f"{key}={value}\n")
-            
-            self.print_status("Created integrity service environment configuration", "SUCCESS")
+
+            self.print_status(
+                "Created integrity service environment configuration", "SUCCESS"
+            )
             self.fix_report["fixes_applied"].append("integrity_service_dns_config")
             return True
-            
+
         except Exception as e:
             self.print_status(f"Failed to fix integrity service DNS: {e}", "ERROR")
             return False
-    
+
     def fix_security_middleware_health_endpoints(self) -> bool:
         """Fix security middleware blocking health endpoints."""
-        self.print_status("Step 2: Fixing Security Middleware Health Endpoint Issues", "INFO")
-        
+        self.print_status(
+            "Step 2: Fixing Security Middleware Health Endpoint Issues", "INFO"
+        )
+
         try:
             # The security middleware has already been fixed in the previous edit
             # Now we need to ensure all services use the correct middleware configuration
-            
+
             # Create a health endpoint test script
-            health_test_script = self.workspace_root / "scripts" / "test_health_endpoints.py"
-            
+            health_test_script = (
+                self.workspace_root / "scripts" / "test_health_endpoints.py"
+            )
+
             test_script_content = '''#!/usr/bin/env python3
 """Test health endpoints across all services."""
 import urllib.request
@@ -159,21 +165,21 @@ def main():
 if __name__ == "__main__":
     main()
 '''
-            
+
             with open(health_test_script, "w") as f:
                 f.write(test_script_content)
-            
+
             # Make script executable
             os.chmod(health_test_script, 0o755)
-            
+
             self.print_status("Created health endpoint test script", "SUCCESS")
             self.fix_report["fixes_applied"].append("health_endpoint_test_script")
             return True
-            
+
         except Exception as e:
             self.print_status(f"Failed to fix security middleware: {e}", "ERROR")
             return False
-    
+
     def validate_service_communication(self) -> Dict[str, bool]:
         """Validate that services can communicate properly."""
         self.print_status("Step 3: Validating Service Communication", "INFO")
@@ -183,28 +189,30 @@ if __name__ == "__main__":
         for service_name, port in self.services.items():
             try:
                 url = f"http://localhost:{port}/health"
-                req = urllib.request.Request(url, method='GET')
+                req = urllib.request.Request(url, method="GET")
                 with urllib.request.urlopen(req, timeout=5) as response:
                     if response.status == 200:
                         results[service_name] = True
                         self.print_status(f"{service_name} is healthy", "SUCCESS")
                     else:
                         results[service_name] = False
-                        self.print_status(f"{service_name} returned {response.status}", "WARNING")
+                        self.print_status(
+                            f"{service_name} returned {response.status}", "WARNING"
+                        )
             except Exception as e:
                 results[service_name] = False
                 self.print_status(f"{service_name} connection failed: {e}", "ERROR")
 
         self.fix_report["service_status"] = results
         return results
-    
+
     def create_service_startup_script(self) -> bool:
         """Create a script to start services with proper configuration."""
         self.print_status("Creating service startup script", "INFO")
-        
+
         try:
             startup_script = self.workspace_root / "scripts" / "start_services_fixed.py"
-            
+
             script_content = '''#!/usr/bin/env python3
 """Start ACGS services with fixed configurations."""
 import os
@@ -285,20 +293,20 @@ def main():
 if __name__ == "__main__":
     main()
 '''
-            
+
             with open(startup_script, "w") as f:
                 f.write(script_content)
-            
+
             os.chmod(startup_script, 0o755)
-            
+
             self.print_status("Created service startup script", "SUCCESS")
             self.fix_report["fixes_applied"].append("service_startup_script")
             return True
-            
+
         except Exception as e:
             self.print_status(f"Failed to create startup script: {e}", "ERROR")
             return False
-    
+
     def run_fixes(self) -> bool:
         """Run all critical fixes."""
         self.print_status("🔧 ACGS-1 Critical Deployment Issues Fix", "INFO")
@@ -310,12 +318,16 @@ if __name__ == "__main__":
         # Fix 1: Integrity Service DNS
         if self.fix_integrity_service_dns():
             success_count += 1
-            self.fix_report["issues_resolved"].append("integrity_service_dns_resolution")
+            self.fix_report["issues_resolved"].append(
+                "integrity_service_dns_resolution"
+            )
 
         # Fix 2: Security Middleware Health Endpoints
         if self.fix_security_middleware_health_endpoints():
             success_count += 1
-            self.fix_report["issues_resolved"].append("security_middleware_health_endpoints")
+            self.fix_report["issues_resolved"].append(
+                "security_middleware_health_endpoints"
+            )
 
         # Fix 3: Service Startup Script
         if self.create_service_startup_script():
@@ -327,12 +339,16 @@ if __name__ == "__main__":
         healthy_services = sum(service_status.values())
         if healthy_services > 0:
             success_count += 1
-            self.fix_report["issues_resolved"].append("service_communication_validation")
+            self.fix_report["issues_resolved"].append(
+                "service_communication_validation"
+            )
 
         # Generate report
         self.generate_fix_report()
 
-        self.print_status(f"✅ Completed {success_count}/{total_fixes} fixes", "SUCCESS")
+        self.print_status(
+            f"✅ Completed {success_count}/{total_fixes} fixes", "SUCCESS"
+        )
 
         if success_count == total_fixes:
             self.print_status("🎉 All critical issues resolved!", "SUCCESS")
@@ -340,16 +356,16 @@ if __name__ == "__main__":
         else:
             self.print_status("⚠️ Some issues remain - check fix report", "WARNING")
             return False
-    
+
     def generate_fix_report(self):
         """Generate comprehensive fix report."""
         report_file = self.workspace_root / "critical_deployment_fix_report.json"
-        
+
         with open(report_file, "w") as f:
             json.dump(self.fix_report, f, indent=2)
-        
+
         self.print_status(f"Fix report saved to: {report_file}", "INFO")
-        
+
         # Print summary
         print("\n" + "=" * 60)
         print("🔧 CRITICAL DEPLOYMENT FIX SUMMARY")
@@ -357,21 +373,25 @@ if __name__ == "__main__":
         print(f"✅ Fixes Applied: {len(self.fix_report['fixes_applied'])}")
         print(f"✅ Issues Resolved: {len(self.fix_report['issues_resolved'])}")
         print(f"⚠️ Remaining Issues: {len(self.fix_report['remaining_issues'])}")
-        
-        healthy_services = sum(self.fix_report['service_status'].values())
-        total_services = len(self.fix_report['service_status'])
-        print(f"📊 Service Health: {healthy_services}/{total_services} services healthy")
-        
+
+        healthy_services = sum(self.fix_report["service_status"].values())
+        total_services = len(self.fix_report["service_status"])
+        print(
+            f"📊 Service Health: {healthy_services}/{total_services} services healthy"
+        )
+
         print("\n🔧 Next Steps:")
         print("1. Run: python scripts/start_services_fixed.py")
-        print("2. Test: python scripts/test_health_endpoints.py") 
+        print("2. Test: python scripts/test_health_endpoints.py")
         print("3. Validate: python scripts/comprehensive_health_check.py")
+
 
 def main():
     """Main execution function."""
     fixer = CriticalDeploymentFixer()
     success = fixer.run_fixes()
     sys.exit(0 if success else 1)
+
 
 if __name__ == "__main__":
     main()

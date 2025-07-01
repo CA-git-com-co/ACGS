@@ -78,7 +78,9 @@ class TestErrorScenarios:
             "type": "access",
             "exp": int((datetime.utcnow() - timedelta(seconds=1)).timestamp()),
         }
-        expired_token = jwt.encode(expired_payload, auth.SECRET_KEY, algorithm=auth.ALGORITHM)
+        expired_token = jwt.encode(
+            expired_payload, auth.SECRET_KEY, algorithm=auth.ALGORITHM
+        )
         with pytest.raises(HTTPException):
             auth.verify_token_and_get_payload(expired_token)
 

@@ -87,7 +87,11 @@ class HealthCheckHandler(http.server.BaseHTTPRequestHandler):
             self.send_header("Content-type", "application/json")
             self.end_headers()
 
-            response = {"healthy": is_healthy, "lastUpdate": health_state.last_update, "info": info}
+            response = {
+                "healthy": is_healthy,
+                "lastUpdate": health_state.last_update,
+                "info": info,
+            }
             self.wfile.write(json.dumps(response).encode())
         else:
             self.send_response(404)
@@ -111,7 +115,9 @@ class HealthCheckHandler(http.server.BaseHTTPRequestHandler):
                     if data["healthy"]:
                         health_state.set_healthy(data.get("info"))
                     else:
-                        health_state.set_unhealthy(data.get("reason", "No reason provided"))
+                        health_state.set_unhealthy(
+                            data.get("reason", "No reason provided")
+                        )
 
                     self.send_response(200)
                     self.send_header("Content-type", "text/plain")
@@ -184,7 +190,10 @@ def check_vllm_health(host: str, port: int) -> bool:
             json={
                 "model": "nanonets/Nanonets-OCR-s",
                 "messages": [
-                    {"role": "user", "content": [{"type": "text", "text": "Are you available?"}]}
+                    {
+                        "role": "user",
+                        "content": [{"type": "text", "text": "Are you available?"}],
+                    }
                 ],
             },
             timeout=5,
@@ -230,10 +239,15 @@ def main():
     parser = argparse.ArgumentParser(description="OCR Service Health Check Server")
     parser.add_argument("--port", type=int, default=8667, help="Port to listen on")
     parser.add_argument("--host", default="0.0.0.0", help="Host to bind to")
-    parser.add_argument("--vllm-host", default="localhost", help="vLLM service hostname")
+    parser.add_argument(
+        "--vllm-host", default="localhost", help="vLLM service hostname"
+    )
     parser.add_argument("--vllm-port", type=int, default=8666, help="vLLM service port")
     parser.add_argument(
-        "--check-interval", type=int, default=30, help="Health check interval in seconds"
+        "--check-interval",
+        type=int,
+        default=30,
+        help="Health check interval in seconds",
     )
     parser.add_argument("--debug", action="store_true", help="Enable debug logging")
 

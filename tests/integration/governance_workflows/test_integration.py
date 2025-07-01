@@ -17,7 +17,7 @@ class TestComponentIntegration:
         return {
             "database": AsyncMock(),
             "cache": AsyncMock(),
-            "external_service": AsyncMock()
+            "external_service": AsyncMock(),
         }
 
     @pytest.mark.asyncio

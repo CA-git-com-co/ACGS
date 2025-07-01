@@ -111,7 +111,9 @@ class VersionRoutingMiddleware(BaseHTTPMiddleware):
 
             if self.enable_strict_validation:
                 try:
-                    compatibility_info = self.version_manager.validate_version(detected_version)
+                    compatibility_info = self.version_manager.validate_version(
+                        detected_version
+                    )
                 except UnsupportedVersionError as e:
                     return self._create_error_response(
                         error_code=ErrorCode.VALIDATION_ERROR,
@@ -157,7 +159,9 @@ class VersionRoutingMiddleware(BaseHTTPMiddleware):
 
         # Use version manager's detection logic
         return self.version_manager.detect_version_from_request(
-            request_headers=headers, url_path=request.url.path, query_params=query_params
+            request_headers=headers,
+            url_path=request.url.path,
+            query_params=query_params,
         )
 
     def _should_bypass_path(self, path: str) -> bool:
@@ -165,7 +169,10 @@ class VersionRoutingMiddleware(BaseHTTPMiddleware):
         return any(path.startswith(bypass_path) for bypass_path in self.bypass_paths)
 
     def _add_version_headers(
-        self, response: Response, version: APIVersion, compatibility_info: Optional[Any] = None
+        self,
+        response: Response,
+        version: APIVersion,
+        compatibility_info: Optional[Any] = None,
     ):
         """Add version-related headers to response."""
         # Standard version headers
@@ -175,7 +182,9 @@ class VersionRoutingMiddleware(BaseHTTPMiddleware):
 
         # Add deprecation headers if applicable
         if compatibility_info and self.enable_deprecation_warnings:
-            deprecation_headers = self.version_manager.create_deprecation_headers(version)
+            deprecation_headers = self.version_manager.create_deprecation_headers(
+                version
+            )
             for header_name, header_value in deprecation_headers.items():
                 response.headers[header_name] = header_value
 
@@ -230,7 +239,9 @@ class VersionRoutingMiddleware(BaseHTTPMiddleware):
 
     def get_performance_stats(self) -> Dict[str, Any]:
         """Get middleware performance statistics."""
-        avg_latency = self.total_latency_ms / self.request_count if self.request_count > 0 else 0
+        avg_latency = (
+            self.total_latency_ms / self.request_count if self.request_count > 0 else 0
+        )
 
         return {
             "service_name": self.service_name,
@@ -239,7 +250,8 @@ class VersionRoutingMiddleware(BaseHTTPMiddleware):
             "target_latency_ms": self.performance_target_ms,
             "performance_ratio": round(avg_latency / self.performance_target_ms, 2),
             "supported_versions": [
-                str(comp.version) for comp in self.version_manager.get_supported_versions()
+                str(comp.version)
+                for comp in self.version_manager.get_supported_versions()
             ],
         }
 
@@ -266,7 +278,9 @@ def create_version_routing_middleware(
         Configured VersionRoutingMiddleware instance
     """
     # Create version manager
-    version_manager = VersionManager(service_name=service_name, current_version=current_version)
+    version_manager = VersionManager(
+        service_name=service_name, current_version=current_version
+    )
 
     # Register additional supported versions
     if supported_versions:

@@ -34,7 +34,9 @@ class DGMMigrationManager:
 
     async def initialize(self):
         """Initialize database connection."""
-        self.engine = create_async_engine(self.database_url, echo=False, pool_pre_ping=True)
+        self.engine = create_async_engine(
+            self.database_url, echo=False, pool_pre_ping=True
+        )
         self.session_factory = sessionmaker(
             bind=self.engine, class_=AsyncSession, expire_on_commit=False
         )
@@ -53,7 +55,9 @@ class DGMMigrationManager:
             async with self.session_factory() as session:
                 # Create DGM schema
                 await session.execute(text("CREATE SCHEMA IF NOT EXISTS dgm"))
-                await session.execute(text('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"'))
+                await session.execute(
+                    text('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"')
+                )
                 await session.commit()
                 result["schema_created"] = True
                 logger.info("DGM schema created successfully")
@@ -178,7 +182,9 @@ class DGMMigrationManager:
                             "SELECT COUNT(*) FROM dgm.system_configurations WHERE key = 'constitutional_hash'"
                         )
                     )
-                    verification_report["constitutional_compliance"] = result.scalar() > 0
+                    verification_report["constitutional_compliance"] = (
+                        result.scalar() > 0
+                    )
                 except Exception:
                     verification_report["constitutional_compliance"] = False
 
@@ -218,7 +224,9 @@ class DGMMigrationManager:
                         rollback_result["tables_dropped"].append(table_name)
                         logger.warning(f"Dropped table: dgm.{table_name}")
                     except Exception as e:
-                        rollback_result["errors"].append(f"Error dropping {table_name}: {e}")
+                        rollback_result["errors"].append(
+                            f"Error dropping {table_name}: {e}"
+                        )
 
                 # Drop schema
                 await session.execute(text("DROP SCHEMA IF EXISTS dgm CASCADE"))
@@ -226,7 +234,9 @@ class DGMMigrationManager:
                 await session.commit()
 
                 logger.warning("DGM schema completely rolled back")
-                rollback_result["warnings"].append("All DGM data has been permanently deleted")
+                rollback_result["warnings"].append(
+                    "All DGM data has been permanently deleted"
+                )
 
         except Exception as e:
             logger.error(f"Rollback error: {e}")
@@ -483,7 +493,11 @@ class DGMMigrationManager:
 
     async def restore_from_backup(self, backup_name: str) -> Dict[str, Any]:
         """Restore DGM schema from a backup."""
-        restore_result = {"backup_name": backup_name, "tables_restored": [], "errors": []}
+        restore_result = {
+            "backup_name": backup_name,
+            "tables_restored": [],
+            "errors": [],
+        }
 
         try:
             async with self.session_factory() as session:
@@ -514,7 +528,9 @@ class DGMMigrationManager:
                 for table in tables:
                     try:
                         # Clear existing data
-                        await session.execute(text(f"TRUNCATE TABLE dgm.{table} CASCADE"))
+                        await session.execute(
+                            text(f"TRUNCATE TABLE dgm.{table} CASCADE")
+                        )
 
                         # Restore from backup
                         await session.execute(
@@ -545,7 +561,9 @@ class DGMMigrationManager:
             logger.info("DGM migration manager cleaned up")
 
 
-async def run_dgm_migrations(database_url: str, operation: str = "create") -> Dict[str, Any]:
+async def run_dgm_migrations(
+    database_url: str, operation: str = "create"
+) -> Dict[str, Any]:
     """Run DGM database migrations."""
     manager = DGMMigrationManager(database_url)
     await manager.initialize()

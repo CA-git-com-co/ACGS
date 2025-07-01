@@ -31,7 +31,11 @@ class TestAuditTrail:
                 "id": "dgm_engine_v1.0",
                 "authentication": "system_token",
             },
-            "resource": {"type": "improvement_proposal", "id": str(uuid4()), "version": "1.0"},
+            "resource": {
+                "type": "improvement_proposal",
+                "id": str(uuid4()),
+                "version": "1.0",
+            },
             "action": "create",
             "details": {
                 "strategy": "performance_optimization",
@@ -102,7 +106,9 @@ class TestAuditTrail:
 
             # Calculate current event hash
             event_content = json.dumps(event["event_data"], sort_keys=True)
-            event_hash = hashlib.sha256(f"{previous_hash}{event_content}".encode()).hexdigest()
+            event_hash = hashlib.sha256(
+                f"{previous_hash}{event_content}".encode()
+            ).hexdigest()
 
             event["event_hash"] = event_hash
             events.append(event)
@@ -177,7 +183,10 @@ class TestAuditTrail:
             "decision_details": {
                 "overall_compliance_score": 0.87,
                 "decision": "approved",
-                "conditions": ["Enhanced monitoring required", "Quarterly review scheduled"],
+                "conditions": [
+                    "Enhanced monitoring required",
+                    "Quarterly review scheduled",
+                ],
                 "decision_maker": "constitutional_validator_v1.0",
                 "approval_authority": "dgm_oversight_committee",
             },
@@ -187,7 +196,9 @@ class TestAuditTrail:
         all_audits = [proposal_audit] + principle_audits + [decision_audit]
 
         # Check chronological order
-        timestamps = [datetime.fromisoformat(audit["timestamp"]) for audit in all_audits]
+        timestamps = [
+            datetime.fromisoformat(audit["timestamp"]) for audit in all_audits
+        ]
         assert timestamps == sorted(timestamps)
 
         # Verify improvement_id consistency
@@ -227,7 +238,8 @@ class TestAuditTrail:
 
         # Verify tamper detection
         tampered_content = json.dumps(
-            {k: v for k, v in tampered_event.items() if k != "integrity_hash"}, sort_keys=True
+            {k: v for k, v in tampered_event.items() if k != "integrity_hash"},
+            sort_keys=True,
         )
         tampered_hash = hashlib.sha256(tampered_content.encode()).hexdigest()
 
@@ -306,19 +318,26 @@ class TestAuditTrail:
                 event["action"] = "retain_permanently"
             elif event["age_days"] > retention_days:
                 event["action"] = "archive_or_delete"
-            elif event["age_days"] > retention_policy["archival_triggers"]["age_threshold"]:
+            elif (
+                event["age_days"]
+                > retention_policy["archival_triggers"]["age_threshold"]
+            ):
                 event["action"] = "archive"
             else:
                 event["action"] = "retain_active"
 
         # Verify retention decisions
         constitutional_event = next(
-            e for e in audit_events if e["retention_category"] == "constitutional_events"
+            e
+            for e in audit_events
+            if e["retention_category"] == "constitutional_events"
         )
         assert constitutional_event["action"] == "retain_permanently"
 
         violation_event = next(
-            e for e in audit_events if e["retention_category"] == "compliance_violations"
+            e
+            for e in audit_events
+            if e["retention_category"] == "compliance_violations"
         )
         assert violation_event["action"] == "archive"
 
@@ -369,7 +388,9 @@ class TestAuditTrail:
 
             results = []
             for event in db:
-                event_time = datetime.fromisoformat(event["timestamp"].replace("Z", "+00:00"))
+                event_time = datetime.fromisoformat(
+                    event["timestamp"].replace("Z", "+00:00")
+                )
                 if start <= event_time <= end:
                     results.append(event)
             return results
@@ -401,7 +422,10 @@ class TestAuditTrail:
         """Test audit trail compliance reporting capabilities."""
         # Generate compliance report from audit trail
         audit_summary = {
-            "reporting_period": {"start": "2024-01-01T00:00:00Z", "end": "2024-03-31T23:59:59Z"},
+            "reporting_period": {
+                "start": "2024-01-01T00:00:00Z",
+                "end": "2024-03-31T23:59:59Z",
+            },
             "audit_statistics": {
                 "total_events": 1250,
                 "constitutional_assessments": 150,
@@ -439,8 +463,13 @@ class TestAuditTrail:
         assert audit_summary["audit_quality_indicators"]["integrity_score"] == 1.0
 
         # Verify violation tracking
-        total_violations = sum(audit_summary["violation_analysis"]["by_severity"].values())
-        assert total_violations == audit_summary["audit_statistics"]["compliance_violations"]
+        total_violations = sum(
+            audit_summary["violation_analysis"]["by_severity"].values()
+        )
+        assert (
+            total_violations
+            == audit_summary["audit_statistics"]["compliance_violations"]
+        )
 
         # Verify no critical violations
         assert audit_summary["violation_analysis"]["by_severity"]["critical"] == 0

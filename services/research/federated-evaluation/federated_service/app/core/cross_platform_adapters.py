@@ -161,7 +161,9 @@ class BasePlatformAdapter(ABC):
 
         except Exception as e:
             self.status = AdapterStatus.ERROR
-            logger.error(f"Failed to initialize {self.platform_type.value} adapter: {e}")
+            logger.error(
+                f"Failed to initialize {self.platform_type.value} adapter: {e}"
+            )
             raise
 
     async def shutdown(self) -> None:
@@ -174,7 +176,9 @@ class BasePlatformAdapter(ABC):
             logger.info(f"Shutdown {self.platform_type.value} adapter")
 
         except Exception as e:
-            logger.error(f"Error during {self.platform_type.value} adapter shutdown: {e}")
+            logger.error(
+                f"Error during {self.platform_type.value} adapter shutdown: {e}"
+            )
 
     @abstractmethod
     async def _platform_specific_init(self) -> None:
@@ -315,7 +319,9 @@ class OpenAIPlatformAdapter(BasePlatformAdapter):
                 ),
                 "temperature": 0.1,  # Low temperature for consistent evaluation
                 "response_format": (
-                    {"type": "json_object"} if self.capabilities.supports_json_mode else None
+                    {"type": "json_object"}
+                    if self.capabilities.supports_json_mode
+                    else None
                 ),
             }
 
@@ -410,8 +416,12 @@ Please provide a JSON response with the following structure:
                 request_id=request.request_id,
                 platform_type=self.platform_type,
                 success=True,
-                policy_compliance_score=parsed_content.get("policy_compliance_score", 0.5),
-                constitutional_alignment=parsed_content.get("constitutional_alignment", 0.5),
+                policy_compliance_score=parsed_content.get(
+                    "policy_compliance_score", 0.5
+                ),
+                constitutional_alignment=parsed_content.get(
+                    "constitutional_alignment", 0.5
+                ),
                 safety_score=parsed_content.get("safety_score", 0.5),
                 fairness_score=parsed_content.get("fairness_score", 0.5),
                 execution_time_ms=execution_time,
@@ -587,8 +597,11 @@ Recommendations:
                 safety_score=scores.get("safety_score", 0.5),
                 fairness_score=scores.get("fairness_score", 0.5),
                 execution_time_ms=execution_time,
-                tokens_used=usage.get("input_tokens", 0) + usage.get("output_tokens", 0),
-                cost_estimate=(usage.get("input_tokens", 0) + usage.get("output_tokens", 0))
+                tokens_used=usage.get("input_tokens", 0)
+                + usage.get("output_tokens", 0),
+                cost_estimate=(
+                    usage.get("input_tokens", 0) + usage.get("output_tokens", 0)
+                )
                 * self.capabilities.cost_per_1k_tokens
                 / 1000,
                 platform_specific_metrics={
@@ -662,7 +675,9 @@ Recommendations:
             recommendations = re.findall(
                 r"[-•]\s*(.*?)(?=\n[-•]|\n\n|$)", recommendations_text, re.DOTALL
             )
-            sections["recommendations"] = [rec.strip() for rec in recommendations if rec.strip()]
+            sections["recommendations"] = [
+                rec.strip() for rec in recommendations if rec.strip()
+            ]
 
         return sections
 
@@ -818,13 +833,17 @@ Recommendations:
                 fairness_score=scores.get("fairness_score", 0.5),
                 execution_time_ms=execution_time,
                 tokens_used=int(estimated_tokens),
-                cost_estimate=estimated_tokens * self.capabilities.cost_per_1k_tokens / 1000,
+                cost_estimate=estimated_tokens
+                * self.capabilities.cost_per_1k_tokens
+                / 1000,
                 platform_specific_metrics={
                     "model": "command",
                     "analysis": analysis_sections.get("analysis", content),
                     "recommendations": analysis_sections.get("recommendations", []),
                     "likelihood": result["generations"][0].get("likelihood", 0.0),
-                    "finish_reason": result["generations"][0].get("finish_reason", "unknown"),
+                    "finish_reason": result["generations"][0].get(
+                        "finish_reason", "unknown"
+                    ),
                 },
             )
 
@@ -885,7 +904,9 @@ Recommendations:
             recommendations = re.findall(
                 r"\d+\.\s*(.*?)(?=\n\d+\.|\n\n|$)", recommendations_text, re.DOTALL
             )
-            sections["recommendations"] = [rec.strip() for rec in recommendations if rec.strip()]
+            sections["recommendations"] = [
+                rec.strip() for rec in recommendations if rec.strip()
+            ]
 
         return sections
 
@@ -950,7 +971,9 @@ class GroqPlatformAdapter(BasePlatformAdapter):
                 ),
                 "temperature": 0.1,
                 "response_format": (
-                    {"type": "json_object"} if self.capabilities.supports_json_mode else None
+                    {"type": "json_object"}
+                    if self.capabilities.supports_json_mode
+                    else None
                 ),
             }
 
@@ -1041,8 +1064,12 @@ Please provide a JSON response with the following structure:
                 request_id=request.request_id,
                 platform_type=self.platform_type,
                 success=True,
-                policy_compliance_score=parsed_content.get("policy_compliance_score", 0.5),
-                constitutional_alignment=parsed_content.get("constitutional_alignment", 0.5),
+                policy_compliance_score=parsed_content.get(
+                    "policy_compliance_score", 0.5
+                ),
+                constitutional_alignment=parsed_content.get(
+                    "constitutional_alignment", 0.5
+                ),
                 safety_score=parsed_content.get("safety_score", 0.5),
                 fairness_score=parsed_content.get("fairness_score", 0.5),
                 execution_time_ms=execution_time,

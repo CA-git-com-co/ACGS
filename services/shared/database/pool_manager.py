@@ -232,7 +232,9 @@ class ConnectionPool:
 
         except Exception as e:
             self.metrics.connection_errors += 1
-            raise DatabaseError(f"Database connection error: {str(e)}", operation="get_connection")
+            raise DatabaseError(
+                f"Database connection error: {str(e)}", operation="get_connection"
+            )
 
         finally:
             if connection:
@@ -265,7 +267,9 @@ class ConnectionPool:
             if session:
                 await session.rollback()
             self.metrics.connection_errors += 1
-            raise DatabaseError(f"Database session error: {str(e)}", operation="get_session")
+            raise DatabaseError(
+                f"Database session error: {str(e)}", operation="get_session"
+            )
 
         finally:
             if session:
@@ -460,7 +464,9 @@ class DatabasePoolManager:
             yield conn
 
     @asynccontextmanager
-    async def get_session(self, pool_name: str = "default") -> AsyncGenerator[AsyncSession, None]:
+    async def get_session(
+        self, pool_name: str = "default"
+    ) -> AsyncGenerator[AsyncSession, None]:
         """
         Get a session from a specific pool.
 
@@ -472,7 +478,9 @@ class DatabasePoolManager:
         """
         pool = self.get_pool(pool_name)
         if not pool:
-            raise DatabaseError(f"Database pool '{pool_name}' not found", operation="get_session")
+            raise DatabaseError(
+                f"Database pool '{pool_name}' not found", operation="get_session"
+            )
 
         async with pool.get_session() as session:
             yield session
@@ -493,7 +501,9 @@ class DatabasePoolManager:
         """
         pool = self.get_pool(pool_name)
         if not pool:
-            raise DatabaseError(f"Database pool '{pool_name}' not found", operation="execute_query")
+            raise DatabaseError(
+                f"Database pool '{pool_name}' not found", operation="execute_query"
+            )
 
         return await pool.execute_query(query, params)
 

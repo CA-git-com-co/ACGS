@@ -57,7 +57,11 @@ class PerformanceTestRunner:
                 "p95_response_time_ms": 500,
                 "p99_response_time_ms": 1000,
             },
-            "resource_limits": {"max_memory_mb": 1000, "max_cpu_percent": 80, "max_threads": 50},
+            "resource_limits": {
+                "max_memory_mb": 1000,
+                "max_cpu_percent": 80,
+                "max_threads": 50,
+            },
         }
 
         if config_path and os.path.exists(config_path):
@@ -164,7 +168,9 @@ class PerformanceTestRunner:
         print("\nRunning load tests...")
 
         results = {}
-        base_url = f"http://{self.config['service']['host']}:{self.config['service']['port']}"
+        base_url = (
+            f"http://{self.config['service']['host']}:{self.config['service']['port']}"
+        )
 
         for scenario in self.config["load_test"]["scenarios"]:
             print(f"Running {scenario} load test scenario...")
@@ -181,7 +187,9 @@ class PerformanceTestRunner:
                 spawn_rate = self.config["load_test"]["spawn_rate"]
 
             duration = f"{self.config['load_test']['duration_minutes']}m"
-            report_file = f"load_test_{scenario}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html"
+            report_file = (
+                f"load_test_{scenario}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html"
+            )
 
             cmd = [
                 "locust",
@@ -227,10 +235,18 @@ class PerformanceTestRunner:
 
             except subprocess.TimeoutExpired:
                 print(f"✗ {scenario} load test timed out")
-                results[scenario] = {"return_code": -1, "success": False, "error": "timeout"}
+                results[scenario] = {
+                    "return_code": -1,
+                    "success": False,
+                    "error": "timeout",
+                }
             except Exception as e:
                 print(f"✗ {scenario} load test error: {e}")
-                results[scenario] = {"return_code": -1, "success": False, "error": str(e)}
+                results[scenario] = {
+                    "return_code": -1,
+                    "success": False,
+                    "error": str(e),
+                }
 
         return results
 
@@ -334,7 +350,9 @@ class PerformanceTestRunner:
             print(f"  {sla_name}: {status} (required: {required}, actual: {actual})")
 
         if not report["overall_success"]:
-            print("\n⚠ WARNING: Performance tests failed. Review results and optimize system.")
+            print(
+                "\n⚠ WARNING: Performance tests failed. Review results and optimize system."
+            )
         else:
             print("\n✓ SUCCESS: All performance tests passed and SLA requirements met.")
 
@@ -350,7 +368,9 @@ class PerformanceTestRunner:
         try:
             # Run different test categories
             if self.config["tests"]["api_performance"]:
-                self.results["api_performance"] = self.run_pytest_tests("api_performance")
+                self.results["api_performance"] = self.run_pytest_tests(
+                    "api_performance"
+                )
 
             if self.config["tests"]["database_performance"]:
                 self.results["database_performance"] = self.run_pytest_tests(
@@ -363,7 +383,9 @@ class PerformanceTestRunner:
                 )
 
             if self.config["tests"]["system_performance"]:
-                self.results["system_performance"] = self.run_pytest_tests("system_performance")
+                self.results["system_performance"] = self.run_pytest_tests(
+                    "system_performance"
+                )
 
             if self.config["tests"]["load_testing"]:
                 self.results["load_testing"] = self.run_load_tests()
@@ -376,7 +398,9 @@ class PerformanceTestRunner:
         report = self.generate_report()
 
         # Save report to file
-        report_file = f"performance_test_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        report_file = (
+            f"performance_test_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        )
         with open(report_file, "w") as f:
             json.dump(report, f, indent=2)
 
@@ -392,7 +416,9 @@ def main():
     """Main entry point."""
     parser = argparse.ArgumentParser(description="DGM Service Performance Test Runner")
     parser.add_argument("--config", help="Configuration file path")
-    parser.add_argument("--quick", action="store_true", help="Run quick performance tests only")
+    parser.add_argument(
+        "--quick", action="store_true", help="Run quick performance tests only"
+    )
     parser.add_argument("--load-only", action="store_true", help="Run load tests only")
     parser.add_argument("--no-load", action="store_true", help="Skip load tests")
 

@@ -353,14 +353,22 @@ class StatusCodeValidator:
                 for code, count in self.usage_stats.items()
             },
             "client_error_rate": (
-                sum(count for code, count in self.usage_stats.items() if 400 <= code < 500)
+                sum(
+                    count
+                    for code, count in self.usage_stats.items()
+                    if 400 <= code < 500
+                )
                 / total_usage
                 * 100
                 if total_usage > 0
                 else 0
             ),
             "server_error_rate": (
-                sum(count for code, count in self.usage_stats.items() if 500 <= code < 600)
+                sum(
+                    count
+                    for code, count in self.usage_stats.items()
+                    if 500 <= code < 600
+                )
                 / total_usage
                 * 100
                 if total_usage > 0
@@ -393,21 +401,30 @@ status_validator = StatusCodeValidator()
 
 # Convenience functions
 def get_http_status_code(
-    category: ErrorCategory, severity: ErrorSeverity, service: ServiceCode, error_code: str
+    category: ErrorCategory,
+    severity: ErrorSeverity,
+    service: ServiceCode,
+    error_code: str,
 ) -> HTTPStatusCode:
     """Get HTTP status code for error characteristics."""
     return status_mapper.get_status_code(category, severity, service, error_code)
 
 
 def is_error_retryable(
-    category: ErrorCategory, severity: ErrorSeverity, service: ServiceCode, error_code: str
+    category: ErrorCategory,
+    severity: ErrorSeverity,
+    service: ServiceCode,
+    error_code: str,
 ) -> bool:
     """Check if error is retryable."""
     return status_mapper.is_retryable_error(category, severity, service, error_code)
 
 
 def get_error_response_headers(
-    category: ErrorCategory, severity: ErrorSeverity, service: ServiceCode, error_code: str
+    category: ErrorCategory,
+    severity: ErrorSeverity,
+    service: ServiceCode,
+    error_code: str,
 ) -> Dict[str, str]:
     """Get appropriate headers for error response."""
     return status_mapper.get_error_headers(category, severity, service, error_code)

@@ -223,7 +223,9 @@ class AuditLoggingDeployer:
         except Exception as e:
             return {"success": False, "error": str(e), "timestamp": time.time()}
 
-    async def _apply_audit_logging_to_file(self, service_path: Path, service_id: str) -> bool:
+    async def _apply_audit_logging_to_file(
+        self, service_path: Path, service_id: str
+    ) -> bool:
         """Apply audit logging to service file."""
         try:
             # Read current service file
@@ -292,7 +294,9 @@ else:
                 # Insert audit logging application after app creation
                 import re
 
-                content = re.sub(app_creation_pattern, r"\1" + audit_application, content, count=1)
+                content = re.sub(
+                    app_creation_pattern, r"\1" + audit_application, content, count=1
+                )
 
                 # Write modified content back to file
                 with open(service_path, "w") as f:
@@ -363,13 +367,17 @@ async def main():
     print("📝 ACGS-1 Comprehensive Audit Logging Deployment Summary")
     print("=" * 80)
     print(f"Total Services: {summary['deployment_summary']['total_services']}")
-    print(f"Successful Deployments: {summary['deployment_summary']['successful_deployments']}")
+    print(
+        f"Successful Deployments: {summary['deployment_summary']['successful_deployments']}"
+    )
     print(f"Failed Deployments: {summary['deployment_summary']['failed_deployments']}")
     print(f"Success Rate: {summary['deployment_summary']['success_rate']}")
     print(f"Deployment Time: {summary['deployment_summary']['deployment_time']}")
 
     if summary["successful_services"]:
-        print(f"\n✅ Successfully deployed to: {', '.join(summary['successful_services'])}")
+        print(
+            f"\n✅ Successfully deployed to: {', '.join(summary['successful_services'])}"
+        )
 
     if summary["failed_services"]:
         print(f"\n❌ Failed deployments: {', '.join(summary['failed_services'])}")

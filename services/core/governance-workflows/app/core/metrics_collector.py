@@ -75,7 +75,9 @@ class MetricsCollector:
             # Start Prometheus HTTP server if enabled
             if PROMETHEUS_AVAILABLE and self.prometheus_enabled:
                 start_http_server(self.prometheus_port)
-                logger.info(f"Prometheus metrics server started on port {self.prometheus_port}")
+                logger.info(
+                    f"Prometheus metrics server started on port {self.prometheus_port}"
+                )
 
             # Start background collection tasks
             asyncio.create_task(self._periodic_metrics_export())
@@ -204,7 +206,9 @@ class MetricsCollector:
             metric = MetricData(
                 metric_name=f"workflow_{metric_type}",
                 metric_type=(
-                    "counter" if metric_type in ["started", "completed", "failed"] else "gauge"
+                    "counter"
+                    if metric_type in ["started", "completed", "failed"]
+                    else "gauge"
                 ),
                 value=value,
                 labels={"workflow_type": workflow_type, **(labels or {})},
@@ -230,7 +234,9 @@ class MetricsCollector:
                         workflow_type=workflow_type
                     ).set(value)
 
-            logger.debug(f"Recorded workflow metric: {workflow_type}/{metric_type} = {value}")
+            logger.debug(
+                f"Recorded workflow metric: {workflow_type}/{metric_type} = {value}"
+            )
 
         except Exception as e:
             logger.error(f"Failed to record workflow metric: {e}")
@@ -276,7 +282,9 @@ class MetricsCollector:
             logger.error(f"Failed to record performance metric: {e}")
             self.collection_stats["collection_errors"] += 1
 
-    async def record_compliance_metric(self, check_result: str, accuracy_percent: float = None):
+    async def record_compliance_metric(
+        self, check_result: str, accuracy_percent: float = None
+    ):
         """Record a constitutional compliance metric."""
         try:
             # Record compliance check
@@ -306,7 +314,9 @@ class MetricsCollector:
 
             # Update Prometheus metrics if available
             if PROMETHEUS_AVAILABLE and self.prometheus_enabled:
-                self.prometheus_metrics["compliance_checks"].labels(result=check_result).inc()
+                self.prometheus_metrics["compliance_checks"].labels(
+                    result=check_result
+                ).inc()
 
                 if accuracy_percent is not None:
                     self.prometheus_metrics["compliance_accuracy"].set(accuracy_percent)
@@ -356,7 +366,9 @@ class MetricsCollector:
                 ).inc()
 
                 if improvement_percent is not None:
-                    self.prometheus_metrics["wina_performance_improvement"].set(improvement_percent)
+                    self.prometheus_metrics["wina_performance_improvement"].set(
+                        improvement_percent
+                    )
 
             logger.debug(
                 f"Recorded WINA metric: {optimization_type}/{result}, improvement: {improvement_percent}%"
@@ -419,7 +431,8 @@ class MetricsCollector:
             recent_metrics = [
                 m
                 for m in self.metrics_buffer
-                if (datetime.now(timezone.utc) - m.timestamp).total_seconds() < 3600  # Last hour
+                if (datetime.now(timezone.utc) - m.timestamp).total_seconds()
+                < 3600  # Last hour
             ]
 
             # Group metrics by type
@@ -432,11 +445,14 @@ class MetricsCollector:
             return {
                 "collection_statistics": self.collection_stats,
                 "prometheus_enabled": self.prometheus_enabled,
-                "prometheus_port": (self.prometheus_port if self.prometheus_enabled else None),
+                "prometheus_port": (
+                    self.prometheus_port if self.prometheus_enabled else None
+                ),
                 "metrics_buffer_size": len(self.metrics_buffer),
                 "recent_metrics_count": len(recent_metrics),
                 "metrics_by_type": {
-                    metric_type: len(metrics) for metric_type, metrics in metrics_by_type.items()
+                    metric_type: len(metrics)
+                    for metric_type, metrics in metrics_by_type.items()
                 },
                 "export_interval_seconds": self.export_interval,
                 "last_updated": datetime.now(timezone.utc).isoformat(),

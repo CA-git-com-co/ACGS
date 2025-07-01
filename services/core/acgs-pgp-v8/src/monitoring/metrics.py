@@ -228,7 +228,9 @@ class MetricsManager:
     ):
         """Record policy generation metrics."""
         self.policy_generation_requests.labels(status=status, priority=priority).inc()
-        self.policy_generation_duration.labels(priority=priority).observe(duration_seconds)
+        self.policy_generation_duration.labels(priority=priority).observe(
+            duration_seconds
+        )
         self.constitutional_compliance_score.observe(compliance_score)
         self.policy_confidence_score.observe(confidence_score)
 
@@ -254,11 +256,13 @@ class MetricsManager:
             ).inc(errors_detected)
 
         if errors_corrected > 0:
-            self.error_correction_events.labels(error_type="corrected", corrected="true").inc(
-                errors_corrected
-            )
+            self.error_correction_events.labels(
+                error_type="corrected", corrected="true"
+            ).inc(errors_corrected)
 
-        logger.debug(f"Recorded execution metrics: {operation}, {status}, {duration_seconds}s")
+        logger.debug(
+            f"Recorded execution metrics: {operation}, {status}, {duration_seconds}s"
+        )
 
     def record_diagnostic(
         self,
@@ -270,13 +274,19 @@ class MetricsManager:
         auto_executable_count: int,
     ):
         """Record diagnostic engine metrics."""
-        self.diagnostic_requests.labels(target_system=target_system, status=status).inc()
-        self.diagnostic_duration.labels(target_system=target_system).observe(duration_seconds)
+        self.diagnostic_requests.labels(
+            target_system=target_system, status=status
+        ).inc()
+        self.diagnostic_duration.labels(target_system=target_system).observe(
+            duration_seconds
+        )
 
         # Record errors by severity
         for severity, count in errors_by_severity.items():
             if count > 0:
-                self.errors_detected.labels(severity=severity, category="general").inc(count)
+                self.errors_detected.labels(severity=severity, category="general").inc(
+                    count
+                )
 
         # Record recommendations
         if recommendations_count > 0:
@@ -284,7 +294,9 @@ class MetricsManager:
                 strategy="general", auto_executable=str(auto_executable_count > 0)
             ).inc(recommendations_count)
 
-        logger.debug(f"Recorded diagnostic metrics: {target_system}, {status}, {duration_seconds}s")
+        logger.debug(
+            f"Recorded diagnostic metrics: {target_system}, {status}, {duration_seconds}s"
+        )
 
     def record_cache_operation(
         self,
@@ -299,9 +311,9 @@ class MetricsManager:
             operation=operation, cache_type=cache_type, result=result
         ).inc()
 
-        self.cache_operation_duration.labels(operation=operation, cache_type=cache_type).observe(
-            duration_seconds
-        )
+        self.cache_operation_duration.labels(
+            operation=operation, cache_type=cache_type
+        ).observe(duration_seconds)
 
         if hit_rate is not None:
             self.cache_hit_rate.labels(cache_type=cache_type).set(hit_rate)
@@ -340,7 +352,9 @@ class MetricsManager:
         self.response_time_summary.labels(endpoint=endpoint, method=method).observe(
             duration_seconds
         )
-        logger.debug(f"Recorded response time: {method} {endpoint} = {duration_seconds}s")
+        logger.debug(
+            f"Recorded response time: {method} {endpoint} = {duration_seconds}s"
+        )
 
     def update_system_uptime(self):
         """Update system uptime metric."""
@@ -391,7 +405,9 @@ def monitor_performance(endpoint: str, method: str = "POST"):
                 # Record error metrics
                 try:
                     metrics_manager = get_metrics_manager()
-                    metrics_manager.record_response_time(f"{endpoint}_error", method, duration)
+                    metrics_manager.record_response_time(
+                        f"{endpoint}_error", method, duration
+                    )
                 except:
                     pass
 
@@ -418,7 +434,9 @@ def monitor_performance(endpoint: str, method: str = "POST"):
                 # Record error metrics
                 try:
                     metrics_manager = get_metrics_manager()
-                    metrics_manager.record_response_time(f"{endpoint}_error", method, duration)
+                    metrics_manager.record_response_time(
+                        f"{endpoint}_error", method, duration
+                    )
                 except:
                     pass
 

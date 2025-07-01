@@ -38,14 +38,20 @@ try:
     from fastapi.openapi.utils import get_openapi
     from fastapi.routing import APIRoute
     import uvicorn
+
     FASTAPI_AVAILABLE = True
 except ImportError:
     FASTAPI_AVAILABLE = False
     print("Warning: FastAPI not available. Install with: pip install fastapi uvicorn")
 
 try:
-    from services.shared.errors.error_catalog import export_error_catalog, get_service_errors, ServiceCode
+    from services.shared.errors.error_catalog import (
+        export_error_catalog,
+        get_service_errors,
+        ServiceCode,
+    )
     from services.shared.response.unified_response import UnifiedResponse
+
     ERROR_CATALOG_AVAILABLE = True
 except ImportError:
     ERROR_CATALOG_AVAILABLE = False
@@ -53,17 +59,19 @@ except ImportError:
 
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
 class OpenAPIGenerator:
     """Automated OpenAPI documentation generator for ACGS services."""
-    
+
     def __init__(self, output_dir: str = "docs/api/generated"):
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
-        
+
         self.service_configs = {
             "auth": {
                 "name": "Authentication Service",
@@ -72,43 +80,43 @@ class OpenAPIGenerator:
                 "port": 8000,
                 "module_path": "services.platform.authentication.auth_service.app.main",
                 "app_variable": "app",
-                "tags": ["authentication", "authorization", "users", "tokens"]
+                "tags": ["authentication", "authorization", "users", "tokens"],
             },
             "ac": {
-                "name": "Constitutional AI Service", 
+                "name": "Constitutional AI Service",
                 "description": "ACGS Constitutional AI Principles and Compliance Service",
                 "version": "2.1.0",
                 "port": 8001,
                 "module_path": "services.platform.constitutional_ai.ac_service.app.main",
                 "app_variable": "app",
-                "tags": ["constitutional-ai", "principles", "compliance", "council"]
+                "tags": ["constitutional-ai", "principles", "compliance", "council"],
             },
             "integrity": {
                 "name": "Integrity Service",
-                "description": "ACGS Cryptographic Integrity and Audit Service", 
+                "description": "ACGS Cryptographic Integrity and Audit Service",
                 "version": "2.0.0",
                 "port": 8002,
                 "module_path": "services.platform.integrity.integrity_service.app.main",
                 "app_variable": "app",
-                "tags": ["integrity", "cryptography", "audit", "certificates"]
+                "tags": ["integrity", "cryptography", "audit", "certificates"],
             },
             "fv": {
                 "name": "Formal Verification Service",
                 "description": "ACGS Formal Verification and Mathematical Proof Service",
-                "version": "1.5.0", 
+                "version": "1.5.0",
                 "port": 8003,
                 "module_path": "services.platform.formal_verification.fv_service.app.main",
                 "app_variable": "app",
-                "tags": ["formal-verification", "proofs", "z3", "smt"]
+                "tags": ["formal-verification", "proofs", "z3", "smt"],
             },
             "gs": {
                 "name": "Governance Synthesis Service",
                 "description": "ACGS Governance Policy Synthesis and Generation Service",
                 "version": "2.2.0",
                 "port": 8004,
-                "module_path": "services.platform.governance_synthesis.gs_service.app.main", 
+                "module_path": "services.platform.governance_synthesis.gs_service.app.main",
                 "app_variable": "app",
-                "tags": ["governance", "synthesis", "policies", "templates"]
+                "tags": ["governance", "synthesis", "policies", "templates"],
             },
             "pgc": {
                 "name": "Policy Governance Service",
@@ -116,8 +124,8 @@ class OpenAPIGenerator:
                 "version": "2.0.0",
                 "port": 8005,
                 "module_path": "services.platform.policy_governance.pgc_service.app.main",
-                "app_variable": "app", 
-                "tags": ["policy", "governance", "enforcement", "opa"]
+                "app_variable": "app",
+                "tags": ["policy", "governance", "enforcement", "opa"],
             },
             "ec": {
                 "name": "Evolutionary Computation Service",
@@ -126,53 +134,48 @@ class OpenAPIGenerator:
                 "port": 8006,
                 "module_path": "services.platform.evolutionary_computation.ec_service.app.main",
                 "app_variable": "app",
-                "tags": ["evolution", "optimization", "algorithms", "metrics"]
+                "tags": ["evolution", "optimization", "algorithms", "metrics"],
             },
             "dgm": {
-                "name": "Darwin Gödel Machine Service", 
+                "name": "Darwin Gödel Machine Service",
                 "description": "ACGS Darwin Gödel Machine Self-Improvement Service",
                 "version": "1.0.0",
                 "port": 8007,
                 "module_path": "services.platform.darwin_godel_machine.dgm_service.app.main",
                 "app_variable": "app",
-                "tags": ["self-improvement", "godel", "darwin", "workspace"]
-            }
+                "tags": ["self-improvement", "godel", "darwin", "workspace"],
+            },
         }
-        
+
         self.global_schemas = {}
         self.error_responses = {}
         self._load_global_schemas()
-    
+
     def _load_global_schemas(self):
         """Load global schemas for unified responses and error handling."""
-        
+
         # Unified response schema
         self.global_schemas["UnifiedResponse"] = {
             "type": "object",
             "properties": {
                 "success": {
                     "type": "boolean",
-                    "description": "Indicates if the request was successful"
+                    "description": "Indicates if the request was successful",
                 },
-                "data": {
-                    "description": "Response data payload",
-                    "nullable": True
-                },
+                "data": {"description": "Response data payload", "nullable": True},
                 "message": {
-                    "type": "string", 
-                    "description": "Human-readable response message"
+                    "type": "string",
+                    "description": "Human-readable response message",
                 },
-                "metadata": {
-                    "$ref": "#/components/schemas/ResponseMetadata"
-                },
+                "metadata": {"$ref": "#/components/schemas/ResponseMetadata"},
                 "pagination": {
                     "$ref": "#/components/schemas/PaginationMetadata",
-                    "nullable": True
-                }
+                    "nullable": True,
+                },
             },
-            "required": ["success", "data", "message", "metadata"]
+            "required": ["success", "data", "message", "metadata"],
         }
-        
+
         # Response metadata schema
         self.global_schemas["ResponseMetadata"] = {
             "type": "object",
@@ -180,30 +183,24 @@ class OpenAPIGenerator:
                 "timestamp": {
                     "type": "string",
                     "format": "date-time",
-                    "description": "Response timestamp in ISO 8601 format"
+                    "description": "Response timestamp in ISO 8601 format",
                 },
                 "request_id": {
                     "type": "string",
                     "format": "uuid",
-                    "description": "Unique request identifier for correlation"
+                    "description": "Unique request identifier for correlation",
                 },
-                "version": {
-                    "type": "string",
-                    "description": "API version"
-                },
-                "service": {
-                    "type": "string", 
-                    "description": "Service name"
-                },
+                "version": {"type": "string", "description": "API version"},
+                "service": {"type": "string", "description": "Service name"},
                 "execution_time_ms": {
                     "type": "number",
                     "description": "Request execution time in milliseconds",
-                    "nullable": True
-                }
+                    "nullable": True,
+                },
             },
-            "required": ["timestamp", "request_id", "version", "service"]
+            "required": ["timestamp", "request_id", "version", "service"],
         }
-        
+
         # Pagination metadata schema
         self.global_schemas["PaginationMetadata"] = {
             "type": "object",
@@ -211,30 +208,30 @@ class OpenAPIGenerator:
                 "page": {
                     "type": "integer",
                     "minimum": 1,
-                    "description": "Current page number"
+                    "description": "Current page number",
                 },
                 "limit": {
-                    "type": "integer", 
+                    "type": "integer",
                     "minimum": 1,
-                    "description": "Number of items per page"
+                    "description": "Number of items per page",
                 },
                 "total": {
                     "type": "integer",
                     "minimum": 0,
-                    "description": "Total number of items"
+                    "description": "Total number of items",
                 },
                 "has_next": {
                     "type": "boolean",
-                    "description": "Whether there are more pages"
+                    "description": "Whether there are more pages",
                 },
                 "has_previous": {
                     "type": "boolean",
-                    "description": "Whether there are previous pages"
-                }
+                    "description": "Whether there are previous pages",
+                },
             },
-            "required": ["page", "limit", "total", "has_next", "has_previous"]
+            "required": ["page", "limit", "total", "has_next", "has_previous"],
         }
-        
+
         # Error response schema
         self.global_schemas["ErrorResponse"] = {
             "type": "object",
@@ -242,22 +239,18 @@ class OpenAPIGenerator:
                 "success": {
                     "type": "boolean",
                     "enum": [False],
-                    "description": "Always false for error responses"
+                    "description": "Always false for error responses",
                 },
-                "error": {
-                    "$ref": "#/components/schemas/ErrorDetails"
-                },
+                "error": {"$ref": "#/components/schemas/ErrorDetails"},
                 "data": {
                     "nullable": True,
-                    "description": "Always null for error responses"
+                    "description": "Always null for error responses",
                 },
-                "metadata": {
-                    "$ref": "#/components/schemas/ResponseMetadata"
-                }
+                "metadata": {"$ref": "#/components/schemas/ResponseMetadata"},
             },
-            "required": ["success", "error", "data", "metadata"]
+            "required": ["success", "error", "data", "metadata"],
         }
-        
+
         # Error details schema
         self.global_schemas["ErrorDetails"] = {
             "type": "object",
@@ -265,61 +258,79 @@ class OpenAPIGenerator:
                 "code": {
                     "type": "string",
                     "pattern": "^[A-Z]+_[A-Z_]+_[0-9]{3}$",
-                    "description": "Hierarchical error code (SERVICE_CATEGORY_NUMBER)"
+                    "description": "Hierarchical error code (SERVICE_CATEGORY_NUMBER)",
                 },
                 "message": {
                     "type": "string",
-                    "description": "Human-readable error message"
+                    "description": "Human-readable error message",
                 },
                 "details": {
                     "type": "object",
-                    "description": "Additional error details and context"
+                    "description": "Additional error details and context",
                 },
                 "timestamp": {
                     "type": "string",
                     "format": "date-time",
-                    "description": "Error timestamp"
+                    "description": "Error timestamp",
                 },
                 "request_id": {
                     "type": "string",
-                    "format": "uuid", 
-                    "description": "Request identifier for correlation"
+                    "format": "uuid",
+                    "description": "Request identifier for correlation",
                 },
                 "service": {
                     "type": "string",
-                    "description": "Service that generated the error"
+                    "description": "Service that generated the error",
                 },
                 "category": {
                     "type": "string",
-                    "enum": ["VALIDATION", "AUTHENTICATION", "AUTHORIZATION", "BUSINESS_LOGIC", "EXTERNAL_SERVICE", "SYSTEM_ERROR"],
-                    "description": "Error category"
+                    "enum": [
+                        "VALIDATION",
+                        "AUTHENTICATION",
+                        "AUTHORIZATION",
+                        "BUSINESS_LOGIC",
+                        "EXTERNAL_SERVICE",
+                        "SYSTEM_ERROR",
+                    ],
+                    "description": "Error category",
                 },
                 "severity": {
                     "type": "string",
                     "enum": ["info", "warning", "error", "critical"],
-                    "description": "Error severity level"
+                    "description": "Error severity level",
                 },
                 "retryable": {
                     "type": "boolean",
-                    "description": "Whether the error is retryable"
+                    "description": "Whether the error is retryable",
                 },
                 "resolution_guidance": {
                     "type": "string",
-                    "description": "Guidance on how to resolve the error"
-                }
+                    "description": "Guidance on how to resolve the error",
+                },
             },
-            "required": ["code", "message", "details", "timestamp", "request_id", "service", "category", "severity", "retryable", "resolution_guidance"]
+            "required": [
+                "code",
+                "message",
+                "details",
+                "timestamp",
+                "request_id",
+                "service",
+                "category",
+                "severity",
+                "retryable",
+                "resolution_guidance",
+            ],
         }
-        
+
         # Load error responses from catalog
         if ERROR_CATALOG_AVAILABLE:
             self._load_error_responses()
-    
+
     def _load_error_responses(self):
         """Load error responses from error catalog."""
         try:
             error_catalog = export_error_catalog()
-            
+
             for error_code, error_data in error_catalog["errors"].items():
                 self.error_responses[error_data["http_status"]] = {
                     "description": f"Error response - {error_data['message']}",
@@ -334,84 +345,97 @@ class OpenAPIGenerator:
                                     "details": {},
                                     "timestamp": "2025-06-22T10:30:00Z",
                                     "request_id": "550e8400-e29b-41d4-a716-446655440000",
-                                    "service": error_data["service"].lower() + "-service",
+                                    "service": error_data["service"].lower()
+                                    + "-service",
                                     "category": error_data["category"],
                                     "severity": error_data["severity"],
                                     "retryable": error_data["retryable"],
-                                    "resolution_guidance": error_data["resolution_guidance"]
+                                    "resolution_guidance": error_data[
+                                        "resolution_guidance"
+                                    ],
                                 },
                                 "data": None,
                                 "metadata": {
                                     "timestamp": "2025-06-22T10:30:00Z",
                                     "request_id": "550e8400-e29b-41d4-a716-446655440000",
                                     "version": "1.0.0",
-                                    "service": error_data["service"].lower() + "-service"
-                                }
-                            }
+                                    "service": error_data["service"].lower()
+                                    + "-service",
+                                },
+                            },
                         }
-                    }
+                    },
                 }
         except Exception as e:
             logger.warning(f"Could not load error responses: {e}")
-    
+
     def discover_fastapi_app(self, service_key: str) -> Optional[FastAPI]:
         """Discover and load FastAPI application for a service."""
         if not FASTAPI_AVAILABLE:
             logger.error("FastAPI not available")
             return None
-        
+
         config = self.service_configs.get(service_key)
         if not config:
             logger.error(f"Unknown service: {service_key}")
             return None
-        
+
         try:
             # Try to import the module
             module = importlib.import_module(config["module_path"])
             app = getattr(module, config["app_variable"])
-            
+
             if isinstance(app, FastAPI):
                 logger.info(f"Successfully loaded FastAPI app for {config['name']}")
                 return app
             else:
-                logger.error(f"Found {config['app_variable']} but it's not a FastAPI instance")
+                logger.error(
+                    f"Found {config['app_variable']} but it's not a FastAPI instance"
+                )
                 return None
-                
+
         except ImportError as e:
             logger.warning(f"Could not import {config['module_path']}: {e}")
             return None
         except AttributeError as e:
-            logger.warning(f"Could not find {config['app_variable']} in {config['module_path']}: {e}")
+            logger.warning(
+                f"Could not find {config['app_variable']} in {config['module_path']}: {e}"
+            )
             return None
         except Exception as e:
             logger.error(f"Error loading FastAPI app for {service_key}: {e}")
             return None
-    
+
     def create_mock_fastapi_app(self, service_key: str) -> FastAPI:
         """Create a mock FastAPI app with common endpoints for documentation generation."""
         if not FASTAPI_AVAILABLE:
             raise ImportError("FastAPI not available")
-        
+
         config = self.service_configs[service_key]
-        
+
         app = FastAPI(
             title=config["name"],
             description=config["description"],
             version=config["version"],
             tags_metadata=[
-                {"name": tag, "description": f"{tag.replace('-', ' ').title()} operations"}
+                {
+                    "name": tag,
+                    "description": f"{tag.replace('-', ' ').title()} operations",
+                }
                 for tag in config["tags"]
-            ]
+            ],
         )
-        
+
         # Add common endpoints based on service type
         self._add_common_endpoints(app, service_key, config)
-        
+
         return app
-    
-    def _add_common_endpoints(self, app: FastAPI, service_key: str, config: Dict[str, Any]):
+
+    def _add_common_endpoints(
+        self, app: FastAPI, service_key: str, config: Dict[str, Any]
+    ):
         """Add common endpoints to mock FastAPI app."""
-        
+
         # Health endpoint (all services)
         @app.get("/health", tags=["health"], summary="Health Check")
         async def health_check():
@@ -420,9 +444,9 @@ class OpenAPIGenerator:
                 "status": "healthy",
                 "service": config["name"],
                 "version": config["version"],
-                "timestamp": datetime.now().isoformat()
+                "timestamp": datetime.now().isoformat(),
             }
-        
+
         # Service-specific endpoints
         if service_key == "auth":
             self._add_auth_endpoints(app)
@@ -440,167 +464,231 @@ class OpenAPIGenerator:
             self._add_ec_endpoints(app)
         elif service_key == "dgm":
             self._add_dgm_endpoints(app)
-    
+
     def _add_auth_endpoints(self, app: FastAPI):
         """Add authentication service endpoints."""
-        
+
         @app.post("/auth/register", tags=["authentication"], summary="Register User")
         async def register_user():
             """Register a new user account."""
             pass
-        
+
         @app.post("/auth/login", tags=["authentication"], summary="User Login")
         async def login():
             """Authenticate user and return access token."""
             pass
-        
+
         @app.post("/auth/logout", tags=["authentication"], summary="User Logout")
         async def logout():
             """Logout user and revoke tokens."""
             pass
-        
+
         @app.get("/auth/me", tags=["users"], summary="Get Current User")
         async def get_current_user():
             """Get current authenticated user information."""
             pass
-        
+
         @app.post("/auth/token/refresh", tags=["tokens"], summary="Refresh Token")
         async def refresh_token():
             """Refresh authentication token."""
             pass
-    
+
     def _add_ac_endpoints(self, app: FastAPI):
         """Add constitutional AI service endpoints."""
-        
-        @app.get("/api/v1/constitutional/principles", tags=["principles"], summary="Get Constitutional Principles")
+
+        @app.get(
+            "/api/v1/constitutional/principles",
+            tags=["principles"],
+            summary="Get Constitutional Principles",
+        )
         async def get_principles():
             """Retrieve constitutional principles and rules."""
             pass
-        
-        @app.post("/api/v1/constitutional/principles", tags=["principles"], summary="Create Principle")
+
+        @app.post(
+            "/api/v1/constitutional/principles",
+            tags=["principles"],
+            summary="Create Principle",
+        )
         async def create_principle():
             """Create a new constitutional principle."""
             pass
-        
-        @app.get("/api/v1/constitutional/council", tags=["council"], summary="Get Council Status")
+
+        @app.get(
+            "/api/v1/constitutional/council",
+            tags=["council"],
+            summary="Get Council Status",
+        )
         async def get_council():
             """Get constitutional council status and members."""
             pass
-        
-        @app.get("/api/v1/constitutional/compliance", tags=["compliance"], summary="Check Compliance")
+
+        @app.get(
+            "/api/v1/constitutional/compliance",
+            tags=["compliance"],
+            summary="Check Compliance",
+        )
         async def check_compliance():
             """Check constitutional compliance for operations."""
             pass
-    
+
     def _add_integrity_endpoints(self, app: FastAPI):
         """Add integrity service endpoints."""
-        
+
         @app.get("/api/v1/integrity/audit-log", tags=["audit"], summary="Get Audit Log")
         async def get_audit_log():
             """Retrieve system audit log entries."""
             pass
-        
-        @app.get("/api/v1/integrity/certificates", tags=["certificates"], summary="Get Certificates")
+
+        @app.get(
+            "/api/v1/integrity/certificates",
+            tags=["certificates"],
+            summary="Get Certificates",
+        )
         async def get_certificates():
             """Retrieve cryptographic certificates."""
             pass
-        
-        @app.post("/api/v1/integrity/verify", tags=["verification"], summary="Verify Signature")
+
+        @app.post(
+            "/api/v1/integrity/verify",
+            tags=["verification"],
+            summary="Verify Signature",
+        )
         async def verify_signature():
             """Verify digital signature integrity."""
             pass
-    
+
     def _add_fv_endpoints(self, app: FastAPI):
         """Add formal verification service endpoints."""
-        
-        @app.post("/api/v1/verification/verify", tags=["verification"], summary="Verify Property")
+
+        @app.post(
+            "/api/v1/verification/verify",
+            tags=["verification"],
+            summary="Verify Property",
+        )
         async def verify_property():
             """Formally verify a mathematical property."""
             pass
-        
-        @app.get("/api/v1/verification/results", tags=["results"], summary="Get Verification Results")
+
+        @app.get(
+            "/api/v1/verification/results",
+            tags=["results"],
+            summary="Get Verification Results",
+        )
         async def get_results():
             """Retrieve formal verification results."""
             pass
-        
-        @app.get("/api/v1/verification/rules", tags=["rules"], summary="Get Verification Rules")
+
+        @app.get(
+            "/api/v1/verification/rules",
+            tags=["rules"],
+            summary="Get Verification Rules",
+        )
         async def get_rules():
             """Get available verification rules and templates."""
             pass
-    
+
     def _add_gs_endpoints(self, app: FastAPI):
         """Add governance synthesis service endpoints."""
-        
-        @app.post("/api/v1/synthesis/generate", tags=["synthesis"], summary="Generate Policy")
+
+        @app.post(
+            "/api/v1/synthesis/generate", tags=["synthesis"], summary="Generate Policy"
+        )
         async def generate_policy():
             """Generate governance policy from principles."""
             pass
-        
-        @app.get("/api/v1/synthesis/templates", tags=["templates"], summary="Get Templates")
+
+        @app.get(
+            "/api/v1/synthesis/templates", tags=["templates"], summary="Get Templates"
+        )
         async def get_templates():
             """Retrieve policy generation templates."""
             pass
-        
-        @app.get("/api/v1/synthesis/history", tags=["history"], summary="Get Generation History")
+
+        @app.get(
+            "/api/v1/synthesis/history",
+            tags=["history"],
+            summary="Get Generation History",
+        )
         async def get_history():
             """Get policy generation history."""
             pass
-    
+
     def _add_pgc_endpoints(self, app: FastAPI):
         """Add policy governance service endpoints."""
-        
-        @app.get("/api/v1/enforcement/policies", tags=["policies"], summary="Get Policies")
+
+        @app.get(
+            "/api/v1/enforcement/policies", tags=["policies"], summary="Get Policies"
+        )
         async def get_policies():
             """Retrieve governance policies."""
             pass
-        
-        @app.post("/api/v1/enforcement/evaluate", tags=["evaluation"], summary="Evaluate Policy")
+
+        @app.post(
+            "/api/v1/enforcement/evaluate",
+            tags=["evaluation"],
+            summary="Evaluate Policy",
+        )
         async def evaluate_policy():
             """Evaluate policy against input data."""
             pass
-        
-        @app.get("/api/v1/enforcement/decisions", tags=["decisions"], summary="Get Decisions")
+
+        @app.get(
+            "/api/v1/enforcement/decisions", tags=["decisions"], summary="Get Decisions"
+        )
         async def get_decisions():
             """Get policy evaluation decisions."""
             pass
-    
+
     def _add_ec_endpoints(self, app: FastAPI):
         """Add evolutionary computation service endpoints."""
-        
-        @app.post("/api/v1/evolution/optimize", tags=["optimization"], summary="Start Optimization")
+
+        @app.post(
+            "/api/v1/evolution/optimize",
+            tags=["optimization"],
+            summary="Start Optimization",
+        )
         async def start_optimization():
             """Start evolutionary optimization process."""
             pass
-        
+
         @app.get("/api/v1/evolution/metrics", tags=["metrics"], summary="Get Metrics")
         async def get_metrics():
             """Get evolutionary computation metrics."""
             pass
-        
-        @app.get("/api/v1/evolution/history", tags=["history"], summary="Get Evolution History")
+
+        @app.get(
+            "/api/v1/evolution/history",
+            tags=["history"],
+            summary="Get Evolution History",
+        )
         async def get_history():
             """Get evolution process history."""
             pass
-    
+
     def _add_dgm_endpoints(self, app: FastAPI):
         """Add Darwin Gödel Machine service endpoints."""
-        
+
         @app.get("/api/v1/dgm/workspace", tags=["workspace"], summary="Get Workspace")
         async def get_workspace():
             """Get self-improvement workspace status."""
             pass
-        
-        @app.post("/api/v1/dgm/propose", tags=["improvement"], summary="Propose Improvement")
+
+        @app.post(
+            "/api/v1/dgm/propose", tags=["improvement"], summary="Propose Improvement"
+        )
         async def propose_improvement():
             """Propose self-improvement modification."""
             pass
-        
+
         @app.get("/api/v1/dgm/metrics", tags=["metrics"], summary="Get Metrics")
         async def get_metrics():
             """Get self-improvement metrics."""
             pass
 
-    def generate_openapi_spec(self, service_key: str, use_mock: bool = False) -> Dict[str, Any]:
+    def generate_openapi_spec(
+        self, service_key: str, use_mock: bool = False
+    ) -> Dict[str, Any]:
         """Generate OpenAPI 3.0 specification for a service."""
 
         config = self.service_configs.get(service_key)
@@ -622,7 +710,7 @@ class OpenAPIGenerator:
             version=config["version"],
             description=config["description"],
             routes=app.routes,
-            tags=app.tags_metadata
+            tags=app.tags_metadata,
         )
 
         # Enhance the specification
@@ -630,41 +718,43 @@ class OpenAPIGenerator:
 
         return openapi_spec
 
-    def _enhance_openapi_spec(self, spec: Dict[str, Any], service_key: str, config: Dict[str, Any]):
+    def _enhance_openapi_spec(
+        self, spec: Dict[str, Any], service_key: str, config: Dict[str, Any]
+    ):
         """Enhance OpenAPI specification with ACGS-specific features."""
 
         # Add server information
         spec["servers"] = [
             {
                 "url": f"http://localhost:{config['port']}",
-                "description": "Development server"
+                "description": "Development server",
             },
             {
                 "url": f"https://api.acgs.dev/{service_key}",
-                "description": "Development environment"
+                "description": "Development environment",
             },
             {
                 "url": f"https://api.acgs.com/{service_key}",
-                "description": "Production environment"
-            }
+                "description": "Production environment",
+            },
         ]
 
         # Add contact and license information
         spec["info"]["contact"] = {
             "name": "ACGS Development Team",
             "url": "https://acgs.com/support",
-            "email": "api-support@acgs.com"
+            "email": "api-support@acgs.com",
         }
 
         spec["info"]["license"] = {
             "name": "ACGS License",
-            "url": "https://acgs.com/license"
+            "url": "https://acgs.com/license",
         }
 
         # Add external documentation
         spec["externalDocs"] = {
             "description": "ACGS API Documentation",
-            "url": "https://docs.acgs.com"
+            "url": "https://docs.acgs.com",
         }
 
         # Ensure components section exists
@@ -683,22 +773,19 @@ class OpenAPIGenerator:
                 "type": "http",
                 "scheme": "bearer",
                 "bearerFormat": "JWT",
-                "description": "JWT token authentication"
+                "description": "JWT token authentication",
             },
             "CookieAuth": {
                 "type": "apiKey",
                 "in": "cookie",
                 "name": "access_token_cookie",
-                "description": "Cookie-based authentication"
-            }
+                "description": "Cookie-based authentication",
+            },
         }
 
         # Add global security requirement
         if service_key != "auth":  # Auth service has its own security handling
-            spec["security"] = [
-                {"BearerAuth": []},
-                {"CookieAuth": []}
-            ]
+            spec["security"] = [{"BearerAuth": []}, {"CookieAuth": []}]
 
         # Enhance paths with unified responses and error handling
         self._enhance_paths(spec, service_key)
@@ -707,10 +794,15 @@ class OpenAPIGenerator:
         if "tags" not in spec:
             spec["tags"] = []
 
-        spec["tags"].extend([
-            {"name": tag, "description": f"{tag.replace('-', ' ').title()} operations"}
-            for tag in config["tags"]
-        ])
+        spec["tags"].extend(
+            [
+                {
+                    "name": tag,
+                    "description": f"{tag.replace('-', ' ').title()} operations",
+                }
+                for tag in config["tags"]
+            ]
+        )
 
     def _enhance_paths(self, spec: Dict[str, Any], service_key: str):
         """Enhance API paths with unified responses and error handling."""
@@ -745,11 +837,11 @@ class OpenAPIGenerator:
                                 "timestamp": "2025-06-22T10:30:00Z",
                                 "request_id": "550e8400-e29b-41d4-a716-446655440000",
                                 "version": "1.0.0",
-                                "service": f"{service_key}-service"
-                            }
-                        }
+                                "service": f"{service_key}-service",
+                            },
+                        },
                     }
-                }
+                },
             }
 
         # Add common error responses
@@ -760,7 +852,7 @@ class OpenAPIGenerator:
             "404": "Not Found - Resource not found",
             "422": "Unprocessable Entity - Validation failed",
             "500": "Internal Server Error - Unexpected error",
-            "503": "Service Unavailable - Service temporarily unavailable"
+            "503": "Service Unavailable - Service temporarily unavailable",
         }
 
         for status_code, description in error_responses.items():
@@ -771,7 +863,7 @@ class OpenAPIGenerator:
                         "application/json": {
                             "schema": {"$ref": "#/components/schemas/ErrorResponse"}
                         }
-                    }
+                    },
                 }
 
         # Add request ID parameter for correlation
@@ -780,21 +872,19 @@ class OpenAPIGenerator:
 
         # Check if X-Request-ID parameter already exists
         has_request_id = any(
-            param.get("name") == "X-Request-ID"
-            for param in operation["parameters"]
+            param.get("name") == "X-Request-ID" for param in operation["parameters"]
         )
 
         if not has_request_id:
-            operation["parameters"].append({
-                "name": "X-Request-ID",
-                "in": "header",
-                "required": False,
-                "schema": {
-                    "type": "string",
-                    "format": "uuid"
-                },
-                "description": "Optional request ID for correlation tracking"
-            })
+            operation["parameters"].append(
+                {
+                    "name": "X-Request-ID",
+                    "in": "header",
+                    "required": False,
+                    "schema": {"type": "string", "format": "uuid"},
+                    "description": "Optional request ID for correlation tracking",
+                }
+            )
 
     def generate_all_specs(self, use_mock: bool = False) -> Dict[str, Dict[str, Any]]:
         """Generate OpenAPI specifications for all services."""
@@ -813,7 +903,12 @@ class OpenAPIGenerator:
 
         return specs
 
-    def save_spec(self, service_key: str, spec: Dict[str, Any], formats: List[str] = ["json", "yaml"]):
+    def save_spec(
+        self,
+        service_key: str,
+        spec: Dict[str, Any],
+        formats: List[str] = ["json", "yaml"],
+    ):
         """Save OpenAPI specification in multiple formats."""
 
         config = self.service_configs[service_key]
@@ -910,7 +1005,9 @@ class OpenAPIGenerator:
 
         logger.info(f"Generated HTML docs: {html_path}")
 
-    def generate_combined_spec(self, specs: Dict[str, Dict[str, Any]]) -> Dict[str, Any]:
+    def generate_combined_spec(
+        self, specs: Dict[str, Dict[str, Any]]
+    ) -> Dict[str, Any]:
         """Generate combined OpenAPI specification for all services."""
 
         combined_spec = {
@@ -922,22 +1019,16 @@ class OpenAPIGenerator:
                 "contact": {
                     "name": "ACGS Development Team",
                     "url": "https://acgs.com/support",
-                    "email": "api-support@acgs.com"
+                    "email": "api-support@acgs.com",
                 },
-                "license": {
-                    "name": "ACGS License",
-                    "url": "https://acgs.com/license"
-                }
+                "license": {"name": "ACGS License", "url": "https://acgs.com/license"},
             },
             "servers": [
-                {
-                    "url": "http://localhost",
-                    "description": "Development environment"
-                },
+                {"url": "http://localhost", "description": "Development environment"},
                 {
                     "url": "https://api.acgs.com",
-                    "description": "Production environment"
-                }
+                    "description": "Production environment",
+                },
             ],
             "paths": {},
             "components": {
@@ -946,11 +1037,11 @@ class OpenAPIGenerator:
                     "BearerAuth": {
                         "type": "http",
                         "scheme": "bearer",
-                        "bearerFormat": "JWT"
+                        "bearerFormat": "JWT",
                     }
-                }
+                },
             },
-            "tags": []
+            "tags": [],
         }
 
         # Combine paths from all services
@@ -964,7 +1055,11 @@ class OpenAPIGenerator:
             if "paths" in spec:
                 for path, path_item in spec["paths"].items():
                     # Add service prefix to path
-                    prefixed_path = f"/{service_key}{path}" if not path.startswith(f"/{service_key}") else path
+                    prefixed_path = (
+                        f"/{service_key}{path}"
+                        if not path.startswith(f"/{service_key}")
+                        else path
+                    )
                     combined_spec["paths"][prefixed_path] = path_item
 
             # Add service tags
@@ -976,17 +1071,37 @@ class OpenAPIGenerator:
 
 def main():
     """Main function for CLI usage."""
-    parser = argparse.ArgumentParser(description="Generate OpenAPI documentation for ACGS services")
+    parser = argparse.ArgumentParser(
+        description="Generate OpenAPI documentation for ACGS services"
+    )
 
     # Create a temporary generator to get service choices
     temp_generator = OpenAPIGenerator("temp")
     service_choices = list(temp_generator.service_configs.keys()) + ["all"]
 
-    parser.add_argument("--service", help="Generate docs for specific service", choices=service_choices)
-    parser.add_argument("--output", default="docs/api/generated", help="Output directory")
-    parser.add_argument("--format", nargs="+", default=["json", "yaml", "html"], choices=["json", "yaml", "html"], help="Output formats")
-    parser.add_argument("--mock", action="store_true", help="Use mock FastAPI apps instead of discovering real ones")
-    parser.add_argument("--combined", action="store_true", help="Generate combined specification for all services")
+    parser.add_argument(
+        "--service", help="Generate docs for specific service", choices=service_choices
+    )
+    parser.add_argument(
+        "--output", default="docs/api/generated", help="Output directory"
+    )
+    parser.add_argument(
+        "--format",
+        nargs="+",
+        default=["json", "yaml", "html"],
+        choices=["json", "yaml", "html"],
+        help="Output formats",
+    )
+    parser.add_argument(
+        "--mock",
+        action="store_true",
+        help="Use mock FastAPI apps instead of discovering real ones",
+    )
+    parser.add_argument(
+        "--combined",
+        action="store_true",
+        help="Generate combined specification for all services",
+    )
     parser.add_argument("--verbose", action="store_true", help="Enable verbose logging")
 
     args = parser.parse_args()

@@ -176,9 +176,13 @@ class ServiceDiscovery:
         for service_type, instances in self.instances.items():
             if instances:
                 # Register instances with failover manager
-                self.failover_manager.register_service_instances(service_type, instances)
+                self.failover_manager.register_service_instances(
+                    service_type, instances
+                )
 
-                logger.info(f"Initialized failover circuit breaker for {service_type.value}")
+                logger.info(
+                    f"Initialized failover circuit breaker for {service_type.value}"
+                )
 
     async def _health_check_loop(self):
         # requires: Valid input parameters
@@ -288,7 +292,9 @@ class ServiceDiscovery:
         error_rate = (failed_requests / max(total_requests, 1)) * 100
 
         # Calculate throughput (simplified)
-        current_connections = sum(inst.current_connections for inst in service_instances)
+        current_connections = sum(
+            inst.current_connections for inst in service_instances
+        )
 
         # Create performance metrics
         metrics = PerformanceMetrics(
@@ -342,7 +348,9 @@ class ServiceDiscovery:
         """Register callback for service up events."""
         self._service_up_callbacks.append(callback)
 
-    def register_service_down_callback(self, callback: Callable[[ServiceInstance], None]):
+    def register_service_down_callback(
+        self, callback: Callable[[ServiceInstance], None]
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -393,7 +401,9 @@ class ServiceDiscovery:
 
         if selected and session_id:
             # Set session affinity for governance workflow continuity
-            self.session_manager.set_affinity(session_id, service_type, selected.instance_id)
+            self.session_manager.set_affinity(
+                session_id, service_type, selected.instance_id
+            )
             selected.increment_connections()
 
         return selected
@@ -450,7 +460,9 @@ class ServiceDiscovery:
             for instance in healthy_instances
             if instance.response_time is not None
         ]
-        avg_response_time = sum(response_times) / len(response_times) if response_times else None
+        avg_response_time = (
+            sum(response_times) / len(response_times) if response_times else None
+        )
 
         return {
             "service": service_type.value,
@@ -588,7 +600,9 @@ class ServiceDiscovery:
         """Get session affinity statistics."""
         return self.session_manager.get_session_stats()
 
-    def set_instance_weight(self, service_type: ServiceType, instance_id: str, weight: int):
+    def set_instance_weight(
+        self, service_type: ServiceType, instance_id: str, weight: int
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -635,11 +649,15 @@ class ServiceDiscovery:
         if not instance_id:
             instance = self.get_best_instance(service_type)
             if not instance:
-                raise ServiceUnavailableError(f"No healthy instances for {service_type.value}")
+                raise ServiceUnavailableError(
+                    f"No healthy instances for {service_type.value}"
+                )
             instance_id = instance.instance_id
 
         # Execute with failover protection
-        return await failover_breaker.execute_with_failover(operation, instance_id, *args, **kwargs)
+        return await failover_breaker.execute_with_failover(
+            operation, instance_id, *args, **kwargs
+        )
 
     def get_failover_status(self, service_type: ServiceType) -> dict[str, Any]:
         """Get failover status for a service type."""
@@ -655,7 +673,9 @@ class ServiceDiscovery:
         # ensures: Correct function execution
         # sha256: func_hash
         """Configure failover settings for a service type."""
-        failover_breaker = self.failover_manager.get_failover_breaker(service_type, config)
+        failover_breaker = self.failover_manager.get_failover_breaker(
+            service_type, config
+        )
 
         # Re-register instances with new configuration
         instances = self.instances.get(service_type, [])
@@ -682,8 +702,10 @@ class ServiceDiscovery:
             Service instance with session affinity
         """
         # Check if session already has affinity for this service
-        affinity_instance_id = await self.governance_session_manager.get_service_affinity(
-            session_id, service_type
+        affinity_instance_id = (
+            await self.governance_session_manager.get_service_affinity(
+                session_id, service_type
+            )
         )
 
         if affinity_instance_id:

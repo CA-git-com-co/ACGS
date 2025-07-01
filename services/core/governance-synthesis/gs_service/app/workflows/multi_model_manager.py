@@ -229,7 +229,9 @@ class MultiModelManager:
         self.performance_trackers: dict[str, ModelPerformanceTracker] = {}
 
         if not LANGCHAIN_AVAILABLE:
-            logger.warning("LangChain not available. Multi-model functionality will be limited.")
+            logger.warning(
+                "LangChain not available. Multi-model functionality will be limited."
+            )
 
         self._initialize_models()
 
@@ -257,25 +259,37 @@ class MultiModelManager:
                             timeout=self.config.timeout_seconds,
                         )
                         self.model_clients[model_name] = client
-                        self.performance_trackers[model_name] = ModelPerformanceTracker(model_name)
+                        self.performance_trackers[model_name] = ModelPerformanceTracker(
+                            model_name
+                        )
                         logger.info(f"Initialized Gemini model: {model_name}")
 
-                elif model_name.startswith("meta-llama/") or model_name.startswith("llama"):
+                elif model_name.startswith("meta-llama/") or model_name.startswith(
+                    "llama"
+                ):
                     if self.config.groq_api_key and GROQ_AVAILABLE:
                         client = Groq(api_key=self.config.groq_api_key)
                         self.model_clients[model_name] = client
-                        self.performance_trackers[model_name] = ModelPerformanceTracker(model_name)
+                        self.performance_trackers[model_name] = ModelPerformanceTracker(
+                            model_name
+                        )
                         logger.info(f"Initialized Groq Llama model: {model_name}")
 
-                elif model_name.startswith("qwen/qwen3-32b") or model_name == "qwen3-32b":
+                elif (
+                    model_name.startswith("qwen/qwen3-32b") or model_name == "qwen3-32b"
+                ):
                     # Groq API support for Qwen3-32B model
                     if self.config.groq_api_key and GROQ_AVAILABLE:
                         client = Groq(api_key=self.config.groq_api_key)
                         self.model_clients[model_name] = client
-                        self.performance_trackers[model_name] = ModelPerformanceTracker(model_name)
+                        self.performance_trackers[model_name] = ModelPerformanceTracker(
+                            model_name
+                        )
                         logger.info(f"Initialized Groq Qwen3-32B model: {model_name}")
 
-                elif model_name.startswith("deepseek/") or model_name.startswith("qwen/qwen3-235b"):
+                elif model_name.startswith("deepseek/") or model_name.startswith(
+                    "qwen/qwen3-235b"
+                ):
                     # OpenRouter API support for DeepSeek models and Qwen3-235B
                     if (
                         hasattr(self.config, "openrouter_api_key")
@@ -287,15 +301,21 @@ class MultiModelManager:
                             base_url="https://openrouter.ai/api/v1",
                         )
                         self.model_clients[model_name] = client
-                        self.performance_trackers[model_name] = ModelPerformanceTracker(model_name)
+                        self.performance_trackers[model_name] = ModelPerformanceTracker(
+                            model_name
+                        )
                         logger.info(f"Initialized OpenRouter model: {model_name}")
 
-                elif model_name.startswith("qwen/qwen3-32b") or model_name == "qwen3-32b":
+                elif (
+                    model_name.startswith("qwen/qwen3-32b") or model_name == "qwen3-32b"
+                ):
                     # Groq API support for Qwen3-32B model
                     if self.config.groq_api_key and GROQ_AVAILABLE:
                         client = Groq(api_key=self.config.groq_api_key)
                         self.model_clients[model_name] = client
-                        self.performance_trackers[model_name] = ModelPerformanceTracker(model_name)
+                        self.performance_trackers[model_name] = ModelPerformanceTracker(
+                            model_name
+                        )
                         logger.info(f"Initialized Groq Qwen3-32B model: {model_name}")
 
                 elif model_name.startswith("grok"):
@@ -305,14 +325,18 @@ class MultiModelManager:
                             base_url="https://api.x.ai/v1",
                         )
                         self.model_clients[model_name] = client
-                        self.performance_trackers[model_name] = ModelPerformanceTracker(model_name)
+                        self.performance_trackers[model_name] = ModelPerformanceTracker(
+                            model_name
+                        )
                         logger.info(f"Initialized xAI Grok model: {model_name}")
 
                 elif model_name.startswith("gpt"):
                     if self.config.openai_api_key and OPENAI_AVAILABLE:
                         client = OpenAI(api_key=self.config.openai_api_key)
                         self.model_clients[model_name] = client
-                        self.performance_trackers[model_name] = ModelPerformanceTracker(model_name)
+                        self.performance_trackers[model_name] = ModelPerformanceTracker(
+                            model_name
+                        )
                         logger.info(f"Initialized OpenAI model: {model_name}")
 
                 elif model_name.startswith("qwen/") or model_name.startswith("nvidia/"):
@@ -322,7 +346,9 @@ class MultiModelManager:
                             api_key=self.config.nvidia_api_key,
                         )
                         self.model_clients[model_name] = client
-                        self.performance_trackers[model_name] = ModelPerformanceTracker(model_name)
+                        self.performance_trackers[model_name] = ModelPerformanceTracker(
+                            model_name
+                        )
                         logger.info(f"Initialized NVIDIA API model: {model_name}")
 
                 elif (
@@ -336,8 +362,8 @@ class MultiModelManager:
                             # Create Ollama client instance
                             client = OllamaLLMClient()
                             self.model_clients[model_name] = client
-                            self.performance_trackers[model_name] = ModelPerformanceTracker(
-                                model_name
+                            self.performance_trackers[model_name] = (
+                                ModelPerformanceTracker(model_name)
                             )
                             logger.info(f"Initialized Ollama model: {model_name}")
                         except Exception as ollama_error:
@@ -382,7 +408,9 @@ class MultiModelManager:
 
         # Try primary model first
         for attempt in range(max_retries):
-            model_to_use = primary_model if attempt < max_retries - 1 else fallback_model
+            model_to_use = (
+                primary_model if attempt < max_retries - 1 else fallback_model
+            )
 
             # Check if model should be used (circuit breaker)
             if (
@@ -400,7 +428,9 @@ class MultiModelManager:
 
                 # Record success
                 if model_to_use in self.performance_trackers:
-                    self.performance_trackers[model_to_use].record_success(response_time)
+                    self.performance_trackers[model_to_use].record_success(
+                        response_time
+                    )
 
                 return {
                     "content": response,
@@ -411,7 +441,9 @@ class MultiModelManager:
                 }
 
             except Exception as e:
-                logger.warning(f"Model {model_to_use} failed on attempt {attempt + 1}: {e}")
+                logger.warning(
+                    f"Model {model_to_use} failed on attempt {attempt + 1}: {e}"
+                )
 
                 # Record failure
                 if model_to_use in self.performance_trackers:
@@ -455,12 +487,16 @@ class MultiModelManager:
             client.temperature = temperature
 
             if structured_output_class:
-                structured_client = client.with_structured_output(structured_output_class)
+                structured_client = client.with_structured_output(
+                    structured_output_class
+                )
                 response = await structured_client.ainvoke(prompt)
                 return response
             else:
                 response = await client.ainvoke(prompt)
-                return response.content if hasattr(response, "content") else str(response)
+                return (
+                    response.content if hasattr(response, "content") else str(response)
+                )
 
         elif isinstance(client, Groq):
             # Groq client for Llama and Qwen models
@@ -495,7 +531,9 @@ class MultiModelManager:
             loop = asyncio.get_event_loop()
 
             # Handle different model types
-            if model_name.startswith("deepseek/") or model_name.startswith("qwen/qwen3-235b"):
+            if model_name.startswith("deepseek/") or model_name.startswith(
+                "qwen/qwen3-235b"
+            ):
                 # OpenRouter models (DeepSeek Chat v3, DeepSeek R1, Qwen3-235B)
                 extra_headers = {
                     "HTTP-Referer": "https://acgs.local",  # Optional site URL
@@ -601,7 +639,9 @@ class MultiModelManager:
                 return response
 
         else:
-            raise ValueError(f"Unsupported client type for model {model_name}: {type(client)}")
+            raise ValueError(
+                f"Unsupported client type for model {model_name}: {type(client)}"
+            )
 
     def get_performance_metrics(self) -> dict[str, Any]:
         """Get performance metrics for all models."""
@@ -616,7 +656,9 @@ class MultiModelManager:
                 "average_quality_score": tracker.get_average_quality_score(),
                 "circuit_breaker_open": tracker.circuit_breaker_open,
                 "last_failure_time": (
-                    tracker.last_failure_time.isoformat() if tracker.last_failure_time else None
+                    tracker.last_failure_time.isoformat()
+                    if tracker.last_failure_time
+                    else None
                 ),
             }
 
@@ -625,7 +667,8 @@ class MultiModelManager:
             tracker.total_requests for tracker in self.performance_trackers.values()
         )
         total_successful = sum(
-            tracker.successful_requests for tracker in self.performance_trackers.values()
+            tracker.successful_requests
+            for tracker in self.performance_trackers.values()
         )
 
         metrics["overall"] = {
@@ -634,7 +677,9 @@ class MultiModelManager:
                 total_successful / total_requests if total_requests > 0 else 0.0
             ),
             "reliability_target_met": (
-                (total_successful / total_requests) >= 0.999 if total_requests > 0 else False
+                (total_successful / total_requests) >= 0.999
+                if total_requests > 0
+                else False
             ),
             "active_models": len(
                 [t for t in self.performance_trackers.values() if t.should_use_model()]
@@ -657,7 +702,9 @@ class MultiModelManager:
 
             if primary_tracker and primary_tracker.should_use_model():
                 if primary_tracker.get_success_rate() >= 0.95:
-                    recommendations[role.value] = f"Use {primary_model} (excellent performance)"
+                    recommendations[role.value] = (
+                        f"Use {primary_model} (excellent performance)"
+                    )
                 else:
                     recommendations[role.value] = (
                         f"Use {primary_model} with caution (success rate: {primary_tracker.get_success_rate():.2%})"

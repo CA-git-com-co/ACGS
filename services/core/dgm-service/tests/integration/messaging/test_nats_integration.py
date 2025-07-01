@@ -20,7 +20,11 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../.."))
 
 from dgm_service.messaging.event_publisher import EventPublisher
 from dgm_service.messaging.event_subscriber import EventSubscriber
-from dgm_service.messaging.message_types import EventPriority, EventType, create_improvement_event
+from dgm_service.messaging.message_types import (
+    EventPriority,
+    EventType,
+    create_improvement_event,
+)
 from dgm_service.messaging.nats_client import NATSClient, NATSConfig
 
 
@@ -119,10 +123,14 @@ class TestNATSIntegration:
         received_events = []
 
         async def test_handler(event_type, event_data, metadata):
-            received_events.append({"type": event_type, "data": event_data, "metadata": metadata})
+            received_events.append(
+                {"type": event_type, "data": event_data, "metadata": metadata}
+            )
 
         # Subscribe to improvement events
-        success = await subscriber.subscribe_to_event(EventType.IMPROVEMENT_PROPOSED, test_handler)
+        success = await subscriber.subscribe_to_event(
+            EventType.IMPROVEMENT_PROPOSED, test_handler
+        )
 
         assert success is True
         assert subscriber.metrics["handlers_registered"] == 1
@@ -137,7 +145,9 @@ class TestNATSIntegration:
         received_events = []
 
         async def event_handler(event_type, event_data, metadata):
-            received_events.append({"type": event_type, "data": event_data, "metadata": metadata})
+            received_events.append(
+                {"type": event_type, "data": event_data, "metadata": metadata}
+            )
 
         await subscriber.subscribe_to_improvements(event_handler)
 
@@ -301,7 +311,9 @@ class TestNATSIntegration:
         received_events = []
 
         async def pattern_handler(subject, event_data, metadata):
-            received_events.append({"subject": subject, "data": event_data, "metadata": metadata})
+            received_events.append(
+                {"subject": subject, "data": event_data, "metadata": metadata}
+            )
 
         # Subscribe to pattern
         success = await subscriber.subscribe_to_pattern(

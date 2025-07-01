@@ -55,7 +55,9 @@ class ACGSRedisClient:
             logger.info(f"Redis client initialized for service: {self.service_name}")
 
         except Exception as e:
-            logger.error(f"Failed to initialize Redis client for {self.service_name}: {e}")
+            logger.error(
+                f"Failed to initialize Redis client for {self.service_name}: {e}"
+            )
             raise
 
     async def close(self):
@@ -133,12 +135,16 @@ class ACGSRedisClient:
             logger.error(f"Failed to increment key {key}: {e}")
             return None
 
-    async def set_hash(self, key: str, mapping: dict[str, Any], ttl: int | None = None) -> bool:
+    async def set_hash(
+        self, key: str, mapping: dict[str, Any], ttl: int | None = None
+    ) -> bool:
         """Set hash in Redis with optional TTL."""
         try:
             async with self.get_client() as client:
                 # Convert values to strings for Redis
-                str_mapping = {k: json.dumps(v, default=str) for k, v in mapping.items()}
+                str_mapping = {
+                    k: json.dumps(v, default=str) for k, v in mapping.items()
+                }
                 result = await client.hset(key, mapping=str_mapping)
                 if ttl:
                     await client.expire(key, ttl)
@@ -159,7 +165,9 @@ class ACGSRedisClient:
             logger.error(f"Failed to get hash {key}: {e}")
             return None
 
-    async def add_to_list(self, key: str, value: Any, max_length: int | None = None) -> bool:
+    async def add_to_list(
+        self, key: str, value: Any, max_length: int | None = None
+    ) -> bool:
         """Add value to Redis list with optional max length."""
         try:
             async with self.get_client() as client:

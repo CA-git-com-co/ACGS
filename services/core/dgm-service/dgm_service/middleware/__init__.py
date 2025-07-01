@@ -9,4 +9,9 @@ from .logging import LoggingMiddleware
 from .rate_limiting import RateLimitingMiddleware
 from .security import SecurityMiddleware
 
-__all__ = ["AuthMiddleware", "SecurityMiddleware", "LoggingMiddleware", "RateLimitingMiddleware"]
+__all__ = [
+    "AuthMiddleware",
+    "SecurityMiddleware",
+    "LoggingMiddleware",
+    "RateLimitingMiddleware",
+]

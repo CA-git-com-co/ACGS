@@ -4,18 +4,23 @@ Unit tests for services.core.governance-synthesis.gs_service.app.services.violat
 
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
-from services.core.governance-synthesis.gs_service.app.services.violation_detection_service import ViolationType, ViolationSeverity, ViolationDetectionResult, BatchViolationResult, ViolationDetectionService
-
+from services.core.governance_synthesis.gs_service.app.services.violation_detection_service import (
+    ViolationType,
+    ViolationSeverity,
+    ViolationDetectionResult,
+    BatchViolationResult,
+    ViolationDetectionService,
+)
 
 
 class TestViolationType:
     """Test suite for ViolationType."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -24,12 +29,12 @@ class TestViolationType:
 
 class TestViolationSeverity:
     """Test suite for ViolationSeverity."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -38,12 +43,12 @@ class TestViolationSeverity:
 
 class TestViolationDetectionResult:
     """Test suite for ViolationDetectionResult."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -52,12 +57,12 @@ class TestViolationDetectionResult:
 
 class TestBatchViolationResult:
     """Test suite for BatchViolationResult."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -66,15 +71,13 @@ class TestBatchViolationResult:
 
 class TestViolationDetectionService:
     """Test suite for ViolationDetectionService."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
         pass
-
-

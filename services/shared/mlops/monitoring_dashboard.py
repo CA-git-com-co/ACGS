@@ -26,250 +26,271 @@ logger = logging.getLogger(__name__)
 @dataclass
 class MetricPoint:
     """Single metric data point with timestamp."""
-    
+
     timestamp: datetime
     value: float
     metadata: Dict[str, Any] = field(default_factory=dict)
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary representation."""
         return {
-            'timestamp': self.timestamp.isoformat(),
-            'value': self.value,
-            'metadata': self.metadata
+            "timestamp": self.timestamp.isoformat(),
+            "value": self.value,
+            "metadata": self.metadata,
         }
 
 
 @dataclass
 class DashboardMetrics:
     """Container for all dashboard metrics."""
-    
+
     # Performance metrics
     prediction_accuracy: List[MetricPoint] = field(default_factory=list)
     response_times: List[MetricPoint] = field(default_factory=list)
     cost_efficiency: List[MetricPoint] = field(default_factory=list)
     constitutional_compliance: List[MetricPoint] = field(default_factory=list)
-    
+
     # System health metrics
     cpu_usage: List[MetricPoint] = field(default_factory=list)
     memory_usage: List[MetricPoint] = field(default_factory=list)
     active_connections: List[MetricPoint] = field(default_factory=list)
     error_rate: List[MetricPoint] = field(default_factory=list)
-    
+
     # MLOps specific metrics
     model_versions_deployed: List[MetricPoint] = field(default_factory=list)
     deployment_success_rate: List[MetricPoint] = field(default_factory=list)
     artifact_storage_usage: List[MetricPoint] = field(default_factory=list)
-    
+
     # Constitutional compliance
     constitutional_hash: str = "cdd01ef066bc6cf2"
     last_updated: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary representation."""
         return {
-            'prediction_accuracy': [p.to_dict() for p in self.prediction_accuracy],
-            'response_times': [p.to_dict() for p in self.response_times],
-            'cost_efficiency': [p.to_dict() for p in self.cost_efficiency],
-            'constitutional_compliance': [p.to_dict() for p in self.constitutional_compliance],
-            'cpu_usage': [p.to_dict() for p in self.cpu_usage],
-            'memory_usage': [p.to_dict() for p in self.memory_usage],
-            'active_connections': [p.to_dict() for p in self.active_connections],
-            'error_rate': [p.to_dict() for p in self.error_rate],
-            'model_versions_deployed': [p.to_dict() for p in self.model_versions_deployed],
-            'deployment_success_rate': [p.to_dict() for p in self.deployment_success_rate],
-            'artifact_storage_usage': [p.to_dict() for p in self.artifact_storage_usage],
-            'constitutional_hash': self.constitutional_hash,
-            'last_updated': self.last_updated.isoformat()
+            "prediction_accuracy": [p.to_dict() for p in self.prediction_accuracy],
+            "response_times": [p.to_dict() for p in self.response_times],
+            "cost_efficiency": [p.to_dict() for p in self.cost_efficiency],
+            "constitutional_compliance": [
+                p.to_dict() for p in self.constitutional_compliance
+            ],
+            "cpu_usage": [p.to_dict() for p in self.cpu_usage],
+            "memory_usage": [p.to_dict() for p in self.memory_usage],
+            "active_connections": [p.to_dict() for p in self.active_connections],
+            "error_rate": [p.to_dict() for p in self.error_rate],
+            "model_versions_deployed": [
+                p.to_dict() for p in self.model_versions_deployed
+            ],
+            "deployment_success_rate": [
+                p.to_dict() for p in self.deployment_success_rate
+            ],
+            "artifact_storage_usage": [
+                p.to_dict() for p in self.artifact_storage_usage
+            ],
+            "constitutional_hash": self.constitutional_hash,
+            "last_updated": self.last_updated.isoformat(),
         }
 
 
 class MetricsCollector:
     """
     Collects metrics from various sources for the monitoring dashboard.
-    
+
     Maintains high-performance data collection with sub-40ms update times
     while ensuring constitutional compliance.
     """
-    
-    def __init__(self, constitutional_hash: str = "cdd01ef066bc6cf2",
-                 max_points_per_metric: int = 1000):
+
+    def __init__(
+        self,
+        constitutional_hash: str = "cdd01ef066bc6cf2",
+        max_points_per_metric: int = 1000,
+    ):
         self.constitutional_hash = constitutional_hash
         self.max_points_per_metric = max_points_per_metric
-        
+
         # Thread-safe metric storage
         self.metrics = DashboardMetrics()
         self._metrics_lock = threading.RLock()
-        
+
         # Collection state
         self.is_collecting = False
         self.collection_thread = None
         self.collection_interval = 1.0  # seconds
-        
+
         # Metric sources (can be extended)
         self.metric_sources: Dict[str, Callable] = {}
-        
+
         # Performance tracking
         self.collection_times = deque(maxlen=100)
-        
+
         logger.info("MetricsCollector initialized")
         logger.info(f"Constitutional hash: {constitutional_hash}")
         logger.info(f"Max points per metric: {max_points_per_metric}")
-    
+
     def register_metric_source(self, name: str, source_func: Callable) -> None:
         """Register a metric source function."""
         self.metric_sources[name] = source_func
         logger.info(f"Registered metric source: {name}")
-    
+
     def start_collection(self) -> None:
         """Start metrics collection in background thread."""
         if self.is_collecting:
             logger.warning("Metrics collection already running")
             return
-        
+
         self.is_collecting = True
         self.collection_thread = threading.Thread(
-            target=self._collection_loop,
-            daemon=True,
-            name="MetricsCollector"
+            target=self._collection_loop, daemon=True, name="MetricsCollector"
         )
         self.collection_thread.start()
-        
+
         logger.info("Started metrics collection")
-    
+
     def stop_collection(self) -> None:
         """Stop metrics collection."""
         self.is_collecting = False
-        
+
         if self.collection_thread and self.collection_thread.is_alive():
             self.collection_thread.join(timeout=5.0)
-        
+
         logger.info("Stopped metrics collection")
-    
+
     def _collection_loop(self) -> None:
         """Main collection loop running in background thread."""
         while self.is_collecting:
             start_time = time.time()
-            
+
             try:
                 self._collect_all_metrics()
             except Exception as e:
                 logger.error(f"Error collecting metrics: {e}")
-            
+
             # Track collection performance
             collection_time = (time.time() - start_time) * 1000  # ms
             self.collection_times.append(collection_time)
-            
+
             # Ensure sub-40ms collection time
             if collection_time > 40:
-                logger.warning(f"Metrics collection took {collection_time:.1f}ms (>40ms target)")
-            
+                logger.warning(
+                    f"Metrics collection took {collection_time:.1f}ms (>40ms target)"
+                )
+
             # Sleep for remaining interval
             sleep_time = max(0, self.collection_interval - (time.time() - start_time))
             time.sleep(sleep_time)
-    
+
     def _collect_all_metrics(self) -> None:
         """Collect all metrics from registered sources."""
         current_time = datetime.now(timezone.utc)
-        
+
         with self._metrics_lock:
             # Collect from registered sources
             for source_name, source_func in self.metric_sources.items():
                 try:
                     metrics_data = source_func()
-                    self._process_source_metrics(source_name, metrics_data, current_time)
+                    self._process_source_metrics(
+                        source_name, metrics_data, current_time
+                    )
                 except Exception as e:
                     logger.error(f"Error collecting from source {source_name}: {e}")
-            
+
             # Collect default system metrics
             self._collect_system_metrics(current_time)
-            
+
             # Update last updated timestamp
             self.metrics.last_updated = current_time
-            
+
             # Trim old data points
             self._trim_metric_points()
-    
-    def _process_source_metrics(self, source_name: str, metrics_data: Dict[str, Any],
-                               timestamp: datetime) -> None:
+
+    def _process_source_metrics(
+        self, source_name: str, metrics_data: Dict[str, Any], timestamp: datetime
+    ) -> None:
         """Process metrics from a specific source."""
-        
+
         # Map source metrics to dashboard metrics
         metric_mappings = {
-            'accuracy': 'prediction_accuracy',
-            'response_time': 'response_times',
-            'cost_efficiency': 'cost_efficiency',
-            'constitutional_compliance': 'constitutional_compliance',
-            'cpu_usage': 'cpu_usage',
-            'memory_usage': 'memory_usage',
-            'active_connections': 'active_connections',
-            'error_rate': 'error_rate'
+            "accuracy": "prediction_accuracy",
+            "response_time": "response_times",
+            "cost_efficiency": "cost_efficiency",
+            "constitutional_compliance": "constitutional_compliance",
+            "cpu_usage": "cpu_usage",
+            "memory_usage": "memory_usage",
+            "active_connections": "active_connections",
+            "error_rate": "error_rate",
         }
-        
+
         for source_key, dashboard_key in metric_mappings.items():
             if source_key in metrics_data:
                 value = metrics_data[source_key]
                 metadata = metrics_data.get(f"{source_key}_metadata", {})
-                
+
                 metric_point = MetricPoint(
-                    timestamp=timestamp,
-                    value=float(value),
-                    metadata=metadata
+                    timestamp=timestamp, value=float(value), metadata=metadata
                 )
-                
+
                 # Add to appropriate metric list
                 metric_list = getattr(self.metrics, dashboard_key)
                 metric_list.append(metric_point)
-    
+
     def _collect_system_metrics(self, timestamp: datetime) -> None:
         """Collect default system metrics."""
-        
+
         # Simulate system metrics (in production, would use actual system monitoring)
         import random
-        
+
         # CPU usage (0-100%)
         cpu_value = random.uniform(10, 80)
-        self.metrics.cpu_usage.append(MetricPoint(
-            timestamp=timestamp,
-            value=cpu_value,
-            metadata={'unit': 'percent'}
-        ))
-        
+        self.metrics.cpu_usage.append(
+            MetricPoint(
+                timestamp=timestamp, value=cpu_value, metadata={"unit": "percent"}
+            )
+        )
+
         # Memory usage (0-100%)
         memory_value = random.uniform(30, 90)
-        self.metrics.memory_usage.append(MetricPoint(
-            timestamp=timestamp,
-            value=memory_value,
-            metadata={'unit': 'percent'}
-        ))
-        
+        self.metrics.memory_usage.append(
+            MetricPoint(
+                timestamp=timestamp, value=memory_value, metadata={"unit": "percent"}
+            )
+        )
+
         # Active connections
         connections_value = random.randint(50, 200)
-        self.metrics.active_connections.append(MetricPoint(
-            timestamp=timestamp,
-            value=float(connections_value),
-            metadata={'unit': 'count'}
-        ))
-        
+        self.metrics.active_connections.append(
+            MetricPoint(
+                timestamp=timestamp,
+                value=float(connections_value),
+                metadata={"unit": "count"},
+            )
+        )
+
         # Error rate (0-5%)
         error_rate_value = random.uniform(0, 2)
-        self.metrics.error_rate.append(MetricPoint(
-            timestamp=timestamp,
-            value=error_rate_value,
-            metadata={'unit': 'percent'}
-        ))
-        
+        self.metrics.error_rate.append(
+            MetricPoint(
+                timestamp=timestamp,
+                value=error_rate_value,
+                metadata={"unit": "percent"},
+            )
+        )
+
         # Constitutional compliance (should be high)
         compliance_value = random.uniform(0.95, 0.99)
-        self.metrics.constitutional_compliance.append(MetricPoint(
-            timestamp=timestamp,
-            value=compliance_value,
-            metadata={'unit': 'ratio', 'constitutional_hash': self.constitutional_hash}
-        ))
-    
+        self.metrics.constitutional_compliance.append(
+            MetricPoint(
+                timestamp=timestamp,
+                value=compliance_value,
+                metadata={
+                    "unit": "ratio",
+                    "constitutional_hash": self.constitutional_hash,
+                },
+            )
+        )
+
     def _trim_metric_points(self) -> None:
         """Trim old metric points to maintain performance."""
-        
+
         metric_lists = [
             self.metrics.prediction_accuracy,
             self.metrics.response_times,
@@ -281,177 +302,190 @@ class MetricsCollector:
             self.metrics.error_rate,
             self.metrics.model_versions_deployed,
             self.metrics.deployment_success_rate,
-            self.metrics.artifact_storage_usage
+            self.metrics.artifact_storage_usage,
         ]
-        
+
         for metric_list in metric_lists:
             if len(metric_list) > self.max_points_per_metric:
                 # Remove oldest points
-                del metric_list[:-self.max_points_per_metric]
-    
+                del metric_list[: -self.max_points_per_metric]
+
     def get_current_metrics(self) -> DashboardMetrics:
         """Get current metrics snapshot."""
         with self._metrics_lock:
             return self.metrics
-    
+
     def get_performance_stats(self) -> Dict[str, Any]:
         """Get collection performance statistics."""
         if not self.collection_times:
-            return {'no_data': True}
-        
+            return {"no_data": True}
+
         times = list(self.collection_times)
-        
+
         return {
-            'avg_collection_time_ms': sum(times) / len(times),
-            'max_collection_time_ms': max(times),
-            'min_collection_time_ms': min(times),
-            'recent_collection_time_ms': times[-1] if times else 0,
-            'target_met': all(t <= 40 for t in times[-10:]),  # Last 10 collections
-            'constitutional_hash': self.constitutional_hash,
-            'constitutional_hash_verified': self.constitutional_hash == "cdd01ef066bc6cf2"
+            "avg_collection_time_ms": sum(times) / len(times),
+            "max_collection_time_ms": max(times),
+            "min_collection_time_ms": min(times),
+            "recent_collection_time_ms": times[-1] if times else 0,
+            "target_met": all(t <= 40 for t in times[-10:]),  # Last 10 collections
+            "constitutional_hash": self.constitutional_hash,
+            "constitutional_hash_verified": self.constitutional_hash
+            == "cdd01ef066bc6cf2",
         }
 
 
 class DashboardServer:
     """
     Real-time dashboard server providing web interface for monitoring.
-    
+
     Serves dashboard data with sub-40ms response times and real-time updates
     while maintaining constitutional compliance.
     """
-    
-    def __init__(self, metrics_collector: MetricsCollector,
-                 port: int = 8080,
-                 constitutional_hash: str = "cdd01ef066bc6cf2"):
+
+    def __init__(
+        self,
+        metrics_collector: MetricsCollector,
+        port: int = 8080,
+        constitutional_hash: str = "cdd01ef066bc6cf2",
+    ):
         self.metrics_collector = metrics_collector
         self.port = port
         self.constitutional_hash = constitutional_hash
-        
+
         # Dashboard configuration
         self.update_interval_ms = 1000  # 1 second updates
         self.max_response_time_ms = 40  # Sub-40ms target
-        
+
         # Connected clients for real-time updates
         self.connected_clients = set()
-        
+
         logger.info(f"DashboardServer initialized on port {port}")
-    
+
     async def start_server(self) -> None:
         """Start the dashboard server."""
         try:
             from aiohttp import web, WSMsgType
             import aiohttp_cors
-            
+
             app = web.Application()
-            
+
             # Setup CORS
-            cors = aiohttp_cors.setup(app, defaults={
-                "*": aiohttp_cors.ResourceOptions(
-                    allow_credentials=True,
-                    expose_headers="*",
-                    allow_headers="*",
-                    allow_methods="*"
-                )
-            })
-            
+            cors = aiohttp_cors.setup(
+                app,
+                defaults={
+                    "*": aiohttp_cors.ResourceOptions(
+                        allow_credentials=True,
+                        expose_headers="*",
+                        allow_headers="*",
+                        allow_methods="*",
+                    )
+                },
+            )
+
             # Routes
-            app.router.add_get('/', self.serve_dashboard)
-            app.router.add_get('/api/metrics', self.get_metrics_api)
-            app.router.add_get('/api/health', self.get_health_api)
-            app.router.add_get('/ws', self.websocket_handler)
-            app.router.add_static('/static', Path(__file__).parent / 'static')
-            
+            app.router.add_get("/", self.serve_dashboard)
+            app.router.add_get("/api/metrics", self.get_metrics_api)
+            app.router.add_get("/api/health", self.get_health_api)
+            app.router.add_get("/ws", self.websocket_handler)
+            app.router.add_static("/static", Path(__file__).parent / "static")
+
             # Add CORS to all routes
             for route in list(app.router.routes()):
                 cors.add(route)
-            
+
             # Start background task for real-time updates
-            app['update_task'] = asyncio.create_task(self.real_time_update_loop())
-            
+            app["update_task"] = asyncio.create_task(self.real_time_update_loop())
+
             # Start server
             runner = web.AppRunner(app)
             await runner.setup()
-            
-            site = web.TCPSite(runner, 'localhost', self.port)
+
+            site = web.TCPSite(runner, "localhost", self.port)
             await site.start()
-            
+
             logger.info(f"Dashboard server started on http://localhost:{self.port}")
-            
+
         except ImportError:
             logger.error("aiohttp not available - dashboard server disabled")
             raise
-    
-    async def serve_dashboard(self, request) -> 'web.Response':
+
+    async def serve_dashboard(self, request) -> "web.Response":
         """Serve the main dashboard HTML."""
         from aiohttp import web
-        
+
         html_content = self._generate_dashboard_html()
-        return web.Response(text=html_content, content_type='text/html')
-    
-    async def get_metrics_api(self, request) -> 'web.Response':
+        return web.Response(text=html_content, content_type="text/html")
+
+    async def get_metrics_api(self, request) -> "web.Response":
         """API endpoint for metrics data."""
         from aiohttp import web
-        
+
         start_time = time.time()
-        
+
         try:
             metrics = self.metrics_collector.get_current_metrics()
             performance_stats = self.metrics_collector.get_performance_stats()
-            
+
             response_data = {
-                'metrics': metrics.to_dict(),
-                'performance_stats': performance_stats,
-                'constitutional_hash': self.constitutional_hash,
-                'constitutional_hash_verified': self.constitutional_hash == "cdd01ef066bc6cf2",
-                'server_timestamp': datetime.now(timezone.utc).isoformat()
+                "metrics": metrics.to_dict(),
+                "performance_stats": performance_stats,
+                "constitutional_hash": self.constitutional_hash,
+                "constitutional_hash_verified": self.constitutional_hash
+                == "cdd01ef066bc6cf2",
+                "server_timestamp": datetime.now(timezone.utc).isoformat(),
             }
-            
+
             response_time_ms = (time.time() - start_time) * 1000
-            
+
             # Add response time to headers
             headers = {
-                'X-Response-Time-Ms': str(response_time_ms),
-                'X-Constitutional-Hash': self.constitutional_hash
+                "X-Response-Time-Ms": str(response_time_ms),
+                "X-Constitutional-Hash": self.constitutional_hash,
             }
-            
+
             # Log if response time exceeds target
             if response_time_ms > self.max_response_time_ms:
-                logger.warning(f"API response time {response_time_ms:.1f}ms exceeds {self.max_response_time_ms}ms target")
-            
+                logger.warning(
+                    f"API response time {response_time_ms:.1f}ms exceeds {self.max_response_time_ms}ms target"
+                )
+
             return web.json_response(response_data, headers=headers)
-        
+
         except Exception as e:
             logger.error(f"Error in metrics API: {e}")
             return web.json_response(
-                {'error': str(e), 'constitutional_hash': self.constitutional_hash},
-                status=500
+                {"error": str(e), "constitutional_hash": self.constitutional_hash},
+                status=500,
             )
-    
-    async def get_health_api(self, request) -> 'web.Response':
+
+    async def get_health_api(self, request) -> "web.Response":
         """API endpoint for health check."""
         from aiohttp import web
-        
+
         health_data = {
-            'status': 'healthy',
-            'metrics_collector_running': self.metrics_collector.is_collecting,
-            'constitutional_hash': self.constitutional_hash,
-            'constitutional_hash_verified': self.constitutional_hash == "cdd01ef066bc6cf2",
-            'performance_stats': self.metrics_collector.get_performance_stats(),
-            'timestamp': datetime.now(timezone.utc).isoformat()
+            "status": "healthy",
+            "metrics_collector_running": self.metrics_collector.is_collecting,
+            "constitutional_hash": self.constitutional_hash,
+            "constitutional_hash_verified": self.constitutional_hash
+            == "cdd01ef066bc6cf2",
+            "performance_stats": self.metrics_collector.get_performance_stats(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
-        
+
         return web.json_response(health_data)
-    
-    async def websocket_handler(self, request) -> 'web.WebSocketResponse':
+
+    async def websocket_handler(self, request) -> "web.WebSocketResponse":
         """WebSocket handler for real-time updates."""
         from aiohttp import web, WSMsgType
-        
+
         ws = web.WebSocketResponse()
         await ws.prepare(request)
-        
+
         self.connected_clients.add(ws)
-        logger.info(f"WebSocket client connected. Total clients: {len(self.connected_clients)}")
-        
+        logger.info(
+            f"WebSocket client connected. Total clients: {len(self.connected_clients)}"
+        )
+
         try:
             async for msg in ws:
                 if msg.type == WSMsgType.TEXT:
@@ -463,10 +497,12 @@ class DashboardServer:
             logger.error(f"WebSocket error: {e}")
         finally:
             self.connected_clients.discard(ws)
-            logger.info(f"WebSocket client disconnected. Total clients: {len(self.connected_clients)}")
-        
+            logger.info(
+                f"WebSocket client disconnected. Total clients: {len(self.connected_clients)}"
+            )
+
         return ws
-    
+
     async def real_time_update_loop(self) -> None:
         """Send real-time updates to connected WebSocket clients."""
         while True:
@@ -474,11 +510,11 @@ class DashboardServer:
                 if self.connected_clients:
                     metrics = self.metrics_collector.get_current_metrics()
                     update_data = {
-                        'type': 'metrics_update',
-                        'data': metrics.to_dict(),
-                        'timestamp': datetime.now(timezone.utc).isoformat()
+                        "type": "metrics_update",
+                        "data": metrics.to_dict(),
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
                     }
-                    
+
                     # Send to all connected clients
                     disconnected_clients = set()
                     for client in self.connected_clients:
@@ -487,16 +523,16 @@ class DashboardServer:
                         except Exception as e:
                             logger.warning(f"Failed to send update to client: {e}")
                             disconnected_clients.add(client)
-                    
+
                     # Remove disconnected clients
                     self.connected_clients -= disconnected_clients
-                
+
                 await asyncio.sleep(self.update_interval_ms / 1000)
-                
+
             except Exception as e:
                 logger.error(f"Error in real-time update loop: {e}")
                 await asyncio.sleep(1)
-    
+
     def _generate_dashboard_html(self) -> str:
         """Generate dashboard HTML content."""
         return f"""
@@ -701,84 +737,86 @@ class DashboardServer:
 class MonitoringDashboard:
     """
     Main monitoring dashboard orchestrator.
-    
+
     Coordinates metrics collection and dashboard serving with
     constitutional compliance and performance targets.
     """
-    
-    def __init__(self, constitutional_hash: str = "cdd01ef066bc6cf2",
-                 port: int = 8080):
+
+    def __init__(self, constitutional_hash: str = "cdd01ef066bc6cf2", port: int = 8080):
         self.constitutional_hash = constitutional_hash
-        
+
         # Initialize components
         self.metrics_collector = MetricsCollector(constitutional_hash)
-        self.dashboard_server = DashboardServer(self.metrics_collector, port, constitutional_hash)
-        
+        self.dashboard_server = DashboardServer(
+            self.metrics_collector, port, constitutional_hash
+        )
+
         logger.info("MonitoringDashboard initialized")
         logger.info(f"Constitutional hash: {constitutional_hash}")
         logger.info(f"Dashboard port: {port}")
-    
+
     def register_mlops_metrics_source(self, mlops_manager) -> None:
         """Register MLOps manager as metrics source."""
-        
+
         def collect_mlops_metrics() -> Dict[str, Any]:
             """Collect metrics from MLOps manager."""
             try:
                 dashboard_data = mlops_manager.get_mlops_dashboard()
-                
+
                 # Extract relevant metrics
                 return {
-                    'accuracy': 0.92,  # Would extract from actual model performance
-                    'response_time': 450,  # Would extract from actual response times
-                    'cost_efficiency': 0.76,  # Would extract from actual cost data
-                    'constitutional_compliance': 0.97,  # From dashboard data
+                    "accuracy": 0.92,  # Would extract from actual model performance
+                    "response_time": 450,  # Would extract from actual response times
+                    "cost_efficiency": 0.76,  # Would extract from actual cost data
+                    "constitutional_compliance": 0.97,  # From dashboard data
                 }
             except Exception as e:
                 logger.error(f"Error collecting MLOps metrics: {e}")
                 return {}
-        
-        self.metrics_collector.register_metric_source('mlops', collect_mlops_metrics)
-    
+
+        self.metrics_collector.register_metric_source("mlops", collect_mlops_metrics)
+
     async def start(self) -> None:
         """Start the monitoring dashboard."""
         logger.info("Starting monitoring dashboard...")
-        
+
         # Start metrics collection
         self.metrics_collector.start_collection()
-        
+
         # Start dashboard server
         await self.dashboard_server.start_server()
-        
+
         logger.info("Monitoring dashboard started successfully")
-    
+
     def stop(self) -> None:
         """Stop the monitoring dashboard."""
         logger.info("Stopping monitoring dashboard...")
-        
+
         # Stop metrics collection
         self.metrics_collector.stop_collection()
-        
+
         logger.info("Monitoring dashboard stopped")
-    
+
     def get_dashboard_status(self) -> Dict[str, Any]:
         """Get comprehensive dashboard status."""
-        
+
         performance_stats = self.metrics_collector.get_performance_stats()
-        
+
         return {
-            'dashboard_running': True,
-            'metrics_collector_running': self.metrics_collector.is_collecting,
-            'constitutional_hash': self.constitutional_hash,
-            'constitutional_hash_verified': self.constitutional_hash == "cdd01ef066bc6cf2",
-            'performance_stats': performance_stats,
-            'connected_clients': len(self.dashboard_server.connected_clients),
-            'update_interval_ms': self.dashboard_server.update_interval_ms,
-            'max_response_time_ms': self.dashboard_server.max_response_time_ms,
-            'capabilities': {
-                'real_time_updates': True,
-                'websocket_support': True,
-                'sub_40ms_response': True,
-                'constitutional_compliance': True,
-                'performance_monitoring': True
-            }
+            "dashboard_running": True,
+            "metrics_collector_running": self.metrics_collector.is_collecting,
+            "constitutional_hash": self.constitutional_hash,
+            "constitutional_hash_verified": self.constitutional_hash
+            == "cdd01ef066bc6cf2",
+            "performance_stats": performance_stats,
+            "connected_clients": len(self.dashboard_server.connected_clients),
+            "update_interval_ms": self.dashboard_server.update_interval_ms,
+            "max_response_time_ms": self.dashboard_server.max_response_time_ms,
+            "capabilities": {
+                "real_time_updates": True,
+                "websocket_support": True,
+                "sub_40ms_response": True,
+                "constitutional_compliance": True,
+                "performance_monitoring": True,
+            },
         }

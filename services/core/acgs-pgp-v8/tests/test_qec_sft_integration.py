@@ -138,7 +138,9 @@ class TestQECSFTIntegration:
         assert not retrieved_stabilizer.is_applicable_to_domain("security")
 
     @pytest.mark.asyncio
-    async def test_stabilizer_execution_mock(self, stabilizer_env, sample_lsu, sample_stabilizer):
+    async def test_stabilizer_execution_mock(
+        self, stabilizer_env, sample_lsu, sample_stabilizer
+    ):
         """Test stabilizer execution with mocked container."""
         # Add stabilizer to registry
         stabilizer_env.stabilizer_registry[sample_stabilizer.id] = sample_stabilizer
@@ -158,7 +160,9 @@ class TestQECSFTIntegration:
             mock_run.return_value = mock_result
 
             # Execute stabilizer
-            result = await stabilizer_env.execute_stabilizer(sample_stabilizer.id, sample_lsu)
+            result = await stabilizer_env.execute_stabilizer(
+                sample_stabilizer.id, sample_lsu
+            )
 
             # Verify results
             assert result.status == StabilizerStatus.COMPLETED
@@ -198,7 +202,9 @@ class TestQECSFTIntegration:
 
         # Verify diagnostic results
         assert diagnostic_result.target_system == f"LSU-{sample_lsu.id}"
-        assert diagnostic_result.error_count > 0  # Should detect errors from failed stabilizer
+        assert (
+            diagnostic_result.error_count > 0
+        )  # Should detect errors from failed stabilizer
         assert diagnostic_result.critical_error_count > 0  # Constitutional violation
         assert len(diagnostic_result.recommendations) > 0
         assert not diagnostic_result.is_system_healthy()
@@ -224,7 +230,9 @@ class TestQECSFTIntegration:
             mock_run.return_value = mock_result
 
             # Step 1: Execute all stabilizers
-            stabilizer_results = await stabilizer_env.execute_all_stabilizers(sample_lsu)
+            stabilizer_results = await stabilizer_env.execute_all_stabilizers(
+                sample_lsu
+            )
 
             # Step 2: Perform syndrome diagnosis
             diagnostic_result = await diagnostic_engine.diagnose_lsu_stabilizer_results(
@@ -282,7 +290,9 @@ class TestQECSFTIntegration:
         )
 
         # Verify auto-executable recommendations
-        auto_recs = [rec for rec in diagnostic_result.recommendations if rec.is_safe_to_execute()]
+        auto_recs = [
+            rec for rec in diagnostic_result.recommendations if rec.is_safe_to_execute()
+        ]
         assert diagnostic_result.auto_executable_recommendations == len(auto_recs)
 
     @pytest.mark.asyncio

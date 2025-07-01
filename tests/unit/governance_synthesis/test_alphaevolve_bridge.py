@@ -4,18 +4,27 @@ Unit tests for services.core.governance-synthesis.gs_service.app.services.alphae
 
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
-from services.core.governance-synthesis.gs_service.app.services.alphaevolve_bridge import ConstitutionalPrinciple, OperationalRule, PolicySynthesisInput, PolicySuggestion, LLMPolicyGenerator, SyntacticValidator, ScenarioBasedSemanticValidator, AlphaEvolveBridge, ValidationResult
-
+from services.core.governance_synthesis.gs_service.app.services.alphaevolve_bridge import (
+    ConstitutionalPrinciple,
+    OperationalRule,
+    PolicySynthesisInput,
+    PolicySuggestion,
+    LLMPolicyGenerator,
+    SyntacticValidator,
+    ScenarioBasedSemanticValidator,
+    AlphaEvolveBridge,
+    ValidationResult,
+)
 
 
 class TestConstitutionalPrinciple:
     """Test suite for ConstitutionalPrinciple."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -24,12 +33,12 @@ class TestConstitutionalPrinciple:
 
 class TestOperationalRule:
     """Test suite for OperationalRule."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -40,17 +49,17 @@ class TestOperationalRule:
         # TODO: Implement test for to_dict
         instance = OperationalRule()
         # Add test implementation here
-        assert hasattr(instance, 'to_dict')
+        assert hasattr(instance, "to_dict")
 
 
 class TestPolicySynthesisInput:
     """Test suite for PolicySynthesisInput."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -59,12 +68,12 @@ class TestPolicySynthesisInput:
 
 class TestPolicySuggestion:
     """Test suite for PolicySuggestion."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -73,12 +82,12 @@ class TestPolicySuggestion:
 
 class TestLLMPolicyGenerator:
     """Test suite for LLMPolicyGenerator."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -89,17 +98,17 @@ class TestLLMPolicyGenerator:
         # TODO: Implement test for synthesize_policy
         instance = LLMPolicyGenerator()
         # Add test implementation here
-        assert hasattr(instance, 'synthesize_policy')
+        assert hasattr(instance, "synthesize_policy")
 
 
 class TestSyntacticValidator:
     """Test suite for SyntacticValidator."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -110,17 +119,17 @@ class TestSyntacticValidator:
         # TODO: Implement test for validate
         instance = SyntacticValidator()
         # Add test implementation here
-        assert hasattr(instance, 'validate')
+        assert hasattr(instance, "validate")
 
 
 class TestScenarioBasedSemanticValidator:
     """Test suite for ScenarioBasedSemanticValidator."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -129,12 +138,12 @@ class TestScenarioBasedSemanticValidator:
 
 class TestAlphaEvolveBridge:
     """Test suite for AlphaEvolveBridge."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -145,20 +154,18 @@ class TestAlphaEvolveBridge:
         # TODO: Implement test for is_available
         instance = AlphaEvolveBridge()
         # Add test implementation here
-        assert hasattr(instance, 'is_available')
+        assert hasattr(instance, "is_available")
 
 
 class TestValidationResult:
     """Test suite for ValidationResult."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
         pass
-
-

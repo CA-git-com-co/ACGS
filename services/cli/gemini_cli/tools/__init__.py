@@ -12,6 +12,7 @@ import asyncio
 
 import sys
 import os
+
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from gemini_config import GeminiConfig
 
@@ -21,11 +22,11 @@ logger = logging.getLogger(__name__)
 
 class ToolManager:
     """Manager for Gemini tools integration"""
-    
+
     def __init__(self, config: GeminiConfig):
         self.config = config
         self.enabled_tools = self._get_enabled_tools()
-    
+
     def _get_enabled_tools(self) -> List[str]:
         """Get list of enabled tools"""
         tools = []
@@ -44,12 +45,14 @@ class ToolManager:
         if self.config.tools.sandbox_execution:
             tools.append("sandbox_execution")
         return tools
-    
-    async def execute_tool(self, tool_name: str, parameters: Dict[str, Any]) -> Dict[str, Any]:
+
+    async def execute_tool(
+        self, tool_name: str, parameters: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Execute a tool with given parameters"""
         if tool_name not in self.enabled_tools:
             return {"error": f"Tool '{tool_name}' is not enabled"}
-        
+
         try:
             if tool_name == "file_system":
                 return await self._execute_file_system(parameters)
@@ -67,65 +70,55 @@ class ToolManager:
                 return await self._execute_sandbox(parameters)
             else:
                 return {"error": f"Unknown tool: {tool_name}"}
-        
+
         except Exception as e:
             logger.error(f"Tool execution failed: {e}")
             return {"error": str(e)}
-    
+
     async def _execute_file_system(self, params: Dict) -> Dict:
         """Execute file system operations"""
         operation = params.get("operation")
-        
+
         if operation == "read":
             path = Path(params.get("path"))
             if path.exists():
                 content = path.read_text()
-                return {
-                    "path": str(path),
-                    "content": content,
-                    "size": len(content)
-                }
+                return {"path": str(path), "content": content, "size": len(content)}
             else:
                 return {"error": f"File not found: {path}"}
-        
+
         elif operation == "write":
             path = Path(params.get("path"))
             content = params.get("content", "")
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(content)
-            return {
-                "path": str(path),
-                "written": len(content),
-                "status": "success"
-            }
-        
+            return {"path": str(path), "written": len(content), "status": "success"}
+
         elif operation == "list":
             path = Path(params.get("path", "."))
             if path.is_dir():
                 items = []
                 for item in path.iterdir():
-                    items.append({
-                        "name": item.name,
-                        "type": "directory" if item.is_dir() else "file",
-                        "size": item.stat().st_size if item.is_file() else None
-                    })
-                return {
-                    "path": str(path),
-                    "items": items,
-                    "count": len(items)
-                }
+                    items.append(
+                        {
+                            "name": item.name,
+                            "type": "directory" if item.is_dir() else "file",
+                            "size": item.stat().st_size if item.is_file() else None,
+                        }
+                    )
+                return {"path": str(path), "items": items, "count": len(items)}
             else:
                 return {"error": f"Not a directory: {path}"}
-        
+
         else:
             return {"error": f"Unknown file system operation: {operation}"}
-    
+
     async def _execute_web_fetch(self, params: Dict) -> Dict:
         """Fetch content from web URL"""
         url = params.get("url")
         if not url:
             return {"error": "URL is required"}
-        
+
         async with aiohttp.ClientSession() as session:
             try:
                 async with session.get(url, timeout=30) as response:
@@ -135,17 +128,17 @@ class ToolManager:
                         "status_code": response.status,
                         "content": content[:5000],  # Limit content size
                         "content_type": response.headers.get("Content-Type"),
-                        "truncated": len(content) > 5000
+                        "truncated": len(content) > 5000,
                     }
             except aiohttp.ClientError as e:
                 return {"error": f"Failed to fetch URL: {e}"}
-    
+
     async def _execute_web_search(self, params: Dict) -> Dict:
         """Execute web search (placeholder)"""
         query = params.get("query")
         if not query:
             return {"error": "Query is required"}
-        
+
         # This would integrate with actual search API
         return {
             "query": query,
@@ -153,112 +146,97 @@ class ToolManager:
                 {
                     "title": f"Result 1 for: {query}",
                     "url": "https://example.com/1",
-                    "snippet": "This is a mock search result..."
+                    "snippet": "This is a mock search result...",
                 },
                 {
                     "title": f"Result 2 for: {query}",
                     "url": "https://example.com/2",
-                    "snippet": "Another mock search result..."
-                }
+                    "snippet": "Another mock search result...",
+                },
             ],
-            "total_results": 2
+            "total_results": 2,
         }
-    
+
     async def _execute_shell(self, params: Dict) -> Dict:
         """Execute shell command"""
         import subprocess
-        
+
         command = params.get("command")
         if not command:
             return {"error": "Command is required"}
-        
+
         # Security check
         forbidden_commands = ["rm -rf", "format", "dd", "mkfs"]
         if any(forbidden in command for forbidden in forbidden_commands):
             return {"error": "Command contains forbidden operations"}
-        
+
         try:
             result = subprocess.run(
-                command,
-                shell=True,
-                capture_output=True,
-                text=True,
-                timeout=60
+                command, shell=True, capture_output=True, text=True, timeout=60
             )
-            
+
             return {
                 "command": command,
                 "return_code": result.returncode,
                 "stdout": result.stdout[:5000],
                 "stderr": result.stderr[:1000],
-                "truncated": len(result.stdout) > 5000
+                "truncated": len(result.stdout) > 5000,
             }
-        
+
         except subprocess.TimeoutExpired:
             return {"error": "Command timed out after 60 seconds"}
         except Exception as e:
             return {"error": f"Command execution failed: {e}"}
-    
+
     async def _execute_memory(self, params: Dict) -> Dict:
         """Execute memory operations"""
         operation = params.get("operation")
         memory_file = Path.home() / ".gemini_cli" / "memory.json"
-        
+
         if operation == "save":
             key = params.get("key")
             value = params.get("value")
-            
+
             if not key:
                 return {"error": "Key is required"}
-            
+
             # Load existing memory
             memory = {}
             if memory_file.exists():
                 memory = json.loads(memory_file.read_text())
-            
+
             # Save new value
             memory[key] = value
             memory_file.parent.mkdir(parents=True, exist_ok=True)
             memory_file.write_text(json.dumps(memory, indent=2))
-            
-            return {
-                "operation": "save",
-                "key": key,
-                "status": "success"
-            }
-        
+
+            return {"operation": "save", "key": key, "status": "success"}
+
         elif operation == "load":
             key = params.get("key")
-            
+
             if not memory_file.exists():
                 return {"error": "No memory found"}
-            
+
             memory = json.loads(memory_file.read_text())
-            
+
             if key:
                 if key in memory:
-                    return {
-                        "operation": "load",
-                        "key": key,
-                        "value": memory[key]
-                    }
+                    return {"operation": "load", "key": key, "value": memory[key]}
                 else:
                     return {"error": f"Key not found: {key}"}
             else:
-                return {
-                    "operation": "load",
-                    "memory": memory
-                }
-        
+                return {"operation": "load", "memory": memory}
+
         else:
             return {"error": f"Unknown memory operation: {operation}"}
-    
+
     async def _execute_multi_file_read(self, params: Dict) -> Dict:
         """Read multiple files"""
         paths = params.get("paths", [])
         results = {}
         errors = []
-        
+
         for path_str in paths:
             path = Path(path_str)
             if path.exists():
@@ -268,35 +246,29 @@ class ToolManager:
                     errors.append(f"Failed to read {path}: {e}")
             else:
                 errors.append(f"File not found: {path}")
-        
-        return {
-            "files_read": len(results),
-            "results": results,
-            "errors": errors
-        }
-    
+
+        return {"files_read": len(results), "results": results, "errors": errors}
+
     async def _execute_sandbox(self, params: Dict) -> Dict:
         """Execute code in ACGS sandbox"""
         # This integrates with ACGS sandbox service
         from acgs_client import ACGSClient
-        
+
         client = ACGSClient(self.config)
-        
+
         code = params.get("code")
         language = params.get("language", "python")
-        
+
         if not code:
             return {"error": "Code is required"}
-        
+
         # Submit to sandbox
         result = client.execute_code(
-            code=code,
-            language=language,
-            environment=params.get("environment", {})
+            code=code, language=language, environment=params.get("environment", {})
         )
-        
+
         return result
-    
+
     def get_tool_schema(self, tool_name: str) -> Dict:
         """Get schema for a tool"""
         schemas = {
@@ -306,17 +278,14 @@ class ToolManager:
                     "operation": {
                         "type": "string",
                         "enum": ["read", "write", "list"],
-                        "description": "Operation to perform"
+                        "description": "Operation to perform",
                     },
-                    "path": {
-                        "type": "string",
-                        "description": "File or directory path"
-                    },
+                    "path": {"type": "string", "description": "File or directory path"},
                     "content": {
                         "type": "string",
-                        "description": "Content for write operation"
-                    }
-                }
+                        "description": "Content for write operation",
+                    },
+                },
             },
             "web_fetch": {
                 "description": "Fetch content from web URL",
@@ -324,27 +293,24 @@ class ToolManager:
                     "url": {
                         "type": "string",
                         "format": "uri",
-                        "description": "URL to fetch"
+                        "description": "URL to fetch",
                     }
-                }
+                },
             },
             "web_search": {
                 "description": "Search the web",
                 "parameters": {
-                    "query": {
-                        "type": "string",
-                        "description": "Search query"
-                    }
-                }
+                    "query": {"type": "string", "description": "Search query"}
+                },
             },
             "shell_execution": {
                 "description": "Execute shell commands",
                 "parameters": {
                     "command": {
                         "type": "string",
-                        "description": "Shell command to execute"
+                        "description": "Shell command to execute",
                     }
-                }
+                },
             },
             "memory": {
                 "description": "Persistent memory operations",
@@ -352,34 +318,26 @@ class ToolManager:
                     "operation": {
                         "type": "string",
                         "enum": ["save", "load"],
-                        "description": "Memory operation"
+                        "description": "Memory operation",
                     },
-                    "key": {
-                        "type": "string",
-                        "description": "Memory key"
-                    },
-                    "value": {
-                        "description": "Value to save (for save operation)"
-                    }
-                }
+                    "key": {"type": "string", "description": "Memory key"},
+                    "value": {"description": "Value to save (for save operation)"},
+                },
             },
             "sandbox_execution": {
                 "description": "Execute code in ACGS sandbox",
                 "parameters": {
-                    "code": {
-                        "type": "string",
-                        "description": "Code to execute"
-                    },
+                    "code": {"type": "string", "description": "Code to execute"},
                     "language": {
                         "type": "string",
-                        "description": "Programming language"
+                        "description": "Programming language",
                     },
                     "environment": {
                         "type": "object",
-                        "description": "Environment variables"
-                    }
-                }
-            }
+                        "description": "Environment variables",
+                    },
+                },
+            },
         }
-        
+
         return schemas.get(tool_name, {})

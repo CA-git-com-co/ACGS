@@ -163,8 +163,12 @@ class RealTimeComplianceEngine:
         # Check for concurrent validation limit
         async with self.validation_semaphore:
             if context.action_id in self.active_validations:
-                logger.warning(f"Duplicate validation request for action {context.action_id}")
-                return self._create_error_result(context.action_id, "Duplicate validation")
+                logger.warning(
+                    f"Duplicate validation request for action {context.action_id}"
+                )
+                return self._create_error_result(
+                    context.action_id, "Duplicate validation"
+                )
 
             self.active_validations.add(context.action_id)
 
@@ -179,7 +183,9 @@ class RealTimeComplianceEngine:
                 applicable_rules = await self._load_applicable_rules(context)
 
                 # Step 3: Execute rule evaluation based on compliance level
-                compliance_result = await self._execute_rule_evaluation(context, applicable_rules)
+                compliance_result = await self._execute_rule_evaluation(
+                    context, applicable_rules
+                )
 
                 # Step 4: Determine enforcement action
                 enforcement_action = await self._determine_enforcement_action(
@@ -201,7 +207,9 @@ class RealTimeComplianceEngine:
                     warnings=compliance_result["warnings"],
                     recommendations=compliance_result["recommendations"],
                     rules_applied=[rule["id"] for rule in applicable_rules],
-                    constitutional_analysis=compliance_result.get("constitutional_analysis"),
+                    constitutional_analysis=compliance_result.get(
+                        "constitutional_analysis"
+                    ),
                     audit_trail=compliance_result["audit_trail"],
                 )
 
@@ -252,11 +260,15 @@ class RealTimeComplianceEngine:
             environment={"intercepted": True, "timestamp": time.time()},
         )
 
-        logger.info(f"Intercepting {action_type.value} action {action_id} by user {user_id}")
+        logger.info(
+            f"Intercepting {action_type.value} action {action_id} by user {user_id}"
+        )
 
         return await self.validate_action(context)
 
-    async def _check_validation_cache(self, context: ActionContext) -> ComplianceResult | None:
+    async def _check_validation_cache(
+        self, context: ActionContext
+    ) -> ComplianceResult | None:
         """Check if validation result is cached."""
         cache_key = self._generate_cache_key(context)
 
@@ -274,7 +286,9 @@ class RealTimeComplianceEngine:
 
         return None
 
-    async def _load_applicable_rules(self, context: ActionContext) -> list[dict[str, Any]]:
+    async def _load_applicable_rules(
+        self, context: ActionContext
+    ) -> list[dict[str, Any]]:
         """Load rules applicable to the action context."""
         # This would integrate with the rule engine in production
         # For now, return mock rules based on action type
@@ -367,7 +381,9 @@ class RealTimeComplianceEngine:
             ComplianceLevel.THOROUGH,
             ComplianceLevel.CRITICAL,
         ]:
-            constitutional_analysis = await self._perform_constitutional_analysis(context)
+            constitutional_analysis = await self._perform_constitutional_analysis(
+                context
+            )
 
         evaluation_time = (time.time() - evaluation_start) * 1000
 
@@ -397,7 +413,9 @@ class RealTimeComplianceEngine:
 
         # Basic action type validation
         if context.action_type == ActionType.CONSTITUTIONAL_AMENDMENT:
-            critical_violations.append("Constitutional amendments require thorough validation")
+            critical_violations.append(
+                "Constitutional amendments require thorough validation"
+            )
 
         return {
             "compliant": len(critical_violations) == 0,
@@ -405,7 +423,9 @@ class RealTimeComplianceEngine:
             "confidence": 0.8,  # Lower confidence for fast evaluation
             "violations": critical_violations,
             "warnings": [],
-            "recommendations": ["Consider using standard compliance level for better validation"],
+            "recommendations": [
+                "Consider using standard compliance level for better validation"
+            ],
             "audit_trail": [
                 {"rule_type": "fast_evaluation", "violations": len(critical_violations)}
             ],
@@ -507,7 +527,9 @@ class RealTimeComplianceEngine:
             "details": {"governance_check": "passed"},
         }
 
-    async def _perform_constitutional_analysis(self, context: ActionContext) -> dict[str, Any]:
+    async def _perform_constitutional_analysis(
+        self, context: ActionContext
+    ) -> dict[str, Any]:
         """Perform deep constitutional analysis for thorough compliance."""
 
         # This would integrate with the AC service for constitutional analysis
@@ -569,7 +591,9 @@ class RealTimeComplianceEngine:
 
         self.validation_cache[cache_key] = result
 
-    async def _log_audit_trail(self, context: ActionContext, result: ComplianceResult) -> None:
+    async def _log_audit_trail(
+        self, context: ActionContext, result: ComplianceResult
+    ) -> None:
         """Log comprehensive audit trail for compliance validation."""
 
         audit_entry = {
@@ -620,7 +644,9 @@ class RealTimeComplianceEngine:
             self.performance_metrics["enforcement_actions"][action_key] = 0
         self.performance_metrics["enforcement_actions"][action_key] += 1
 
-    def _create_error_result(self, action_id: str, error_message: str) -> ComplianceResult:
+    def _create_error_result(
+        self, action_id: str, error_message: str
+    ) -> ComplianceResult:
         """Create error result for failed validations."""
 
         return ComplianceResult(

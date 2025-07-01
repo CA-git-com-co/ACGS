@@ -90,15 +90,21 @@ class ServiceRegistry:
 
         return self
 
-    def register_singleton(self, interface: type, implementation: type = None) -> "ServiceRegistry":
+    def register_singleton(
+        self, interface: type, implementation: type = None
+    ) -> "ServiceRegistry":
         """Register a singleton service."""
         return self.register(interface, implementation, ServiceScope.SINGLETON)
 
-    def register_transient(self, interface: type, implementation: type = None) -> "ServiceRegistry":
+    def register_transient(
+        self, interface: type, implementation: type = None
+    ) -> "ServiceRegistry":
         """Register a transient service."""
         return self.register(interface, implementation, ServiceScope.TRANSIENT)
 
-    def register_scoped(self, interface: type, implementation: type = None) -> "ServiceRegistry":
+    def register_scoped(
+        self, interface: type, implementation: type = None
+    ) -> "ServiceRegistry":
         """Register a scoped service."""
         return self.register(interface, implementation, ServiceScope.SCOPED)
 
@@ -204,7 +210,9 @@ class ServiceRegistry:
         for interface, registration in self._registrations.items():
             for dependency in registration.dependencies or []:
                 if not self.is_registered(dependency):
-                    errors.append(f"Service {interface} depends on unregistered {dependency}")
+                    errors.append(
+                        f"Service {interface} depends on unregistered {dependency}"
+                    )
 
         return errors
 

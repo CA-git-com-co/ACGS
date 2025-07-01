@@ -13,7 +13,9 @@ from datetime import datetime
 from pathlib import Path
 
 
-def run_command(command: list[str], capture_output: bool = True) -> tuple[int, str, str]:
+def run_command(
+    command: list[str], capture_output: bool = True
+) -> tuple[int, str, str]:
     """Run command safely without shell injection and return exit code, stdout, stderr.
 
     Args:
@@ -40,7 +42,15 @@ def run_unit_tests(verbose: bool = False) -> dict:
     """Run unit tests and return results."""
     print("🧪 Running unit tests...")
 
-    cmd = ["python", "-m", "pytest", "tests/test_generation_engine.py", "-m", "unit", "--tb=short"]
+    cmd = [
+        "python",
+        "-m",
+        "pytest",
+        "tests/test_generation_engine.py",
+        "-m",
+        "unit",
+        "--tb=short",
+    ]
     if verbose:
         cmd.append("-v")
 
@@ -59,7 +69,15 @@ def run_integration_tests(verbose: bool = False) -> dict:
     """Run integration tests and return results."""
     print("🔗 Running integration tests...")
 
-    cmd = ["python", "-m", "pytest", "tests/test_integration.py", "-m", "integration", "--tb=short"]
+    cmd = [
+        "python",
+        "-m",
+        "pytest",
+        "tests/test_integration.py",
+        "-m",
+        "integration",
+        "--tb=short",
+    ]
     if verbose:
         cmd.append("-v")
 
@@ -78,7 +96,15 @@ def run_performance_tests(verbose: bool = False) -> dict:
     """Run performance tests and return results."""
     print("⚡ Running performance tests...")
 
-    cmd = ["python", "-m", "pytest", "tests/test_performance.py", "-m", "performance", "--tb=short"]
+    cmd = [
+        "python",
+        "-m",
+        "pytest",
+        "tests/test_performance.py",
+        "-m",
+        "performance",
+        "--tb=short",
+    ]
     if verbose:
         cmd.append("-v")
 
@@ -97,8 +123,15 @@ def run_coverage_tests() -> dict:
     """Run tests with coverage reporting."""
     print("📊 Running tests with coverage...")
 
-    cmd = ["python", "-m", "pytest", "tests/", "--cov=src",
-           "--cov-report=term-missing", "--cov-report=html:htmlcov"]
+    cmd = [
+        "python",
+        "-m",
+        "pytest",
+        "tests/",
+        "--cov=src",
+        "--cov-report=term-missing",
+        "--cov-report=html:htmlcov",
+    ]
 
     exit_code, stdout, stderr = run_command(cmd)
 
@@ -131,10 +164,16 @@ def validate_performance_targets(test_results: list) -> dict:
             # This is a simplified parser - in production, you'd use structured output
             if "Average response time:" in output:
                 try:
-                    line = [l for l in output.split("\n") if "Average response time:" in l][0]
+                    line = [
+                        l for l in output.split("\n") if "Average response time:" in l
+                    ][0]
                     actual_time = float(line.split(":")[1].strip().replace("ms", ""))
-                    performance_validation["response_time_target"]["actual"] = actual_time
-                    performance_validation["response_time_target"]["passed"] = actual_time <= 500
+                    performance_validation["response_time_target"][
+                        "actual"
+                    ] = actual_time
+                    performance_validation["response_time_target"]["passed"] = (
+                        actual_time <= 500
+                    )
                 except:
                     pass
 
@@ -217,7 +256,9 @@ def print_test_summary(report: dict):
     print(f"Total test suites: {summary['total_test_suites']}")
     print(f"Passed: {summary['passed_test_suites']}")
     print(f"Failed: {summary['failed_test_suites']}")
-    print(f"Overall status: {'✅ PASSED' if summary['overall_passed'] else '❌ FAILED'}")
+    print(
+        f"Overall status: {'✅ PASSED' if summary['overall_passed'] else '❌ FAILED'}"
+    )
 
     print("\n📊 Performance Validation:")
     perf = report["performance_validation"]
@@ -244,12 +285,20 @@ def main():
     """Main test runner function."""
     parser = argparse.ArgumentParser(description="ACGS-PGP v8 Test Runner")
     parser.add_argument("--unit", action="store_true", help="Run unit tests only")
-    parser.add_argument("--integration", action="store_true", help="Run integration tests only")
-    parser.add_argument("--performance", action="store_true", help="Run performance tests only")
-    parser.add_argument("--coverage", action="store_true", help="Run tests with coverage")
+    parser.add_argument(
+        "--integration", action="store_true", help="Run integration tests only"
+    )
+    parser.add_argument(
+        "--performance", action="store_true", help="Run performance tests only"
+    )
+    parser.add_argument(
+        "--coverage", action="store_true", help="Run tests with coverage"
+    )
     parser.add_argument("--all", action="store_true", help="Run all test suites")
     parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
-    parser.add_argument("--report", default="test_report.json", help="Output report file")
+    parser.add_argument(
+        "--report", default="test_report.json", help="Output report file"
+    )
 
     args = parser.parse_args()
 
@@ -289,9 +338,9 @@ def main():
         print_test_summary(report)
 
         # Exit with appropriate code
-        overall_success = report["test_summary"]["overall_passed"] and performance_validation.get(
-            "overall_passed", True
-        )
+        overall_success = report["test_summary"][
+            "overall_passed"
+        ] and performance_validation.get("overall_passed", True)
 
         sys.exit(0 if overall_success else 1)
 

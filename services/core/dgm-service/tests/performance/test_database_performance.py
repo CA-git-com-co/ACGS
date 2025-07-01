@@ -51,7 +51,11 @@ class DatabasePerformanceTest:
             end_time = time.perf_counter()
             execution_time = (end_time - start_time) * 1000  # Convert to milliseconds
 
-            return {"execution_time_ms": execution_time, "row_count": len(rows), "success": True}
+            return {
+                "execution_time_ms": execution_time,
+                "row_count": len(rows),
+                "success": True,
+            }
         except Exception as e:
             end_time = time.perf_counter()
             execution_time = (end_time - start_time) * 1000
@@ -128,7 +132,9 @@ class DatabasePerformanceTest:
         total_time = (end_time - start_time) * 1000
 
         # Flatten results
-        flat_results = [result for worker_results in all_results for result in worker_results]
+        flat_results = [
+            result for worker_results in all_results for result in worker_results
+        ]
 
         execution_times = [r["execution_time_ms"] for r in flat_results if r["success"]]
         success_count = sum(1 for r in flat_results if r["success"])
@@ -140,8 +146,11 @@ class DatabasePerformanceTest:
             "total_operations": len(flat_results),
             "successful_operations": success_count,
             "success_rate": (success_count / len(flat_results)) * 100,
-            "avg_operation_time_ms": statistics.mean(execution_times) if execution_times else 0,
-            "operations_per_second": len(flat_results) / ((end_time - start_time) or 0.001),
+            "avg_operation_time_ms": (
+                statistics.mean(execution_times) if execution_times else 0
+            ),
+            "operations_per_second": len(flat_results)
+            / ((end_time - start_time) or 0.001),
         }
 
 
@@ -162,7 +171,9 @@ async def test_simple_query_performance(db_test):
     result = await db_test.measure_query_time("SELECT 1")
 
     # Simple queries should be very fast
-    assert result["success"], f"Simple query failed: {result.get('error', 'Unknown error')}"
+    assert result[
+        "success"
+    ], f"Simple query failed: {result.get('error', 'Unknown error')}"
     assert (
         result["execution_time_ms"] < 10
     ), f"Simple query too slow: {result['execution_time_ms']}ms"
@@ -183,7 +194,9 @@ async def test_dgm_archive_query_performance(db_test):
     result = await db_test.measure_query_time(query)
 
     # Archive queries should be fast with proper indexing
-    assert result["success"], f"Archive query failed: {result.get('error', 'Unknown error')}"
+    assert result[
+        "success"
+    ], f"Archive query failed: {result.get('error', 'Unknown error')}"
     assert (
         result["execution_time_ms"] < 100
     ), f"Archive query too slow: {result['execution_time_ms']}ms"
@@ -209,7 +222,9 @@ async def test_performance_metrics_aggregation(db_test):
     result = await db_test.measure_query_time(query)
 
     # Aggregation queries should complete within reasonable time
-    assert result["success"], f"Aggregation query failed: {result.get('error', 'Unknown error')}"
+    assert result[
+        "success"
+    ], f"Aggregation query failed: {result.get('error', 'Unknown error')}"
     assert (
         result["execution_time_ms"] < 500
     ), f"Aggregation query too slow: {result['execution_time_ms']}ms"
@@ -232,7 +247,9 @@ async def test_constitutional_compliance_search(db_test):
     result = await db_test.measure_query_time(query, {"min_score": 0.8})
 
     # Compliance searches should be optimized
-    assert result["success"], f"Compliance search failed: {result.get('error', 'Unknown error')}"
+    assert result[
+        "success"
+    ], f"Compliance search failed: {result.get('error', 'Unknown error')}"
     assert (
         result["execution_time_ms"] < 200
     ), f"Compliance search too slow: {result['execution_time_ms']}ms"
@@ -282,7 +299,9 @@ async def test_index_effectiveness(db_test):
     WHERE metadata::text LIKE :pattern
     """
 
-    non_indexed_result = await db_test.measure_query_time(non_indexed_query, {"pattern": "%test%"})
+    non_indexed_result = await db_test.measure_query_time(
+        non_indexed_query, {"pattern": "%test%"}
+    )
 
     # Indexed queries should be significantly faster
     assert indexed_result["success"], "Indexed query failed"
@@ -292,7 +311,9 @@ async def test_index_effectiveness(db_test):
 
     # Non-indexed query can be slower but should still complete
     if non_indexed_result["success"]:
-        assert non_indexed_result["execution_time_ms"] < 1000, "Non-indexed query extremely slow"
+        assert (
+            non_indexed_result["execution_time_ms"] < 1000
+        ), "Non-indexed query extremely slow"
 
 
 @pytest.mark.performance
@@ -315,10 +336,14 @@ async def test_bulk_operations_performance(db_test):
         )
 
     # Test bulk insert performance
-    result = await db_test.bulk_insert_performance("dgm_archive", test_records, batch_size=100)
+    result = await db_test.bulk_insert_performance(
+        "dgm_archive", test_records, batch_size=100
+    )
 
     # Bulk operations should be efficient
-    assert result["success"], f"Bulk insert failed: {result.get('error', 'Unknown error')}"
+    assert result[
+        "success"
+    ], f"Bulk insert failed: {result.get('error', 'Unknown error')}"
     assert (
         result["records_per_second"] > 100
     ), f"Bulk insert too slow: {result['records_per_second']} records/sec"
@@ -348,7 +373,9 @@ async def test_database_statistics_query(db_test):
     result = await db_test.measure_query_time(stats_query)
 
     # Statistics queries should be fast for monitoring
-    assert result["success"], f"Statistics query failed: {result.get('error', 'Unknown error')}"
+    assert result[
+        "success"
+    ], f"Statistics query failed: {result.get('error', 'Unknown error')}"
     assert (
         result["execution_time_ms"] < 100
     ), f"Statistics query too slow: {result['execution_time_ms']}ms"
@@ -375,7 +402,11 @@ async def test_concurrent_read_write_performance(db_test):
         for i in range(5):
             result = await db_test.measure_query_time(
                 "INSERT INTO dgm.performance_metrics (metric_name, value, timestamp, service_name) VALUES (:name, :value, NOW(), :service)",
-                {"name": f"test_metric_{i}", "value": i * 0.1, "service": "dgm-service"},
+                {
+                    "name": f"test_metric_{i}",
+                    "value": i * 0.1,
+                    "service": "dgm-service",
+                },
             )
             results.append(result)
         return results
@@ -406,5 +437,7 @@ async def test_concurrent_read_write_performance(db_test):
 
     # Concurrent operations should maintain good performance
     assert read_success_rate >= 99.0, f"Read success rate too low: {read_success_rate}%"
-    assert write_success_rate >= 99.0, f"Write success rate too low: {write_success_rate}%"
+    assert (
+        write_success_rate >= 99.0
+    ), f"Write success rate too low: {write_success_rate}%"
     assert total_time < 5000, f"Concurrent operations took too long: {total_time}ms"

@@ -160,7 +160,9 @@ class ObservabilityFramework:
         """Initialize the observability framework."""
         try:
             if not OPENTELEMETRY_AVAILABLE:
-                logger.warning("OpenTelemetry not available - observability features limited")
+                logger.warning(
+                    "OpenTelemetry not available - observability features limited"
+                )
                 return
 
             # Initialize OpenTelemetry components
@@ -360,7 +362,9 @@ class ObservabilityFramework:
             # Update metrics
             self.observability_metrics["alerts_triggered"] += 1
 
-            logger.warning(f"Alert triggered: {title} ({alert_level.value}) - {description}")
+            logger.warning(
+                f"Alert triggered: {title} ({alert_level.value}) - {description}"
+            )
 
             return alert_id
 
@@ -409,7 +413,9 @@ class ObservabilityFramework:
             )
 
             if evolution_result.performance_metrics:
-                duration = evolution_result.performance_metrics.get("duration_minutes", 0)
+                duration = evolution_result.performance_metrics.get(
+                    "duration_minutes", 0
+                )
                 await self.record_metric(
                     "evolution_duration_minutes",
                     duration,
@@ -418,7 +424,9 @@ class ObservabilityFramework:
                     labels={"evolution_id": evolution_result.evolution_id},
                 )
 
-            logger.info(f"Evolution completion recorded: {evolution_result.evolution_id}")
+            logger.info(
+                f"Evolution completion recorded: {evolution_result.evolution_id}"
+            )
 
         except Exception as e:
             logger.error(f"Failed to record evolution completion: {e}")
@@ -450,7 +458,9 @@ class ObservabilityFramework:
         except Exception as e:
             logger.error(f"Failed to record evolution failure: {e}")
 
-    async def record_evolution_warning(self, evolution_id: str, warning_type: str, details: Any):
+    async def record_evolution_warning(
+        self, evolution_id: str, warning_type: str, details: Any
+    ):
         """Record a warning for an evolution cycle."""
         try:
             await self.record_metric(
@@ -472,7 +482,9 @@ class ObservabilityFramework:
                 "evolution_warning_total",
             )
 
-            logger.warning(f"Evolution warning recorded: {evolution_id} - {warning_type}")
+            logger.warning(
+                f"Evolution warning recorded: {evolution_id} - {warning_type}"
+            )
 
         except Exception as e:
             logger.error(f"Failed to record evolution warning: {e}")
@@ -497,7 +509,9 @@ class ObservabilityFramework:
 
                 # Add OTLP exporter
                 otlp_span_exporter = OTLPSpanExporter(endpoint=self.otlp_endpoint)
-                self.tracer_provider.add_span_processor(BatchSpanProcessor(otlp_span_exporter))
+                self.tracer_provider.add_span_processor(
+                    BatchSpanProcessor(otlp_span_exporter)
+                )
 
                 self.tracer = trace.get_tracer(self.service_name, self.service_version)
                 logger.info("OpenTelemetry tracing initialized")
@@ -713,7 +727,9 @@ class ObservabilityFramework:
         try:
             for alert_id, alert in list(self.active_alerts.items()):
                 # Auto-resolve alerts older than 1 hour (simplified logic)
-                if (datetime.now(timezone.utc) - alert.triggered_at).total_seconds() > 3600:
+                if (
+                    datetime.now(timezone.utc) - alert.triggered_at
+                ).total_seconds() > 3600:
                     await self.resolve_alert(alert_id)
 
         except Exception as e:
@@ -726,7 +742,10 @@ class ObservabilityFramework:
                 # Escalate critical alerts that have been active for more than 15 minutes
                 if (
                     alert.alert_level == AlertLevel.CRITICAL
-                    and (datetime.now(timezone.utc) - alert.triggered_at).total_seconds() > 900
+                    and (
+                        datetime.now(timezone.utc) - alert.triggered_at
+                    ).total_seconds()
+                    > 900
                 ):
 
                     logger.critical(

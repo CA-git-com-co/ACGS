@@ -67,15 +67,15 @@ class DatabaseManager:
             self._sync_engine = create_engine(
                 self.database_url,
                 poolclass=QueuePool,
-                pool_size=optimized_settings['pool_size'],
-                max_overflow=optimized_settings['max_overflow'],
-                pool_timeout=optimized_settings['pool_timeout'],
-                pool_recycle=optimized_settings['pool_recycle'],
+                pool_size=optimized_settings["pool_size"],
+                max_overflow=optimized_settings["max_overflow"],
+                pool_timeout=optimized_settings["pool_timeout"],
+                pool_recycle=optimized_settings["pool_recycle"],
                 echo=self.echo,
                 # Connection pool settings
-                pool_pre_ping=optimized_settings['pool_pre_ping'],
-                pool_reset_on_return=optimized_settings['pool_reset_on_return'],
-                connect_args=optimized_settings['connect_args']
+                pool_pre_ping=optimized_settings["pool_pre_ping"],
+                pool_reset_on_return=optimized_settings["pool_reset_on_return"],
+                connect_args=optimized_settings["connect_args"],
             )
 
             # Setup performance monitoring
@@ -105,22 +105,24 @@ class DatabaseManager:
         """Initialize asynchronous database engine."""
         if self._async_engine is None:
             # Convert sync URL to async URL
-            async_url = self.database_url.replace("postgresql://", "postgresql+asyncpg://")
+            async_url = self.database_url.replace(
+                "postgresql://", "postgresql+asyncpg://"
+            )
 
             # Use optimized settings from optimizer
             optimized_settings = self.optimizer.optimized_settings
 
             self._async_engine = create_async_engine(
                 async_url,
-                pool_size=optimized_settings['pool_size'],
-                max_overflow=optimized_settings['max_overflow'],
-                pool_timeout=optimized_settings['pool_timeout'],
-                pool_recycle=optimized_settings['pool_recycle'],
+                pool_size=optimized_settings["pool_size"],
+                max_overflow=optimized_settings["max_overflow"],
+                pool_timeout=optimized_settings["pool_timeout"],
+                pool_recycle=optimized_settings["pool_recycle"],
                 echo=self.echo,
                 # Connection pool settings
-                pool_pre_ping=optimized_settings['pool_pre_ping'],
-                pool_reset_on_return=optimized_settings['pool_reset_on_return'],
-                connect_args=optimized_settings['connect_args']
+                pool_pre_ping=optimized_settings["pool_pre_ping"],
+                pool_reset_on_return=optimized_settings["pool_reset_on_return"],
+                connect_args=optimized_settings["connect_args"],
             )
 
             # Setup async query monitoring
@@ -198,7 +200,9 @@ class DatabaseManager:
                         }
                     else:
                         health_status["status"] = "unhealthy"
-                        health_status["connection_pool"]["async"] = {"status": "unhealthy"}
+                        health_status["connection_pool"]["async"] = {
+                            "status": "unhealthy"
+                        }
 
             # Check sync connection
             if self._sync_engine:
@@ -215,7 +219,9 @@ class DatabaseManager:
                         }
                     else:
                         health_status["status"] = "unhealthy"
-                        health_status["connection_pool"]["sync"] = {"status": "unhealthy"}
+                        health_status["connection_pool"]["sync"] = {
+                            "status": "unhealthy"
+                        }
 
             from datetime import datetime
 

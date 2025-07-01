@@ -239,7 +239,9 @@ class LLMAsJudgeFramework:
         ]:
             self.rubrics[dimension] = self._create_generic_rubric(dimension)
 
-    def _create_generic_rubric(self, dimension: EvaluationDimension) -> EvaluationRubric:
+    def _create_generic_rubric(
+        self, dimension: EvaluationDimension
+    ) -> EvaluationRubric:
         """Create a generic rubric for a dimension."""
         return EvaluationRubric(
             dimension=dimension,
@@ -353,7 +355,9 @@ class LLMAsJudgeFramework:
         prompt = self._create_evaluation_prompt(policy_text, rubric, context)
 
         # Get evaluation from primary judge
-        primary_result = await self._get_judge_evaluation(prompt, self.config.primary_judge_model)
+        primary_result = await self._get_judge_evaluation(
+            prompt, self.config.primary_judge_model
+        )
 
         # If multi-judge is enabled, get secondary evaluation
         if self.config.use_multi_judge:
@@ -366,13 +370,13 @@ class LLMAsJudgeFramework:
             if score_diff <= (1.0 - self.config.consensus_threshold):
                 # Consensus reached, average the scores
                 final_score = (primary_result[0] + secondary_result[0]) / 2
-                final_feedback = f"Primary: {primary_result[1]}\nSecondary: {secondary_result[1]}"
+                final_feedback = (
+                    f"Primary: {primary_result[1]}\nSecondary: {secondary_result[1]}"
+                )
             else:
                 # No consensus, use primary judge result
                 final_score = primary_result[0]
-                final_feedback = (
-                    f"No consensus (diff: {score_diff:.2f}). Primary: {primary_result[1]}"
-                )
+                final_feedback = f"No consensus (diff: {score_diff:.2f}). Primary: {primary_result[1]}"
         else:
             final_score = primary_result[0]
             final_feedback = primary_result[1]
@@ -386,7 +390,10 @@ class LLMAsJudgeFramework:
         criteria_text = "\n".join([f"- {criterion}" for criterion in rubric.criteria])
 
         scoring_guide_text = "\n".join(
-            [f"{score}: {description}" for score, description in rubric.scoring_guide.items()]
+            [
+                f"{score}: {description}"
+                for score, description in rubric.scoring_guide.items()
+            ]
         )
 
         prompt = f"""
@@ -485,7 +492,9 @@ class LLMAsJudgeFramework:
 
         return total_score / total_weight if total_weight > 0 else 0.0
 
-    def _calculate_confidence(self, dimension_scores: Dict[EvaluationDimension, float]) -> float:
+    def _calculate_confidence(
+        self, dimension_scores: Dict[EvaluationDimension, float]
+    ) -> float:
         """Calculate confidence in the evaluation."""
         scores = list(dimension_scores.values())
 
@@ -548,7 +557,9 @@ class LLMAsJudgeFramework:
         recommendations = []
         for dimension in low_scoring_dimensions:
             rubric = self.rubrics[dimension]
-            rec = f"Improve {dimension.value}: Focus on {', '.join(rubric.criteria[:2])}"
+            rec = (
+                f"Improve {dimension.value}: Focus on {', '.join(rubric.criteria[:2])}"
+            )
             recommendations.append(rec)
 
         return recommendations[:5]  # Limit to 5 recommendations

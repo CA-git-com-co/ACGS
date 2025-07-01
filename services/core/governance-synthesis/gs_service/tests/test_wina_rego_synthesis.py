@@ -162,7 +162,9 @@ deny {
             assert result.validation_result["is_valid"] is True
 
     @pytest.mark.asyncio
-    async def test_synthesize_rego_policy_without_wina(self, mock_constitutional_principles):
+    async def test_synthesize_rego_policy_without_wina(
+        self, mock_constitutional_principles
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -315,7 +317,9 @@ class TestWINARegoSynthesisAPI:
         """Test the main synthesis function."""
 
         synthesis_goal = "Create data access policy"
-        constitutional_principles = [{"description": "Protect user data", "type": "privacy"}]
+        constitutional_principles = [
+            {"description": "Protect user data", "type": "privacy"}
+        ]
 
         with patch(
             "app.core.wina_rego_synthesis.get_wina_rego_synthesizer"

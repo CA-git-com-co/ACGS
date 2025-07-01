@@ -83,7 +83,9 @@ class TestMessagingBasic:
 
         # Test publish
         success = await mock_client.publish(
-            "dgm.improvement.proposed", {"improvement_id": str(uuid4())}, {"priority": "high"}
+            "dgm.improvement.proposed",
+            {"improvement_id": str(uuid4())},
+            {"priority": "high"},
         )
         assert success is True
 
@@ -106,7 +108,11 @@ class TestMessagingBasic:
 
         async def mock_publish_event(event_type, **kwargs):
             published_events.append(
-                {"type": event_type, "data": kwargs, "timestamp": datetime.utcnow().isoformat()}
+                {
+                    "type": event_type,
+                    "data": kwargs,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
             )
             return True
 
@@ -158,7 +164,11 @@ class TestMessagingBasic:
 
         async def mock_subscribe_to_event(event_type, handler, queue_group=None):
             subscriptions.append(
-                {"event_type": event_type, "handler": handler, "queue_group": queue_group}
+                {
+                    "event_type": event_type,
+                    "handler": handler,
+                    "queue_group": queue_group,
+                }
             )
             return True
 
@@ -206,7 +216,9 @@ class TestMessagingBasic:
         ]
 
         # Sort by priority
-        sorted_events = sorted(events, key=lambda e: priorities[e["priority"]], reverse=True)
+        sorted_events = sorted(
+            events, key=lambda e: priorities[e["priority"]], reverse=True
+        )
 
         assert sorted_events[0]["priority"] == "critical"
         assert sorted_events[1]["priority"] == "high"
@@ -311,7 +323,8 @@ class TestMessagingBasic:
         assert deserialized["event_type"] == message["event_type"]
         assert deserialized["data"]["strategy"] == message["data"]["strategy"]
         assert (
-            deserialized["data"]["expected_improvement"] == message["data"]["expected_improvement"]
+            deserialized["data"]["expected_improvement"]
+            == message["data"]["expected_improvement"]
         )
 
     def test_health_check_structure(self):

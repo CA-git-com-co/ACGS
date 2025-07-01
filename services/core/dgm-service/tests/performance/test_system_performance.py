@@ -40,9 +40,13 @@ class SystemPerformanceTest:
             "memory_percent": self.process.memory_percent(),
             "cpu_percent": self.process.cpu_percent(),
             "num_threads": self.process.num_threads(),
-            "num_fds": self.process.num_fds() if hasattr(self.process, "num_fds") else 0,
+            "num_fds": (
+                self.process.num_fds() if hasattr(self.process, "num_fds") else 0
+            ),
             "connections": (
-                len(self.process.connections()) if hasattr(self.process, "connections") else 0
+                len(self.process.connections())
+                if hasattr(self.process, "connections")
+                else 0
             ),
         }
 
@@ -80,7 +84,9 @@ class SystemPerformanceTest:
         return {
             "start_memory_mb": start_metrics["memory_mb"],
             "end_memory_mb": end_metrics["memory_mb"],
-            "peak_memory_mb": max(memory_samples) if memory_samples else start_metrics["memory_mb"],
+            "peak_memory_mb": (
+                max(memory_samples) if memory_samples else start_metrics["memory_mb"]
+            ),
             "memory_growth_mb": end_metrics["memory_mb"] - start_metrics["memory_mb"],
             "iterations": iterations,
             "memory_samples": memory_samples,
@@ -131,7 +137,9 @@ async def test_memory_usage_baseline(system_test):
     metrics = system_test.get_system_metrics()
 
     # Memory usage should be reasonable for a Python service
-    assert metrics["memory_mb"] < 500, f"Baseline memory usage too high: {metrics['memory_mb']}MB"
+    assert (
+        metrics["memory_mb"] < 500
+    ), f"Baseline memory usage too high: {metrics['memory_mb']}MB"
     assert (
         metrics["memory_percent"] < 10
     ), f"Memory percentage too high: {metrics['memory_percent']}%"
@@ -155,7 +163,9 @@ async def test_file_descriptor_usage(system_test):
 
     # Should not leak file descriptors
     if metrics["num_fds"] > 0:  # Only test if available on platform
-        assert metrics["num_fds"] < 1000, f"Too many file descriptors: {metrics['num_fds']}"
+        assert (
+            metrics["num_fds"] < 1000
+        ), f"Too many file descriptors: {metrics['num_fds']}"
 
 
 @pytest.mark.performance
@@ -175,7 +185,9 @@ async def test_memory_stress_resilience(system_test):
 
     # Memory should be released after stress test
     final_memory = system_test.get_system_metrics()["memory_mb"]
-    assert final_memory < result["peak_memory_mb"], "Memory not properly released after stress test"
+    assert (
+        final_memory < result["peak_memory_mb"]
+    ), "Memory not properly released after stress test"
 
 
 @pytest.mark.performance
@@ -189,7 +201,9 @@ async def test_cpu_usage_under_load(system_test):
     assert (
         result["avg_cpu_percent"] < 80
     ), f"Average CPU usage too high: {result['avg_cpu_percent']}%"
-    assert result["max_cpu_percent"] < 95, f"Peak CPU usage too high: {result['max_cpu_percent']}%"
+    assert (
+        result["max_cpu_percent"] < 95
+    ), f"Peak CPU usage too high: {result['max_cpu_percent']}%"
 
 
 @pytest.mark.performance
@@ -290,7 +304,9 @@ async def test_garbage_collection_impact():
 
     # Performance should not degrade significantly after GC
     performance_ratio = post_gc_time / pre_gc_time
-    assert performance_ratio < 2.0, f"Performance degraded too much after GC: {performance_ratio}x"
+    assert (
+        performance_ratio < 2.0
+    ), f"Performance degraded too much after GC: {performance_ratio}x"
 
 
 @pytest.mark.performance
@@ -317,7 +333,9 @@ async def test_concurrent_operations_system_impact():
 
     # Concurrent operations should complete efficiently
     assert execution_time < 30, f"Concurrent operations too slow: {execution_time}s"
-    assert memory_growth < 50, f"Memory growth too high during concurrent ops: {memory_growth}MB"
+    assert (
+        memory_growth < 50
+    ), f"Memory growth too high during concurrent ops: {memory_growth}MB"
 
 
 @pytest.mark.performance

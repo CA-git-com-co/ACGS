@@ -11,5 +11,5 @@ __all__ = [
     "UserSession",
     "Agent",
     "AgentSession",
-    "AgentAuditLog"
+    "AgentAuditLog",
 ]

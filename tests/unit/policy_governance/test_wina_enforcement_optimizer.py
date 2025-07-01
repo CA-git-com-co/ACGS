@@ -4,18 +4,23 @@ Unit tests for services.core.policy-governance.pgc_service.app.core.wina_enforce
 
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
-from services.core.policy-governance.pgc_service.app.core.wina_enforcement_optimizer import EnforcementStrategy, EnforcementContext, WINAEnforcementMetrics, WINAEnforcementResult, WINAEnforcementOptimizer
-
+from services.core.policy_governance.pgc_service.app.core.wina_enforcement_optimizer import (
+    EnforcementStrategy,
+    EnforcementContext,
+    WINAEnforcementMetrics,
+    WINAEnforcementResult,
+    WINAEnforcementOptimizer,
+)
 
 
 class TestEnforcementStrategy:
     """Test suite for EnforcementStrategy."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -24,12 +29,12 @@ class TestEnforcementStrategy:
 
 class TestEnforcementContext:
     """Test suite for EnforcementContext."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -38,12 +43,12 @@ class TestEnforcementContext:
 
 class TestWINAEnforcementMetrics:
     """Test suite for WINAEnforcementMetrics."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -52,12 +57,12 @@ class TestWINAEnforcementMetrics:
 
 class TestWINAEnforcementResult:
     """Test suite for WINAEnforcementResult."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -66,12 +71,12 @@ class TestWINAEnforcementResult:
 
 class TestWINAEnforcementOptimizer:
     """Test suite for WINAEnforcementOptimizer."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -82,6 +87,4 @@ class TestWINAEnforcementOptimizer:
         # TODO: Implement test for get_performance_summary
         instance = WINAEnforcementOptimizer()
         # Add test implementation here
-        assert hasattr(instance, 'get_performance_summary')
-
-
+        assert hasattr(instance, "get_performance_summary")

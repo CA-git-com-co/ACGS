@@ -183,7 +183,9 @@ class ResearchDataPipeline:
             Tuple of (anonymized_data, anonymization_metadata)
         """
 
-        logger.info(f"Anonymizing {len(research_data)} records using {config.method.value}")
+        logger.info(
+            f"Anonymizing {len(research_data)} records using {config.method.value}"
+        )
 
         if config.method == AnonymizationMethod.K_ANONYMITY:
             return await self._apply_k_anonymity(research_data, config)
@@ -235,7 +237,9 @@ class ResearchDataPipeline:
 
         # Consistency statistics
         consistency_scores = [
-            r["consistency_score"] for r in research_data if r["consistency_score"] is not None
+            r["consistency_score"]
+            for r in research_data
+            if r["consistency_score"] is not None
         ]
         consistency_stats = {}
         if consistency_scores:
@@ -243,7 +247,9 @@ class ResearchDataPipeline:
                 "mean": statistics.mean(consistency_scores),
                 "median": statistics.median(consistency_scores),
                 "std_dev": (
-                    statistics.stdev(consistency_scores) if len(consistency_scores) > 1 else 0.0
+                    statistics.stdev(consistency_scores)
+                    if len(consistency_scores) > 1
+                    else 0.0
                 ),
                 "min": min(consistency_scores),
                 "max": max(consistency_scores),
@@ -252,7 +258,9 @@ class ResearchDataPipeline:
 
         # Execution time statistics
         execution_times = [
-            r["execution_time_ms"] for r in research_data if r.get("execution_time_ms") is not None
+            r["execution_time_ms"]
+            for r in research_data
+            if r.get("execution_time_ms") is not None
         ]
         execution_stats = {}
         if execution_times:
@@ -260,7 +268,9 @@ class ResearchDataPipeline:
                 "mean_ms": statistics.mean(execution_times),
                 "median_ms": statistics.median(execution_times),
                 "std_dev_ms": (
-                    statistics.stdev(execution_times) if len(execution_times) > 1 else 0.0
+                    statistics.stdev(execution_times)
+                    if len(execution_times) > 1
+                    else 0.0
                 ),
                 "min_ms": min(execution_times),
                 "max_ms": max(execution_times),
@@ -273,19 +283,25 @@ class ResearchDataPipeline:
             "overall_accuracy": consistent_count / len(research_data),
             "consistent_count": consistent_count,
             "inconsistent_count": len(research_data) - consistent_count,
-            "adaptation_required_count": sum(1 for r in research_data if r["adaptation_required"]),
+            "adaptation_required_count": sum(
+                1 for r in research_data if r["adaptation_required"]
+            ),
         }
 
         # Temporal distribution (by month)
         temporal_counts = {}
         for record in research_data:
-            executed_at = datetime.fromisoformat(record["executed_at"].replace("Z", "+00:00"))
+            executed_at = datetime.fromisoformat(
+                record["executed_at"].replace("Z", "+00:00")
+            )
             month_key = executed_at.strftime("%Y-%m")
             temporal_counts[month_key] = temporal_counts.get(month_key, 0) + 1
 
         # Conflict statistics
         conflict_stats = {
-            "conflicts_detected": sum(1 for r in research_data if r["conflict_detected"]),
+            "conflicts_detected": sum(
+                1 for r in research_data if r["conflict_detected"]
+            ),
             "conflict_rate": sum(1 for r in research_data if r["conflict_detected"])
             / len(research_data),
             "test_type_distribution": {},
@@ -346,7 +362,9 @@ class ResearchDataPipeline:
             ResearchDataExport record
         """
 
-        logger.info(f"Creating research export '{export_name}' for {len(domain_ids)} domains")
+        logger.info(
+            f"Creating research export '{export_name}' for {len(domain_ids)} domains"
+        )
 
         try:
             # Collect raw research data
@@ -355,12 +373,14 @@ class ResearchDataPipeline:
             )
 
             # Anonymize the data
-            anonymized_data, anonymization_metadata = await self.anonymize_research_data(
-                raw_data, anonymization_config
+            anonymized_data, anonymization_metadata = (
+                await self.anonymize_research_data(raw_data, anonymization_config)
             )
 
             # Generate statistical summary
-            statistical_summary = await self.generate_statistical_summary(anonymized_data)
+            statistical_summary = await self.generate_statistical_summary(
+                anonymized_data
+            )
 
             # Prepare export data
             export_data = {
@@ -560,7 +580,9 @@ class ResearchDataPipeline:
             # Generalize principle_id
             if "principle_id" in anonymized_record and "principle_id" in levels:
                 principle_id = anonymized_record["principle_id"]
-                anonymized_record["principle_category"] = f"principle_group_{principle_id % 5}"
+                anonymized_record["principle_category"] = (
+                    f"principle_group_{principle_id % 5}"
+                )
                 del anonymized_record["principle_id"]
 
             anonymized_data.append(anonymized_record)

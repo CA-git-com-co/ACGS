@@ -130,7 +130,9 @@ class TestConstitutionalValidator:
         assert "constitutional_hash" in result
         assert "audit_trail" in result
 
-    async def test_validate_execution_compliance_failure(self, validator, sample_execution_result):
+    async def test_validate_execution_compliance_failure(
+        self, validator, sample_execution_result
+    ):
         """Test validation of execution with compliance failure."""
         # Mock AC service response with compliance failure
         validator.ac_service_client.validate_execution_compliance.return_value = {
@@ -189,10 +191,20 @@ class TestConstitutionalValidator:
         """Test governance principles validation."""
         # Mock governance principles check
         with patch.object(validator, "_check_democratic_principles") as mock_democratic:
-            mock_democratic.return_value = {"compliant": True, "score": 0.90, "issues": []}
+            mock_democratic.return_value = {
+                "compliant": True,
+                "score": 0.90,
+                "issues": [],
+            }
 
-            with patch.object(validator, "_check_transparency_requirements") as mock_transparency:
-                mock_transparency.return_value = {"compliant": True, "score": 0.95, "issues": []}
+            with patch.object(
+                validator, "_check_transparency_requirements"
+            ) as mock_transparency:
+                mock_transparency.return_value = {
+                    "compliant": True,
+                    "score": 0.95,
+                    "issues": [],
+                }
 
                 with patch.object(
                     validator, "_check_accountability_measures"
@@ -203,7 +215,9 @@ class TestConstitutionalValidator:
                         "issues": [],
                     }
 
-                    result = await validator.validate_governance_principles(sample_proposal)
+                    result = await validator.validate_governance_principles(
+                        sample_proposal
+                    )
 
         assert result["overall_compliance"] is True
         assert result["overall_score"] >= 0.85
@@ -223,7 +237,9 @@ class TestConstitutionalValidator:
         }
 
         with patch.object(validator, "_store_compliance_log") as mock_store:
-            await validator.log_compliance_validation(improvement_id, "proposal", validation_result)
+            await validator.log_compliance_validation(
+                improvement_id, "proposal", validation_result
+            )
 
             mock_store.assert_called_once()
             call_args = mock_store.call_args[0]
@@ -316,7 +332,9 @@ class TestConstitutionalValidator:
             assert violation["severity"] in ["low", "medium", "high", "critical"]
 
         # Check that safety and security violations have higher severity
-        safety_violation = next(v for v in assessed_violations if v["type"] == "safety_concern")
+        safety_violation = next(
+            v for v in assessed_violations if v["type"] == "safety_concern"
+        )
         security_violation = next(
             v for v in assessed_violations if v["type"] == "unauthorized_access"
         )
@@ -327,7 +345,11 @@ class TestConstitutionalValidator:
     async def test_recommendation_generation(self, validator):
         """Test recommendation generation for violations."""
         violations = [
-            {"type": "unsafe_modification", "severity": "high", "affected_principles": ["safety"]},
+            {
+                "type": "unsafe_modification",
+                "severity": "high",
+                "affected_principles": ["safety"],
+            },
             {
                 "type": "insufficient_transparency",
                 "severity": "medium",
@@ -348,8 +370,8 @@ class TestConstitutionalValidator:
     async def test_ac_service_integration_failure(self, validator, sample_proposal):
         """Test handling of AC service integration failure."""
         # Mock AC service failure
-        validator.ac_service_client.validate_governance_compliance.side_effect = Exception(
-            "AC Service unavailable"
+        validator.ac_service_client.validate_governance_compliance.side_effect = (
+            Exception("AC Service unavailable")
         )
 
         # Should fall back to local validation
@@ -358,7 +380,9 @@ class TestConstitutionalValidator:
         # Should still return a result, but with lower confidence
         assert "is_compliant" in result
         assert "compliance_score" in result
-        assert result["compliance_score"] < 0.8  # Lower confidence due to service failure
+        assert (
+            result["compliance_score"] < 0.8
+        )  # Lower confidence due to service failure
 
     async def test_batch_validation(self, validator):
         """Test batch validation of multiple proposals."""

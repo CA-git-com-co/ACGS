@@ -45,7 +45,8 @@ CONSTITUTIONAL_COMPLIANCE_RATE = Gauge(
 )
 
 OPA_CIRCUIT_BREAKER_STATE = Gauge(
-    "opa_circuit_breaker_state", "OPA circuit breaker state (0=closed, 1=open, 2=half-open)"
+    "opa_circuit_breaker_state",
+    "OPA circuit breaker state (0=closed, 1=open, 2=half-open)",
 )
 
 CACHE_HIT_RATE = Gauge("policy_cache_hit_rate", "Policy evaluation cache hit rate")
@@ -65,9 +66,13 @@ class PolicyEvaluationRequest(BaseModel):
 
 class PolicyEvaluationResponse(BaseModel):
     allow: bool = Field(..., description="Whether the action is allowed")
-    violations: List[str] = Field(default_factory=list, description="List of policy violations")
+    violations: List[str] = Field(
+        default_factory=list, description="List of policy violations"
+    )
     reason: Optional[str] = Field(None, description="Reason for the decision")
-    confidence_score: Optional[float] = Field(None, description="Confidence score (0-1)")
+    confidence_score: Optional[float] = Field(
+        None, description="Confidence score (0-1)"
+    )
     evaluation_time_ms: int = Field(..., description="Evaluation time in milliseconds")
     cache_hit: bool = Field(..., description="Whether result came from cache")
     policy_version: str = Field(..., description="Version of policies used")
@@ -113,7 +118,9 @@ class PolicyEngineService:
             logger.info("Connected to Redis")
 
             # Initialize OPA session
-            self.opa_session = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=5.0))
+            self.opa_session = aiohttp.ClientSession(
+                timeout=aiohttp.ClientTimeout(total=5.0)
+            )
 
             # Test OPA connection
             await self._test_opa_connection()
@@ -133,7 +140,9 @@ class PolicyEngineService:
             logger.error(f"OPA connection test failed: {e}")
             raise
 
-    async def evaluate_policy(self, request: PolicyEvaluationRequest) -> PolicyEvaluationResponse:
+    async def evaluate_policy(
+        self, request: PolicyEvaluationRequest
+    ) -> PolicyEvaluationResponse:
         """Evaluate a policy request"""
         start_time = time.time()
         evaluation_id = str(uuid.uuid4())
@@ -157,9 +166,9 @@ class PolicyEngineService:
                     cache_hit="true",
                 ).inc()
 
-                POLICY_EVALUATION_DURATION.labels(policy_name="cached", cache_hit="true").observe(
-                    time.time() - start_time
-                )
+                POLICY_EVALUATION_DURATION.labels(
+                    policy_name="cached", cache_hit="true"
+                ).observe(time.time() - start_time)
 
                 return result
 
@@ -178,12 +187,14 @@ class PolicyEngineService:
                 self.allowed_count += 1
 
             POLICY_EVALUATIONS_TOTAL.labels(
-                result=("allow" if result.allow else "deny"), policy_name="opa", cache_hit="false"
+                result=("allow" if result.allow else "deny"),
+                policy_name="opa",
+                cache_hit="false",
             ).inc()
 
-            POLICY_EVALUATION_DURATION.labels(policy_name="opa", cache_hit="false").observe(
-                time.time() - start_time
-            )
+            POLICY_EVALUATION_DURATION.labels(
+                policy_name="opa", cache_hit="false"
+            ).observe(time.time() - start_time)
 
             # Update compliance rate
             if self.evaluation_count > 0:
@@ -253,7 +264,9 @@ class PolicyEngineService:
 
         except Exception as e:
             # Update circuit breaker state metric
-            OPA_CIRCUIT_BREAKER_STATE.set(1 if self.opa_breaker.current_state == "open" else 0)
+            OPA_CIRCUIT_BREAKER_STATE.set(
+                1 if self.opa_breaker.current_state == "open" else 0
+            )
             logger.error(f"OPA evaluation failed: {e}")
             raise
 
@@ -292,7 +305,9 @@ class PolicyEngineService:
             # Only cache successful evaluations
             if result.confidence_score and result.confidence_score > 0.8:
                 cache_data = result.dict()
-                await self.redis_client.setex(cache_key, self.cache_ttl, json.dumps(cache_data))
+                await self.redis_client.setex(
+                    cache_key, self.cache_ttl, json.dumps(cache_data)
+                )
         except Exception as e:
             logger.warning(f"Cache set failed: {e}")
 
@@ -310,7 +325,9 @@ class PolicyEngineService:
         # Check OPA
         try:
             async with self.opa_session.get(f"{self.opa_url}/health") as response:
-                dependencies["opa"] = "healthy" if response.status == 200 else "unhealthy"
+                dependencies["opa"] = (
+                    "healthy" if response.status == 200 else "unhealthy"
+                )
         except Exception:
             dependencies["opa"] = "unhealthy"
 
@@ -397,4 +414,6 @@ async def readiness_check():
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8001, log_level="info", access_log=True)
+    uvicorn.run(
+        "main:app", host="0.0.0.0", port=8001, log_level="info", access_log=True
+    )

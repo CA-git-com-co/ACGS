@@ -137,7 +137,9 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
 
         api_response = APIResponse(
             status=APIStatus.ERROR,
-            error=APIError(code=error_code, message=exc.detail, correlation_id=correlation_id),
+            error=APIError(
+                code=error_code, message=exc.detail, correlation_id=correlation_id
+            ),
             metadata=APIMetadata(
                 service_name=self.service_name,
                 correlation_id=correlation_id,
@@ -277,7 +279,9 @@ def add_production_middleware(app, service_name: str, enable_versioning: bool = 
     # Import version middleware here to avoid circular imports
     if enable_versioning:
         try:
-            from .middleware.version_routing_middleware import create_version_routing_middleware
+            from .middleware.version_routing_middleware import (
+                create_version_routing_middleware,
+            )
 
             # Add version routing middleware (executed early in chain)
             version_middleware = create_version_routing_middleware(
@@ -333,7 +337,9 @@ def create_exception_handlers(service_name: str) -> dict[Any, Callable]:
 
         api_response = APIResponse(
             status=APIStatus.ERROR,
-            error=APIError(code=error_code, message=exc.detail, correlation_id=correlation_id),
+            error=APIError(
+                code=error_code, message=exc.detail, correlation_id=correlation_id
+            ),
             metadata=APIMetadata(
                 service_name=service_name,
                 correlation_id=correlation_id,
@@ -360,10 +366,14 @@ def create_exception_handlers(service_name: str) -> dict[Any, Callable]:
                 details={"validation_errors": exc.errors()},
                 correlation_id=correlation_id,
             ),
-            metadata=APIMetadata(service_name=service_name, correlation_id=correlation_id),
+            metadata=APIMetadata(
+                service_name=service_name, correlation_id=correlation_id
+            ),
         )
 
-        return JSONResponse(status_code=422, content=serialize_api_response(api_response))
+        return JSONResponse(
+            status_code=422, content=serialize_api_response(api_response)
+        )
 
     return {
         HTTPException: http_exception_handler,

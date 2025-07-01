@@ -46,7 +46,9 @@ class RateLimitingMiddleware(BaseHTTPMiddleware):
         response = await call_next(request)
 
         # Add rate limiting headers
-        remaining = max(0, self.requests_per_minute - len(self.request_history[client_ip]))
+        remaining = max(
+            0, self.requests_per_minute - len(self.request_history[client_ip])
+        )
         response.headers["X-RateLimit-Limit"] = str(self.requests_per_minute)
         response.headers["X-RateLimit-Remaining"] = str(remaining)
         response.headers["X-RateLimit-Reset"] = str(int(current_time + 60))
@@ -69,7 +71,10 @@ class RateLimitingMiddleware(BaseHTTPMiddleware):
     def _clean_old_requests(self, client_ip: str, current_time: float):
         """Remove requests older than 1 minute."""
         cutoff_time = current_time - 60
-        while self.request_history[client_ip] and self.request_history[client_ip][0] < cutoff_time:
+        while (
+            self.request_history[client_ip]
+            and self.request_history[client_ip][0] < cutoff_time
+        ):
             self.request_history[client_ip].popleft()
 
     def _is_rate_limited(self, client_ip: str, current_time: float) -> bool:
@@ -82,4 +87,6 @@ class RateLimitingMiddleware(BaseHTTPMiddleware):
             1 for req_time in self.request_history[client_ip] if req_time > burst_cutoff
         )
 
-        return request_count >= self.requests_per_minute or burst_count >= self.burst_limit
+        return (
+            request_count >= self.requests_per_minute or burst_count >= self.burst_limit
+        )

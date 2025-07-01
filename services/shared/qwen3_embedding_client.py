@@ -114,7 +114,9 @@ class Qwen3EmbeddingClient:
         # Semaphore for concurrent request limiting
         self.request_semaphore = asyncio.Semaphore(self.max_concurrent_requests)
 
-        logger.info(f"Qwen3EmbeddingClient initialized with dimension={self.embedding_dimension}")
+        logger.info(
+            f"Qwen3EmbeddingClient initialized with dimension={self.embedding_dimension}"
+        )
 
     async def initialize(self) -> bool:
         """Initialize the embedding client and model."""
@@ -134,7 +136,9 @@ class Qwen3EmbeddingClient:
                 self.initialized = True
 
                 init_time = (time.time() - start_time) * 1000
-                logger.info(f"Qwen3EmbeddingClient initialized successfully in {init_time:.2f}ms")
+                logger.info(
+                    f"Qwen3EmbeddingClient initialized successfully in {init_time:.2f}ms"
+                )
 
                 # Record initialization metrics
                 self.metrics.record_constitutional_principle_operation(
@@ -299,13 +303,17 @@ class Qwen3EmbeddingClient:
                     if len(embedding) != self.embedding_dimension:
                         # Pad or truncate to match expected dimension
                         if len(embedding) < self.embedding_dimension:
-                            embedding.extend([0.0] * (self.embedding_dimension - len(embedding)))
+                            embedding.extend(
+                                [0.0] * (self.embedding_dimension - len(embedding))
+                            )
                         else:
                             embedding = embedding[: self.embedding_dimension]
 
                     return embedding
                 else:
-                    logger.error(f"OpenRouter API error: {response.status_code} - {response.text}")
+                    logger.error(
+                        f"OpenRouter API error: {response.status_code} - {response.text}"
+                    )
                     return await self._generate_mock_embedding(request)
 
         except Exception as e:
@@ -365,7 +373,9 @@ class Qwen3EmbeddingClient:
             return
 
         try:
-            self.redis_client.set(cache_key, json.dumps(embedding), self.cache_ttl_seconds)
+            self.redis_client.set(
+                cache_key, json.dumps(embedding), self.cache_ttl_seconds
+            )
         except Exception as e:
             logger.warning(f"Cache storage error: {e}")
 
@@ -379,7 +389,8 @@ class Qwen3EmbeddingClient:
             "performance_metrics": {
                 "total_requests": self.total_requests,
                 "successful_requests": self.successful_requests,
-                "success_rate": (self.successful_requests / max(1, self.total_requests)) * 100,
+                "success_rate": (self.successful_requests / max(1, self.total_requests))
+                * 100,
                 "cache_hit_rate": (self.cache_hits / max(1, self.total_requests)) * 100,
                 "average_response_time": 0.0,
             },
@@ -399,10 +410,14 @@ class Qwen3EmbeddingClient:
 
                 health_status["test_response_time_ms"] = test_time
                 health_status["test_success"] = response.success
-                health_status["performance_metrics"]["average_response_time"] = test_time
+                health_status["performance_metrics"][
+                    "average_response_time"
+                ] = test_time
 
                 # Check if performance targets are met
-                health_status["performance_targets_met"] = test_time < 500.0  # <500ms target
+                health_status["performance_targets_met"] = (
+                    test_time < 500.0
+                )  # <500ms target
 
             except Exception as e:
                 health_status["status"] = "degraded"

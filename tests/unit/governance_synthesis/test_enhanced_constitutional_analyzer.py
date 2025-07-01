@@ -4,18 +4,26 @@ Unit tests for services.core.governance-synthesis.gs_service.app.core.enhanced_c
 
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
-from services.core.governance-synthesis.gs_service.app.core.enhanced_constitutional_analyzer import AnalysisType, ConflictSeverity, ConstitutionalPrinciple, PolicyRule, ConflictAnalysisResult, ComplianceAnalysisResult, SemanticClusterResult, EnhancedConstitutionalAnalyzer
-
+from services.core.governance_synthesis.gs_service.app.core.enhanced_constitutional_analyzer import (
+    AnalysisType,
+    ConflictSeverity,
+    ConstitutionalPrinciple,
+    PolicyRule,
+    ConflictAnalysisResult,
+    ComplianceAnalysisResult,
+    SemanticClusterResult,
+    EnhancedConstitutionalAnalyzer,
+)
 
 
 class TestAnalysisType:
     """Test suite for AnalysisType."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -24,12 +32,12 @@ class TestAnalysisType:
 
 class TestConflictSeverity:
     """Test suite for ConflictSeverity."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -38,12 +46,12 @@ class TestConflictSeverity:
 
 class TestConstitutionalPrinciple:
     """Test suite for ConstitutionalPrinciple."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -52,12 +60,12 @@ class TestConstitutionalPrinciple:
 
 class TestPolicyRule:
     """Test suite for PolicyRule."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -66,12 +74,12 @@ class TestPolicyRule:
 
 class TestConflictAnalysisResult:
     """Test suite for ConflictAnalysisResult."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -80,12 +88,12 @@ class TestConflictAnalysisResult:
 
 class TestComplianceAnalysisResult:
     """Test suite for ComplianceAnalysisResult."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -94,12 +102,12 @@ class TestComplianceAnalysisResult:
 
 class TestSemanticClusterResult:
     """Test suite for SemanticClusterResult."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -108,15 +116,13 @@ class TestSemanticClusterResult:
 
 class TestEnhancedConstitutionalAnalyzer:
     """Test suite for EnhancedConstitutionalAnalyzer."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
         pass
-
-

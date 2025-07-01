@@ -79,8 +79,12 @@ def upgrade():
         "wina_constitutional_updates",
         ["approval_status"],
     )
-    op.create_index("idx_wina_updates_update_type", "wina_constitutional_updates", ["update_type"])
-    op.create_index("idx_wina_updates_timestamp", "wina_constitutional_updates", ["timestamp"])
+    op.create_index(
+        "idx_wina_updates_update_type", "wina_constitutional_updates", ["update_type"]
+    )
+    op.create_index(
+        "idx_wina_updates_timestamp", "wina_constitutional_updates", ["timestamp"]
+    )
     op.create_index(
         "idx_wina_updates_constitutional_distance",
         "wina_constitutional_updates",
@@ -192,7 +196,9 @@ def upgrade():
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("update_id", sa.Integer(), nullable=False),
         sa.Column("amendment_id", sa.Integer(), nullable=True),  # Link to AC amendments
-        sa.Column("approval_type", sa.String(20), nullable=False),  # 'auto', 'council', 'manual'
+        sa.Column(
+            "approval_type", sa.String(20), nullable=False
+        ),  # 'auto', 'council', 'manual'
         sa.Column("approval_status", sa.String(20), nullable=False),
         sa.Column("approval_context", postgresql.JSONB(), nullable=True),
         sa.Column("submission_timestamp", sa.DateTime(timezone=True), nullable=False),
@@ -235,10 +241,18 @@ def upgrade():
     )
 
     # Create indexes for approvals table
-    op.create_index("idx_wina_approvals_update_id", "wina_update_approvals", ["update_id"])
-    op.create_index("idx_wina_approvals_amendment_id", "wina_update_approvals", ["amendment_id"])
-    op.create_index("idx_wina_approvals_status", "wina_update_approvals", ["approval_status"])
-    op.create_index("idx_wina_approvals_type", "wina_update_approvals", ["approval_type"])
+    op.create_index(
+        "idx_wina_approvals_update_id", "wina_update_approvals", ["update_id"]
+    )
+    op.create_index(
+        "idx_wina_approvals_amendment_id", "wina_update_approvals", ["amendment_id"]
+    )
+    op.create_index(
+        "idx_wina_approvals_status", "wina_update_approvals", ["approval_status"]
+    )
+    op.create_index(
+        "idx_wina_approvals_type", "wina_update_approvals", ["approval_type"]
+    )
     op.create_index(
         "idx_wina_approvals_submission_timestamp",
         "wina_update_approvals",
@@ -332,7 +346,9 @@ def downgrade():
     op.drop_column("constitutional_principles", "wina_optimization_enabled")
 
     # Drop WINA update approvals table
-    op.drop_index("idx_wina_approvals_submission_timestamp", table_name="wina_update_approvals")
+    op.drop_index(
+        "idx_wina_approvals_submission_timestamp", table_name="wina_update_approvals"
+    )
     op.drop_index("idx_wina_approvals_type", table_name="wina_update_approvals")
     op.drop_index("idx_wina_approvals_status", table_name="wina_update_approvals")
     op.drop_index("idx_wina_approvals_amendment_id", table_name="wina_update_approvals")
@@ -348,8 +364,12 @@ def downgrade():
         "idx_wina_monitoring_compliance_status",
         table_name="wina_update_performance_monitoring",
     )
-    op.drop_index("idx_wina_monitoring_start", table_name="wina_update_performance_monitoring")
-    op.drop_index("idx_wina_monitoring_update_id", table_name="wina_update_performance_monitoring")
+    op.drop_index(
+        "idx_wina_monitoring_start", table_name="wina_update_performance_monitoring"
+    )
+    op.drop_index(
+        "idx_wina_monitoring_update_id", table_name="wina_update_performance_monitoring"
+    )
     op.drop_table("wina_update_performance_monitoring")
 
     # Drop WINA optimization analysis table
@@ -357,8 +377,12 @@ def downgrade():
         "idx_wina_analysis_optimization_potential",
         table_name="wina_optimization_analysis",
     )
-    op.drop_index("idx_wina_analysis_timestamp", table_name="wina_optimization_analysis")
-    op.drop_index("idx_wina_analysis_principle_id", table_name="wina_optimization_analysis")
+    op.drop_index(
+        "idx_wina_analysis_timestamp", table_name="wina_optimization_analysis"
+    )
+    op.drop_index(
+        "idx_wina_analysis_principle_id", table_name="wina_optimization_analysis"
+    )
     op.drop_table("wina_optimization_analysis")
 
     # Drop WINA constitutional updates table
@@ -366,8 +390,16 @@ def downgrade():
         "idx_wina_updates_constitutional_distance",
         table_name="wina_constitutional_updates",
     )
-    op.drop_index("idx_wina_updates_timestamp", table_name="wina_constitutional_updates")
-    op.drop_index("idx_wina_updates_update_type", table_name="wina_constitutional_updates")
-    op.drop_index("idx_wina_updates_approval_status", table_name="wina_constitutional_updates")
-    op.drop_index("idx_wina_updates_principle_id", table_name="wina_constitutional_updates")
+    op.drop_index(
+        "idx_wina_updates_timestamp", table_name="wina_constitutional_updates"
+    )
+    op.drop_index(
+        "idx_wina_updates_update_type", table_name="wina_constitutional_updates"
+    )
+    op.drop_index(
+        "idx_wina_updates_approval_status", table_name="wina_constitutional_updates"
+    )
+    op.drop_index(
+        "idx_wina_updates_principle_id", table_name="wina_constitutional_updates"
+    )
     op.drop_table("wina_constitutional_updates")

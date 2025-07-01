@@ -13,6 +13,6 @@ from .qec_engine import (
 
 __all__ = [
     "QuantumErrorCorrectionEngine",
-    "QuantumState", 
+    "QuantumState",
     "StabilizerCode",
 ]

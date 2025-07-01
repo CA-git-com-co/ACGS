@@ -25,7 +25,9 @@ async def create_policy_rule(
 
 
 async def get_policy_rule(db: AsyncSession, rule_id: int) -> models.PolicyRule | None:
-    result = await db.execute(select(models.PolicyRule).filter(models.PolicyRule.id == rule_id))
+    result = await db.execute(
+        select(models.PolicyRule).filter(models.PolicyRule.id == rule_id)
+    )
     return result.scalars().first()
 
 
@@ -54,8 +56,12 @@ async def update_policy_rule_status(
     db_rule = await get_policy_rule(db, rule_id)
     if db_rule:
         db_rule.verification_status = status
-        db_rule.verified_at = datetime.utcnow()  # Set verification time when status changes
-        if new_version:  # Optionally increment version if status update implies a new version
+        db_rule.verified_at = (
+            datetime.utcnow()
+        )  # Set verification time when status changes
+        if (
+            new_version
+        ):  # Optionally increment version if status update implies a new version
             db_rule.version += 1
         await db.commit()
         await db.refresh(db_rule)
@@ -69,7 +75,10 @@ async def update_policy_rule_content(
     if db_rule:
         update_data = rule_update.model_dump(exclude_unset=True)
 
-        if "rule_content" in update_data and update_data["rule_content"] != db_rule.rule_content:
+        if (
+            "rule_content" in update_data
+            and update_data["rule_content"] != db_rule.rule_content
+        ):
             db_rule.version += 1  # Increment version if content changes
             db_rule.verification_status = "pending"  # Reset status if content changes
             db_rule.verified_at = None
@@ -82,7 +91,9 @@ async def update_policy_rule_content(
     return db_rule
 
 
-async def delete_policy_rule(db: AsyncSession, rule_id: int) -> models.PolicyRule | None:
+async def delete_policy_rule(
+    db: AsyncSession, rule_id: int
+) -> models.PolicyRule | None:
     db_rule = await get_policy_rule(db, rule_id)
     if db_rule:
         await db.delete(db_rule)
@@ -101,7 +112,9 @@ async def count_policy_rules(db: AsyncSession, status: str | None = None) -> int
 # --- AuditLog CRUD operations ---
 
 
-async def create_audit_log(db: AsyncSession, log_entry: schemas.AuditLogCreate) -> models.AuditLog:
+async def create_audit_log(
+    db: AsyncSession, log_entry: schemas.AuditLogCreate
+) -> models.AuditLog:
     db_log_entry = models.AuditLog(**log_entry.model_dump())  # Pydantic v2+
     db.add(db_log_entry)
     await db.commit()
@@ -110,7 +123,9 @@ async def create_audit_log(db: AsyncSession, log_entry: schemas.AuditLogCreate) 
 
 
 async def get_audit_log(db: AsyncSession, log_id: int) -> models.AuditLog | None:
-    result = await db.execute(select(models.AuditLog).filter(models.AuditLog.id == log_id))
+    result = await db.execute(
+        select(models.AuditLog).filter(models.AuditLog.id == log_id)
+    )
     return result.scalars().first()
 
 
@@ -179,7 +194,9 @@ async def create_appeal(
 
 
 async def get_appeal(db: AsyncSession, appeal_id: int) -> models.Appeal | None:
-    result = await db.execute(select(models.Appeal).filter(models.Appeal.id == appeal_id))
+    result = await db.execute(
+        select(models.Appeal).filter(models.Appeal.id == appeal_id)
+    )
     return result.scalars().first()
 
 
@@ -279,7 +296,9 @@ async def get_dispute_resolution(
     db: AsyncSession, dispute_id: int
 ) -> models.DisputeResolution | None:
     result = await db.execute(
-        select(models.DisputeResolution).filter(models.DisputeResolution.id == dispute_id)
+        select(models.DisputeResolution).filter(
+            models.DisputeResolution.id == dispute_id
+        )
     )
     return result.scalars().first()
 
@@ -288,7 +307,9 @@ async def get_dispute_resolution_by_appeal(
     db: AsyncSession, appeal_id: int
 ) -> models.DisputeResolution | None:
     result = await db.execute(
-        select(models.DisputeResolution).filter(models.DisputeResolution.appeal_id == appeal_id)
+        select(models.DisputeResolution).filter(
+            models.DisputeResolution.appeal_id == appeal_id
+        )
     )
     return result.scalars().first()
 
@@ -306,12 +327,16 @@ async def get_dispute_resolutions(
     if status:
         stmt = stmt.where(models.DisputeResolution.status == status)
     if resolution_method:
-        stmt = stmt.where(models.DisputeResolution.resolution_method == resolution_method)
+        stmt = stmt.where(
+            models.DisputeResolution.resolution_method == resolution_method
+        )
     if appeal_id:
         stmt = stmt.where(models.DisputeResolution.appeal_id == appeal_id)
 
     result = await db.execute(
-        stmt.order_by(models.DisputeResolution.initiated_at.desc()).offset(skip).limit(limit)
+        stmt.order_by(models.DisputeResolution.initiated_at.desc())
+        .offset(skip)
+        .limit(limit)
     )
     return result.scalars().all()
 
@@ -346,7 +371,9 @@ async def count_dispute_resolutions(
     if status:
         stmt = stmt.where(models.DisputeResolution.status == status)
     if resolution_method:
-        stmt = stmt.where(models.DisputeResolution.resolution_method == resolution_method)
+        stmt = stmt.where(
+            models.DisputeResolution.resolution_method == resolution_method
+        )
     if appeal_id:
         stmt = stmt.where(models.DisputeResolution.appeal_id == appeal_id)
 

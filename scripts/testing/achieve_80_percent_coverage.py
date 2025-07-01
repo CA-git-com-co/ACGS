@@ -27,9 +27,11 @@ sys.path.insert(0, str(project_root))
 
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class CoverageReport:
     """Test coverage report for a component."""
+
     component: str
     total_lines: int
     covered_lines: int
@@ -37,13 +39,14 @@ class CoverageReport:
     missing_lines: List[int]
     test_files: List[str]
 
+
 class TestCoverageAchiever:
     """Achieves 80% test coverage across all critical components."""
-    
+
     def __init__(self):
         self.project_root = project_root
         self.target_coverage = 80.0
-        
+
         # Critical components for coverage expansion
         self.critical_components = {
             "constitutional-ai": {
@@ -54,8 +57,8 @@ class TestCoverageAchiever:
                     "ac_service/app/api/v1/collective_constitutional_ai.py",
                     "ac_service/app/api/v1/workflows.py",
                     "ac_service/app/api/v1/voting.py",
-                    "ac_service/app/api/hitl_sampling.py"
-                ]
+                    "ac_service/app/api/hitl_sampling.py",
+                ],
             },
             "policy-governance": {
                 "path": "services/core/policy-governance",
@@ -64,8 +67,8 @@ class TestCoverageAchiever:
                 "priority_modules": [
                     "pgc_service/app/api/v1/enforcement.py",
                     "pgc_service/app/api/v1/governance_workflows.py",
-                    "pgc_service/app/main.py"
-                ]
+                    "pgc_service/app/main.py",
+                ],
             },
             "governance-synthesis": {
                 "path": "services/core/governance-synthesis",
@@ -75,26 +78,24 @@ class TestCoverageAchiever:
                     "gs_service/app/api/v1/synthesize.py",
                     "gs_service/app/api/v1/constitutional_synthesis.py",
                     "gs_service/app/api/v1/enhanced_synthesis.py",
-                    "gs_service/app/api/v1/wina_rego_synthesis.py"
-                ]
+                    "gs_service/app/api/v1/wina_rego_synthesis.py",
+                ],
             },
             "policy-engine": {
                 "path": "services/core/policy-engine",
                 "current_coverage": 60.0,
                 "target_coverage": 80.0,
-                "priority_modules": [
-                    "main.py"
-                ]
-            }
+                "priority_modules": ["main.py"],
+            },
         }
-        
+
         # Coverage reports
         self.coverage_reports: Dict[str, CoverageReport] = {}
-        
+
     async def achieve_80_percent_coverage(self) -> Dict[str, Any]:
         """Achieve 80% test coverage across all critical components."""
         logger.info("🎯 Starting 80% test coverage achievement...")
-        
+
         coverage_results = {
             "components_processed": 0,
             "components_achieving_80_percent": 0,
@@ -105,69 +106,79 @@ class TestCoverageAchiever:
             "overall_coverage_achieved": 0.0,
             "target_met": False,
             "errors": [],
-            "success": True
+            "success": True,
         }
-        
+
         try:
             # Analyze current coverage
             current_coverage = await self._analyze_current_coverage()
-            
+
             # Expand test suites for each component
             for component_name, component_config in self.critical_components.items():
                 logger.info(f"Expanding test coverage for: {component_name}")
-                
+
                 component_results = await self._expand_component_coverage(
                     component_name, component_config
                 )
-                
+
                 coverage_results["components_processed"] += 1
-                coverage_results["test_files_enhanced"] += component_results["test_files_enhanced"]
-                coverage_results["edge_cases_added"] += component_results["edge_cases_added"]
-                coverage_results["integration_tests_added"] += component_results["integration_tests_added"]
-                coverage_results["performance_tests_added"] += component_results["performance_tests_added"]
-                
+                coverage_results["test_files_enhanced"] += component_results[
+                    "test_files_enhanced"
+                ]
+                coverage_results["edge_cases_added"] += component_results[
+                    "edge_cases_added"
+                ]
+                coverage_results["integration_tests_added"] += component_results[
+                    "integration_tests_added"
+                ]
+                coverage_results["performance_tests_added"] += component_results[
+                    "performance_tests_added"
+                ]
+
                 if component_results["coverage_achieved"] >= 80.0:
                     coverage_results["components_achieving_80_percent"] += 1
-            
+
             # Measure final coverage
             final_coverage = await self._measure_final_coverage()
             coverage_results.update(final_coverage)
-            
+
             # Generate coverage report
             await self._generate_coverage_report(coverage_results)
-            
+
             logger.info("✅ 80% test coverage achievement completed")
             return coverage_results
-            
+
         except Exception as e:
             logger.error(f"❌ Coverage achievement failed: {e}")
             coverage_results["success"] = False
             coverage_results["errors"].append(str(e))
             return coverage_results
-    
+
     async def _analyze_current_coverage(self) -> Dict[str, Any]:
         """Analyze current test coverage across components."""
         logger.info("📊 Analyzing current test coverage...")
-        
+
         try:
             # Simulate coverage analysis (in production, would use pytest-cov)
             current_analysis = {
                 "constitutional-ai": 60.2,
                 "policy-governance": 58.7,
                 "governance-synthesis": 61.3,
-                "policy-engine": 59.1
+                "policy-engine": 59.1,
             }
-            
+
             overall_current = sum(current_analysis.values()) / len(current_analysis)
-            
+
             logger.info(f"📊 Current overall coverage: {overall_current:.1f}%")
             return {"current_overall_coverage": overall_current}
-            
+
         except Exception as e:
             logger.error(f"Coverage analysis failed: {e}")
             raise
-    
-    async def _expand_component_coverage(self, component_name: str, config: Dict[str, Any]) -> Dict[str, Any]:
+
+    async def _expand_component_coverage(
+        self, component_name: str, config: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Expand test coverage for a specific component."""
         component_results = {
             "test_files_enhanced": 0,
@@ -175,41 +186,53 @@ class TestCoverageAchiever:
             "integration_tests_added": 0,
             "performance_tests_added": 0,
             "coverage_achieved": 0.0,
-            "errors": []
+            "errors": [],
         }
-        
+
         try:
             # Enhance unit tests with edge cases
             edge_case_results = await self._add_edge_case_tests(component_name, config)
             component_results.update(edge_case_results)
-            
+
             # Add integration tests
-            integration_results = await self._add_integration_tests(component_name, config)
+            integration_results = await self._add_integration_tests(
+                component_name, config
+            )
             component_results.update(integration_results)
-            
+
             # Add performance tests
-            performance_results = await self._add_performance_tests(component_name, config)
+            performance_results = await self._add_performance_tests(
+                component_name, config
+            )
             component_results.update(performance_results)
-            
+
             # Add error scenario tests
-            error_scenario_results = await self._add_error_scenario_tests(component_name, config)
+            error_scenario_results = await self._add_error_scenario_tests(
+                component_name, config
+            )
             component_results.update(error_scenario_results)
-            
+
             # Simulate coverage measurement
             component_results["coverage_achieved"] = 82.5  # Target achieved
-            
-            logger.info(f"✅ Coverage expanded for {component_name}: {component_results['coverage_achieved']:.1f}%")
-            
+
+            logger.info(
+                f"✅ Coverage expanded for {component_name}: {component_results['coverage_achieved']:.1f}%"
+            )
+
         except Exception as e:
-            logger.error(f"Component coverage expansion failed for {component_name}: {e}")
+            logger.error(
+                f"Component coverage expansion failed for {component_name}: {e}"
+            )
             component_results["errors"].append(str(e))
-        
+
         return component_results
-    
-    async def _add_edge_case_tests(self, component_name: str, config: Dict[str, Any]) -> Dict[str, Any]:
+
+    async def _add_edge_case_tests(
+        self, component_name: str, config: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Add edge case tests to improve coverage."""
         logger.info(f"🔍 Adding edge case tests for {component_name}...")
-        
+
         try:
             # Create edge case test file
             edge_case_test_content = f'''"""
@@ -279,29 +302,34 @@ class TestEdgeCases:
         # TODO: Test mixed encoding scenarios
         assert True  # Placeholder
 '''
-            
+
             # Write edge case test file
-            edge_case_path = self.project_root / "tests" / "edge_cases" / component_name.replace("-", "_") / "test_edge_cases.py"
+            edge_case_path = (
+                self.project_root
+                / "tests"
+                / "edge_cases"
+                / component_name.replace("-", "_")
+                / "test_edge_cases.py"
+            )
             edge_case_path.parent.mkdir(parents=True, exist_ok=True)
-            
-            with open(edge_case_path, 'w') as f:
+
+            with open(edge_case_path, "w") as f:
                 f.write(edge_case_test_content)
-            
+
             logger.info(f"✅ Edge case tests added for {component_name}")
-            
-            return {
-                "test_files_enhanced": 1,
-                "edge_cases_added": 8
-            }
-            
+
+            return {"test_files_enhanced": 1, "edge_cases_added": 8}
+
         except Exception as e:
             logger.error(f"Edge case test addition failed for {component_name}: {e}")
             raise
-    
-    async def _add_integration_tests(self, component_name: str, config: Dict[str, Any]) -> Dict[str, Any]:
+
+    async def _add_integration_tests(
+        self, component_name: str, config: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Add integration tests for storage abstraction and AI service interfaces."""
         logger.info(f"🔗 Adding integration tests for {component_name}...")
-        
+
         try:
             # Create integration test file
             integration_test_content = f'''"""
@@ -396,29 +424,34 @@ class TestCrossServiceIntegration:
         # TODO: Test error recovery
         assert True  # Placeholder
 '''
-            
+
             # Write integration test file
-            integration_path = self.project_root / "tests" / "integration" / component_name.replace("-", "_") / "test_integration_extended.py"
+            integration_path = (
+                self.project_root
+                / "tests"
+                / "integration"
+                / component_name.replace("-", "_")
+                / "test_integration_extended.py"
+            )
             integration_path.parent.mkdir(parents=True, exist_ok=True)
-            
-            with open(integration_path, 'w') as f:
+
+            with open(integration_path, "w") as f:
                 f.write(integration_test_content)
-            
+
             logger.info(f"✅ Integration tests added for {component_name}")
-            
-            return {
-                "test_files_enhanced": 1,
-                "integration_tests_added": 9
-            }
-            
+
+            return {"test_files_enhanced": 1, "integration_tests_added": 9}
+
         except Exception as e:
             logger.error(f"Integration test addition failed for {component_name}: {e}")
             raise
-    
-    async def _add_performance_tests(self, component_name: str, config: Dict[str, Any]) -> Dict[str, Any]:
+
+    async def _add_performance_tests(
+        self, component_name: str, config: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Add performance tests for critical paths."""
         logger.info(f"⚡ Adding performance tests for {component_name}...")
-        
+
         try:
             # Create performance test file
             performance_test_content = f'''"""
@@ -542,26 +575,31 @@ class TestPerformanceCriticalPaths:
         # TODO: Test cache memory usage
         assert True  # Placeholder
 '''
-            
+
             # Write performance test file
-            performance_path = self.project_root / "tests" / "performance" / component_name.replace("-", "_") / "test_performance_extended.py"
+            performance_path = (
+                self.project_root
+                / "tests"
+                / "performance"
+                / component_name.replace("-", "_")
+                / "test_performance_extended.py"
+            )
             performance_path.parent.mkdir(parents=True, exist_ok=True)
-            
-            with open(performance_path, 'w') as f:
+
+            with open(performance_path, "w") as f:
                 f.write(performance_test_content)
-            
+
             logger.info(f"✅ Performance tests added for {component_name}")
-            
-            return {
-                "test_files_enhanced": 1,
-                "performance_tests_added": 7
-            }
-            
+
+            return {"test_files_enhanced": 1, "performance_tests_added": 7}
+
         except Exception as e:
             logger.error(f"Performance test addition failed for {component_name}: {e}")
             raise
 
-    async def _add_error_scenario_tests(self, component_name: str, config: Dict[str, Any]) -> Dict[str, Any]:
+    async def _add_error_scenario_tests(
+        self, component_name: str, config: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Add error scenario tests to improve coverage."""
         logger.info(f"❌ Adding error scenario tests for {component_name}...")
 
@@ -629,21 +667,26 @@ class TestErrorScenarios:
 '''
 
             # Write error scenario test file
-            error_path = self.project_root / "tests" / "error_scenarios" / component_name.replace("-", "_") / "test_error_scenarios.py"
+            error_path = (
+                self.project_root
+                / "tests"
+                / "error_scenarios"
+                / component_name.replace("-", "_")
+                / "test_error_scenarios.py"
+            )
             error_path.parent.mkdir(parents=True, exist_ok=True)
 
-            with open(error_path, 'w') as f:
+            with open(error_path, "w") as f:
                 f.write(error_test_content)
 
             logger.info(f"✅ Error scenario tests added for {component_name}")
 
-            return {
-                "test_files_enhanced": 1,
-                "edge_cases_added": 7
-            }
+            return {"test_files_enhanced": 1, "edge_cases_added": 7}
 
         except Exception as e:
-            logger.error(f"Error scenario test addition failed for {component_name}: {e}")
+            logger.error(
+                f"Error scenario test addition failed for {component_name}: {e}"
+            )
             raise
 
     async def _measure_final_coverage(self) -> Dict[str, Any]:
@@ -656,25 +699,30 @@ class TestErrorScenarios:
                 "constitutional-ai": 82.5,
                 "policy-governance": 81.3,
                 "governance-synthesis": 83.7,
-                "policy-engine": 80.9
+                "policy-engine": 80.9,
             }
 
-            overall_coverage = sum(final_coverage_by_component.values()) / len(final_coverage_by_component)
+            overall_coverage = sum(final_coverage_by_component.values()) / len(
+                final_coverage_by_component
+            )
             target_met = overall_coverage >= self.target_coverage
 
             components_meeting_target = sum(
-                1 for coverage in final_coverage_by_component.values()
+                1
+                for coverage in final_coverage_by_component.values()
                 if coverage >= self.target_coverage
             )
 
             logger.info(f"📊 Final overall coverage: {overall_coverage:.1f}%")
-            logger.info(f"📊 Components meeting 80% target: {components_meeting_target}/{len(final_coverage_by_component)}")
+            logger.info(
+                f"📊 Components meeting 80% target: {components_meeting_target}/{len(final_coverage_by_component)}"
+            )
 
             return {
                 "overall_coverage_achieved": overall_coverage,
                 "target_met": target_met,
                 "component_coverage": final_coverage_by_component,
-                "components_meeting_target": components_meeting_target
+                "components_meeting_target": components_meeting_target,
             }
 
         except Exception as e:
@@ -694,8 +742,13 @@ class TestErrorScenarios:
                 component: {
                     "baseline_coverage": config["current_coverage"],
                     "target_coverage": config["target_coverage"],
-                    "achieved_coverage": results.get("component_coverage", {}).get(component, 0.0),
-                    "improvement": results.get("component_coverage", {}).get(component, 0.0) - config["current_coverage"]
+                    "achieved_coverage": results.get("component_coverage", {}).get(
+                        component, 0.0
+                    ),
+                    "improvement": results.get("component_coverage", {}).get(
+                        component, 0.0
+                    )
+                    - config["current_coverage"],
                 }
                 for component, config in self.critical_components.items()
             },
@@ -703,31 +756,35 @@ class TestErrorScenarios:
                 "edge_case_tests": "Added comprehensive edge case coverage",
                 "integration_tests": "Added storage abstraction and AI service integration tests",
                 "performance_tests": "Added critical path performance validation",
-                "error_scenario_tests": "Added comprehensive error handling coverage"
+                "error_scenario_tests": "Added comprehensive error handling coverage",
             },
             "test_files_created": [
                 "tests/edge_cases/{component}/test_edge_cases.py",
                 "tests/integration/{component}/test_integration_extended.py",
                 "tests/performance/{component}/test_performance_extended.py",
-                "tests/error_scenarios/{component}/test_error_scenarios.py"
+                "tests/error_scenarios/{component}/test_error_scenarios.py",
             ],
             "coverage_metrics": {
-                "overall_coverage_achieved": results.get("overall_coverage_achieved", 0.0),
+                "overall_coverage_achieved": results.get(
+                    "overall_coverage_achieved", 0.0
+                ),
                 "target_coverage": self.target_coverage,
                 "target_met": results.get("target_met", False),
-                "components_meeting_target": results.get("components_meeting_target", 0),
-                "total_components": len(self.critical_components)
+                "components_meeting_target": results.get(
+                    "components_meeting_target", 0
+                ),
+                "total_components": len(self.critical_components),
             },
             "next_steps": [
                 "Run comprehensive test suite to validate coverage",
                 "Integrate coverage reporting into CI/CD pipeline",
                 "Set up coverage monitoring and alerts",
                 "Establish coverage maintenance procedures",
-                "Schedule regular coverage reviews"
-            ]
+                "Schedule regular coverage reviews",
+            ],
         }
 
-        with open(report_path, 'w') as f:
+        with open(report_path, "w") as f:
             json.dump(report, f, indent=2)
 
         logger.info(f"📊 Coverage achievement report saved to: {report_path}")
@@ -737,7 +794,7 @@ async def main():
     """Main coverage achievement function."""
     logging.basicConfig(
         level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
 
     achiever = TestCoverageAchiever()
@@ -750,15 +807,23 @@ async def main():
         print(f"📊 Edge cases added: {results['edge_cases_added']}")
         print(f"📊 Integration tests added: {results['integration_tests_added']}")
         print(f"📊 Performance tests added: {results['performance_tests_added']}")
-        print(f"📊 Overall coverage achieved: {results['overall_coverage_achieved']:.1f}%")
+        print(
+            f"📊 Overall coverage achieved: {results['overall_coverage_achieved']:.1f}%"
+        )
 
         # Check if target was met
-        if results['target_met']:
+        if results["target_met"]:
             print("🎯 TARGET ACHIEVED: ≥80% line coverage consistently!")
-            print(f"✅ {results['components_achieving_80_percent']}/{results['components_processed']} components meeting 80% target")
+            print(
+                f"✅ {results['components_achieving_80_percent']}/{results['components_processed']} components meeting 80% target"
+            )
         else:
-            print(f"⚠️  TARGET PARTIALLY MET: {results['overall_coverage_achieved']:.1f}% overall coverage")
-            print(f"📊 {results['components_achieving_80_percent']}/{results['components_processed']} components meeting 80% target")
+            print(
+                f"⚠️  TARGET PARTIALLY MET: {results['overall_coverage_achieved']:.1f}% overall coverage"
+            )
+            print(
+                f"📊 {results['components_achieving_80_percent']}/{results['components_processed']} components meeting 80% target"
+            )
 
         print("\n🎯 COVERAGE ENHANCEMENTS COMPLETED:")
         print("✅ Edge cases and error scenarios covered")
@@ -767,7 +832,7 @@ async def main():
         print("✅ Comprehensive unit test coverage expansion")
     else:
         print("❌ 80% coverage achievement failed!")
-        for error in results['errors']:
+        for error in results["errors"]:
             print(f"   - {error}")
         sys.exit(1)
 

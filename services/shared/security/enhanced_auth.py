@@ -192,7 +192,10 @@ class EnhancedJWTManager:
         return jwt.encode(payload, self.secret_key, algorithm=self.algorithm)
 
     def verify_token(
-        self, token: str, ip_address: Optional[str] = None, device_fingerprint: Optional[str] = None
+        self,
+        token: str,
+        ip_address: Optional[str] = None,
+        device_fingerprint: Optional[str] = None,
     ) -> Dict[str, Any]:
         """Verify and decode token with security checks."""
         try:
@@ -213,8 +216,10 @@ class EnhancedJWTManager:
             # Verify device fingerprint if enabled
             if self.enable_device_fingerprinting and device_fingerprint:
                 token_device_hash = payload.get("device")
-                if token_device_hash and token_device_hash != self._hash_device_fingerprint(
-                    device_fingerprint
+                if (
+                    token_device_hash
+                    and token_device_hash
+                    != self._hash_device_fingerprint(device_fingerprint)
                 ):
                     raise HTTPException(status_code=401, detail="Token device mismatch")
 
@@ -229,7 +234,10 @@ class EnhancedJWTManager:
         """Revoke a token."""
         try:
             payload = jwt.decode(
-                token, self.secret_key, algorithms=[self.algorithm], options={"verify_exp": False}
+                token,
+                self.secret_key,
+                algorithms=[self.algorithm],
+                options={"verify_exp": False},
             )
             jti = payload.get("jti")
             if jti:
@@ -239,11 +247,15 @@ class EnhancedJWTManager:
 
     def _hash_ip(self, ip_address: str) -> str:
         """Hash IP address for privacy."""
-        return hashlib.sha256(f"{ip_address}{self.secret_key}".encode()).hexdigest()[:16]
+        return hashlib.sha256(f"{ip_address}{self.secret_key}".encode()).hexdigest()[
+            :16
+        ]
 
     def _hash_device_fingerprint(self, fingerprint: str) -> str:
         """Hash device fingerprint."""
-        return hashlib.sha256(f"{fingerprint}{self.secret_key}".encode()).hexdigest()[:16]
+        return hashlib.sha256(f"{fingerprint}{self.secret_key}".encode()).hexdigest()[
+            :16
+        ]
 
 
 class MultiFactorAuthManager:
@@ -269,7 +281,10 @@ class MultiFactorAuthManager:
         return totp.verify(token, valid_window=window)
 
     def create_mfa_challenge(
-        self, user_id: str, methods: List[AuthenticationMethod], expires_in_minutes: int = 5
+        self,
+        user_id: str,
+        methods: List[AuthenticationMethod],
+        expires_in_minutes: int = 5,
     ) -> str:
         """Create MFA challenge."""
         challenge_id = str(uuid.uuid4())
@@ -490,7 +505,8 @@ class SessionManager:
         if len(user_session_ids) >= self.max_concurrent_sessions:
             # Remove oldest session
             oldest_session_id = min(
-                user_session_ids, key=lambda sid: self.active_sessions[sid]["created_at"]
+                user_session_ids,
+                key=lambda sid: self.active_sessions[sid]["created_at"],
             )
             self.revoke_session(oldest_session_id)
 
@@ -517,7 +533,9 @@ class SessionManager:
     def update_session_activity(self, session_id: str):
         """Update session last activity."""
         if session_id in self.active_sessions:
-            self.active_sessions[session_id]["last_activity"] = datetime.now(timezone.utc)
+            self.active_sessions[session_id]["last_activity"] = datetime.now(
+                timezone.utc
+            )
 
     def revoke_session(self, session_id: str):
         """Revoke a session."""

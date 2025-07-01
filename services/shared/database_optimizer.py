@@ -27,7 +27,9 @@ class DatabasePerformanceOptimizer:
         # ensures: Correct function execution
         # sha256: func_hash
         self.database_url = database_url
-        self.engine = async_engine if not database_url else create_async_engine(database_url)
+        self.engine = (
+            async_engine if not database_url else create_async_engine(database_url)
+        )
         self.performance_metrics = {}
         self.slow_queries = []
         self.optimization_history = []
@@ -119,7 +121,9 @@ class DatabasePerformanceOptimizer:
                 """
                     )
                 )
-                metrics["index_usage"] = [dict(row._mapping) for row in index_stats.fetchall()]
+                metrics["index_usage"] = [
+                    dict(row._mapping) for row in index_stats.fetchall()
+                ]
 
                 # Table statistics
                 table_stats = await conn.execute(
@@ -142,7 +146,9 @@ class DatabasePerformanceOptimizer:
                 """
                     )
                 )
-                metrics["table_stats"] = [dict(row._mapping) for row in table_stats.fetchall()]
+                metrics["table_stats"] = [
+                    dict(row._mapping) for row in table_stats.fetchall()
+                ]
 
                 # Database size information
                 db_size = await conn.execute(
@@ -285,8 +291,12 @@ class DatabasePerformanceOptimizer:
                         logger.info(f"Created index: {index_def['name']}")
 
                     except Exception as e:
-                        index_results["failed"].append({"name": index_def["name"], "error": str(e)})
-                        logger.warning(f"Failed to create index {index_def['name']}", error=str(e))
+                        index_results["failed"].append(
+                            {"name": index_def["name"], "error": str(e)}
+                        )
+                        logger.warning(
+                            f"Failed to create index {index_def['name']}", error=str(e)
+                        )
 
         except Exception as e:
             logger.error("Error creating performance indexes", error=str(e))
@@ -358,7 +368,9 @@ class DatabasePerformanceOptimizer:
 
         return optimization_results
 
-    async def identify_slow_queries(self, threshold_ms: int = 1000) -> list[dict[str, Any]]:
+    async def identify_slow_queries(
+        self, threshold_ms: int = 1000
+    ) -> list[dict[str, Any]]:
         """Identify and analyze slow queries."""
         slow_queries = []
 
@@ -393,11 +405,15 @@ class DatabasePerformanceOptimizer:
                         {"threshold": threshold_ms},
                     )
 
-                    slow_queries = [dict(row._mapping) for row in query_stats.fetchall()]
+                    slow_queries = [
+                        dict(row._mapping) for row in query_stats.fetchall()
+                    ]
 
                 except Exception:
                     # pg_stat_statements not available, use alternative method
-                    logger.warning("pg_stat_statements not available for slow query analysis")
+                    logger.warning(
+                        "pg_stat_statements not available for slow query analysis"
+                    )
 
         except Exception as e:
             logger.error("Error identifying slow queries", error=str(e))

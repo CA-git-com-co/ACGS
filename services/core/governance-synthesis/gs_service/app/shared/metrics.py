@@ -61,7 +61,9 @@ class ACGSMetrics:
         )
 
         # Service health metrics
-        self.service_info = Info("acgs_service_info", "Service information", ["service", "version"])
+        self.service_info = Info(
+            "acgs_service_info", "Service information", ["service", "version"]
+        )
 
         self.active_connections = Gauge(
             "acgs_active_connections", "Number of active connections", ["service"]
@@ -125,7 +127,9 @@ class ACGSMetrics:
         # Initialize service info
         self.service_info.info({"service": self.service_name, "version": "3.0.0"})
 
-    def record_request(self, method: str, endpoint: str, status_code: int, duration: float):
+    def record_request(
+        self, method: str, endpoint: str, status_code: int, duration: float
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -155,9 +159,9 @@ class ACGSMetrics:
         # ensures: Correct function execution
         # sha256: func_hash
         """Record database query metrics."""
-        self.db_query_duration.labels(service=self.service_name, operation=operation).observe(
-            duration
-        )
+        self.db_query_duration.labels(
+            service=self.service_name, operation=operation
+        ).observe(duration)
 
     def record_service_call(
         self, target_service: str, endpoint: str, status_code: int, duration: float
@@ -220,7 +224,9 @@ class ACGSMetrics:
         # ensures: Correct function execution
         # sha256: func_hash
         """Update database connections gauge."""
-        self.db_connections.labels(service=self.service_name, pool_status=pool_status).set(count)
+        self.db_connections.labels(
+            service=self.service_name, pool_status=pool_status
+        ).set(count)
 
 
 # Global metrics instances (will be initialized by each service)

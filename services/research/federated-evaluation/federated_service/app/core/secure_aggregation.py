@@ -106,7 +106,9 @@ class SecureAggregator:
         """Initialize the secure aggregator."""
         try:
             if not CRYPTOGRAPHY_AVAILABLE:
-                logger.warning("Cryptography library not available. Using mock implementations.")
+                logger.warning(
+                    "Cryptography library not available. Using mock implementations."
+                )
 
             # Generate aggregation keys
             await self._generate_aggregation_keys()
@@ -182,7 +184,9 @@ class SecureAggregator:
             Aggregated results with privacy guarantees
         """
         try:
-            aggregation_id = hashlib.sha256(f"agg_{time.time()}".encode()).hexdigest()[:16]
+            aggregation_id = hashlib.sha256(f"agg_{time.time()}".encode()).hexdigest()[
+                :16
+            ]
             start_time = time.time()
 
             logger.info(f"Starting secure aggregation: {aggregation_id}")
@@ -208,11 +212,15 @@ class SecureAggregator:
             elif self.config.method == AggregationMethod.SECURE_SUM:
                 aggregated = await self._secure_sum(filtered_results)
             elif self.config.method == AggregationMethod.DIFFERENTIAL_PRIVATE:
-                aggregated = await self._differential_private_aggregation(filtered_results)
+                aggregated = await self._differential_private_aggregation(
+                    filtered_results
+                )
             elif self.config.method == AggregationMethod.BYZANTINE_ROBUST:
                 aggregated = await self._byzantine_robust_aggregation(filtered_results)
             else:
-                raise ValueError(f"Unsupported aggregation method: {self.config.method}")
+                raise ValueError(
+                    f"Unsupported aggregation method: {self.config.method}"
+                )
 
             # Add aggregation metadata
             aggregated.update(
@@ -222,18 +230,23 @@ class SecureAggregator:
                     "participant_count": len(filtered_results),
                     "aggregation_time": time.time() - start_time,
                     "privacy_budget_used": self.config.privacy_budget,
-                    "byzantine_nodes_detected": len(successful_results) - len(filtered_results),
+                    "byzantine_nodes_detected": len(successful_results)
+                    - len(filtered_results),
                 }
             )
 
             # Update metrics
-            await self._update_aggregation_metrics(aggregation_id, time.time() - start_time, True)
+            await self._update_aggregation_metrics(
+                aggregation_id, time.time() - start_time, True
+            )
 
             logger.info(f"Secure aggregation completed: {aggregation_id}")
             return aggregated
 
         except Exception as e:
-            await self._update_aggregation_metrics("failed", time.time() - start_time, False)
+            await self._update_aggregation_metrics(
+                "failed", time.time() - start_time, False
+            )
             logger.error(f"Secure aggregation failed: {e}")
             raise
 
@@ -250,7 +263,9 @@ class SecureAggregator:
             metrics_by_node = {}
             for node_id, result in results.items():
                 metrics_by_node[node_id] = {
-                    "policy_compliance_score": result.get("policy_compliance_score", 0.0),
+                    "policy_compliance_score": result.get(
+                        "policy_compliance_score", 0.0
+                    ),
                     "execution_time_ms": result.get("execution_time_ms", 0.0),
                     "success": result.get("success", False),
                 }
@@ -282,14 +297,18 @@ class SecureAggregator:
                 for node_id in results:
                     filtered_results[node_id] = results[node_id]
 
-            logger.info(f"Byzantine detection: {len(results)} -> {len(filtered_results)} nodes")
+            logger.info(
+                f"Byzantine detection: {len(results)} -> {len(filtered_results)} nodes"
+            )
             return filtered_results
 
         except Exception as e:
             logger.error(f"Byzantine detection failed: {e}")
             return results  # Return original results if detection fails
 
-    async def _federated_averaging(self, results: dict[str, dict[str, Any]]) -> dict[str, Any]:
+    async def _federated_averaging(
+        self, results: dict[str, dict[str, Any]]
+    ) -> dict[str, Any]:
         """Perform federated averaging of evaluation results."""
         try:
             if not results:
@@ -328,13 +347,17 @@ class SecureAggregator:
                 aggregated["consistency_score"] = max(0.0, 1.0 - std_score)
 
             # Calculate overall success rate
-            success_count = sum(1 for result in results.values() if result.get("success", False))
+            success_count = sum(
+                1 for result in results.values() if result.get("success", False)
+            )
             aggregated["success_rate"] = success_count / len(results)
 
             # Add privacy score (placeholder - would implement actual privacy metrics)
             aggregated["privacy_score"] = 0.95  # High privacy due to secure aggregation
 
-            logger.debug(f"Federated averaging completed with {len(results)} participants")
+            logger.debug(
+                f"Federated averaging completed with {len(results)} participants"
+            )
             return aggregated
 
         except Exception as e:
@@ -460,7 +483,9 @@ class SecureAggregator:
             # Calculate robustness score
             byzantine_tolerance = len(results) * self.config.byzantine_tolerance
             aggregated["byzantine_tolerance"] = byzantine_tolerance
-            aggregated["robustness_score"] = min(1.0, len(results) / (2 * byzantine_tolerance + 1))
+            aggregated["robustness_score"] = min(
+                1.0, len(results) / (2 * byzantine_tolerance + 1)
+            )
 
             # Moderate privacy score (robustness vs privacy tradeoff)
             aggregated["privacy_score"] = 0.85
@@ -539,7 +564,9 @@ class SecureAggregator:
                         share_id=f"share_{i}",
                         encrypted_value=f"mock_encrypted_{i}".encode(),
                         participant_id=f"participant_{i}",
-                        verification_hash=hashlib.sha256(f"share_{i}".encode()).hexdigest(),
+                        verification_hash=hashlib.sha256(
+                            f"share_{i}".encode()
+                        ).hexdigest(),
                     )
                     shares.append(share)
                 return shares
@@ -596,7 +623,9 @@ class SecureAggregator:
             logger.error(f"Failed to encrypt share: {e}")
             return b"encryption_failed"
 
-    async def verify_aggregation_integrity(self, aggregated_result: dict[str, Any]) -> bool:
+    async def verify_aggregation_integrity(
+        self, aggregated_result: dict[str, Any]
+    ) -> bool:
         """Verify the integrity of aggregated results."""
         try:
             # Check required fields

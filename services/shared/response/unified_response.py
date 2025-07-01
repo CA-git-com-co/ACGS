@@ -65,7 +65,11 @@ class PaginationMetadata:
         has_previous = page > 1
 
         return cls(
-            page=page, limit=limit, total=total, has_next=has_next, has_previous=has_previous
+            page=page,
+            limit=limit,
+            total=total,
+            has_next=has_next,
+            has_previous=has_previous,
         )
 
 
@@ -102,7 +106,9 @@ class UnifiedResponse(BaseModel):
     pagination: Optional[PaginationMetadata] = Field(
         None, description="Pagination information for paginated responses"
     )
-    error: Optional[Dict[str, Any]] = Field(None, description="Error details when success=false")
+    error: Optional[Dict[str, Any]] = Field(
+        None, description="Error details when success=false"
+    )
 
     class Config:
         """Pydantic configuration."""
@@ -221,7 +227,10 @@ class ResponseBuilder:
             error_data = {"error_code": error_code, "details": data}
 
         return UnifiedResponse(
-            success=False, data=error_data, message=message, metadata=self._create_metadata()
+            success=False,
+            data=error_data,
+            message=message,
+            metadata=self._create_metadata(),
         )
 
     def paginated_success(
@@ -299,10 +308,16 @@ def create_dgm_response_builder() -> ResponseBuilder:
 # Utility functions for backward compatibility
 def create_legacy_response(data: Any, status: str = "success") -> Dict[str, Any]:
     """Create legacy response format for backward compatibility."""
-    return {"status": status, "data": data, "timestamp": datetime.now(timezone.utc).isoformat()}
+    return {
+        "status": status,
+        "data": data,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
 
 
-def migrate_legacy_response(legacy_response: Dict[str, Any], service_name: str) -> UnifiedResponse:
+def migrate_legacy_response(
+    legacy_response: Dict[str, Any], service_name: str
+) -> UnifiedResponse:
     """Migrate legacy response format to unified format."""
     builder = ResponseBuilder(service_name)
 
@@ -367,7 +382,13 @@ def validate_response_format(response_data: Dict[str, Any]) -> bool:
     # Validate pagination if present
     if "pagination" in response_data and response_data["pagination"] is not None:
         pagination = response_data["pagination"]
-        required_pagination_fields = ["page", "limit", "total", "has_next", "has_previous"]
+        required_pagination_fields = [
+            "page",
+            "limit",
+            "total",
+            "has_next",
+            "has_previous",
+        ]
 
         for field in required_pagination_fields:
             if field not in pagination:

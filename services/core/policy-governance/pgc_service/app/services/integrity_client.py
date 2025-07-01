@@ -5,7 +5,9 @@ import httpx
 from ..schemas import IntegrityPolicyRule  # Using the schema defined in pgc_service
 
 # Load environment variables
-INTEGRITY_SERVICE_URL = os.getenv("INTEGRITY_SERVICE_URL", "http://localhost:8002/api/v1")
+INTEGRITY_SERVICE_URL = os.getenv(
+    "INTEGRITY_SERVICE_URL", "http://localhost:8002/api/v1"
+)
 
 
 class IntegrityServiceClient:
@@ -43,12 +45,16 @@ class IntegrityServiceClient:
                 "/policies/", params={"status": "verified"}, headers=headers
             )
             response.raise_for_status()
-            data = response.json()  # Integrity service returns {"rules": [...], "total": ...}
+            data = (
+                response.json()
+            )  # Integrity service returns {"rules": [...], "total": ...}
 
             # Ensure 'rules' key exists and is a list
             rules_data = data.get("rules", [])
             if not isinstance(rules_data, list):
-                print(f"Integrity Client: Expected a list of rules, got {type(rules_data)}")
+                print(
+                    f"Integrity Client: Expected a list of rules, got {type(rules_data)}"
+                )
                 return []
 
             return [IntegrityPolicyRule(**rule) for rule in rules_data]
@@ -58,10 +64,14 @@ class IntegrityServiceClient:
             )
             return []
         except httpx.RequestError as e:
-            print(f"Integrity Client: Request error listing verified policy rules: {str(e)}")
+            print(
+                f"Integrity Client: Request error listing verified policy rules: {str(e)}"
+            )
             return []
         except Exception as e:  # Catch other potential errors like JSON decoding
-            print(f"Integrity Client: Unexpected error listing verified policy rules: {str(e)}")
+            print(
+                f"Integrity Client: Unexpected error listing verified policy rules: {str(e)}"
+            )
             return []
 
     async def close(self):
@@ -82,7 +92,9 @@ if __name__ == "__main__":
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
-        print(f"Testing Integrity Client for PGC Service against URL: {INTEGRITY_SERVICE_URL}")
+        print(
+            f"Testing Integrity Client for PGC Service against URL: {INTEGRITY_SERVICE_URL}"
+        )
         # This test requires integrity_service to be running and have some 'verified' rules.
 
         # Placeholder token for Integrity Service (if its placeholder auth expects one)
@@ -99,7 +111,9 @@ if __name__ == "__main__":
         #     print("\nNo verified policy rules found or an error occurred.")
 
         await integrity_service_client.close()
-        print("\nNote: Actual data fetching depends on running integrity_service and its data.")
+        print(
+            "\nNote: Actual data fetching depends on running integrity_service and its data."
+        )
         print(
             "If integrity_service is not running or has no 'verified' rules, an empty list is expected."
         )

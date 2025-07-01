@@ -48,7 +48,9 @@ class SpanFinishRequest(BaseModel):
     """Request model for finishing a trace span."""
 
     status: str = Field(default="ok", description="Span status (ok, error, timeout)")
-    logs: list[dict[str, Any]] = Field(default_factory=list, description="Span log entries")
+    logs: list[dict[str, Any]] = Field(
+        default_factory=list, description="Span log entries"
+    )
 
 
 class AlertTriggerRequest(BaseModel):
@@ -61,7 +63,9 @@ class AlertTriggerRequest(BaseModel):
     )
     source: str = Field(default="api", description="Source of the alert")
     metric_name: str | None = Field(None, description="Related metric name")
-    threshold_value: float | None = Field(None, description="Threshold that was exceeded")
+    threshold_value: float | None = Field(
+        None, description="Threshold that was exceeded"
+    )
     current_value: float | None = Field(None, description="Current metric value")
 
 
@@ -77,7 +81,9 @@ class ObservabilityResponse(BaseModel):
 @router.post("/metrics/record", response_model=ObservabilityResponse)
 async def record_metric(
     request: MetricRecordRequest,
-    observability_framework: ObservabilityFramework = Depends(get_observability_framework),
+    observability_framework: ObservabilityFramework = Depends(
+        get_observability_framework
+    ),
 ):
     """
     Record a performance metric.
@@ -117,7 +123,9 @@ async def record_metric(
 @router.post("/tracing/start-span", response_model=ObservabilityResponse)
 async def start_span(
     request: SpanStartRequest,
-    observability_framework: ObservabilityFramework = Depends(get_observability_framework),
+    observability_framework: ObservabilityFramework = Depends(
+        get_observability_framework
+    ),
 ):
     """
     Start a new trace span.
@@ -149,7 +157,9 @@ async def start_span(
 async def finish_span(
     span_id: str,
     request: SpanFinishRequest,
-    observability_framework: ObservabilityFramework = Depends(get_observability_framework),
+    observability_framework: ObservabilityFramework = Depends(
+        get_observability_framework
+    ),
 ):
     """
     Finish a trace span.
@@ -180,7 +190,9 @@ async def finish_span(
 @router.post("/alerts/trigger", response_model=ObservabilityResponse)
 async def trigger_alert(
     request: AlertTriggerRequest,
-    observability_framework: ObservabilityFramework = Depends(get_observability_framework),
+    observability_framework: ObservabilityFramework = Depends(
+        get_observability_framework
+    ),
 ):
     """
     Trigger a custom alert.
@@ -221,7 +233,9 @@ async def trigger_alert(
 @router.post("/alerts/{alert_id}/resolve", response_model=ObservabilityResponse)
 async def resolve_alert(
     alert_id: str,
-    observability_framework: ObservabilityFramework = Depends(get_observability_framework),
+    observability_framework: ObservabilityFramework = Depends(
+        get_observability_framework
+    ),
 ):
     """
     Resolve an active alert.
@@ -248,7 +262,9 @@ async def resolve_alert(
 
 @router.get("/metrics")
 async def get_metrics(
-    observability_framework: ObservabilityFramework = Depends(get_observability_framework),
+    observability_framework: ObservabilityFramework = Depends(
+        get_observability_framework
+    ),
 ):
     """
     Get current metrics buffer.
@@ -289,7 +305,9 @@ async def get_metrics(
 
 @router.get("/traces")
 async def get_active_traces(
-    observability_framework: ObservabilityFramework = Depends(get_observability_framework),
+    observability_framework: ObservabilityFramework = Depends(
+        get_observability_framework
+    ),
 ):
     """
     Get active trace spans.
@@ -329,7 +347,9 @@ async def get_active_traces(
 
 @router.get("/alerts")
 async def get_active_alerts(
-    observability_framework: ObservabilityFramework = Depends(get_observability_framework),
+    observability_framework: ObservabilityFramework = Depends(
+        get_observability_framework
+    ),
 ):
     """
     Get active alerts.
@@ -363,10 +383,18 @@ async def get_active_alerts(
                 "active_alerts": active_alerts,
                 "total_count": len(active_alerts),
                 "alert_levels": {
-                    "critical": len([a for a in active_alerts if a["alert_level"] == "critical"]),
-                    "error": len([a for a in active_alerts if a["alert_level"] == "error"]),
-                    "warning": len([a for a in active_alerts if a["alert_level"] == "warning"]),
-                    "info": len([a for a in active_alerts if a["alert_level"] == "info"]),
+                    "critical": len(
+                        [a for a in active_alerts if a["alert_level"] == "critical"]
+                    ),
+                    "error": len(
+                        [a for a in active_alerts if a["alert_level"] == "error"]
+                    ),
+                    "warning": len(
+                        [a for a in active_alerts if a["alert_level"] == "warning"]
+                    ),
+                    "info": len(
+                        [a for a in active_alerts if a["alert_level"] == "info"]
+                    ),
                 },
             },
         }
@@ -378,7 +406,9 @@ async def get_active_alerts(
 
 @router.get("/status")
 async def get_observability_status(
-    observability_framework: ObservabilityFramework = Depends(get_observability_framework),
+    observability_framework: ObservabilityFramework = Depends(
+        get_observability_framework
+    ),
 ):
     """
     Get observability framework status.
@@ -402,7 +432,9 @@ async def get_observability_status(
 
 @router.get("/health")
 async def observability_health_check(
-    observability_framework: ObservabilityFramework = Depends(get_observability_framework),
+    observability_framework: ObservabilityFramework = Depends(
+        get_observability_framework
+    ),
 ):
     """
     Health check for the observability framework.

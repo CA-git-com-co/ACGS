@@ -114,7 +114,9 @@ def upgrade():
         sa.Column("llm_model", sa.String(100), nullable=False),
         sa.Column("prompt_template", sa.String(100), nullable=False),
         sa.Column("failure_type", sa.String(50), nullable=True),
-        sa.Column("error_details", postgresql.JSONB(astext_type=sa.Text()), nullable=True),
+        sa.Column(
+            "error_details", postgresql.JSONB(astext_type=sa.Text()), nullable=True
+        ),
         sa.Column("recovery_strategy", sa.String(100), nullable=True),
         sa.Column("final_outcome", sa.String(50), nullable=False),
         sa.Column("prediction_accuracy", sa.Float, nullable=True),
@@ -142,7 +144,9 @@ def upgrade():
         ["principle_id"],
     )
 
-    op.create_index("idx_qec_synthesis_logs_timestamp", "qec_synthesis_attempt_logs", ["timestamp"])
+    op.create_index(
+        "idx_qec_synthesis_logs_timestamp", "qec_synthesis_attempt_logs", ["timestamp"]
+    )
 
     op.create_index(
         "idx_qec_synthesis_logs_failure_type",
@@ -203,7 +207,9 @@ def upgrade():
         ["calculation_timestamp"],
     )
 
-    op.create_index("idx_qec_distance_calc_score", "qec_distance_calculations", ["distance_score"])
+    op.create_index(
+        "idx_qec_distance_calc_score", "qec_distance_calculations", ["distance_score"]
+    )
 
     # Create new table for QEC error predictions
     op.create_table(
@@ -236,7 +242,9 @@ def upgrade():
     )
 
     # Create indexes for error predictions
-    op.create_index("idx_qec_error_pred_principle_id", "qec_error_predictions", ["principle_id"])
+    op.create_index(
+        "idx_qec_error_pred_principle_id", "qec_error_predictions", ["principle_id"]
+    )
 
     op.create_index(
         "idx_qec_error_pred_timestamp",
@@ -316,13 +324,19 @@ def downgrade():
     op.drop_table("qec_synthesis_attempt_logs")
 
     # Drop indexes from constitutional_principles
-    op.drop_index("idx_constitutional_principles_error_metadata_gin", "constitutional_principles")
+    op.drop_index(
+        "idx_constitutional_principles_error_metadata_gin", "constitutional_principles"
+    )
     op.drop_index(
         "idx_constitutional_principles_validation_criteria_gin",
         "constitutional_principles",
     )
-    op.drop_index("idx_constitutional_principles_score_updated_at", "constitutional_principles")
-    op.drop_index("idx_constitutional_principles_distance_score", "constitutional_principles")
+    op.drop_index(
+        "idx_constitutional_principles_score_updated_at", "constitutional_principles"
+    )
+    op.drop_index(
+        "idx_constitutional_principles_distance_score", "constitutional_principles"
+    )
 
     # Remove QEC enhancement columns from constitutional_principles
     op.drop_column("constitutional_principles", "recovery_strategies")

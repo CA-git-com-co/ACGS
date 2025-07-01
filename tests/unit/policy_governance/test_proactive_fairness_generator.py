@@ -4,18 +4,26 @@ Unit tests for services.core.policy-governance.pgc_service.app.core.proactive_fa
 
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
-from services.core.policy-governance.pgc_service.app.core.proactive_fairness_generator import FairnessMetric, ProtectedAttribute, FairnessConstraint, FairnessGenerationConfig, FairnessAssessment, BiasDetectionEngine, FairnessOptimizer, ProactiveFairnessGenerator
-
+from services.core.policy_governance.pgc_service.app.core.proactive_fairness_generator import (
+    FairnessMetric,
+    ProtectedAttribute,
+    FairnessConstraint,
+    FairnessGenerationConfig,
+    FairnessAssessment,
+    BiasDetectionEngine,
+    FairnessOptimizer,
+    ProactiveFairnessGenerator,
+)
 
 
 class TestFairnessMetric:
     """Test suite for FairnessMetric."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -24,12 +32,12 @@ class TestFairnessMetric:
 
 class TestProtectedAttribute:
     """Test suite for ProtectedAttribute."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -38,12 +46,12 @@ class TestProtectedAttribute:
 
 class TestFairnessConstraint:
     """Test suite for FairnessConstraint."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -52,12 +60,12 @@ class TestFairnessConstraint:
 
 class TestFairnessGenerationConfig:
     """Test suite for FairnessGenerationConfig."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -66,12 +74,12 @@ class TestFairnessGenerationConfig:
 
 class TestFairnessAssessment:
     """Test suite for FairnessAssessment."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -80,12 +88,12 @@ class TestFairnessAssessment:
 
 class TestBiasDetectionEngine:
     """Test suite for BiasDetectionEngine."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -94,12 +102,12 @@ class TestBiasDetectionEngine:
 
 class TestFairnessOptimizer:
     """Test suite for FairnessOptimizer."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -108,12 +116,12 @@ class TestFairnessOptimizer:
 
 class TestProactiveFairnessGenerator:
     """Test suite for ProactiveFairnessGenerator."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -124,6 +132,4 @@ class TestProactiveFairnessGenerator:
         # TODO: Implement test for get_fairness_metrics
         instance = ProactiveFairnessGenerator()
         # Add test implementation here
-        assert hasattr(instance, 'get_fairness_metrics')
-
-
+        assert hasattr(instance, "get_fairness_metrics")

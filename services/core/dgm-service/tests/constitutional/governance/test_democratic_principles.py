@@ -41,7 +41,9 @@ class TestDemocraticPrinciples:
             "created_at": datetime.utcnow().isoformat(),
         }
 
-    async def test_democratic_participation_requirements(self, sample_governance_proposal):
+    async def test_democratic_participation_requirements(
+        self, sample_governance_proposal
+    ):
         """Test democratic participation requirements validation."""
         proposal = sample_governance_proposal
 
@@ -57,7 +59,9 @@ class TestDemocraticPrinciples:
             expected_result = scenario["should_pass"]
 
             # Simulate participation check
-            min_participation = proposal["democratic_requirements"]["minimum_participation"]
+            min_participation = proposal["democratic_requirements"][
+                "minimum_participation"
+            ]
             meets_participation = participation_rate >= min_participation
 
             assert (
@@ -72,9 +76,21 @@ class TestDemocraticPrinciples:
         # Test various voting scenarios
         voting_scenarios = [
             {"votes_for": 80, "total_votes": 100, "should_pass": True},  # 80% approval
-            {"votes_for": 75, "total_votes": 100, "should_pass": True},  # Exactly at threshold
-            {"votes_for": 70, "total_votes": 100, "should_pass": False},  # Below threshold
-            {"votes_for": 60, "total_votes": 80, "should_pass": True},  # 75% of smaller group
+            {
+                "votes_for": 75,
+                "total_votes": 100,
+                "should_pass": True,
+            },  # Exactly at threshold
+            {
+                "votes_for": 70,
+                "total_votes": 100,
+                "should_pass": False,
+            },  # Below threshold
+            {
+                "votes_for": 60,
+                "total_votes": 80,
+                "should_pass": True,
+            },  # 75% of smaller group
         ]
 
         for scenario in voting_scenarios:
@@ -169,7 +185,9 @@ class TestDemocraticPrinciples:
             "votes": {"approve": 95, "reject": 20, "abstain": 5},
         }
 
-        participation_rate = voting_phase["votes_cast"] / voting_phase["eligible_voters"]
+        participation_rate = (
+            voting_phase["votes_cast"] / voting_phase["eligible_voters"]
+        )
         approval_rate = voting_phase["votes"]["approve"] / voting_phase["votes_cast"]
 
         assert participation_rate >= 0.6  # Minimum participation

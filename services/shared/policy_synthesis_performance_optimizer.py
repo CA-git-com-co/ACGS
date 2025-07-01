@@ -64,7 +64,9 @@ class PolicySynthesisPerformanceOptimizer:
     and consensus algorithm tuning for <2s response times.
     """
 
-    def __init__(self, optimization_level: OptimizationLevel = OptimizationLevel.ENHANCED):
+    def __init__(
+        self, optimization_level: OptimizationLevel = OptimizationLevel.ENHANCED
+    ):
         """Initialize performance optimizer."""
         self.optimization_level = optimization_level
         self.metrics = PerformanceMetrics()
@@ -192,9 +194,13 @@ class PolicySynthesisPerformanceOptimizer:
         try:
             # Parallel model execution
             if self.optimization_settings["enable_parallel_processing"]:
-                model_results = await self._execute_models_parallel(policy_request, models)
+                model_results = await self._execute_models_parallel(
+                    policy_request, models
+                )
             else:
-                model_results = await self._execute_models_sequential(policy_request, models)
+                model_results = await self._execute_models_sequential(
+                    policy_request, models
+                )
 
             # Fast consensus calculation
             consensus_result = await self._calculate_fast_consensus(
@@ -222,14 +228,18 @@ class PolicySynthesisPerformanceOptimizer:
         self, policy_request: dict[str, Any], models: list[str]
     ) -> dict[str, dict[str, Any]]:
         """Execute models in parallel with optimized concurrency."""
-        max_parallel = min(len(models), self.optimization_settings["max_parallel_models"])
+        max_parallel = min(
+            len(models), self.optimization_settings["max_parallel_models"]
+        )
 
         # Create semaphore for concurrency control
         semaphore = asyncio.Semaphore(max_parallel)
 
         async def execute_single_model(model_id: str) -> tuple[str, dict[str, Any]]:
             async with semaphore:
-                return model_id, await self._execute_optimized_model(model_id, policy_request)
+                return model_id, await self._execute_optimized_model(
+                    model_id, policy_request
+                )
 
         # Execute models with timeout
         timeout = self.optimization_settings["consensus_timeout"]
@@ -298,7 +308,9 @@ class PolicySynthesisPerformanceOptimizer:
             }
 
             # Cache result
-            await self._cache_result(cache_key, "model", result, config.cache_ttl_seconds)
+            await self._cache_result(
+                cache_key, "model", result, config.cache_ttl_seconds
+            )
 
             return result
 
@@ -306,7 +318,9 @@ class PolicySynthesisPerformanceOptimizer:
             logger.error(f"Model {model_id} execution failed: {e}")
             raise
 
-    async def _simulate_qwen3_32b_execution(self, request: dict[str, Any]) -> dict[str, Any]:
+    async def _simulate_qwen3_32b_execution(
+        self, request: dict[str, Any]
+    ) -> dict[str, Any]:
         """Simulate optimized Qwen3-32B execution."""
         # Simulate fast execution with streaming
         await asyncio.sleep(0.8)  # Optimized from 2.0s
@@ -332,7 +346,9 @@ class PolicySynthesisPerformanceOptimizer:
             ],
         }
 
-    async def _simulate_deepseek_chat_execution(self, request: dict[str, Any]) -> dict[str, Any]:
+    async def _simulate_deepseek_chat_execution(
+        self, request: dict[str, Any]
+    ) -> dict[str, Any]:
         """Simulate optimized DeepSeek Chat v3 execution."""
         await asyncio.sleep(0.6)  # Optimized from 1.8s
 
@@ -349,7 +365,9 @@ class PolicySynthesisPerformanceOptimizer:
             "processing_optimizations": ["optimized_inference", "batch_processing"],
         }
 
-    async def _simulate_qwen3_235b_execution(self, request: dict[str, Any]) -> dict[str, Any]:
+    async def _simulate_qwen3_235b_execution(
+        self, request: dict[str, Any]
+    ) -> dict[str, Any]:
         """Simulate optimized Qwen3-235B execution."""
         await asyncio.sleep(1.2)  # Optimized from 3.0s
 
@@ -369,7 +387,9 @@ class PolicySynthesisPerformanceOptimizer:
             ],
         }
 
-    async def _simulate_deepseek_r1_execution(self, request: dict[str, Any]) -> dict[str, Any]:
+    async def _simulate_deepseek_r1_execution(
+        self, request: dict[str, Any]
+    ) -> dict[str, Any]:
         """Simulate optimized DeepSeek R1 execution."""
         await asyncio.sleep(0.9)  # Optimized from 2.5s
 
@@ -389,7 +409,9 @@ class PolicySynthesisPerformanceOptimizer:
             ],
         }
 
-    async def _simulate_generic_model_execution(self, request: dict[str, Any]) -> dict[str, Any]:
+    async def _simulate_generic_model_execution(
+        self, request: dict[str, Any]
+    ) -> dict[str, Any]:
         """Simulate generic model execution."""
         await asyncio.sleep(1.0)
 
@@ -453,9 +475,13 @@ class PolicySynthesisPerformanceOptimizer:
             final_confidence = 0.0
 
         # Calculate agreement score
-        compliance_scores = [r.get("compliance_score", 0.0) for r in model_results.values()]
+        compliance_scores = [
+            r.get("compliance_score", 0.0) for r in model_results.values()
+        ]
         agreement_score = (
-            1.0 - (max(compliance_scores) - min(compliance_scores)) if compliance_scores else 0.0
+            1.0 - (max(compliance_scores) - min(compliance_scores))
+            if compliance_scores
+            else 0.0
         )
 
         consensus_time = time.time() - start_time
@@ -487,7 +513,9 @@ class PolicySynthesisPerformanceOptimizer:
         request_id = self._generate_request_id(request)
         return f"{model_id}:{request_id}"
 
-    async def _get_cached_result(self, cache_key: str, cache_type: str) -> dict[str, Any] | None:
+    async def _get_cached_result(
+        self, cache_key: str, cache_type: str
+    ) -> dict[str, Any] | None:
         """Get cached result if valid."""
         if cache_key not in self.synthesis_cache:
             return None
@@ -540,7 +568,8 @@ class PolicySynthesisPerformanceOptimizer:
         # Update average response time
         if self.metrics.total_requests > 0:
             self.metrics.avg_response_time = (
-                self.metrics.avg_response_time * (self.metrics.total_requests - 1) + processing_time
+                self.metrics.avg_response_time * (self.metrics.total_requests - 1)
+                + processing_time
             ) / self.metrics.total_requests
 
     async def get_performance_report(self) -> dict[str, Any]:
@@ -557,7 +586,8 @@ class PolicySynthesisPerformanceOptimizer:
             "success_rate": success_rate,
             "target_response_time_met": self.metrics.avg_response_time < 2.0,
             "model_configurations": {
-                model_id: asdict(config) for model_id, config in self.model_configs.items()
+                model_id: asdict(config)
+                for model_id, config in self.model_configs.items()
             },
             "optimization_settings": self.optimization_settings,
             "cache_statistics": {

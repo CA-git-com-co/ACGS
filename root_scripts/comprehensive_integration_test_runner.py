@@ -94,7 +94,9 @@ class ComprehensiveIntegrationTestRunner:
         print("🚀 ACGS-PGP Step 6: Comprehensive Integration Testing")
         print("=" * 70)
         print(f"Test Execution ID: {self.results['test_execution_id']}")
-        print(f"Start Time: {self.start_time.strftime('%Y-%m-%d %H:%M:%S timezone.utc')}")
+        print(
+            f"Start Time: {self.start_time.strftime('%Y-%m-%d %H:%M:%S timezone.utc')}"
+        )
         print()
 
         try:

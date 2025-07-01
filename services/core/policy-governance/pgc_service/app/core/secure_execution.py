@@ -23,10 +23,14 @@ async def apply_pet_transformation(input_data: PETContextInput) -> PETContextOut
 
     if input_data.transformation == "homomorphic_encryption":
         # Simulate encrypting the data (e.g., replacing values with "[encrypted_value]")
-        processed_data = {key: f"[encrypted_{value}]" for key, value in input_data.data.items()}
+        processed_data = {
+            key: f"[encrypted_{value}]" for key, value in input_data.data.items()
+        }
     elif input_data.transformation == "differential_privacy":
         # Simulate adding noise or generalizing data
-        processed_data = {key: f"[dp_protected_{value}]" for key, value in input_data.data.items()}
+        processed_data = {
+            key: f"[dp_protected_{value}]" for key, value in input_data.data.items()
+        }
         # Add some mock noise if data is numeric
         for key, value in input_data.data.items():
             if isinstance(value, int | float):
@@ -40,7 +44,9 @@ async def apply_pet_transformation(input_data: PETContextInput) -> PETContextOut
 
     else:
         status = "error"
-        processed_data = {"error": f"Unknown PET transformation: {input_data.transformation}"}
+        processed_data = {
+            "error": f"Unknown PET transformation: {input_data.transformation}"
+        }
 
     print(f"Mock PET: Output data: {str(processed_data)[:100]}...")
     return PETContextOutput(processed_data=processed_data, status=status)
@@ -53,18 +59,24 @@ async def execute_in_mock_tee(input_context: TEEContextInput) -> TEEContextOutpu
     """
     Mocks executing code within a Trusted Execution Environment.
     """
-    print(f"Mock TEE: Preparing to execute code for data: {str(input_context.data)[:100]}...")
+    print(
+        f"Mock TEE: Preparing to execute code for data: {str(input_context.data)[:100]}..."
+    )
     print(f"Mock TEE: Code to execute (reference): {input_context.code_to_execute}")
 
     # Simulate execution based on the 'code_to_execute' reference
     result: Any = None
     status = "success"
-    mock_attestation = "mock_tee_attestation_report_for_" + input_context.code_to_execute
+    mock_attestation = (
+        "mock_tee_attestation_report_for_" + input_context.code_to_execute
+    )
 
     if input_context.code_to_execute == "sensitive_data_aggregation":
         # Example: Aggregate some numeric values from the input data
         try:
-            total_sum = sum(v for v in input_context.data.values() if isinstance(v, int | float))
+            total_sum = sum(
+                v for v in input_context.data.values() if isinstance(v, int | float)
+            )
             result = {"aggregated_sum": total_sum}
         except Exception as e:
             result = {"error": f"Failed aggregation: {str(e)}"}
@@ -79,12 +91,16 @@ async def execute_in_mock_tee(input_context: TEEContextInput) -> TEEContextOutpu
         else:
             result = {"decision": "deny", "reason": "User is not admin (TEE check)"}
     else:
-        result = {"error": f"Unknown code reference for TEE: {input_context.code_to_execute}"}
+        result = {
+            "error": f"Unknown code reference for TEE: {input_context.code_to_execute}"
+        }
         status = "error"
         mock_attestation = None
 
     print(f"Mock TEE: Execution result: {result}")
-    return TEEContextOutput(result=result, attestation_report=mock_attestation, status=status)
+    return TEEContextOutput(
+        result=result, attestation_report=mock_attestation, status=status
+    )
 
 
 # Example Usage

@@ -284,7 +284,9 @@ def handle_service_error(
 
     # If already an ACGS exception, add context and return
     if isinstance(error, ACGSException):
-        error.details.update({"service": service_name, "operation": operation, **context})
+        error.details.update(
+            {"service": service_name, "operation": operation, **context}
+        )
         return error
 
     # Convert common exception types
@@ -383,7 +385,9 @@ def log_error(
         logger.error(f"Unhandled error: {str(error)}", extra=context, exc_info=True)
 
 
-def create_error_response(error: Exception, include_traceback: bool = False) -> dict[str, Any]:
+def create_error_response(
+    error: Exception, include_traceback: bool = False
+) -> dict[str, Any]:
     """
     Create standardized error response for API endpoints.
 
@@ -396,7 +400,9 @@ def create_error_response(error: Exception, include_traceback: bool = False) -> 
     """
     if isinstance(error, ACGSException):
         response = error.to_dict()
-        if not include_traceback and "traceback" in response["error"].get("details", {}):
+        if not include_traceback and "traceback" in response["error"].get(
+            "details", {}
+        ):
             del response["error"]["details"]["traceback"]
         return response
 

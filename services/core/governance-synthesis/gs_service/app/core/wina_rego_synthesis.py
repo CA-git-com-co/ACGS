@@ -118,14 +118,18 @@ class WINARegoSynthesizer:
         # Initialize WINA components
         if enable_wina:
             try:
-                self.wina_config, self.wina_integration_config = load_wina_config_from_env()
+                self.wina_config, self.wina_integration_config = (
+                    load_wina_config_from_env()
+                )
                 self.wina_integrator = WINAModelIntegrator(
                     self.wina_config, self.wina_integration_config
                 )
                 self.wina_metrics = WINAMetrics(self.wina_config)
                 logger.info("WINA optimization enabled for Rego policy synthesis")
             except Exception as e:
-                logger.warning(f"Failed to initialize WINA: {e}. Disabling WINA optimization.")
+                logger.warning(
+                    f"Failed to initialize WINA: {e}. Disabling WINA optimization."
+                )
                 self.enable_wina = False
 
         # Initialize LLM components
@@ -136,7 +140,9 @@ class WINARegoSynthesizer:
         if ALPHAEVOLVE_AVAILABLE:
             try:
                 llm_service = get_llm_service("real")  # Use real LLM for production
-                self.alphaevolve_synthesizer = LLMPolicyGenerator(llm_service=llm_service)
+                self.alphaevolve_synthesizer = LLMPolicyGenerator(
+                    llm_service=llm_service
+                )
                 logger.info("AlphaEvolve PolicySynthesizer initialized")
             except Exception as e:
                 logger.warning(f"Failed to initialize AlphaEvolve synthesizer: {e}")
@@ -187,8 +193,10 @@ class WINARegoSynthesizer:
             )
 
             # Phase 1: Constitutional prompting with WINA optimization
-            constitutional_synthesis_input = await self._prepare_constitutional_synthesis_input(
-                synthesis_goal, constitutional_principles, constraints, context_data
+            constitutional_synthesis_input = (
+                await self._prepare_constitutional_synthesis_input(
+                    synthesis_goal, constitutional_principles, constraints, context_data
+                )
             )
 
             # Phase 2: WINA-optimized constitutional synthesis
@@ -240,7 +248,8 @@ class WINARegoSynthesizer:
                 synthesis_metrics=synthesis_metrics,
                 validation_result=validation_result,
                 warnings=warnings,
-                success=validation_result.get("is_valid", False) and constitutional_compliance,
+                success=validation_result.get("is_valid", False)
+                and constitutional_compliance,
             )
 
             # Update tracking
@@ -370,7 +379,9 @@ class WINARegoSynthesizer:
             )
 
             # Synthesize with AlphaEvolve
-            policy_suggestion = self.alphaevolve_synthesizer.synthesize_policy(alphaevolve_input)
+            policy_suggestion = self.alphaevolve_synthesizer.synthesize_policy(
+                alphaevolve_input
+            )
 
             if policy_suggestion:
                 logger.info(
@@ -516,11 +527,16 @@ default deny = false
 
             # Check for basic Rego syntax elements
             required_elements = ["package ", "default ", "{", "}"]
-            missing_elements = [elem for elem in required_elements if elem not in rego_content]
+            missing_elements = [
+                elem for elem in required_elements if elem not in rego_content
+            ]
 
             if missing_elements:
                 validation_result["warnings"].extend(
-                    [f"Missing Rego element: {elem.strip()}" for elem in missing_elements]
+                    [
+                        f"Missing Rego element: {elem.strip()}"
+                        for elem in missing_elements
+                    ]
                 )
 
             # Basic syntax validation (simplified)
@@ -540,7 +556,8 @@ default deny = false
 
             # Overall validation
             validation_result["is_valid"] = (
-                validation_result["syntax_valid"] and len(validation_result["errors"]) == 0
+                validation_result["syntax_valid"]
+                and len(validation_result["errors"]) == 0
             )
 
             logger.debug(f"Rego validation result: {validation_result}")
@@ -569,7 +586,9 @@ default deny = false
             # Check if policy content references constitutional principles
             principle_references = 0
             for principle in constitutional_principles:
-                principle_text = principle.get("description", "") or principle.get("text", "")
+                principle_text = principle.get("description", "") or principle.get(
+                    "text", ""
+                )
                 if principle_text:
                     # Simple keyword matching (could be enhanced with semantic analysis)
                     keywords = principle_text.lower().split()[:5]  # Take first 5 words
@@ -579,7 +598,9 @@ default deny = false
                             break
 
             # Constitutional compliance based on principle integration
-            principle_compliance = principle_references > 0 or len(constitutional_principles) == 0
+            principle_compliance = (
+                principle_references > 0 or len(constitutional_principles) == 0
+            )
             compliance_checks.append(principle_compliance)
 
             # Check for basic policy structure compliance
@@ -589,7 +610,9 @@ default deny = false
             compliance_checks.append(structure_compliance)
 
             # Overall compliance
-            constitutional_compliance = all(compliance_checks) if compliance_checks else True
+            constitutional_compliance = (
+                all(compliance_checks) if compliance_checks else True
+            )
 
             logger.debug(
                 f"Constitutional compliance: {constitutional_compliance}, "
@@ -618,7 +641,9 @@ default deny = false
 
         if wina_synthesis_result.wina_optimization:
             gflops_reduction = wina_synthesis_result.wina_optimization.gflops_reduction
-            accuracy_preservation = wina_synthesis_result.wina_optimization.accuracy_preservation
+            accuracy_preservation = (
+                wina_synthesis_result.wina_optimization.accuracy_preservation
+            )
             optimization_applied = True
 
         # Calculate policy complexity score (simplified)
@@ -657,15 +682,19 @@ default deny = false
             # Update running averages
             if result.wina_optimization:
                 current_gflops = self._performance_metrics["average_gflops_reduction"]
-                current_accuracy = self._performance_metrics["average_accuracy_preservation"]
+                current_accuracy = self._performance_metrics[
+                    "average_accuracy_preservation"
+                ]
 
                 n = self._performance_metrics["wina_optimized_syntheses"]
                 if n > 0:
                     self._performance_metrics["average_gflops_reduction"] = (
-                        current_gflops * (n - 1) + result.synthesis_metrics.gflops_reduction
+                        current_gflops * (n - 1)
+                        + result.synthesis_metrics.gflops_reduction
                     ) / n
                     self._performance_metrics["average_accuracy_preservation"] = (
-                        current_accuracy * (n - 1) + result.synthesis_metrics.accuracy_preservation
+                        current_accuracy * (n - 1)
+                        + result.synthesis_metrics.accuracy_preservation
                     ) / n
 
             # Update success rates
@@ -673,14 +702,18 @@ default deny = false
                 1 for r in self._synthesis_history if r.constitutional_compliance
             )
             valid_syntheses = sum(
-                1 for r in self._synthesis_history if r.synthesis_metrics.rego_validation_success
+                1
+                for r in self._synthesis_history
+                if r.synthesis_metrics.rego_validation_success
             )
 
             total = len(self._synthesis_history)
             self._performance_metrics["constitutional_compliance_rate"] = (
                 compliant_syntheses / total
             )
-            self._performance_metrics["rego_validation_success_rate"] = valid_syntheses / total
+            self._performance_metrics["rego_validation_success_rate"] = (
+                valid_syntheses / total
+            )
 
             # Log performance update
             logger.debug(
@@ -903,9 +936,7 @@ class WINARegoSynthesisIntegration:
         Returns:
             WINARegoSynthesisResult
         """
-        synthesis_goal = (
-            f"Generate governance rules for evolutionary computation: {optimization_objective}"
-        )
+        synthesis_goal = f"Generate governance rules for evolutionary computation: {optimization_objective}"
 
         # Create constitutional principles from constraints
         constitutional_principles = [

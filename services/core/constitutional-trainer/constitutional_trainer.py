@@ -108,7 +108,9 @@ class ConstitutionalTrainer:
             logger.error(f"Failed to initialize model {self.model_name}: {e}")
             raise
 
-    def _configure_lora(self, lora_config: Optional[Dict[str, Any]] = None) -> LoraConfig:
+    def _configure_lora(
+        self, lora_config: Optional[Dict[str, Any]] = None
+    ) -> LoraConfig:
         """Configure LoRA for parameter-efficient fine-tuning."""
         default_config = {
             "r": 16,
@@ -154,7 +156,9 @@ class ConstitutionalTrainer:
                 if progress_callback:
                     await progress_callback(0.3)
 
-                self.privacy_engine = ConstitutionalPrivacyEngine(self.model, self.config)
+                self.privacy_engine = ConstitutionalPrivacyEngine(
+                    self.model, self.config
+                )
                 logger.info("Differential privacy enabled for constitutional training")
 
             # Phase 4: Execute constitutional training with critique-revision
@@ -200,8 +204,8 @@ class ConstitutionalTrainer:
                 response = item["response"]
 
                 # Apply critique-revision cycle to improve constitutional compliance
-                improved_response, compliance_score = await self._critique_revision_cycle(
-                    prompt, response
+                improved_response, compliance_score = (
+                    await self._critique_revision_cycle(prompt, response)
                 )
 
                 # Only include data that meets constitutional threshold
@@ -228,10 +232,14 @@ class ConstitutionalTrainer:
                 logger.error(f"Failed to process training item {i}: {e}")
                 continue
 
-        logger.info(f"Processed {len(processed_data)}/{len(training_data)} training items")
+        logger.info(
+            f"Processed {len(processed_data)}/{len(training_data)} training items"
+        )
         return processed_data
 
-    async def _critique_revision_cycle(self, prompt: str, response: str) -> Tuple[str, float]:
+    async def _critique_revision_cycle(
+        self, prompt: str, response: str
+    ) -> Tuple[str, float]:
         """Execute critique-revision cycle for constitutional compliance improvement."""
         current_response = response
         best_score = 0.0
@@ -306,7 +314,9 @@ class ConstitutionalTrainer:
         Provide a revised response that maintains helpfulness while ensuring constitutional compliance:
         """
 
-        return await self._generate_response(revision_prompt, max_tokens=self.config.max_new_tokens)
+        return await self._generate_response(
+            revision_prompt, max_tokens=self.config.max_new_tokens
+        )
 
     async def _generate_response(self, prompt: str, max_tokens: int = None) -> str:
         """Generate response using the model."""
@@ -315,7 +325,11 @@ class ConstitutionalTrainer:
 
         try:
             inputs = self.tokenizer(
-                prompt, return_tensors="pt", truncation=True, max_length=2048, padding=True
+                prompt,
+                return_tensors="pt",
+                truncation=True,
+                max_length=2048,
+                padding=True,
             )
 
             # Move to device
@@ -409,7 +423,9 @@ class ConstitutionalTrainer:
         training_metrics = {
             "training_loss": training_result.training_loss,
             "train_runtime": training_result.metrics.get("train_runtime", 0),
-            "train_samples_per_second": training_result.metrics.get("train_samples_per_second", 0),
+            "train_samples_per_second": training_result.metrics.get(
+                "train_samples_per_second", 0
+            ),
             "constitutional_compliance_avg": (
                 sum(self.training_metrics["constitutional_compliance_scores"])
                 / len(self.training_metrics["constitutional_compliance_scores"])
@@ -449,7 +465,11 @@ class ConstitutionalTrainer:
 
             # Tokenize
             tokenized = self.tokenizer(
-                texts, truncation=True, padding=False, max_length=2048, return_tensors=None
+                texts,
+                truncation=True,
+                padding=False,
+                max_length=2048,
+                return_tensors=None,
             )
 
             # Set labels for causal LM (labels = input_ids)
@@ -465,7 +485,9 @@ class ConstitutionalTrainer:
         }
 
         dataset = Dataset.from_dict(dataset_dict)
-        dataset = dataset.map(tokenize_function, batched=True, remove_columns=dataset.column_names)
+        dataset = dataset.map(
+            tokenize_function, batched=True, remove_columns=dataset.column_names
+        )
 
         return dataset
 
@@ -483,13 +505,17 @@ class ConstitutionalTrainer:
 
             for prompt in test_prompts:
                 response = await self._generate_response(prompt)
-                is_compliant, score, violations = await self.validator.validate_response(
-                    response, {"prompt": prompt, "validation_type": "final"}
+                is_compliant, score, violations = (
+                    await self.validator.validate_response(
+                        response, {"prompt": prompt, "validation_type": "final"}
+                    )
                 )
                 compliance_scores.append(score)
 
             final_score = (
-                sum(compliance_scores) / len(compliance_scores) if compliance_scores else 0.0
+                sum(compliance_scores) / len(compliance_scores)
+                if compliance_scores
+                else 0.0
             )
             return final_score
 
@@ -509,7 +535,9 @@ class ConstitutionalTrainer:
 
         try:
             async with aiohttp.ClientSession() as session:
-                await session.post(f"{self.config.audit_engine_url}/api/v1/log", json=audit_event)
+                await session.post(
+                    f"{self.config.audit_engine_url}/api/v1/log", json=audit_event
+                )
         except Exception as e:
             logger.error(f"Failed to log training completion: {e}")
 
@@ -525,6 +553,8 @@ class ConstitutionalTrainer:
 
         try:
             async with aiohttp.ClientSession() as session:
-                await session.post(f"{self.config.audit_engine_url}/api/v1/log", json=audit_event)
+                await session.post(
+                    f"{self.config.audit_engine_url}/api/v1/log", json=audit_event
+                )
         except Exception as e:
             logger.error(f"Failed to log training failure: {e}")

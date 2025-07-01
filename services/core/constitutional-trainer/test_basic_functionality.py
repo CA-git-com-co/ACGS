@@ -67,9 +67,13 @@ class MockResponse:
 
 
 # Patch imports for testing
-sys.modules["aioredis"] = type("MockModule", (), {"from_url": lambda url: MockRedis()})()
+sys.modules["aioredis"] = type(
+    "MockModule", (), {"from_url": lambda url: MockRedis()}
+)()
 sys.modules["aiohttp"] = type(
-    "MockModule", (), {"ClientSession": MockClientSession, "ClientTimeout": lambda **kwargs: None}
+    "MockModule",
+    (),
+    {"ClientSession": MockClientSession, "ClientTimeout": lambda **kwargs: None},
 )()
 sys.modules["torch"] = type(
     "MockModule",
@@ -154,7 +158,10 @@ sys.modules["opacus"] = type(
                 "ModuleValidator": type(
                     "ModuleValidator",
                     (),
-                    {"validate": lambda model, strict=True: [], "fix": lambda model: None},
+                    {
+                        "validate": lambda model, strict=True: [],
+                        "fix": lambda model: None,
+                    },
                 )()
             },
         )(),
@@ -258,7 +265,9 @@ def test_metrics():
     # Test session tracking
     metrics.record_training_session_start("test-session-001", "test-model")
     metrics.record_training_session_end(
-        "test-session-001", True, {"constitutional_compliance_score": 0.96, "training_loss": 0.15}
+        "test-session-001",
+        True,
+        {"constitutional_compliance_score": 0.96, "training_loss": 0.15},
     )
 
     # Test metrics generation
@@ -311,7 +320,9 @@ async def test_constitutional_trainer(config):
         return trainer
 
     except Exception as e:
-        print(f"⚠️ Constitutional trainer test had expected issues (missing dependencies): {e}")
+        print(
+            f"⚠️ Constitutional trainer test had expected issues (missing dependencies): {e}"
+        )
         return None
 
 
@@ -336,7 +347,9 @@ def test_configuration_validation():
 
     # Test valid configuration
     config = ConstitutionalConfig(
-        constitutional_hash="cdd01ef066bc6cf2", compliance_threshold=0.95, max_critique_iterations=3
+        constitutional_hash="cdd01ef066bc6cf2",
+        compliance_threshold=0.95,
+        max_critique_iterations=3,
     )
 
     assert config.compliance_threshold == 0.95

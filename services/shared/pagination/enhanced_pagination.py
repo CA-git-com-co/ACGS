@@ -76,7 +76,9 @@ class FilterField(BaseModel):
 
     field: str = Field(..., description="Field name to filter by")
     operator: FilterOperator = Field(FilterOperator.EQ, description="Filter operator")
-    value: Union[str, int, float, bool, List[Any], None] = Field(..., description="Filter value")
+    value: Union[str, int, float, bool, List[Any], None] = Field(
+        ..., description="Filter value"
+    )
 
     @validator("field")
     def validate_field_name(cls, v):
@@ -91,7 +93,9 @@ class PaginationParams(BaseModel):
 
     page: int = Field(1, ge=1, description="Page number (1-based)")
     limit: int = Field(50, ge=1, le=1000, description="Items per page")
-    offset: Optional[int] = Field(None, ge=0, description="Offset for cursor-based pagination")
+    offset: Optional[int] = Field(
+        None, ge=0, description="Offset for cursor-based pagination"
+    )
 
     @property
     def skip(self) -> int:
@@ -136,10 +140,14 @@ class PaginatedResponse(BaseModel, Generic[T]):
 
     data: List[T] = Field(..., description="Paginated data items")
     pagination: PaginationMetadata = Field(..., description="Pagination metadata")
-    filters_applied: Optional[List[FilterField]] = Field(None, description="Applied filters")
+    filters_applied: Optional[List[FilterField]] = Field(
+        None, description="Applied filters"
+    )
     sort_applied: Optional[List[SortField]] = Field(None, description="Applied sorting")
     search_applied: Optional[SearchParams] = Field(None, description="Applied search")
-    total_query_time_ms: Optional[float] = Field(None, description="Query execution time")
+    total_query_time_ms: Optional[float] = Field(
+        None, description="Query execution time"
+    )
 
 
 class EnhancedPaginator:
@@ -191,12 +199,16 @@ class EnhancedPaginator:
 
             # Validate field is allowed
             if self.allowed_sort_fields and field not in self.allowed_sort_fields:
-                raise HTTPException(status_code=400, detail=f"Sorting by '{field}' is not allowed")
+                raise HTTPException(
+                    status_code=400, detail=f"Sorting by '{field}' is not allowed"
+                )
 
             try:
                 sort_direction = SortDirection(direction.lower())
             except ValueError:
-                raise HTTPException(status_code=400, detail=f"Invalid sort direction: {direction}")
+                raise HTTPException(
+                    status_code=400, detail=f"Invalid sort direction: {direction}"
+                )
 
             sort_fields.append(SortField(field=field, direction=sort_direction))
 
@@ -216,7 +228,9 @@ class EnhancedPaginator:
         for filter_spec in filters.split(","):
             parts = filter_spec.split(":", 2)
             if len(parts) != 3:
-                raise HTTPException(status_code=400, detail=f"Invalid filter format: {filter_spec}")
+                raise HTTPException(
+                    status_code=400, detail=f"Invalid filter format: {filter_spec}"
+                )
 
             field, operator, value = parts
 
@@ -229,7 +243,9 @@ class EnhancedPaginator:
             try:
                 filter_operator = FilterOperator(operator)
             except ValueError:
-                raise HTTPException(status_code=400, detail=f"Invalid filter operator: {operator}")
+                raise HTTPException(
+                    status_code=400, detail=f"Invalid filter operator: {operator}"
+                )
 
             # Parse value based on operator
             parsed_value = self._parse_filter_value(value, filter_operator)
@@ -258,16 +274,21 @@ class EnhancedPaginator:
                 invalid_fields = set(fields) - set(self.allowed_search_fields)
                 if invalid_fields:
                     raise HTTPException(
-                        status_code=400, detail=f"Search in fields {invalid_fields} is not allowed"
+                        status_code=400,
+                        detail=f"Search in fields {invalid_fields} is not allowed",
                     )
 
         return SearchParams(query=search, fields=fields, fuzzy=fuzzy)
 
-    def apply_pagination(self, query: SQLQuery, pagination: PaginationParams) -> SQLQuery:
+    def apply_pagination(
+        self, query: SQLQuery, pagination: PaginationParams
+    ) -> SQLQuery:
         """Apply pagination to SQLAlchemy query."""
         return query.offset(pagination.skip).limit(pagination.limit)
 
-    def apply_sorting(self, query: SQLQuery, sort_fields: List[SortField], model_class) -> SQLQuery:
+    def apply_sorting(
+        self, query: SQLQuery, sort_fields: List[SortField], model_class
+    ) -> SQLQuery:
         """Apply sorting to SQLAlchemy query."""
         for sort_field in sort_fields:
             if hasattr(model_class, sort_field.field):
@@ -293,10 +314,15 @@ class EnhancedPaginator:
         return query
 
     def create_pagination_metadata(
-        self, pagination: PaginationParams, total_items: int, base_url: Optional[str] = None
+        self,
+        pagination: PaginationParams,
+        total_items: int,
+        base_url: Optional[str] = None,
     ) -> PaginationMetadata:
         """Create pagination metadata with navigation information."""
-        total_pages = math.ceil(total_items / pagination.limit) if total_items > 0 else 1
+        total_pages = (
+            math.ceil(total_items / pagination.limit) if total_items > 0 else 1
+        )
 
         metadata = PaginationMetadata(
             page=pagination.page,
@@ -314,10 +340,14 @@ class EnhancedPaginator:
         # Generate navigation URLs if base_url provided
         if base_url:
             metadata.first_url = f"{base_url}?page=1&limit={pagination.limit}"
-            metadata.last_url = f"{base_url}?page={total_pages}&limit={pagination.limit}"
+            metadata.last_url = (
+                f"{base_url}?page={total_pages}&limit={pagination.limit}"
+            )
 
             if metadata.next_page:
-                metadata.next_url = f"{base_url}?page={metadata.next_page}&limit={pagination.limit}"
+                metadata.next_url = (
+                    f"{base_url}?page={metadata.next_page}&limit={pagination.limit}"
+                )
 
             if metadata.previous_page:
                 metadata.previous_url = (
@@ -338,7 +368,8 @@ class EnhancedPaginator:
             parts = value.split("|")
             if len(parts) != 2:
                 raise HTTPException(
-                    status_code=400, detail="BETWEEN operator requires two values separated by |"
+                    status_code=400,
+                    detail="BETWEEN operator requires two values separated by |",
                 )
             return parts
 

@@ -100,7 +100,9 @@ class CircuitBreaker:
 
         if self.failure_count >= self.failure_threshold:
             self.state = ConnectionState.FAILED
-            logger.warning(f"Circuit breaker opened after {self.failure_count} failures")
+            logger.warning(
+                f"Circuit breaker opened after {self.failure_count} failures"
+            )
 
     def can_execute(self) -> bool:
         """Check if operations can be executed."""
@@ -230,7 +232,8 @@ class ConnectionPool:
                 query_time = time.time() - start_time
                 self.metrics["query_count"] += 1
                 self.metrics["avg_query_time"] = (
-                    self.metrics["avg_query_time"] * (self.metrics["query_count"] - 1) + query_time
+                    self.metrics["avg_query_time"] * (self.metrics["query_count"] - 1)
+                    + query_time
                 ) / self.metrics["query_count"]
 
         except Exception as e:
@@ -246,7 +249,11 @@ class ConnectionPool:
 
     def _select_engine(self, read_only: bool) -> AsyncEngine:
         """Select appropriate engine based on operation type."""
-        if read_only and self.replica_engine and self.replica_circuit_breaker.is_healthy():
+        if (
+            read_only
+            and self.replica_engine
+            and self.replica_circuit_breaker.is_healthy()
+        ):
             return self.replica_engine
         return self.primary_engine
 
@@ -306,10 +313,14 @@ class ConnectionPool:
             },
             "replica": {
                 "state": (
-                    self.replica_circuit_breaker.state.value if self.replica_engine else "disabled"
+                    self.replica_circuit_breaker.state.value
+                    if self.replica_engine
+                    else "disabled"
                 ),
                 "failure_count": (
-                    self.replica_circuit_breaker.failure_count if self.replica_engine else 0
+                    self.replica_circuit_breaker.failure_count
+                    if self.replica_engine
+                    else 0
                 ),
                 "pool_size": replica_pool.size() if replica_pool else 0,
                 "checked_in": replica_pool.checkedin() if replica_pool else 0,

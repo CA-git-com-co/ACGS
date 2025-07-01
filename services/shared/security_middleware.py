@@ -124,7 +124,9 @@ def add_security_middleware(
 
     # Add comprehensive security middleware if components are available
     if SHARED_COMPONENTS_AVAILABLE:
-        app.add_middleware(SecurityMiddleware, service_name=service_name, redis_url=redis_url)
+        app.add_middleware(
+            SecurityMiddleware, service_name=service_name, redis_url=redis_url
+        )
     else:
         # Add basic security headers middleware
         @app.middleware("http")
@@ -138,12 +140,16 @@ def add_security_middleware(
             response.headers["X-Content-Type-Options"] = "nosniff"
             response.headers["X-Frame-Options"] = "DENY"
             response.headers["X-XSS-Protection"] = "1; mode=block"
-            response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+            response.headers["Strict-Transport-Security"] = (
+                "max-age=31536000; includeSubDomains"
+            )
             response.headers["Content-Security-Policy"] = (
                 "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'"
             )
             response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-            response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+            response.headers["Permissions-Policy"] = (
+                "geolocation=(), microphone=(), camera=()"
+            )
 
             return response
 
@@ -289,7 +295,9 @@ class ThreatDetector:
         threats.extend(header_threats)
 
         # Analyze user agent
-        user_agent_threats = self._analyze_user_agent(request.headers.get("user-agent", ""))
+        user_agent_threats = self._analyze_user_agent(
+            request.headers.get("user-agent", "")
+        )
         threats.extend(user_agent_threats)
 
         # Determine overall threat level
@@ -401,7 +409,9 @@ class CSRFProtectionMiddleware(BaseHTTPMiddleware):
 
     def __init__(self, app, secret_key: str = None, exempt_paths: List[str] = None):
         super().__init__(app)
-        self.secret_key = secret_key or os.environ.get("CSRF_SECRET_KEY", secrets.token_urlsafe(32))
+        self.secret_key = secret_key or os.environ.get(
+            "CSRF_SECRET_KEY", secrets.token_urlsafe(32)
+        )
         self.exempt_paths = exempt_paths or [
             "/health",
             "/docs",
@@ -418,7 +428,9 @@ class CSRFProtectionMiddleware(BaseHTTPMiddleware):
             return await call_next(request)
 
         # Validate CSRF token for state-changing operations
-        csrf_token = request.headers.get("X-CSRF-Token") or request.cookies.get("csrf_token")
+        csrf_token = request.headers.get("X-CSRF-Token") or request.cookies.get(
+            "csrf_token"
+        )
 
         if not csrf_token or not self._validate_csrf_token(csrf_token):
             self.logger.warning(f"CSRF token validation failed for {request.url.path}")
@@ -450,7 +462,9 @@ class CSRFProtectionMiddleware(BaseHTTPMiddleware):
         """Generate a new CSRF token."""
         timestamp = str(int(time.time()))
         message = f"{timestamp}:{secrets.token_urlsafe(16)}"
-        signature = hmac.new(self.secret_key.encode(), message.encode(), hashlib.sha256).hexdigest()
+        signature = hmac.new(
+            self.secret_key.encode(), message.encode(), hashlib.sha256
+        ).hexdigest()
         return f"{message}:{signature}"
 
     def _validate_csrf_token(self, token: str) -> bool:
@@ -555,7 +569,9 @@ class SecurityMiddleware(BaseHTTPMiddleware):
 
             # Block critical threats immediately
             if threat_analysis["threat_level"] == SecurityThreatLevel.CRITICAL:
-                await self._log_security_event(request, "critical_threat_blocked", threat_analysis)
+                await self._log_security_event(
+                    request, "critical_threat_blocked", threat_analysis
+                )
                 return self._create_security_error_response(
                     "Request blocked due to security policy",
                     correlation_id,
@@ -564,14 +580,20 @@ class SecurityMiddleware(BaseHTTPMiddleware):
 
             # 3. Rate limiting (if available) - skip for public endpoints
             if self.rate_limiter and not self._is_public_endpoint(request.url.path):
-                rate_limit_allowed, rate_limit_info = await self.rate_limiter.check_rate_limit(
-                    request
+                rate_limit_allowed, rate_limit_info = (
+                    await self.rate_limiter.check_rate_limit(request)
                 )
                 if not rate_limit_allowed:
                     # Serialize datetime objects before logging
-                    serializable_rate_limit_info = self._serialize_datetime_objects(rate_limit_info)
-                    await self._log_security_event(request, "rate_limit_exceeded", serializable_rate_limit_info)
-                    return self._create_rate_limit_error_response(rate_limit_info, correlation_id)
+                    serializable_rate_limit_info = self._serialize_datetime_objects(
+                        rate_limit_info
+                    )
+                    await self._log_security_event(
+                        request, "rate_limit_exceeded", serializable_rate_limit_info
+                    )
+                    return self._create_rate_limit_error_response(
+                        rate_limit_info, correlation_id
+                    )
             else:
                 rate_limit_info = {}
 
@@ -596,7 +618,9 @@ class SecurityMiddleware(BaseHTTPMiddleware):
                 sql_injection_check = self._detect_sql_injection(request)
                 if sql_injection_check:
                     await self._log_security_event(
-                        request, "sql_injection_attempt", {"patterns": sql_injection_check}
+                        request,
+                        "sql_injection_attempt",
+                        {"patterns": sql_injection_check},
                     )
                     return self._create_security_error_response(
                         "Request blocked due to security policy",
@@ -632,7 +656,9 @@ class SecurityMiddleware(BaseHTTPMiddleware):
                 SecurityThreatLevel.HIGH,
                 SecurityThreatLevel.MEDIUM,
             ]:
-                await self._log_security_event(request, "threat_detected", threat_analysis)
+                await self._log_security_event(
+                    request, "threat_detected", threat_analysis
+                )
 
             return response
 
@@ -742,7 +768,9 @@ class SecurityMiddleware(BaseHTTPMiddleware):
         response.headers["X-Security-Policy"] = "enforced"
         response.headers["X-Content-Security-Policy"] = csp_policy  # Legacy support
 
-    def _add_rate_limit_headers(self, response: Response, rate_limit_info: dict[str, Any]):
+    def _add_rate_limit_headers(
+        self, response: Response, rate_limit_info: dict[str, Any]
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -750,9 +778,13 @@ class SecurityMiddleware(BaseHTTPMiddleware):
         if "limit" in rate_limit_info:
             response.headers["X-RateLimit-Limit"] = str(rate_limit_info["limit"])
         if "remaining" in rate_limit_info:
-            response.headers["X-RateLimit-Remaining"] = str(rate_limit_info["remaining"])
+            response.headers["X-RateLimit-Remaining"] = str(
+                rate_limit_info["remaining"]
+            )
         if "reset_time" in rate_limit_info:
-            response.headers["X-RateLimit-Reset"] = str(int(rate_limit_info["reset_time"]))
+            response.headers["X-RateLimit-Reset"] = str(
+                int(rate_limit_info["reset_time"])
+            )
 
     def _create_security_error_response(
         self, message: str, correlation_id: str, status_code: int
@@ -793,7 +825,10 @@ class SecurityMiddleware(BaseHTTPMiddleware):
         if isinstance(obj, datetime):
             return obj.isoformat()
         elif isinstance(obj, dict):
-            return {key: self._serialize_datetime_objects(value) for key, value in obj.items()}
+            return {
+                key: self._serialize_datetime_objects(value)
+                for key, value in obj.items()
+            }
         elif isinstance(obj, list):
             return [self._serialize_datetime_objects(item) for item in obj]
         else:
@@ -848,7 +883,9 @@ class SecurityMiddleware(BaseHTTPMiddleware):
             headers=headers,
         )
 
-    async def _log_security_event(self, request: Request, event_type: str, details: dict[str, Any]):
+    async def _log_security_event(
+        self, request: Request, event_type: str, details: dict[str, Any]
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -920,7 +957,9 @@ class SecurityMiddleware(BaseHTTPMiddleware):
                 service_payload = ServiceAuthManager.verify_service_token(token)
                 request.state.auth_type = "service"
                 request.state.service_name = service_payload.get("service_name")
-                request.state.service_permissions = service_payload.get("permissions", [])
+                request.state.service_permissions = service_payload.get(
+                    "permissions", []
+                )
             else:
                 # Validate user token
                 token_data = await enhanced_auth_service.verify_token(token)
@@ -933,7 +972,9 @@ class SecurityMiddleware(BaseHTTPMiddleware):
                 user_data = enhanced_auth_service.users_db.get(token_data.username)
                 if user_data:
                     user = user_data["user"]
-                    request.state.user_permissions = PermissionChecker.get_user_permissions(user)
+                    request.state.user_permissions = (
+                        PermissionChecker.get_user_permissions(user)
+                    )
                 else:
                     request.state.user_permissions = []
 
@@ -1038,7 +1079,9 @@ class SecurityMiddleware(BaseHTTPMiddleware):
             "local",
         ]
 
-    def _create_https_redirect_response(self, request: Request, correlation_id: str) -> Response:
+    def _create_https_redirect_response(
+        self, request: Request, correlation_id: str
+    ) -> Response:
         """Create HTTPS redirect response."""
         https_url = request.url.replace(scheme="https")
 
@@ -1112,7 +1155,9 @@ class SecurityMiddleware(BaseHTTPMiddleware):
         return False
 
 
-def apply_production_security_middleware(app, service_name: str, config: SecurityConfig = None):
+def apply_production_security_middleware(
+    app, service_name: str, config: SecurityConfig = None
+):
     """
     Apply comprehensive production-grade security middleware to FastAPI application.
 

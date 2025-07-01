@@ -24,78 +24,80 @@ project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
 class SimpleOpenAPIGenerator:
     """Simplified OpenAPI documentation generator for ACGS services."""
-    
+
     def __init__(self, output_dir: str = "docs/api/generated"):
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
-        
+
         self.service_configs = {
             "auth": {
                 "name": "Authentication Service",
                 "description": "ACGS Authentication and Authorization Service providing user management, token-based authentication, and role-based access control.",
                 "version": "2.1.0",
                 "port": 8000,
-                "tags": ["authentication", "authorization", "users", "tokens"]
+                "tags": ["authentication", "authorization", "users", "tokens"],
             },
             "ac": {
-                "name": "Constitutional AI Service", 
+                "name": "Constitutional AI Service",
                 "description": "ACGS Constitutional AI Principles and Compliance Service for managing constitutional rules and ensuring system compliance.",
                 "version": "2.1.0",
                 "port": 8001,
-                "tags": ["constitutional-ai", "principles", "compliance", "council"]
+                "tags": ["constitutional-ai", "principles", "compliance", "council"],
             },
             "integrity": {
                 "name": "Integrity Service",
                 "description": "ACGS Cryptographic Integrity and Audit Service providing digital signatures, certificates, and audit logging.",
                 "version": "2.0.0",
                 "port": 8002,
-                "tags": ["integrity", "cryptography", "audit", "certificates"]
+                "tags": ["integrity", "cryptography", "audit", "certificates"],
             },
             "fv": {
                 "name": "Formal Verification Service",
                 "description": "ACGS Formal Verification and Mathematical Proof Service using Z3 SMT solver for property verification.",
-                "version": "1.5.0", 
+                "version": "1.5.0",
                 "port": 8003,
-                "tags": ["formal-verification", "proofs", "z3", "smt"]
+                "tags": ["formal-verification", "proofs", "z3", "smt"],
             },
             "gs": {
                 "name": "Governance Synthesis Service",
                 "description": "ACGS Governance Policy Synthesis and Generation Service for creating governance policies from constitutional principles.",
                 "version": "2.2.0",
                 "port": 8004,
-                "tags": ["governance", "synthesis", "policies", "templates"]
+                "tags": ["governance", "synthesis", "policies", "templates"],
             },
             "pgc": {
                 "name": "Policy Governance Service",
                 "description": "ACGS Policy Governance and Enforcement Service using OPA for policy evaluation and enforcement.",
                 "version": "2.0.0",
                 "port": 8005,
-                "tags": ["policy", "governance", "enforcement", "opa"]
+                "tags": ["policy", "governance", "enforcement", "opa"],
             },
             "ec": {
                 "name": "Evolutionary Computation Service",
                 "description": "ACGS Evolutionary Computation and Optimization Service for genetic algorithms and evolutionary optimization.",
                 "version": "1.8.0",
                 "port": 8006,
-                "tags": ["evolution", "optimization", "algorithms", "metrics"]
+                "tags": ["evolution", "optimization", "algorithms", "metrics"],
             },
             "dgm": {
-                "name": "Darwin Gödel Machine Service", 
+                "name": "Darwin Gödel Machine Service",
                 "description": "ACGS Darwin Gödel Machine Self-Improvement Service for recursive self-optimization and improvement.",
                 "version": "1.0.0",
                 "port": 8007,
-                "tags": ["self-improvement", "godel", "darwin", "workspace"]
-            }
+                "tags": ["self-improvement", "godel", "darwin", "workspace"],
+            },
         }
-        
+
         self.global_schemas = self._create_global_schemas()
-    
+
     def _create_global_schemas(self) -> Dict[str, Any]:
         """Create global schemas for unified responses and error handling."""
         return {
@@ -105,23 +107,18 @@ class SimpleOpenAPIGenerator:
                 "properties": {
                     "success": {
                         "type": "boolean",
-                        "description": "Indicates if the request was successful"
+                        "description": "Indicates if the request was successful",
                     },
-                    "data": {
-                        "description": "Response data payload",
-                        "nullable": True
-                    },
+                    "data": {"description": "Response data payload", "nullable": True},
                     "message": {
-                        "type": "string", 
-                        "description": "Human-readable response message"
+                        "type": "string",
+                        "description": "Human-readable response message",
                     },
-                    "metadata": {
-                        "$ref": "#/components/schemas/ResponseMetadata"
-                    },
+                    "metadata": {"$ref": "#/components/schemas/ResponseMetadata"},
                     "pagination": {
                         "$ref": "#/components/schemas/PaginationMetadata",
-                        "nullable": True
-                    }
+                        "nullable": True,
+                    },
                 },
                 "required": ["success", "data", "message", "metadata"],
                 "example": {
@@ -132,9 +129,9 @@ class SimpleOpenAPIGenerator:
                         "timestamp": "2025-06-22T10:30:00Z",
                         "request_id": "550e8400-e29b-41d4-a716-446655440000",
                         "version": "1.0.0",
-                        "service": "example-service"
-                    }
-                }
+                        "service": "example-service",
+                    },
+                },
             },
             "ResponseMetadata": {
                 "type": "object",
@@ -143,28 +140,22 @@ class SimpleOpenAPIGenerator:
                     "timestamp": {
                         "type": "string",
                         "format": "date-time",
-                        "description": "Response timestamp in ISO 8601 format"
+                        "description": "Response timestamp in ISO 8601 format",
                     },
                     "request_id": {
                         "type": "string",
                         "format": "uuid",
-                        "description": "Unique request identifier for correlation"
+                        "description": "Unique request identifier for correlation",
                     },
-                    "version": {
-                        "type": "string",
-                        "description": "API version"
-                    },
-                    "service": {
-                        "type": "string", 
-                        "description": "Service name"
-                    },
+                    "version": {"type": "string", "description": "API version"},
+                    "service": {"type": "string", "description": "Service name"},
                     "execution_time_ms": {
                         "type": "number",
                         "description": "Request execution time in milliseconds",
-                        "nullable": True
-                    }
+                        "nullable": True,
+                    },
                 },
-                "required": ["timestamp", "request_id", "version", "service"]
+                "required": ["timestamp", "request_id", "version", "service"],
             },
             "PaginationMetadata": {
                 "type": "object",
@@ -173,28 +164,28 @@ class SimpleOpenAPIGenerator:
                     "page": {
                         "type": "integer",
                         "minimum": 1,
-                        "description": "Current page number"
+                        "description": "Current page number",
                     },
                     "limit": {
-                        "type": "integer", 
+                        "type": "integer",
                         "minimum": 1,
-                        "description": "Number of items per page"
+                        "description": "Number of items per page",
                     },
                     "total": {
                         "type": "integer",
                         "minimum": 0,
-                        "description": "Total number of items"
+                        "description": "Total number of items",
                     },
                     "has_next": {
                         "type": "boolean",
-                        "description": "Whether there are more pages"
+                        "description": "Whether there are more pages",
                     },
                     "has_previous": {
                         "type": "boolean",
-                        "description": "Whether there are previous pages"
-                    }
+                        "description": "Whether there are previous pages",
+                    },
                 },
-                "required": ["page", "limit", "total", "has_next", "has_previous"]
+                "required": ["page", "limit", "total", "has_next", "has_previous"],
             },
             "ErrorResponse": {
                 "type": "object",
@@ -203,18 +194,14 @@ class SimpleOpenAPIGenerator:
                     "success": {
                         "type": "boolean",
                         "enum": [False],
-                        "description": "Always false for error responses"
+                        "description": "Always false for error responses",
                     },
-                    "error": {
-                        "$ref": "#/components/schemas/ErrorDetails"
-                    },
+                    "error": {"$ref": "#/components/schemas/ErrorDetails"},
                     "data": {
                         "nullable": True,
-                        "description": "Always null for error responses"
+                        "description": "Always null for error responses",
                     },
-                    "metadata": {
-                        "$ref": "#/components/schemas/ResponseMetadata"
-                    }
+                    "metadata": {"$ref": "#/components/schemas/ResponseMetadata"},
                 },
                 "required": ["success", "error", "data", "metadata"],
                 "example": {
@@ -229,16 +216,16 @@ class SimpleOpenAPIGenerator:
                         "category": "AUTHENTICATION",
                         "severity": "warning",
                         "retryable": False,
-                        "resolution_guidance": "Verify username and password are correct"
+                        "resolution_guidance": "Verify username and password are correct",
                     },
                     "data": None,
                     "metadata": {
                         "timestamp": "2025-06-22T10:30:00Z",
                         "request_id": "550e8400-e29b-41d4-a716-446655440000",
                         "version": "2.1.0",
-                        "service": "authentication-service"
-                    }
-                }
+                        "service": "authentication-service",
+                    },
+                },
             },
             "ErrorDetails": {
                 "type": "object",
@@ -247,60 +234,78 @@ class SimpleOpenAPIGenerator:
                     "code": {
                         "type": "string",
                         "pattern": "^[A-Z]+_[A-Z_]+_[0-9]{3}$",
-                        "description": "Hierarchical error code (SERVICE_CATEGORY_NUMBER)"
+                        "description": "Hierarchical error code (SERVICE_CATEGORY_NUMBER)",
                     },
                     "message": {
                         "type": "string",
-                        "description": "Human-readable error message"
+                        "description": "Human-readable error message",
                     },
                     "details": {
                         "type": "object",
-                        "description": "Additional error details and context"
+                        "description": "Additional error details and context",
                     },
                     "timestamp": {
                         "type": "string",
                         "format": "date-time",
-                        "description": "Error timestamp"
+                        "description": "Error timestamp",
                     },
                     "request_id": {
                         "type": "string",
-                        "format": "uuid", 
-                        "description": "Request identifier for correlation"
+                        "format": "uuid",
+                        "description": "Request identifier for correlation",
                     },
                     "service": {
                         "type": "string",
-                        "description": "Service that generated the error"
+                        "description": "Service that generated the error",
                     },
                     "category": {
                         "type": "string",
-                        "enum": ["VALIDATION", "AUTHENTICATION", "AUTHORIZATION", "BUSINESS_LOGIC", "EXTERNAL_SERVICE", "SYSTEM_ERROR"],
-                        "description": "Error category"
+                        "enum": [
+                            "VALIDATION",
+                            "AUTHENTICATION",
+                            "AUTHORIZATION",
+                            "BUSINESS_LOGIC",
+                            "EXTERNAL_SERVICE",
+                            "SYSTEM_ERROR",
+                        ],
+                        "description": "Error category",
                     },
                     "severity": {
                         "type": "string",
                         "enum": ["info", "warning", "error", "critical"],
-                        "description": "Error severity level"
+                        "description": "Error severity level",
                     },
                     "retryable": {
                         "type": "boolean",
-                        "description": "Whether the error is retryable"
+                        "description": "Whether the error is retryable",
                     },
                     "resolution_guidance": {
                         "type": "string",
-                        "description": "Guidance on how to resolve the error"
-                    }
+                        "description": "Guidance on how to resolve the error",
+                    },
                 },
-                "required": ["code", "message", "details", "timestamp", "request_id", "service", "category", "severity", "retryable", "resolution_guidance"]
-            }
+                "required": [
+                    "code",
+                    "message",
+                    "details",
+                    "timestamp",
+                    "request_id",
+                    "service",
+                    "category",
+                    "severity",
+                    "retryable",
+                    "resolution_guidance",
+                ],
+            },
         }
-    
+
     def generate_service_spec(self, service_key: str) -> Dict[str, Any]:
         """Generate OpenAPI specification for a specific service."""
-        
+
         config = self.service_configs.get(service_key)
         if not config:
             raise ValueError(f"Unknown service: {service_key}")
-        
+
         # Create base OpenAPI specification
         spec = {
             "openapi": "3.0.3",
@@ -311,26 +316,23 @@ class SimpleOpenAPIGenerator:
                 "contact": {
                     "name": "ACGS Development Team",
                     "url": "https://acgs.com/support",
-                    "email": "api-support@acgs.com"
+                    "email": "api-support@acgs.com",
                 },
-                "license": {
-                    "name": "ACGS License",
-                    "url": "https://acgs.com/license"
-                }
+                "license": {"name": "ACGS License", "url": "https://acgs.com/license"},
             },
             "servers": [
                 {
                     "url": f"http://localhost:{config['port']}",
-                    "description": "Development server"
+                    "description": "Development server",
                 },
                 {
                     "url": f"https://api.acgs.dev/{service_key}",
-                    "description": "Development environment"
+                    "description": "Development environment",
                 },
                 {
                     "url": f"https://api.acgs.com/{service_key}",
-                    "description": "Production environment"
-                }
+                    "description": "Production environment",
+                },
             ],
             "paths": self._generate_service_paths(service_key, config),
             "components": {
@@ -340,38 +342,40 @@ class SimpleOpenAPIGenerator:
                         "type": "http",
                         "scheme": "bearer",
                         "bearerFormat": "JWT",
-                        "description": "JWT token authentication"
+                        "description": "JWT token authentication",
                     },
                     "CookieAuth": {
                         "type": "apiKey",
                         "in": "cookie",
                         "name": "access_token_cookie",
-                        "description": "Cookie-based authentication"
-                    }
-                }
+                        "description": "Cookie-based authentication",
+                    },
+                },
             },
             "tags": [
-                {"name": tag, "description": f"{tag.replace('-', ' ').title()} operations"}
+                {
+                    "name": tag,
+                    "description": f"{tag.replace('-', ' ').title()} operations",
+                }
                 for tag in config["tags"]
             ],
             "externalDocs": {
                 "description": "ACGS API Documentation",
-                "url": "https://docs.acgs.com"
-            }
+                "url": "https://docs.acgs.com",
+            },
         }
-        
+
         # Add security requirement for non-auth services
         if service_key != "auth":
-            spec["security"] = [
-                {"BearerAuth": []},
-                {"CookieAuth": []}
-            ]
-        
+            spec["security"] = [{"BearerAuth": []}, {"CookieAuth": []}]
+
         return spec
-    
-    def _generate_service_paths(self, service_key: str, config: Dict[str, Any]) -> Dict[str, Any]:
+
+    def _generate_service_paths(
+        self, service_key: str, config: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Generate API paths for a service."""
-        
+
         paths = {
             "/health": {
                 "get": {
@@ -383,38 +387,42 @@ class SimpleOpenAPIGenerator:
                             "description": "Service is healthy",
                             "content": {
                                 "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/UnifiedResponse"},
+                                    "schema": {
+                                        "$ref": "#/components/schemas/UnifiedResponse"
+                                    },
                                     "example": {
                                         "success": True,
                                         "data": {
                                             "status": "healthy",
                                             "service": config["name"],
-                                            "version": config["version"]
+                                            "version": config["version"],
                                         },
                                         "message": "Service is healthy",
                                         "metadata": {
                                             "timestamp": "2025-06-22T10:30:00Z",
                                             "request_id": "550e8400-e29b-41d4-a716-446655440000",
                                             "version": config["version"],
-                                            "service": f"{service_key}-service"
-                                        }
-                                    }
+                                            "service": f"{service_key}-service",
+                                        },
+                                    },
                                 }
-                            }
+                            },
                         },
                         "503": {
                             "description": "Service unavailable",
                             "content": {
                                 "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/ErrorResponse"}
+                                    "schema": {
+                                        "$ref": "#/components/schemas/ErrorResponse"
+                                    }
                                 }
-                            }
-                        }
-                    }
+                            },
+                        },
+                    },
                 }
             }
         }
-        
+
         # Add service-specific paths
         if service_key == "auth":
             paths.update(self._get_auth_paths())
@@ -432,9 +440,9 @@ class SimpleOpenAPIGenerator:
             paths.update(self._get_ec_paths())
         elif service_key == "dgm":
             paths.update(self._get_dgm_paths())
-        
+
         return paths
-    
+
     def _get_auth_paths(self) -> Dict[str, Any]:
         """Get authentication service paths."""
         return {
@@ -454,25 +462,27 @@ class SimpleOpenAPIGenerator:
                                         "email": {"type": "string", "format": "email"},
                                         "password": {"type": "string", "minLength": 8},
                                         "first_name": {"type": "string"},
-                                        "last_name": {"type": "string"}
+                                        "last_name": {"type": "string"},
                                     },
-                                    "required": ["username", "email", "password"]
+                                    "required": ["username", "email", "password"],
                                 }
                             }
-                        }
+                        },
                     },
                     "responses": {
                         "201": {
                             "description": "User registered successfully",
                             "content": {
                                 "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/UnifiedResponse"}
+                                    "schema": {
+                                        "$ref": "#/components/schemas/UnifiedResponse"
+                                    }
                                 }
-                            }
+                            },
                         },
                         "400": {"$ref": "#/components/responses/BadRequest"},
-                        "409": {"$ref": "#/components/responses/Conflict"}
-                    }
+                        "409": {"$ref": "#/components/responses/Conflict"},
+                    },
                 }
             },
             "/auth/login": {
@@ -488,28 +498,30 @@ class SimpleOpenAPIGenerator:
                                     "type": "object",
                                     "properties": {
                                         "username": {"type": "string"},
-                                        "password": {"type": "string"}
+                                        "password": {"type": "string"},
                                     },
-                                    "required": ["username", "password"]
+                                    "required": ["username", "password"],
                                 }
                             }
-                        }
+                        },
                     },
                     "responses": {
                         "200": {
                             "description": "Authentication successful",
                             "content": {
                                 "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/UnifiedResponse"}
+                                    "schema": {
+                                        "$ref": "#/components/schemas/UnifiedResponse"
+                                    }
                                 }
-                            }
+                            },
                         },
-                        "401": {"$ref": "#/components/responses/Unauthorized"}
-                    }
+                        "401": {"$ref": "#/components/responses/Unauthorized"},
+                    },
                 }
-            }
+            },
         }
-    
+
     def _get_ac_paths(self) -> Dict[str, Any]:
         """Get constitutional AI service paths."""
         return {
@@ -523,15 +535,17 @@ class SimpleOpenAPIGenerator:
                             "description": "Principles retrieved successfully",
                             "content": {
                                 "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/UnifiedResponse"}
+                                    "schema": {
+                                        "$ref": "#/components/schemas/UnifiedResponse"
+                                    }
                                 }
-                            }
+                            },
                         }
-                    }
+                    },
                 }
             }
         }
-    
+
     def _get_integrity_paths(self) -> Dict[str, Any]:
         """Get integrity service paths."""
         return {
@@ -545,15 +559,17 @@ class SimpleOpenAPIGenerator:
                             "description": "Audit log retrieved successfully",
                             "content": {
                                 "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/UnifiedResponse"}
+                                    "schema": {
+                                        "$ref": "#/components/schemas/UnifiedResponse"
+                                    }
                                 }
-                            }
+                            },
                         }
-                    }
+                    },
                 }
             }
         }
-    
+
     def _get_fv_paths(self) -> Dict[str, Any]:
         """Get formal verification service paths."""
         return {
@@ -567,15 +583,17 @@ class SimpleOpenAPIGenerator:
                             "description": "Verification completed",
                             "content": {
                                 "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/UnifiedResponse"}
+                                    "schema": {
+                                        "$ref": "#/components/schemas/UnifiedResponse"
+                                    }
                                 }
-                            }
+                            },
                         }
-                    }
+                    },
                 }
             }
         }
-    
+
     def _get_gs_paths(self) -> Dict[str, Any]:
         """Get governance synthesis service paths."""
         return {
@@ -589,15 +607,17 @@ class SimpleOpenAPIGenerator:
                             "description": "Policy generated successfully",
                             "content": {
                                 "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/UnifiedResponse"}
+                                    "schema": {
+                                        "$ref": "#/components/schemas/UnifiedResponse"
+                                    }
                                 }
-                            }
+                            },
                         }
-                    }
+                    },
                 }
             }
         }
-    
+
     def _get_pgc_paths(self) -> Dict[str, Any]:
         """Get policy governance service paths."""
         return {
@@ -611,15 +631,17 @@ class SimpleOpenAPIGenerator:
                             "description": "Policies retrieved successfully",
                             "content": {
                                 "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/UnifiedResponse"}
+                                    "schema": {
+                                        "$ref": "#/components/schemas/UnifiedResponse"
+                                    }
                                 }
-                            }
+                            },
                         }
-                    }
+                    },
                 }
             }
         }
-    
+
     def _get_ec_paths(self) -> Dict[str, Any]:
         """Get evolutionary computation service paths."""
         return {
@@ -633,15 +655,17 @@ class SimpleOpenAPIGenerator:
                             "description": "Optimization started successfully",
                             "content": {
                                 "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/UnifiedResponse"}
+                                    "schema": {
+                                        "$ref": "#/components/schemas/UnifiedResponse"
+                                    }
                                 }
-                            }
+                            },
                         }
-                    }
+                    },
                 }
             }
         }
-    
+
     def _get_dgm_paths(self) -> Dict[str, Any]:
         """Get Darwin Gödel Machine service paths."""
         return {
@@ -655,41 +679,48 @@ class SimpleOpenAPIGenerator:
                             "description": "Workspace status retrieved successfully",
                             "content": {
                                 "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/UnifiedResponse"}
+                                    "schema": {
+                                        "$ref": "#/components/schemas/UnifiedResponse"
+                                    }
                                 }
-                            }
+                            },
                         }
-                    }
+                    },
                 }
             }
         }
-    
-    def save_spec(self, service_key: str, spec: Dict[str, Any], formats: List[str] = ["json", "yaml"]):
+
+    def save_spec(
+        self,
+        service_key: str,
+        spec: Dict[str, Any],
+        formats: List[str] = ["json", "yaml"],
+    ):
         """Save OpenAPI specification in multiple formats."""
-        
+
         base_filename = f"{service_key}_openapi"
-        
+
         # Save JSON format
         if "json" in formats:
             json_path = self.output_dir / f"{base_filename}.json"
             with open(json_path, "w") as f:
                 json.dump(spec, f, indent=2)
             logger.info(f"Saved JSON spec: {json_path}")
-        
+
         # Save YAML format
         if "yaml" in formats:
             yaml_path = self.output_dir / f"{base_filename}.yaml"
             with open(yaml_path, "w") as f:
                 yaml.dump(spec, f, default_flow_style=False, sort_keys=False)
             logger.info(f"Saved YAML spec: {yaml_path}")
-        
+
         # Generate HTML documentation
         if "html" in formats:
             self._generate_html_docs(service_key, spec)
-    
+
     def _generate_html_docs(self, service_key: str, spec: Dict[str, Any]):
         """Generate HTML documentation using Swagger UI."""
-        
+
         config = self.service_configs[service_key]
         html_content = f"""<!DOCTYPE html>
 <html lang="en">
@@ -715,18 +746,20 @@ class SimpleOpenAPIGenerator:
     </script>
 </body>
 </html>"""
-        
+
         html_path = self.output_dir / f"{service_key}_docs.html"
         with open(html_path, "w") as f:
             f.write(html_content)
-        
+
         logger.info(f"Generated HTML docs: {html_path}")
-    
-    def generate_all_specs(self, formats: List[str] = ["json", "yaml", "html"]) -> Dict[str, Dict[str, Any]]:
+
+    def generate_all_specs(
+        self, formats: List[str] = ["json", "yaml", "html"]
+    ) -> Dict[str, Dict[str, Any]]:
         """Generate OpenAPI specifications for all services."""
-        
+
         specs = {}
-        
+
         for service_key in self.service_configs.keys():
             try:
                 logger.info(f"Generating OpenAPI spec for {service_key}")
@@ -737,27 +770,39 @@ class SimpleOpenAPIGenerator:
             except Exception as e:
                 logger.error(f"Failed to generate spec for {service_key}: {e}")
                 specs[service_key] = None
-        
+
         return specs
 
 
 def main():
     """Main function for CLI usage."""
-    parser = argparse.ArgumentParser(description="Generate OpenAPI documentation for ACGS services")
-    parser.add_argument("--service", help="Generate docs for specific service", 
-                       choices=list(SimpleOpenAPIGenerator().service_configs.keys()) + ["all"])
-    parser.add_argument("--output", default="docs/api/generated", help="Output directory")
-    parser.add_argument("--format", nargs="+", default=["json", "yaml", "html"], 
-                       choices=["json", "yaml", "html"], help="Output formats")
+    parser = argparse.ArgumentParser(
+        description="Generate OpenAPI documentation for ACGS services"
+    )
+    parser.add_argument(
+        "--service",
+        help="Generate docs for specific service",
+        choices=list(SimpleOpenAPIGenerator().service_configs.keys()) + ["all"],
+    )
+    parser.add_argument(
+        "--output", default="docs/api/generated", help="Output directory"
+    )
+    parser.add_argument(
+        "--format",
+        nargs="+",
+        default=["json", "yaml", "html"],
+        choices=["json", "yaml", "html"],
+        help="Output formats",
+    )
     parser.add_argument("--verbose", action="store_true", help="Enable verbose logging")
-    
+
     args = parser.parse_args()
-    
+
     if args.verbose:
         logging.getLogger().setLevel(logging.DEBUG)
-    
+
     generator = SimpleOpenAPIGenerator(args.output)
-    
+
     if args.service == "all" or args.service is None:
         # Generate for all services
         logger.info("Generating OpenAPI specifications for all services")
@@ -767,7 +812,7 @@ def main():
         logger.info(f"Generating OpenAPI specification for {args.service}")
         spec = generator.generate_service_spec(args.service)
         generator.save_spec(args.service, spec, args.format)
-    
+
     logger.info("Documentation generation complete")
 
 

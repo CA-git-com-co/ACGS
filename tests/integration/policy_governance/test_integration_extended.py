@@ -9,7 +9,7 @@ from unittest.mock import AsyncMock, patch
 
 class TestStorageIntegration:
     """Storage abstraction integration tests."""
-    
+
     @pytest.mark.asyncio
     async def test_database_integration(self):
         """Test database storage integration."""
@@ -17,7 +17,7 @@ class TestStorageIntegration:
         # TODO: Test transaction handling
         # TODO: Test connection pooling
         assert True  # Placeholder
-    
+
     @pytest.mark.asyncio
     async def test_cache_integration(self):
         """Test cache storage integration."""
@@ -25,7 +25,7 @@ class TestStorageIntegration:
         # TODO: Test cache invalidation
         # TODO: Test cache consistency
         assert True  # Placeholder
-    
+
     @pytest.mark.asyncio
     async def test_file_storage_integration(self):
         """Test file storage integration."""
@@ -37,7 +37,7 @@ class TestStorageIntegration:
 
 class TestAIServiceIntegration:
     """AI service interface integration tests."""
-    
+
     @pytest.mark.asyncio
     async def test_llm_service_integration(self):
         """Test LLM service integration."""
@@ -45,7 +45,7 @@ class TestAIServiceIntegration:
         # TODO: Test prompt handling
         # TODO: Test response processing
         assert True  # Placeholder
-    
+
     @pytest.mark.asyncio
     async def test_constitutional_ai_integration(self):
         """Test constitutional AI integration."""
@@ -53,7 +53,7 @@ class TestAIServiceIntegration:
         # TODO: Test compliance checking
         # TODO: Test governance decision making
         assert True  # Placeholder
-    
+
     @pytest.mark.asyncio
     async def test_synthesis_service_integration(self):
         """Test synthesis service integration."""
@@ -65,7 +65,7 @@ class TestAIServiceIntegration:
 
 class TestCrossServiceIntegration:
     """Cross-service integration tests."""
-    
+
     @pytest.mark.asyncio
     async def test_service_communication(self):
         """Test inter-service communication."""
@@ -73,7 +73,7 @@ class TestCrossServiceIntegration:
         # TODO: Test message passing
         # TODO: Test error propagation
         assert True  # Placeholder
-    
+
     @pytest.mark.asyncio
     async def test_data_consistency(self):
         """Test data consistency across services."""
@@ -81,7 +81,7 @@ class TestCrossServiceIntegration:
         # TODO: Test distributed transactions
         # TODO: Test conflict resolution
         assert True  # Placeholder
-    
+
     @pytest.mark.asyncio
     async def test_end_to_end_workflows(self):
         """Test end-to-end workflow integration."""

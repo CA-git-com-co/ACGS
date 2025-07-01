@@ -154,7 +154,9 @@ class LearningAlgorithm(ABC):
     """Abstract base class for learning algorithms."""
 
     @abstractmethod
-    async def process_feedback(self, feedback: list[FeedbackSignal]) -> list[LearningAction]:
+    async def process_feedback(
+        self, feedback: list[FeedbackSignal]
+    ) -> list[LearningAction]:
         """Process feedback signals and generate learning actions."""
 
     @abstractmethod
@@ -173,10 +175,14 @@ class ReinforcementLearningAlgorithm(LearningAlgorithm):
         # sha256: func_hash
         self.learning_rate = learning_rate
         self.exploration_rate = exploration_rate
-        self.q_table: dict[str, dict[str, float]] = defaultdict(lambda: defaultdict(float))
+        self.q_table: dict[str, dict[str, float]] = defaultdict(
+            lambda: defaultdict(float)
+        )
         self.experience_replay: deque = deque(maxlen=10000)
 
-    async def process_feedback(self, feedback: list[FeedbackSignal]) -> list[LearningAction]:
+    async def process_feedback(
+        self, feedback: list[FeedbackSignal]
+    ) -> list[LearningAction]:
         """Process feedback using reinforcement learning."""
         actions = []
 
@@ -190,8 +196,12 @@ class ReinforcementLearningAlgorithm(LearningAlgorithm):
 
             # Q-learning update
             current_q = self.q_table[state_key][action_key]
-            max_future_q = max(self.q_table[state_key].values()) if self.q_table[state_key] else 0
-            new_q = current_q + self.learning_rate * (reward + 0.9 * max_future_q - current_q)
+            max_future_q = (
+                max(self.q_table[state_key].values()) if self.q_table[state_key] else 0
+            )
+            new_q = current_q + self.learning_rate * (
+                reward + 0.9 * max_future_q - current_q
+            )
             self.q_table[state_key][action_key] = new_q
 
             # Generate learning action if improvement opportunity detected
@@ -234,7 +244,10 @@ class ReinforcementLearningAlgorithm(LearningAlgorithm):
             if signal.component_type == WINAComponentType.NEURON_ACTIVATION:
                 if signal.feedback_type == FeedbackType.EFFICIENCY_GAIN and reward > 0:
                     adjustments["activation_threshold"] = 0.05 * reward
-                elif signal.feedback_type == FeedbackType.ACCURACY_RETENTION and reward < 0:
+                elif (
+                    signal.feedback_type == FeedbackType.ACCURACY_RETENTION
+                    and reward < 0
+                ):
                     adjustments["activation_threshold"] = -0.02 * abs(reward)
 
             elif signal.component_type == WINAComponentType.DYNAMIC_GATING:
@@ -243,7 +256,10 @@ class ReinforcementLearningAlgorithm(LearningAlgorithm):
                     adjustments["adaptive_rate"] = 0.01 * reward
 
             elif signal.component_type == WINAComponentType.SVD_TRANSFORMATION:
-                if signal.feedback_type == FeedbackType.ACCURACY_RETENTION and reward > 0:
+                if (
+                    signal.feedback_type == FeedbackType.ACCURACY_RETENTION
+                    and reward > 0
+                ):
                     adjustments["rank_threshold"] = 0.02 * reward
 
             if adjustments:
@@ -293,7 +309,9 @@ class PatternRecognitionAlgorithm(LearningAlgorithm):
         self.pattern_database: list[dict[str, Any]] = []
         self.feedback_history: deque = deque(maxlen=window_size)
 
-    async def process_feedback(self, feedback: list[FeedbackSignal]) -> list[LearningAction]:
+    async def process_feedback(
+        self, feedback: list[FeedbackSignal]
+    ) -> list[LearningAction]:
         """Process feedback using pattern recognition."""
         actions = []
 
@@ -376,7 +394,9 @@ class PatternRecognitionAlgorithm(LearningAlgorithm):
 
         return abs((values[-1] - values[0]) / len(values))
 
-    async def _pattern_to_action(self, pattern: dict[str, Any]) -> LearningAction | None:
+    async def _pattern_to_action(
+        self, pattern: dict[str, Any]
+    ) -> LearningAction | None:
         """Convert identified pattern to learning action."""
         try:
             if pattern["type"] == "increasing_performance":
@@ -395,7 +415,9 @@ class PatternRecognitionAlgorithm(LearningAlgorithm):
                 return LearningAction(
                     action_type="reverse_trend",
                     component_target=pattern["component"],
-                    parameter_adjustments={"correction_factor": -0.1 * pattern["strength"]},
+                    parameter_adjustments={
+                        "correction_factor": -0.1 * pattern["strength"]
+                    },
                     expected_impact=pattern["strength"],
                     confidence=0.6,
                     rationale="Correcting declining performance pattern",
@@ -648,7 +670,9 @@ class WINAContinuousLearningSystem:
         try:
             component_profile = self.component_profiles.get(action.component_target)
             if not component_profile:
-                logger.warning(f"No profile found for component {action.component_target}")
+                logger.warning(
+                    f"No profile found for component {action.component_target}"
+                )
                 return
 
             # Apply parameter adjustments within bounds
@@ -672,11 +696,15 @@ class WINAContinuousLearningSystem:
 
             # Record in learning history
             performance_estimate = action.expected_impact
-            component_profile.learning_history.append((updated_params.copy(), performance_estimate))
+            component_profile.learning_history.append(
+                (updated_params.copy(), performance_estimate)
+            )
 
             # Keep history manageable
             if len(component_profile.learning_history) > 100:
-                component_profile.learning_history = component_profile.learning_history[-50:]
+                component_profile.learning_history = component_profile.learning_history[
+                    -50:
+                ]
 
             logger.debug(
                 f"Learning action executed for {action.component_target.value}: {action.rationale}"
@@ -695,7 +723,9 @@ class WINAContinuousLearningSystem:
                     strategy_effectiveness=action.confidence,
                     feedback_quality=0.8,  # Placeholder
                 )
-                await self.performance_collector.record_learning_feedback_metrics(learning_metrics)
+                await self.performance_collector.record_learning_feedback_metrics(
+                    learning_metrics
+                )
 
             self.learning_metrics["successful_adaptations"] += 1
 
@@ -725,9 +755,9 @@ class WINAContinuousLearningSystem:
 
                 # Keep trend history manageable
                 if len(self.learning_state.performance_trend) > 100:
-                    self.learning_state.performance_trend = self.learning_state.performance_trend[
-                        -50:
-                    ]
+                    self.learning_state.performance_trend = (
+                        self.learning_state.performance_trend[-50:]
+                    )
 
                 # Update average performance improvement metric
                 if len(self.learning_state.performance_trend) > 1:
@@ -735,7 +765,9 @@ class WINAContinuousLearningSystem:
                         self.learning_state.performance_trend[-1]
                         - self.learning_state.performance_trend[0]
                     ) / len(self.learning_state.performance_trend)
-                    self.learning_metrics["average_performance_improvement"] = improvement
+                    self.learning_metrics["average_performance_improvement"] = (
+                        improvement
+                    )
 
             # Determine learning phase
             await self._update_learning_phase()
@@ -854,7 +886,9 @@ class WINAContinuousLearningSystem:
             recent_performance = [perf for _, perf in profile.learning_history[-10:]]
 
             if len(recent_performance) > 1:
-                (recent_performance[-1] - recent_performance[0]) / len(recent_performance)
+                (recent_performance[-1] - recent_performance[0]) / len(
+                    recent_performance
+                )
 
                 # Update stability score
                 variance = np.var(recent_performance)
@@ -867,7 +901,9 @@ class WINAContinuousLearningSystem:
                     profile.adaptation_rate = min(0.2, profile.adaptation_rate + 0.02)
 
         except Exception as e:
-            logger.warning(f"Component performance analysis failed for {component_type}: {e}")
+            logger.warning(
+                f"Component performance analysis failed for {component_type}: {e}"
+            )
 
     async def _optimize_learning_strategy(self):
         # requires: Valid input parameters

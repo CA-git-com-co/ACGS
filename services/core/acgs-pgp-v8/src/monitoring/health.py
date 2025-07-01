@@ -137,7 +137,9 @@ class HealthMonitor:
 
         # Wait for tasks to complete
         if self.monitoring_tasks:
-            await asyncio.gather(*self.monitoring_tasks.values(), return_exceptions=True)
+            await asyncio.gather(
+                *self.monitoring_tasks.values(), return_exceptions=True
+            )
 
         self.monitoring_tasks.clear()
         logger.info("Health monitoring stopped")
@@ -295,7 +297,9 @@ class HealthMonitor:
         # Calculate health percentages
         total_checks = len(self.health_results)
         healthy_checks = sum(
-            1 for result in self.health_results.values() if result.status == HealthStatus.HEALTHY
+            1
+            for result in self.health_results.values()
+            if result.status == HealthStatus.HEALTHY
         )
 
         health_percentage = healthy_checks / total_checks if total_checks > 0 else 0
@@ -306,10 +310,14 @@ class HealthMonitor:
             message = f"System healthy ({healthy_checks}/{total_checks} checks passing)"
         elif health_percentage >= self.degraded_threshold:
             overall_status = HealthStatus.DEGRADED
-            message = f"System degraded ({healthy_checks}/{total_checks} checks passing)"
+            message = (
+                f"System degraded ({healthy_checks}/{total_checks} checks passing)"
+            )
         else:
             overall_status = HealthStatus.UNHEALTHY
-            message = f"System unhealthy ({healthy_checks}/{total_checks} checks passing)"
+            message = (
+                f"System unhealthy ({healthy_checks}/{total_checks} checks passing)"
+            )
 
         return {
             "status": overall_status.value,

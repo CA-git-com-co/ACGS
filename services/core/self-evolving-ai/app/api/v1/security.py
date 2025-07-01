@@ -23,7 +23,9 @@ router = APIRouter()
 class ThreatDetectionRequest(BaseModel):
     """Request model for threat detection."""
 
-    event_data: dict[str, Any] = Field(..., description="Event data to analyze for threats")
+    event_data: dict[str, Any] = Field(
+        ..., description="Event data to analyze for threats"
+    )
     source: str = Field(..., description="Source of the event")
     event_type: str = Field(..., description="Type of event")
 
@@ -42,7 +44,9 @@ class SecurityAssessmentRequest(BaseModel):
 
     assessment_type: str = Field(..., description="Type of security assessment")
     target_resource: str = Field(..., description="Target resource for assessment")
-    assessment_data: dict[str, Any] = Field(default_factory=dict, description="Assessment data")
+    assessment_data: dict[str, Any] = Field(
+        default_factory=dict, description="Assessment data"
+    )
 
 
 class SecurityResponse(BaseModel):
@@ -92,7 +96,9 @@ async def detect_threat(
                     "threat_level": threat_assessment.threat_level.value,
                     "threat_type": threat_assessment.threat_type,
                     "description": threat_assessment.description,
-                    "affected_layers": [layer.value for layer in threat_assessment.affected_layers],
+                    "affected_layers": [
+                        layer.value for layer in threat_assessment.affected_layers
+                    ],
                     "mitigation_required": threat_assessment.mitigation_required,
                     "mitigation_actions": threat_assessment.mitigation_actions,
                     "confidence_score": threat_assessment.confidence_score,
@@ -166,7 +172,9 @@ async def perform_security_assessment(
             requester_id="security_assessment_api",
         )
 
-        assessment_result = await security_manager.assess_evolution_security(mock_evolution)
+        assessment_result = await security_manager.assess_evolution_security(
+            mock_evolution
+        )
 
         return SecurityResponse(
             success=True,
@@ -227,7 +235,9 @@ async def get_active_threats(
                     "threat_level": threat.threat_level.value,
                     "threat_type": threat.threat_type,
                     "description": threat.description,
-                    "affected_layers": [layer.value for layer in threat.affected_layers],
+                    "affected_layers": [
+                        layer.value for layer in threat.affected_layers
+                    ],
                     "mitigation_required": threat.mitigation_required,
                     "mitigation_actions": threat.mitigation_actions,
                     "confidence_score": threat.confidence_score,
@@ -242,10 +252,18 @@ async def get_active_threats(
                 "active_threats": active_threats,
                 "total_count": len(active_threats),
                 "threat_levels": {
-                    "critical": len([t for t in active_threats if t["threat_level"] == "critical"]),
-                    "high": len([t for t in active_threats if t["threat_level"] == "high"]),
-                    "medium": len([t for t in active_threats if t["threat_level"] == "medium"]),
-                    "low": len([t for t in active_threats if t["threat_level"] == "low"]),
+                    "critical": len(
+                        [t for t in active_threats if t["threat_level"] == "critical"]
+                    ),
+                    "high": len(
+                        [t for t in active_threats if t["threat_level"] == "high"]
+                    ),
+                    "medium": len(
+                        [t for t in active_threats if t["threat_level"] == "medium"]
+                    ),
+                    "low": len(
+                        [t for t in active_threats if t["threat_level"] == "low"]
+                    ),
                 },
             },
         }
@@ -268,7 +286,9 @@ async def get_security_events(
     try:
         # Get recent security events (limited)
         recent_events = (
-            security_manager.security_events[-limit:] if security_manager.security_events else []
+            security_manager.security_events[-limit:]
+            if security_manager.security_events
+            else []
         )
 
         events_data = []
@@ -321,7 +341,11 @@ async def get_security_layers_status(
                 "layers": layers_status,
                 "total_layers": len(layers_status),
                 "active_layers": len(
-                    [layer for layer in layers_status.values() if layer.get("status") == "active"]
+                    [
+                        layer
+                        for layer in layers_status.values()
+                        if layer.get("status") == "active"
+                    ]
                 ),
                 "layer_health": {
                     layer_name: layer_info.get("status", "unknown")

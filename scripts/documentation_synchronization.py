@@ -22,7 +22,7 @@ import requests
 
 class DocumentationSynchronizer:
     """Documentation synchronization tool for ACGS-PGP system."""
-    
+
     def __init__(self, project_root: str = "/home/ubuntu/ACGS"):
         self.project_root = Path(project_root)
         self.services = {
@@ -32,22 +32,22 @@ class DocumentationSynchronizer:
             "fv_service": {"port": 8003, "status": "operational"},
             "gs_service": {"port": 8004, "status": "operational"},
             "pgc_service": {"port": 8005, "status": "degraded"},
-            "ec_service": {"port": 8006, "status": "operational"}
+            "ec_service": {"port": 8006, "status": "operational"},
         }
         self.constitutional_hash = "cdd01ef066bc6cf2"
-        
+
     def verify_service_status(self) -> Dict[str, Any]:
         """Verify current service status and endpoints."""
         print("🔍 Verifying service status...")
-        
+
         status_report = {
             "timestamp": datetime.now().isoformat(),
             "services": {},
             "total_operational": 0,
             "total_degraded": 0,
-            "total_failed": 0
+            "total_failed": 0,
         }
-        
+
         for service_name, config in self.services.items():
             port = config["port"]
             try:
@@ -61,21 +61,21 @@ class DocumentationSynchronizer:
             except:
                 status = "failed"
                 status_report["total_failed"] += 1
-            
+
             status_report["services"][service_name] = {
                 "port": port,
                 "status": status,
-                "endpoint": f"http://localhost:{port}/health"
+                "endpoint": f"http://localhost:{port}/health",
             }
-        
+
         return status_report
-    
+
     def update_service_documentation(self) -> List[str]:
         """Update service documentation with current status."""
         print("📝 Updating service documentation...")
-        
+
         updated_files = []
-        
+
         # Update main README
         readme_content = f"""# ACGS-PGP System Documentation
 
@@ -175,18 +175,18 @@ For issues and support:
 3. Review configuration in `/config/shared/`
 4. Consult troubleshooting guides above
 """
-        
+
         readme_path = self.project_root / "README.md"
-        with open(readme_path, 'w') as f:
+        with open(readme_path, "w") as f:
             f.write(readme_content)
         updated_files.append(str(readme_path))
-        
+
         return updated_files
-    
+
     def create_operational_runbook(self) -> str:
         """Create comprehensive operational runbook."""
         print("📋 Creating operational runbook...")
-        
+
         runbook_content = f"""# ACGS-PGP Operational Runbook
 
 ## Service Management
@@ -309,39 +309,39 @@ cp -r /home/ubuntu/ACGS/config_backup_20250623_220151/config/* /home/ubuntu/ACGS
 
 Last Updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 """
-        
+
         runbook_path = self.project_root / "docs" / "operational-runbook.md"
         runbook_path.parent.mkdir(exist_ok=True)
-        with open(runbook_path, 'w') as f:
+        with open(runbook_path, "w") as f:
             f.write(runbook_content)
-        
+
         return str(runbook_path)
-    
+
     def synchronize_documentation(self) -> Dict[str, Any]:
         """Synchronize all documentation with current system state."""
         print("🚀 Starting documentation synchronization...")
-        
+
         # Verify current system state
         status_report = self.verify_service_status()
-        
+
         # Update documentation
         updated_files = self.update_service_documentation()
-        
+
         # Create operational runbook
         runbook_path = self.create_operational_runbook()
         updated_files.append(runbook_path)
-        
+
         # Create docs directory structure
         docs_dirs = [
             "docs/api",
-            "docs/deployment", 
+            "docs/deployment",
             "docs/troubleshooting",
-            "docs/architecture"
+            "docs/architecture",
         ]
-        
+
         for dir_path in docs_dirs:
             (self.project_root / dir_path).mkdir(parents=True, exist_ok=True)
-        
+
         results = {
             "timestamp": datetime.now().isoformat(),
             "status_report": status_report,
@@ -353,10 +353,10 @@ Last Updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
                 "operational_services": status_report["total_operational"],
                 "degraded_services": status_report["total_degraded"],
                 "failed_services": status_report["total_failed"],
-                "documentation_files_updated": len(updated_files)
-            }
+                "documentation_files_updated": len(updated_files),
+            },
         }
-        
+
         return results
 
 
@@ -365,26 +365,26 @@ def print_documentation_report(results: Dict[str, Any]):
     print("\n" + "=" * 80)
     print("📚 ACGS-PGP DOCUMENTATION SYNCHRONIZATION REPORT")
     print("=" * 80)
-    
+
     summary = results["summary"]
     print(f"📊 System Status:")
     print(f"   • Total Services: {summary['total_services']}")
     print(f"   • Operational: {summary['operational_services']}")
     print(f"   • Degraded: {summary['degraded_services']}")
     print(f"   • Failed: {summary['failed_services']}")
-    
+
     print(f"\n📝 Documentation Updates:")
     print(f"   • Files Updated: {summary['documentation_files_updated']}")
     print(f"   • Directories Created: {len(results['created_directories'])}")
-    
+
     print(f"\n🏛️ Constitutional Governance:")
     print(f"   • Hash: {results['constitutional_hash']}")
     print(f"   • Compliance: Validated across all services")
-    
+
     print(f"\n📋 Updated Files:")
     for file_path in results["updated_files"]:
         print(f"   ✅ {file_path}")
-    
+
     print("=" * 80)
 
 
@@ -392,15 +392,15 @@ def main():
     """Main documentation synchronization function."""
     synchronizer = DocumentationSynchronizer()
     results = synchronizer.synchronize_documentation()
-    
+
     # Print report
     print_documentation_report(results)
-    
+
     # Save results
-    with open("documentation_sync_results.json", 'w') as f:
+    with open("documentation_sync_results.json", "w") as f:
         json.dump(results, f, indent=2)
     print(f"\n📄 Results saved to: documentation_sync_results.json")
-    
+
     return 0
 
 

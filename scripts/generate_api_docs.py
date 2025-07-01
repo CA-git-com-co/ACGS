@@ -8,11 +8,12 @@ import os
 from pathlib import Path
 from datetime import datetime
 
+
 def create_service_api_doc(service_name, port, description, endpoints):
     """Create API documentation for a service."""
-    
-    service_slug = service_name.lower().replace(' ', '_').replace('-', '_')
-    
+
+    service_slug = service_name.lower().replace(" ", "_").replace("-", "_")
+
     content = f"""# {service_name} API Documentation
 
 ## Overview
@@ -57,7 +58,7 @@ Returns the current health status of the {service_name}.
 ```
 
 """
-    
+
     # Add endpoint documentation
     for endpoint in endpoints:
         content += f"""### {endpoint['name']}
@@ -69,23 +70,23 @@ Returns the current health status of the {service_name}.
 **Authentication**: {'Required' if endpoint.get('auth', True) else 'Not required'}
 
 """
-        
-        if 'request' in endpoint:
+
+        if "request" in endpoint:
             content += f"""**Request Body**:
 ```json
 {endpoint['request']}
 ```
 
 """
-        
-        if 'response' in endpoint:
+
+        if "response" in endpoint:
             content += f"""**Response (200 OK)**:
 ```json
 {endpoint['response']}
 ```
 
 """
-    
+
     # Add common sections
     content += f"""## Error Responses
 
@@ -172,12 +173,13 @@ Returns Prometheus-formatted metrics for monitoring.
 
 **For additional support or questions, please refer to the [ACGS-1 Documentation](../README.md) or contact the development team.**
 """
-    
+
     return content
+
 
 def main():
     """Generate API documentation for all services."""
-    
+
     # Define services and their endpoints
     services = [
         {
@@ -192,24 +194,24 @@ def main():
                     "description": "Authenticate user and return JWT token.",
                     "auth": False,
                     "request": '{"username": "user", "password": "password"}',
-                    "response": '{"access_token": "jwt_token", "token_type": "bearer", "expires_in": 3600}'
+                    "response": '{"access_token": "jwt_token", "token_type": "bearer", "expires_in": 3600}',
                 },
                 {
                     "name": "Token Refresh",
-                    "method": "POST", 
+                    "method": "POST",
                     "path": "/auth/refresh",
                     "description": "Refresh an existing JWT token.",
                     "request": '{"refresh_token": "refresh_token"}',
-                    "response": '{"access_token": "new_jwt_token", "expires_in": 3600}'
+                    "response": '{"access_token": "new_jwt_token", "expires_in": 3600}',
                 },
                 {
                     "name": "User Profile",
                     "method": "GET",
                     "path": "/auth/profile",
                     "description": "Get current user profile information.",
-                    "response": '{"user_id": "123", "username": "user", "roles": ["citizen"], "permissions": ["read", "write"]}'
-                }
-            ]
+                    "response": '{"user_id": "123", "username": "user", "roles": ["citizen"], "permissions": ["read", "write"]}',
+                },
+            ],
         },
         {
             "name": "Integrity Service",
@@ -222,7 +224,7 @@ def main():
                     "path": "/api/v1/sign",
                     "description": "Create digital signature for document or data.",
                     "request": '{"document": "content", "signer_id": "user123"}',
-                    "response": '{"signature": "digital_signature", "signature_id": "sig_123", "timestamp": "2024-06-20T10:30:00Z"}'
+                    "response": '{"signature": "digital_signature", "signature_id": "sig_123", "timestamp": "2024-06-20T10:30:00Z"}',
                 },
                 {
                     "name": "Signature Verification",
@@ -230,9 +232,9 @@ def main():
                     "path": "/api/v1/verify",
                     "description": "Verify digital signature authenticity.",
                     "request": '{"document": "content", "signature": "digital_signature"}',
-                    "response": '{"valid": true, "signer_id": "user123", "timestamp": "2024-06-20T10:30:00Z"}'
-                }
-            ]
+                    "response": '{"valid": true, "signer_id": "user123", "timestamp": "2024-06-20T10:30:00Z"}',
+                },
+            ],
         },
         {
             "name": "Formal Verification Service",
@@ -245,9 +247,9 @@ def main():
                     "path": "/api/v1/verify-policy",
                     "description": "Formally verify policy consistency and completeness.",
                     "request": '{"policy": "policy_text", "rules": ["consistency", "completeness"]}',
-                    "response": '{"verified": true, "issues": [], "confidence": 0.95}'
+                    "response": '{"verified": true, "issues": [], "confidence": 0.95}',
                 }
-            ]
+            ],
         },
         {
             "name": "Governance Synthesis Service",
@@ -260,9 +262,9 @@ def main():
                     "path": "/api/v1/synthesize",
                     "description": "Synthesize policy from multiple inputs and requirements.",
                     "request": '{"inputs": ["req1", "req2"], "stakeholders": ["citizens"], "principles": ["fairness"]}',
-                    "response": '{"synthesized_policy": "policy_text", "confidence": 0.88, "alternatives": []}'
+                    "response": '{"synthesized_policy": "policy_text", "confidence": 0.88, "alternatives": []}',
                 }
-            ]
+            ],
         },
         {
             "name": "Policy Governance Service",
@@ -275,7 +277,7 @@ def main():
                     "path": "/api/v1/policies",
                     "description": "Create a new policy for governance.",
                     "request": '{"title": "Policy Title", "description": "Description", "category": "governance"}',
-                    "response": '{"policy_id": "pol_123", "status": "draft", "created_at": "2024-06-20T10:30:00Z"}'
+                    "response": '{"policy_id": "pol_123", "status": "draft", "created_at": "2024-06-20T10:30:00Z"}',
                 },
                 {
                     "name": "Vote on Policy",
@@ -283,9 +285,9 @@ def main():
                     "path": "/api/v1/policies/{id}/vote",
                     "description": "Cast vote on a policy proposal.",
                     "request": '{"vote": "approve", "comment": "Supports transparency"}',
-                    "response": '{"vote_id": "vote_123", "status": "recorded", "timestamp": "2024-06-20T10:30:00Z"}'
-                }
-            ]
+                    "response": '{"vote_id": "vote_123", "status": "recorded", "timestamp": "2024-06-20T10:30:00Z"}',
+                },
+            ],
         },
         {
             "name": "Evolutionary Computation Service",
@@ -298,9 +300,9 @@ def main():
                     "path": "/api/v1/evolve",
                     "description": "Start evolutionary optimization process.",
                     "request": '{"initial_policies": ["pol1"], "fitness_criteria": ["effectiveness"], "generations": 10}',
-                    "response": '{"evolution_id": "evo_123", "status": "running", "estimated_completion": "2024-06-20T11:00:00Z"}'
+                    "response": '{"evolution_id": "evo_123", "status": "running", "estimated_completion": "2024-06-20T11:00:00Z"}',
                 }
-            ]
+            ],
         },
         {
             "name": "Darwin Gödel Machine Service",
@@ -313,9 +315,9 @@ def main():
                     "path": "/api/v1/improve",
                     "description": "Trigger self-improvement process.",
                     "request": '{"target_component": "policy_analysis", "improvement_type": "performance"}',
-                    "response": '{"improvement_id": "imp_123", "status": "initiated", "expected_benefit": 0.15}'
+                    "response": '{"improvement_id": "imp_123", "status": "initiated", "expected_benefit": 0.15}',
                 }
-            ]
+            ],
         },
         {
             "name": "OCR Service",
@@ -328,35 +330,38 @@ def main():
                     "path": "/api/v1/ocr/extract",
                     "description": "Extract text from image or document.",
                     "request": '{"image_data": "base64_encoded_image", "format": "pdf"}',
-                    "response": '{"extracted_text": "Document text content", "confidence": 0.95, "processing_time_ms": 1200}'
+                    "response": '{"extracted_text": "Document text content", "confidence": 0.95, "processing_time_ms": 1200}',
                 }
-            ]
-        }
+            ],
+        },
     ]
-    
+
     # Create docs directory if it doesn't exist
     docs_dir = Path("docs/api")
     docs_dir.mkdir(parents=True, exist_ok=True)
-    
+
     # Generate documentation for each service
     for service in services:
-        filename = f"{service['name'].lower().replace(' ', '_').replace('-', '_')}_api.md"
-        filepath = docs_dir / filename
-        
-        content = create_service_api_doc(
-            service['name'],
-            service['port'],
-            service['description'],
-            service['endpoints']
+        filename = (
+            f"{service['name'].lower().replace(' ', '_').replace('-', '_')}_api.md"
         )
-        
-        with open(filepath, 'w') as f:
+        filepath = docs_dir / filename
+
+        content = create_service_api_doc(
+            service["name"],
+            service["port"],
+            service["description"],
+            service["endpoints"],
+        )
+
+        with open(filepath, "w") as f:
             f.write(content)
-        
+
         print(f"✅ Generated API documentation: {filepath}")
-    
+
     print(f"\n🎉 API documentation generation complete!")
     print(f"📁 Documentation files created in: {docs_dir}")
+
 
 if __name__ == "__main__":
     main()

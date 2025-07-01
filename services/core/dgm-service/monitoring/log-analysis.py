@@ -46,13 +46,17 @@ class LogAnalyzer:
                 r'"event_type":\s*"constitutional_compliance".*"compliant":\s*false'
             ),
             "performance_degradation": re.compile(r'"threshold_exceeded":\s*true'),
-            "auth_failure": re.compile(r'"event_type":\s*"authentication".*"success":\s*false'),
+            "auth_failure": re.compile(
+                r'"event_type":\s*"authentication".*"success":\s*false'
+            ),
             "high_response_time": re.compile(r'"duration_ms":\s*([0-9]+)'),
             "improvement_failure": re.compile(r'"improvement_event_type":\s*"failed"'),
             "database_error": re.compile(
                 r'"event_type":\s*"database_operation".*"error":\s*"[^"]+"'
             ),
-            "model_request_failure": re.compile(r'"provider":\s*"[^"]+".*"status":\s*"failed"'),
+            "model_request_failure": re.compile(
+                r'"provider":\s*"[^"]+".*"status":\s*"failed"'
+            ),
             "cache_miss": re.compile(r'"cache_hit_rate":\s*([0-9.]+)'),
         }
 
@@ -109,9 +113,13 @@ class LogAnalyzer:
             # Handle non-JSON logs
             await self.process_unstructured_log(line, source)
 
-    async def process_structured_log(self, log_data: Dict[str, Any], source: str) -> None:
+    async def process_structured_log(
+        self, log_data: Dict[str, Any], source: str
+    ) -> None:
         """Process structured JSON log entry."""
-        timestamp = datetime.fromisoformat(log_data.get("timestamp", datetime.now().isoformat()))
+        timestamp = datetime.fromisoformat(
+            log_data.get("timestamp", datetime.now().isoformat())
+        )
         level = log_data.get("level", "INFO")
         event_type = log_data.get("event_type", "general")
 
@@ -143,12 +151,16 @@ class LogAnalyzer:
 
         self.metrics[f"{source}_total"] += 1
 
-    async def check_patterns(self, log_data: Dict[str, Any], event: Dict[str, Any]) -> None:
+    async def check_patterns(
+        self, log_data: Dict[str, Any], event: Dict[str, Any]
+    ) -> None:
         """Check log data against known patterns."""
         # Constitutional violations
-        if log_data.get("event_type") == "constitutional_compliance" and not log_data.get(
-            "constitutional", {}
-        ).get("compliant", True):
+        if log_data.get(
+            "event_type"
+        ) == "constitutional_compliance" and not log_data.get("constitutional", {}).get(
+            "compliant", True
+        ):
             await self.trigger_alert("constitutional_violation", event, "critical")
 
         # Performance issues
@@ -156,7 +168,9 @@ class LogAnalyzer:
             await self.trigger_alert("performance_degradation", event, "warning")
 
         # Authentication failures
-        if log_data.get("event_type") == "authentication" and not log_data.get("success", True):
+        if log_data.get("event_type") == "authentication" and not log_data.get(
+            "success", True
+        ):
             await self.trigger_alert("auth_failure", event, "warning")
 
         # High response times
@@ -176,11 +190,14 @@ class LogAnalyzer:
         cache_hit_rate = log_data.get("cache_hit_rate")
         if (
             cache_hit_rate is not None
-            and cache_hit_rate < self.alert_thresholds["low_cache_hit_rate"]["threshold"]
+            and cache_hit_rate
+            < self.alert_thresholds["low_cache_hit_rate"]["threshold"]
         ):
             await self.trigger_alert("low_cache_hit_rate", event, "warning")
 
-    async def trigger_alert(self, alert_type: str, event: Dict[str, Any], severity: str) -> None:
+    async def trigger_alert(
+        self, alert_type: str, event: Dict[str, Any], severity: str
+    ) -> None:
         """Trigger an alert."""
         alert = {
             "timestamp": datetime.now().isoformat(),
@@ -226,7 +243,9 @@ class LogAnalyzer:
             if response.status_code == 200:
                 print(f"✅ Alert sent to Alertmanager: {alert['alert_type']}")
             else:
-                print(f"❌ Failed to send alert to Alertmanager: {response.status_code}")
+                print(
+                    f"❌ Failed to send alert to Alertmanager: {response.status_code}"
+                )
 
         except Exception as e:
             print(f"❌ Error sending alert to Alertmanager: {e}")
@@ -265,7 +284,9 @@ class LogAnalyzer:
         print("=" * 60)
 
         # Recent events summary
-        recent_count = len([e for e in self.recent_events if (now - e["timestamp"]).seconds < 300])
+        recent_count = len(
+            [e for e in self.recent_events if (now - e["timestamp"]).seconds < 300]
+        )
         print(f"Recent events (5min): {recent_count}")
 
         # Error rates
@@ -274,9 +295,13 @@ class LogAnalyzer:
         print(f"Errors: {error_count}, Warnings: {warning_count}")
 
         # Top event types
-        event_metrics = {k: v for k, v in self.metrics.items() if k.startswith("event_")}
+        event_metrics = {
+            k: v for k, v in self.metrics.items() if k.startswith("event_")
+        }
         if event_metrics:
-            top_events = sorted(event_metrics.items(), key=lambda x: x[1], reverse=True)[:5]
+            top_events = sorted(
+                event_metrics.items(), key=lambda x: x[1], reverse=True
+            )[:5]
             print("Top event types:")
             for event_type, count in top_events:
                 print(f"  {event_type}: {count}")
@@ -287,8 +312,12 @@ class LogAnalyzer:
 async def main():
     """Main function."""
     parser = argparse.ArgumentParser(description="DGM Service Log Analysis Tool")
-    parser.add_argument("--log-dir", default="/var/log/dgm-service", help="Log directory path")
-    parser.add_argument("--interval", type=int, default=5, help="Monitoring interval in seconds")
+    parser.add_argument(
+        "--log-dir", default="/var/log/dgm-service", help="Log directory path"
+    )
+    parser.add_argument(
+        "--interval", type=int, default=5, help="Monitoring interval in seconds"
+    )
     parser.add_argument("--analyze-file", help="Analyze a specific log file")
 
     args = parser.parse_args()

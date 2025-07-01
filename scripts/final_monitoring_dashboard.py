@@ -20,16 +20,17 @@ import uvicorn
 SERVICES = {
     "ac_service": "http://localhost:8001",
     "hitl_service": "http://localhost:8008",
-    "auth_service": "http://localhost:8016"
+    "auth_service": "http://localhost:8016",
 }
 
 app = FastAPI(title="ACGS Final Monitoring Dashboard")
+
 
 class FinalACGSMonitor:
     def __init__(self):
         self.http_client = httpx.AsyncClient(timeout=10.0)
         self.alerts = []
-        
+
     async def get_service_health(self) -> Dict[str, Any]:
         """Get health status of all services."""
         health_data = {
@@ -37,22 +38,24 @@ class FinalACGSMonitor:
             "services": {},
             "overall_status": "healthy",
             "healthy_services": 0,
-            "total_services": len(SERVICES)
+            "total_services": len(SERVICES),
         }
-        
+
         for service_name, service_url in SERVICES.items():
             try:
                 start_time = time.perf_counter()
-                response = await self.http_client.get(f"{service_url}/health", timeout=5.0)
+                response = await self.http_client.get(
+                    f"{service_url}/health", timeout=5.0
+                )
                 response_time = (time.perf_counter() - start_time) * 1000
-                
+
                 service_data = {
                     "status": "healthy" if response.status_code == 200 else "unhealthy",
                     "response_time_ms": response_time,
                     "status_code": response.status_code,
-                    "last_check": datetime.utcnow().isoformat()
+                    "last_check": datetime.utcnow().isoformat(),
                 }
-                
+
                 if response.status_code == 200:
                     health_data["healthy_services"] += 1
                     try:
@@ -61,19 +64,19 @@ class FinalACGSMonitor:
                         pass
                 else:
                     health_data["overall_status"] = "degraded"
-                    
+
                 health_data["services"][service_name] = service_data
-                
+
             except Exception as e:
                 health_data["services"][service_name] = {
                     "status": "error",
                     "error": str(e),
-                    "last_check": datetime.utcnow().isoformat()
+                    "last_check": datetime.utcnow().isoformat(),
                 }
                 health_data["overall_status"] = "degraded"
-        
+
         return health_data
-    
+
     async def test_hitl_performance(self) -> Dict[str, Any]:
         """Test HITL service performance."""
         try:
@@ -84,66 +87,74 @@ class FinalACGSMonitor:
                 "operation_description": "Dashboard monitoring test",
                 "operation_context": {
                     "constitutional_hash": "cdd01ef066bc6cf2",
-                    "test_id": "dashboard-monitor"
-                }
+                    "test_id": "dashboard-monitor",
+                },
             }
-            
+
             start_time = time.perf_counter()
             response = await self.http_client.post(
                 f"{SERVICES['hitl_service']}/api/v1/reviews/evaluate",
                 json=test_request,
-                timeout=5.0
+                timeout=5.0,
             )
             end_time = time.perf_counter()
-            
+
             latency_ms = (end_time - start_time) * 1000
-            
+
             return {
                 "latency_ms": latency_ms,
                 "success": response.status_code == 200,
                 "status_code": response.status_code,
-                "response_data": response.json() if response.status_code == 200 else None,
-                "last_updated": datetime.utcnow().isoformat()
+                "response_data": (
+                    response.json() if response.status_code == 200 else None
+                ),
+                "last_updated": datetime.utcnow().isoformat(),
             }
-                
+
         except Exception as e:
             return {"error": str(e), "success": False}
-    
+
     async def get_dashboard_data(self) -> Dict[str, Any]:
         """Get comprehensive dashboard data."""
         service_health = await self.get_service_health()
         hitl_performance = await self.test_hitl_performance()
-        
+
         # Check for alerts
         new_alerts = []
         if hitl_performance.get("latency_ms", 0) > 5.0:
-            new_alerts.append({
-                "type": "performance",
-                "severity": "warning",
-                "message": f"HITL latency ({hitl_performance['latency_ms']:.2f}ms) exceeds 5ms target",
-                "timestamp": datetime.utcnow().isoformat()
-            })
-        
+            new_alerts.append(
+                {
+                    "type": "performance",
+                    "severity": "warning",
+                    "message": f"HITL latency ({hitl_performance['latency_ms']:.2f}ms) exceeds 5ms target",
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
+
         if not hitl_performance.get("success", False):
-            new_alerts.append({
-                "type": "reliability",
-                "severity": "error",
-                "message": "HITL service not responding correctly",
-                "timestamp": datetime.utcnow().isoformat()
-            })
-        
+            new_alerts.append(
+                {
+                    "type": "reliability",
+                    "severity": "error",
+                    "message": "HITL service not responding correctly",
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
+
         if service_health["overall_status"] != "healthy":
-            new_alerts.append({
-                "type": "system",
-                "severity": "warning",
-                "message": f"System status degraded: {service_health['healthy_services']}/{service_health['total_services']} services healthy",
-                "timestamp": datetime.utcnow().isoformat()
-            })
-        
+            new_alerts.append(
+                {
+                    "type": "system",
+                    "severity": "warning",
+                    "message": f"System status degraded: {service_health['healthy_services']}/{service_health['total_services']} services healthy",
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
+
         # Add to alerts list (keep last 10)
         self.alerts.extend(new_alerts)
         self.alerts = self.alerts[-10:]
-        
+
         return {
             "system_health": service_health,
             "hitl_performance": hitl_performance,
@@ -153,13 +164,21 @@ class FinalACGSMonitor:
                 "healthy_services": f"{service_health['healthy_services']}/{service_health['total_services']}",
                 "hitl_latency": hitl_performance.get("latency_ms", 0),
                 "hitl_success": hitl_performance.get("success", False),
-                "active_alerts": len([a for a in self.alerts if a.get("severity") in ["warning", "error"]])
+                "active_alerts": len(
+                    [
+                        a
+                        for a in self.alerts
+                        if a.get("severity") in ["warning", "error"]
+                    ]
+                ),
             },
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.utcnow().isoformat(),
         }
+
 
 # Global monitor instance
 monitor = FinalACGSMonitor()
+
 
 @app.get("/", response_class=HTMLResponse)
 async def dashboard():
@@ -337,19 +356,22 @@ async def dashboard():
     """
     return HTMLResponse(content=html_content)
 
+
 @app.get("/api/dashboard")
 async def get_dashboard_api():
     """API endpoint for dashboard data."""
     return await monitor.get_dashboard_data()
 
+
 @app.get("/api/health")
 async def health_check():
     """Health check endpoint."""
     return {
-        "status": "healthy", 
-        "service": "acgs_final_monitoring_dashboard", 
-        "timestamp": datetime.utcnow().isoformat()
+        "status": "healthy",
+        "service": "acgs_final_monitoring_dashboard",
+        "timestamp": datetime.utcnow().isoformat(),
     }
+
 
 async def main():
     """Run the monitoring dashboard."""
@@ -357,10 +379,11 @@ async def main():
     print("📊 Dashboard will be available at: http://localhost:8080")
     print("🔗 API endpoint: http://localhost:8080/api/dashboard")
     print("💡 Press Ctrl+C to stop")
-    
+
     config = uvicorn.Config(app, host="0.0.0.0", port=8080, log_level="info")
     server = uvicorn.Server(config)
     await server.serve()
+
 
 if __name__ == "__main__":
     asyncio.run(main())

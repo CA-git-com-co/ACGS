@@ -40,7 +40,9 @@ class TestGenerationEngine:
         """Create generation engine for testing."""
         return GenerationEngine(generation_config)
 
-    async def test_generation_engine_initialization(self, generation_engine, generation_config):
+    async def test_generation_engine_initialization(
+        self, generation_engine, generation_config
+    ):
         """Test generation engine initialization."""
         assert generation_engine.config == generation_config
         assert generation_engine.constitutional_hash == "cdd01ef066bc6cf2"
@@ -86,7 +88,9 @@ class TestGenerationEngine:
         request = PolicyGenerationRequest(**sample_policy_request)
 
         # Generate policy
-        response = await generation_engine.generate_policy(request, use_quantum_enhancement=True)
+        response = await generation_engine.generate_policy(
+            request, use_quantum_enhancement=True
+        )
 
         # Verify response
         assert response.generation_id is not None
@@ -150,8 +154,10 @@ class TestGenerationEngine:
             mock_client_instance.post.return_value = mock_response
             mock_client.return_value.__aenter__.return_value = mock_client_instance
 
-            compliance_result = await generation_engine._validate_constitutional_compliance(
-                test_content
+            compliance_result = (
+                await generation_engine._validate_constitutional_compliance(
+                    test_content
+                )
             )
 
         assert compliance_result["compliance_score"] >= 0.8
@@ -226,7 +232,9 @@ class TestGenerationModels:
 
     def test_representation_creation(self):
         """Test Representation creation and validation."""
-        lsu = LSU(content="Test content", representation_type=RepresentationType.POLICY_DRAFT)
+        lsu = LSU(
+            content="Test content", representation_type=RepresentationType.POLICY_DRAFT
+        )
         representation = Representation(
             lsu=lsu, confidence_score=0.85, constitutional_compliance_score=0.90
         )

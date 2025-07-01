@@ -15,7 +15,9 @@ from typing import Any, Dict, List, Optional
 from sqlalchemy import and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..core.constitutional_council_scalability import ConstitutionalCouncilScalabilityFramework
+from ..core.constitutional_council_scalability import (
+    ConstitutionalCouncilScalabilityFramework,
+)
 from ..models import ACAmendment, ACAmendmentVote, User
 from ..monitoring.scalability_metrics import GovernancePhase, get_metrics_collector
 from ..schemas import ACAmendmentCreate, ACAmendmentVoteCreate
@@ -101,7 +103,9 @@ class DemocraticGovernanceEngine:
         self.scalability_framework = ConstitutionalCouncilScalabilityFramework(db)
 
     async def initiate_democratic_process(
-        self, amendment: ACAmendmentCreate, process_config: Optional[DemocraticProcess] = None
+        self,
+        amendment: ACAmendmentCreate,
+        process_config: Optional[DemocraticProcess] = None,
     ) -> DemocraticProcess:
         """Initiate a new democratic governance process."""
 
@@ -126,8 +130,10 @@ class DemocraticGovernanceEngine:
             process_config.current_phase = GovernancePhase.PROPOSAL
 
             # Calculate eligible participants
-            process_config.eligible_participants = await self._count_eligible_participants(
-                process_config.stakeholder_groups
+            process_config.eligible_participants = (
+                await self._count_eligible_participants(
+                    process_config.stakeholder_groups
+                )
             )
 
             logger.info(
@@ -137,7 +143,8 @@ class DemocraticGovernanceEngine:
             # Record metrics
             await self.metrics_collector.record_amendment_processing_time(
                 amendment_id=process_config.amendment_id,
-                processing_time_ms=(datetime.utcnow() - start_time).total_seconds() * 1000,
+                processing_time_ms=(datetime.utcnow() - start_time).total_seconds()
+                * 1000,
             )
 
             return process_config
@@ -146,7 +153,9 @@ class DemocraticGovernanceEngine:
             logger.error(f"Failed to initiate democratic process: {e}")
             raise
 
-    async def start_consultation_phase(self, process: DemocraticProcess) -> DemocraticProcess:
+    async def start_consultation_phase(
+        self, process: DemocraticProcess
+    ) -> DemocraticProcess:
         """Start the public consultation phase."""
 
         start_time = datetime.utcnow()
@@ -163,7 +172,9 @@ class DemocraticGovernanceEngine:
             if process.expert_review_required:
                 await self._request_expert_reviews(process)
 
-            logger.info(f"Started consultation phase for amendment {process.amendment_id}")
+            logger.info(
+                f"Started consultation phase for amendment {process.amendment_id}"
+            )
 
             return process
 
@@ -171,7 +182,9 @@ class DemocraticGovernanceEngine:
             logger.error(f"Failed to start consultation phase: {e}")
             raise
 
-    async def conduct_democratic_voting(self, process: DemocraticProcess) -> Dict[str, Any]:
+    async def conduct_democratic_voting(
+        self, process: DemocraticProcess
+    ) -> Dict[str, Any]:
         """Conduct democratic voting with configured mechanism."""
 
         start_time = datetime.utcnow()
@@ -181,7 +194,9 @@ class DemocraticGovernanceEngine:
             process.current_phase = GovernancePhase.VOTING
 
             # Get all eligible voters
-            eligible_voters = await self._get_eligible_voters(process.stakeholder_groups)
+            eligible_voters = await self._get_eligible_voters(
+                process.stakeholder_groups
+            )
 
             # Get existing votes
             existing_votes = await self._get_existing_votes(process.amendment_id)
@@ -193,7 +208,9 @@ class DemocraticGovernanceEngine:
 
             # Check if quorum is met
             quorum_met = self._check_quorum(
-                len(existing_votes), len(eligible_voters), process.voting_config.quorum_percentage
+                len(existing_votes),
+                len(eligible_voters),
+                process.voting_config.quorum_percentage,
             )
 
             # Determine if threshold is met
@@ -238,7 +255,9 @@ class DemocraticGovernanceEngine:
             logger.error(f"Failed to conduct democratic voting: {e}")
             raise
 
-    async def _count_eligible_participants(self, stakeholder_groups: List[StakeholderGroup]) -> int:
+    async def _count_eligible_participants(
+        self, stakeholder_groups: List[StakeholderGroup]
+    ) -> int:
         """Count eligible participants across stakeholder groups."""
         try:
             # This would query the database for actual user counts
@@ -262,14 +281,18 @@ class DemocraticGovernanceEngine:
     async def _setup_public_consultation(self, process: DemocraticProcess):
         """Setup public consultation mechanisms."""
         # This would setup public comment systems, forums, etc.
-        logger.info(f"Setting up public consultation for amendment {process.amendment_id}")
+        logger.info(
+            f"Setting up public consultation for amendment {process.amendment_id}"
+        )
 
     async def _request_expert_reviews(self, process: DemocraticProcess):
         """Request expert reviews for the amendment."""
         # This would send notifications to expert advisors
         logger.info(f"Requesting expert reviews for amendment {process.amendment_id}")
 
-    async def _get_eligible_voters(self, stakeholder_groups: List[StakeholderGroup]) -> List[User]:
+    async def _get_eligible_voters(
+        self, stakeholder_groups: List[StakeholderGroup]
+    ) -> List[User]:
         """Get list of eligible voters from stakeholder groups."""
         # This would query the database for actual users
         # For now, return mock data
@@ -328,7 +351,9 @@ class DemocraticGovernanceEngine:
             return False
         return (votes_cast / eligible_voters) >= quorum_percentage
 
-    def _check_threshold(self, voting_results: Dict[str, Any], threshold_percentage: float) -> bool:
+    def _check_threshold(
+        self, voting_results: Dict[str, Any], threshold_percentage: float
+    ) -> bool:
         """Check if voting threshold is met."""
         # This would implement the actual threshold logic based on voting mechanism
         return True  # Mock implementation
@@ -348,6 +373,8 @@ class DemocraticGovernanceEngine:
         return min(1.0, base_score)
 
 
-async def create_democratic_governance_engine(db: AsyncSession) -> DemocraticGovernanceEngine:
+async def create_democratic_governance_engine(
+    db: AsyncSession,
+) -> DemocraticGovernanceEngine:
     """Factory function to create a democratic governance engine."""
     return DemocraticGovernanceEngine(db)

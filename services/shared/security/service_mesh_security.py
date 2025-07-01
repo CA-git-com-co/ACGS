@@ -131,7 +131,9 @@ class ServiceCommunicationRule:
 class ServiceMeshSecurityManager:
     """Comprehensive service mesh security manager."""
 
-    def __init__(self, ca_cert_path: Optional[Path] = None, ca_key_path: Optional[Path] = None):
+    def __init__(
+        self, ca_cert_path: Optional[Path] = None, ca_key_path: Optional[Path] = None
+    ):
         """Initialize service mesh security manager."""
         self.service_identities: Dict[str, ServiceIdentity] = {}
         self.communication_rules: Dict[str, ServiceCommunicationRule] = {}
@@ -159,7 +161,9 @@ class ServiceMeshSecurityManager:
         """Load existing CA certificate and key."""
         try:
             with open(self.ca_cert_path, "rb") as f:
-                self.ca_cert = x509.load_pem_x509_certificate(f.read(), default_backend())
+                self.ca_cert = x509.load_pem_x509_certificate(
+                    f.read(), default_backend()
+                )
 
             with open(self.ca_key_path, "rb") as f:
                 self.ca_key = serialization.load_pem_private_key(
@@ -196,7 +200,9 @@ class ServiceMeshSecurityManager:
             .public_key(self.ca_key.public_key())
             .serial_number(x509.random_serial_number())
             .not_valid_before(datetime.now(timezone.utc))
-            .not_valid_after(datetime.now(timezone.utc) + timedelta(days=3650))  # 10 years
+            .not_valid_after(
+                datetime.now(timezone.utc) + timedelta(days=3650)
+            )  # 10 years
             .add_extension(
                 x509.SubjectAlternativeName(
                     [
@@ -265,9 +271,19 @@ class ServiceMeshSecurityManager:
             # API Gateway to all services
             ("api_gateway", "*", [CommunicationProtocol.HTTPS], ServiceTrustLevel.HIGH),
             # Auth service to all services (for token validation)
-            ("auth_service", "*", [CommunicationProtocol.HTTPS], ServiceTrustLevel.CRITICAL),
+            (
+                "auth_service",
+                "*",
+                [CommunicationProtocol.HTTPS],
+                ServiceTrustLevel.CRITICAL,
+            ),
             # Integrity service to all services (for audit logging)
-            ("integrity_service", "*", [CommunicationProtocol.HTTPS], ServiceTrustLevel.CRITICAL),
+            (
+                "integrity_service",
+                "*",
+                [CommunicationProtocol.HTTPS],
+                ServiceTrustLevel.CRITICAL,
+            ),
             # Constitutional AI service communication
             (
                 "ac_service",
@@ -275,9 +291,19 @@ class ServiceMeshSecurityManager:
                 [CommunicationProtocol.HTTPS],
                 ServiceTrustLevel.HIGH,
             ),
-            ("ac_service", "fv_service", [CommunicationProtocol.HTTPS], ServiceTrustLevel.HIGH),
+            (
+                "ac_service",
+                "fv_service",
+                [CommunicationProtocol.HTTPS],
+                ServiceTrustLevel.HIGH,
+            ),
             # Policy Governance communication
-            ("pgc_service", "ac_service", [CommunicationProtocol.HTTPS], ServiceTrustLevel.HIGH),
+            (
+                "pgc_service",
+                "ac_service",
+                [CommunicationProtocol.HTTPS],
+                ServiceTrustLevel.HIGH,
+            ),
             (
                 "pgc_service",
                 "integrity_service",
@@ -285,10 +311,25 @@ class ServiceMeshSecurityManager:
                 ServiceTrustLevel.HIGH,
             ),
             # Governance Synthesis communication
-            ("gs_service", "ac_service", [CommunicationProtocol.HTTPS], ServiceTrustLevel.MEDIUM),
-            ("gs_service", "fv_service", [CommunicationProtocol.HTTPS], ServiceTrustLevel.MEDIUM),
+            (
+                "gs_service",
+                "ac_service",
+                [CommunicationProtocol.HTTPS],
+                ServiceTrustLevel.MEDIUM,
+            ),
+            (
+                "gs_service",
+                "fv_service",
+                [CommunicationProtocol.HTTPS],
+                ServiceTrustLevel.MEDIUM,
+            ),
             # DGM service communication
-            ("dgm_service", "ac_service", [CommunicationProtocol.HTTPS], ServiceTrustLevel.HIGH),
+            (
+                "dgm_service",
+                "ac_service",
+                [CommunicationProtocol.HTTPS],
+                ServiceTrustLevel.HIGH,
+            ),
             (
                 "dgm_service",
                 "integrity_service",
@@ -329,7 +370,9 @@ class ServiceMeshSecurityManager:
                 x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, "CA"),
                 x509.NameAttribute(NameOID.LOCALITY_NAME, "San Francisco"),
                 x509.NameAttribute(NameOID.ORGANIZATION_NAME, "ACGS-1"),
-                x509.NameAttribute(NameOID.ORGANIZATIONAL_UNIT_NAME, service_identity.namespace),
+                x509.NameAttribute(
+                    NameOID.ORGANIZATIONAL_UNIT_NAME, service_identity.namespace
+                ),
                 x509.NameAttribute(NameOID.COMMON_NAME, service_identity.service_name),
             ]
         )
@@ -402,7 +445,9 @@ class ServiceMeshSecurityManager:
         self.certificates[service_identity.service_name] = cert
         self.private_keys[service_identity.service_name] = private_key
 
-        logger.info(f"Generated certificate for service: {service_identity.service_name}")
+        logger.info(
+            f"Generated certificate for service: {service_identity.service_name}"
+        )
 
     def create_ssl_context(
         self, service_name: str, verify_mode: ssl.VerifyMode = ssl.CERT_REQUIRED

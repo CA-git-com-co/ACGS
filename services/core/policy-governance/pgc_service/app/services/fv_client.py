@@ -66,7 +66,10 @@ class CircuitBreaker:
             else:
                 raise Exception("Circuit breaker is open")
 
-        if self.state == "half-open" and self.half_open_calls >= self.half_open_max_calls:
+        if (
+            self.state == "half-open"
+            and self.half_open_calls >= self.half_open_max_calls
+        ):
             raise Exception("Circuit breaker is half-open and max calls reached")
 
         try:
@@ -183,7 +186,9 @@ class FVServiceClient:
                 if attempt < self.retry_attempts - 1:
                     await asyncio.sleep(self.retry_delay_ms / 1000)
                 else:
-                    logger.error(f"Request to {url} failed after {self.retry_attempts} attempts")
+                    logger.error(
+                        f"Request to {url} failed after {self.retry_attempts} attempts"
+                    )
                     raise
 
     async def _execute_request(

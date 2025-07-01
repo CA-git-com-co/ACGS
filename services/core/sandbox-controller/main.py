@@ -46,10 +46,14 @@ SANDBOX_VIOLATIONS_TOTAL = Counter(
 )
 
 SANDBOX_ESCAPE_ATTEMPTS_TOTAL = Counter(
-    "sandbox_escape_attempts_total", "Total number of sandbox escape attempts", ["pattern"]
+    "sandbox_escape_attempts_total",
+    "Total number of sandbox escape attempts",
+    ["pattern"],
 )
 
-ACTIVE_SANDBOXES = Gauge("active_sandboxes_count", "Number of currently active sandboxes")
+ACTIVE_SANDBOXES = Gauge(
+    "active_sandboxes_count", "Number of currently active sandboxes"
+)
 
 
 # Request/Response Models
@@ -59,7 +63,9 @@ class SandboxExecutionRequest(BaseModel):
     timeout_seconds: int = Field(default=300, description="Execution timeout")
     memory_limit_mb: int = Field(default=2048, description="Memory limit in MB")
     cpu_limit: float = Field(default=0.5, description="CPU limit (cores)")
-    environment: Dict[str, str] = Field(default_factory=dict, description="Environment variables")
+    environment: Dict[str, str] = Field(
+        default_factory=dict, description="Environment variables"
+    )
 
 
 class SandboxExecutionResponse(BaseModel):
@@ -130,7 +136,10 @@ class SandboxController:
                 "syscalls": ["socket", "bind", "connect", "listen"],
                 "severity": "high",
             },
-            "file_traversal": {"paths": ["/etc/", "/root/", "/proc/", "/sys/"], "severity": "high"},
+            "file_traversal": {
+                "paths": ["/etc/", "/root/", "/proc/", "/sys/"],
+                "severity": "high",
+            },
             "shell_execution": {
                 "processes": ["/bin/sh", "/bin/bash", "/bin/zsh"],
                 "severity": "medium",
@@ -175,7 +184,9 @@ class SandboxController:
             logger.error(f"Sandbox execution failed: {e}")
             execution_time = time.time() - start_time
 
-            SANDBOX_EXECUTIONS_TOTAL.labels(result="error", termination_reason="system_error").inc()
+            SANDBOX_EXECUTIONS_TOTAL.labels(
+                result="error", termination_reason="system_error"
+            ).inc()
 
             return SandboxExecutionResponse(
                 execution_id=execution_id,
@@ -232,7 +243,9 @@ class SandboxController:
                 "network_mode": "none",  # No network access
                 "read_only": True,  # Read-only root filesystem
                 "mem_limit": f"{request.memory_limit_mb}m",
-                "cpu_quota": int(request.cpu_limit * 100000),  # CPU quota in microseconds
+                "cpu_quota": int(
+                    request.cpu_limit * 100000
+                ),  # CPU quota in microseconds
                 "cpu_period": 100000,
                 "pids_limit": 100,  # Limit number of processes
                 "security_opt": [
@@ -242,7 +255,9 @@ class SandboxController:
                 "cap_drop": ["ALL"],  # Drop all capabilities
                 "user": "1000:1000",  # Non-root user
                 "working_dir": "/workspace",
-                "volumes": {"/tmp": {"bind": "/workspace", "mode": "rw"}},  # Temporary workspace
+                "volumes": {
+                    "/tmp": {"bind": "/workspace", "mode": "rw"}
+                },  # Temporary workspace
                 "environment": {
                     **request.environment,
                     "PYTHONPATH": "/workspace",
@@ -285,7 +300,9 @@ class SandboxController:
             container.start()
 
             # Start monitoring
-            monitor_task = asyncio.create_task(self._monitor_sandbox_execution(sandbox_info))
+            monitor_task = asyncio.create_task(
+                self._monitor_sandbox_execution(sandbox_info)
+            )
 
             # Wait for completion or timeout
             try:
@@ -415,7 +432,9 @@ class SandboxController:
         # For now, we'll implement basic checks
         pass
 
-    async def _report_violation(self, sandbox_info: Dict[str, Any], violation: Dict[str, Any]):
+    async def _report_violation(
+        self, sandbox_info: Dict[str, Any], violation: Dict[str, Any]
+    ):
         """Report violation to monitoring systems"""
         try:
             # Update metrics
@@ -436,7 +455,9 @@ class SandboxController:
         except Exception as e:
             logger.error(f"Failed to report violation: {e}")
 
-    async def _emergency_containment(self, sandbox_info: Dict[str, Any], violation: Dict[str, Any]):
+    async def _emergency_containment(
+        self, sandbox_info: Dict[str, Any], violation: Dict[str, Any]
+    ):
         """Emergency containment for critical violations"""
         try:
             container = sandbox_info["container"]
@@ -476,7 +497,9 @@ class SandboxController:
         except Exception as e:
             logger.error(f"Forensic snapshot failed: {e}")
 
-    async def _send_to_audit_trail(self, sandbox_info: Dict[str, Any], violation: Dict[str, Any]):
+    async def _send_to_audit_trail(
+        self, sandbox_info: Dict[str, Any], violation: Dict[str, Any]
+    ):
         """Send violation to audit trail"""
         try:
             event = ViolationEvent(
@@ -522,7 +545,8 @@ class SandboxController:
                 - stats["precpu_stats"]["cpu_usage"]["total_usage"]
             )
             system_delta = (
-                stats["cpu_stats"]["system_cpu_usage"] - stats["precpu_stats"]["system_cpu_usage"]
+                stats["cpu_stats"]["system_cpu_usage"]
+                - stats["precpu_stats"]["system_cpu_usage"]
             )
 
             if system_delta > 0:
@@ -580,7 +604,10 @@ class SandboxController:
             try:
                 # Clean up any orphaned containers
                 for execution_id, sandbox_info in list(self.active_sandboxes.items()):
-                    if time.time() - sandbox_info["start_time"] > sandbox_info["timeout"] + 60:
+                    if (
+                        time.time() - sandbox_info["start_time"]
+                        > sandbox_info["timeout"] + 60
+                    ):
                         logger.warning(f"Cleaning up orphaned sandbox: {execution_id}")
                         await self._cleanup_sandbox(sandbox_info)
 

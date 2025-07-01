@@ -133,8 +133,16 @@ class APIVersion:
             return NotImplemented
 
         # Compare major.minor.patch first
-        if (self.major, self.minor, self.patch) != (other.major, other.minor, other.patch):
-            return (self.major, self.minor, self.patch) < (other.major, other.minor, other.patch)
+        if (self.major, self.minor, self.patch) != (
+            other.major,
+            other.minor,
+            other.patch,
+        ):
+            return (self.major, self.minor, self.patch) < (
+                other.major,
+                other.minor,
+                other.patch,
+            )
 
         # Handle prerelease comparison
         if self.prerelease is None and other.prerelease is None:
@@ -231,7 +239,9 @@ class VersionManager:
         # Initialize with current version
         self._register_current_version()
 
-        logger.info(f"VersionManager initialized for {service_name} with version {current_version}")
+        logger.info(
+            f"VersionManager initialized for {service_name} with version {current_version}"
+        )
 
     def _register_current_version(self):
         """Register the current version as stable."""
@@ -266,7 +276,9 @@ class VersionManager:
         elif status == VersionStatus.STABLE and version < self.current_version:
             # Auto-deprecate older stable versions
             deprecated_since = datetime.now(timezone.utc)
-            sunset_date = deprecated_since + timedelta(days=self.deprecation_period_days)
+            sunset_date = deprecated_since + timedelta(
+                days=self.deprecation_period_days
+            )
             status = VersionStatus.DEPRECATED
 
         compatibility = VersionCompatibility(
@@ -285,7 +297,10 @@ class VersionManager:
         return compatibility
 
     def detect_version_from_request(
-        self, request_headers: Dict[str, str], url_path: str, query_params: Dict[str, str]
+        self,
+        request_headers: Dict[str, str],
+        url_path: str,
+        query_params: Dict[str, str],
     ) -> APIVersion:
         """
         Detect API version from multiple sources with priority order:
@@ -300,7 +315,9 @@ class VersionManager:
             try:
                 return APIVersion.from_string(request_headers["api-version"])
             except VersionValidationError:
-                logger.warning(f"Invalid API-Version header: {request_headers['api-version']}")
+                logger.warning(
+                    f"Invalid API-Version header: {request_headers['api-version']}"
+                )
 
         # 2. Check Accept header
         accept_header = request_headers.get("accept", "")
@@ -310,7 +327,9 @@ class VersionManager:
                 try:
                     return APIVersion.from_string(version_match.group(1))
                 except VersionValidationError:
-                    logger.warning(f"Invalid version in Accept header: {version_match.group(1)}")
+                    logger.warning(
+                        f"Invalid version in Accept header: {version_match.group(1)}"
+                    )
 
         # 3. Check URL path
         path_pattern = r"/api/v(\d+)(?:\.(\d+))?(?:\.(\d+))?/"
@@ -326,7 +345,9 @@ class VersionManager:
             try:
                 return APIVersion.from_string(query_params["version"])
             except VersionValidationError:
-                logger.warning(f"Invalid version query parameter: {query_params['version']}")
+                logger.warning(
+                    f"Invalid version query parameter: {query_params['version']}"
+                )
 
         # 5. Default to current version
         return self.current_version
@@ -375,13 +396,18 @@ class VersionManager:
 
         return compatibility
 
-    def _find_compatible_version(self, requested_version: APIVersion) -> Optional[APIVersion]:
+    def _find_compatible_version(
+        self, requested_version: APIVersion
+    ) -> Optional[APIVersion]:
         """Find a compatible version for the requested version."""
         compatible_versions = []
 
         for version_str, compatibility in self.supported_versions.items():
             version = compatibility.version
-            if version.is_compatible_with(requested_version) and compatibility.is_supported():
+            if (
+                version.is_compatible_with(requested_version)
+                and compatibility.is_supported()
+            ):
                 compatible_versions.append(version)
 
         # Return the highest compatible version
@@ -389,25 +415,35 @@ class VersionManager:
 
     def get_supported_versions(self) -> List[VersionCompatibility]:
         """Get all currently supported versions."""
-        return [comp for comp in self.supported_versions.values() if comp.is_supported()]
+        return [
+            comp for comp in self.supported_versions.values() if comp.is_supported()
+        ]
 
     def get_deprecated_versions(self) -> List[VersionCompatibility]:
         """Get all deprecated versions."""
-        return [comp for comp in self.supported_versions.values() if comp.is_deprecated()]
+        return [
+            comp for comp in self.supported_versions.values() if comp.is_deprecated()
+        ]
 
     def get_version_info(self) -> Dict[str, any]:
         """Get comprehensive version information for the service."""
         return {
             "service": self.service_name,
             "current_version": str(self.current_version),
-            "supported_versions": [str(comp.version) for comp in self.get_supported_versions()],
+            "supported_versions": [
+                str(comp.version) for comp in self.get_supported_versions()
+            ],
             "deprecated_versions": [
                 {
                     "version": str(comp.version),
                     "deprecated_since": (
-                        comp.deprecated_since.isoformat() if comp.deprecated_since else None
+                        comp.deprecated_since.isoformat()
+                        if comp.deprecated_since
+                        else None
                     ),
-                    "sunset_date": comp.sunset_date.isoformat() if comp.sunset_date else None,
+                    "sunset_date": (
+                        comp.sunset_date.isoformat() if comp.sunset_date else None
+                    ),
                     "days_until_sunset": comp.days_until_sunset(),
                     "migration_guide": comp.migration_guide_url,
                 }
@@ -448,15 +484,21 @@ class VersionManager:
 
             # Sunset header (RFC 8594)
             if compatibility.sunset_date:
-                headers["Sunset"] = compatibility.sunset_date.strftime("%a, %d %b %Y %H:%M:%S GMT")
+                headers["Sunset"] = compatibility.sunset_date.strftime(
+                    "%a, %d %b %Y %H:%M:%S GMT"
+                )
 
             # Link header for migration guide
             if compatibility.migration_guide_url:
-                headers["Link"] = f'<{compatibility.migration_guide_url}>; rel="successor-version"'
+                headers["Link"] = (
+                    f'<{compatibility.migration_guide_url}>; rel="successor-version"'
+                )
 
         return headers
 
-    def bump_version(self, policy: VersionPolicy, prerelease: Optional[str] = None) -> APIVersion:
+    def bump_version(
+        self, policy: VersionPolicy, prerelease: Optional[str] = None
+    ) -> APIVersion:
         """
         Bump version according to semantic versioning rules.
 
@@ -475,7 +517,10 @@ class VersionManager:
             )
         elif policy == VersionPolicy.MINOR:
             new_version = APIVersion(
-                major=current.major, minor=current.minor + 1, patch=0, prerelease=prerelease
+                major=current.major,
+                minor=current.minor + 1,
+                patch=0,
+                prerelease=prerelease,
             )
         else:  # PATCH
             new_version = APIVersion(

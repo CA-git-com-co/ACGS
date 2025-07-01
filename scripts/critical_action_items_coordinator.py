@@ -97,7 +97,9 @@ class CriticalActionItemsCoordinator:
 
                 if phase_result["success"]:
                     successful_phases += 1
-                    logger.info(f"✅ {phase_name} completed successfully in {phase_duration:.2f}s")
+                    logger.info(
+                        f"✅ {phase_name} completed successfully in {phase_duration:.2f}s"
+                    )
                 else:
                     logger.error(
                         f"❌ {phase_name} failed: {phase_result.get('error', 'Unknown error')}"
@@ -113,7 +115,9 @@ class CriticalActionItemsCoordinator:
                 }
 
         # Calculate overall success rate
-        self.execution_report["overall_success_rate"] = (successful_phases / total_phases) * 100
+        self.execution_report["overall_success_rate"] = (
+            successful_phases / total_phases
+        ) * 100
         self.execution_report["end_time"] = datetime.now(timezone.utc).isoformat()
 
         # Final validation
@@ -162,9 +166,9 @@ class CriticalActionItemsCoordinator:
 
             # Update success criteria
             if health_status == "ALL_HEALTHY":
-                self.execution_report["success_criteria"]["infrastructure_availability"][
-                    "achieved"
-                ] = 100.0
+                self.execution_report["success_criteria"][
+                    "infrastructure_availability"
+                ]["achieved"] = 100.0
 
         except Exception as e:
             results["success"] = False
@@ -191,7 +195,9 @@ class CriticalActionItemsCoordinator:
             # 3. Deploy performance monitoring
             logger.info("🧪 Deploying performance monitoring")
             monitoring_status = await self.deploy_performance_monitoring()
-            results["enhancements"].append(f"Performance monitoring: {monitoring_status}")
+            results["enhancements"].append(
+                f"Performance monitoring: {monitoring_status}"
+            )
 
             # 4. Anchor program testing
             logger.info("🧪 Running Anchor program tests")
@@ -391,7 +397,9 @@ class CriticalActionItemsCoordinator:
                 try:
                     response = requests.get(endpoint, timeout=10)
                     if response.status_code != 200:
-                        unhealthy_services.append(f"{service}: HTTP {response.status_code}")
+                        unhealthy_services.append(
+                            f"{service}: HTTP {response.status_code}"
+                        )
                 except Exception as e:
                     unhealthy_services.append(f"{service}: {str(e)}")
 
@@ -427,7 +435,9 @@ class CriticalActionItemsCoordinator:
             if coverage_file.exists():
                 with open(coverage_file) as f:
                     coverage_data = json.load(f)
-                    coverage_percent = coverage_data.get("totals", {}).get("percent_covered", 0)
+                    coverage_percent = coverage_data.get("totals", {}).get(
+                        "percent_covered", 0
+                    )
                     self.execution_report["success_criteria"]["test_coverage"][
                         "achieved"
                     ] = coverage_percent
@@ -534,7 +544,9 @@ class CriticalActionItemsCoordinator:
                 json.dump(batching_config, f, indent=2)
 
             # Update success criteria
-            self.execution_report["success_criteria"]["transaction_cost_sol"]["achieved"] = 0.008
+            self.execution_report["success_criteria"]["transaction_cost_sol"][
+                "achieved"
+            ] = 0.008
             return "CONFIGURED"
         except Exception as e:
             return f"ERROR: {str(e)}"
@@ -552,14 +564,17 @@ class CriticalActionItemsCoordinator:
             }
 
             config_path = (
-                self.project_root / "services/core/formal-verification/z3_optimization.json"
+                self.project_root
+                / "services/core/formal-verification/z3_optimization.json"
             )
             config_path.parent.mkdir(exist_ok=True)
             with open(config_path, "w") as f:
                 json.dump(z3_config, f, indent=2)
 
             # Update success criteria
-            self.execution_report["success_criteria"]["response_time_seconds"]["achieved"] = 1.5
+            self.execution_report["success_criteria"]["response_time_seconds"][
+                "achieved"
+            ] = 1.5
             return "OPTIMIZED"
         except Exception as e:
             return f"ERROR: {str(e)}"
@@ -593,7 +608,9 @@ class CriticalActionItemsCoordinator:
                 "audit_logging": True,
             }
 
-            config_path = self.project_root / "blockchain/constitutional_council_security.json"
+            config_path = (
+                self.project_root / "blockchain/constitutional_council_security.json"
+            )
             with open(config_path, "w") as f:
                 json.dump(multisig_config, f, indent=2)
 
@@ -618,7 +635,8 @@ class CriticalActionItemsCoordinator:
             }
 
             config_path = (
-                self.project_root / "services/core/formal-verification/coverage_config.json"
+                self.project_root
+                / "services/core/formal-verification/coverage_config.json"
             )
             config_path.parent.mkdir(exist_ok=True)
             with open(config_path, "w") as f:
@@ -645,8 +663,12 @@ class CriticalActionItemsCoordinator:
             for guide in guides:
                 guide_path = guides_dir / guide
                 with open(guide_path, "w") as f:
-                    f.write(f"# {guide.replace('_', ' ').replace('.md', '').title()}\n\n")
-                    f.write("Implementation guide created by Critical Action Items Coordinator.\n")
+                    f.write(
+                        f"# {guide.replace('_', ' ').replace('.md', '').title()}\n\n"
+                    )
+                    f.write(
+                        "Implementation guide created by Critical Action Items Coordinator.\n"
+                    )
 
             return "CREATED"
         except Exception as e:
@@ -718,9 +740,13 @@ async def main():
     print("\n📊 Success Criteria Achievement:")
     for criterion, values in report["success_criteria"].items():
         status = "✅" if values["achieved"] >= values["target"] else "❌"
-        print(f"{status} {criterion}: {values['achieved']:.2f} / {values['target']:.2f}")
+        print(
+            f"{status} {criterion}: {values['achieved']:.2f} / {values['target']:.2f}"
+        )
 
-    print(f"\n📄 Full report: reports/critical_action_items_report_{report['execution_id']}.json")
+    print(
+        f"\n📄 Full report: reports/critical_action_items_report_{report['execution_id']}.json"
+    )
 
     return report
 

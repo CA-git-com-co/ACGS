@@ -4,18 +4,24 @@ Unit tests for services.core.policy-governance.pgc_service.app.core.realtime_com
 
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
-from services.core.policy-governance.pgc_service.app.core.realtime_compliance_engine import ActionType, ComplianceLevel, EnforcementAction, ActionContext, ComplianceResult, RealTimeComplianceEngine
-
+from services.core.policy_governance.pgc_service.app.core.realtime_compliance_engine import (
+    ActionType,
+    ComplianceLevel,
+    EnforcementAction,
+    ActionContext,
+    ComplianceResult,
+    RealTimeComplianceEngine,
+)
 
 
 class TestActionType:
     """Test suite for ActionType."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -24,12 +30,12 @@ class TestActionType:
 
 class TestComplianceLevel:
     """Test suite for ComplianceLevel."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -38,12 +44,12 @@ class TestComplianceLevel:
 
 class TestEnforcementAction:
     """Test suite for EnforcementAction."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -52,12 +58,12 @@ class TestEnforcementAction:
 
 class TestActionContext:
     """Test suite for ActionContext."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -66,12 +72,12 @@ class TestActionContext:
 
 class TestComplianceResult:
     """Test suite for ComplianceResult."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -80,12 +86,12 @@ class TestComplianceResult:
 
 class TestRealTimeComplianceEngine:
     """Test suite for RealTimeComplianceEngine."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -96,13 +102,11 @@ class TestRealTimeComplianceEngine:
         # TODO: Implement test for get_performance_metrics
         instance = RealTimeComplianceEngine()
         # Add test implementation here
-        assert hasattr(instance, 'get_performance_metrics')
+        assert hasattr(instance, "get_performance_metrics")
 
     def test_get_audit_log(self):
         """Test get_audit_log method."""
         # TODO: Implement test for get_audit_log
         instance = RealTimeComplianceEngine()
         # Add test implementation here
-        assert hasattr(instance, 'get_audit_log')
-
-
+        assert hasattr(instance, "get_audit_log")

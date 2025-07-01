@@ -37,14 +37,18 @@ from .models import (
 class BanditActionRequest(BaseModel):
     """Request model for bandit algorithm actions."""
 
-    context_key: str = Field(..., description="Context identifier for the bandit problem")
+    context_key: str = Field(
+        ..., description="Context identifier for the bandit problem"
+    )
     algorithm_type: str = Field(
         default="conservative_bandit", description="Type of bandit algorithm"
     )
     exploration_rate: Optional[float] = Field(
         default=0.1, ge=0.0, le=1.0, description="Exploration rate"
     )
-    safety_threshold: float = Field(default=0.8, ge=0.0, le=1.0, description="Safety threshold")
+    safety_threshold: float = Field(
+        default=0.8, ge=0.0, le=1.0, description="Safety threshold"
+    )
 
     @validator("algorithm_type")
     def validate_algorithm_type(cls, v):
@@ -170,7 +174,9 @@ async def get_dgm_status(
         total_improvements = archive_stats.get("total_improvements", 0)
         successful_improvements = archive_stats.get("successful_improvements", 0)
         success_rate = (
-            (successful_improvements / total_improvements * 100) if total_improvements > 0 else 0.0
+            (successful_improvements / total_improvements * 100)
+            if total_improvements > 0
+            else 0.0
         )
 
         return DGMStatusResponse(
@@ -584,7 +590,8 @@ async def list_archive_entries(
                 status_filter = ImprovementStatus(status)
             except ValueError:
                 raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST, detail=f"Invalid status: {status}"
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Invalid status: {status}",
                 )
 
         # Get archive entries
@@ -612,7 +619,9 @@ async def list_archive_entries(
                     timestamp=entry.timestamp,
                     description=entry.description,
                     status=entry.status.value,
-                    constitutional_compliance_score=float(entry.constitutional_compliance_score),
+                    constitutional_compliance_score=float(
+                        entry.constitutional_compliance_score
+                    ),
                     performance_before=entry.performance_before or {},
                     performance_after=entry.performance_after or {},
                     metadata=entry.metadata or {},
@@ -625,7 +634,11 @@ async def list_archive_entries(
             total += 1  # At least one more page
 
         return ArchiveListResponse(
-            entries=archive_entries, total=total, page=page, page_size=page_size, has_next=has_next
+            entries=archive_entries,
+            total=total,
+            page=page,
+            page_size=page_size,
+            has_next=has_next,
         )
 
     except HTTPException:
@@ -648,7 +661,9 @@ async def get_performance_report(
     Get performance report for the specified time period.
     """
     try:
-        report = await performance_monitor.generate_report(days=days, service_name=service_name)
+        report = await performance_monitor.generate_report(
+            days=days, service_name=service_name
+        )
 
         return PerformanceReport(
             period_start=report["period_start"],
@@ -730,7 +745,9 @@ async def get_bandit_report(dgm_engine: DGMEngine = Depends(get_dgm_engine)):
 
 
 @router.delete("/improvements/{improvement_id}")
-async def cancel_improvement(improvement_id: UUID, dgm_engine: DGMEngine = Depends(get_dgm_engine)):
+async def cancel_improvement(
+    improvement_id: UUID, dgm_engine: DGMEngine = Depends(get_dgm_engine)
+):
     """
     Cancel a running improvement.
 

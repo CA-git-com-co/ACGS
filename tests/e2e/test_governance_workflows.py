@@ -1,18 +1,20 @@
 """
 End-to-end governance workflow tests for ACGS-1
 """
+
 import pytest
 import asyncio
 import httpx
 from typing import Dict, Any
 
+
 class TestGovernanceWorkflows:
     """Test all 5 governance workflows end-to-end"""
-    
+
     @pytest.fixture
     def base_url(self):
         return "http://localhost"
-    
+
     @pytest.fixture
     def service_ports(self):
         return {
@@ -22,9 +24,9 @@ class TestGovernanceWorkflows:
             "fv": 8003,
             "gs": 8004,
             "pgc": 8005,
-            "ec": 8006
+            "ec": 8006,
         }
-    
+
     @pytest.mark.e2e
     async def test_policy_creation_workflow(self, base_url, service_ports):
         """Test complete policy creation workflow"""
@@ -34,7 +36,7 @@ class TestGovernanceWorkflows:
         # 4. Implement policy
         # 5. Monitor policy
         pass
-    
+
     @pytest.mark.e2e
     async def test_constitutional_compliance_workflow(self, base_url, service_ports):
         """Test constitutional compliance validation workflow"""
@@ -44,7 +46,7 @@ class TestGovernanceWorkflows:
         # 4. Approve or reject
         # 5. Enforce compliance
         pass
-    
+
     @pytest.mark.e2e
     async def test_policy_enforcement_workflow(self, base_url, service_ports):
         """Test real-time policy enforcement workflow"""
@@ -54,7 +56,7 @@ class TestGovernanceWorkflows:
         # 4. Escalate if necessary
         # 5. Resolve violation
         pass
-    
+
     @pytest.mark.e2e
     async def test_wina_oversight_workflow(self, base_url, service_ports):
         """Test WINA oversight and monitoring workflow"""
@@ -64,7 +66,7 @@ class TestGovernanceWorkflows:
         # 4. Adjust parameters
         # 5. Validate improvements
         pass
-    
+
     @pytest.mark.e2e
     async def test_audit_transparency_workflow(self, base_url, service_ports):
         """Test audit and transparency reporting workflow"""

@@ -29,7 +29,9 @@ class BanditState(Base):
     __tablename__ = "bandit_states"
     __table_args__ = {"schema": "dgm"}
 
-    id = Column(PG_UUID(as_uuid=True), primary_key=True, server_default=func.uuid_generate_v4())
+    id = Column(
+        PG_UUID(as_uuid=True), primary_key=True, server_default=func.uuid_generate_v4()
+    )
 
     # Bandit configuration
     algorithm_type = Column(Enum(BanditAlgorithmType), nullable=False, index=True)
@@ -60,9 +62,14 @@ class BanditState(Base):
 
     # Timestamps
     last_updated = Column(
-        DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now()
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+        onupdate=func.now(),
     )
-    created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    created_at = Column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
 
     def __repr__(self):
         return (
@@ -74,13 +81,17 @@ class BanditState(Base):
         """Convert to dictionary representation."""
         return {
             "id": str(self.id),
-            "algorithm_type": self.algorithm_type.value if self.algorithm_type else None,
+            "algorithm_type": (
+                self.algorithm_type.value if self.algorithm_type else None
+            ),
             "context_key": self.context_key,
             "arm_id": self.arm_id,
             "total_pulls": self.total_pulls,
             "total_reward": float(self.total_reward),
             "average_reward": float(self.average_reward),
-            "confidence_bound": float(self.confidence_bound) if self.confidence_bound else None,
+            "confidence_bound": (
+                float(self.confidence_bound) if self.confidence_bound else None
+            ),
             "epsilon": float(self.epsilon) if self.epsilon else None,
             "alpha": float(self.alpha) if self.alpha else None,
             "beta": float(self.beta) if self.beta else None,
@@ -89,6 +100,8 @@ class BanditState(Base):
             "algorithm_state": self.algorithm_state,
             "exploration_data": self.exploration_data,
             "constitutional_hash": self.constitutional_hash,
-            "last_updated": self.last_updated.isoformat() if self.last_updated else None,
+            "last_updated": (
+                self.last_updated.isoformat() if self.last_updated else None
+            ),
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }

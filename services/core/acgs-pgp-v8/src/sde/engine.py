@@ -29,7 +29,7 @@ from .ml_models import (
     AnomalyDetectionModel,
     RecoveryRecommendationModel,
     MLModelTrainer,
-    TrainingDataGenerator
+    TrainingDataGenerator,
 )
 
 from ..generation_engine.models import LogicalSemanticUnit
@@ -97,7 +97,7 @@ class SyndromeDiagnosticEngine:
 
                 # If no pre-trained models, initialize basic models
                 if not self.error_classifier:
-                    self.error_classifier = ErrorClassificationModel('random_forest')
+                    self.error_classifier = ErrorClassificationModel("random_forest")
 
                 if not self.anomaly_detector:
                     self.anomaly_detector = AnomalyDetectionModel(contamination=0.1)
@@ -137,7 +137,7 @@ class SyndromeDiagnosticEngine:
             # Load error classification model
             error_model_path = models_dir / "error_classification_random_forest.joblib"
             if error_model_path.exists():
-                self.error_classifier = ErrorClassificationModel('random_forest')
+                self.error_classifier = ErrorClassificationModel("random_forest")
                 self.error_classifier.load_model(error_model_path)
                 logger.info("Loaded pre-trained error classification model")
 
@@ -204,7 +204,9 @@ class SyndromeDiagnosticEngine:
 
             # Generate recovery recommendations if requested
             if include_recommendations and result.errors_detected:
-                recommendations = await self._generate_recommendations(result.errors_detected)
+                recommendations = await self._generate_recommendations(
+                    result.errors_detected
+                )
                 for recommendation in recommendations:
                     result.add_recommendation(recommendation)
 
@@ -224,7 +226,9 @@ class SyndromeDiagnosticEngine:
             # Update average metrics
             self._update_average_metrics(result)
 
-            result.audit_trail.append(f"Diagnosis completed in {diagnostic_duration:.2f}ms")
+            result.audit_trail.append(
+                f"Diagnosis completed in {diagnostic_duration:.2f}ms"
+            )
             logger.info(f"System diagnosis completed: {diagnostic_id}")
 
             return result
@@ -271,7 +275,9 @@ class SyndromeDiagnosticEngine:
         category = self._determine_error_category(error_message, error_context)
 
         # Check for constitutional impact
-        constitutional_impact = self._check_constitutional_impact(error_message, error_context)
+        constitutional_impact = self._check_constitutional_impact(
+            error_message, error_context
+        )
 
         # Calculate confidence score
         confidence_score = self._calculate_classification_confidence(
@@ -519,7 +525,9 @@ class SyndromeDiagnosticEngine:
                 health_data["errors"].append(
                     {
                         "message": "Response time exceeded threshold",
-                        "context": {"response_time": health_data["metrics"]["response_time_ms"]},
+                        "context": {
+                            "response_time": health_data["metrics"]["response_time_ms"]
+                        },
                     }
                 )
 
@@ -599,7 +607,9 @@ class SyndromeDiagnosticEngine:
             success_probability=success_probability,
             estimated_recovery_time_minutes=recovery_time,
             constitutional_compliance=not error.constitutional_impact,
-            risk_level=(ErrorSeverity.LOW if success_probability > 0.8 else ErrorSeverity.MEDIUM),
+            risk_level=(
+                ErrorSeverity.LOW if success_probability > 0.8 else ErrorSeverity.MEDIUM
+            ),
         )
 
     def _update_average_metrics(self, result: DiagnosticResult) -> None:
@@ -621,7 +631,8 @@ class SyndromeDiagnosticEngine:
         # Update average compliance score
         current_avg_compliance = self.metrics.average_compliance_score
         self.metrics.average_compliance_score = (
-            current_avg_compliance * (total - 1) + result.constitutional_compliance_score
+            current_avg_compliance * (total - 1)
+            + result.constitutional_compliance_score
         ) / total
 
         self.metrics.last_updated = datetime.now()
@@ -716,7 +727,9 @@ class SyndromeDiagnosticEngine:
             # Update average metrics
             self._update_average_metrics(result)
 
-            result.audit_trail.append(f"LSU diagnosis completed in {diagnostic_duration:.2f}ms")
+            result.audit_trail.append(
+                f"LSU diagnosis completed in {diagnostic_duration:.2f}ms"
+            )
             logger.info(f"LSU diagnosis completed: {diagnostic_id}")
 
             return result

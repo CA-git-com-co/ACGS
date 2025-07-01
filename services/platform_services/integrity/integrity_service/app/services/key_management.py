@@ -46,7 +46,9 @@ class KeyManagementService:
 
         # Generate random key for development
         key = secrets.token_bytes(32)
-        logger.warning("Using randomly generated master key - not suitable for production")
+        logger.warning(
+            "Using randomly generated master key - not suitable for production"
+        )
         return key
 
     def _encrypt_private_key(self, private_key_pem: str) -> bytes:
@@ -86,7 +88,9 @@ class KeyManagementService:
             a ^ b
             for a, b in zip(
                 encrypted_key,
-                (self.encryption_key * ((len(encrypted_key) // 32) + 1))[: len(encrypted_key)],
+                (self.encryption_key * ((len(encrypted_key) // 32) + 1))[
+                    : len(encrypted_key)
+                ],
                 strict=False,
             )
         )

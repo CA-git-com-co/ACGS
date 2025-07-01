@@ -27,4 +27,6 @@ if __name__ == "__main__":
     print("⚠️ This configuration is for health check compatibility only")
 
     # Start with minimal configuration
-    uvicorn.run(app, host="0.0.0.0", port=8004, log_level="info", access_log=True, reload=False)
+    uvicorn.run(
+        app, host="0.0.0.0", port=8004, log_level="info", access_log=True, reload=False
+    )

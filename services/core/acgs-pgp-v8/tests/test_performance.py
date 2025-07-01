@@ -72,7 +72,9 @@ class TestPerformanceTargets:
 
         # Calculate statistics
         avg_response_time = statistics.mean(response_times)
-        p95_response_time = statistics.quantiles(response_times, n=20)[18]  # 95th percentile
+        p95_response_time = statistics.quantiles(response_times, n=20)[
+            18
+        ]  # 95th percentile
         max_response_time = max(response_times)
 
         # Verify performance targets
@@ -91,7 +93,9 @@ class TestPerformanceTargets:
         print(f"  95th percentile: {p95_response_time:.2f}ms")
         print(f"  Max response time: {max_response_time:.2f}ms")
 
-    async def test_concurrent_policy_generation(self, performance_engine, sample_policy_request):
+    async def test_concurrent_policy_generation(
+        self, performance_engine, sample_policy_request
+    ):
         """Test concurrent policy generation performance."""
         concurrent_requests = 10
 
@@ -143,7 +147,9 @@ class TestPerformanceTargets:
         assert (
             avg_individual_time <= 1000.0
         ), f"Average concurrent response time {avg_individual_time}ms too high"
-        assert throughput >= 5.0, f"Throughput {throughput} req/s below target of 5 req/s"
+        assert (
+            throughput >= 5.0
+        ), f"Throughput {throughput} req/s below target of 5 req/s"
 
         print("Concurrent Performance Results:")
         print(f"  Concurrent requests: {concurrent_requests}")
@@ -161,7 +167,9 @@ class TestPerformanceTargets:
         # Mock cache operations for performance testing
         with patch.object(cache_manager, "initialize", new_callable=AsyncMock):
             with patch.object(cache_manager, "get", new_callable=AsyncMock) as mock_get:
-                with patch.object(cache_manager, "set", new_callable=AsyncMock) as mock_set:
+                with patch.object(
+                    cache_manager, "set", new_callable=AsyncMock
+                ) as mock_set:
 
                     await cache_manager.initialize()
 
@@ -182,14 +190,20 @@ class TestPerformanceTargets:
                         start_time = datetime.now()
 
                         # Simulate cache get
-                        result = await cache_manager.get(f"test_key_{i % 20}", prefix="test")
+                        result = await cache_manager.get(
+                            f"test_key_{i % 20}", prefix="test"
+                        )
 
                         if result is None:
                             # Cache miss - set data
-                            await cache_manager.set(f"test_key_{i % 20}", cache_data, prefix="test")
+                            await cache_manager.set(
+                                f"test_key_{i % 20}", cache_data, prefix="test"
+                            )
 
                         end_time = datetime.now()
-                        operation_time_ms = (end_time - start_time).total_seconds() * 1000
+                        operation_time_ms = (
+                            end_time - start_time
+                        ).total_seconds() * 1000
                         cache_operations.append(operation_time_ms)
 
                     # Calculate cache performance
@@ -241,7 +255,9 @@ class TestPerformanceTargets:
         memory_increase = final_memory - initial_memory
 
         # Verify memory usage is reasonable
-        assert memory_increase <= 100.0, f"Memory increase {memory_increase}MB exceeds 100MB limit"
+        assert (
+            memory_increase <= 100.0
+        ), f"Memory increase {memory_increase}MB exceeds 100MB limit"
 
         print("Memory Usage Results:")
         print(f"  Initial memory: {initial_memory:.2f}MB")
@@ -274,8 +290,10 @@ class TestPerformanceTargets:
 
                 # Test constitutional compliance validation
                 test_content = f"Test policy content {i}"
-                compliance_result = await performance_engine._validate_constitutional_compliance(
-                    test_content
+                compliance_result = (
+                    await performance_engine._validate_constitutional_compliance(
+                        test_content
+                    )
                 )
 
                 end_time = datetime.now()
@@ -320,7 +338,9 @@ class TestStressTests:
             concurrent_requests = 50
 
             async def stress_task():
-                with patch("src.generation_engine.engine.httpx.AsyncClient") as mock_client:
+                with patch(
+                    "src.generation_engine.engine.httpx.AsyncClient"
+                ) as mock_client:
                     mock_response = MagicMock()
                     mock_response.status_code = 200
                     mock_response.json.return_value = {
@@ -331,7 +351,9 @@ class TestStressTests:
 
                     mock_client_instance = AsyncMock()
                     mock_client_instance.post.return_value = mock_response
-                    mock_client.return_value.__aenter__.return_value = mock_client_instance
+                    mock_client.return_value.__aenter__.return_value = (
+                        mock_client_instance
+                    )
 
                     request = PolicyGenerationRequest(**sample_policy_request)
                     return await engine.generate_policy(request)
@@ -350,8 +372,12 @@ class TestStressTests:
             total_time = (end_time - start_time).total_seconds()
 
             # Verify stress test results
-            assert success_rate >= 95.0, f"Success rate {success_rate}% below 95% under stress"
-            assert total_time <= 30.0, f"Stress test took {total_time}s, exceeds 30s limit"
+            assert (
+                success_rate >= 95.0
+            ), f"Success rate {success_rate}% below 95% under stress"
+            assert (
+                total_time <= 30.0
+            ), f"Stress test took {total_time}s, exceeds 30s limit"
 
             print("Stress Test Results:")
             print(f"  Concurrent requests: {concurrent_requests}")

@@ -15,7 +15,11 @@ from ...models.compliance import ComplianceLevel, ConstitutionalComplianceLog
 
 from ...core.constitutional_validator import ConstitutionalValidator
 from ...network.service_client import ACGSServiceClient
-from .models import ConstitutionalValidationRequest, ConstitutionalValidationResponse, ErrorResponse
+from .models import (
+    ConstitutionalValidationRequest,
+    ConstitutionalValidationResponse,
+    ErrorResponse,
+)
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -59,15 +63,22 @@ async def validate_constitutional_compliance(
 
             # Combine results (take the more restrictive result)
             combined_score = min(
-                validation_result.get("compliance_score", 0), ac_result.get("compliance_score", 0)
+                validation_result.get("compliance_score", 0),
+                ac_result.get("compliance_score", 0),
             )
 
             combined_violations = list(
-                set(validation_result.get("violations", []) + ac_result.get("violations", []))
+                set(
+                    validation_result.get("violations", [])
+                    + ac_result.get("violations", [])
+                )
             )
 
             combined_warnings = list(
-                set(validation_result.get("warnings", []) + ac_result.get("warnings", []))
+                set(
+                    validation_result.get("warnings", [])
+                    + ac_result.get("warnings", [])
+                )
             )
 
         except Exception as e:
@@ -79,7 +90,8 @@ async def validate_constitutional_compliance(
 
         # Determine compliance based on score and violations
         is_compliant = (
-            combined_score >= 0.8 and len(combined_violations) == 0  # Configurable threshold
+            combined_score >= 0.8
+            and len(combined_violations) == 0  # Configurable threshold
         )
 
         return ConstitutionalValidationResponse(
@@ -133,9 +145,13 @@ async def get_constitutional_principles(
 
 @router.get("/compliance/history")
 async def get_compliance_history(
-    improvement_id: Optional[UUID] = Query(None, description="Filter by improvement ID"),
+    improvement_id: Optional[UUID] = Query(
+        None, description="Filter by improvement ID"
+    ),
     days: int = Query(30, ge=1, le=365, description="Number of days to include"),
-    min_score: Optional[float] = Query(None, ge=0, le=1, description="Minimum compliance score"),
+    min_score: Optional[float] = Query(
+        None, ge=0, le=1, description="Minimum compliance score"
+    ),
 ):
     """
     Get compliance history and trends.
@@ -190,7 +206,9 @@ async def get_compliance_history(
                 )
 
             date_key = log.created_at.date().isoformat()
-            daily_scores_map.setdefault(date_key, []).append(float(log.compliance_score))
+            daily_scores_map.setdefault(date_key, []).append(
+                float(log.compliance_score)
+            )
 
         daily_scores = [
             {"date": k, "average_score": sum(v) / len(v)}

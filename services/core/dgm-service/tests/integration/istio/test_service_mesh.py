@@ -46,7 +46,9 @@ class TestServiceMesh:
 
         # Verify pod template
         pod_template = deployment["spec"]["template"]
-        assert pod_template["metadata"]["annotations"]["sidecar.istio.io/inject"] == "true"
+        assert (
+            pod_template["metadata"]["annotations"]["sidecar.istio.io/inject"] == "true"
+        )
 
         # Verify container configuration
         container = pod_template["spec"]["containers"][0]
@@ -54,7 +56,9 @@ class TestServiceMesh:
         assert container["ports"][0]["containerPort"] == 8007
 
         # Verify environment variables
-        env_vars = {env["name"]: env.get("value") for env in container["env"] if "value" in env}
+        env_vars = {
+            env["name"]: env.get("value") for env in container["env"] if "value" in env
+        }
         assert env_vars["ENVIRONMENT"] == "production"
         assert env_vars["NATS_ENABLE_JETSTREAM"] == "true"
         assert env_vars["CONSTITUTIONAL_HASH"] == "cdd01ef066bc6cf2"
@@ -91,7 +95,9 @@ class TestServiceMesh:
             configs = list(yaml.safe_load_all(f))
 
         # Find VirtualService configuration
-        virtual_service = next((c for c in configs if c.get("kind") == "VirtualService"), None)
+        virtual_service = next(
+            (c for c in configs if c.get("kind") == "VirtualService"), None
+        )
         assert virtual_service is not None, "VirtualService configuration should exist"
 
         # Verify hosts
@@ -105,7 +111,10 @@ class TestServiceMesh:
             (
                 r
                 for r in http_routes
-                if any(m.get("uri", {}).get("prefix") == "/api/v1/dgm" for m in r.get("match", []))
+                if any(
+                    m.get("uri", {}).get("prefix") == "/api/v1/dgm"
+                    for m in r.get("match", [])
+                )
             ),
             None,
         )
@@ -122,7 +131,9 @@ class TestServiceMesh:
             configs = list(yaml.safe_load_all(f))
 
         # Find DestinationRule configuration
-        dest_rule = next((c for c in configs if c.get("kind") == "DestinationRule"), None)
+        dest_rule = next(
+            (c for c in configs if c.get("kind") == "DestinationRule"), None
+        )
         assert dest_rule is not None, "DestinationRule configuration should exist"
 
         # Verify traffic policy
@@ -159,7 +170,8 @@ class TestServiceMesh:
 
         # Find RBAC policy
         rbac_policy = next(
-            (p for p in authz_policies if p["metadata"]["name"] == "dgm-service-rbac"), None
+            (p for p in authz_policies if p["metadata"]["name"] == "dgm-service-rbac"),
+            None,
         )
         assert rbac_policy is not None, "RBAC policy should exist"
 
@@ -193,9 +205,12 @@ class TestServiceMesh:
 
         # Find constitutional enforcement policy
         const_policy = next(
-            (p for p in authz_policies if "constitutional" in p["metadata"]["name"]), None
+            (p for p in authz_policies if "constitutional" in p["metadata"]["name"]),
+            None,
         )
-        assert const_policy is not None, "Constitutional enforcement policy should exist"
+        assert (
+            const_policy is not None
+        ), "Constitutional enforcement policy should exist"
 
         # Verify constitutional hash requirement
         const_rules = const_policy["spec"]["rules"]
@@ -221,7 +236,9 @@ class TestServiceMesh:
             configs = list(yaml.safe_load_all(f))
 
         # Find PeerAuthentication configuration
-        peer_auth = next((c for c in configs if c.get("kind") == "PeerAuthentication"), None)
+        peer_auth = next(
+            (c for c in configs if c.get("kind") == "PeerAuthentication"), None
+        )
         assert peer_auth is not None, "PeerAuthentication configuration should exist"
 
         # Verify mTLS mode
@@ -239,7 +256,9 @@ class TestServiceMesh:
             configs = list(yaml.safe_load_all(f))
 
         # Find RequestAuthentication configuration
-        req_auth = next((c for c in configs if c.get("kind") == "RequestAuthentication"), None)
+        req_auth = next(
+            (c for c in configs if c.get("kind") == "RequestAuthentication"), None
+        )
         assert req_auth is not None, "RequestAuthentication configuration should exist"
 
         # Verify JWT rules
@@ -260,7 +279,9 @@ class TestServiceMesh:
 
         # Find Telemetry configurations
         telemetry_configs = [c for c in configs if c.get("kind") == "Telemetry"]
-        assert len(telemetry_configs) >= 2, "Multiple telemetry configurations should exist"
+        assert (
+            len(telemetry_configs) >= 2
+        ), "Multiple telemetry configurations should exist"
 
         # Find metrics telemetry
         metrics_telemetry = next(
@@ -285,7 +306,9 @@ class TestServiceMesh:
         # Verify custom tags
         custom_tags = tracing_telemetry["spec"]["tracing"][1]["customTags"]
         assert "constitutional_hash" in custom_tags
-        assert custom_tags["constitutional_hash"]["literal"]["value"] == "cdd01ef066bc6cf2"
+        assert (
+            custom_tags["constitutional_hash"]["literal"]["value"] == "cdd01ef066bc6cf2"
+        )
 
     def test_traffic_management_policies(self, istio_configs_path):
         """Test traffic management configurations."""
@@ -328,7 +351,8 @@ class TestServiceMesh:
                 r
                 for r in http_routes
                 if any(
-                    m.get("headers", {}).get("x-experiment-group", {}).get("exact") == "strategy-a"
+                    m.get("headers", {}).get("x-experiment-group", {}).get("exact")
+                    == "strategy-a"
                     for m in r.get("match", [])
                 )
             ),
@@ -366,7 +390,8 @@ class TestServiceMesh:
 
         # Find constitutional headers filter
         const_filter = next(
-            (f for f in envoy_filters if "constitutional" in f["metadata"]["name"]), None
+            (f for f in envoy_filters if "constitutional" in f["metadata"]["name"]),
+            None,
         )
         assert const_filter is not None, "Constitutional headers filter should exist"
 
@@ -396,9 +421,12 @@ class TestServiceMesh:
 
         # Find external dependencies ServiceEntry
         external_deps = next(
-            (se for se in service_entries if "external-deps" in se["metadata"]["name"]), None
+            (se for se in service_entries if "external-deps" in se["metadata"]["name"]),
+            None,
         )
-        assert external_deps is not None, "External dependencies ServiceEntry should exist"
+        assert (
+            external_deps is not None
+        ), "External dependencies ServiceEntry should exist"
 
         # Verify external hosts
         hosts = external_deps["spec"]["hosts"]
@@ -407,7 +435,8 @@ class TestServiceMesh:
 
         # Find LLM provider ServiceEntry
         llm_provider = next(
-            (se for se in service_entries if "llm-provider" in se["metadata"]["name"]), None
+            (se for se in service_entries if "llm-provider" in se["metadata"]["name"]),
+            None,
         )
         assert llm_provider is not None, "LLM provider ServiceEntry should exist"
 
@@ -445,7 +474,9 @@ class TestServiceMesh:
             (
                 e
                 for e in egress
-                if any("nats.acgs.svc.cluster.local" in host for host in e.get("hosts", []))
+                if any(
+                    "nats.acgs.svc.cluster.local" in host for host in e.get("hosts", [])
+                )
             ),
             None,
         )

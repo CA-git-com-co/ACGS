@@ -14,6 +14,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class LoadTester:
     """Comprehensive load testing system."""
 
@@ -29,20 +30,31 @@ class LoadTester:
             "failed_requests": 0,
             "response_times": [],
             "error_rates": [],
-            "throughput_rps": 0
+            "throughput_rps": 0,
         }
 
     async def run_load_test(self) -> Dict[str, Any]:
         """Run comprehensive load test."""
         target_rps = self.baseline_rps * self.target_multiplier
 
-        logger.info(f"Starting load test: {target_rps} RPS for {self.test_duration_seconds}s")
+        logger.info(
+            f"Starting load test: {target_rps} RPS for {self.test_duration_seconds}s"
+        )
 
         # Test endpoints
         endpoints = [
-            {"url": "http://localhost:8001/api/v1/constitutional-ai/health", "weight": 0.3},
-            {"url": "http://localhost:8005/api/v1/policy-governance/health", "weight": 0.3},
-            {"url": "http://localhost:8004/api/v1/governance-synthesis/health", "weight": 0.4}
+            {
+                "url": "http://localhost:8001/api/v1/constitutional-ai/health",
+                "weight": 0.3,
+            },
+            {
+                "url": "http://localhost:8005/api/v1/policy-governance/health",
+                "weight": 0.3,
+            },
+            {
+                "url": "http://localhost:8004/api/v1/governance-synthesis/health",
+                "weight": 0.4,
+            },
         ]
 
         # Create semaphore to control concurrency
@@ -73,12 +85,16 @@ class LoadTester:
         # Calculate results
         return self._calculate_results()
 
-    async def _make_request(self, session: aiohttp.ClientSession, url: str, semaphore: asyncio.Semaphore):
+    async def _make_request(
+        self, session: aiohttp.ClientSession, url: str, semaphore: asyncio.Semaphore
+    ):
         """Make individual HTTP request."""
         async with semaphore:
             start_time = time.time()
             try:
-                async with session.get(url, timeout=aiohttp.ClientTimeout(total=10)) as response:
+                async with session.get(
+                    url, timeout=aiohttp.ClientTimeout(total=10)
+                ) as response:
                     response_time = (time.time() - start_time) * 1000  # Convert to ms
 
                     self.results["total_requests"] += 1
@@ -108,7 +124,11 @@ class LoadTester:
         p99 = statistics.quantiles(response_times, n=100)[98]  # 99th percentile
 
         # Calculate error rate
-        error_rate = self.results["failed_requests"] / self.results["total_requests"] if self.results["total_requests"] > 0 else 0
+        error_rate = (
+            self.results["failed_requests"] / self.results["total_requests"]
+            if self.results["total_requests"] > 0
+            else 0
+        )
 
         # Calculate throughput
         throughput = self.results["successful_requests"] / self.test_duration_seconds
@@ -123,17 +143,21 @@ class LoadTester:
             "response_time_p95_ms": p95,
             "response_time_p99_ms": p99,
             "latency_target_achieved": p99 <= self.latency_target_ms,
-            "load_multiplier_achieved": throughput >= (self.baseline_rps * self.target_multiplier * 0.8)  # 80% of target
+            "load_multiplier_achieved": throughput
+            >= (self.baseline_rps * self.target_multiplier * 0.8),  # 80% of target
         }
 
         return results
+
 
 async def main():
     """Main load testing function."""
     tester = LoadTester()
 
     print("🔥 Starting comprehensive load test...")
-    print(f"Target: {tester.baseline_rps * tester.target_multiplier} RPS for {tester.test_duration_seconds}s")
+    print(
+        f"Target: {tester.baseline_rps * tester.target_multiplier} RPS for {tester.test_duration_seconds}s"
+    )
 
     # Run load test (shortened for demo)
     tester.test_duration_seconds = 60  # 1 minute for demo
@@ -145,12 +169,15 @@ async def main():
     print(f"  Throughput: {results['throughput_rps']:.1f} RPS")
     print(f"  P99 Latency: {results['response_time_p99_ms']:.1f}ms")
 
-    if results['latency_target_achieved']:
+    if results["latency_target_achieved"]:
         print("🎯 Latency target achieved!")
     else:
-        print(f"⚠️  Latency target missed: {results['response_time_p99_ms']:.1f}ms > {tester.latency_target_ms}ms")
+        print(
+            f"⚠️  Latency target missed: {results['response_time_p99_ms']:.1f}ms > {tester.latency_target_ms}ms"
+        )
 
     return results
+
 
 if __name__ == "__main__":
     asyncio.run(main())

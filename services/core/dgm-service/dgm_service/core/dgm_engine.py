@@ -105,8 +105,10 @@ class DGMEngine:
             )
 
             # Validate constitutional compliance
-            compliance_result = await self.constitutional_validator.validate_improvement(
-                improvement_proposal
+            compliance_result = (
+                await self.constitutional_validator.validate_improvement(
+                    improvement_proposal
+                )
             )
 
             if not compliance_result.get("is_compliant", False):
@@ -147,7 +149,9 @@ class DGMEngine:
             }
 
             # Estimate completion time based on priority and complexity
-            estimated_completion = self._estimate_completion_time(improvement_proposal, priority)
+            estimated_completion = self._estimate_completion_time(
+                improvement_proposal, priority
+            )
 
             logger.info(f"Started improvement {improvement_id}: {description}")
 
@@ -166,7 +170,9 @@ class DGMEngine:
                 "estimated_completion": None,
             }
 
-    async def get_improvement_status(self, improvement_id: UUID) -> Optional[Dict[str, Any]]:
+    async def get_improvement_status(
+        self, improvement_id: UUID
+    ) -> Optional[Dict[str, Any]]:
         """Get the status of a specific improvement."""
         if improvement_id in self.active_improvements:
             improvement = self.active_improvements[improvement_id]
@@ -194,7 +200,9 @@ class DGMEngine:
             }
 
         # Check archive for completed improvements
-        archived_improvement = await self.archive_manager.get_improvement(improvement_id)
+        archived_improvement = await self.archive_manager.get_improvement(
+            improvement_id
+        )
         if archived_improvement:
             return {
                 "improvement_id": improvement_id,
@@ -202,7 +210,9 @@ class DGMEngine:
                 "description": archived_improvement.description,
                 "started_at": archived_improvement.timestamp,
                 "completed_at": archived_improvement.updated_at,
-                "compliance_score": float(archived_improvement.constitutional_compliance_score),
+                "compliance_score": float(
+                    archived_improvement.constitutional_compliance_score
+                ),
                 "performance_before": archived_improvement.performance_before,
                 "performance_after": archived_improvement.performance_after,
             }
@@ -228,7 +238,10 @@ class DGMEngine:
 
         except Exception as e:
             logger.error(f"Failed to cancel improvement {improvement_id}: {e}")
-            return {"success": False, "message": f"Failed to cancel improvement: {str(e)}"}
+            return {
+                "success": False,
+                "message": f"Failed to cancel improvement: {str(e)}",
+            }
 
     async def rollback_improvement(
         self, improvement_id: UUID, rollback_id: UUID, reason: str, force: bool = False
@@ -236,7 +249,9 @@ class DGMEngine:
         """Rollback a completed improvement."""
         try:
             # Get improvement from archive
-            archived_improvement = await self.archive_manager.get_improvement(improvement_id)
+            archived_improvement = await self.archive_manager.get_improvement(
+                improvement_id
+            )
             if not archived_improvement:
                 return {"success": False, "message": "Improvement not found in archive"}
 
@@ -262,13 +277,20 @@ class DGMEngine:
     async def _can_start_improvement(self) -> bool:
         """Check if we can start a new improvement."""
         active_count = len(
-            [imp for imp in self.active_improvements.values() if imp["status"] == "running"]
+            [
+                imp
+                for imp in self.active_improvements.values()
+                if imp["status"] == "running"
+            ]
         )
 
         return active_count < self.safety_constraints["max_concurrent_improvements"]
 
     async def _generate_improvement_proposal(
-        self, target_services: List[str], priority: str, metadata: Optional[Dict[str, Any]]
+        self,
+        target_services: List[str],
+        priority: str,
+        metadata: Optional[Dict[str, Any]],
     ) -> Dict[str, Any]:
         """Generate improvement proposal using bandit algorithm."""
         # Get current performance metrics
@@ -283,7 +305,9 @@ class DGMEngine:
             "target_services": target_services,
             "priority": priority,
             "current_performance": current_performance,
-            "proposed_changes": await self._generate_changes(selected_arm, target_services),
+            "proposed_changes": await self._generate_changes(
+                selected_arm, target_services
+            ),
             "expected_improvement": await self._estimate_improvement(selected_arm),
             "risk_assessment": await self._assess_risk(selected_arm, target_services),
             "metadata": metadata or {},
@@ -328,7 +352,9 @@ class DGMEngine:
                 algorithm_changes=proposal["proposed_changes"],
                 performance_before=performance_before,
                 performance_after=performance_after,
-                constitutional_compliance_score=compliance_result.get("compliance_score", 0),
+                constitutional_compliance_score=compliance_result.get(
+                    "compliance_score", 0
+                ),
                 compliance_details=compliance_result,
                 rollback_data=execution_result.get("rollback_data"),
                 metadata={

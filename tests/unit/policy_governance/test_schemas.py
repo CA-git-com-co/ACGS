@@ -4,18 +4,27 @@ Unit tests for services.core.policy-governance.pgc_service.app.schemas
 
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
-from services.core.policy-governance.pgc_service.app.schemas import PolicyQueryContext, PolicyQueryRequest, PolicyQueryResponse, PETContextInput, PETContextOutput, TEEContextInput, TEEContextOutput, IntegrityPolicyRule, User
-
+from services.core.policy_governance.pgc_service.app.schemas import (
+    PolicyQueryContext,
+    PolicyQueryRequest,
+    PolicyQueryResponse,
+    PETContextInput,
+    PETContextOutput,
+    TEEContextInput,
+    TEEContextOutput,
+    IntegrityPolicyRule,
+    User,
+)
 
 
 class TestPolicyQueryContext:
     """Test suite for PolicyQueryContext."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -24,12 +33,12 @@ class TestPolicyQueryContext:
 
 class TestPolicyQueryRequest:
     """Test suite for PolicyQueryRequest."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -38,12 +47,12 @@ class TestPolicyQueryRequest:
 
 class TestPolicyQueryResponse:
     """Test suite for PolicyQueryResponse."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -52,12 +61,12 @@ class TestPolicyQueryResponse:
 
 class TestPETContextInput:
     """Test suite for PETContextInput."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -66,12 +75,12 @@ class TestPETContextInput:
 
 class TestPETContextOutput:
     """Test suite for PETContextOutput."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -80,12 +89,12 @@ class TestPETContextOutput:
 
 class TestTEEContextInput:
     """Test suite for TEEContextInput."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -94,12 +103,12 @@ class TestTEEContextInput:
 
 class TestTEEContextOutput:
     """Test suite for TEEContextOutput."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -108,12 +117,12 @@ class TestTEEContextOutput:
 
 class TestIntegrityPolicyRule:
     """Test suite for IntegrityPolicyRule."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -122,15 +131,13 @@ class TestIntegrityPolicyRule:
 
 class TestUser:
     """Test suite for User."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
         pass
-
-

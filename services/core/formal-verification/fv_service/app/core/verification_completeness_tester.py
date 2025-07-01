@@ -164,7 +164,9 @@ class VerificationCompletenessTester:
                     "condition_a(X) :- X > 0, X < 100.",
                     "condition_b(X) :- X % 2 = 0.",  # Even numbers
                 ],
-                obligations=["forall X: complex_rule(X) -> (X > 0 and X < 100 and X % 2 = 0)"],
+                obligations=[
+                    "forall X: complex_rule(X) -> (X > 0 and X < 100 and X % 2 = 0)"
+                ],
                 expected_result="verified",
                 test_type="boundary",
                 rationale="Complex logical dependencies should be properly verified",
@@ -212,21 +214,24 @@ class VerificationCompletenessTester:
             r
             for r in results
             if any(
-                tc.test_type == "positive" and tc.name == r.test_case_name for tc in self.test_cases
+                tc.test_type == "positive" and tc.name == r.test_case_name
+                for tc in self.test_cases
             )
         ]
         negative_tests = [
             r
             for r in results
             if any(
-                tc.test_type == "negative" and tc.name == r.test_case_name for tc in self.test_cases
+                tc.test_type == "negative" and tc.name == r.test_case_name
+                for tc in self.test_cases
             )
         ]
         boundary_tests = [
             r
             for r in results
             if any(
-                tc.test_type == "boundary" and tc.name == r.test_case_name for tc in self.test_cases
+                tc.test_type == "boundary" and tc.name == r.test_case_name
+                for tc in self.test_cases
             )
         ]
 
@@ -256,14 +261,20 @@ class VerificationCompletenessTester:
             "negative_case_pass_rate": negative_pass_rate,
             "boundary_case_pass_rate": boundary_pass_rate,
             "total_execution_time_seconds": total_time,
-            "verification_completeness_score": self._calculate_completeness_score(results),
+            "verification_completeness_score": self._calculate_completeness_score(
+                results
+            ),
             "detailed_results": [self._result_to_dict(r) for r in results],
         }
 
-        logger.info(f"Completeness testing completed: {passed_count}/{len(results)} tests passed")
+        logger.info(
+            f"Completeness testing completed: {passed_count}/{len(results)} tests passed"
+        )
         return summary
 
-    async def _run_single_test(self, test_case: VerificationTestCase) -> CompletenessTestResult:
+    async def _run_single_test(
+        self, test_case: VerificationTestCase
+    ) -> CompletenessTestResult:
         """Run a single verification test case."""
         logger.debug(f"Running test case: {test_case.name}")
         start_time = time.time()
@@ -311,7 +322,9 @@ class VerificationCompletenessTester:
                 error_message=str(e),
             )
 
-    def _calculate_completeness_score(self, results: list[CompletenessTestResult]) -> float:
+    def _calculate_completeness_score(
+        self, results: list[CompletenessTestResult]
+    ) -> float:
         """Calculate a completeness score based on test results."""
         if not results:
             return 0.0
@@ -393,10 +406,14 @@ async def run_completeness_testing_example():
         )
 
     if results["positive_case_pass_rate"] < 0.8:
-        print("⚠️  WARNING: Low positive case pass rate - verification may be too strict")
+        print(
+            "⚠️  WARNING: Low positive case pass rate - verification may be too strict"
+        )
 
     if results["verification_completeness_score"] < 0.7:
-        print("❌ CRITICAL: Low verification completeness score - SMT encoding needs improvement")
+        print(
+            "❌ CRITICAL: Low verification completeness score - SMT encoding needs improvement"
+        )
     else:
         print("✅ Verification completeness score acceptable")
 

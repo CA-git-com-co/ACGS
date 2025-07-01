@@ -270,7 +270,9 @@ class UltraLowLatencyOptimizer:
         self.cache_hit_counter = Counter(
             "pgc_cache_hits_total", "Total cache hits", ["cache_level"]
         )
-        self.throughput_gauge = Gauge("pgc_throughput_rps", "Requests per second throughput")
+        self.throughput_gauge = Gauge(
+            "pgc_throughput_rps", "Requests per second throughput"
+        )
 
     async def optimize_policy_decision(
         self,
@@ -456,7 +458,9 @@ class UltraLowLatencyOptimizer:
             recommendations.append("Optimize cache lookup - consider in-memory caching")
 
         if eval_time > 20:
-            recommendations.append("Optimize policy evaluation - consider rule simplification")
+            recommendations.append(
+                "Optimize policy evaluation - consider rule simplification"
+            )
             recommendations.append("Enable fragment-level caching for complex policies")
 
         if level == OptimizationLevel.STANDARD:
@@ -477,13 +481,17 @@ class UltraLowLatencyOptimizer:
         p99_latency = np.percentile(recent_latencies, 99)
 
         # Calculate cache hit rate
-        recent_results = self.optimization_results[-100:] if self.optimization_results else []
+        recent_results = (
+            self.optimization_results[-100:] if self.optimization_results else []
+        )
         cache_hits = sum(1 for r in recent_results if r.cache_hit)
         cache_hit_rate = cache_hits / len(recent_results) if recent_results else 0.0
 
         # Calculate throughput (simplified)
         if len(recent_results) >= 2:
-            time_span = (recent_results[-1].timestamp - recent_results[0].timestamp).total_seconds()
+            time_span = (
+                recent_results[-1].timestamp - recent_results[0].timestamp
+            ).total_seconds()
             throughput_rps = len(recent_results) / time_span if time_span > 0 else 0.0
         else:
             throughput_rps = 0.0
@@ -517,14 +525,18 @@ class UltraLowLatencyOptimizer:
         }
 
         # Recent optimization trends
-        recent_results = self.optimization_results[-50:] if self.optimization_results else []
+        recent_results = (
+            self.optimization_results[-50:] if self.optimization_results else []
+        )
         optimization_trends = {}
 
         if recent_results:
             # Group by optimization level
             level_performance = defaultdict(list)
             for result in recent_results:
-                level_performance[result.optimization_level.value].append(result.latency_ms)
+                level_performance[result.optimization_level.value].append(
+                    result.latency_ms
+                )
 
             for level, latencies in level_performance.items():
                 optimization_trends[level] = {
@@ -545,7 +557,9 @@ class UltraLowLatencyOptimizer:
                 f"Cache hit rate ({metrics.cache_hit_rate:.1%}) below 80% target"
             )
         if metrics.error_rate > 0.01:
-            recommendations.append(f"Error rate ({metrics.error_rate:.1%}) above 1% threshold")
+            recommendations.append(
+                f"Error rate ({metrics.error_rate:.1%}) above 1% threshold"
+            )
 
         return {
             "performance_metrics": {
@@ -592,7 +606,9 @@ class UltraLowLatencyOptimizer:
         # Fragment cache optimization
         fragment_stats = self.fragment_cache.get_cache_stats()
         if fragment_stats["cache_utilization"] > 0.9:
-            adjustments.append("Fragment cache near capacity - consider increasing size")
+            adjustments.append(
+                "Fragment cache near capacity - consider increasing size"
+            )
 
         # Speculative execution tuning
         if metrics.cache_hit_rate < 0.7:
@@ -605,7 +621,9 @@ class UltraLowLatencyOptimizer:
                 "target_achievement": metrics.avg_latency <= self.target_latency,
             },
             "adjustments_made": adjustments,
-            "next_review": (datetime.now(timezone.utc) + timedelta(minutes=15)).isoformat(),
+            "next_review": (
+                datetime.now(timezone.utc) + timedelta(minutes=15)
+            ).isoformat(),
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
@@ -641,7 +659,9 @@ class UltraLowLatencyOptimizer:
         # Execute benchmark
         for i, request in enumerate(test_requests):
             try:
-                result = await self.optimize_policy_decision(request, OptimizationLevel.ENHANCED)
+                result = await self.optimize_policy_decision(
+                    request, OptimizationLevel.ENHANCED
+                )
 
                 latencies.append(result.latency_ms)
                 if result.cache_hit:
@@ -672,7 +692,11 @@ class UltraLowLatencyOptimizer:
         performance_grade = (
             "A"
             if target_met and cache_hit_rate > 0.8
-            else ("B" if target_met else "C" if avg_latency <= self.target_latency * 1.5 else "D")
+            else (
+                "B"
+                if target_met
+                else "C" if avg_latency <= self.target_latency * 1.5 else "D"
+            )
         )
 
         benchmark_results = {

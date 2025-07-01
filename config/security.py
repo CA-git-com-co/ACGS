@@ -14,7 +14,7 @@ SECURITY_HEADERS = {
     "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
     "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'",
     "Referrer-Policy": "strict-origin-when-cross-origin",
-    "Permissions-Policy": "geolocation=(), microphone=(), camera=()"
+    "Permissions-Policy": "geolocation=(), microphone=(), camera=()",
 }
 
 # Secure defaults
@@ -47,6 +47,7 @@ RATE_LIMIT_BURST = 10
 SECURITY_LOG_LEVEL = "INFO"
 SECURITY_LOG_FILE = "/var/log/acgs/security.log"
 
+
 def get_security_config() -> Dict[str, Any]:
     """Get security configuration"""
     return {
@@ -61,6 +62,6 @@ def get_security_config() -> Dict[str, Any]:
             "require_uppercase": PASSWORD_REQUIRE_UPPERCASE,
             "require_lowercase": PASSWORD_REQUIRE_LOWERCASE,
             "require_numbers": PASSWORD_REQUIRE_NUMBERS,
-            "require_symbols": PASSWORD_REQUIRE_SYMBOLS
-        }
+            "require_symbols": PASSWORD_REQUIRE_SYMBOLS,
+        },
     }

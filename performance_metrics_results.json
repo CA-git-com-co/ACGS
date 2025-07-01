@@ -1,6 +1,6 @@
 {
-  "test_start": "2025-06-30T19:33:49.166239",
-  "test_end": "2025-06-30T19:34:10.426524",
+  "test_start": "2025-07-01T20:44:42.115980+00:00",
+  "test_end": "2025-07-01T20:45:03.401343+00:00",
   "performance_metrics": {
     "decision_latency": {
       "total_requests": 200,
@@ -9,118 +9,107 @@
       "success_rate": 0.0,
       "error_rate": 1.0,
       "latency_stats": {
-        "min_ms": 0.649261,
-        "max_ms": 4.608448,
-        "mean_ms": 0.85831883,
-        "median_ms": 0.7962644999999999,
-        "p50_ms": 0.79811,
-        "p90_ms": 1.063696,
-        "p95_ms": 1.217944,
-        "p99_ms": 2.125641,
-        "p999_ms": 4.608448,
-        "std_dev_ms": 0.32411115776267624,
+        "min_ms": 0.607991,
+        "max_ms": 17.004497,
+        "mean_ms": 0.89536161,
+        "median_ms": 0.7511515,
+        "p50_ms": 0.753862,
+        "p90_ms": 0.890722,
+        "p95_ms": 0.954942,
+        "p99_ms": 6.877885,
+        "p999_ms": 17.004497,
+        "std_dev_ms": 1.2617162102400405,
         "count": 200
       }
     },
     "throughput": {
-      "duration_seconds": 20.023916244506836,
-      "total_requests": 3010,
-      "successful_requests": 3010,
-      "requests_per_second": 150.32024521305786,
-      "successful_rps": 150.32024521305786,
+      "duration_seconds": 20.046385765075684,
+      "total_requests": 3560,
+      "successful_requests": 3560,
+      "requests_per_second": 177.5881219547388,
+      "successful_rps": 177.5881219547388,
       "success_rate": 1.0
     },
     "cache_performance": {
       "cache_hit_rate": 1.0,
       "cache_miss_rate": 0.0,
       "write_latency_ms": {
-        "mean": 0.08823333999998795,
-        "p95": 0.1201590000619035
+        "mean": 0.07091444989782758,
+        "p95": 0.09055998816620559
       },
       "read_latency_ms": {
-        "mean": 0.06113593001373374,
-        "p95": 0.09689900002740615
+        "mean": 0.05061600881163031,
+        "p95": 0.06835999374743551
       },
       "redis_info": {
-        "used_memory_mb": 1.0389862060546875,
+        "used_memory_mb": 1.0626220703125,
         "connected_clients": 1,
-        "total_commands_processed": 214
+        "total_commands_processed": 7816
       }
     }
   },
   "system_metrics": {
     "cpu": {
-      "usage_percent": 12.6,
+      "usage_percent": 6.9,
       "count": 16,
       "load_average": [
-        2.5419921875,
-        2.33056640625,
-        2.232421875
+        2.2783203125,
+        2.408203125,
+        2.298828125
       ]
     },
     "memory": {
       "total_gb": 125.5402603149414,
-      "available_gb": 87.52656936645508,
-      "used_gb": 35.97166061401367,
-      "usage_percent": 30.3
+      "available_gb": 59.273868560791016,
+      "used_gb": 63.68377685546875,
+      "usage_percent": 52.8
     },
     "disk": {
-      "total_gb": 910.9493408203125,
-      "free_gb": 876.5982666015625,
-      "used_gb": 34.35107421875,
-      "usage_percent": 3.7709093886402902
+      "total_gb": 904.0419921875,
+      "free_gb": 869.658935546875,
+      "used_gb": 34.383056640625,
+      "usage_percent": 3.8032588018869253
     },
     "network": {
-      "bytes_sent": 425415393,
-      "bytes_recv": 330641314,
-      "packets_sent": 473806,
-      "packets_recv": 530617
+      "bytes_sent": 7590766580,
+      "bytes_recv": 7805136397,
+      "packets_sent": 20698421,
+      "packets_recv": 21113944
     }
   },
   "service_metrics": {
     "hitl_service": {
       "healthy": true,
-      "response_time_ms": 1.3825480000377866,
+      "response_time_ms": 1.4422829990508035,
       "status_code": 200,
       "response_data": {
         "status": "healthy",
-        "timestamp": "1751312050.4224813",
+        "timestamp": "1751402703.3976212",
         "service": "agent-hitl-service",
-        "version": "1.0.0"
+        "version": "1.0.0",
+        "constitutional_hash": "cdd01ef066bc6cf2"
       }
     },
     "ac_service": {
+      "healthy": false,
+      "error": "All connection attempts failed",
+      "response_time_ms": 5000
+    },
+    "auth_service": {
       "healthy": true,
-      "response_time_ms": 2.3498299999573646,
+      "response_time_ms": 2.35079500998836,
       "status_code": 200,
       "response_data": {
         "status": "healthy",
-        "service": "ac_service_production",
-        "version": "3.0.0",
-        "port": 8001,
-        "timestamp": 1751312050.4244022,
-        "enhanced_services": false,
-        "services": {
-          "compliance_engine": false,
-          "violation_detector": false,
-          "audit_logger": false,
-          "fv_client": false
-        },
-        "performance": {
-          "response_time_target": "<100ms for compliance checks",
-          "accuracy_target": ">99% constitutional compliance detection",
-          "availability_target": ">99.9%"
-        }
+        "service": "auth_service",
+        "version": "3.1.0",
+        "timestamp": "2025-07-01T20:45:03.400075+00:00",
+        "constitutional_hash": "cdd01ef066bc6cf2"
       }
-    },
-    "auth_service": {
-      "healthy": false,
-      "error": "Server disconnected without sending a response.",
-      "response_time_ms": 5000
     }
   },
   "targets_met": {
-    "decision_latency_p99": true,
+    "decision_latency_p99": false,
     "decision_latency_p95": true,
     "decision_latency_mean": true,
     "throughput": true,
@@ -130,10 +119,10 @@
     "error_rate": false
   },
   "summary": {
-    "targets_passed": 7,
+    "targets_passed": 6,
     "total_targets": 8,
-    "targets_pass_rate": 0.875,
-    "critical_p99_latency_met": true,
-    "performance_grade": "B"
+    "targets_pass_rate": 0.75,
+    "critical_p99_latency_met": false,
+    "performance_grade": "C"
   }
 }

@@ -55,13 +55,17 @@ class ConstitutionalViolation(BaseModel):
     description: str
     affected_principle_ids: list[int] = Field(default_factory=list)
     suggested_fix: str | None = None
-    confidence: float = Field(..., ge=0.0, le=1.0, description="Detection confidence (0-1)")
+    confidence: float = Field(
+        ..., ge=0.0, le=1.0, description="Detection confidence (0-1)"
+    )
 
 
 class ConstitutionalFidelityScore(BaseModel):
     """Constitutional fidelity scoring for policy validation."""
 
-    overall_score: float = Field(..., ge=0.0, le=1.0, description="Overall fidelity score (0-1)")
+    overall_score: float = Field(
+        ..., ge=0.0, le=1.0, description="Overall fidelity score (0-1)"
+    )
     principle_coverage_score: float = Field(..., ge=0.0, le=1.0)
     logical_consistency_score: float = Field(..., ge=0.0, le=1.0)
     fairness_score: float = Field(..., ge=0.0, le=1.0)
@@ -108,7 +112,9 @@ class RegoPolicy(BaseModel):
 
     # Constitutional compliance
     constitutional_fidelity: ConstitutionalFidelityScore | None = None
-    source_principles: list[int] = Field(default_factory=list, description="Source principle IDs")
+    source_principles: list[int] = Field(
+        default_factory=list, description="Source principle IDs"
+    )
 
     @validator("package_name")
     def validate_package_name(cls, v):
@@ -133,8 +139,12 @@ class RegoPolicy(BaseModel):
             if not rule.strip():
                 raise ValueError("Empty rules are not allowed")
             # Basic Rego syntax check
-            if not any(keyword in rule for keyword in ["allow", "deny", "default", ":="]):
-                raise ValueError(f"Rule appears to be invalid Rego syntax: {rule[:50]}...")
+            if not any(
+                keyword in rule for keyword in ["allow", "deny", "default", ":="]
+            ):
+                raise ValueError(
+                    f"Rule appears to be invalid Rego syntax: {rule[:50]}..."
+                )
 
         return v
 
@@ -228,7 +238,9 @@ class ModelSpecializationConfig(BaseModel):
     )
     policy_synthesis_model: str = Field(default="grok-3-mini")
     conflict_resolution_model: str = Field(default="gemini-2.0-flash")
-    bias_mitigation_model: str = Field(default="meta-llama/llama-4-maverick-17b-128e-instruct")
+    bias_mitigation_model: str = Field(
+        default="meta-llama/llama-4-maverick-17b-128e-instruct"
+    )
     fidelity_monitoring_model: str = Field(default="gemini-2.0-flash")
 
     # Model-specific parameters

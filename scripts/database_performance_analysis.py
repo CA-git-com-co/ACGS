@@ -399,14 +399,24 @@ class DatabasePerformanceAnalyzer:
 
         try:
             # Run all analyses
-            self.analysis_results["database_structure"] = self.analyze_database_size_and_structure()
-            self.analysis_results["query_performance"] = self.analyze_query_performance()
-            self.analysis_results["connection_activity"] = self.analyze_connection_and_activity()
-            self.analysis_results["cache_performance"] = self.analyze_cache_performance()
+            self.analysis_results["database_structure"] = (
+                self.analyze_database_size_and_structure()
+            )
+            self.analysis_results["query_performance"] = (
+                self.analyze_query_performance()
+            )
+            self.analysis_results["connection_activity"] = (
+                self.analyze_connection_and_activity()
+            )
+            self.analysis_results["cache_performance"] = (
+                self.analyze_cache_performance()
+            )
             self.analysis_results["locks_blocking"] = self.analyze_locks_and_blocking()
 
             # Generate recommendations
-            self.analysis_results["recommendations"] = self.generate_optimization_recommendations()
+            self.analysis_results["recommendations"] = (
+                self.generate_optimization_recommendations()
+            )
 
             # Add summary
             self.analysis_results["analysis_summary"] = {
@@ -416,7 +426,9 @@ class DatabasePerformanceAnalyzer:
                 "analyses_completed": len(
                     [k for k in self.analysis_results.keys() if k != "analysis_summary"]
                 ),
-                "recommendations_count": len(self.analysis_results.get("recommendations", [])),
+                "recommendations_count": len(
+                    self.analysis_results.get("recommendations", [])
+                ),
             }
 
         except Exception as e:
@@ -461,9 +473,13 @@ class DatabasePerformanceAnalyzer:
                 print(f"   {rec['description']}")
 
         # Performance assessment
-        if cache.get("buffer_cache_hit_ratio") and "%" in str(cache["buffer_cache_hit_ratio"]):
+        if cache.get("buffer_cache_hit_ratio") and "%" in str(
+            cache["buffer_cache_hit_ratio"]
+        ):
             try:
-                ratio = float(str(cache["buffer_cache_hit_ratio"]).split()[-1].replace("%", ""))
+                ratio = float(
+                    str(cache["buffer_cache_hit_ratio"]).split()[-1].replace("%", "")
+                )
                 if ratio >= 95:
                     print("\n🎉 EXCELLENT: Database cache performance is optimal!")
                 elif ratio >= 90:

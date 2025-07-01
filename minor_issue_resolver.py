@@ -17,6 +17,7 @@ from dataclasses import dataclass
 project_root = Path(__file__).parent
 sys.path.insert(0, str(project_root))
 
+
 @dataclass
 class MinorResolutionResult:
     issue_id: str
@@ -27,36 +28,38 @@ class MinorResolutionResult:
     remaining_work: List[str]
     details: Dict[str, Any]
 
+
 class MinorIssueResolver:
     def __init__(self):
         self.project_root = project_root
         self.resolution_results = []
-        
+
     def load_minor_issues(self) -> List[Dict[str, Any]]:
         """Load minor issues from the analysis results."""
         issue_file = self.project_root / "issue_analysis_results.json"
-        
+
         if not issue_file.exists():
             print("❌ Issue analysis results not found. Run issue_analyzer.py first.")
             return []
-        
-        with open(issue_file, 'r') as f:
+
+        with open(issue_file, "r") as f:
             data = json.load(f)
-        
+
         # Filter for minor issues
         minor_issues = [
-            issue for issue in data.get("prioritized_issues", [])
+            issue
+            for issue in data.get("prioritized_issues", [])
             if issue.get("severity") == "MINOR"
         ]
-        
+
         print(f"📋 Found {len(minor_issues)} minor issues to resolve")
         return minor_issues
-    
+
     def improve_code_quality(self, issue: Dict[str, Any]) -> MinorResolutionResult:
         """Improve code quality and consistency."""
         start_time = time.time()
         actions_taken = []
-        
+
         try:
             # Create code quality guidelines
             quality_guidelines = '''"""
@@ -203,18 +206,18 @@ class PolicyValidator:
 - Use distributed tracing
 - Monitor error rates and latencies
 '''
-            
+
             # Save code quality guidelines
             guidelines_file = self.project_root / "docs" / "code_quality_guidelines.md"
             guidelines_file.parent.mkdir(parents=True, exist_ok=True)
-            
-            with open(guidelines_file, 'w') as f:
+
+            with open(guidelines_file, "w") as f:
                 f.write(quality_guidelines)
-            
+
             actions_taken.append("Created comprehensive code quality guidelines")
-            
+
             # Create pre-commit configuration
-            precommit_config = '''# Pre-commit configuration for ACGS-2
+            precommit_config = """# Pre-commit configuration for ACGS-2
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
@@ -249,16 +252,16 @@ repos:
     hooks:
       - id: mypy
         additional_dependencies: [types-all]
-'''
-            
+"""
+
             precommit_file = self.project_root / ".pre-commit-config.yaml"
-            with open(precommit_file, 'w') as f:
+            with open(precommit_file, "w") as f:
                 f.write(precommit_config)
-            
+
             actions_taken.append("Created pre-commit configuration")
-            
+
             # Create project documentation template
-            readme_template = '''# ACGS-2 - Adaptive Constitutional Governance System
+            readme_template = """# ACGS-2 - Adaptive Constitutional Governance System
 
 ## Overview
 ACGS-2 is a comprehensive governance system implementing constitutional AI processing, policy governance, and Darwin Gödel Machine mechanisms for adaptive decision-making.
@@ -326,24 +329,24 @@ python -m pytest --cov=services --cov-report=html
 
 ## License
 [License information]
-'''
-            
+"""
+
             readme_file = self.project_root / "README.md"
-            with open(readme_file, 'w') as f:
+            with open(readme_file, "w") as f:
                 f.write(readme_template)
-            
+
             actions_taken.append("Created comprehensive project documentation")
-            
+
             verification_passed = self._verify_code_quality_improvements()
             actions_taken.append("Verified code quality improvements")
-            
+
             remaining_work = [
                 "Apply code formatting to existing codebase",
                 "Add type hints to all functions",
                 "Complete docstring coverage",
-                "Set up automated code quality checks in CI/CD"
+                "Set up automated code quality checks in CI/CD",
             ]
-            
+
             return MinorResolutionResult(
                 issue["id"],
                 "RESOLVED" if verification_passed else "PARTIAL",
@@ -354,10 +357,10 @@ python -m pytest --cov=services --cov-report=html
                 {
                     "guidelines_created": str(guidelines_file),
                     "precommit_config_created": str(precommit_file),
-                    "documentation_created": str(readme_file)
-                }
+                    "documentation_created": str(readme_file),
+                },
             )
-            
+
         except Exception as e:
             return MinorResolutionResult(
                 issue["id"],
@@ -366,9 +369,9 @@ python -m pytest --cov=services --cov-report=html
                 actions_taken,
                 False,
                 [],
-                {"error": str(e)}
+                {"error": str(e)},
             )
-    
+
     def _verify_code_quality_improvements(self) -> bool:
         """Verify that code quality improvements are in place."""
         try:
@@ -376,46 +379,55 @@ python -m pytest --cov=services --cov-report=html
             guidelines_file = self.project_root / "docs" / "code_quality_guidelines.md"
             precommit_file = self.project_root / ".pre-commit-config.yaml"
             readme_file = self.project_root / "README.md"
-            
-            return all(f.exists() for f in [guidelines_file, precommit_file, readme_file])
-            
+
+            return all(
+                f.exists() for f in [guidelines_file, precommit_file, readme_file]
+            )
+
         except Exception:
             return False
-    
+
     def resolve_minor_issues(self) -> Dict[str, Any]:
         """Resolve all minor issues."""
         print("Starting Minor Issue Resolution and Code Quality Improvement...")
         print("=" * 60)
-        
+
         minor_issues = self.load_minor_issues()
-        
+
         # Always improve code quality regardless of specific issues
         generic_issue = {
             "id": "QUALITY-001",
             "title": "Code quality and consistency improvements",
-            "category": "MAINTAINABILITY"
+            "category": "MAINTAINABILITY",
         }
-        
+
         print(f"\n🔧 Improving code quality and consistency...")
         result = self.improve_code_quality(generic_issue)
         self.resolution_results.append(result)
-        
+
         # Log result
-        status_symbol = {"RESOLVED": "✅", "PARTIAL": "🟡", "FAILED": "❌", "SKIPPED": "⊝"}
+        status_symbol = {
+            "RESOLVED": "✅",
+            "PARTIAL": "🟡",
+            "FAILED": "❌",
+            "SKIPPED": "⊝",
+        }
         symbol = status_symbol.get(result.status, "?")
-        
-        print(f"{symbol} {result.issue_id}: {result.status} ({result.resolution_time:.3f}s)")
+
+        print(
+            f"{symbol} {result.issue_id}: {result.status} ({result.resolution_time:.3f}s)"
+        )
         print(f"   Actions: {len(result.actions_taken)}")
         print(f"   Verified: {'✓' if result.verification_passed else '✗'}")
         print(f"   Remaining: {len(result.remaining_work)}")
-        
+
         # Process any specific minor issues
         resolved_count = 1 if result.status == "RESOLVED" else 0
         failed_count = 1 if result.status == "FAILED" else 0
-        
+
         for issue in minor_issues:
             print(f"\n🔧 Resolving: {issue['id']} - {issue['title']}")
-            
+
             # Generic resolution for minor issues
             minor_result = MinorResolutionResult(
                 issue["id"],
@@ -424,17 +436,17 @@ python -m pytest --cov=services --cov-report=html
                 ["Applied code quality improvements", "Updated documentation"],
                 True,
                 ["Monitor for additional improvements"],
-                {"resolved_by": "code_quality_improvements"}
+                {"resolved_by": "code_quality_improvements"},
             )
-            
+
             self.resolution_results.append(minor_result)
             resolved_count += 1
-            
+
             print(f"✅ {minor_result.issue_id}: RESOLVED (0.100s)")
             print(f"   Actions: 2")
             print(f"   Verified: ✓")
             print(f"   Remaining: 1")
-        
+
         # Generate summary
         total_issues = len(minor_issues) + 1  # +1 for code quality
         summary = {
@@ -443,7 +455,9 @@ python -m pytest --cov=services --cov-report=html
             "partial": sum(1 for r in self.resolution_results if r.status == "PARTIAL"),
             "failed": failed_count,
             "skipped": sum(1 for r in self.resolution_results if r.status == "SKIPPED"),
-            "resolution_rate": (resolved_count / total_issues * 100) if total_issues > 0 else 0,
+            "resolution_rate": (
+                (resolved_count / total_issues * 100) if total_issues > 0 else 0
+            ),
             "results": [
                 {
                     "issue_id": r.issue_id,
@@ -452,12 +466,12 @@ python -m pytest --cov=services --cov-report=html
                     "actions_taken": r.actions_taken,
                     "verification_passed": r.verification_passed,
                     "remaining_work": r.remaining_work,
-                    "details": r.details
+                    "details": r.details,
                 }
                 for r in self.resolution_results
-            ]
+            ],
         }
-        
+
         print("\n" + "=" * 60)
         print("MINOR ISSUE RESOLUTION SUMMARY")
         print("=" * 60)
@@ -467,25 +481,27 @@ python -m pytest --cov=services --cov-report=html
         print(f"Failed: {summary['failed']}")
         print(f"Skipped: {summary['skipped']}")
         print(f"Resolution Rate: {summary['resolution_rate']:.1f}%")
-        
+
         return summary
+
 
 def main():
     resolver = MinorIssueResolver()
     summary = resolver.resolve_minor_issues()
-    
+
     # Save results
     output_file = project_root / "minor_issue_resolution_results.json"
-    with open(output_file, 'w') as f:
+    with open(output_file, "w") as f:
         json.dump(summary, f, indent=2)
-    
+
     print(f"\nDetailed results saved to: {output_file}")
-    
+
     # Return appropriate exit code
     if summary["failed"] > 0:
         print(f"\n⚠️  {summary['failed']} minor issues failed to resolve!")
         return 1
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

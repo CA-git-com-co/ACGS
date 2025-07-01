@@ -170,7 +170,9 @@ class RapidAmendmentHandler:
             }
 
         # Create amendment with rapid processing flags
-        amendment = await self._create_rapid_amendment(db, amendment_data, urgency_level)
+        amendment = await self._create_rapid_amendment(
+            db, amendment_data, urgency_level
+        )
 
         # Initialize rapid voting process
         await self._initialize_rapid_voting(db, amendment, urgency_level)
@@ -218,6 +220,7 @@ class RapidAmendmentHandler:
     async def _get_active_amendment_count(self, db: AsyncSession) -> int:
         """Get count of currently active amendments."""
         from ..models import ACAmendment as ACAmendmentModel
+
         result = await db.execute(
             select(func.count(ACAmendmentModel.id)).where(
                 ACAmendmentModel.status.in_(["proposed", "voting", "discussion"])
@@ -235,6 +238,7 @@ class RapidAmendmentHandler:
         # Check for amendments affecting same principles
         if hasattr(amendment_data, "affected_principle_ids"):
             from ..models import ACAmendment as ACAmendmentModel
+
             result = await db.execute(
                 select(ACAmendmentModel.id, ACAmendmentModel.proposed_changes).where(
                     and_(
@@ -245,7 +249,10 @@ class RapidAmendmentHandler:
             )
             conflicting_amendments = result.fetchall()
             conflicts.extend(
-                [f"Amendment {a.id}: {a.proposed_changes[:50]}..." for a in conflicting_amendments]
+                [
+                    f"Amendment {a.id}: {a.proposed_changes[:50]}..."
+                    for a in conflicting_amendments
+                ]
             )
 
         return conflicts
@@ -255,16 +262,24 @@ class RapidAmendmentHandler:
     ) -> dict[str, Any]:
         """Validate amendment content for completeness and safety."""
         # Use proposed_changes as title equivalent
-        if not amendment_data.proposed_changes or len(amendment_data.proposed_changes.strip()) < 10:
+        if (
+            not amendment_data.proposed_changes
+            or len(amendment_data.proposed_changes.strip()) < 10
+        ):
             return {"valid": False, "error": "Amendment proposed changes too short"}
 
         # Use justification as description equivalent
-        if not amendment_data.justification or len(amendment_data.justification.strip()) < 20:
+        if (
+            not amendment_data.justification
+            or len(amendment_data.justification.strip()) < 20
+        ):
             return {"valid": False, "error": "Amendment justification too short"}
 
         # Check for dangerous keywords (simplified)
         dangerous_keywords = ["delete all", "remove everything", "disable system"]
-        content = f"{amendment_data.proposed_changes} {amendment_data.justification}".lower()
+        content = (
+            f"{amendment_data.proposed_changes} {amendment_data.justification}".lower()
+        )
         for keyword in dangerous_keywords:
             if keyword in content:
                 return {
@@ -394,7 +409,9 @@ class RapidAmendmentHandler:
     async def _get_council_members(self, db: AsyncSession) -> list[User]:
         """Get active Constitutional Council members."""
         result = await db.execute(
-            select(User).where(and_(User.role == "constitutional_council", User.is_active))
+            select(User).where(
+                and_(User.role == "constitutional_council", User.is_active)
+            )
         )
         return result.scalars().all()
 
@@ -413,7 +430,9 @@ class RapidAmendmentHandler:
             f"Notifying {len(members)} council members of {urgency_level.value} amendment {amendment.id}"
         )
 
-    async def _monitor_amendment_performance(self, amendment_id: int, start_time: float):
+    async def _monitor_amendment_performance(
+        self, amendment_id: int, start_time: float
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -463,7 +482,9 @@ class RapidAmendmentHandler:
 
             # Add to active amendments set
             active_key = self.redis_client.generate_key("active_amendments")
-            await self.redis_client.add_to_list(active_key, amendment.id, max_length=100)
+            await self.redis_client.add_to_list(
+                active_key, amendment.id, max_length=100
+            )
 
         except Exception as e:
             logger.error(f"Failed to cache amendment {amendment.id}: {e}")
@@ -577,7 +598,9 @@ class AsyncVotingManager:
             }
         else:
             # Process synchronously
-            result = await self._process_vote_background(db, amendment_id, vote_data, voter_id)
+            result = await self._process_vote_background(
+                db, amendment_id, vote_data, voter_id
+            )
             return {
                 "success": result["success"],
                 "vote_recorded": True,
@@ -677,7 +700,9 @@ class AsyncVotingManager:
             elif against_votes / total_votes > 0.4:
                 await self._finalize_amendment(db, amendment_id, "rejected")
 
-    async def _finalize_amendment(self, db: AsyncSession, amendment_id: int, status: str):
+    async def _finalize_amendment(
+        self, db: AsyncSession, amendment_id: int, status: str
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -708,8 +733,11 @@ class ConstitutionalCouncilScalabilityFramework:
         thirty_days_ago = datetime.utcnow() - timedelta(days=30)
 
         from ..models import ACAmendment as ACAmendmentModel
+
         recent_amendments = await db.execute(
-            select(ACAmendmentModel).where(ACAmendmentModel.created_at >= thirty_days_ago)
+            select(ACAmendmentModel).where(
+                ACAmendmentModel.created_at >= thirty_days_ago
+            )
         )
         amendments = recent_amendments.scalars().all()
 
@@ -737,7 +765,9 @@ class ConstitutionalCouncilScalabilityFramework:
                         amendment.finalized_at - amendment.created_at
                     ).total_seconds() / 3600
                     voting_times.append(voting_time)
-            avg_voting_time = sum(voting_times) / len(voting_times) if voting_times else 0.0
+            avg_voting_time = (
+                sum(voting_times) / len(voting_times) if voting_times else 0.0
+            )
 
         # Calculate consensus rate (approved / total completed)
         consensus_rate = (

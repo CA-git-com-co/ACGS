@@ -79,7 +79,9 @@ class SLADashboard:
         print("=" * 80)
         print("📊 ACGS-1 SLA MONITORING DASHBOARD")
         print("=" * 80)
-        print(f"📅 {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S timezone.utc')}")
+        print(
+            f"📅 {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S timezone.utc')}"
+        )
         print(
             f"🔄 Auto-refresh every {self.refresh_interval} seconds (Press Ctrl+C to exit)"
         )

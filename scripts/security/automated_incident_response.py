@@ -10,11 +10,13 @@ import logging
 from datetime import datetime
 from enum import Enum
 
+
 class IncidentSeverity(Enum):
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
     CRITICAL = "critical"
+
 
 class IncidentResponseSystem:
     """Automated incident response and management system."""
@@ -32,8 +34,8 @@ class IncidentResponseSystem:
                     "isolate_affected_systems",
                     "preserve_evidence",
                     "notify_security_team",
-                    "activate_incident_commander"
-                ]
+                    "activate_incident_commander",
+                ],
             },
             "data_leak": {
                 "severity": IncidentSeverity.HIGH,
@@ -41,8 +43,8 @@ class IncidentResponseSystem:
                     "stop_data_flow",
                     "assess_impact",
                     "notify_stakeholders",
-                    "initiate_containment"
-                ]
+                    "initiate_containment",
+                ],
             },
             "service_disruption": {
                 "severity": IncidentSeverity.MEDIUM,
@@ -50,9 +52,9 @@ class IncidentResponseSystem:
                     "assess_service_impact",
                     "implement_workaround",
                     "notify_users",
-                    "escalate_if_needed"
-                ]
-            }
+                    "escalate_if_needed",
+                ],
+            },
         }
 
     def handle_incident(self, incident_type, details):
@@ -65,7 +67,7 @@ class IncidentResponseSystem:
             "details": details,
             "timestamp": datetime.now().isoformat(),
             "status": "active",
-            "actions_taken": []
+            "actions_taken": [],
         }
 
         # Execute response playbook
@@ -104,18 +106,23 @@ class IncidentResponseSystem:
         """Preserve digital evidence."""
         print(f"💾 Preserving evidence for incident {incident_id}")
 
+
 def main():
     """Main incident response system."""
     irs = IncidentResponseSystem()
 
     # Simulate incident handling
-    incident_id = irs.handle_incident("security_breach", {
-        "source": "threat_detection_system",
-        "affected_systems": ["auth-service", "database"],
-        "attack_vector": "sql_injection"
-    })
+    incident_id = irs.handle_incident(
+        "security_breach",
+        {
+            "source": "threat_detection_system",
+            "affected_systems": ["auth-service", "database"],
+            "attack_vector": "sql_injection",
+        },
+    )
 
     print(f"✅ Incident {incident_id} handled successfully")
+
 
 if __name__ == "__main__":
     main()

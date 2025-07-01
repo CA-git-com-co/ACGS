@@ -45,10 +45,14 @@ class AuthCacheManager:
         try:
             # Configure Redis for auth service
             config = CacheConfig(
-                redis_url=os.getenv("REDIS_URL", "redis://localhost:6379/1"),  # Use DB 1 for auth
+                redis_url=os.getenv(
+                    "REDIS_URL", "redis://localhost:6379/1"
+                ),  # Use DB 1 for auth
                 redis_password=os.getenv("REDIS_PASSWORD", ""),
                 max_connections=int(os.getenv("REDIS_MAX_CONNECTIONS", "10")),
-                health_check_interval=int(os.getenv("REDIS_HEALTH_CHECK_INTERVAL", "30")),
+                health_check_interval=int(
+                    os.getenv("REDIS_HEALTH_CHECK_INTERVAL", "30")
+                ),
             )
 
             self.redis_client = await get_redis_client(self.service_name, config)
@@ -100,7 +104,9 @@ class AuthCacheManager:
         cache_key = f"auth_token:{token_hash}"
         token_ttl = ttl or CACHE_TTL_POLICIES["auth_tokens"]
 
-        return await self.redis_client.set(cache_key, token_data, ttl=token_ttl, prefix="tokens")
+        return await self.redis_client.set(
+            cache_key, token_data, ttl=token_ttl, prefix="tokens"
+        )
 
     async def get_auth_token(self, token_hash: str) -> dict[str, Any] | None:
         """Get cached authentication token data."""
@@ -148,7 +154,9 @@ class AuthCacheManager:
         cache_key = f"user_permissions:{user_id}"
         return await self.redis_client.delete(cache_key, prefix="permissions")
 
-    async def cache_rate_limit(self, identifier: str, count: int, window_seconds: int) -> bool:
+    async def cache_rate_limit(
+        self, identifier: str, count: int, window_seconds: int
+    ) -> bool:
         """Cache rate limiting data."""
         if not self.redis_client:
             await self.initialize()
@@ -188,7 +196,9 @@ class AuthCacheManager:
             return current_count
 
         except Exception as e:
-            logger.error("Rate limit increment error", identifier=identifier, error=str(e))
+            logger.error(
+                "Rate limit increment error", identifier=identifier, error=str(e)
+            )
             return 0
 
     async def warm_cache(self):
@@ -265,7 +275,9 @@ def cache_auth_result(ttl: int | None = None, cache_type: str = "auth_tokens"):
     )
 
 
-def generate_request_cache_key(request: Request, additional_params: dict[str, Any] = None) -> str:
+def generate_request_cache_key(
+    request: Request, additional_params: dict[str, Any] = None
+) -> str:
     """Generate cache key from request parameters."""
     key_data = {
         "path": request.url.path,

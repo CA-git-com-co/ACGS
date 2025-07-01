@@ -80,7 +80,9 @@ class TestDatabaseIntegration:
         result = await test_db_session.execute(stmt)
         assert result.scalar_one_or_none() is None
 
-    async def test_performance_metrics_batch_insert(self, test_db_session: AsyncSession):
+    async def test_performance_metrics_batch_insert(
+        self, test_db_session: AsyncSession
+    ):
         """Test batch insertion of performance metrics."""
         improvement_id = uuid4()
         base_time = datetime.utcnow()
@@ -126,7 +128,9 @@ class TestDatabaseIntegration:
 
         assert len(range_metrics) == 51  # 25-75 inclusive
 
-    async def test_constitutional_compliance_workflow(self, test_db_session: AsyncSession):
+    async def test_constitutional_compliance_workflow(
+        self, test_db_session: AsyncSession
+    ):
         """Test constitutional compliance logging workflow."""
         improvement_id = uuid4()
 
@@ -186,7 +190,11 @@ class TestDatabaseIntegration:
     async def test_bandit_state_updates(self, test_db_session: AsyncSession):
         """Test bandit algorithm state updates."""
         # Create initial bandit states
-        arms = ["performance_optimization", "code_refactoring", "architecture_improvement"]
+        arms = [
+            "performance_optimization",
+            "code_refactoring",
+            "architecture_improvement",
+        ]
 
         for arm in arms:
             state = BanditState(
@@ -217,7 +225,8 @@ class TestDatabaseIntegration:
                 .values(
                     pulls=BanditState.pulls + 1,
                     rewards=BanditState.rewards + reward,
-                    success_rate=(BanditState.rewards + reward) / (BanditState.pulls + 1),
+                    success_rate=(BanditState.rewards + reward)
+                    / (BanditState.pulls + 1),
                     last_updated=datetime.utcnow(),
                 )
             )

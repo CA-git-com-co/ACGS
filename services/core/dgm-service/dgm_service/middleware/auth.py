@@ -46,11 +46,15 @@ class AuthMiddleware(BaseHTTPMiddleware):
         # Extract authorization header
         auth_header = request.headers.get("Authorization")
         if not auth_header:
-            return self._unauthorized_response("Missing Authorization header", request_id)
+            return self._unauthorized_response(
+                "Missing Authorization header", request_id
+            )
 
         # Validate Bearer token format
         if not auth_header.startswith("Bearer "):
-            return self._unauthorized_response("Invalid Authorization header format", request_id)
+            return self._unauthorized_response(
+                "Invalid Authorization header format", request_id
+            )
 
         token = auth_header[7:]  # Remove "Bearer " prefix
 
@@ -68,7 +72,9 @@ class AuthMiddleware(BaseHTTPMiddleware):
             request.state.permissions = validation_result.get("permissions", [])
 
             # Check if user has required permissions for DGM operations
-            if not self._has_dgm_permissions(request.state.roles, request.state.permissions):
+            if not self._has_dgm_permissions(
+                request.state.roles, request.state.permissions
+            ):
                 return self._forbidden_response(
                     "Insufficient permissions for DGM operations", request_id
                 )
@@ -80,7 +86,9 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
         except Exception as e:
             logger.error(f"Authentication failed: {e}")
-            return self._unauthorized_response("Authentication service error", request_id)
+            return self._unauthorized_response(
+                "Authentication service error", request_id
+            )
 
         # Process request
         response = await call_next(request)

@@ -24,7 +24,10 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
-    handlers=[logging.FileHandler("logs/penetration_testing.log"), logging.StreamHandler()],
+    handlers=[
+        logging.FileHandler("logs/penetration_testing.log"),
+        logging.StreamHandler(),
+    ],
 )
 logger = logging.getLogger(__name__)
 
@@ -122,7 +125,9 @@ class PenetrationTesting:
 
             for service_name, port in self.services:
                 try:
-                    response = requests.get(f"http://localhost:{port}/health", timeout=5)
+                    response = requests.get(
+                        f"http://localhost:{port}/health", timeout=5
+                    )
 
                     if response.status_code == 200:
                         available_services += 1
@@ -170,7 +175,9 @@ class PenetrationTesting:
             self.results["summary"]["services_tested"] = available_services
             self.results["summary"]["total_tests"] += len(self.services)
             self.results["summary"]["passed_tests"] += available_services
-            self.results["summary"]["failed_tests"] += len(self.services) - available_services
+            self.results["summary"]["failed_tests"] += (
+                len(self.services) - available_services
+            )
 
             self.results["tests"]["service_availability"] = {
                 "status": "SUCCESS",
@@ -202,11 +209,18 @@ class PenetrationTesting:
 
             for service_name, port in self.services:
                 # Test endpoints without authentication
-                test_endpoints = ["/api/users", "/api/admin", "/api/config", "/api/data"]
+                test_endpoints = [
+                    "/api/users",
+                    "/api/admin",
+                    "/api/config",
+                    "/api/data",
+                ]
 
                 for endpoint in test_endpoints:
                     try:
-                        response = requests.get(f"http://localhost:{port}{endpoint}", timeout=5)
+                        response = requests.get(
+                            f"http://localhost:{port}{endpoint}", timeout=5
+                        )
 
                         if response.status_code == 200:
                             findings.append(
@@ -237,7 +251,9 @@ class PenetrationTesting:
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
-            logger.info(f"✅ Authentication bypass testing completed: {len(findings)} findings")
+            logger.info(
+                f"✅ Authentication bypass testing completed: {len(findings)} findings"
+            )
 
         except Exception as e:
             logger.error(f"❌ Authentication bypass testing failed: {e}")
@@ -259,13 +275,21 @@ class PenetrationTesting:
                 for payload in self.payloads["sql_injection"]:
                     try:
                         response = requests.get(
-                            f"http://localhost:{port}/health", params={"id": payload}, timeout=5
+                            f"http://localhost:{port}/health",
+                            params={"id": payload},
+                            timeout=5,
                         )
 
                         # Check for SQL error messages
                         if any(
                             error in response.text.lower()
-                            for error in ["sql", "mysql", "postgresql", "sqlite", "syntax error"]
+                            for error in [
+                                "sql",
+                                "mysql",
+                                "postgresql",
+                                "sqlite",
+                                "syntax error",
+                            ]
                         ):
                             findings.append(
                                 {
@@ -316,7 +340,9 @@ class PenetrationTesting:
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
-            logger.info(f"✅ Injection vulnerability testing completed: {len(findings)} findings")
+            logger.info(
+                f"✅ Injection vulnerability testing completed: {len(findings)} findings"
+            )
 
         except Exception as e:
             logger.error(f"❌ Injection vulnerability testing failed: {e}")
@@ -342,7 +368,9 @@ class PenetrationTesting:
 
             for service_name, port in self.services:
                 try:
-                    response = requests.get(f"http://localhost:{port}/health", timeout=5)
+                    response = requests.get(
+                        f"http://localhost:{port}/health", timeout=5
+                    )
                     headers = dict(response.headers)
 
                     missing_headers = []
@@ -374,7 +402,9 @@ class PenetrationTesting:
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
-            logger.info(f"✅ Security headers testing completed: {len(findings)} findings")
+            logger.info(
+                f"✅ Security headers testing completed: {len(findings)} findings"
+            )
 
         except Exception as e:
             logger.error(f"❌ Security headers testing failed: {e}")
@@ -393,7 +423,9 @@ class PenetrationTesting:
 
             for service_name, port in self.services:
                 try:
-                    response = requests.get(f"http://localhost:{port}/health", timeout=5)
+                    response = requests.get(
+                        f"http://localhost:{port}/health", timeout=5
+                    )
 
                     # Check for session cookies
                     if response.cookies:
@@ -438,7 +470,9 @@ class PenetrationTesting:
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
-            logger.info(f"✅ Session management testing completed: {len(findings)} findings")
+            logger.info(
+                f"✅ Session management testing completed: {len(findings)} findings"
+            )
 
         except Exception as e:
             logger.error(f"❌ Session management testing failed: {e}")
@@ -468,7 +502,9 @@ class PenetrationTesting:
                     try:
                         headers = {"Authorization": token}
                         response = requests.get(
-                            f"http://localhost:{port}/health", headers=headers, timeout=5
+                            f"http://localhost:{port}/health",
+                            headers=headers,
+                            timeout=5,
                         )
 
                         # Should return 401 or 403 for invalid tokens
@@ -496,7 +532,9 @@ class PenetrationTesting:
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
-            logger.info(f"✅ Authorization bypass testing completed: {len(findings)} findings")
+            logger.info(
+                f"✅ Authorization bypass testing completed: {len(findings)} findings"
+            )
 
         except Exception as e:
             logger.error(f"❌ Authorization bypass testing failed: {e}")
@@ -561,7 +599,10 @@ class PenetrationTesting:
 
         # Add specific recommendations based on test results
         for test_type, test_data in self.results["tests"].items():
-            if test_data.get("status") == "SUCCESS" and test_data.get("findings_count", 0) > 0:
+            if (
+                test_data.get("status") == "SUCCESS"
+                and test_data.get("findings_count", 0) > 0
+            ):
                 recommendations.append(
                     {
                         "priority": "HIGH",

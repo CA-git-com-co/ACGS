@@ -24,13 +24,13 @@ from tests.conftest import docker_rm
 
 @pytest.mark.gpu
 def test_trtllm_eval():
-    model_path = os.getenv('NEMO_SKILLS_TEST_TRTLLM_MODEL')
+    model_path = os.getenv("NEMO_SKILLS_TEST_TRTLLM_MODEL")
     if not model_path:
         pytest.skip("Define NEMO_SKILLS_TEST_TRTLLM_MODEL to run this test")
-    model_type = os.getenv('NEMO_SKILLS_TEST_MODEL_TYPE')
+    model_type = os.getenv("NEMO_SKILLS_TEST_MODEL_TYPE")
     if not model_type:
         pytest.skip("Define NEMO_SKILLS_TEST_MODEL_TYPE to run this test")
-    prompt_template = 'llama3-instruct' if model_type == 'llama' else 'qwen-instruct'
+    prompt_template = "llama3-instruct" if model_type == "llama" else "qwen-instruct"
 
     output_dir = f"/tmp/nemo-skills-tests/{model_type}/trtllm-eval"
     docker_rm([output_dir])
@@ -50,29 +50,29 @@ def test_trtllm_eval():
     subprocess.run(cmd, shell=True, check=True)
 
     # running compute_metrics to check that results are expected
-    metrics = ComputeMetrics(benchmark='gsm8k').compute_metrics([f"{output_dir}/eval-results/gsm8k/output.jsonl"])[
-        "all"
-    ]["greedy"]
+    metrics = ComputeMetrics(benchmark="gsm8k").compute_metrics(
+        [f"{output_dir}/eval-results/gsm8k/output.jsonl"]
+    )["all"]["greedy"]
     # rough check, since exact accuracy varies depending on gpu type
-    if model_type == 'llama':
-        assert metrics['symbolic_correct'] >= 50
+    if model_type == "llama":
+        assert metrics["symbolic_correct"] >= 50
     else:  # qwen
-        assert metrics['symbolic_correct'] >= 70
-    assert metrics['num_entries'] == 20
+        assert metrics["symbolic_correct"] >= 70
+    assert metrics["num_entries"] == 20
 
 
 @pytest.mark.gpu
-@pytest.mark.parametrize("server_type", ['trtllm', 'trtllm-serve'])
+@pytest.mark.parametrize("server_type", ["trtllm", "trtllm-serve"])
 def test_trtllm_code_execution_eval(server_type):
-    model_path = os.getenv('NEMO_SKILLS_TEST_TRTLLM_MODEL')
+    model_path = os.getenv("NEMO_SKILLS_TEST_TRTLLM_MODEL")
     if not model_path:
         pytest.skip("Define NEMO_SKILLS_TEST_TRTLLM_MODEL to run this test")
-    model_type = os.getenv('NEMO_SKILLS_TEST_MODEL_TYPE')
+    model_type = os.getenv("NEMO_SKILLS_TEST_MODEL_TYPE")
     if not model_type:
         pytest.skip("Define NEMO_SKILLS_TEST_MODEL_TYPE to run this test")
     # we are using the base prompt for llama to make it follow few-shots
-    prompt_template = 'llama3-base' if model_type == 'llama' else 'qwen-instruct'
-    code_tags = 'nemotron' if model_type == 'llama' else 'qwen'
+    prompt_template = "llama3-base" if model_type == "llama" else "qwen-instruct"
+    code_tags = "nemotron" if model_type == "llama" else "qwen"
 
     output_dir = f"/tmp/nemo-skills-tests/{model_type}/{server_type}-eval"
     docker_rm([output_dir])
@@ -96,33 +96,34 @@ def test_trtllm_code_execution_eval(server_type):
     subprocess.run(cmd, shell=True, check=True)
 
     # running compute_metrics to check that results are expected
-    metrics = ComputeMetrics(benchmark='gsm8k').compute_metrics([f"{output_dir}/eval-results/gsm8k/output.jsonl"])[
-        "all"
-    ]["greedy"]
+    metrics = ComputeMetrics(benchmark="gsm8k").compute_metrics(
+        [f"{output_dir}/eval-results/gsm8k/output.jsonl"]
+    )["all"]["greedy"]
     # rough check, since exact accuracy varies depending on gpu type
-    if model_type == 'llama':
-        assert metrics['symbolic_correct'] >= 40
+    if model_type == "llama":
+        assert metrics["symbolic_correct"] >= 40
     else:  # qwen
-        assert metrics['symbolic_correct'] >= 70
-    assert metrics['num_entries'] == 20
+        assert metrics["symbolic_correct"] >= 70
+    assert metrics["num_entries"] == 20
 
 
 @pytest.mark.gpu
 @pytest.mark.parametrize(
-    "server_type,server_args", [('vllm', ''), ('sglang', ''), ('trtllm-serve', '--backend pytorch')]
+    "server_type,server_args",
+    [("vllm", ""), ("sglang", ""), ("trtllm-serve", "--backend pytorch")],
 )
 def test_hf_eval(server_type, server_args):
     # this test expects llama3-instruct to properly check accuracy
     # will run a bunch of benchmarks, but is still pretty fast
     # mmlu/ifeval will be cut to 400 samples to save time
     # could cut everything, but human-eval/mbpp don't work with partial gens
-    model_path = os.getenv('NEMO_SKILLS_TEST_HF_MODEL')
+    model_path = os.getenv("NEMO_SKILLS_TEST_HF_MODEL")
     if not model_path:
         pytest.skip("Define NEMO_SKILLS_TEST_HF_MODEL to run this test")
-    model_type = os.getenv('NEMO_SKILLS_TEST_MODEL_TYPE')
+    model_type = os.getenv("NEMO_SKILLS_TEST_MODEL_TYPE")
     if not model_type:
         pytest.skip("Define NEMO_SKILLS_TEST_MODEL_TYPE to run this test")
-    if model_type != 'llama':
+    if model_type != "llama":
         pytest.skip("Only running this test for llama models")
 
     output_dir = f"/tmp/nemo-skills-tests/{model_type}/{server_type}-eval"
@@ -153,47 +154,45 @@ def test_hf_eval(server_type, server_args):
     )
 
     # running compute_metrics to check that results are expected
-    metrics = ComputeMetrics(benchmark='algebra222').compute_metrics(
+    metrics = ComputeMetrics(benchmark="algebra222").compute_metrics(
         [f"{output_dir}/eval-results/algebra222/output.jsonl"],
     )["all"]["greedy"]
 
-    assert metrics['symbolic_correct'] >= 75
-    assert metrics['num_entries'] == 164
+    assert metrics["symbolic_correct"] >= 75
+    assert metrics["num_entries"] == 164
 
-    metrics = ComputeMetrics(benchmark='human-eval').compute_metrics(
+    metrics = ComputeMetrics(benchmark="human-eval").compute_metrics(
         [f"{output_dir}/eval-results/human-eval/output.jsonl"],
     )["all"]["greedy"]
-    assert metrics['passing_base_tests'] >= 50
-    assert metrics['passing_plus_tests'] >= 50
-    assert metrics['num_entries'] == 164
+    assert metrics["passing_base_tests"] >= 50
+    assert metrics["passing_plus_tests"] >= 50
+    assert metrics["num_entries"] == 164
 
-    metrics = ComputeMetrics(benchmark='ifeval').compute_metrics(
+    metrics = ComputeMetrics(benchmark="ifeval").compute_metrics(
         [f"{output_dir}/eval-results/ifeval/output.jsonl"],
-    )[
-        "all"
-    ]["greedy"]
-    assert metrics['prompt_strict_accuracy'] >= 60
-    assert metrics['instruction_strict_accuracy'] >= 70
-    assert metrics['prompt_loose_accuracy'] >= 60
-    assert metrics['instruction_loose_accuracy'] >= 70
-    assert metrics['num_prompts'] == 164
+    )["all"]["greedy"]
+    assert metrics["prompt_strict_accuracy"] >= 60
+    assert metrics["instruction_strict_accuracy"] >= 70
+    assert metrics["prompt_loose_accuracy"] >= 60
+    assert metrics["instruction_loose_accuracy"] >= 70
+    assert metrics["num_prompts"] == 164
 
-    metrics = ComputeMetrics(benchmark='mmlu').compute_metrics([f"{output_dir}/eval-results/mmlu/output.jsonl"])[
-        "all"
-    ]["greedy"]
-    assert metrics['symbolic_correct'] >= 60
-    assert metrics['num_entries'] == 164
+    metrics = ComputeMetrics(benchmark="mmlu").compute_metrics(
+        [f"{output_dir}/eval-results/mmlu/output.jsonl"]
+    )["all"]["greedy"]
+    assert metrics["symbolic_correct"] >= 60
+    assert metrics["num_entries"] == 164
 
 
 @pytest.mark.gpu
 def test_nemo_eval():
-    model_path = os.getenv('NEMO_SKILLS_TEST_NEMO_MODEL')
+    model_path = os.getenv("NEMO_SKILLS_TEST_NEMO_MODEL")
     if not model_path:
         pytest.skip("Define NEMO_SKILLS_TEST_NEMO_MODEL to run this test")
-    model_type = os.getenv('NEMO_SKILLS_TEST_MODEL_TYPE')
+    model_type = os.getenv("NEMO_SKILLS_TEST_MODEL_TYPE")
     if not model_type:
         pytest.skip("Define NEMO_SKILLS_TEST_MODEL_TYPE to run this test")
-    prompt_template = 'llama3-instruct' if model_type == 'llama' else 'qwen-instruct'
+    prompt_template = "llama3-instruct" if model_type == "llama" else "qwen-instruct"
 
     output_dir = f"/tmp/nemo-skills-tests/{model_type}/nemo-eval"
     docker_rm([output_dir])
@@ -213,28 +212,28 @@ def test_nemo_eval():
     subprocess.run(cmd, shell=True, check=True)
 
     # running compute_metrics to check that results are expected
-    metrics = ComputeMetrics(benchmark='gsm8k').compute_metrics([f"{output_dir}/eval-results/gsm8k/output.jsonl"])[
-        "all"
-    ]["greedy"]
+    metrics = ComputeMetrics(benchmark="gsm8k").compute_metrics(
+        [f"{output_dir}/eval-results/gsm8k/output.jsonl"]
+    )["all"]["greedy"]
     # rough check, since exact accuracy varies depending on gpu type
-    if model_type == 'llama':
-        assert metrics['symbolic_correct'] >= 50
+    if model_type == "llama":
+        assert metrics["symbolic_correct"] >= 50
     else:  # qwen
-        assert metrics['symbolic_correct'] >= 70
-    assert metrics['num_entries'] == 20
+        assert metrics["symbolic_correct"] >= 70
+    assert metrics["num_entries"] == 20
 
 
 @pytest.mark.gpu
 def test_megatron_eval():
-    model_path = os.getenv('NEMO_SKILLS_TEST_MEGATRON_MODEL')
+    model_path = os.getenv("NEMO_SKILLS_TEST_MEGATRON_MODEL")
     if not model_path:
         pytest.skip("Define NEMO_SKILLS_TEST_MEGATRON_MODEL to run this test")
-    model_type = os.getenv('NEMO_SKILLS_TEST_MODEL_TYPE')
+    model_type = os.getenv("NEMO_SKILLS_TEST_MODEL_TYPE")
     if not model_type:
         pytest.skip("Define NEMO_SKILLS_TEST_MODEL_TYPE to run this test")
     if model_type != "llama":
         pytest.skip("Only llama models are supported in Megatron.")
-    prompt_template = 'llama3-instruct'
+    prompt_template = "llama3-instruct"
 
     output_dir = f"/tmp/nemo-skills-tests/{model_type}/megatron-eval"
     docker_rm([output_dir])
@@ -255,10 +254,10 @@ def test_megatron_eval():
     subprocess.run(cmd, shell=True, check=True)
 
     # running compute_metrics to check that results are expected
-    metrics = ComputeMetrics(benchmark='gsm8k').compute_metrics([f"{output_dir}/eval-results/gsm8k/output.jsonl"])[
-        "all"
-    ]["greedy"]
+    metrics = ComputeMetrics(benchmark="gsm8k").compute_metrics(
+        [f"{output_dir}/eval-results/gsm8k/output.jsonl"]
+    )["all"]["greedy"]
     # rough check, since exact accuracy varies depending on gpu type
     # TODO: something is broken in megatron inference here as this should be 50!
-    assert metrics['symbolic_correct'] >= 20
-    assert metrics['num_entries'] == 20
+    assert metrics["symbolic_correct"] >= 20
+    assert metrics["num_entries"] == 20

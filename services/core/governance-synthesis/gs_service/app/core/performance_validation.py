@@ -192,7 +192,9 @@ class PerformanceValidator:
         # Calculate convergence indicators
         reward_variance = self._calculate_reward_variance()
         selection_entropy = self._calculate_selection_entropy(template_selection_counts)
-        convergence_score = self._calculate_convergence_score(reward_variance, selection_entropy)
+        convergence_score = self._calculate_convergence_score(
+            reward_variance, selection_entropy
+        )
 
         # Create performance snapshot
         snapshot = PerformanceSnapshot(
@@ -226,7 +228,8 @@ class PerformanceValidator:
             return 1.0  # High variance initially
 
         recent_rewards = [
-            snapshot.average_reward for snapshot in self.performance_history[-window_size:]
+            snapshot.average_reward
+            for snapshot in self.performance_history[-window_size:]
         ]
 
         return float(np.var(recent_rewards))
@@ -275,7 +278,9 @@ class PerformanceValidator:
         recent_snapshots = self.performance_history[-20:]  # Last 20 iterations
 
         # Calculate stability metrics
-        reward_stability = self._calculate_stability([s.average_reward for s in recent_snapshots])
+        reward_stability = self._calculate_stability(
+            [s.average_reward for s in recent_snapshots]
+        )
         selection_stability = self._calculate_stability(
             [s.selection_entropy for s in recent_snapshots]
         )
@@ -293,7 +298,9 @@ class PerformanceValidator:
         convergence_confidence = 0.0
 
         if convergence_status == ConvergenceStatus.CONVERGED:
-            convergence_iteration, convergence_confidence = self._find_convergence_point()
+            convergence_iteration, convergence_confidence = (
+                self._find_convergence_point()
+            )
 
         # Trend analysis
         trend_direction, trend_strength = self._analyze_trend(recent_snapshots)
@@ -342,7 +349,9 @@ class PerformanceValidator:
         stability = max(0.0, 1.0 - cv)
         return min(1.0, stability)
 
-    def _calculate_improvement_rate(self, snapshots: list[PerformanceSnapshot]) -> float:
+    def _calculate_improvement_rate(
+        self, snapshots: list[PerformanceSnapshot]
+    ) -> float:
         """Calculate rate of improvement per iteration."""
         if len(snapshots) < 2:
             return 0.0
@@ -376,7 +385,10 @@ class PerformanceValidator:
         stability_threshold = 0.8
         improvement_threshold = 0.001  # Very small improvement rate
 
-        if reward_stability > stability_threshold and selection_stability > stability_threshold:
+        if (
+            reward_stability > stability_threshold
+            and selection_stability > stability_threshold
+        ):
             if abs(improvement_rate) < improvement_threshold:
                 return ConvergenceStatus.CONVERGED
             elif improvement_rate > 0:
@@ -452,7 +464,9 @@ class PerformanceValidator:
             return self.current_iteration
 
         # Rough estimate
-        iterations_needed = int((current_variance - target_variance) / max(improvement_rate, 0.001))
+        iterations_needed = int(
+            (current_variance - target_variance) / max(improvement_rate, 0.001)
+        )
         predicted_iteration = self.current_iteration + iterations_needed
 
         return min(predicted_iteration, self.target_iterations)
@@ -501,9 +515,12 @@ class PerformanceValidator:
             if self.convergence_analysis.status == ConvergenceStatus.CONVERGED:
                 convergence_target_met = (
                     self.convergence_analysis.convergence_iteration
-                    and self.convergence_analysis.convergence_iteration <= self.target_iterations
+                    and self.convergence_analysis.convergence_iteration
+                    <= self.target_iterations
                 )
-            convergence_progress = min(1.0, self.current_iteration / self.target_iterations)
+            convergence_progress = min(
+                1.0, self.current_iteration / self.target_iterations
+            )
 
         return {
             "status": "active",
@@ -582,13 +599,17 @@ class PerformanceValidator:
             "report_generated": datetime.now(timezone.utc).isoformat(),
             "validation_period": {
                 "start_time": self.start_time.isoformat(),
-                "duration_hours": (datetime.now(timezone.utc) - self.start_time).total_seconds()
+                "duration_hours": (
+                    datetime.now(timezone.utc) - self.start_time
+                ).total_seconds()
                 / 3600,
             },
             "summary_statistics": summary_stats,
             "performance_targets": self.check_performance_targets(),
             "convergence_analysis": (
-                self.convergence_analysis.__dict__ if self.convergence_analysis else None
+                self.convergence_analysis.__dict__
+                if self.convergence_analysis
+                else None
             ),
             "baselines": {
                 baseline_id: {

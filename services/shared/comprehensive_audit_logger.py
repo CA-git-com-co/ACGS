@@ -387,7 +387,11 @@ class ComprehensiveAuditLogger:
         key = f"audit:{self.service_name}:{audit_entry.id}"
         # Ensure datetime objects are properly serialized
         audit_dict = audit_entry.dict()
-        audit_dict['timestamp'] = audit_dict['timestamp'].isoformat() if isinstance(audit_dict['timestamp'], datetime) else audit_dict['timestamp']
+        audit_dict["timestamp"] = (
+            audit_dict["timestamp"].isoformat()
+            if isinstance(audit_dict["timestamp"], datetime)
+            else audit_dict["timestamp"]
+        )
         value = json.dumps(audit_dict, default=str)
 
         # Encrypt if encryption is enabled
@@ -411,7 +415,11 @@ class ComprehensiveAuditLogger:
 
         # Ensure datetime objects are properly serialized
         audit_dict = audit_entry.dict()
-        audit_dict['timestamp'] = audit_dict['timestamp'].isoformat() if isinstance(audit_dict['timestamp'], datetime) else audit_dict['timestamp']
+        audit_dict["timestamp"] = (
+            audit_dict["timestamp"].isoformat()
+            if isinstance(audit_dict["timestamp"], datetime)
+            else audit_dict["timestamp"]
+        )
         log_line = json.dumps(audit_dict, default=str) + "\n"
 
         # Encrypt if encryption is enabled
@@ -451,7 +459,9 @@ class ComprehensiveAuditLogger:
             await self.redis_client.publish("audit_alerts", json.dumps(alert_data))
 
         # Log critical event
-        logger.critical(f"CRITICAL AUDIT EVENT: {audit_entry.event_type} - {audit_entry.operation}")
+        logger.critical(
+            f"CRITICAL AUDIT EVENT: {audit_entry.event_type} - {audit_entry.operation}"
+        )
 
     async def get_audit_logs(
         self,
@@ -515,7 +525,9 @@ class ComprehensiveAuditLogger:
             "total_logs": self.log_count,
             "error_count": self.error_count,
             "logs_per_second": self.log_count / uptime if uptime > 0 else 0,
-            "error_rate": (self.error_count / self.log_count if self.log_count > 0 else 0),
+            "error_rate": (
+                self.error_count / self.log_count if self.log_count > 0 else 0
+            ),
             "redis_connected": self.redis_client is not None,
             "encryption_enabled": self.cipher is not None,
             "integrity_protection_enabled": self.integrity_key is not None,
@@ -551,7 +563,9 @@ async def log_user_login(
     audit_logger = await get_audit_logger(service_name)
 
     return await audit_logger.log_audit_event(
-        event_type=(AuditEventType.USER_LOGIN if success else AuditEventType.LOGIN_FAILED),
+        event_type=(
+            AuditEventType.USER_LOGIN if success else AuditEventType.LOGIN_FAILED
+        ),
         operation="user_authentication",
         result_status="success" if success else "failure",
         user_id=user_id,
@@ -642,7 +656,9 @@ class AuditLoggingMiddleware:
                 operation=f"{request_info['method']} {request_info['path']}",
                 result_status="started",
                 correlation_id=correlation_id,
-                ip_address=(request_info["client"][0] if request_info["client"] else None),
+                ip_address=(
+                    request_info["client"][0] if request_info["client"] else None
+                ),
                 user_agent=request_info["headers"].get(b"user-agent", b"").decode(),
                 resource_type="api_endpoint",
                 resource_id=request_info["path"],

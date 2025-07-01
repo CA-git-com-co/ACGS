@@ -11,6 +11,7 @@ from typing import List, Dict, Any
 
 logger = logging.getLogger(__name__)
 
+
 class DatabaseQueryOptimizer:
     """Optimizes database queries and implements performance improvements."""
 
@@ -21,10 +22,7 @@ class DatabaseQueryOptimizer:
     async def initialize_pool(self):
         """Initialize database connection pool."""
         self.connection_pool = await asyncpg.create_pool(
-            self.database_url,
-            min_size=10,
-            max_size=20,
-            command_timeout=60
+            self.database_url, min_size=10, max_size=20, command_timeout=60
         )
 
     async def create_performance_indexes(self):
@@ -34,21 +32,17 @@ class DatabaseQueryOptimizer:
             "CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_conversations_user_id ON conversations(user_id)",
             "CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_conversations_created_at ON conversations(created_at)",
             "CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_conversations_status ON conversations(status)",
-
             # Policy Governance indexes
             "CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_policies_status ON policies(status)",
             "CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_policies_created_at ON policies(created_at)",
             "CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_policy_evaluations_policy_id ON policy_evaluations(policy_id)",
-
             # Governance Synthesis indexes
             "CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_synthesis_requests_status ON synthesis_requests(status)",
             "CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_synthesis_requests_created_at ON synthesis_requests(created_at)",
-
             # User and session indexes
             "CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_users_email ON users(email)",
             "CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_sessions_user_id ON sessions(user_id)",
             "CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_sessions_expires_at ON sessions(expires_at)",
-
             # Composite indexes for common queries
             "CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_conversations_user_status ON conversations(user_id, status)",
             "CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_policies_status_created ON policies(status, created_at)",
@@ -65,8 +59,12 @@ class DatabaseQueryOptimizer:
     async def optimize_table_statistics(self):
         """Update table statistics for query planner."""
         tables = [
-            "conversations", "policies", "policy_evaluations",
-            "synthesis_requests", "users", "sessions"
+            "conversations",
+            "policies",
+            "policy_evaluations",
+            "synthesis_requests",
+            "users",
+            "sessions",
         ]
 
         async with self.connection_pool.acquire() as conn:
@@ -105,7 +103,7 @@ class DatabaseQueryOptimizer:
             FROM policies p
             LEFT JOIN policy_evaluations pe ON p.id = pe.policy_id
             GROUP BY p.id, p.title
-            """
+            """,
         ]
 
         async with self.connection_pool.acquire() as conn:
@@ -128,6 +126,7 @@ class DatabaseQueryOptimizer:
                 except Exception as e:
                     logger.warning(f"View refresh failed for {view}: {e}")
 
+
 async def main():
     """Main database optimization function."""
     database_url = "postgresql://acgs_user:acgs_password@localhost:5432/acgs_production"
@@ -147,6 +146,7 @@ async def main():
     await optimizer.create_materialized_views()
 
     print("✅ Database optimization completed")
+
 
 if __name__ == "__main__":
     asyncio.run(main())

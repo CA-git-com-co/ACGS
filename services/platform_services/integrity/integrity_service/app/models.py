@@ -31,9 +31,13 @@ class PolicyRule(Base):
     rule_content = Column(Text, nullable=False)
     source_principle_ids = Column(JSONB, nullable=True)
     version = Column(Integer, default=1, nullable=False)
-    verification_status = Column(String(50), default="pending", nullable=False, index=True)
+    verification_status = Column(
+        String(50), default="pending", nullable=False, index=True
+    )
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    updated_at = Column(
+        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
+    )
 
     # Cryptographic integrity fields
     content_hash = Column(String(64), nullable=True, index=True)
@@ -112,7 +116,9 @@ class CryptoKey(Base):
     key_id = Column(
         String(64), unique=True, nullable=False, index=True
     )  # Unique key identifier (SHA256 of public key)
-    key_type = Column(String(20), nullable=False, index=True)  # "RSA", "ECDSA", "Ed25519"
+    key_type = Column(
+        String(20), nullable=False, index=True
+    )  # "RSA", "ECDSA", "Ed25519"
     key_size = Column(Integer, nullable=False)  # Key size in bits
     public_key_pem = Column(Text, nullable=False)  # PEM-encoded public key
     private_key_encrypted = Column(
@@ -125,10 +131,14 @@ class CryptoKey(Base):
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     expires_at = Column(DateTime, nullable=True)  # Key expiration date
     revoked_at = Column(DateTime, nullable=True)  # Key revocation date
-    hsm_key_reference = Column(String(255), nullable=True)  # HSM key reference if using HSM
+    hsm_key_reference = Column(
+        String(255), nullable=True
+    )  # HSM key reference if using HSM
 
     # Key rotation and lifecycle
-    parent_key_id = Column(String(64), nullable=True, index=True)  # Previous key in rotation chain
+    parent_key_id = Column(
+        String(64), nullable=True, index=True
+    )  # Previous key in rotation chain
     rotation_reason = Column(String(100), nullable=True)  # Reason for key rotation
 
     def __repr__(self):
@@ -144,7 +154,9 @@ class MerkleTreeNode(Base):
     __tablename__ = "merkle_tree_nodes"
 
     id = Column(Integer, primary_key=True, index=True)
-    node_hash = Column(String(64), nullable=False, index=True)  # SHA3-256 hash of the node
+    node_hash = Column(
+        String(64), nullable=False, index=True
+    )  # SHA3-256 hash of the node
     parent_hash = Column(String(64), nullable=True, index=True)  # Parent node hash
     left_child_hash = Column(String(64), nullable=True)  # Left child hash
     right_child_hash = Column(String(64), nullable=True)  # Right child hash
@@ -175,9 +187,13 @@ class TimestampToken(Base):
         LargeBinary, nullable=False
     )  # RFC 3161 timestamp token (ASN.1 DER encoded)
     tsa_url = Column(String(255), nullable=False)  # Timestamp Authority URL
-    timestamp_value = Column(DateTime, nullable=False, index=True)  # Extracted timestamp value
+    timestamp_value = Column(
+        DateTime, nullable=False, index=True
+    )  # Extracted timestamp value
     policy_oid = Column(String(100), nullable=True)  # TSA policy OID
-    hash_algorithm = Column(String(50), nullable=False)  # Hash algorithm used (e.g., "SHA3-256")
+    hash_algorithm = Column(
+        String(50), nullable=False
+    )  # Hash algorithm used (e.g., "SHA3-256")
     message_imprint = Column(LargeBinary, nullable=False)  # Original message hash
     serial_number = Column(String(100), nullable=True)  # TSA serial number
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)

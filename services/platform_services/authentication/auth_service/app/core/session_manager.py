@@ -54,7 +54,9 @@ class SessionManager:
 
         # Check for new device fingerprint
         current_fingerprint = self.generate_device_fingerprint(request)
-        known_fingerprints = {session.device_fingerprint for session in existing_sessions}
+        known_fingerprints = {
+            session.device_fingerprint for session in existing_sessions
+        }
         if current_fingerprint not in known_fingerprints:
             risk_score += 20
 
@@ -89,7 +91,9 @@ class SessionManager:
 
         return "unknown"
 
-    async def create_session(self, db: AsyncSession, user: User, request: Request) -> UserSession:
+    async def create_session(
+        self, db: AsyncSession, user: User, request: Request
+    ) -> UserSession:
         """Create new user session"""
         # Check concurrent session limit
         active_sessions = await self.get_active_sessions(db, user.id)
@@ -121,14 +125,20 @@ class SessionManager:
 
         return session
 
-    async def get_session(self, db: AsyncSession, session_id: str) -> UserSession | None:
+    async def get_session(
+        self, db: AsyncSession, session_id: str
+    ) -> UserSession | None:
         """Get session by ID"""
         result = await db.execute(
-            select(UserSession).where(UserSession.session_id == session_id, UserSession.is_active)
+            select(UserSession).where(
+                UserSession.session_id == session_id, UserSession.is_active
+            )
         )
         return result.scalar_one_or_none()
 
-    async def get_active_sessions(self, db: AsyncSession, user_id: int) -> list[UserSession]:
+    async def get_active_sessions(
+        self, db: AsyncSession, user_id: int
+    ) -> list[UserSession]:
         """Get all active sessions for a user"""
         result = await db.execute(
             select(UserSession).where(
@@ -178,7 +188,9 @@ class SessionManager:
         self, db: AsyncSession, user_id: int, exclude_session_id: str | None = None
     ) -> int:
         """Terminate all sessions for a user (except optionally one)"""
-        query = select(UserSession).where(UserSession.user_id == user_id, UserSession.is_active)
+        query = select(UserSession).where(
+            UserSession.user_id == user_id, UserSession.is_active
+        )
 
         if exclude_session_id:
             query = query.where(UserSession.session_id != exclude_session_id)
@@ -197,7 +209,9 @@ class SessionManager:
         current_time = datetime.now(timezone.utc)
 
         result = await db.execute(
-            select(UserSession).where(UserSession.expires_at <= current_time, UserSession.is_active)
+            select(UserSession).where(
+                UserSession.expires_at <= current_time, UserSession.is_active
+            )
         )
         expired_sessions = result.scalars().all()
 
@@ -207,7 +221,9 @@ class SessionManager:
         await db.commit()
         return len(expired_sessions)
 
-    async def get_session_info(self, db: AsyncSession, session_id: str) -> dict[str, Any] | None:
+    async def get_session_info(
+        self, db: AsyncSession, session_id: str
+    ) -> dict[str, Any] | None:
         """Get detailed session information"""
         session = await self.get_session(db, session_id)
         if not session:

@@ -88,11 +88,17 @@ class RateLimiter:
         self.endpoint_configs: dict[str, RateLimitConfig] = {
             "/auth/login": RateLimitConfig(requests_per_minute=10, burst_size=3),
             "/auth/register": RateLimitConfig(requests_per_minute=5, burst_size=2),
-            "/auth/token/refresh": RateLimitConfig(requests_per_minute=20, burst_size=5),
+            "/auth/token/refresh": RateLimitConfig(
+                requests_per_minute=20, burst_size=5
+            ),
             "/api/v1/policies": RateLimitConfig(requests_per_minute=200, burst_size=50),
-            "/api/v1/principles": RateLimitConfig(requests_per_minute=100, burst_size=25),
+            "/api/v1/principles": RateLimitConfig(
+                requests_per_minute=100, burst_size=25
+            ),
             "/api/v1/synthesis": RateLimitConfig(requests_per_minute=30, burst_size=10),
-            "/api/v1/verification": RateLimitConfig(requests_per_minute=50, burst_size=15),
+            "/api/v1/verification": RateLimitConfig(
+                requests_per_minute=50, burst_size=15
+            ),
             "/health": RateLimitConfig(requests_per_minute=1000, burst_size=100),
         }
 
@@ -198,7 +204,9 @@ class RateLimiter:
 
         return False
 
-    def _get_rate_limit_config(self, request: Request, endpoint_pattern: str) -> RateLimitConfig:
+    def _get_rate_limit_config(
+        self, request: Request, endpoint_pattern: str
+    ) -> RateLimitConfig:
         """Get rate limit configuration for request."""
         # Get base configuration
         config = self.endpoint_configs.get(endpoint_pattern, self.default_config)

@@ -241,9 +241,13 @@ class EnhancedConstitutionalAnalyzer:
 
             # Generate embeddings if not present
             if not principle1.embedding:
-                principle1.embedding = await generate_policy_embedding(principle1.content)
+                principle1.embedding = await generate_policy_embedding(
+                    principle1.content
+                )
             if not principle2.embedding:
-                principle2.embedding = await generate_policy_embedding(principle2.content)
+                principle2.embedding = await generate_policy_embedding(
+                    principle2.content
+                )
 
             # Calculate semantic similarity using Qwen3 embeddings
             similarity_score = await analyze_constitutional_principle_similarity(
@@ -251,13 +255,17 @@ class EnhancedConstitutionalAnalyzer:
             )
 
             # Determine conflict status based on similarity and content analysis
-            conflict_detected, severity, description = await self._analyze_potential_conflict(
-                principle1, principle2, similarity_score
+            conflict_detected, severity, description = (
+                await self._analyze_potential_conflict(
+                    principle1, principle2, similarity_score
+                )
             )
 
             # Generate resolution suggestions using multi-model manager
-            resolution_suggestions = await self._generate_conflict_resolution_suggestions(
-                principle1, principle2, conflict_detected, severity
+            resolution_suggestions = (
+                await self._generate_conflict_resolution_suggestions(
+                    principle1, principle2, conflict_detected, severity
+                )
             )
 
             # Calculate confidence score
@@ -362,10 +370,14 @@ class EnhancedConstitutionalAnalyzer:
                     supporting_principles.append(principle.id)
 
             # Calculate overall compliance score
-            overall_compliance = np.mean(compliance_scores) if compliance_scores else 0.0
+            overall_compliance = (
+                np.mean(compliance_scores) if compliance_scores else 0.0
+            )
 
             # Determine compliance status
-            compliant = overall_compliance >= self.compliance_threshold and len(violations) == 0
+            compliant = (
+                overall_compliance >= self.compliance_threshold and len(violations) == 0
+            )
 
             # Calculate confidence score using multi-model consensus
             confidence_score = await self._calculate_compliance_confidence(
@@ -656,7 +668,9 @@ class EnhancedConstitutionalAnalyzer:
             metadata_quality = 0.1
 
         # Adjust based on content length (more content = higher confidence)
-        content_factor = min(1.0, (len(principle1.content) + len(principle2.content)) / 1000) * 0.1
+        content_factor = (
+            min(1.0, (len(principle1.content) + len(principle2.content)) / 1000) * 0.1
+        )
 
         return min(1.0, base_confidence + metadata_quality + content_factor)
 
@@ -722,7 +736,9 @@ class EnhancedConstitutionalAnalyzer:
                         "description": result.get(
                             "description", "Compliance score below threshold"
                         ),
-                        "remediation": result.get("remediation", "Review and revise policy"),
+                        "remediation": result.get(
+                            "remediation", "Review and revise policy"
+                        ),
                         "principle_id": principle.id,
                         "compliance_score": compliance_score,
                     }
@@ -789,7 +805,9 @@ class EnhancedConstitutionalAnalyzer:
         current_avg = self._performance_metrics["average_response_time"]
         total_analyses = self._performance_metrics["total_analyses"]
 
-        new_avg = ((current_avg * (total_analyses - 1)) + processing_time) / total_analyses
+        new_avg = (
+            (current_avg * (total_analyses - 1)) + processing_time
+        ) / total_analyses
         self._performance_metrics["average_response_time"] = new_avg
 
     # ========================================================================
@@ -917,7 +935,9 @@ class EnhancedConstitutionalAnalyzer:
             detailed_violations = []
             if not compliance_result.compliant:
                 for violation in compliance_result.violations:
-                    detailed_analysis = await self._analyze_violation_details(policy, violation)
+                    detailed_analysis = await self._analyze_violation_details(
+                        policy, violation
+                    )
                     detailed_violations.append(detailed_analysis)
 
             return {
@@ -1122,8 +1142,12 @@ class EnhancedConstitutionalAnalyzer:
         recommendations = []
 
         if not compliance_result.compliant:
-            recommendations.append("Immediate review required due to compliance violations")
-            recommendations.append("Suspend action until constitutional compliance achieved")
+            recommendations.append(
+                "Immediate review required due to compliance violations"
+            )
+            recommendations.append(
+                "Suspend action until constitutional compliance achieved"
+            )
 
         if compliance_result.compliance_score < 0.8:
             recommendations.append("Enhanced monitoring recommended")
@@ -1195,13 +1219,17 @@ class EnhancedConstitutionalAnalyzer:
             response_time_ok = avg_response_time < 0.5  # <500ms target
 
             overall_healthy = (
-                embedding_health["status"] == "healthy" and multi_model_healthy and response_time_ok
+                embedding_health["status"] == "healthy"
+                and multi_model_healthy
+                and response_time_ok
             )
 
             return {
                 "status": "healthy" if overall_healthy else "degraded",
                 "embedding_client": embedding_health["status"],
-                "multi_model_manager": ("healthy" if multi_model_healthy else "unavailable"),
+                "multi_model_manager": (
+                    "healthy" if multi_model_healthy else "unavailable"
+                ),
                 "average_response_time_ms": avg_response_time * 1000,
                 "response_time_target_met": response_time_ok,
                 "total_analyses": self._performance_metrics["total_analyses"],
@@ -1426,7 +1454,9 @@ async def example_semantic_similarity_analysis():
     )
 
     # Analyze similarity
-    similarity_result = await analyzer.analyze_principle_similarity(principle1, principle2)
+    similarity_result = await analyzer.analyze_principle_similarity(
+        principle1, principle2
+    )
 
     logger.info("Principle Similarity Analysis:")
     logger.info(f"- Similarity Score: {similarity_result.similarity_score:.3f}")
@@ -1463,7 +1493,9 @@ async def example_performance_monitoring():
         f"- Average Response Time: {metrics['analyzer_metrics']['average_response_time'] * 1000:.2f}ms"
     )
     logger.info(f"- Error Count: {metrics['analyzer_metrics']['error_count']}")
-    logger.info(f"- Embedding Client Status: {metrics['embedding_client_health']['status']}")
+    logger.info(
+        f"- Embedding Client Status: {metrics['embedding_client_health']['status']}"
+    )
     logger.info(f"- Constitutional Hash: {metrics['constitutional_hash']}")
 
     # Health check
@@ -1511,7 +1543,9 @@ async def integrate_with_pgc_service(
         # Generate enforcement recommendation
         enforcement_recommendation = {
             "policy_id": policy_id,
-            "enforcement_action": ("allow" if compliance_result["compliant"] else "block"),
+            "enforcement_action": (
+                "allow" if compliance_result["compliant"] else "block"
+            ),
             "compliance_score": compliance_result["compliance_score"],
             "confidence_score": compliance_result["confidence_score"],
             "violations": compliance_result["violations"],

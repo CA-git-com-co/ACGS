@@ -32,7 +32,9 @@ async def analyze_neuron_activations(
 
             # Calculate variance
             if n > 1:
-                variance_activation = sum((x - mean_activation) ** 2 for x in activations) / (n - 1)
+                variance_activation = sum(
+                    (x - mean_activation) ** 2 for x in activations
+                ) / (n - 1)
             else:
                 variance_activation = (
                     0.0  # Variance is undefined for a single data point or no data
@@ -72,12 +74,16 @@ async def calculate_wina_weights(
     weights: dict[str, float] = {}
 
     # Pre-compute column norms for efficiency (cache for reuse)
-    column_norms = await _compute_column_norms(weight_matrices) if weight_matrices else {}
+    column_norms = (
+        await _compute_column_norms(weight_matrices) if weight_matrices else {}
+    )
 
     for analysis in analyzed_activations:
         # True WINA algorithm: |x_i * ||W_:,i||_2|
         activation_value = analysis.mean_activation
-        column_norm = column_norms.get(analysis.neuron_id, 1.0)  # Default to 1.0 if no weight matrix
+        column_norm = column_norms.get(
+            analysis.neuron_id, 1.0
+        )  # Default to 1.0 if no weight matrix
 
         # WINA weight calculation with absolute value for magnitude
         wina_weight = abs(activation_value * column_norm)
@@ -110,10 +116,10 @@ async def _compute_column_norms(weight_matrices: dict[str, Any]) -> dict[str, fl
     for layer_id, weight_matrix in weight_matrices.items():
         try:
             # Compute column-wise L2 norms
-            if hasattr(weight_matrix, 'norm'):
+            if hasattr(weight_matrix, "norm"):
                 # PyTorch tensor
                 norms = weight_matrix.norm(dim=0, p=2).cpu().numpy()
-            elif hasattr(weight_matrix, 'shape'):
+            elif hasattr(weight_matrix, "shape"):
                 # NumPy array
                 norms = np.linalg.norm(weight_matrix, axis=0)
             else:
@@ -128,6 +134,7 @@ async def _compute_column_norms(weight_matrices: dict[str, Any]) -> dict[str, fl
         except Exception as e:
             # Log error but continue processing
             import logging
+
             logger = logging.getLogger(__name__)
             logger.warning(f"Failed to compute column norms for layer {layer_id}: {e}")
             continue

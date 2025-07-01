@@ -45,14 +45,18 @@ class ErrorCorrectionRequest(BaseModel):
     principle_ids: list[str] | None = Field(
         default=None, description="Constitutional principle IDs to analyze"
     )
-    policy_ids: list[str] | None = Field(default=None, description="Policy IDs to analyze")
+    policy_ids: list[str] | None = Field(
+        default=None, description="Policy IDs to analyze"
+    )
     context_data: dict[str, Any] | None = Field(
         default=None, description="Additional context for correction"
     )
     enable_parallel_processing: bool = Field(
         default=True, description="Enable parallel conflict processing"
     )
-    max_response_time_seconds: int = Field(default=30, description="Maximum response time target")
+    max_response_time_seconds: int = Field(
+        default=30, description="Maximum response time target"
+    )
 
 
 class ConflictDetectionRequest(BaseModel):
@@ -60,7 +64,9 @@ class ConflictDetectionRequest(BaseModel):
 
     principle_ids: list[str] = Field(..., description="Constitutional principle IDs")
     policy_ids: list[str] = Field(..., description="Policy IDs")
-    context_data: dict[str, Any] | None = Field(default=None, description="Additional context")
+    context_data: dict[str, Any] | None = Field(
+        default=None, description="Additional context"
+    )
 
 
 class SemanticValidationRequest(BaseModel):
@@ -68,15 +74,21 @@ class SemanticValidationRequest(BaseModel):
 
     principle_id: str = Field(..., description="Constitutional principle ID")
     policy_id: str = Field(..., description="Policy ID")
-    context_data: dict[str, Any] | None = Field(default=None, description="Additional context")
+    context_data: dict[str, Any] | None = Field(
+        default=None, description="Additional context"
+    )
 
 
 class PolicyRefinementRequest(BaseModel):
     """Request model for policy refinement suggestions."""
 
     policy_id: str = Field(..., description="Policy ID to refine")
-    principle_ids: list[str] = Field(..., description="Constitutional principle IDs to align with")
-    context_data: dict[str, Any] | None = Field(default=None, description="Additional context")
+    principle_ids: list[str] = Field(
+        ..., description="Constitutional principle IDs to align with"
+    )
+    context_data: dict[str, Any] | None = Field(
+        default=None, description="Additional context"
+    )
 
 
 @router.post("/workflow/execute")
@@ -154,7 +166,9 @@ async def execute_error_correction_workflow(
 
     except Exception as e:
         logger.error(f"Error in error correction workflow: {e}")
-        raise HTTPException(status_code=500, detail=f"Error correction workflow failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Error correction workflow failed: {str(e)}"
+        )
 
 
 @router.post("/conflicts/detect")
@@ -233,7 +247,9 @@ async def detect_conflicts(
 
     except Exception as e:
         logger.error(f"Error in conflict detection: {e}")
-        raise HTTPException(status_code=500, detail=f"Conflict detection failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Conflict detection failed: {str(e)}"
+        )
 
 
 @router.post("/validation/semantic")
@@ -268,7 +284,9 @@ async def validate_semantic_consistency(
         policy = policy_result.scalar_one_or_none()
 
         if not policy:
-            raise HTTPException(status_code=404, detail=f"Policy {request.policy_id} not found")
+            raise HTTPException(
+                status_code=404, detail=f"Policy {request.policy_id} not found"
+            )
 
         # Perform semantic validation
         validation_result = await qec_service.semantic_validator.validate_and_correct(
@@ -302,7 +320,9 @@ async def validate_semantic_consistency(
 
     except Exception as e:
         logger.error(f"Error in semantic validation: {e}")
-        raise HTTPException(status_code=500, detail=f"Semantic validation failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Semantic validation failed: {str(e)}"
+        )
 
 
 @router.get("/performance/summary")
@@ -358,7 +378,9 @@ async def generate_policy_refinement_suggestions(
         policy = policy_result.scalar_one_or_none()
 
         if not policy:
-            raise HTTPException(status_code=404, detail=f"Policy {request.policy_id} not found")
+            raise HTTPException(
+                status_code=404, detail=f"Policy {request.policy_id} not found"
+            )
 
         # Fetch principles
         principle_query = select(ConstitutionalPrinciple).where(
@@ -374,8 +396,10 @@ async def generate_policy_refinement_suggestions(
             )
 
         # Generate refinement suggestions
-        suggestions = await qec_service.refinement_suggester.generate_refinement_suggestions(
-            policy=policy, principles=principles, context_data=request.context_data
+        suggestions = (
+            await qec_service.refinement_suggester.generate_refinement_suggestions(
+                policy=policy, principles=principles, context_data=request.context_data
+            )
         )
 
         # Format suggestions for response
@@ -435,7 +459,9 @@ async def resolve_conflict_automatically(
         # Create ConflictDetectionResult from input data
         conflict = ConflictDetectionResult(
             conflict_detected=conflict_data.get("conflict_detected", True),
-            conflict_type=ConflictType(conflict_data.get("conflict_type", "policy_inconsistency")),
+            conflict_type=ConflictType(
+                conflict_data.get("conflict_type", "policy_inconsistency")
+            ),
             severity=ViolationSeverity(conflict_data.get("severity", "medium")),
             conflicting_principles=conflict_data.get("conflicting_principles", []),
             conflicting_policies=conflict_data.get("conflicting_policies", []),
@@ -443,7 +469,9 @@ async def resolve_conflict_automatically(
             confidence_score=conflict_data.get("confidence_score", 0.5),
             detection_metadata=conflict_data.get("detection_metadata", {}),
             recommended_strategy=(
-                ResolutionStrategy(conflict_data.get("recommended_strategy", "automatic_merge"))
+                ResolutionStrategy(
+                    conflict_data.get("recommended_strategy", "automatic_merge")
+                )
                 if conflict_data.get("recommended_strategy")
                 else None
             ),
@@ -490,7 +518,9 @@ async def resolve_conflict_automatically(
 
     except Exception as e:
         logger.error(f"Error in conflict resolution: {e}")
-        raise HTTPException(status_code=500, detail=f"Conflict resolution failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Conflict resolution failed: {str(e)}"
+        )
 
 
 @router.get("/conflicts/complexity/{conflict_id}")
@@ -515,7 +545,9 @@ async def analyze_conflict_complexity(
         # Create ConflictDetectionResult from input data
         conflict = ConflictDetectionResult(
             conflict_detected=conflict_data.get("conflict_detected", True),
-            conflict_type=ConflictType(conflict_data.get("conflict_type", "policy_inconsistency")),
+            conflict_type=ConflictType(
+                conflict_data.get("conflict_type", "policy_inconsistency")
+            ),
             severity=ViolationSeverity(conflict_data.get("severity", "medium")),
             conflicting_principles=conflict_data.get("conflicting_principles", []),
             conflicting_policies=conflict_data.get("conflicting_policies", []),
@@ -553,7 +585,9 @@ async def analyze_conflict_complexity(
                         ),
                         "confidence_score": conflict.confidence_score,
                         "conflict_type": (
-                            conflict.conflict_type.value if conflict.conflict_type else "unknown"
+                            conflict.conflict_type.value
+                            if conflict.conflict_type
+                            else "unknown"
                         ),
                     },
                 },
@@ -566,4 +600,6 @@ async def analyze_conflict_complexity(
 
     except Exception as e:
         logger.error(f"Error in complexity analysis: {e}")
-        raise HTTPException(status_code=500, detail=f"Complexity analysis failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Complexity analysis failed: {str(e)}"
+        )

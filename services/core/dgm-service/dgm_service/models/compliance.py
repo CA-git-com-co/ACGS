@@ -40,7 +40,9 @@ class ConstitutionalComplianceLog(Base):
     __tablename__ = "constitutional_compliance_logs"
     __table_args__ = {"schema": "dgm"}
 
-    id = Column(PG_UUID(as_uuid=True), primary_key=True, server_default=func.uuid_generate_v4())
+    id = Column(
+        PG_UUID(as_uuid=True), primary_key=True, server_default=func.uuid_generate_v4()
+    )
 
     # Reference information
     improvement_id = Column(PG_UUID(as_uuid=True), nullable=True, index=True)
@@ -50,7 +52,9 @@ class ConstitutionalComplianceLog(Base):
     # Compliance assessment
     compliance_level = Column(Enum(ComplianceLevel), nullable=False, index=True)
     compliance_score = Column(Numeric(3, 2), nullable=False)
-    status = Column(Enum(ComplianceStatus), nullable=False, default=ComplianceStatus.PENDING)
+    status = Column(
+        Enum(ComplianceStatus), nullable=False, default=ComplianceStatus.PENDING
+    )
 
     # Constitutional reference
     constitutional_hash = Column(String(64), nullable=False, default="cdd01ef066bc6cf2")
@@ -67,11 +71,18 @@ class ConstitutionalComplianceLog(Base):
     review_required = Column(Boolean, default=False)
 
     # Timestamps
-    assessed_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    assessed_at = Column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
     reviewed_at = Column(DateTime(timezone=True), nullable=True)
-    created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    created_at = Column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
     updated_at = Column(
-        DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now()
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+        onupdate=func.now(),
     )
 
     def __repr__(self):
@@ -87,7 +98,9 @@ class ConstitutionalComplianceLog(Base):
             "improvement_id": str(self.improvement_id) if self.improvement_id else None,
             "service_name": self.service_name,
             "operation_type": self.operation_type,
-            "compliance_level": self.compliance_level.value if self.compliance_level else None,
+            "compliance_level": (
+                self.compliance_level.value if self.compliance_level else None
+            ),
             "compliance_score": float(self.compliance_score),
             "status": self.status.value if self.status else None,
             "constitutional_hash": self.constitutional_hash,

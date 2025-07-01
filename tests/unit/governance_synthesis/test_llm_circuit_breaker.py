@@ -4,18 +4,26 @@ Unit tests for services.core.governance-synthesis.gs_service.app.core.llm_circui
 
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
-from services.core.governance-synthesis.gs_service.app.core.llm_circuit_breaker import CircuitState, FailureType, CircuitBreakerConfig, FailureRecord, CircuitMetrics, LLMCircuitBreaker, CircuitBreakerOpenError, LLMCircuitBreakerManager
-
+from services.core.governance_synthesis.gs_service.app.core.llm_circuit_breaker import (
+    CircuitState,
+    FailureType,
+    CircuitBreakerConfig,
+    FailureRecord,
+    CircuitMetrics,
+    LLMCircuitBreaker,
+    CircuitBreakerOpenError,
+    LLMCircuitBreakerManager,
+)
 
 
 class TestCircuitState:
     """Test suite for CircuitState."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -24,12 +32,12 @@ class TestCircuitState:
 
 class TestFailureType:
     """Test suite for FailureType."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -38,12 +46,12 @@ class TestFailureType:
 
 class TestCircuitBreakerConfig:
     """Test suite for CircuitBreakerConfig."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -52,12 +60,12 @@ class TestCircuitBreakerConfig:
 
 class TestFailureRecord:
     """Test suite for FailureRecord."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -66,12 +74,12 @@ class TestFailureRecord:
 
 class TestCircuitMetrics:
     """Test suite for CircuitMetrics."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -80,12 +88,12 @@ class TestCircuitMetrics:
 
 class TestLLMCircuitBreaker:
     """Test suite for LLMCircuitBreaker."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -96,17 +104,17 @@ class TestLLMCircuitBreaker:
         # TODO: Implement test for get_health_status
         instance = LLMCircuitBreaker()
         # Add test implementation here
-        assert hasattr(instance, 'get_health_status')
+        assert hasattr(instance, "get_health_status")
 
 
 class TestCircuitBreakerOpenError:
     """Test suite for CircuitBreakerOpenError."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -115,12 +123,12 @@ class TestCircuitBreakerOpenError:
 
 class TestLLMCircuitBreakerManager:
     """Test suite for LLMCircuitBreakerManager."""
-    
+
     def setup_method(self):
         """Set up test fixtures."""
         # TODO: Add setup logic
         pass
-    
+
     def teardown_method(self):
         """Clean up after tests."""
         # TODO: Add cleanup logic
@@ -131,13 +139,11 @@ class TestLLMCircuitBreakerManager:
         # TODO: Implement test for get_circuit_breaker
         instance = LLMCircuitBreakerManager()
         # Add test implementation here
-        assert hasattr(instance, 'get_circuit_breaker')
+        assert hasattr(instance, "get_circuit_breaker")
 
     def test_get_all_health_status(self):
         """Test get_all_health_status method."""
         # TODO: Implement test for get_all_health_status
         instance = LLMCircuitBreakerManager()
         # Add test implementation here
-        assert hasattr(instance, 'get_all_health_status')
-
-
+        assert hasattr(instance, "get_all_health_status")
