@@ -1,0 +1,76 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'acgs-enhanced-ocr'
+    static_configs:
+      - targets: ['ocr-service:8667']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    scrape_timeout: 5s
+    params:
+      format: ['prometheus']
+
+  - job_name: 'acgs-ocr-governance'
+    static_configs:
+      - targets: ['ocr-service:8668']
+    metrics_path: '/governance/metrics'
+    scrape_interval: 30s
+    scrape_timeout: 10s
+
+  - job_name: 'redis-ocr'
+    static_configs:
+      - targets: ['redis:6379']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          # - alertmanager:9093
+
+# Load recording rules once and periodically evaluate them according to the global 'evaluation_interval'.
+rule_files:
+  - "ocr_rules.yml"
+
+# Alerting rules for OCR service
+# ocr_rules.yml content would include:
+# groups:
+#   - name: ocr_service
+#     rules:
+#       - alert: OCRServiceDown
+#         expr: up{job="acgs-enhanced-ocr"} == 0
+#         for: 1m
+#         labels:
+#           severity: critical
+#         annotations:
+#           summary: "OCR service is down"
+#           description: "The ACGS Enhanced OCR service has been down for more than 1 minute."
+#
+#       - alert: OCRHighLatency
+#         expr: histogram_quantile(0.95, rate(ocr_request_duration_seconds_bucket[5m])) > 10
+#         for: 2m
+#         labels:
+#           severity: warning
+#         annotations:
+#           summary: "OCR service high latency"
+#           description: "95th percentile latency is above 10 seconds for 2 minutes."
+#
+#       - alert: OCRHighErrorRate
+#         expr: rate(ocr_requests_failed_total[5m]) / rate(ocr_requests_total[5m]) > 0.1
+#         for: 1m
+#         labels:
+#           severity: warning
+#         annotations:
+#           summary: "OCR service high error rate"
+#           description: "Error rate is above 10% for 1 minute."

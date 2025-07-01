@@ -1,16 +1,34 @@
-# OCR Service Backend for ACGS-1
+# Enhanced OCR Service for ACGS
 
-This service provides the backend OCR (Optical Character Recognition) processing capabilities to the ACGS-1 system using the Nanonets OCR model through vLLM.
+This service provides advanced OCR (Optical Character Recognition) processing capabilities to the ACGS system using the Nanonets-OCR-s model with comprehensive document analysis features.
 
-**Note**: This is the OCR service backend for Docker deployment. The Python client library for consuming this service is located in `services/ocr_service/` (note the underscore).
+**Note**: This is the enhanced OCR service backend for Docker deployment. The Python client library for consuming this service is located in `services/ocr_service/` (note the underscore).
 
-## Features
+## 🚀 Enhanced Features
 
-- Extract text from images and documents
-- Process various document types (forms, receipts, invoices, IDs)
-- GPU-accelerated processing for high performance
-- Integrates with the ACGS-1 service mesh
-- RESTful API compatible with OpenAI's Chat Completions API
+### Core OCR Capabilities
+- **Advanced Text Extraction**: Powered by Nanonets-OCR-s model
+- **LaTeX Equation Recognition**: Automatic conversion of mathematical equations to LaTeX format
+- **Intelligent Image Description**: Structured image analysis with contextual descriptions
+- **Signature Detection & Isolation**: Identifies and extracts signatures with authentication details
+- **Watermark Extraction**: Detects and extracts watermark text for authenticity verification
+- **Smart Checkbox Handling**: Converts form checkboxes to standardized Unicode symbols (☐, ☑, ☒)
+- **Complex Table Extraction**: Accurate table processing in both HTML and markdown formats
+
+### Governance-Specific Features
+- **Constitutional Document Analysis**: Specialized processing for legal and governance documents
+- **Document Authenticity Validation**: Multi-factor authenticity scoring
+- **Compliance Verification**: Automated compliance checking against governance standards
+- **Structured Element Parsing**: Comprehensive extraction of document components
+- **Policy Document Processing**: Optimized handling of policy and regulatory documents
+
+### Technical Features
+- **GPU-accelerated processing** for high performance
+- **Redis caching** for improved response times
+- **Concurrent request handling** with configurable limits
+- **Comprehensive monitoring** with Prometheus metrics
+- **RESTful API** compatible with OpenAI's Chat Completions API
+- **Health checks** and service discovery integration
 
 ## Requirements
 
@@ -74,32 +92,74 @@ curl -X POST "http://localhost:8666/v1/chat/completions" \
     }'
 ```
 
-### Using the Python Client
+### Enhanced Python Client Usage
 
-Process an image with the provided client:
+#### Basic Document Processing
 
 ```bash
-python services/ocr-service/client.py --image /path/to/image.jpg --prompt "Extract all text from this image"
+# Basic OCR processing
+python services/ocr-service/ocr_integration.py /path/to/document.jpg
+
+# Constitutional document analysis
+python services/ocr-service/ocr_integration.py /path/to/constitution.pdf constitutional
+
+# Detailed structured analysis
+python services/ocr-service/ocr_integration.py /path/to/document.jpg governance_form --structured
 ```
 
-### Integration with ACGS-1 Services
-
-Import the OCR integration module in your service:
+#### Advanced Integration with ACGS Services
 
 ```python
-from services.ocr_service.ocr_integration import OCRIntegration
+from services.ocr_service.ocr_integration import EnhancedOCRIntegration
+from services.ocr_service.governance_integration_service import GovernanceIntegrationService
 
-# Initialize the OCR integration
-ocr = OCRIntegration()
+# Initialize enhanced OCR integration
+ocr = EnhancedOCRIntegration()
 
-# Check if the OCR service is healthy
+# Check service health
 if ocr.check_health():
-    # Extract text from an image
-    result = ocr.extract_text('/path/to/image.jpg')
+    # Basic document analysis
+    result = ocr.analyze_document('/path/to/document.jpg', 'constitutional')
 
-    # Process a specific document type
-    invoice_data = ocr.analyze_document('/path/to/invoice.jpg', 'invoice')
+    # Extract structured elements
+    processed_doc = ocr.extract_structured_elements('/path/to/document.jpg', 'legal')
+
+    # Get authenticity analysis
+    auth_result = ocr.get_document_authenticity_score('/path/to/document.jpg')
+
+    print(f"Signatures found: {len(processed_doc.signatures)}")
+    print(f"Watermarks found: {len(processed_doc.watermarks)}")
+    print(f"Authenticity score: {auth_result['authenticity_score']}")
+
+# High-level governance integration
+governance_service = GovernanceIntegrationService()
+
+# Complete governance document processing
+result = governance_service.process_governance_document(
+    image_data='/path/to/policy.pdf',
+    document_type='policy',
+    validation_level='strict',
+    include_validation=True
+)
+
+print(f"Overall score: {result['validation']['overall_score']}")
+print(f"Compliance score: {result['validation']['compliance_score']}")
 ```
+
+#### Document Type Support
+
+The enhanced OCR service supports specialized processing for:
+
+- **Constitutional Documents**: `constitutional`
+- **Legal Documents**: `legal`
+- **Policy Documents**: `policy`
+- **Governance Forms**: `governance_form`
+- **Official Documents**: `official_document`
+- **Technical Documents**: `technical`
+- **Contracts**: `contract`
+- **Forms**: `form`
+- **Receipts**: `receipt`
+- **Invoices**: `invoice`
 
 ## Configuration
 

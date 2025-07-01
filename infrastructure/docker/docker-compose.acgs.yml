@@ -606,6 +606,48 @@ services:
           memory: 256M
           cpus: '0.25'
 
+  # Agent HITL Service - Human Oversight Integration
+  agent_hitl_service:
+    build:
+      context: ./services/core/agent-hitl
+      dockerfile: Dockerfile
+    container_name: acgs_agent_hitl
+    environment:
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - DATABASE_URL=postgresql+asyncpg://postgres:${POSTGRES_PASSWORD:-acgs_secure_2024}@postgres:5432/agent_hitl
+      - REDIS_URL=redis://redis:6379
+      - AGENT_IDENTITY_SERVICE_URL=http://auth_service:8000
+      - CONSTITUTIONAL_AI_SERVICE_URL=http://ac_service:8001
+      - POLICY_GOVERNANCE_SERVICE_URL=http://pgc_service:8005
+      - AGENT_HITL_SERVICE_PORT=8008
+      - REDIS_CACHE_TTL_CONFIDENCE=3600
+      - REDIS_CACHE_TTL_PATTERNS=86400
+      - DECISION_CACHE_SIZE=10000
+      - MAX_CONCURRENT_REVIEWS=100
+      - CONFIDENCE_LEARNING_RATE=0.1
+    ports:
+      - '8008:8008'
+    volumes:
+      - ./logs/agent-hitl:/app/logs
+    networks:
+      - acgs_network
+    depends_on:
+      - postgres
+      - redis
+      - auth_service
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8008/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
   # Monitoring and Metrics
   prometheus:
     image: prom/prometheus:v2.48.0

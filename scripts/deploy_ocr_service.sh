@@ -1,6 +1,7 @@
 #!/bin/bash
-# OCR Service Deployment Script for ACGS-1
-# This script deploys the OCR service and integrates it with the ACGS-1 system
+# Enhanced OCR Service Deployment Script for ACGS
+# This script deploys the enhanced OCR service with Nanonets-OCR-s capabilities
+# and integrates it with the ACGS governance system
 
 set -e
 
@@ -9,9 +10,11 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 RED='\033[0;31m'
 BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}=== ACGS OCR Service Deployment ===${NC}"
+echo -e "${BLUE}=== ACGS Enhanced OCR Service Deployment ===${NC}"
+echo -e "${PURPLE}Features: Nanonets-OCR-s, Governance Validation, Structured Processing${NC}"
 
 # Check if HUGGING_FACE_HUB_TOKEN is set
 if [ -z "${HUGGING_FACE_HUB_TOKEN}" ]; then
@@ -74,47 +77,85 @@ if docker ps | grep -q "acgs_ocr_service"; then
     echo -e "${GREEN}Existing OCR service stopped.${NC}"
 fi
 
-# Build the OCR service
-echo -e "${YELLOW}Building OCR service...${NC}"
-docker-compose -f docker-compose.ocr.yml build
-echo -e "${GREEN}OCR service built successfully.${NC}"
+# Set default environment variables if not provided
+export LOG_LEVEL=${LOG_LEVEL:-INFO}
+export MAX_CONCURRENT_REQUESTS=${MAX_CONCURRENT_REQUESTS:-10}
+export ENABLE_GOVERNANCE_VALIDATION=${ENABLE_GOVERNANCE_VALIDATION:-true}
+export ENABLE_STRUCTURED_PROCESSING=${ENABLE_STRUCTURED_PROCESSING:-true}
+export CACHE_ENABLED=${CACHE_ENABLED:-true}
 
-# Start the OCR service
-echo -e "${YELLOW}Starting OCR service...${NC}"
-docker-compose -f docker-compose.ocr.yml up -d
-echo -e "${GREEN}OCR service container started.${NC}"
+echo -e "${YELLOW}Configuration:${NC}"
+echo -e "  Log Level: ${LOG_LEVEL}"
+echo -e "  Max Concurrent Requests: ${MAX_CONCURRENT_REQUESTS}"
+echo -e "  Governance Validation: ${ENABLE_GOVERNANCE_VALIDATION}"
+echo -e "  Structured Processing: ${ENABLE_STRUCTURED_PROCESSING}"
+echo -e "  Cache Enabled: ${CACHE_ENABLED}"
 
-# Wait for service to be healthy
-echo -e "${YELLOW}Waiting for OCR service to initialize (this may take several minutes for first run)...${NC}"
+# Build the enhanced OCR service
+echo -e "${YELLOW}Building enhanced OCR service...${NC}"
+docker-compose -f infrastructure/docker/docker-compose.ocr.yml build
+echo -e "${GREEN}Enhanced OCR service built successfully.${NC}"
+
+# Start the enhanced OCR service stack
+echo -e "${YELLOW}Starting enhanced OCR service stack...${NC}"
+docker-compose -f infrastructure/docker/docker-compose.ocr.yml up -d
+echo -e "${GREEN}Enhanced OCR service stack started.${NC}"
+
+# Wait for services to be healthy
+echo -e "${YELLOW}Waiting for enhanced OCR service stack to initialize...${NC}"
+echo -e "${BLUE}This may take several minutes on first run while downloading models.${NC}"
+
+# Wait for Redis first
+echo -e "${YELLOW}Waiting for Redis to be ready...${NC}"
 attempt=1
-max_attempts=30
-until docker ps | grep acgs_ocr_service | grep -q "(healthy)" || [ $attempt -gt $max_attempts ]; do
-    if [ $attempt -eq 1 ]; then
-        echo -e "${BLUE}The service is downloading the model on first run, which may take several minutes.${NC}"
-        echo -e "${BLUE}You can check progress with: docker-compose -f docker-compose.ocr.yml logs --follow ocr-service${NC}"
-    fi
-    echo -e "${YELLOW}Waiting for OCR service to be healthy (attempt $attempt/$max_attempts)...${NC}"
-    sleep 20
+max_attempts=10
+until docker ps | grep acgs_ocr_redis | grep -q "(healthy)" || [ $attempt -gt $max_attempts ]; do
+    echo -e "${YELLOW}Waiting for Redis (attempt $attempt/$max_attempts)...${NC}"
+    sleep 5
     attempt=$((attempt+1))
 done
 
 if [ $attempt -gt $max_attempts ]; then
-    echo -e "${RED}Error: OCR service failed to become healthy after $(($max_attempts * 20)) seconds.${NC}"
+    echo -e "${RED}Redis failed to start. Checking logs...${NC}"
+    docker-compose -f infrastructure/docker/docker-compose.ocr.yml logs redis
+    exit 1
+fi
+
+echo -e "${GREEN}Redis is ready.${NC}"
+
+# Wait for OCR service
+echo -e "${YELLOW}Waiting for enhanced OCR service to be ready...${NC}"
+attempt=1
+max_attempts=40  # Increased for model download time
+until docker ps | grep acgs_enhanced_ocr_service | grep -q "(healthy)" || [ $attempt -gt $max_attempts ]; do
+    if [ $attempt -eq 1 ]; then
+        echo -e "${BLUE}The service is downloading the Nanonets-OCR-s model on first run.${NC}"
+        echo -e "${BLUE}You can check progress with: docker-compose -f infrastructure/docker/docker-compose.ocr.yml logs --follow ocr-service${NC}"
+    fi
+    echo -e "${YELLOW}Waiting for enhanced OCR service (attempt $attempt/$max_attempts)...${NC}"
+    sleep 30
+    attempt=$((attempt+1))
+done
+
+if [ $attempt -gt $max_attempts ]; then
+    echo -e "${RED}Error: Enhanced OCR service failed to become healthy after $(($max_attempts * 30)) seconds.${NC}"
     echo -e "${YELLOW}Showing OCR service logs:${NC}"
-    docker-compose -f docker-compose.ocr.yml logs --tail=100 ocr-service
-    
+    docker-compose -f infrastructure/docker/docker-compose.ocr.yml logs --tail=100 ocr-service
+
     echo -e "${YELLOW}Checking health endpoint directly:${NC}"
-    curl -s http://localhost:8667/health
+    curl -s http://localhost:8667/health || echo "Health check failed"
     echo
-    
+
     echo -e "${RED}Deployment failed. Please check the logs above for errors.${NC}"
     echo -e "${YELLOW}You can try increasing start_period in docker-compose.ocr.yml if the model is still downloading.${NC}"
     exit 1
 fi
 
-echo -e "${GREEN}OCR service is now running and healthy!${NC}"
-echo -e "${GREEN}API endpoint: http://localhost:8666${NC}"
+echo -e "${GREEN}Enhanced OCR service stack is now running and healthy!${NC}"
+echo -e "${GREEN}OCR API endpoint: http://localhost:8666${NC}"
 echo -e "${GREEN}Health endpoint: http://localhost:8667/health${NC}"
+echo -e "${GREEN}Governance integration: http://localhost:8668${NC}"
+echo -e "${GREEN}Monitoring: http://localhost:9091${NC}"
 
 # Test the OCR service
 echo -e "${YELLOW}Testing OCR service with a simple request...${NC}"

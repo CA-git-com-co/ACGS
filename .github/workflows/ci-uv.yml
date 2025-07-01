@@ -1,24 +1,39 @@
-name: ACGS CI/CD with UV
+name: ACGS: CI/CD with UV
 
 on:
   push:
     branches: [master, main, develop]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.gitignore'
+      - 'LICENSE'
   pull_request:
     branches: [master, main]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+
+permissions:
+  contents: read
+  packages: read
+  actions: read
 
 env:
-  PYTHON_VERSION: '3.10'
+  PYTHON_VERSION: '3.11'
   NODE_VERSION: '18'
   NODE_VERSION_BLOCKCHAIN: '20'
   UV_CACHE_DIR: /tmp/.uv-cache
-  JWT_SECRET_KEY: 'test-jwt-secret-key-32-characters-minimum-length-required-for-validation'
-  DATABASE_URL: 'postgresql+asyncpg://acgs_user:strong_password_here@localhost:5432/acgs_pgp_db'
-  REDIS_URL: 'redis://localhost:6379/0'
+  # Security: Use secrets for sensitive configuration
+  JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY || 'test-jwt-secret-key-32-characters-minimum-length-required-for-validation' }}
+  DATABASE_URL: ${{ secrets.DATABASE_URL || 'postgresql+asyncpg://acgs_user:test_password@localhost:5432/acgs_pgp_test_db' }}
+  REDIS_URL: ${{ secrets.REDIS_URL || 'redis://localhost:6379/0' }}
 
 jobs:
   # Python services with UV
   python-services:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     strategy:
       matrix:
         include:

@@ -150,7 +150,7 @@ class SecurityInputValidator:
         for pattern in self.command_injection_patterns:
             if re.search(pattern, input_str, re.IGNORECASE):
                 result["is_valid"] = False
-                result["violations"].append("Command injection detected")
+                result["violations"].append("command injection")
                 result["risk_level"] = "CRITICAL"
                 break
         
@@ -204,9 +204,11 @@ class SecurityInputValidator:
             # HTML escape
             return html.escape(input_str)
         else:
-            # General sanitization - remove dangerous characters
-            sanitized = re.sub(r'[<>"\'`]', '', input_str)
-            return sanitized.strip()
+            # General sanitization - remove dangerous characters and script tags
+            sanitized = re.sub(r'<script[^>]*>.*?</script>', '', input_str, flags=re.IGNORECASE | re.DOTALL)
+            sanitized = re.sub(r'</?script[^>]*>', '', sanitized, flags=re.IGNORECASE)
+            sanitized = re.sub(r'[<>"\'`]', '', sanitized)
+            return sanitized
     
     def validate_json_input(self, json_str: str) -> Dict[str, Any]:
         """Validate JSON input for injection attacks."""

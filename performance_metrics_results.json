@@ -1,0 +1,139 @@
+{
+  "test_start": "2025-06-30T19:33:49.166239",
+  "test_end": "2025-06-30T19:34:10.426524",
+  "performance_metrics": {
+    "decision_latency": {
+      "total_requests": 200,
+      "successful_requests": 0,
+      "failed_requests": 200,
+      "success_rate": 0.0,
+      "error_rate": 1.0,
+      "latency_stats": {
+        "min_ms": 0.649261,
+        "max_ms": 4.608448,
+        "mean_ms": 0.85831883,
+        "median_ms": 0.7962644999999999,
+        "p50_ms": 0.79811,
+        "p90_ms": 1.063696,
+        "p95_ms": 1.217944,
+        "p99_ms": 2.125641,
+        "p999_ms": 4.608448,
+        "std_dev_ms": 0.32411115776267624,
+        "count": 200
+      }
+    },
+    "throughput": {
+      "duration_seconds": 20.023916244506836,
+      "total_requests": 3010,
+      "successful_requests": 3010,
+      "requests_per_second": 150.32024521305786,
+      "successful_rps": 150.32024521305786,
+      "success_rate": 1.0
+    },
+    "cache_performance": {
+      "cache_hit_rate": 1.0,
+      "cache_miss_rate": 0.0,
+      "write_latency_ms": {
+        "mean": 0.08823333999998795,
+        "p95": 0.1201590000619035
+      },
+      "read_latency_ms": {
+        "mean": 0.06113593001373374,
+        "p95": 0.09689900002740615
+      },
+      "redis_info": {
+        "used_memory_mb": 1.0389862060546875,
+        "connected_clients": 1,
+        "total_commands_processed": 214
+      }
+    }
+  },
+  "system_metrics": {
+    "cpu": {
+      "usage_percent": 12.6,
+      "count": 16,
+      "load_average": [
+        2.5419921875,
+        2.33056640625,
+        2.232421875
+      ]
+    },
+    "memory": {
+      "total_gb": 125.5402603149414,
+      "available_gb": 87.52656936645508,
+      "used_gb": 35.97166061401367,
+      "usage_percent": 30.3
+    },
+    "disk": {
+      "total_gb": 910.9493408203125,
+      "free_gb": 876.5982666015625,
+      "used_gb": 34.35107421875,
+      "usage_percent": 3.7709093886402902
+    },
+    "network": {
+      "bytes_sent": 425415393,
+      "bytes_recv": 330641314,
+      "packets_sent": 473806,
+      "packets_recv": 530617
+    }
+  },
+  "service_metrics": {
+    "hitl_service": {
+      "healthy": true,
+      "response_time_ms": 1.3825480000377866,
+      "status_code": 200,
+      "response_data": {
+        "status": "healthy",
+        "timestamp": "1751312050.4224813",
+        "service": "agent-hitl-service",
+        "version": "1.0.0"
+      }
+    },
+    "ac_service": {
+      "healthy": true,
+      "response_time_ms": 2.3498299999573646,
+      "status_code": 200,
+      "response_data": {
+        "status": "healthy",
+        "service": "ac_service_production",
+        "version": "3.0.0",
+        "port": 8001,
+        "timestamp": 1751312050.4244022,
+        "enhanced_services": false,
+        "services": {
+          "compliance_engine": false,
+          "violation_detector": false,
+          "audit_logger": false,
+          "fv_client": false
+        },
+        "performance": {
+          "response_time_target": "<100ms for compliance checks",
+          "accuracy_target": ">99% constitutional compliance detection",
+          "availability_target": ">99.9%"
+        }
+      }
+    },
+    "auth_service": {
+      "healthy": false,
+      "error": "Server disconnected without sending a response.",
+      "response_time_ms": 5000
+    }
+  },
+  "targets_met": {
+    "decision_latency_p99": true,
+    "decision_latency_p95": true,
+    "decision_latency_mean": true,
+    "throughput": true,
+    "cache_hit_rate": true,
+    "cpu_usage": true,
+    "memory_usage": true,
+    "error_rate": false
+  },
+  "summary": {
+    "targets_passed": 7,
+    "total_targets": 8,
+    "targets_pass_rate": 0.875,
+    "critical_p99_latency_met": true,
+    "performance_grade": "B"
+  }
+}

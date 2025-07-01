@@ -74,6 +74,7 @@ class User(Base):
     last_login_at = Column(DateTime)
 
     roles = relationship("Role", secondary=user_roles_table, back_populates="users")
+    owned_agents = relationship("Agent", back_populates="owner")
 
     def __repr__(self):
         # requires: Valid input parameters

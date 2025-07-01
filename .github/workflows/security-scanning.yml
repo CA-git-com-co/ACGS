@@ -1,10 +1,21 @@
-name: ACGS-1 Comprehensive Security Scanning
+name: ACGS: Comprehensive Security Scanning
 
 on:
-  # Reduced triggers to avoid redundancy with unified-ci.yml
+  # Reduced triggers to avoid redundancy with cost-optimized-ci.yml
   schedule:
     - cron: '0 3 * * 1' # Weekly on Monday at 3 AM  
   workflow_dispatch:
+    inputs:
+      scan_type:
+        description: 'Type of security scan'
+        required: false
+        default: 'comprehensive'
+        type: choice
+        options:
+          - comprehensive
+          - dependency-only
+          - code-only
+          - container-only
     inputs:
       scan_type:
         description: 'Type of security scan'
@@ -32,6 +43,7 @@ jobs:
   dependency_scanning:
     runs-on: ubuntu-latest
     name: Dependency Vulnerability Scanning
+    timeout-minutes: 30
     if: github.event.inputs.scan_type == 'comprehensive' || github.event.inputs.scan_type == 'dependency-only' || github.event.inputs.scan_type == ''
     steps:
       - name: Check out repository
@@ -46,6 +58,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
+          cache: 'npm'
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable

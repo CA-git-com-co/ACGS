@@ -36,7 +36,7 @@ print_error() {
 }
 
 # Project root directory (current directory)
-PROJECT_ROOT="/home/ubuntu/ACGS"
+PROJECT_ROOT="/home/dislove/ACGS-2"
 LOG_DIR="$PROJECT_ROOT/logs"
 PID_DIR="$PROJECT_ROOT/pids"
 

@@ -1,0 +1,334 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  acgs-database:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: acgs_db
+      POSTGRES_USER: acgs_user
+      POSTGRES_PASSWORD: acgs_secure_password
+    volumes:
+      - acgs_postgres_data:/var/lib/postgresql/data
+      - ./services/platform/authentication/auth_service/migrations:/docker-entrypoint-initdb.d/01-auth
+      - ./services/core/agent-hitl/migrations:/docker-entrypoint-initdb.d/02-hitl
+      - ./services/core/sandbox-execution/migrations:/docker-entrypoint-initdb.d/03-sandbox
+      - ./services/core/audit-integrity/migrations:/docker-entrypoint-initdb.d/04-audit
+    ports:
+      - "5440:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U acgs_user -d acgs_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - acgs-network
+
+  # Redis for Caching and Sessions
+  acgs-redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - acgs_redis_data:/data
+    ports:
+      - "6390:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - acgs-network
+
+  # Agent Identity Management Service (Auth Service)
+  acgs-auth-service:
+    build:
+      context: ./services/platform/authentication/auth_service
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgresql+asyncpg://acgs_user:acgs_secure_password@acgs-database:5432/acgs_db
+      REDIS_URL: redis://acgs-redis:6379/0
+      CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+      AUTH_SERVICE_HOST: 0.0.0.0
+      AUTH_SERVICE_PORT: 8000
+      ACGE_ENABLED: "true"
+    ports:
+      - "8022:8000"
+    depends_on:
+      acgs-database:
+        condition: service_healthy
+      acgs-redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - acgs-network
+    volumes:
+      - acgs_auth_logs:/app/logs
+
+  # Agent Human-in-the-Loop Service
+  acgs-agent-hitl:
+    build:
+      context: ./services/core/agent-hitl
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgresql+asyncpg://acgs_user:acgs_secure_password@acgs-database:5432/acgs_db
+      REDIS_URL: redis://acgs-redis:6379/1
+      CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+      AGENT_HITL_HOST: 0.0.0.0
+      AGENT_HITL_PORT: 8008
+      CONSTITUTIONAL_AI_URL: http://acgs-auth-service:8006
+      POLICY_GOVERNANCE_URL: http://acgs-auth-service:8006
+      AUTH_SERVICE_URL: http://acgs-auth-service:8000
+    ports:
+      - "8023:8008"
+    depends_on:
+      acgs-database:
+        condition: service_healthy
+      acgs-redis:
+        condition: service_healthy
+      acgs-auth-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8008/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - acgs-network
+    volumes:
+      - acgs_hitl_logs:/app/logs
+
+  # Sandbox Execution Service
+  acgs-sandbox-execution:
+    build:
+      context: ./services/core/sandbox-controller/hardened
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgresql+asyncpg://acgs_user:acgs_secure_password@acgs-database:5432/acgs_db
+      REDIS_URL: redis://acgs-redis:6379/2
+      CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+      SANDBOX_HOST: 0.0.0.0
+      SANDBOX_PORT: 8009
+      AUTH_SERVICE_URL: http://acgs-auth-service:8000
+      AGENT_HITL_URL: http://acgs-agent-hitl:8008
+      DOCKER_SOCKET: unix:///var/run/docker.sock
+      SANDBOX_MEMORY_LIMIT: 512m
+      SANDBOX_CPU_LIMIT: "0.5"
+      MAX_CONCURRENT_SANDBOXES: 5
+    ports:
+      - "8024:8009"
+    depends_on:
+      acgs-database:
+        condition: service_healthy
+      acgs-redis:
+        condition: service_healthy
+      acgs-auth-service:
+        condition: service_healthy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - acgs_sandbox_logs:/app/logs
+      - acgs_sandbox_workspace:/tmp/sandbox
+    privileged: true  # Required for Docker-in-Docker
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8009/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - acgs-network
+
+  # Formal Verification Service
+  acgs-formal-verification:
+    build:
+      context: ./services/core/formal-verification/fv_service
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgresql+asyncpg://acgs_user:acgs_secure_password@acgs-database:5432/acgs_db
+      REDIS_URL: redis://acgs-redis:6379/3
+      CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+      FORMAL_VERIFICATION_HOST: 0.0.0.0
+      FORMAL_VERIFICATION_PORT: 8010
+      Z3_TIMEOUT_MS: 5000
+      Z3_MAX_MEMORY_MB: 1024
+      POLICY_GOVERNANCE_URL: http://acgs-auth-service:8006
+      CONSTITUTIONAL_AI_URL: http://acgs-auth-service:8006
+    ports:
+      - "8025:8010"
+    depends_on:
+      acgs-database:
+        condition: service_healthy
+      acgs-redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8010/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - acgs-network
+    volumes:
+      - acgs_verification_logs:/app/logs
+      - acgs_verification_specs:/app/specs
+      - acgs_verification_proofs:/app/proofs
+
+  # Audit Integrity Service
+  acgs-audit-integrity:
+    build:
+      context: ./services/core/audit-engine
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgresql+asyncpg://acgs_user:acgs_secure_password@acgs-database:5432/acgs_db
+      REDIS_URL: redis://acgs-redis:6379/4
+      CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+      AUDIT_INTEGRITY_HOST: 0.0.0.0
+      AUDIT_INTEGRITY_PORT: 8011
+      ENABLE_BLOCKCHAIN_ANCHORING: "true"
+      BLOCKCHAIN_TYPE: mock
+      BATCH_SIZE: 100
+      BATCH_TIMEOUT_MINUTES: 15
+      PRIVATE_KEY_PATH: /app/keys/audit_private_key.pem
+      PUBLIC_KEY_PATH: /app/keys/audit_public_key.pem
+    ports:
+      - "8026:8011"
+    depends_on:
+      acgs-database:
+        condition: service_healthy
+      acgs-redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8011/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - acgs-network
+    volumes:
+      - acgs_audit_logs:/app/logs
+      - acgs_audit_data:/app/data
+      - acgs_audit_keys:/app/keys
+      - acgs_audit_backups:/app/backups
+
+  # ACGS Coordinator Service
+  acgs-coordinator:
+    build:
+      context: ./services/integration
+      dockerfile: Dockerfile
+    environment:
+      COORDINATOR_HOST: 0.0.0.0
+      COORDINATOR_PORT: 8000
+      CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+      AUTH_SERVICE_URL: http://acgs-auth-service:8000
+      AGENT_HITL_URL: http://acgs-agent-hitl:8008
+      SANDBOX_EXECUTION_URL: http://acgs-sandbox-execution:8009
+      FORMAL_VERIFICATION_URL: http://acgs-formal-verification:8010
+      AUDIT_INTEGRITY_URL: http://acgs-audit-integrity:8011
+    ports:
+      - "8027:8000"
+    depends_on:
+      acgs-auth-service:
+        condition: service_healthy
+      acgs-agent-hitl:
+        condition: service_healthy
+      acgs-sandbox-execution:
+        condition: service_healthy
+      acgs-formal-verification:
+        condition: service_healthy
+      acgs-audit-integrity:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - acgs-network
+    volumes:
+      - acgs_coordinator_logs:/app/logs
+
+  # Monitoring and Metrics (Prometheus)
+  acgs-prometheus:
+    image: prom/prometheus:latest
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    ports:
+      - "9092:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - acgs_prometheus_data:/prometheus
+    networks:
+      - acgs-network
+
+  # Monitoring Dashboard (Grafana)
+  acgs-grafana:
+    image: grafana/grafana:latest
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: acgs_admin_password
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    ports:
+      - "3003:3000"
+    volumes:
+      - acgs_grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+    depends_on:
+      - acgs-prometheus
+    networks:
+      - acgs-network
+
+  # Log Aggregation (ELK Stack - Elasticsearch)
+  acgs-elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.8.0
+    environment:
+      discovery.type: single-node
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+      xpack.security.enabled: "false"
+    ports:
+      - "9202:9200"
+    volumes:
+      - acgs_elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - acgs-network
+
+  # Log Aggregation (ELK Stack - Kibana)
+  acgs-kibana:
+    image: docker.elastic.co/kibana/kibana:8.8.0
+    environment:
+      ELASTICSEARCH_HOSTS: http://acgs-elasticsearch:9200
+    ports:
+      - "5602:5601"
+    depends_on:
+      - acgs-elasticsearch
+    networks:
+      - acgs-network
+
+volumes:
+  acgs_postgres_data:
+  acgs_redis_data:
+  acgs_auth_logs:
+  acgs_hitl_logs:
+  acgs_sandbox_logs:
+  acgs_sandbox_workspace:
+  acgs_verification_logs:
+  acgs_verification_specs:
+  acgs_verification_proofs:
+  acgs_audit_logs:
+  acgs_audit_data:
+  acgs_audit_keys:
+  acgs_audit_backups:
+  acgs_coordinator_logs:
+  acgs_prometheus_data:
+  acgs_grafana_data:
+  acgs_elasticsearch_data:
+
+networks:
+  acgs-network:
+    external: true
+    name: acgs_network

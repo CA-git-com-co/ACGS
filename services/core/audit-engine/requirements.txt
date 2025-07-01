@@ -10,14 +10,12 @@ asyncpg==0.29.0
 aioredis==2.0.1
 
 # Kafka integration
-aiokafka==0.8.11
+aiokafka==0.12.0
 
-# AWS S3 integration
-aioboto3==12.0.0
-boto3==1.34.0
+
 
 # Cryptography
-cryptography==41.0.8
+
 
 # Logging and monitoring
 structlog==23.2.0

@@ -33,4 +33,4 @@ EXPOSE 8003
 
 # Run main.py when the container launches
 # The command should point to main:app since main.py is in the root directory
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8003", "--workers", "2"]
+CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8003", "--workers", "2"]

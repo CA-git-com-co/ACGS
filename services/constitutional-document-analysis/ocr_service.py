@@ -55,13 +55,19 @@ class DocumentIntegrity:
 
 @dataclass
 class StructuredContent:
-    """Structured document content"""
+    """Enhanced structured document content with Nanonets-OCR-s capabilities"""
 
     articles: List[Dict]
     sections: List[Dict]
     amendments: List[Dict]
     tables: str
     equations: str
+    signatures: List[Dict]
+    watermarks: List[Dict]
+    page_numbers: List[Dict]
+    images: List[Dict]
+    seals: List[Dict]
+    checkboxes: List[Dict]
 
 
 @dataclass
@@ -79,13 +85,14 @@ class OCRAnalysisResult:
 
 class ConstitutionalOCRService:
     """
-    Constitutional Document OCR and Analysis Service
-    Integrates with NVIDIA Llama-3.1-Nemotron-Nano-VL-8B-V1 model
+    Enhanced Constitutional Document OCR and Analysis Service
+    Integrates with Nanonets-OCR-s for advanced document processing capabilities
+    including LaTeX equations, signature detection, watermark extraction, and structured parsing
     """
 
-    def __init__(self, model_endpoint: str = "http://localhost:8002/v1"):
+    def __init__(self, model_endpoint: str = "http://localhost:8666/v1"):
         self.client = OpenAI(api_key="acgs-constitutional-analysis", base_url=model_endpoint)
-        self.model_name = "nvidia/Llama-3.1-Nemotron-Nano-VL-8B-V1"
+        self.model_name = "nanonets/Nanonets-OCR-s"
 
     def encode_image(self, image_path: str) -> str:
         """Encode image to base64 string"""
@@ -116,12 +123,15 @@ CONSTITUTIONAL DOCUMENT SPECIFIC REQUIREMENTS:
 - Mark definitions in <definition term="X">definition text</definition>
 - Identify rights and freedoms in <right>text</right> tags
 - Mark procedural requirements in <procedure>text</procedure> tags
+- Extract signatures and wrap in <signature>signature text</signature> tags
+- Identify official seals and mark as <seal>seal description</seal>
 
 QUALITY REQUIREMENTS:
 - Maintain exact legal terminology and punctuation
 - Preserve hierarchical structure (articles, sections, subsections)
 - Ensure accurate transcription of legal references and citations
-- Maintain formatting of legal lists and enumerations"""
+- Maintain formatting of legal lists and enumerations
+- Extract all authentication elements (signatures, seals, watermarks)"""
 
         if document_type == "amendment":
             base_prompt += "\n\nAMENDMENT SPECIFIC: Focus on identifying the amendment number, ratification date, and the specific changes being made to the original constitution."
@@ -207,12 +217,36 @@ QUALITY REQUIREMENTS:
         # Extract equations (LaTeX formatted)
         equations = self._extract_latex_equations(text)
 
+        # Extract signatures
+        signatures = self._extract_tagged_content(text, "signature")
+
+        # Extract watermarks
+        watermarks = self._extract_tagged_content(text, "watermark")
+
+        # Extract page numbers
+        page_numbers = self._extract_tagged_content(text, "page_number")
+
+        # Extract images with descriptions
+        images = self._extract_tagged_content(text, "img")
+
+        # Extract seals
+        seals = self._extract_tagged_content(text, "seal")
+
+        # Extract checkboxes
+        checkboxes = self._extract_checkboxes(text)
+
         return StructuredContent(
             articles=articles,
             sections=sections,
             amendments=amendments,
             tables=tables,
             equations=equations,
+            signatures=signatures,
+            watermarks=watermarks,
+            page_numbers=page_numbers,
+            images=images,
+            seals=seals,
+            checkboxes=checkboxes,
         )
 
     def _extract_tagged_content(self, text: str, tag: str) -> List[Dict]:
@@ -289,6 +323,39 @@ QUALITY REQUIREMENTS:
             equations.extend(matches)
 
         return "\n".join(equations)
+
+    def _extract_checkboxes(self, text: str) -> List[Dict]:
+        """Extract checkbox states from text"""
+        import re
+
+        checkboxes = []
+
+        # Find checkbox patterns
+        checkbox_patterns = [
+            (r'☐', 'unchecked'),
+            (r'☑', 'checked'),
+            (r'☒', 'crossed'),
+            (r'\[ \]', 'unchecked'),
+            (r'\[x\]', 'checked'),
+            (r'\[X\]', 'checked'),
+        ]
+
+        for pattern, state in checkbox_patterns:
+            matches = re.finditer(pattern, text)
+            for match in matches:
+                # Try to extract context around the checkbox
+                start = max(0, match.start() - 50)
+                end = min(len(text), match.end() + 50)
+                context = text[start:end].strip()
+
+                checkboxes.append({
+                    'state': state,
+                    'position': match.start(),
+                    'context': context,
+                    'symbol': match.group()
+                })
+
+        return checkboxes
 
     async def _analyze_constitutional_compliance(
         self, text: str, document_type: str

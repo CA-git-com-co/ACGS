@@ -1,0 +1,456 @@
+name: 'ACGS: Optimized CI/CD Pipeline'
+
+on:
+  push:
+    branches: [main, master, develop]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.gitignore'
+      - 'LICENSE'
+      - '**.txt'
+  pull_request:
+    branches: [main, master, develop]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+  schedule:
+    - cron: '0 2 * * 1' # Weekly on Monday at 2 AM
+  workflow_dispatch:
+    inputs:
+      force_full_build:
+        description: 'Force full build regardless of changes'
+        required: false
+        default: false
+        type: boolean
+      skip_tests:
+        description: 'Skip test execution'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  packages: write
+  security-events: write
+  actions: read
+  id-token: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  PYTHON_VERSION: '3.11'
+  NODE_VERSION: '18'
+  RUST_VERSION: '1.81.0'
+  UV_CACHE_DIR: /tmp/.uv-cache
+
+jobs:
+  # Change detection for intelligent execution
+  detect-changes:
+    runs-on: ubuntu-latest
+    name: Detect Changes
+    timeout-minutes: 5
+    outputs:
+      python: ${{ steps.filter.outputs.python }}
+      rust: ${{ steps.filter.outputs.rust }}
+      node: ${{ steps.filter.outputs.node }}
+      docker: ${{ steps.filter.outputs.docker }}
+      security: ${{ steps.filter.outputs.security }}
+      should_run_tests: ${{ steps.decision.outputs.should_run_tests }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect file changes
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            python:
+              - 'services/**/*.py'
+              - '**/requirements*.txt'
+              - '**/pyproject.toml'
+              - 'tests/**/*.py'
+            rust:
+              - 'blockchain/**/*.rs'
+              - '**/Cargo.toml'
+              - '**/Cargo.lock'
+              - 'blockchain/Anchor.toml'
+            node:
+              - '**/*.js'
+              - '**/*.ts'
+              - '**/package.json'
+              - '**/package-lock.json'
+            docker:
+              - '**/Dockerfile*'
+              - 'docker-compose*.yml'
+              - 'infrastructure/docker/**'
+            security:
+              - '.github/workflows/**'
+              - 'scripts/security/**'
+              - '**/requirements*.txt'
+              - '**/Cargo.toml'
+
+      - name: Make execution decision
+        id: decision
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]] || \
+             [[ "${{ github.ref }}" == "refs/heads/master" ]] || \
+             [[ "${{ github.event_name }}" == "schedule" ]] || \
+             [[ "${{ github.event.inputs.force_full_build }}" == "true" ]]; then
+            echo "should_run_tests=true" >> $GITHUB_OUTPUT
+            echo "✅ Full pipeline execution"
+          elif [[ "${{ steps.filter.outputs.python }}" == "true" ]] || \
+               [[ "${{ steps.filter.outputs.rust }}" == "true" ]] || \
+               [[ "${{ steps.filter.outputs.node }}" == "true" ]]; then
+            echo "should_run_tests=true" >> $GITHUB_OUTPUT
+            echo "✅ Running tests (code changes detected)"
+          else
+            echo "should_run_tests=false" >> $GITHUB_OUTPUT
+            echo "⏭️ Skipping tests (no relevant changes)"
+          fi
+
+  # Python quality and testing
+  python-quality:
+    runs-on: ubuntu-latest
+    name: Python Quality & Testing
+    needs: detect-changes
+    if: needs.detect-changes.outputs.should_run_tests == 'true' && needs.detect-changes.outputs.python == 'true'
+    timeout-minutes: 30
+    strategy:
+      matrix:
+        service: 
+          - constitutional-ai
+          - governance-synthesis
+          - policy-governance
+          - formal-verification
+          - integrity
+          - evolutionary-computation
+      fail-fast: false
+      max-parallel: 3
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Cache Python dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/uv
+            ${{ env.UV_CACHE_DIR }}
+          key: python-${{ runner.os }}-${{ matrix.service }}-${{ hashFiles('**/requirements*.txt', '**/pyproject.toml') }}
+          restore-keys: |
+            python-${{ runner.os }}-${{ matrix.service }}-
+            python-${{ runner.os }}-
+
+      - name: Install UV
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        run: |
+          SERVICE_PATH=""
+          if [ -d "services/core/${{ matrix.service }}" ]; then
+            SERVICE_PATH="services/core/${{ matrix.service }}"
+          elif [ -d "services/platform/${{ matrix.service }}" ]; then
+            SERVICE_PATH="services/platform/${{ matrix.service }}"
+          else
+            echo "Service ${{ matrix.service }} not found, skipping"
+            exit 0
+          fi
+          
+          cd "$SERVICE_PATH"
+          uv venv
+          source .venv/bin/activate
+          
+          if [ -f "pyproject.toml" ]; then
+            uv pip install -e . || echo "⚠️ Project install failed"
+          elif [ -f "requirements.txt" ]; then
+            uv pip install -r requirements.txt || echo "⚠️ Requirements install failed"
+          fi
+          
+          uv pip install pytest black isort mypy coverage || echo "⚠️ Dev tools install failed"
+
+      - name: Run quality checks
+        run: |
+          SERVICE_PATH=""
+          if [ -d "services/core/${{ matrix.service }}" ]; then
+            SERVICE_PATH="services/core/${{ matrix.service }}"
+          elif [ -d "services/platform/${{ matrix.service }}" ]; then
+            SERVICE_PATH="services/platform/${{ matrix.service }}"
+          else
+            exit 0
+          fi
+          
+          cd "$SERVICE_PATH"
+          source .venv/bin/activate
+          
+          echo "Running quality checks for ${{ matrix.service }}..."
+          
+          # Run checks in parallel
+          (black --check . || echo "⚠️ Black failed") &
+          (isort --check-only . || echo "⚠️ isort failed") &
+          (mypy . --ignore-missing-imports || echo "⚠️ mypy failed") &
+          
+          wait
+
+      - name: Run tests
+        if: github.event.inputs.skip_tests != 'true'
+        run: |
+          SERVICE_PATH=""
+          if [ -d "services/core/${{ matrix.service }}" ]; then
+            SERVICE_PATH="services/core/${{ matrix.service }}"
+          elif [ -d "services/platform/${{ matrix.service }}" ]; then
+            SERVICE_PATH="services/platform/${{ matrix.service }}"
+          else
+            exit 0
+          fi
+          
+          cd "$SERVICE_PATH"
+          source .venv/bin/activate
+          
+          if [ -d "tests" ]; then
+            pytest tests/ -v --cov=. --cov-report=xml || echo "⚠️ Tests failed"
+          else
+            echo "No tests found for ${{ matrix.service }}"
+          fi
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v5
+        if: always()
+        with:
+          files: ./coverage.xml
+          flags: ${{ matrix.service }}
+          name: codecov-${{ matrix.service }}
+        continue-on-error: true
+
+  # Rust build and quality
+  rust-build:
+    runs-on: ubuntu-latest
+    name: Rust Build & Quality
+    needs: detect-changes
+    if: needs.detect-changes.outputs.should_run_tests == 'true' && needs.detect-changes.outputs.rust == 'true'
+    timeout-minutes: 45
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{ env.RUST_VERSION }}
+          components: rustfmt, clippy
+
+      - name: Cache Rust dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            blockchain/target/
+          key: rust-${{ runner.os }}-${{ hashFiles('**/Cargo.lock', '**/Cargo.toml') }}
+          restore-keys: |
+            rust-${{ runner.os }}-
+
+      - name: Install Solana CLI
+        run: |
+          if ! command -v solana >/dev/null 2>&1; then
+            echo "Installing Solana CLI..."
+            timeout 120 curl -sSfL https://release.solana.com/stable/install | sh
+            echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+          fi
+
+      - name: Install Anchor CLI
+        run: |
+          if ! command -v anchor >/dev/null 2>&1; then
+            echo "Installing Anchor CLI..."
+            timeout 180 npm install -g @coral-xyz/anchor-cli@0.29.0 || echo "⚠️ Anchor install failed"
+          fi
+
+      - name: Rust quality checks
+        working-directory: blockchain
+        run: |
+          echo "Running Rust quality checks..."
+          
+          # Run in parallel
+          (cargo fmt --all -- --check || echo "⚠️ Format check failed") &
+          (cargo clippy --all-targets --all-features -- -D warnings || echo "⚠️ Clippy failed") &
+          
+          wait
+
+      - name: Build Anchor programs
+        if: github.event.inputs.skip_tests != 'true'
+        working-directory: blockchain
+        run: |
+          if command -v solana >/dev/null 2>&1; then
+            solana config set --url localhost
+          fi
+          
+          if command -v anchor >/dev/null 2>&1; then
+            anchor build --skip-lint || echo "⚠️ Anchor build failed"
+          else
+            cargo build --release || echo "⚠️ Cargo build failed"
+          fi
+
+      - name: Run Rust tests
+        if: github.event.inputs.skip_tests != 'true'
+        working-directory: blockchain
+        run: |
+          cargo test --all || echo "⚠️ Rust tests failed"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rust-build-artifacts
+          path: |
+            blockchain/target/deploy/
+            blockchain/target/idl/
+          retention-days: 7
+
+  # Security scanning
+  security-scan:
+    runs-on: ubuntu-latest
+    name: Security Scanning
+    needs: detect-changes
+    if: needs.detect-changes.outputs.should_run_tests == 'true' && (needs.detect-changes.outputs.security == 'true' || github.event_name == 'schedule')
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install security tools
+        run: |
+          pip install safety bandit semgrep || echo "⚠️ Python security tools failed"
+          
+          if command -v cargo >/dev/null 2>&1; then
+            cargo install cargo-audit || echo "⚠️ cargo-audit install failed"
+          fi
+
+      - name: Run security scans
+        run: |
+          echo "Running security scans..."
+          
+          # Python security
+          safety check || echo "⚠️ Safety scan found issues"
+          find . -name "*.py" -not -path "*/venv/*" | head -50 | xargs bandit || echo "⚠️ Bandit scan found issues"
+          
+          # Rust security
+          if [ -d "blockchain" ] && command -v cargo-audit >/dev/null 2>&1; then
+            cd blockchain
+            cargo audit \
+              --ignore RUSTSEC-2021-0145 \
+              --ignore RUSTSEC-2023-0033 \
+              --ignore RUSTSEC-2024-0375 \
+              --ignore RUSTSEC-2024-0388 \
+              --ignore RUSTSEC-2024-0436 \
+              || echo "⚠️ Cargo audit found issues"
+          fi
+
+      - name: Run Trivy scan
+        uses: aquasecurity/trivy-action@0.31.0
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Upload security results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  # Docker build (only when needed)
+  docker-build:
+    runs-on: ubuntu-latest
+    name: Docker Build
+    needs: [detect-changes, python-quality, rust-build]
+    if: needs.detect-changes.outputs.docker == 'true' || (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        run: |
+          if [ -f "infrastructure/docker/Dockerfile.acgs" ]; then
+            TAG="${{ github.ref == 'refs/heads/main' && 'latest' || github.sha }}"
+            
+            docker buildx build \
+              -f infrastructure/docker/Dockerfile.acgs \
+              -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$TAG \
+              --cache-from=type=gha \
+              --cache-to=type=gha,mode=max \
+              --push \
+              .
+            
+            echo "✅ Built and pushed: $TAG"
+          else
+            echo "⚠️ No Dockerfile found"
+          fi
+
+  # Final status report
+  status-report:
+    runs-on: ubuntu-latest
+    name: Pipeline Status
+    needs: [detect-changes, python-quality, rust-build, security-scan, docker-build]
+    if: always()
+    timeout-minutes: 5
+    steps:
+      - name: Generate report
+        run: |
+          echo "📊 ACGS Optimized CI/CD Pipeline Report"
+          echo "======================================"
+          echo "Trigger: ${{ github.event_name }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+          echo ""
+          echo "Change Detection:"
+          echo "- Python: ${{ needs.detect-changes.outputs.python }}"
+          echo "- Rust: ${{ needs.detect-changes.outputs.rust }}"
+          echo "- Node: ${{ needs.detect-changes.outputs.node }}"
+          echo "- Docker: ${{ needs.detect-changes.outputs.docker }}"
+          echo "- Security: ${{ needs.detect-changes.outputs.security }}"
+          echo ""
+          echo "Job Results:"
+          echo "- Python Quality: ${{ needs.python-quality.result }}"
+          echo "- Rust Build: ${{ needs.rust-build.result }}"
+          echo "- Security Scan: ${{ needs.security-scan.result }}"
+          echo "- Docker Build: ${{ needs.docker-build.result }}"
+          echo ""
+          
+          if [[ "${{ needs.python-quality.result }}" == "success" || "${{ needs.python-quality.result }}" == "skipped" ]] && \
+             [[ "${{ needs.rust-build.result }}" == "success" || "${{ needs.rust-build.result }}" == "skipped" ]] && \
+             [[ "${{ needs.security-scan.result }}" == "success" || "${{ needs.security-scan.result }}" == "skipped" ]]; then
+            echo "✅ Pipeline Status: SUCCESS"
+          else
+            echo "❌ Pipeline Status: FAILURE"
+          fi

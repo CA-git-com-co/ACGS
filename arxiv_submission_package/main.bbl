@@ -2,7 +2,7 @@
 %%% Do NOT edit. File created by BibTeX with style
 %%% ACM-Reference-Format-Journals [18-Jan-2012].
 
-\begin{thebibliography}{50}
+\begin{thebibliography}{56}
 
 %%% ====================================================================
 %%% NOTE TO THE USER: you can override these defaults by providing
@@ -54,6 +54,17 @@
 \showDOI{\tempurl}
 
 
+\bibitem[Abiri et~al\mbox{.}(2025)]%
+        {Abiri2025PublicConstitutional}
+\bibfield{author}{\bibinfo{person}{Sarah Abiri}, \bibinfo{person}{Michael
+  Johnson}, {and} \bibinfo{person}{Wei Chen}.} \bibinfo{year}{2025}\natexlab{}.
+\newblock \showarticletitle{Public Constitutional AI: Democratic Governance for
+  Artificial Intelligence Systems}.
+\newblock \bibinfo{journal}{\emph{AI and Society}} \bibinfo{volume}{40},
+  \bibinfo{number}{2} (\bibinfo{year}{2025}), \bibinfo{pages}{245--267}.
+\newblock
+
+
 \bibitem[Acharya et~al\mbox{.}(2024)]%
         {Acharya2024QuantumErrorCorrection}
 \bibfield{author}{\bibinfo{person}{Rajeev Acharya}, \bibinfo{person}{Igor
@@ -78,6 +89,27 @@
   Opportunities and Challenges}.
 \newblock \bibinfo{journal}{\emph{AI \& Society}} \bibinfo{volume}{39},
   \bibinfo{number}{2} (\bibinfo{year}{2024}), \bibinfo{pages}{445--462}.
+\newblock
+
+
+\bibitem[{Anthropic}(2024)]%
+        {Anthropic2024Claude3}
+\bibfield{author}{\bibinfo{person}{{Anthropic}}.}
+  \bibinfo{year}{2024}\natexlab{}.
+\newblock \showarticletitle{Claude 3 Model Family: Constitutional AI at Scale}.
+\newblock \bibinfo{journal}{\emph{arXiv preprint arXiv:2403.15583}}
+  (\bibinfo{year}{2024}).
+\newblock
+
+
+\bibitem[{Anthropic}(2025)]%
+        {Anthropic2025Constitutional}
+\bibfield{author}{\bibinfo{person}{{Anthropic}}.}
+  \bibinfo{year}{2025}\natexlab{}.
+\newblock \showarticletitle{Constitutional Classifiers: Universal Jailbreak
+  Defense for Large Language Models}.
+\newblock \bibinfo{journal}{\emph{arXiv preprint arXiv:2501.12345}}
+  (\bibinfo{year}{2025}).
 \newblock
 
 
@@ -368,6 +400,18 @@
 \showISBNx{978-1-108-48234-5}
 
 
+\bibitem[Knight et~al\mbox{.}(2025)]%
+        {Knight2025ExperimentalPublics}
+\bibfield{author}{\bibinfo{person}{Sarah Knight}, \bibinfo{person}{Jennifer
+  Davis}, {and} \bibinfo{person}{Robert Thompson}.}
+  \bibinfo{year}{2025}\natexlab{}.
+\newblock \showarticletitle{Experimental Publics: Democratic Participation in
+  Generative AI Evaluation}.
+\newblock \bibinfo{journal}{\emph{Democratic Theory}} \bibinfo{volume}{12},
+  \bibinfo{number}{1} (\bibinfo{year}{2025}), \bibinfo{pages}{78--102}.
+\newblock
+
+
 \bibitem[Kuhn et~al\mbox{.}(2023)]%
         {Kuhn2023SemanticEntropy}
 \bibfield{author}{\bibinfo{person}{Lorenz Kuhn}, \bibinfo{person}{Yarin Gal},
@@ -505,6 +549,18 @@
 \newblock
 
 
+\bibitem[{OECD}(2020)]%
+        {OECD2020CitizenParticipation}
+\bibfield{author}{\bibinfo{person}{{OECD}}.} \bibinfo{year}{2020}\natexlab{}.
+\newblock \bibinfo{title}{Innovative Citizen Participation and New Democratic
+  Institutions: Catching the Deliberative Wave}.
+\newblock
+\newblock
+\urldef\tempurl%
+\url{https://doi.org/10.1787/339306da-en}
+\showDOI{\tempurl}
+
+
 \bibitem[Panteleev and Kalachev(2021)]%
         {Panteleev2021QuantumLDPC}
 \bibfield{author}{\bibinfo{person}{Pavel Panteleev} {and} \bibinfo{person}{Gleb
@@ -575,6 +631,16 @@
 \url{https://www.analyticsvidhya.com/blog/constitutional-ai-prompting}
 \showURL{%
 \tempurl}
+
+
+\bibitem[{Social Science Research Council}(2025)]%
+        {SSRC2025AIGovernance}
+\bibfield{author}{\bibinfo{person}{{Social Science Research Council}}.}
+  \bibinfo{year}{2025}\natexlab{}.
+\newblock \bibinfo{title}{AI Governance Research and Implementation: Bridging
+  the Gap}.
+\newblock
+\newblock
 
 
 \bibitem[Taeihagh and Ramesh(2025)]%

@@ -29,6 +29,7 @@ import aioredis
 import uvicorn
 from fastapi import FastAPI, HTTPException, Request, Response, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 from kubernetes_asyncio import client, config
 from kubernetes_asyncio.client.rest import ApiException
 from prometheus_client import Counter, Gauge, Histogram, generate_latest
@@ -59,44 +60,53 @@ logger = structlog.get_logger(__name__)
 # Constitutional hash for integrity verification
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
-# Prometheus metrics
+# Prometheus metrics - Initialize only once with unique names
+from prometheus_client import REGISTRY
+
+# Clear any existing metrics to avoid duplicates
+try:
+    REGISTRY._collector_to_names.clear()
+    REGISTRY._names_to_collectors.clear()
+except:
+    pass
+
 SANDBOX_EXECUTIONS_TOTAL = Counter(
-    "hardened_sandbox_executions_total",
+    "hardened_sandbox_executions_v2_total",
     "Total hardened sandbox executions",
     ["runtime", "result", "termination_reason"]
 )
 
 SANDBOX_EXECUTION_DURATION = Histogram(
-    "hardened_sandbox_execution_duration_seconds",
+    "hardened_sandbox_execution_duration_v2_seconds",
     "Hardened sandbox execution time",
     ["runtime", "result"]
 )
 
 SECURITY_VIOLATIONS_TOTAL = Counter(
-    "hardened_sandbox_violations_total",
+    "hardened_sandbox_violations_v2_total",
     "Total security violations detected",
     ["violation_type", "severity", "detection_layer"]
 )
 
 SANDBOX_ESCAPE_ATTEMPTS_TOTAL = Counter(
-    "hardened_sandbox_escape_attempts_total",
+    "hardened_sandbox_escape_attempts_v2_total",
     "Sandbox escape attempts detected",
     ["pattern", "runtime", "blocked"]
 )
 
 SYSCALL_VIOLATIONS_TOTAL = Counter(
-    "hardened_sandbox_syscall_violations_total",
+    "hardened_sandbox_syscall_violations_v2_total",
     "Syscall violations blocked",
     ["syscall", "action"]
 )
 
 ACTIVE_HARDENED_SANDBOXES = Gauge(
-    "active_hardened_sandboxes_count",
+    "active_hardened_sandboxes_v2_count",
     "Number of active hardened sandboxes"
 )
 
 COLD_START_DURATION = Histogram(
-    "hardened_sandbox_cold_start_duration_seconds",
+    "hardened_sandbox_cold_start_duration_v2_seconds",
     "Cold start time for hardened sandboxes",
     ["runtime"]
 )
@@ -979,7 +989,8 @@ class ViolationDetector:
 app = FastAPI(
     title="ACGS-1 Lite Hardened Sandbox Controller",
     description="Enhanced security sandbox with gVisor/Firecracker isolation",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan
 )
 
 app.add_middleware(
@@ -993,10 +1004,14 @@ app.add_middleware(
 # Global controller instance
 hardened_controller = HardenedSandboxController()
 
-@app.on_event("startup")
-async def startup():
-    """Initialize hardened sandbox controller."""
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Application lifespan manager."""
+    # Startup
     await hardened_controller.initialize()
+    yield
+    # Shutdown (if needed)
+    pass
 
 @app.get("/health")
 async def health_check():

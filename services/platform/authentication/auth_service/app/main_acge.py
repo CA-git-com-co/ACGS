@@ -23,12 +23,15 @@ from starlette.responses import PlainTextResponse
 import sys
 sys.path.append('..')
 from acge_integration import (
-    ACGEAuthIntegration, 
-    ConstitutionalAuthMiddleware, 
+    ACGEAuthIntegration,
+    ConstitutionalAuthMiddleware,
     add_constitutional_headers,
     constitutional_auth_dependency,
     create_constitutional_jwt_claims
 )
+
+# Import API routers
+from .api.agents import router as agents_router
 
 # Service configuration
 SERVICE_NAME = "acgs-auth-service-acge"
@@ -109,6 +112,9 @@ app.add_middleware(
 
 # Add trusted host middleware
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
+
+# Include API routers
+app.include_router(agents_router, prefix="/api/v1")
 
 # Security scheme
 security = HTTPBearer()
@@ -384,7 +390,11 @@ async def service_info():
             "/metrics",
             "/api/v1/auth/login",
             "/api/v1/auth/validate",
-            "/api/v1/auth/info"
+            "/api/v1/auth/info",
+            "/api/v1/agents",
+            "/api/v1/agents/{agent_id}",
+            "/api/v1/agents/{agent_id}/status",
+            "/api/v1/agents/{agent_id}/audit-logs"
         ],
         "constitutional_features": [
             "acge_model_integration",
