@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+    environment: performance_test
+    type: test
+  name: acgs-performance_test

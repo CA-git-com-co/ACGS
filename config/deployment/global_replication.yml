@@ -1,0 +1,21 @@
+constitutional_hash: cdd01ef066bc6cf2
+replication_strategy: multi_master_with_constitutional_validation
+replication_topology:
+  audit_data:
+    mode: append_only
+    source: all_regions
+    targets: global_audit_store
+    validation: cryptographic_integrity
+  constitutional_policies:
+    mode: synchronous
+    source: global_constitutional_authority
+    targets:
+    - us_east
+    - eu_west
+    - asia_pacific
+    validation: constitutional_hash_verification
+  operational_data:
+    mode: asynchronous
+    source: regional_primary
+    targets: regional_replicas
+    validation: checksum_and_constitutional_compliance

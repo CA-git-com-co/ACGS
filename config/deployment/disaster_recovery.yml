@@ -1,0 +1,14 @@
+constitutional_hash: cdd01ef066bc6cf2
+failover_scenarios:
+  global_control_plane_failure:
+    decision: distributed_constitutional_authority
+    detection: multi_region_consensus
+    execution: regional_autonomy_with_constitutional_constraints
+  regional_failure:
+    decision: constitutional_governance_committee
+    detection: automated_health_checks
+    execution: automated_with_constitutional_validation
+recovery_objectives:
+  constitutional_continuity: zero_tolerance
+  rpo: 5_seconds
+  rto: 30_seconds

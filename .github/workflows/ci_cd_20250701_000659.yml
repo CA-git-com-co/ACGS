@@ -1,0 +1,89 @@
+jobs:
+  performance-test:
+    if: github.event_name == 'schedule' || contains(github.event.head_commit.message,
+      '[perf-test]')
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+    - name: Run performance tests
+      run: python performance/validation/latency_validation_suite.py
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Run security scan
+      run: python security/audit/comprehensive_security_audit.py
+    - name: Run dependency check
+      run: pip-audit --format=json --output=security-report.json
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        env:
+          POSTGRES_DB: acgs_test
+          POSTGRES_PASSWORD: postgres
+        image: postgres:13
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+          --health-retries 5
+        ports:
+        - 5432:5432
+      redis:
+        image: redis:6
+        options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout
+          5s --health-retries 5
+        ports:
+        - 6379:6379
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: pip install -r requirements.txt && pip install -r requirements-test.txt
+    - env:
+        CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/acgs_test
+        REDIS_URL: redis://localhost:6379/0
+      name: Run unit tests
+      run: python -m pytest tests/unit/ -v --cov=services --cov-report=xml --cov-report=term
+    - env:
+        CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/acgs_test
+        REDIS_URL: redis://localhost:6379/0
+      name: Run integration tests
+      run: python -m pytest tests/integration/ -v --cov=services --cov-report=xml
+        --cov-report=term
+    - name: Run security tests
+      run: python -m pytest tests/security/ -v
+    - name: Run constitutional compliance tests
+      run: python tests/policies/test_constitutional_policies.py
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+    strategy:
+      matrix:
+        python-version:
+        - '3.9'
+        - '3.10'
+        - '3.11'
+name: ACGS CI/CD Pipeline
+'on':
+  pull_request:
+    branches:
+    - main
+  push:
+    branches:
+    - main
+    - develop
+  schedule:
+  - cron: 0 2 * * *

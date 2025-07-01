@@ -1,0 +1,246 @@
+# ACGS Comprehensive Monitoring Dashboard Configuration
+# Constitutional Hash: cdd01ef066bc6cf2
+
+dashboard:
+  name: "ACGS Comprehensive Monitoring Dashboard"
+  version: "1.0"
+  constitutional_hash: "cdd01ef066bc6cf2"
+  
+  server:
+    host: "0.0.0.0"
+    port: 8000
+    workers: 4
+    reload: false
+    
+  security:
+    enable_auth: true
+    session_timeout: 3600
+    cors_origins: ["http://localhost:3000", "https://acgs.com"]
+    
+metrics:
+  collection_interval: 5  # seconds
+  retention_period: 7  # days
+  
+  system_metrics:
+    enabled: true
+    collect:
+      - cpu_usage
+      - memory_usage
+      - disk_usage
+      - network_io
+      - process_count
+      
+  performance_metrics:
+    enabled: true
+    collect:
+      - response_time
+      - throughput
+      - cache_hit_rate
+      - error_rate
+      - queue_depth
+      
+  constitutional_metrics:
+    enabled: true
+    collect:
+      - hash_validation_rate
+      - policy_compliance_rate
+      - governance_decision_latency
+      - constitutional_violations
+      - audit_trail_completeness
+      
+  service_metrics:
+    enabled: true
+    services:
+      - name: "auth-service"
+        port: 8001
+        health_endpoint: "/health"
+        metrics_endpoint: "/metrics"
+        
+      - name: "constitutional-ai"
+        port: 8002
+        health_endpoint: "/health"
+        metrics_endpoint: "/metrics"
+        
+      - name: "policy-governance"
+        port: 8003
+        health_endpoint: "/health"
+        metrics_endpoint: "/metrics"
+        
+      - name: "governance-synthesis"
+        port: 8004
+        health_endpoint: "/health"
+        metrics_endpoint: "/metrics"
+        
+      - name: "integrity-service"
+        port: 8005
+        health_endpoint: "/health"
+        metrics_endpoint: "/metrics"
+
+alerting:
+  enabled: true
+  
+  thresholds:
+    system:
+      cpu_usage: 80.0
+      memory_usage: 85.0
+      disk_usage: 90.0
+      
+    performance:
+      response_time_ms: 5.0
+      error_rate_percent: 1.0
+      cache_hit_rate_percent: 80.0
+      
+    constitutional:
+      compliance_rate_percent: 99.9
+      hash_validation_failures: 0
+      policy_violations: 0
+      
+  channels:
+    - type: "webhook"
+      url: "https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK"
+      severity_levels: ["critical", "warning"]
+      
+    - type: "email"
+      smtp_server: "smtp.acgs.com"
+      recipients: ["ops@acgs.com", "security@acgs.com"]
+      severity_levels: ["critical"]
+      
+    - type: "pagerduty"
+      integration_key: "YOUR_PAGERDUTY_KEY"
+      severity_levels: ["critical"]
+
+dashboards:
+  main_dashboard:
+    title: "ACGS System Overview"
+    refresh_interval: 30
+    panels:
+      - type: "system_health"
+        title: "System Health"
+        position: [0, 0, 6, 4]
+        
+      - type: "constitutional_compliance"
+        title: "Constitutional Compliance"
+        position: [6, 0, 6, 4]
+        
+      - type: "performance_metrics"
+        title: "Performance Metrics"
+        position: [0, 4, 12, 4]
+        
+      - type: "service_status"
+        title: "Service Status"
+        position: [0, 8, 6, 4]
+        
+      - type: "alerts"
+        title: "Active Alerts"
+        position: [6, 8, 6, 4]
+        
+  performance_dashboard:
+    title: "Performance Analytics"
+    refresh_interval: 10
+    panels:
+      - type: "response_time_chart"
+        title: "Response Time Trends"
+        position: [0, 0, 12, 6]
+        
+      - type: "throughput_chart"
+        title: "Throughput Analysis"
+        position: [0, 6, 6, 6]
+        
+      - type: "cache_performance"
+        title: "Cache Performance"
+        position: [6, 6, 6, 6]
+        
+  constitutional_dashboard:
+    title: "Constitutional Governance"
+    refresh_interval: 15
+    panels:
+      - type: "compliance_overview"
+        title: "Compliance Overview"
+        position: [0, 0, 12, 4]
+        
+      - type: "governance_metrics"
+        title: "Governance Metrics"
+        position: [0, 4, 6, 4]
+        
+      - type: "audit_trail"
+        title: "Audit Trail"
+        position: [6, 4, 6, 4]
+        
+      - type: "policy_violations"
+        title: "Policy Violations"
+        position: [0, 8, 12, 4]
+
+data_sources:
+  prometheus:
+    enabled: true
+    url: "http://localhost:9090"
+    scrape_interval: 15
+    
+  redis:
+    enabled: true
+    host: "localhost"
+    port: 6379
+    db: 0
+    
+  postgresql:
+    enabled: true
+    host: "localhost"
+    port: 5432
+    database: "acgs_monitoring"
+    username: "monitoring_user"
+    
+  elasticsearch:
+    enabled: false
+    hosts: ["localhost:9200"]
+    index_pattern: "acgs-logs-*"
+
+visualization:
+  charts:
+    default_theme: "light"
+    color_palette: ["#667eea", "#764ba2", "#f093fb", "#f5576c", "#4facfe", "#00f2fe"]
+    
+  real_time:
+    enabled: true
+    websocket_endpoint: "/ws/metrics"
+    update_interval: 5
+    
+  historical:
+    enabled: true
+    default_time_range: "1h"
+    max_time_range: "30d"
+
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  
+  handlers:
+    console:
+      enabled: true
+      level: "INFO"
+      
+    file:
+      enabled: true
+      level: "DEBUG"
+      filename: "logs/monitoring_dashboard.log"
+      max_size: "100MB"
+      backup_count: 5
+      
+    syslog:
+      enabled: false
+      host: "localhost"
+      port: 514
+
+features:
+  real_time_updates: true
+  historical_data: true
+  alert_management: true
+  user_authentication: true
+  role_based_access: true
+  export_capabilities: true
+  mobile_responsive: true
+  dark_mode: true
+  
+experimental:
+  ai_anomaly_detection: false
+  predictive_analytics: false
+  auto_scaling_recommendations: false

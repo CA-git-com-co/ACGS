@@ -1,0 +1,25 @@
+constitutional_hash: cdd01ef066bc6cf2
+databases:
+  redis:
+    constitutional_hash: cdd01ef066bc6cf2
+    database: 0
+    host: localhost
+    port: 9060
+environment_name: unit_test
+isolation: process
+monitoring:
+  constitutional_compliance_monitoring: true
+  constitutional_hash: cdd01ef066bc6cf2
+  grafana_port: 9071
+  prometheus_port: 9070
+services:
+  auth:
+    constitutional_hash: cdd01ef066bc6cf2
+    environment: unit_test
+    host: localhost
+    port: 9000
+  policy:
+    constitutional_hash: cdd01ef066bc6cf2
+    environment: unit_test
+    host: localhost
+    port: 9001

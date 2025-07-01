@@ -1,0 +1,45 @@
+constitutional_hash: cdd01ef066bc6cf2
+databases:
+  redis:
+    constitutional_hash: cdd01ef066bc6cf2
+    database: 0
+    host: localhost
+    port: 9360
+environment_name: performance_test
+isolation: dedicated_cluster
+monitoring:
+  constitutional_compliance_monitoring: true
+  constitutional_hash: cdd01ef066bc6cf2
+  grafana_port: 9371
+  prometheus_port: 9370
+services:
+  audit:
+    constitutional_hash: cdd01ef066bc6cf2
+    environment: performance_test
+    host: localhost
+    port: 9302
+  auth:
+    constitutional_hash: cdd01ef066bc6cf2
+    environment: performance_test
+    host: localhost
+    port: 9300
+  evolution:
+    constitutional_hash: cdd01ef066bc6cf2
+    environment: performance_test
+    host: localhost
+    port: 9304
+  formal_verification:
+    constitutional_hash: cdd01ef066bc6cf2
+    environment: performance_test
+    host: localhost
+    port: 9305
+  hitl:
+    constitutional_hash: cdd01ef066bc6cf2
+    environment: performance_test
+    host: localhost
+    port: 9303
+  policy:
+    constitutional_hash: cdd01ef066bc6cf2
+    environment: performance_test
+    host: localhost
+    port: 9301

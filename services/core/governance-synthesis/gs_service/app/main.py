@@ -369,13 +369,13 @@ from services.shared.security_validation import (
     validate_policy_input,
     validate_governance_input
 )
-    
-    config = {
-        "host": "0.0.0.0",
-        "port": SERVICE_PORT,
-        "log_level": "info",
-        "access_log": True,
-    }
-    
-    logger.info(f"🚀 Starting {SERVICE_NAME} on port {SERVICE_PORT}")
-    uvicorn.run(app, **config)
+
+config = {
+    "host": "0.0.0.0",
+    "port": SERVICE_PORT,
+    "log_level": "info",
+    "access_log": True,
+}
+
+logger.info(f"🚀 Starting {SERVICE_NAME} on port {SERVICE_PORT}")
+uvicorn.run(app, **config)

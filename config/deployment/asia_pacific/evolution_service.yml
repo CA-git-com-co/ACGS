@@ -1,0 +1,11 @@
+constitutional_hash: cdd01ef066bc6cf2
+environment_variables:
+  COMPLIANCE_FRAMEWORK: APAC_CONSTITUTIONAL_AI
+  CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+  REGION: asia_pacific
+  REGULATORY_ZONE: APAC
+port: 8205
+region: asia_pacific
+regulatory_zone: APAC
+replicas: 2
+service_name: evolution_service

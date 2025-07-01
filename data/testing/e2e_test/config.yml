@@ -1,0 +1,54 @@
+constitutional_hash: cdd01ef066bc6cf2
+databases:
+  postgresql:
+    constitutional_hash: cdd01ef066bc6cf2
+    database: acgs_test_e2e_test
+    host: localhost
+    password: test_password_123
+    port: 9250
+    replica_host: localhost
+    replica_port: 9251
+    username: acgs_test
+  redis:
+    constitutional_hash: cdd01ef066bc6cf2
+    database: 0
+    host: localhost
+    port: 9260
+environment_name: e2e_test
+isolation: namespace
+monitoring:
+  constitutional_compliance_monitoring: true
+  constitutional_hash: cdd01ef066bc6cf2
+  grafana_port: 9271
+  prometheus_port: 9270
+services:
+  audit:
+    constitutional_hash: cdd01ef066bc6cf2
+    environment: e2e_test
+    host: localhost
+    port: 9202
+  auth:
+    constitutional_hash: cdd01ef066bc6cf2
+    environment: e2e_test
+    host: localhost
+    port: 9200
+  evolution:
+    constitutional_hash: cdd01ef066bc6cf2
+    environment: e2e_test
+    host: localhost
+    port: 9204
+  formal_verification:
+    constitutional_hash: cdd01ef066bc6cf2
+    environment: e2e_test
+    host: localhost
+    port: 9205
+  hitl:
+    constitutional_hash: cdd01ef066bc6cf2
+    environment: e2e_test
+    host: localhost
+    port: 9203
+  policy:
+    constitutional_hash: cdd01ef066bc6cf2
+    environment: e2e_test
+    host: localhost
+    port: 9201

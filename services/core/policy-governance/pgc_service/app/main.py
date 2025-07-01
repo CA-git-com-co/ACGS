@@ -9,16 +9,44 @@ from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 
 
-# Import production security middleware
+# Import standardized security middleware
 try:
     import sys
-    sys.path.append('/home/ubuntu/ACGS/services/shared')
-    from security_middleware import apply_production_security_middleware, create_security_config
+    import os
+    from pathlib import Path
+
+    # Add project root to path
+    project_root = Path(__file__).parent.parent.parent.parent.parent.absolute()
+    sys.path.insert(0, str(project_root))
+
+    from services.shared.security.standardized_security import (
+        apply_standardized_security,
+        create_health_endpoint_response,
+        validate_policy_input,
+        validate_governance_input,
+        create_security_headers,
+        CONSTITUTIONAL_HASH
+    )
     SECURITY_MIDDLEWARE_AVAILABLE = True
-    print("✅ Production security middleware loaded successfully")
+    print("✅ Standardized security middleware loaded successfully")
 except ImportError as e:
-    print(f"⚠️ Production security middleware not available: {e}")
+    print(f"⚠️ Standardized security middleware not available: {e}")
     SECURITY_MIDDLEWARE_AVAILABLE = False
+
+    # Create fallback functions
+    def apply_standardized_security(app, service_name, service_version="3.0.0"):
+        return app
+
+    def create_health_endpoint_response(service_name, service_version="3.0.0"):
+        return {"status": "healthy", "service_name": service_name}
+
+    def validate_policy_input(func):
+        return func
+
+    def validate_governance_input(func):
+        return func
+
+    CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -69,16 +97,10 @@ app = FastAPI(
     redoc_url="/redoc",
     lifespan=lifespan,
 )
-# Apply production-grade security middleware
+# Apply standardized security middleware
 if SECURITY_MIDDLEWARE_AVAILABLE:
-    security_config = create_security_config(
-        max_request_size=10 * 1024 * 1024,  # 10MB
-        rate_limit_requests=120,
-        rate_limit_window=60,
-        enable_threat_detection=True
-    )
-    apply_production_security_middleware(app, "pgc_service", security_config)
-    print(f"✅ Production security middleware applied to pgc service")
+    app = apply_standardized_security(app, "pgc_service", SERVICE_VERSION)
+    print(f"✅ Standardized security middleware applied to pgc service")
 else:
     print(f"⚠️ Security middleware not available for pgc service")
 
@@ -419,19 +441,12 @@ async def get_performance_health():
 if __name__ == "__main__":
     import uvicorn
 
-# Security validation imports
-from services.shared.security_validation import (
-    validate_user_input,
-    validate_policy_input,
-    validate_governance_input
-)
-    
     config = {
         "host": "0.0.0.0",
         "port": SERVICE_PORT,
         "log_level": "info",
         "access_log": True,
     }
-    
+
     logger.info(f"🚀 Starting {SERVICE_NAME} on port {SERVICE_PORT}")
     uvicorn.run(app, **config)

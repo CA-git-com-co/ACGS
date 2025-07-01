@@ -16,15 +16,11 @@ const responseTime = new Trend('response_time');
 const constitutionalCompliance = new Rate('constitutional_compliance');
 const throughputCounter = new Counter('requests_per_second');
 
-// ACGS services configuration
+// ACGS services configuration - Updated for current running services
 const services = {
-    'auth-service': 8000,
-    'ac-service': 8001,
-    'integrity-service': 8002,
-    'fv-service': 8003,
-    'gs-service': 8004,
-    'pgc-service': 8005,
-    'ec-service': 8006
+    'auth-service': 8022,
+    'pgc-service': 8003,
+    'hitl-service': 8023
 };
 
 // Load test scenarios

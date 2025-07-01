@@ -1,0 +1,42 @@
+constitutional_hash: cdd01ef066bc6cf2
+databases:
+  postgresql:
+    constitutional_hash: cdd01ef066bc6cf2
+    database: acgs_test_integration_test
+    host: localhost
+    password: test_password_123
+    port: 9150
+    username: acgs_test
+  redis:
+    constitutional_hash: cdd01ef066bc6cf2
+    database: 0
+    host: localhost
+    port: 9160
+environment_name: integration_test
+isolation: container
+monitoring:
+  constitutional_compliance_monitoring: true
+  constitutional_hash: cdd01ef066bc6cf2
+  grafana_port: 9171
+  prometheus_port: 9170
+services:
+  audit:
+    constitutional_hash: cdd01ef066bc6cf2
+    environment: integration_test
+    host: localhost
+    port: 9102
+  auth:
+    constitutional_hash: cdd01ef066bc6cf2
+    environment: integration_test
+    host: localhost
+    port: 9100
+  hitl:
+    constitutional_hash: cdd01ef066bc6cf2
+    environment: integration_test
+    host: localhost
+    port: 9103
+  policy:
+    constitutional_hash: cdd01ef066bc6cf2
+    environment: integration_test
+    host: localhost
+    port: 9101

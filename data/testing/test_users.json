@@ -1,0 +1,16 @@
+[
+  {
+    "id": "user_001",
+    "username": "test_admin",
+    "role": "administrator",
+    "constitutional_clearance": true,
+    "constitutional_hash": "cdd01ef066bc6cf2"
+  },
+  {
+    "id": "user_002",
+    "username": "test_user",
+    "role": "user",
+    "constitutional_clearance": false,
+    "constitutional_hash": "cdd01ef066bc6cf2"
+  }
+]

@@ -1,0 +1,350 @@
+# ACGS Enhanced Security Configuration
+# Advanced security hardening settings for production deployment
+# Version: 2.0 - Constitutional Governance Compliant
+
+# Service Configuration
+service:
+  name: 'acgs-enhanced'
+  version: '3.1.0'
+  environment: 'production'
+  constitutional_hash: 'cdd01ef066bc6cf2'
+  security_framework_version: '2.0'
+  last_security_update: '2025-07-01'
+  compliance_standards: ['SOC2', 'GDPR', 'HIPAA', 'FedRAMP']
+
+# Advanced Authentication Configuration
+authentication:
+  # Enhanced JWT Configuration
+  jwt:
+    algorithm: 'HS256'
+    expiration_hours: 8
+    refresh_expiration_days: 7
+    issuer: 'acgs-auth-service'
+    audience: 'acgs-services'
+    key_rotation_days: 30
+    require_constitutional_hash: true
+    min_key_length: 256
+    
+  # Enhanced API Key Configuration
+  api_keys:
+    enabled: true
+    expiration_days: 30
+    rotation_enabled: true
+    auto_rotation: true
+    min_length: 64
+    require_scoping: true
+    rate_limit_per_key: 1000
+    
+  # Multi-Factor Authentication
+  mfa:
+    enabled: true
+    required_for_admin: true
+    required_for_sensitive_ops: true
+    methods: ['totp', 'webauthn', 'hardware_key']
+    backup_codes: true
+    max_attempts: 3
+    lockout_duration_minutes: 30
+    
+  # Enhanced Session Management
+  sessions:
+    timeout_minutes: 15
+    max_concurrent: 3
+    secure_cookies: true
+    httponly_cookies: true
+    samesite: 'strict'
+    session_binding: true
+    ip_validation: true
+
+# Advanced Encryption Configuration
+encryption:
+  # Data at Rest
+  data_at_rest:
+    enabled: true
+    algorithm: 'AES-256-GCM'
+    key_rotation_days: 90
+    backup_encryption: true
+    
+  # Data in Transit
+  data_in_transit:
+    tls_version: '1.3'
+    cipher_suites: ['TLS_AES_256_GCM_SHA384', 'TLS_CHACHA20_POLY1305_SHA256']
+    certificate_validation: 'strict'
+    hsts_enabled: true
+    hsts_max_age: 31536000
+    
+  # Key Management
+  key_management:
+    provider: 'internal'  # internal, vault, aws-kms, azure-kv
+    key_derivation: 'PBKDF2'
+    key_stretching_iterations: 100000
+    master_key_rotation_days: 180
+
+# Advanced Input Validation
+input_validation:
+  enabled: true
+  strict_mode: true
+  max_request_size: 10485760  # 10MB
+  max_json_depth: 10
+  max_array_length: 1000
+  max_string_length: 10000
+  
+  # Malicious Pattern Detection
+  pattern_detection:
+    sql_injection: true
+    xss_detection: true
+    command_injection: true
+    path_traversal: true
+    ldap_injection: true
+    
+  # Content Type Validation
+  content_types:
+    allowed: ['application/json', 'application/x-www-form-urlencoded', 'multipart/form-data']
+    charset_validation: true
+    
+  # File Upload Security
+  file_uploads:
+    enabled: true
+    max_file_size: 5242880  # 5MB
+    allowed_extensions: ['.jpg', '.jpeg', '.png', '.pdf', '.txt']
+    virus_scanning: true
+    content_type_validation: true
+
+# Advanced Rate Limiting
+rate_limiting:
+  enabled: true
+  adaptive_limits: true
+  
+  # Global Limits
+  global:
+    requests_per_minute: 1000
+    requests_per_hour: 10000
+    burst_capacity: 100
+    
+  # Per-IP Limits
+  per_ip:
+    requests_per_minute: 100
+    requests_per_hour: 1000
+    burst_capacity: 20
+    
+  # Per-User Limits
+  per_user:
+    requests_per_minute: 200
+    requests_per_hour: 2000
+    burst_capacity: 50
+    
+  # Endpoint-Specific Limits
+  endpoints:
+    '/api/v1/auth/login':
+      requests_per_minute: 5
+      requests_per_hour: 20
+    '/api/v1/admin/*':
+      requests_per_minute: 10
+      requests_per_hour: 100
+
+# Advanced Security Headers
+security_headers:
+  enabled: true
+  
+  # Core Security Headers
+  headers:
+    'X-Content-Type-Options': 'nosniff'
+    'X-Frame-Options': 'DENY'
+    'X-XSS-Protection': '1; mode=block'
+    'Referrer-Policy': 'strict-origin-when-cross-origin'
+    'Permissions-Policy': 'geolocation=(), microphone=(), camera=(), payment=(), usb=()'
+    
+  # Content Security Policy
+  csp:
+    enabled: true
+    policy: |
+      default-src 'self';
+      script-src 'self' 'unsafe-inline';
+      style-src 'self' 'unsafe-inline';
+      img-src 'self' data: https:;
+      font-src 'self' https:;
+      connect-src 'self' https:;
+      frame-ancestors 'none';
+      base-uri 'self';
+      form-action 'self'
+    report_uri: '/api/v1/security/csp-report'
+    
+  # HTTP Strict Transport Security
+  hsts:
+    enabled: true
+    max_age: 31536000
+    include_subdomains: true
+    preload: true
+
+# Advanced Threat Detection
+threat_detection:
+  enabled: true
+  real_time_monitoring: true
+  
+  # Behavioral Analysis
+  behavioral_analysis:
+    enabled: true
+    learning_period_days: 30
+    anomaly_threshold: 0.8
+    
+  # Attack Pattern Detection
+  attack_patterns:
+    brute_force:
+      enabled: true
+      threshold: 5
+      window_minutes: 10
+      action: 'block_ip'
+      
+    credential_stuffing:
+      enabled: true
+      threshold: 10
+      window_minutes: 5
+      action: 'rate_limit'
+      
+    bot_detection:
+      enabled: true
+      user_agent_analysis: true
+      request_pattern_analysis: true
+      
+  # Geolocation Filtering
+  geolocation:
+    enabled: false  # Enable if needed
+    allowed_countries: ['US', 'CA', 'GB', 'DE', 'FR']
+    blocked_countries: []
+
+# Advanced Audit and Logging
+audit_logging:
+  enabled: true
+  comprehensive_logging: true
+  
+  # Log Levels
+  security_events: 'INFO'
+  authentication_events: 'INFO'
+  authorization_events: 'INFO'
+  data_access_events: 'INFO'
+  admin_actions: 'WARNING'
+  
+  # Log Retention
+  retention:
+    security_logs_days: 365
+    audit_logs_days: 2555  # 7 years
+    access_logs_days: 90
+    
+  # Log Encryption
+  log_encryption:
+    enabled: true
+    algorithm: 'AES-256-GCM'
+    
+  # SIEM Integration
+  siem_integration:
+    enabled: false
+    format: 'json'
+    endpoint: 'https://siem.example.com/api/logs'
+
+# Constitutional Compliance
+constitutional_compliance:
+  enabled: true
+  hash: 'cdd01ef066bc6cf2'
+  validation_required: true
+  
+  # Governance Controls
+  governance:
+    policy_validation: true
+    decision_auditing: true
+    compliance_monitoring: true
+    
+  # Constitutional Headers
+  headers:
+    'X-Constitutional-Hash': 'cdd01ef066bc6cf2'
+    'X-Governance-Framework': 'ACGS-Constitutional-v1.0'
+    'X-Compliance-Status': 'validated'
+
+# Advanced Network Security
+network_security:
+  # Firewall Configuration
+  firewall:
+    enabled: true
+    default_policy: 'deny'
+    allowed_ports: [80, 443, 8000, 8001, 8002, 8003, 8004, 8005, 8006]
+    
+  # DDoS Protection
+  ddos_protection:
+    enabled: true
+    rate_limiting: true
+    connection_limiting: true
+    syn_flood_protection: true
+    
+  # IP Filtering
+  ip_filtering:
+    enabled: true
+    whitelist_mode: false
+    blocked_ips: []
+    trusted_proxies: ['127.0.0.1', '::1']
+
+# Compliance and Monitoring
+compliance:
+  # Automated Compliance Checks
+  automated_checks:
+    enabled: true
+    schedule: '0 2 * * *'  # Daily at 2 AM
+    
+  # Compliance Standards
+  standards:
+    soc2:
+      enabled: true
+      controls: ['CC6.1', 'CC6.2', 'CC6.3', 'CC6.6', 'CC6.7']
+      
+    gdpr:
+      enabled: true
+      data_protection: true
+      right_to_deletion: true
+      consent_management: true
+      
+    hipaa:
+      enabled: true
+      phi_protection: true
+      access_controls: true
+      audit_logging: true
+      
+  # Security Metrics
+  metrics:
+    enabled: true
+    collection_interval_minutes: 5
+    retention_days: 90
+    
+    # Key Metrics
+    tracked_metrics:
+      - 'authentication_failures'
+      - 'authorization_failures'
+      - 'security_events'
+      - 'threat_detections'
+      - 'compliance_violations'
+
+# Incident Response
+incident_response:
+  enabled: true
+  
+  # Automated Response
+  automated_response:
+    enabled: true
+    block_malicious_ips: true
+    rate_limit_suspicious_users: true
+    alert_security_team: true
+    
+  # Escalation Procedures
+  escalation:
+    critical: 'immediate'
+    high: '15_minutes'
+    medium: '1_hour'
+    low: '24_hours'
+    
+  # Communication Channels
+  communication:
+    primary: 'slack'
+    backup: 'email'
+    emergency: 'phone'
+    
+  # Contact Information
+  contacts:
+    security_team: 'security@acgs.com'
+    platform_team: 'platform@acgs.com'
+    on_call: 'oncall@acgs.com'

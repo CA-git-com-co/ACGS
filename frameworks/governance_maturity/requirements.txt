@@ -1,0 +1,47 @@
+# ACGS Governance Maturity Framework Requirements
+
+# Core FastAPI and web framework
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+
+# Data processing and analysis
+pandas==2.1.4
+numpy==1.24.4
+
+# Database support
+asyncpg==0.29.0
+sqlalchemy[asyncio]==2.0.23
+
+# Authentication and security
+PyJWT==2.8.0
+cryptography==41.0.8
+python-multipart==0.0.6
+
+# HTTP client for integrations
+requests==2.31.0
+httpx==0.25.2
+
+# Data visualization (for reports)
+matplotlib==3.8.2
+plotly==5.17.0
+
+# Document generation
+reportlab==4.0.7
+jinja2==3.1.2
+
+# Email notifications
+aiosmtplib==3.0.1
+
+# Caching
+redis==5.0.1
+
+# Monitoring and logging
+prometheus-client==0.19.0
+
+# Development and testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+black==23.11.0
+flake8==6.1.0
