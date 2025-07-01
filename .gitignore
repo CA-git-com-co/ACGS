@@ -760,6 +760,13 @@ security-report.json
 # Additional Rust build artifacts (Tauri/Claudia specific)
 claudia-acgs/src-tauri/target/
 
+# Blockchain test ledger files (large binary files)
+blockchain/.anchor/test-ledger/
+blockchain/test-ledger/
+**/test-ledger/
+**/*.bin
+**/*.dat
+
 # Additional temporary files
 *.tmp
 *.temp
