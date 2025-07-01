@@ -143,7 +143,7 @@ def main():
         config_path = sys.argv[1]
     else:
         # Default path
-        config_path = os.path.join(os.path.dirname(__file__), "router-controller", "config.yml")
+        config_path = os.path.join(os.path.dirname(__file__), "router_controller", "config.yml")
 
     print("🔍 Validating NVIDIA LLM Router Configuration")
     print(f"📁 Config file: {config_path}")

@@ -221,7 +221,7 @@ POLICY_SYNTHESIS_MODEL=nvidia/llama-3.1-nemotron-70b-instruct
 
 ### Routing Configuration
 
-The routing policies are defined in `services/platform/nvidia-llm-router/router-controller/config.yml`:
+The routing policies are defined in `services/platform/nvidia-llm-router/router_controller/config.yml`:
 
 ```yaml
 # Task-based routing example
@@ -474,6 +474,6 @@ nvidia_llm_router_server_2:
 For issues and questions:
 
 1. Check the service logs: `docker logs acgs_nvidia_llm_router_server`
-2. Verify configuration: Review `router-controller/config.yml`
+2. Verify configuration: Review `router_controller/config.yml`
 3. Test connectivity: Use health check endpoints
 4. Monitor metrics: Check Prometheus metrics for performance issues
