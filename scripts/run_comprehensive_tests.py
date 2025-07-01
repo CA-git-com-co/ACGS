@@ -175,6 +175,10 @@ class TestRunner:
             with open(coverage_file) as f:
                 coverage_data = json.load(f)
                 self.coverage_results = self._parse_coverage_data(coverage_data)
+        else:
+            print(
+                "coverage.json not found. Run tests with coverage to generate it."
+            )
 
         return results
 

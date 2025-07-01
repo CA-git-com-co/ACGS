@@ -33,6 +33,19 @@ python -m pytest
 
 # Run with coverage
 python -m pytest --cov=services --cov-report=html
+# Generate JSON coverage report
+python -m pytest --cov=services --cov-report=json:coverage.json
+```
+
+### Generating Local Artifacts
+Some files are not stored in the repository. Generate them locally when needed:
+
+```bash
+# Train the ML routing optimizer and create data/ml_routing_models.joblib
+python scripts/generate_ml_routing_models.py
+
+# Produce coverage.json for analysis tools
+python -m pytest --cov=services --cov-report=json:coverage.json
 ```
 
 ## Development
