@@ -1,9 +1,0 @@
-FROM python:3.11-slim
-
-WORKDIR /app
-
-RUN pip install httpx prometheus-client
-
-COPY scripts/constitutional_monitor.py .
-
-CMD ["python", "constitutional_monitor.py"]
