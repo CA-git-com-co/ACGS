@@ -1,12 +1,12 @@
-# ACGS-2 Minimal Branch
+# ACGS-2 Minimal - AI Constitutional Governance System
 
-This is a minimal, production-ready branch of the ACGS-2 (AI Constitutional Governance System) containing only the core working systems and services with minimal code footprint.
+This is a minimal, production-ready branch of the ACGS-2 (AI Constitutional Governance System) containing only the core working systems and services with optimized file organization.
 
-## Architecture Overview
+## 🏗️ Architecture Overview
 
 ### Core Services
 - **Constitutional AI Service (AC)** - Port 8001: Constitutional compliance validation
-- **Formal Verification Service (FV)** - Port 8003: Formal proofs and verification
+- **Formal Verification Service (FV)** - Port 8003: Formal proofs and verification  
 - **Governance Synthesis Service (GS)** - Port 8004: Policy synthesis and governance
 - **Policy Governance Compliance Service (PGC)** - Port 8005: Compliance monitoring
 - **Evolutionary Computation Service (EC)** - Port 8006: Evolutionary algorithms and WINA
@@ -21,11 +21,76 @@ This is a minimal, production-ready branch of the ACGS-2 (AI Constitutional Gove
 - **Consensus Engine**: 7 consensus algorithms for conflict resolution
 - **Blackboard Service**: Redis-based shared knowledge system
 
-### CLI Tools
-- **Gemini CLI**: Core ACGS command-line interface
-- **OpenCode Adapter**: Terminal-based AI coding assistant integration
+## 📁 Project Structure
 
-## Quick Start
+```
+ACGS-2/
+├── README.md                    # This file
+├── CHANGELOG.md                 # Version history
+├── LICENSE                      # License file
+├── requirements.txt             # Core dependencies
+├── pyproject.toml              # Python project configuration
+├── .gitignore                  # Git ignore rules
+├── 
+├── services/                    # Core services
+│   ├── core/                   # Core AI services
+│   │   ├── constitutional-ai/   # Constitutional AI service
+│   │   ├── formal-verification/ # Formal verification service
+│   │   ├── governance-synthesis/ # Governance synthesis service
+│   │   ├── policy-governance/   # Policy governance service
+│   │   ├── evolutionary-computation/ # Evolutionary computation service
+│   │   ├── multi_agent_coordinator/ # Multi-agent coordinator
+│   │   ├── worker_agents/       # Worker agents (Ethics, Legal, Operational)
+│   │   └── consensus_engine/    # Consensus mechanisms
+│   ├── platform_services/      # Platform services
+│   │   ├── authentication/     # Authentication service
+│   │   └── integrity/          # Integrity service
+│   ├── shared/                 # Shared components
+│   │   ├── blackboard/         # Blackboard service
+│   │   ├── wina/              # WINA performance optimization
+│   │   ├── service_mesh/      # Service mesh components
+│   │   └── cache/             # Caching infrastructure
+│   └── cli/                   # CLI tools
+│       ├── gemini_cli/        # Core ACGS CLI
+│       └── opencode_adapter/  # OpenCode integration
+├── 
+├── config/                     # Configuration management
+│   ├── docker/                # Docker configurations
+│   ├── environments/          # Environment-specific configs
+│   └── monitoring/            # Monitoring configurations
+├── 
+├── docs/                      # Documentation
+│   ├── api/                   # API documentation
+│   ├── deployment/            # Deployment guides
+│   ├── operations/            # Operational guides
+│   ├── security/              # Security documentation
+│   └── architecture/          # Architecture documentation
+├── 
+├── tests/                     # Test infrastructure
+│   ├── unit/                  # Unit tests
+│   ├── integration/           # Integration tests
+│   └── fixtures/              # Test fixtures
+├── 
+├── tools/                     # Development and operational tools
+│   ├── deployment/            # Deployment scripts
+│   ├── monitoring/            # Monitoring tools
+│   ├── security/              # Security tools
+│   ├── performance/           # Performance tools
+│   └── testing/               # Testing utilities
+├── 
+├── reports/                   # Generated reports
+│   ├── security/              # Security scan results
+│   ├── performance/           # Performance reports
+│   ├── compliance/            # Compliance reports
+│   └── deployment/            # Deployment reports
+├── 
+└── infrastructure/            # Infrastructure as code
+    ├── k8s/                   # Kubernetes manifests
+    ├── gitops/                # GitOps configurations
+    └── docker/                # Docker infrastructure
+```
+
+## 🚀 Quick Start
 
 ### Prerequisites
 - Docker and Docker Compose
@@ -38,7 +103,7 @@ This is a minimal, production-ready branch of the ACGS-2 (AI Constitutional Gove
 1. **Clone and setup**
    ```bash
    git clone <repository>
-   cd ACGS-2-minimal
+   cd ACGS-2
    python -m venv .venv
    source .venv/bin/activate
    pip install -r requirements.txt
@@ -46,7 +111,7 @@ This is a minimal, production-ready branch of the ACGS-2 (AI Constitutional Gove
 
 2. **Start infrastructure**
    ```bash
-   docker-compose up -d postgres redis
+   docker-compose -f config/docker/docker-compose.yml up -d postgres redis
    ```
 
 3. **Run database migrations**
@@ -57,7 +122,7 @@ This is a minimal, production-ready branch of the ACGS-2 (AI Constitutional Gove
 
 4. **Start services**
    ```bash
-   docker-compose up -d
+   docker-compose -f config/docker/docker-compose.yml up -d
    ```
 
 ### Service Endpoints
@@ -79,7 +144,7 @@ curl http://localhost:8002/health
 curl http://localhost:8003/health
 ```
 
-## Testing
+## 🧪 Testing
 
 ### Run Core Tests
 ```bash
@@ -93,7 +158,7 @@ pytest tests/unit/multi_agent_coordination/ -v
 pytest tests/integration/multi_agent_coordination/ -v
 ```
 
-## Configuration
+## ⚙️ Configuration
 
 ### Environment Variables
 - `DATABASE_URL`: PostgreSQL connection string
@@ -105,56 +170,49 @@ pytest tests/integration/multi_agent_coordination/ -v
 ### Service Configuration
 Each service has its own configuration in `services/*/config/` directories.
 
-## Performance Targets
+## 📊 Performance Targets
 
 - **Throughput**: ≥5 governance requests/second
 - **Latency**: P99 ≤2000ms for governance decisions
 - **Availability**: ≥99.5% uptime
 - **Constitutional Compliance**: ≥90% accuracy
 
-## Key Features
+## 🔧 Development
 
-### Multi-Agent Coordination
-- Hybrid Hierarchical-Blackboard Policy implementation
-- Real-time consensus mechanisms
-- Constitutional oversight integration
-- Performance monitoring with WINA
+### Adding New Services
+1. Create service in appropriate `services/` subdirectory
+2. Add configuration to `config/`
+3. Update `docker-compose.yml`
+4. Add tests to `tests/`
+5. Update documentation in `docs/`
 
-### Constitutional AI Integration
-- O(1) lookup patterns for constitutional principles
-- Sub-5ms P99 latency for compliance checks
-- Multi-model AI provider support
-- Hash-based validation caching
+### Deployment
+- **Development**: Use `config/docker/docker-compose.yml`
+- **Production**: See `docs/deployment/` for guides
+- **Monitoring**: Configure in `config/monitoring/`
 
-### Security & Compliance
-- End-to-end encryption
-- Multi-factor authentication
-- Comprehensive audit logging
-- Regulatory compliance frameworks
+## 📚 Documentation
 
-## Deployment
+- **API Reference**: `docs/api/`
+- **Deployment Guides**: `docs/deployment/`
+- **Operations**: `docs/operations/`
+- **Security**: `docs/security/`
+- **Architecture**: `docs/architecture/`
 
-### Production Deployment
-```bash
-# Build images
-docker-compose build
+## 🛠️ Tools
 
-# Deploy with production settings
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-```
+- **Deployment**: `tools/deployment/`
+- **Monitoring**: `tools/monitoring/`
+- **Security**: `tools/security/`
+- **Performance**: `tools/performance/`
+- **Testing**: `tools/testing/`
 
-### Scaling
-- Services are designed for horizontal scaling
-- Database read replicas supported
-- Redis cluster integration available
-- Kubernetes manifests included
-
-## Monitoring
+## 📈 Monitoring
 
 ### Metrics & Observability
 - Prometheus metrics on `/metrics` endpoints
 - OpenTelemetry tracing
-- Grafana dashboards included
+- Grafana dashboards in `config/monitoring/`
 - Health check endpoints on `/health`
 
 ### Performance Monitoring
@@ -166,11 +224,33 @@ curl http://localhost:8001/metrics
 curl http://localhost:8001/api/v1/performance/metrics
 ```
 
-## Support
+## 🔒 Security
 
-For issues and support:
-- Check service logs: `docker-compose logs <service-name>`
-- Review health checks: `curl http://localhost:<port>/health`
-- Run diagnostics: `python tests/multi_agent_test_runner.py`
+- End-to-end encryption
+- Multi-factor authentication
+- Comprehensive audit logging
+- Regulatory compliance frameworks
+- Security tools in `tools/security/`
 
-This minimal branch provides all core ACGS-2 functionality with approximately 70% less code while maintaining full production readiness.
+## 🤝 Contributing
+
+1. Read `docs/development/`
+2. Follow file organization guidelines
+3. Add tests for new features
+4. Update documentation
+5. Run security scans: `tools/security/`
+
+## 📝 License
+
+See `LICENSE` file for details.
+
+## 🆘 Support
+
+- **Documentation**: Check `docs/`
+- **Service Logs**: `docker-compose logs <service-name>`
+- **Health Checks**: `curl http://localhost:<port>/health`
+- **Diagnostics**: `python tests/multi_agent_test_runner.py`
+
+---
+
+This minimal branch provides all core ACGS-2 functionality with approximately 70% less code while maintaining full production readiness and improved organization.
