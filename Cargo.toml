@@ -1,9 +1,5 @@
 [workspace]
-members = [
-    "blockchain/programs/quantumagi-core",
-    "blockchain/programs/appeals",
-    "blockchain/programs/logging"
-]
+members = [ "blockchain/programs/quantumagi-core", "blockchain/programs/appeals", "blockchain/programs/logging",]
 
 [workspace.dependencies]
 anchor-lang = "0.29.0"

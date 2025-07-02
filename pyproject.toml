@@ -1,9 +1,6 @@
 [build-system]
-requires = ["hatchling"]
+requires = [ "hatchling",]
 build-backend = "hatchling.build"
-
-[tool.hatch.metadata]
-allow-direct-references = true
 
 [project]
 name = "acgs-pgp"
@@ -12,179 +9,26 @@ description = "ACGS-PGP: Advanced Constitutional Governance System with Pragmati
 readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.10"
-authors = [
-    { name = "ACGS Team", email = "info@soln.ai" },
-    { name = "Martin Lyu", email = "info@soln.ai" },
-]
-keywords = [
-    "acgs",
-    "constitutional",
-    "governance",
-    "ai",
-    "blockchain",
-    "solana",
-    "monorepo",
-    "workspace"
-]
-classifiers = [
-    "Development Status :: 4 - Beta",
-    "Intended Audience :: Developers",
-    "License :: OSI Approved :: Apache Software License",
-    "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Topic :: Scientific/Engineering :: Artificial Intelligence",
-    "Topic :: Software Development :: Libraries :: Python Modules",
-]
+keywords = [ "acgs", "constitutional", "governance", "ai", "blockchain", "solana", "monorepo", "workspace",]
+classifiers = [ "Development Status :: 4 - Beta", "Intended Audience :: Developers", "License :: OSI Approved :: Apache Software License", "Operating System :: OS Independent", "Programming Language :: Python :: 3", "Programming Language :: Python :: 3.11", "Programming Language :: Python :: 3.12", "Topic :: Scientific/Engineering :: Artificial Intelligence", "Topic :: Software Development :: Libraries :: Python Modules",]
+dependencies = [ "fastapi>=0.115.6", "uvicorn[standard]>=0.34.0", "pydantic>=2.10.5", "pydantic-settings>=2.7.1", "httpx>=0.28.1", "redis>=5.0.1", "asyncpg>=0.29.0", "sqlalchemy[asyncio]>=2.0.23", "alembic>=1.13.0", "cryptography>=45.0.4", "pyjwt[crypto]>=2.10.0", "python-jose[cryptography]>=3.3.0", "prometheus-client>=0.19.0", "opentelemetry-api>=1.34.1", "opentelemetry-sdk>=1.34.1", "anthropic>=0.8.0", "openai>=1.3.0", "groq>=0.4.0", "torch>=2.7.1", "transformers>=4.35.0", "aiohttp>=3.9.0", "aiofiles>=23.0.0", "python-dotenv>=1.0.0", "pyyaml>=6.0.1", "click>=8.1.7", "rich>=13.6.0", "typer>=0.9.0",]
+dynamic = []
+[[project.authors]]
+name = "ACGS Team"
+email = "info@soln.ai"
 
-dependencies = [
-    # Core Framework
-    "fastapi>=0.115.6",
-    "uvicorn[standard]>=0.34.0",
-    "pydantic>=2.10.5",
-    "pydantic-settings>=2.7.1",
-    "httpx>=0.28.1",
-
-    # Database & Storage
-    "redis>=5.0.1",
-    "asyncpg>=0.29.0",
-    "sqlalchemy[asyncio]>=2.0.23",
-    "alembic>=1.13.0",
-    "psycopg2-binary>=2.9.7",
-
-    # Authentication & Security
-    "cryptography>=45.0.4",  # Security fix: updated to address OpenSSL vulnerabilities
-    "pyjwt[crypto]>=2.10.0",
-    "python-jose[cryptography]>=3.3.0",
-    "passlib[bcrypt]>=1.7.4",
-    "python-multipart>=0.0.10",
-
-    # Monitoring & Observability
-    "prometheus-client>=0.19.0",
-    "opentelemetry-api==1.34.1",
-    "opentelemetry-sdk==1.34.1",
-    "opentelemetry-instrumentation-fastapi==0.55b1",
-
-    # AI/ML Models & Frameworks
-    "anthropic>=0.8.0",
-    "openai>=1.3.0",
-    "google-generativeai>=0.3.0",
-    "groq>=0.4.0",  # Added missing dependency used in services
-    "torch>=2.7.3",  # Security fix: use stable version without known vulnerabilities
-    "transformers>=4.35.0",
-    "sentence-transformers>=2.2.2",  # Added missing dependency
-    "numpy>=1.24.0,<=2.2.6",
-    "scipy>=1.10.0",
-
-    # NeMo-Skills moved to optional dependencies due to conflicts
-
-    # Utilities & CLI
-    "python-dotenv>=1.0.0",
-    "pyyaml>=6.0.1",
-    "click>=8.1.7",
-    "rich>=13.6.0",
-    "typer>=0.9.0",
-    "jinja2>=3.1.0",
-    "aiofiles>=23.0.0",
-
-    # Data Processing
-    "pandas>=2.0.0",
-    "polars>=0.20.0",
-    "pyarrow>=12.0.0",
-
-    # Networking & Communication
-    "websockets>=11.0.0",
-    "aioredis>=2.0.0",
-    "aiohttp>=3.9.0",  # Added missing dependency used in services
-    "celery>=5.3.0",
-
-    # Configuration & Validation
-    "jsonschema>=4.17.0",
-    "marshmallow>=3.19.0",
-    "cerberus>=1.3.4",
-]
+[[project.authors]]
+name = "Martin Lyu"
+email = "info@soln.ai"
 
 [project.optional-dependencies]
-# Development dependencies
-dev = [
-    "pytest>=7.4.3",
-    "pytest-asyncio>=0.21.1",
-    "pytest-cov>=4.1.0",
-    "pytest-mock>=3.14.1",
-    "pytest-xdist>=3.7.0",
-    "pytest-faker>=2.0.0",
-    "coverage[toml]>=7.3.2",
-    "black>=23.11.0",
-    "isort>=5.12.0",
-    "ruff>=0.1.6",  # Replaces flake8 with better performance and features
-    "mypy>=1.7.0",
-    "pre-commit>=3.4.0",
-    "bandit>=1.7.5",
-    "safety>=2.3.0",
-    "locust>=2.17.0",  # For performance testing
-    "memory-profiler>=0.61.0",  # For memory profiling
-]
-
-# Testing dependencies
-test = [
-    "pytest>=7.4.3",
-    "pytest-asyncio>=0.21.1",
-    "pytest-cov>=4.1.0",
-    "pytest-mock>=3.14.1",
-    "pytest-xdist>=3.7.0",
-    "pytest-faker>=2.0.0",
-    "httpx>=0.28.1",
-    "faker>=19.0.0",
-    "coverage[toml]>=7.3.2",
-    "factory-boy>=3.3.0",
-    "responses>=0.23.3",
-    "freezegun>=1.2.2",
-]
-
-# ML/AI specific dependencies
-ml = [
-    "scikit-learn>=1.3.0",
-    "xgboost>=1.7.0",
-    "lightgbm>=4.0.0",
-    "optuna>=3.3.0",
-    "mlflow>=2.6.0",
-    "wandb>=0.15.0",
-    "tensorboard>=2.14.0",
-]
-
-# NVIDIA NeMo-Skills (disabled temporarily due to dependency conflicts)
-# nemo = [
-#     "nemo-skills @ git+https://github.com/NVIDIA/NeMo-Skills.git",
-# ]
-
-# Blockchain dependencies
-blockchain = [
-    "web3>=6.9.0",
-    "eth-account>=0.9.0",
-    "solana>=0.30.0",
-    "solders>=0.18.0",
-]
-
-# Documentation dependencies
-docs = [
-    "sphinx>=7.1.0",
-    "sphinx-rtd-theme>=1.3.0",
-    "myst-parser>=2.0.0",
-    "sphinx-autodoc-typehints>=1.24.0",
-    "sphinx-copybutton>=0.5.2",
-]
-
-# Production dependencies
-prod = [
-    "gunicorn>=21.2.0",
-    "supervisor>=4.2.5",
-]
-
-# All dependencies for complete development environment
-all = [
-    "acgs-pgp[dev,test,ml,blockchain,docs,prod]"
-]
+dev = [ "pytest>=7.4.3", "pytest-asyncio>=0.21.1", "pytest-cov>=4.1.0", "pytest-mock>=3.14.1", "pytest-xdist>=3.7.0", "pytest-faker>=2.0.0", "coverage[toml]>=7.3.2", "black>=23.11.0", "isort>=5.12.0", "ruff>=0.1.6", "mypy>=1.7.0", "pre-commit>=3.4.0", "bandit>=1.7.5", "safety>=2.3.0", "locust>=2.17.0", "memory-profiler>=0.61.0",]
+test = [ "pytest>=7.4.3", "pytest-asyncio>=0.21.1", "pytest-cov>=4.1.0", "pytest-mock>=3.14.1", "pytest-xdist>=3.7.0", "pytest-faker>=2.0.0", "httpx>=0.28.1", "faker>=19.0.0", "coverage[toml]>=7.3.2", "factory-boy>=3.3.0", "responses>=0.23.3", "freezegun>=1.2.2",]
+ml = [ "scikit-learn>=1.3.0", "xgboost>=1.7.0", "lightgbm>=4.0.0", "optuna>=3.3.0", "mlflow>=2.6.0", "wandb>=0.15.0", "tensorboard>=2.14.0",]
+blockchain = [ "web3>=6.9.0", "eth-account>=0.9.0", "solana>=0.30.0", "solders>=0.18.0",]
+docs = [ "sphinx>=7.1.0", "sphinx-rtd-theme>=1.3.0", "myst-parser>=2.0.0", "sphinx-autodoc-typehints>=1.24.0", "sphinx-copybutton>=0.5.2",]
+prod = [ "gunicorn>=21.2.0", "supervisor>=4.2.5",]
+all = [ "acgs-pgp[dev,test,ml,blockchain,docs,prod]",]
 
 [project.urls]
 Homepage = "https://github.com/CA-git-com-co/ACGS"
@@ -198,28 +42,11 @@ acgs-server = "services.main:main"
 acgs-worker = "services.worker.main:main"
 acgs-migrate = "services.database.migrate:main"
 
-[tool.hatch.build.targets.wheel]
-packages = ["services", "scripts", "tools"]
-
-
-
 [tool.black]
 line-length = 88
-target-version = ["py310", "py311", "py312"]
-include = '\.pyi?$'
-extend-exclude = '''
-/(
-  # directories
-  \.eggs
-  | \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | build
-  | dist
-)/
-'''
+target-version = [ "py310", "py311", "py312",]
+include = "\\.pyi?$"
+extend-exclude = "/(\n  # directories\n  \\.eggs\n  | \\.git\n  | \\.hg\n  | \\.mypy_cache\n  | \\.tox\n  | \\.venv\n  | build\n  | dist\n)/\n"
 
 [tool.isort]
 profile = "black"
@@ -231,7 +58,6 @@ use_parentheses = true
 ensure_newline_before_comments = true
 
 [tool.mypy]
-# Enhanced mypy configuration for enterprise code quality
 python_version = "3.10"
 strict = true
 warn_return_any = true
@@ -251,277 +77,57 @@ warn_unreachable = true
 strict_equality = true
 strict_concatenate = true
 disallow_any_unimported = true
-disallow_any_expr = false  # Too strict for practical use
-disallow_any_decorated = false  # Too strict for decorators
-warn_return_any = true
-warn_unreachable = true
+disallow_any_expr = false
+disallow_any_decorated = false
 show_error_codes = true
 show_column_numbers = true
 pretty = true
 color_output = true
-
 [[tool.mypy.overrides]]
-module = [
-    "celery.*",
-    "kombu.*",
-    "elasticsearch.*",
-    "pymongo.*",
-    "motor.*",
-    "redis.*",
-    "prometheus_client.*",
-    "anthropic.*",
-    "openai.*",
-    "google.*",
-    "groq.*",
-    "torch.*",
-    "transformers.*",
-    "sentence_transformers.*",
-    "sklearn.*",
-    "xgboost.*",
-    "lightgbm.*",
-    "optuna.*",
-    "mlflow.*",
-    "wandb.*",
-]
+module = [ "celery.*", "kombu.*", "elasticsearch.*", "pymongo.*", "motor.*", "redis.*", "prometheus_client.*", "anthropic.*", "openai.*", "google.*", "groq.*", "torch.*", "transformers.*", "sentence_transformers.*", "sklearn.*", "xgboost.*", "lightgbm.*", "optuna.*", "mlflow.*", "wandb.*",]
 ignore_missing_imports = true
 
-# Stricter settings for critical modules
 [[tool.mypy.overrides]]
-module = [
-    "services.core.*",
-    "services.shared.*",
-]
+module = [ "services.core.*", "services.shared.*",]
 disallow_any_generics = true
 disallow_untyped_defs = true
-warn_return_any = true
-
-[tool.pytest.ini_options]
-# Enhanced pytest configuration for enterprise testing
-minversion = "7.4"
-addopts = [
-    "-ra",
-    "-q", 
-    "--strict-markers",
-    "--strict-config",
-    "--tb=short",
-    "--maxfail=10",
-    "--cov=services",
-    "--cov-report=term-missing",
-    "--cov-report=html:htmlcov",
-    "--cov-report=xml",
-    "--cov-fail-under=80",
-    "--durations=10",
-    "--junitxml=reports/junit.xml",
-    "--html=reports/pytest-report.html",
-    "--self-contained-html",
-]
-testpaths = [
-    "tests",
-    "services",
-]
-python_files = [
-    "test_*.py",
-    "*_test.py",
-]
-python_classes = ["Test*"]
-python_functions = ["test_*"]
-markers = [
-    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
-    "integration: marks tests as integration tests",
-    "unit: marks tests as unit tests",
-    "e2e: marks tests as end-to-end tests",
-    "performance: marks tests as performance tests",
-    "security: marks tests as security tests",
-    "benchmark: marks tests as benchmark tests",
-    "constitutional: marks tests related to constitutional governance",
-    "timeout: set a timeout for a test",
-    "gpu: marks tests that require GPU",
-    "network: marks tests that require network access",
-    "database: marks tests that require database",
-    "redis: marks tests that require Redis",
-    "ci: marks tests that should run in CI",
-    "local: marks tests that should only run locally",
-    "smoke: marks smoke tests for quick validation",
-    "regression: marks regression tests",
-]
-filterwarnings = [
-    "ignore::DeprecationWarning",
-    "ignore::PendingDeprecationWarning",
-    "ignore::pytest.PytestUnraisableExceptionWarning",
-    "ignore::UserWarning",
-    "ignore::RuntimeWarning",
-    "error::FutureWarning",  # Treat FutureWarnings as errors
-]
-asyncio_mode = "auto"
-timeout = 300
-log_cli = true
-log_cli_level = "INFO"
-log_cli_format = "%(asctime)s [%(levelname)8s] %(name)s: %(message)s"
-log_cli_date_format = "%Y-%m-%d %H:%M:%S"
-# Performance settings
-cache_dir = ".pytest_cache"
-collect_ignore = [
-    "setup.py",
-    "docs",
-    "build",
-    "dist",
-]
-
-[tool.coverage.run]
-# Enhanced coverage configuration for enterprise quality
-source = ["services", "scripts", "core"]
-branch = true
-parallel = true
-omit = [
-    "*/tests/*",
-    "*/test_*",
-    "*_test.py",
-    "test_*.py",
-    "*/__pycache__/*",
-    "*/migrations/*",
-    "*/node_modules/*",
-    "*/venv/*",
-    "*/.venv/*",
-    "setup.py",
-    "conftest.py",
-    "*/conftest.py",
-    "*/site-packages/*",
-    "*/.tox/*",
-    "*/.pytest_cache/*",
-    "*/htmlcov/*",
-    "*/build/*",
-    "*/dist/*",
-    "*/docs/*",
-]
-data_file = ".coverage"
-context = "test"
-
-[tool.coverage.report]
-# Report configuration
-precision = 2
-skip_covered = false
-skip_empty = false
-sort = "cover"
-fail_under = 80
-show_missing = true
-exclude_lines = [
-    "pragma: no cover",
-    "pragma: nocover",
-    "def __repr__",
-    "def __str__",
-    "if self.debug:",
-    "if settings.DEBUG",
-    "if TYPE_CHECKING:",
-    "raise AssertionError",
-    "raise NotImplementedError",
-    "raise ValueError",
-    "if 0:",
-    "if False:",
-    "if __name__ == .__main__.:",
-    "class .*\\bProtocol\\):",
-    "@(abc\\.)?abstractmethod",
-    "@overload",
-    "except ImportError:",
-    "except ModuleNotFoundError:",
-    "\\.\\.\\.",  # Ellipsis
-    "pass",
-]
-
-[tool.coverage.html]
-directory = "htmlcov"
-title = "ACGS-PGP Test Coverage Report"
-show_contexts = true
-
-[tool.coverage.xml]
-output = "coverage.xml"
-
-[tool.coverage.json]
-output = "coverage.json"
-pretty_print = true
-show_contexts = true
 
 [tool.ruff]
-# Enhanced Ruff configuration for enterprise code quality
 target-version = "py310"
 line-length = 88
 preview = true
 show-fixes = true
 output-format = "grouped"
+select = [ "E", "W", "F", "I", "B", "C4", "UP", "N", "S", "T20", "PT", "RET", "SIM", "ARG", "PTH", "ERA", "PL", "RUF", "A", "BLE", "C90", "DJ", "DTZ", "EM", "FBT", "G", "ICN", "INP", "ISC", "LOG", "PERF", "PIE", "Q", "RSE", "SLF", "SLOT", "TID", "TCH", "TRY", "FLY", "NPY", "PD", "FURB",]
+ignore = [ "E501", "B008", "C901", "S101", "S603", "S607", "PLR0913", "PLR0915", "PLR2004", "RUF012", "FBT001", "FBT002", "EM101", "EM102", "TRY003", "G004", "DJ008",]
 
-select = [
-    "E",     # pycodestyle errors
-    "W",     # pycodestyle warnings
-    "F",     # pyflakes
-    "I",     # isort
-    "B",     # flake8-bugbear
-    "C4",    # flake8-comprehensions
-    "UP",    # pyupgrade
-    "N",     # pep8-naming
-    "S",     # flake8-bandit (security)
-    "T20",   # flake8-print
-    "PT",    # flake8-pytest-style
-    "RET",   # flake8-return
-    "SIM",   # flake8-simplify
-    "ARG",   # flake8-unused-arguments
-    "PTH",   # flake8-use-pathlib
-    "ERA",   # eradicate (commented-out code)
-    "PL",    # pylint
-    "RUF",   # ruff-specific rules
-    "A",     # flake8-builtins
-    "BLE",   # flake8-blind-except
-    "C90",   # mccabe complexity
-    "DJ",    # flake8-django
-    "DTZ",   # flake8-datetimez
-    "EM",    # flake8-errmsg
-    "FBT",   # flake8-boolean-trap
-    "G",     # flake8-logging-format
-    "ICN",   # flake8-import-conventions
-    "INP",   # flake8-no-pep420
-    "ISC",   # flake8-implicit-str-concat
-    "LOG",   # flake8-logging
-    "PERF",  # perflint
-    "PIE",   # flake8-pie
-    "Q",     # flake8-quotes
-    "RSE",   # flake8-raise
-    "SLF",   # flake8-self
-    "SLOT",  # flake8-slots
-    "TID",   # flake8-tidy-imports
-    "TCH",   # flake8-type-checking
-    "TRY",   # tryceratops
-    "FLY",   # flynt
-    "NPY",   # NumPy-specific rules
-    "PD",    # pandas-vet
-    "FURB",  # refurb
-]
+[tool.bandit]
+exclude_dirs = [ "tests", "test_*", "*_test.py", "docs", "migrations", ".pytest_cache", "__pycache__",]
+skips = [ "B101", "B601", "B603",]
+tests = [ "B102", "B103", "B104", "B105", "B106", "B107", "B108", "B110", "B112", "B201", "B301", "B302", "B303", "B304", "B305", "B306", "B307", "B308", "B309", "B310", "B311", "B312", "B313", "B314", "B315", "B316", "B317", "B318", "B319", "B320", "B321", "B322", "B323", "B324", "B325", "B401", "B402", "B403", "B404", "B405", "B406", "B407", "B408", "B409", "B410", "B411", "B412", "B413", "B501", "B502", "B503", "B504", "B505", "B506", "B507", "B601", "B602", "B604", "B605", "B606", "B607", "B608", "B609", "B610", "B611", "B701", "B702", "B703",]
+confidence = "HIGH"
+severity = "MEDIUM"
 
-ignore = [
-    "E501",    # line too long, handled by black
-    "B008",    # do not perform function calls in argument defaults
-    "C901",    # too complex
-    "S101",    # use of assert detected (allow in tests)
-    "S603",    # subprocess call: check for execution of untrusted input
-    "S607",    # starting a process with a partial executable path
-    "PLR0913", # too many arguments to function call
-    "PLR0915", # too many statements
-    "PLR2004", # magic value used in comparison
-    "RUF012",  # mutable class attributes should be annotated with `typing.ClassVar`
-    "FBT001",  # boolean positional arg in function definition
-    "FBT002",  # boolean default value in function definition
-    "EM101",   # exception must not use a string literal
-    "EM102",   # exception must not use an f-string literal
-    "TRY003",  # avoid specifying long messages outside the exception class
-    "G004",    # logging statement uses f-string
-    "DJ008",   # model does not define __str__ method
-]
+[tool.uv]
+index-strategy = "unsafe-best-match"
+resolution = "highest"
+compile-bytecode = true
+
+[tool.acgs]
+constitutional_hash = "cdd01ef066bc6cf2"
+version = "2.0.0"
+last_updated = "2025-07-02T20:21:18.940076+00:00"
+dependency_manager = "uv"
+security_scan_enabled = true
 
 [tool.ruff.per-file-ignores]
-"__init__.py" = ["F401"]
-"tests/*" = ["B011", "S101", "ARG001", "PLR2004"]
-"scripts/*" = ["T20", "S603", "S607"]
-"**/conftest.py" = ["F401", "F403"]
+"__init__.py" = [ "F401",]
+"tests/*" = [ "B011", "S101", "ARG001", "PLR2004",]
+"scripts/*" = [ "T20", "S603", "S607",]
+"**/conftest.py" = [ "F401", "F403",]
 
 [tool.ruff.isort]
-known-first-party = ["services", "scripts", "tools", "core"]
+known-first-party = [ "services", "scripts", "tools", "core",]
 force-single-line = false
 combine-as-imports = true
 split-on-trailing-comma = true
@@ -536,93 +142,55 @@ max-branches = 15
 max-returns = 8
 max-statements = 60
 
-[tool.bandit]
-# Enhanced Bandit security configuration
-exclude_dirs = [
-    "tests", 
-    "test_*", 
-    "*_test.py",
-    "docs",
-    "migrations",
-    ".pytest_cache",
-    "__pycache__",
-]
-skips = [
-    "B101",  # assert_used (allow in tests and development)
-    "B601",  # shell_injection_process_substitution
-    "B603",  # subprocess without shell equals true
-]
-# Security test patterns
-tests = [
-    "B102",  # exec_used
-    "B103",  # set_bad_file_permissions
-    "B104",  # hardcoded_bind_all_interfaces
-    "B105",  # hardcoded_password_string
-    "B106",  # hardcoded_password_funcarg
-    "B107",  # hardcoded_password_default
-    "B108",  # hardcoded_tmp_directory
-    "B110",  # try_except_pass
-    "B112",  # try_except_continue
-    "B201",  # flask_debug_true
-    "B301",  # pickle
-    "B302",  # marshal
-    "B303",  # md5
-    "B304",  # des
-    "B305",  # cipher
-    "B306",  # mktemp_q
-    "B307",  # eval
-    "B308",  # mark_safe
-    "B309",  # httpsconnection
-    "B310",  # urllib_urlopen
-    "B311",  # random
-    "B312",  # telnetlib
-    "B313",  # xml_bad_cElementTree
-    "B314",  # xml_bad_ElementTree
-    "B315",  # xml_bad_expatreader
-    "B316",  # xml_bad_expatbuilder
-    "B317",  # xml_bad_sax
-    "B318",  # xml_bad_minidom
-    "B319",  # xml_bad_pulldom
-    "B320",  # xml_bad_etree
-    "B321",  # ftplib
-    "B322",  # input
-    "B323",  # unverified_context
-    "B324",  # hashlib_new_insecure_functions
-    "B325",  # tempnam
-    "B401",  # import_telnetlib
-    "B402",  # import_ftplib
-    "B403",  # import_pickle
-    "B404",  # import_subprocess
-    "B405",  # import_xml_etree
-    "B406",  # import_xml_sax
-    "B407",  # import_xml_expat
-    "B408",  # import_xml_minidom
-    "B409",  # import_xml_pulldom
-    "B410",  # import_lxml
-    "B411",  # import_xmlrpclib
-    "B412",  # import_httpoxy
-    "B413",  # import_pycrypto
-    "B501",  # request_with_no_cert_validation
-    "B502",  # ssl_with_bad_version
-    "B503",  # ssl_with_bad_defaults
-    "B504",  # ssl_with_no_version
-    "B505",  # weak_cryptographic_key
-    "B506",  # yaml_load
-    "B507",  # ssh_no_host_key_verification
-    "B601",  # paramiko_calls
-    "B602",  # subprocess_popen_with_shell_equals_true
-    "B604",  # any_other_function_with_shell_equals_true
-    "B605",  # start_process_with_a_shell
-    "B606",  # start_process_with_no_shell
-    "B607",  # start_process_with_partial_path
-    "B608",  # hardcoded_sql_expressions
-    "B609",  # linux_commands_wildcard_injection
-    "B610",  # django_extra_used
-    "B611",  # django_rawsql_used
-    "B701",  # jinja2_autoescape_false
-    "B702",  # use_of_mako_templates
-    "B703",  # django_mark_safe
-]
-# Constitutional compliance validation
-confidence = "HIGH"
-severity = "MEDIUM"
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.pytest.ini_options]
+minversion = "7.4"
+addopts = [ "-ra", "-q", "--strict-markers", "--strict-config", "--tb=short", "--maxfail=10", "--cov=services", "--cov-report=term-missing", "--cov-report=html:htmlcov", "--cov-report=xml", "--cov-fail-under=80", "--durations=10", "--junitxml=reports/junit.xml",]
+testpaths = [ "tests", "services",]
+python_files = [ "test_*.py", "*_test.py",]
+python_classes = [ "Test*",]
+python_functions = [ "test_*",]
+markers = [ "slow: marks tests as slow (deselect with '-m \"not slow\"')", "integration: marks tests as integration tests", "unit: marks tests as unit tests", "e2e: marks tests as end-to-end tests", "performance: marks tests as performance tests", "security: marks tests as security tests", "benchmark: marks tests as benchmark tests", "constitutional: marks tests related to constitutional governance", "timeout: set a timeout for a test", "gpu: marks tests that require GPU", "network: marks tests that require network access", "database: marks tests that require database", "redis: marks tests that require Redis", "ci: marks tests that should run in CI", "local: marks tests that should only run locally", "smoke: marks smoke tests for quick validation", "regression: marks regression tests",]
+filterwarnings = [ "ignore::DeprecationWarning", "ignore::PendingDeprecationWarning", "ignore::pytest.PytestUnraisableExceptionWarning", "ignore::UserWarning", "ignore::RuntimeWarning", "error::FutureWarning",]
+asyncio_mode = "auto"
+timeout = 300
+log_cli = true
+log_cli_level = "INFO"
+log_cli_format = "%(asctime)s [%(levelname)8s] %(name)s: %(message)s"
+log_cli_date_format = "%Y-%m-%d %H:%M:%S"
+cache_dir = ".pytest_cache"
+
+[tool.coverage.run]
+source = [ "services", "scripts", "core",]
+branch = true
+parallel = true
+omit = [ "*/tests/*", "*/test_*", "*_test.py", "test_*.py", "*/__pycache__/*", "*/migrations/*", "*/node_modules/*", "*/venv/*", "*/.venv/*", "setup.py", "conftest.py", "*/conftest.py", "*/site-packages/*", "*/.tox/*", "*/.pytest_cache/*", "*/htmlcov/*", "*/build/*", "*/dist/*", "*/docs/*",]
+data_file = ".coverage"
+context = "test"
+
+[tool.coverage.report]
+precision = 2
+skip_covered = false
+skip_empty = false
+sort = "cover"
+fail_under = 80
+show_missing = true
+exclude_lines = [ "pragma: no cover", "pragma: nocover", "def __repr__", "def __str__", "if self.debug:", "if settings.DEBUG", "if TYPE_CHECKING:", "raise AssertionError", "raise NotImplementedError", "raise ValueError", "if 0:", "if False:", "if __name__ == .__main__.:", "class .*\\bProtocol\\):", "@(abc\\.)?abstractmethod", "@overload", "except ImportError:", "except ModuleNotFoundError:", "\\.\\.\\.", "pass",]
+
+[tool.coverage.html]
+directory = "htmlcov"
+title = "ACGS-PGP Test Coverage Report"
+show_contexts = true
+
+[tool.coverage.xml]
+output = "coverage.xml"
+
+[tool.coverage.json]
+output = "coverage.json"
+pretty_print = true
+show_contexts = true
+
+[tool.hatch.build.targets.wheel]
+packages = [ "services", "scripts", "tools",]

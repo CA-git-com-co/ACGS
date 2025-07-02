@@ -1,19 +1,5 @@
-# ACGS-PGP pnpm Workspace Configuration
-# Defines workspace packages for unified dependency management
-
 packages:
-  # Frontend applications
-  - 'applications/*'
-
-  # Blockchain components
-  - 'blockchain'
-
-  # Development tools
-  - 'tools/mcp-inspector'
-
-  # Infrastructure monitoring (if any Node.js components exist)
-  - 'infrastructure/monitoring/*'
-
-  # Any other Node.js services
-  - 'services/*/frontend'
-  - 'services/*/ui'
+- services/cli/*
+- tools/mcp-inspector/*
+- services/blockchain
+- applications/*
