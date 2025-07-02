@@ -1,0 +1,44 @@
+[package]
+name = "acgs-blockchain-client"
+version = "0.1.0"
+edition = "2021"
+description = "ACGS Rust client for Solana blockchain interaction"
+
+[dependencies]
+solana-sdk = "1.18"
+solana-client = "1.18"
+solana-account-decoder = "1.18"
+anchor-client = "0.29"
+anchor-lang = "0.29"
+serde_json = "1.0"
+anyhow = "1.0"
+thiserror = "1.0"
+bs58 = "0.5"
+solana-program = "1.18"
+log = "0.4"
+env_logger = "0.10"
+config = "0.14"
+sha256 = "1.5"
+
+[dev-dependencies]
+sha256 = "1.5"
+
+[dependencies.tokio]
+version = "1.0"
+features = [ "full",]
+
+[dependencies.serde]
+version = "1.0"
+features = [ "derive",]
+
+[dependencies.chrono]
+version = "0.4"
+features = [ "serde",]
+
+[dev-dependencies.tokio]
+version = "1.0"
+features = [ "full",]
+
+[package.metadata.acgs]
+constitutional_hash = "cdd01ef066bc6cf2"
+last_updated = "2025-07-02T20:21:24.390661+00:00"

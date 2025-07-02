@@ -16,8 +16,8 @@ from unittest.mock import AsyncMock, Mock, patch
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from .services.human_escalation_system import EscalationLevel
-from .services.human_in_the_loop_sampler import (
+from services.core.constitutional_ai.ac_service.services.human_escalation_system import EscalationLevel
+from services.core.constitutional_ai.ac_service.services.human_in_the_loop_sampler import (
     HITLSamplingConfig,
     HumanInTheLoopSampler,
     SamplingTrigger,

@@ -22,8 +22,8 @@ from services.shared.database import Base
 from services.shared.langgraph_config import ConstitutionalCouncilConfig
 from services.shared.models import User
 
-from .models import ACAmendment
-from .services.stakeholder_engagement import (
+from services.core.constitutional_ai.ac_service.models import ACAmendment
+from services.core.constitutional_ai.ac_service.services.stakeholder_engagement import (
     NotificationChannel,
     StakeholderEngagementInput,
     StakeholderNotificationService,

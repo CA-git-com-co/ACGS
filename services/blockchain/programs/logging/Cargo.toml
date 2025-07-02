@@ -1,0 +1,24 @@
+[package]
+name = "logging"
+version = "0.1.0"
+description = "Quantumagi Logging System - Comprehensive Event Logging and Monitoring"
+edition = "2021"
+license = "MIT"
+
+[lib]
+crate-type = [ "cdylib", "lib",]
+name = "logging"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = [ "no-entrypoint",]
+default = []
+
+[dependencies]
+anchor-lang = "0.29.0"
+
+[package.metadata.acgs]
+constitutional_hash = "cdd01ef066bc6cf2"
+last_updated = "2025-07-02T20:21:24.389401+00:00"

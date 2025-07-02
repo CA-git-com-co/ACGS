@@ -60,40 +60,27 @@ class TestWINAIntegration:
 
             sys.path.append(os.path.join(os.path.dirname(__file__), "..", "app"))
 
-            try:
-                from wina.config import load_wina_config_from_env
-                from wina.constitutional_integration import ConstitutionalWINASupport
-                from wina.continuous_learning import get_wina_learning_system
-                from wina.core import WINACore
-                from wina.gating import RuntimeGating
-                from wina.metrics import WINAMetrics
-                from wina.performance_monitoring import WINAPerformanceCollector
-            except ImportError:
-                # Fallback for direct execution
-                sys.path.append(
-                    os.path.join(os.path.dirname(__file__), "..", "..", "..", "..")
-                )
-                from services.core.evolutionary_computation.app.wina.config import (
-                    load_wina_config_from_env,
-                )
-                from services.core.evolutionary_computation.app.wina.constitutional_integration import (
-                    ConstitutionalWINASupport,
-                )
-                from services.core.evolutionary_computation.app.wina.continuous_learning import (
-                    get_wina_learning_system,
-                )
-                from services.core.evolutionary_computation.app.wina.core import (
-                    WINACore,
-                )
-                from services.core.evolutionary_computation.app.wina.gating import (
-                    RuntimeGating,
-                )
-                from services.core.evolutionary_computation.app.wina.metrics import (
-                    WINAMetrics,
-                )
-                from services.core.evolutionary_computation.app.wina.performance_monitoring import (
-                    WINAPerformanceCollector,
-                )
+            from services.core.evolutionary_computation.app.wina.config import (
+                load_wina_config_from_env,
+            )
+            from services.core.evolutionary_computation.app.wina.constitutional_integration import (
+                ConstitutionalWINASupport,
+            )
+            from services.core.evolutionary_computation.app.wina.continuous_learning import (
+                get_wina_learning_system,
+            )
+            from services.core.evolutionary_computation.app.wina.core import (
+                WINACore,
+            )
+            from services.core.evolutionary_computation.app.wina.gating import (
+                RuntimeGating,
+            )
+            from services.core.evolutionary_computation.app.wina.metrics import (
+                WINAMetrics,
+            )
+            from services.core.evolutionary_computation.app.wina.performance_monitoring import (
+                WINAPerformanceCollector,
+            )
 
             assert True, "All WINA modules imported successfully"
 
@@ -102,7 +89,7 @@ class TestWINAIntegration:
 
     async def test_wina_core_initialization(self, wina_config):
         """Test WINA core component initialization."""
-        from ..app.wina.core import WINACore
+        from services.core.evolutionary_computation.app.wina.core import WINACore
 
         try:
             wina_core = WINACore(wina_config)
@@ -125,8 +112,8 @@ class TestWINAIntegration:
 
     async def test_constitutional_integration(self, wina_config, integration_config):
         """Test constitutional compliance integration."""
-        from ..app.wina.constitutional_integration import ConstitutionalWINASupport
-        from ..app.wina.core import WINAOptimizationResult
+        from services.core.evolutionary_computation.app.wina.constitutional_integration import ConstitutionalWINASupport
+        from services.core.evolutionary_computation.app.wina.core import WINAOptimizationResult
 
         try:
             constitutional_wina = ConstitutionalWINASupport(
@@ -158,7 +145,7 @@ class TestWINAIntegration:
 
     async def test_performance_monitoring(self, wina_config):
         """Test WINA performance monitoring capabilities."""
-        from ..app.wina.performance_monitoring import (
+        from services.core.evolutionary_computation.app.wina.performance_monitoring import (
             WINAComponentType,
             WINAMonitoringLevel,
             WINAPerformanceCollector,
@@ -187,7 +174,7 @@ class TestWINAIntegration:
 
     async def test_ec_service_integration(self):
         """Test integration with EC service main coordinator."""
-        from ..app.core.wina_oversight_coordinator import WINAECOversightCoordinator
+        from services.core.evolutionary_computation.app.core.wina_oversight_coordinator import WINAECOversightCoordinator
 
         try:
             # Test coordinator initialization
@@ -200,7 +187,7 @@ class TestWINAIntegration:
             assert hasattr(coordinator, "performance_collector")
 
             # Test basic oversight operation
-            from ..app.core.wina_oversight_coordinator import (
+            from services.core.evolutionary_computation.app.core.wina_oversight_coordinator import (
                 ECOversightContext,
                 ECOversightRequest,
             )
@@ -222,7 +209,7 @@ class TestWINAIntegration:
 
     async def test_service_communication(self):
         """Test communication with other ACGS services."""
-        from ..app.wina.config import load_wina_config_from_env
+        from services.core.evolutionary_computation.app.wina.config import load_wina_config_from_env
 
         try:
             wina_config, integration_config = load_wina_config_from_env()
@@ -246,8 +233,8 @@ class TestWINAIntegration:
 
     async def test_performance_targets(self):
         """Test that WINA integration meets performance targets."""
-        from ..app.wina.config import load_wina_config_from_env
-        from ..app.wina.core import WINACore
+        from services.core.evolutionary_computation.app.wina.config import load_wina_config_from_env
+        from services.core.evolutionary_computation.app.wina.core import WINACore
 
         try:
             wina_config, _ = load_wina_config_from_env()

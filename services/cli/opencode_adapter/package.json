@@ -45,5 +45,14 @@
     "constitutional"
   ],
   "author": "ACGS Team",
-  "license": "MIT"
+  "license": "MIT",
+  "acgs": {
+    "constitutional_hash": "cdd01ef066bc6cf2",
+    "last_updated": "2025-07-02T20:21:23.127803+00:00"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@latest"
 }

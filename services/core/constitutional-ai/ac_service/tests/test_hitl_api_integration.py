@@ -15,7 +15,7 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from .main import app
+from services.core.constitutional_ai.ac_service.main import app
 
 
 class TestHITLSamplingAPI:
@@ -78,8 +78,8 @@ class TestHITLSamplingAPI:
                     # Mock assessment result
                     from datetime import datetime
 
-                    from .services.human_escalation_system import EscalationLevel
-                    from .services.human_in_the_loop_sampler import (
+                    from services.core.constitutional_ai.ac_service.services.human_escalation_system import EscalationLevel
+                    from services.core.constitutional_ai.ac_service.services.human_in_the_loop_sampler import (
                         SamplingTrigger,
                         UncertaintyAssessment,
                         UncertaintyDimension,
@@ -155,10 +155,10 @@ class TestHITLSamplingAPI:
                         # Mock assessment and escalation
                         from datetime import datetime
 
-                        from .services.human_escalation_system import (
+                        from services.core.constitutional_ai.ac_service.services.human_escalation_system import (
                             EscalationLevel,
                         )
-                        from .services.human_in_the_loop_sampler import (
+                        from services.core.constitutional_ai.ac_service.services.human_in_the_loop_sampler import (
                             SamplingTrigger,
                             UncertaintyAssessment,
                         )
@@ -423,8 +423,8 @@ class TestHITLIntegrationWorkflow:
                     # Mock high uncertainty assessment
                     from datetime import datetime
 
-                    from .services.human_escalation_system import EscalationLevel
-                    from .services.human_in_the_loop_sampler import (
+                    from services.core.constitutional_ai.ac_service.services.human_escalation_system import EscalationLevel
+                    from services.core.constitutional_ai.ac_service.services.human_in_the_loop_sampler import (
                         SamplingTrigger,
                         UncertaintyAssessment,
                     )

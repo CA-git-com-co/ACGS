@@ -43,7 +43,11 @@ class MockRedis:
     
     async def smembers(self, key: str):
         return self.sets.get(key, set())
-    
+
+    async def scard(self, key: str):
+        """Return the number of elements in a set"""
+        return len(self.sets.get(key, set()))
+
     async def srem(self, key: str, *values):
         if key in self.sets:
             self.sets[key].discard(*values)
@@ -69,8 +73,12 @@ class MockRedis:
 
         if mapping:
             self.hashes[key].update(mapping)
-        elif field and value:
+            return len(mapping)
+        elif field is not None and value is not None:
             self.hashes[key][field] = value
+            return 1
+        else:
+            return 0
     
     async def hget(self, key: str, field: str) -> Optional[str]:
         # Check if key has expired
@@ -95,6 +103,10 @@ class MockRedis:
         if key in self.data:
             self.ttls[key] = datetime.utcnow() + timedelta(seconds=seconds)
 
+    def pipeline(self, transaction: bool = False):
+        """Return a mock pipeline"""
+        return MockRedisPipeline(self)
+
     async def zadd(self, key: str, mapping: Dict[str, float]):
         """Add to sorted set"""
         if key not in self.sets:
@@ -115,6 +127,89 @@ class MockRedis:
         if not hasattr(self, 'published_messages'):
             self.published_messages = []
         self.published_messages.append({'channel': channel, 'message': message})
+
+    async def zcard(self, key: str) -> int:
+        """Get cardinality of sorted set"""
+        return len(self.sets.get(key, {}))
+
+    async def zrem(self, key: str, *members):
+        """Remove members from sorted set"""
+        if key in self.sets:
+            for member in members:
+                self.sets[key].pop(member, None)
+        return len(members)
+
+    async def scard(self, key: str) -> int:
+        """Get cardinality of set"""
+        return len(self.sets.get(key, set()))
+
+
+class MockRedisPipeline:
+    """Mock Redis pipeline for transaction support"""
+
+    def __init__(self, redis_client):
+        self.redis_client = redis_client
+        self.commands = []
+
+    async def __aenter__(self):
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        pass
+
+    async def hset(self, key: str, field: str, value: str):
+        """Queue hset command"""
+        self.commands.append(('hset', key, field, value))
+
+    async def sadd(self, key: str, *values):
+        """Queue sadd command"""
+        self.commands.append(('sadd', key, *values))
+
+    async def watch(self, key: str):
+        """Mock watch command"""
+        pass
+
+    async def reset(self):
+        """Mock reset command"""
+        self.commands.clear()
+
+    async def hget(self, key: str, field: str):
+        """Delegate to redis client"""
+        return await self.redis_client.hget(key, field)
+
+    def multi(self):
+        """Mock multi command (not async)"""
+        pass
+
+    async def zrem(self, key: str, *members):
+        """Queue zrem command"""
+        self.commands.append(('zrem', key, *members))
+
+    async def zadd(self, key: str, mapping: dict):
+        """Queue zadd command"""
+        self.commands.append(('zadd', key, mapping))
+
+    async def execute(self):
+        """Execute all queued commands"""
+        results = []
+        for cmd in self.commands:
+            if cmd[0] == 'hset':
+                await self.redis_client.hset(cmd[1], cmd[2], cmd[3])
+                results.append(True)
+            elif cmd[0] == 'sadd':
+                await self.redis_client.sadd(cmd[1], *cmd[2:])
+                results.append(len(cmd[2:]))
+            elif cmd[0] == 'zrem':
+                # Mock zrem - remove from sorted set
+                if cmd[1] in self.redis_client.sets:
+                    for member in cmd[2:]:
+                        self.redis_client.sets[cmd[1]].pop(member, None)
+                results.append(len(cmd[2:]))
+            elif cmd[0] == 'zadd':
+                await self.redis_client.zadd(cmd[1], cmd[2])
+                results.append(len(cmd[2]))
+        self.commands.clear()
+        return results
 
 
 # Mock AI models for consensus testing

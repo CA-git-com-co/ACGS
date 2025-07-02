@@ -3,6 +3,7 @@ Unit tests for Multi-Agent Performance Monitoring and WINA Integration.
 """
 
 import pytest
+import pytest_asyncio
 import asyncio
 from datetime import datetime, timedelta
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -23,12 +24,14 @@ from tests.fixtures.multi_agent.mock_services import MockRedis, MockWINACore
 class TestMultiAgentPerformanceMonitor:
     """Test cases for MultiAgentPerformanceMonitor"""
     
-    @pytest.fixture
+    @pytest_asyncio.fixture
     async def mock_blackboard(self):
         """Create mock blackboard service"""
         from services.shared.blackboard.blackboard_service import BlackboardService
         mock_redis = MockRedis()
-        blackboard = BlackboardService(redis_client=mock_redis)
+        blackboard = BlackboardService(redis_url="redis://localhost:6379", db=0)
+        # Replace the redis client with our mock after initialization
+        blackboard.redis_client = mock_redis
         return blackboard
     
     @pytest.fixture
@@ -36,7 +39,7 @@ class TestMultiAgentPerformanceMonitor:
         """Create mock WINA core"""
         return MockWINACore()
     
-    @pytest.fixture
+    @pytest_asyncio.fixture
     async def performance_monitor(self, mock_blackboard, mock_wina_core):
         """Create MultiAgentPerformanceMonitor with mocks"""
         monitor = MultiAgentPerformanceMonitor(
@@ -45,7 +48,7 @@ class TestMultiAgentPerformanceMonitor:
         )
         return monitor
     
-    @pytest.fixture
+    @pytest_asyncio.fixture
     async def sample_agent_knowledge(self, mock_blackboard):
         """Create sample agent knowledge for testing"""
         knowledge_items = []
@@ -195,7 +198,7 @@ class TestMultiAgentPerformanceMonitor:
         )
         await mock_blackboard.add_knowledge(collab_knowledge)
         
-        agent_knowledge = await mock_blackboard.query_knowledge(agent_id="operational_agent_1")
+        agent_knowledge = await mock_blackboard.query_knowledge(space="governance", agent_id="operational_agent_1")
         
         collaboration_score = await performance_monitor._calculate_collaboration_score(
             "operational_agent_1", agent_knowledge

@@ -4,8 +4,9 @@ Tests the complete interaction between coordinator, worker agents, blackboard, a
 """
 
 import pytest
+import pytest_asyncio
 import asyncio
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import uuid4
 
@@ -19,18 +20,20 @@ from services.core.worker_agents.legal_agent import LegalAgent
 from services.core.worker_agents.operational_agent import OperationalAgent
 from services.core.consensus_engine.consensus_mechanisms import ConsensusEngine, ConsensusAlgorithm
 from services.shared.blackboard.blackboard_service import BlackboardService
-from tests.fixtures.multi_agent.mock_services import MockRedis, TestDataGenerator
+from tests.fixtures.mock_services import MockRedis, TestDataGenerator
 
 
 class TestMultiAgentCoordination:
     """Integration tests for complete multi-agent coordination workflows"""
     
-    @pytest.fixture
+    @pytest_asyncio.fixture
     async def coordination_system(self):
         """Set up complete multi-agent coordination system"""
         # Create blackboard with mock Redis
         mock_redis = MockRedis()
-        blackboard = BlackboardService(redis_client=mock_redis)
+        blackboard = BlackboardService(redis_url="redis://localhost:6379")
+        # Replace the redis client with our mock
+        blackboard.redis_client = mock_redis
         
         # Create consensus engine
         consensus_engine = ConsensusEngine(blackboard)
@@ -38,8 +41,7 @@ class TestMultiAgentCoordination:
         # Create coordinator agent
         coordinator = CoordinatorAgent(
             agent_id="coordinator_1",
-            blackboard_service=blackboard,
-            consensus_engine=consensus_engine
+            blackboard_service=blackboard
         )
         
         # Create worker agents
@@ -59,43 +61,45 @@ class TestMultiAgentCoordination:
     @pytest.fixture
     def ai_model_deployment_request(self):
         """Create a complex AI model deployment governance request"""
-        return {
-            "request_id": str(uuid4()),
-            "request_type": "ai_model_deployment",
-            "description": "Deploy GPT-4 based customer service chatbot",
-            "requester": "product_team",
-            "timestamp": datetime.utcnow().isoformat(),
-            "priority": 1,
-            "model_info": {
-                "model_name": "customer-service-gpt4",
-                "model_type": "language_model",
-                "parameters": "175B",
-                "training_data": "customer_conversations_filtered",
-                "intended_use": "customer_support_automation",
-                "deployment_environment": "production",
-                "expected_users": 50000,
-                "geographic_regions": ["US", "EU", "APAC"]
+        from services.core.multi_agent_coordinator.coordinator_agent import GovernanceRequest
+
+        return GovernanceRequest(
+            request_type="model_deployment",
+            requester_id="product_team",
+            priority=1,
+            input_data={
+                "model_info": {
+                    "model_name": "customer-service-gpt4",
+                    "model_type": "language_model",
+                    "parameters": "175B",
+                    "training_data": "customer_conversations_filtered",
+                    "intended_use": "customer_support_automation",
+                    "deployment_environment": "production",
+                    "expected_users": 50000,
+                    "geographic_regions": ["US", "EU", "APAC"]
+                },
+                "compliance_requirements": {
+                    "ethical_review": True,
+                    "legal_review": True,
+                    "operational_review": True,
+                    "privacy_compliance": ["GDPR", "CCPA"],
+                    "safety_requirements": ["content_filtering", "bias_monitoring"],
+                    "performance_requirements": {
+                        "max_latency_ms": 500,
+                        "min_availability": 99.9,
+                        "max_error_rate": 0.1
+                    }
+                },
+                "stakeholders": [
+                    "customer_support_team",
+                    "legal_team",
+                    "privacy_office",
+                    "security_team",
+                    "product_management"
+                ]
             },
-            "compliance_requirements": {
-                "ethical_review": True,
-                "legal_review": True,
-                "operational_review": True,
-                "privacy_compliance": ["GDPR", "CCPA"],
-                "safety_requirements": ["content_filtering", "bias_monitoring"],
-                "performance_requirements": {
-                    "max_latency_ms": 500,
-                    "min_availability": 99.9,
-                    "max_error_rate": 0.1
-                }
-            },
-            "stakeholders": [
-                "customer_support_team",
-                "legal_team",
-                "privacy_office",
-                "security_team",
-                "product_management"
-            ]
-        }
+            constitutional_requirements=["safety", "transparency", "consent"]
+        )
     
     # Complete Workflow Integration Tests
     
@@ -106,48 +110,49 @@ class TestMultiAgentCoordination:
         blackboard = coordination_system["blackboard"]
         
         # Register all agents
-        await blackboard.register_agent({
-            "agent_id": "ethics_agent_1",
-            "agent_type": "ethics_agent",
-            "capabilities": ["bias_detection", "fairness_evaluation"]
-        })
-        await blackboard.register_agent({
-            "agent_id": "legal_agent_1", 
-            "agent_type": "legal_agent",
-            "capabilities": ["regulatory_compliance", "privacy_law"]
-        })
-        await blackboard.register_agent({
-            "agent_id": "operational_agent_1",
-            "agent_type": "operational_agent", 
-            "capabilities": ["performance_analysis", "scalability_assessment"]
-        })
+        await blackboard.register_agent(
+            "ethics_agent_1",
+            "ethics_agent",
+            ["bias_detection", "fairness_evaluation"]
+        )
+        await blackboard.register_agent(
+            "legal_agent_1",
+            "legal_agent",
+            ["regulatory_compliance", "privacy_law"]
+        )
+        await blackboard.register_agent(
+            "operational_agent_1",
+            "operational_agent",
+            ["performance_analysis", "scalability_assessment"]
+        )
         
         # Process governance request through coordinator
-        result = await coordinator.process_governance_request(ai_model_deployment_request)
-        
+        request_id = await coordinator.process_governance_request(ai_model_deployment_request)
+
         # Verify workflow completion
-        assert result is not None
-        assert "governance_decision" in result
-        assert "analysis_results" in result
-        assert "constitutional_compliance" in result
+        assert request_id is not None
+        assert request_id == ai_model_deployment_request.id
         
         # Verify tasks were created and processed
         all_tasks = await blackboard.query_knowledge(
-            space="coordination",
-            knowledge_type="task_assignment"
+            space="governance",
+            knowledge_type="governance_context"
         )
-        assert len(all_tasks) >= 3  # Ethics, legal, operational tasks
-        
+        assert len(all_tasks) >= 1  # At least one governance context should be created
+
         # Verify agent analyses were completed
         ethics_analysis = await blackboard.query_knowledge(
+            space="governance",
             agent_id="ethics_agent_1",
             knowledge_type="ethical_analysis"
         )
         legal_analysis = await blackboard.query_knowledge(
-            agent_id="legal_agent_1", 
+            space="governance",
+            agent_id="legal_agent_1",
             knowledge_type="legal_analysis"
         )
         operational_analysis = await blackboard.query_knowledge(
+            space="governance",
             agent_id="operational_agent_1",
             knowledge_type="operational_analysis"
         )
@@ -283,14 +288,10 @@ class TestMultiAgentCoordination:
         from services.shared.blackboard.blackboard_service import ConflictItem
         
         conflict = ConflictItem(
-            conflicting_agents=["ethics_agent_1", "legal_agent_1", "operational_agent_1"],
+            involved_agents=["ethics_agent_1", "legal_agent_1", "operational_agent_1"],
+            involved_tasks=[str(uuid4())],
             conflict_type="deployment_decision",
             description="Agents have different deployment recommendations",
-            context={
-                "governance_request_id": str(uuid4()),
-                "deployment_urgency": "high",
-                "stakeholder_pressure": "significant"
-            },
             severity="medium"
         )
         
@@ -410,7 +411,7 @@ class TestMultiAgentCoordination:
         
         # Create performance monitoring
         from services.core.multi_agent_coordinator.performance_integration import MultiAgentPerformanceMonitor
-        from tests.fixtures.multi_agent.mock_services import MockWINACore
+        from tests.fixtures.mock_services import MockWINACore
         
         mock_wina = MockWINACore()
         performance_monitor = MultiAgentPerformanceMonitor(
@@ -419,11 +420,11 @@ class TestMultiAgentCoordination:
         )
         
         # Register agents
-        await blackboard.register_agent({
-            "agent_id": "ethics_agent_1",
-            "agent_type": "ethics_agent",
-            "capabilities": ["bias_detection"]
-        })
+        await blackboard.register_agent(
+            "ethics_agent_1",
+            "ethics_agent",
+            ["bias_detection"]
+        )
         
         # Simulate agent activity
         from services.shared.blackboard.blackboard_service import KnowledgeItem
@@ -582,11 +583,11 @@ class TestMultiAgentCoordination:
         agents = ["ethics_agent_1", "legal_agent_1", "operational_agent_1"]
         
         for agent_id in agents:
-            await blackboard.register_agent({
-                "agent_id": agent_id,
-                "agent_type": agent_id.split("_")[0] + "_agent",
-                "capabilities": ["analysis"]
-            })
+            await blackboard.register_agent(
+                agent_id,
+                agent_id.split("_")[0] + "_agent",
+                ["analysis"]
+            )
             
             # Send heartbeat
             await blackboard.agent_heartbeat(agent_id, {

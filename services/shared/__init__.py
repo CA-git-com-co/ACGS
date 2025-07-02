@@ -11,20 +11,20 @@ except ImportError:
 
 # Import new Phase 2 components
 # Temporarily commented out service_mesh due to tenacity import issues
-from . import common, di, events
+# from . import common, di, events
 
 # from . import service_mesh
 
 # You can optionally define __all__ to control what `from shared import *` imports
 __all__ = [
     "ACGSConfig",
-    "common",
-    "di",
-    "events",
+    # "common",
+    # "di",
+    # "events",
     "get_config",
-    "models",
+    # "models",
     "reset_config",
-    "schemas",
-    "service_mesh",
-    "utils",
+    # "schemas",
+    # "service_mesh",
+    # "utils",
 ]

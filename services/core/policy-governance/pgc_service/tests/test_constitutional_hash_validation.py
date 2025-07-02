@@ -14,7 +14,7 @@ import time
 
 import pytest
 
-from .core.constitutional_hash_validator import (
+from services.core.policy_governance.pgc_service.core.constitutional_hash_validator import (
     ConstitutionalContext,
     ConstitutionalHashStatus,
     ConstitutionalHashValidator,

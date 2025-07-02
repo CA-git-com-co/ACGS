@@ -32,5 +32,14 @@
     "express": "^5.1.0",
     "ws": "^8.18.0",
     "zod": "^3.23.8"
-  }
+  },
+  "acgs": {
+    "constitutional_hash": "cdd01ef066bc6cf2",
+    "last_updated": "2025-07-02T20:21:23.128290+00:00"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@latest"
 }

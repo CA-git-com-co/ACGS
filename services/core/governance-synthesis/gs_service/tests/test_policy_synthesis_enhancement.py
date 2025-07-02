@@ -14,11 +14,11 @@ import pytest
 
 from services.shared.models import Principle
 
-from .core.performance_optimizer import (
+from services.core.governance_synthesis.gs_service.core.performance_optimizer import (
     SynthesisPerformanceMetrics,
     WINAPerformanceOptimizer,
 )
-from .services.qec_error_correction_service import QECErrorCorrectionService
+from services.core.governance_synthesis.gs_service.services.qec_error_correction_service import QECErrorCorrectionService
 
 
 class TestProactiveErrorPrediction:

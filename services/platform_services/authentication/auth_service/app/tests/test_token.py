@@ -3,8 +3,8 @@ from datetime import timedelta
 import pytest
 from freezegun import freeze_time
 
-from ..core import security  # Assuming your security functions are here
-from ..core.config import settings
+from services.platform_services.authentication.auth_service.app.core import security  # Assuming your security functions are here
+from services.platform_services.authentication.auth_service.app.core.config import settings
 
 # from .schemas.token import TokenPayload # Unused, adjust if needed
 

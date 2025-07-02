@@ -3,6 +3,7 @@ Unit tests for ConsensusEngine and consensus mechanisms.
 """
 
 import pytest
+import pytest_asyncio
 import asyncio
 from datetime import datetime, timedelta
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -19,21 +20,23 @@ from services.core.consensus_engine.consensus_mechanisms import (
     ConstitutionalPriorityConsensus, ExpertMediationConsensus
 )
 from services.shared.blackboard.blackboard_service import ConflictItem
-from tests.fixtures.multi_agent.mock_services import MockRedis
+from tests.fixtures.mock_services import MockRedis
 
 
 class TestConsensusEngine:
     """Test cases for ConsensusEngine and consensus mechanisms"""
     
-    @pytest.fixture
+    @pytest_asyncio.fixture
     async def mock_blackboard(self):
         """Create mock blackboard service"""
         from services.shared.blackboard.blackboard_service import BlackboardService
         mock_redis = MockRedis()
-        blackboard = BlackboardService(redis_client=mock_redis)
+        blackboard = BlackboardService()
+        # Replace the Redis client with our mock
+        blackboard.redis_client = mock_redis
         return blackboard
     
-    @pytest.fixture
+    @pytest_asyncio.fixture
     async def consensus_engine(self, mock_blackboard):
         """Create ConsensusEngine with mock blackboard"""
         return ConsensusEngine(mock_blackboard)
@@ -42,14 +45,10 @@ class TestConsensusEngine:
     def sample_conflict(self):
         """Create sample conflict for testing"""
         return ConflictItem(
-            conflicting_agents=["ethics_agent_1", "legal_agent_1", "operational_agent_1"],
+            involved_agents=["ethics_agent_1", "legal_agent_1", "operational_agent_1"],
+            involved_tasks=[str(uuid4())],
             conflict_type="risk_assessment_disagreement",
             description="Agents disagree on risk level for AI model deployment",
-            context={
-                "governance_request_id": str(uuid4()),
-                "model_type": "language_model",
-                "deployment_environment": "production"
-            },
             severity="medium"
         )
     

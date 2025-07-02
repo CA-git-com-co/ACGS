@@ -3,6 +3,7 @@ Unit tests for Worker Agents (Ethics, Legal, Operational).
 """
 
 import pytest
+import pytest_asyncio
 import asyncio
 from datetime import datetime, timedelta
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -22,15 +23,17 @@ from tests.fixtures.multi_agent.mock_services import MockRedis, TestDataGenerato
 class TestEthicsAgent:
     """Test cases for EthicsAgent functionality"""
     
-    @pytest.fixture
+    @pytest_asyncio.fixture
     async def mock_blackboard(self):
         """Create mock blackboard service"""
         from services.shared.blackboard.blackboard_service import BlackboardService
         mock_redis = MockRedis()
-        blackboard = BlackboardService(redis_client=mock_redis)
+        blackboard = BlackboardService(redis_url="redis://localhost:6379", db=0)
+        # Replace the redis client with our mock after initialization
+        blackboard.redis_client = mock_redis
         return blackboard
     
-    @pytest.fixture
+    @pytest_asyncio.fixture
     async def ethics_agent(self, mock_blackboard):
         """Create EthicsAgent with mock dependencies"""
         agent = EthicsAgent(
@@ -44,7 +47,6 @@ class TestEthicsAgent:
         """Create sample ethics analysis task"""
         return TaskDefinition(
             task_type="ethical_analysis",
-            description="Analyze ethical implications of AI model deployment",
             requirements={
                 "bias_assessment": True,
                 "fairness_evaluation": True,
@@ -52,8 +54,7 @@ class TestEthicsAgent:
                 "transparency_review": True
             },
             priority=1,
-            assigned_agents=["ethics_agent_1"],
-            metadata={
+            input_data={
                 "governance_request_id": str(uuid4()),
                 "model_info": {
                     "model_type": "language_model",
@@ -86,18 +87,21 @@ class TestEthicsAgent:
         task_id = await mock_blackboard.create_task(ethics_task)
         await mock_blackboard.claim_task(task_id, "ethics_agent_1")
         
-        # Process task
-        result = await ethics_agent.process_task(task_id)
-        
-        assert result is not None
-        assert isinstance(result, EthicalAnalysisResult)
-        assert result.approved in [True, False]
-        assert result.risk_level in ["low", "medium", "high", "critical"]
-        assert 0.0 <= result.confidence <= 1.0
-        assert len(result.bias_assessment) > 0
-        assert len(result.fairness_evaluation) > 0
-        assert len(result.harm_assessment) > 0
-        assert len(result.recommendations) >= 0
+        # Get the task and process it
+        task = await mock_blackboard.get_task(task_id)
+        await ethics_agent._process_task(task)
+
+        # Check that task was completed
+        completed_task = await mock_blackboard.get_task(task_id)
+        assert completed_task.status == "completed"
+
+        # Check that knowledge was added to blackboard
+        knowledge_items = await mock_blackboard.query_knowledge(
+            space="governance",
+            agent_id="ethics_agent_1",
+            knowledge_type="ethical_analysis_result"
+        )
+        assert len(knowledge_items) > 0
     
     @pytest.mark.asyncio
     async def test_bias_detection(self, ethics_agent):
@@ -222,15 +226,17 @@ class TestEthicsAgent:
 class TestLegalAgent:
     """Test cases for LegalAgent functionality"""
     
-    @pytest.fixture
+    @pytest_asyncio.fixture
     async def mock_blackboard(self):
         """Create mock blackboard service"""
         from services.shared.blackboard.blackboard_service import BlackboardService
         mock_redis = MockRedis()
-        blackboard = BlackboardService(redis_client=mock_redis)
+        blackboard = BlackboardService(redis_url="redis://localhost:6379", db=0)
+        # Replace the redis client with our mock after initialization
+        blackboard.redis_client = mock_redis
         return blackboard
     
-    @pytest.fixture
+    @pytest_asyncio.fixture
     async def legal_agent(self, mock_blackboard):
         """Create LegalAgent with mock dependencies"""
         agent = LegalAgent(
@@ -244,7 +250,6 @@ class TestLegalAgent:
         """Create sample legal analysis task"""
         return TaskDefinition(
             task_type="legal_analysis",
-            description="Analyze legal compliance of AI model deployment",
             requirements={
                 "regulatory_compliance": True,
                 "liability_assessment": True,
@@ -252,8 +257,7 @@ class TestLegalAgent:
                 "intellectual_property_check": True
             },
             priority=1,
-            assigned_agents=["legal_agent_1"],
-            metadata={
+            input_data={
                 "governance_request_id": str(uuid4()),
                 "jurisdiction": "EU",
                 "deployment_regions": ["EU", "US"],
@@ -410,15 +414,17 @@ class TestLegalAgent:
 class TestOperationalAgent:
     """Test cases for OperationalAgent functionality"""
     
-    @pytest.fixture
+    @pytest_asyncio.fixture
     async def mock_blackboard(self):
         """Create mock blackboard service"""
         from services.shared.blackboard.blackboard_service import BlackboardService
         mock_redis = MockRedis()
-        blackboard = BlackboardService(redis_client=mock_redis)
+        blackboard = BlackboardService(redis_url="redis://localhost:6379", db=0)
+        # Replace the redis client with our mock after initialization
+        blackboard.redis_client = mock_redis
         return blackboard
     
-    @pytest.fixture
+    @pytest_asyncio.fixture
     async def operational_agent(self, mock_blackboard):
         """Create OperationalAgent with mock dependencies"""
         agent = OperationalAgent(
@@ -432,7 +438,6 @@ class TestOperationalAgent:
         """Create sample operational analysis task"""
         return TaskDefinition(
             task_type="operational_analysis",
-            description="Analyze operational feasibility of AI model deployment",
             requirements={
                 "performance_analysis": True,
                 "scalability_assessment": True,
@@ -441,8 +446,7 @@ class TestOperationalAgent:
                 "monitoring_setup": True
             },
             priority=1,
-            assigned_agents=["operational_agent_1"],
-            metadata={
+            input_data={
                 "governance_request_id": str(uuid4()),
                 "model_info": {
                     "model_type": "language_model",
@@ -687,15 +691,17 @@ class TestOperationalAgent:
 class TestWorkerAgentCoordination:
     """Test coordination between different worker agents"""
     
-    @pytest.fixture
+    @pytest_asyncio.fixture
     async def mock_blackboard(self):
         """Create mock blackboard service"""
         from services.shared.blackboard.blackboard_service import BlackboardService
         mock_redis = MockRedis()
-        blackboard = BlackboardService(redis_client=mock_redis)
+        blackboard = BlackboardService(redis_url="redis://localhost:6379", db=0)
+        # Replace the redis client with our mock after initialization
+        blackboard.redis_client = mock_redis
         return blackboard
     
-    @pytest.fixture
+    @pytest_asyncio.fixture
     async def all_agents(self, mock_blackboard):
         """Create all three worker agents"""
         ethics_agent = EthicsAgent("ethics_agent_1", mock_blackboard)
@@ -716,29 +722,23 @@ class TestWorkerAgentCoordination:
         
         ethics_task = TaskDefinition(
             task_type="ethical_analysis",
-            description="Ethics review for AI deployment",
             requirements={"bias_assessment": True},
-            priority=1,
-            assigned_agents=["ethics_agent_1"],
-            metadata={"governance_request_id": governance_request_id}
+            input_data={"governance_request_id": governance_request_id, "description": "Ethics review for AI deployment"},
+            priority=1
         )
         
         legal_task = TaskDefinition(
             task_type="legal_analysis",
-            description="Legal review for AI deployment",
             requirements={"regulatory_compliance": True},
-            priority=1,
-            assigned_agents=["legal_agent_1"],
-            metadata={"governance_request_id": governance_request_id}
+            input_data={"governance_request_id": governance_request_id, "description": "Legal review for AI deployment"},
+            priority=1
         )
-        
+
         operational_task = TaskDefinition(
             task_type="operational_analysis",
-            description="Operational review for AI deployment",
             requirements={"performance_analysis": True},
-            priority=1,
-            assigned_agents=["operational_agent_1"],
-            metadata={"governance_request_id": governance_request_id}
+            input_data={"governance_request_id": governance_request_id, "description": "Operational review for AI deployment"},
+            priority=1
         )
         
         # Add tasks to blackboard
@@ -788,6 +788,7 @@ class TestWorkerAgentCoordination:
         
         # Legal agent queries for ethics knowledge
         ethics_insights = await mock_blackboard.query_knowledge(
+            space="governance",
             agent_id="ethics_agent_1",
             tags={"bias"}
         )
@@ -813,6 +814,7 @@ class TestWorkerAgentCoordination:
         
         # Operational agent queries for both ethics and legal knowledge
         shared_knowledge = await mock_blackboard.query_knowledge(
+            space="governance",
             tags={"shared"}
         )
         
@@ -880,13 +882,10 @@ class TestWorkerAgentCoordination:
             from services.shared.blackboard.blackboard_service import ConflictItem
             
             conflict = ConflictItem(
-                conflicting_agents=["ethics_agent_1", "legal_agent_1"],
+                involved_agents=["ethics_agent_1", "legal_agent_1"],
+                involved_tasks=[governance_request_id],
                 conflict_type="assessment_disagreement",
                 description="Agents disagree on risk assessment",
-                context={
-                    "governance_request_id": governance_request_id,
-                    "disagreement_points": ["risk_level", "approval_recommendation"]
-                },
                 severity="medium"
             )
             

@@ -14,23 +14,23 @@ from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 
-from .services.automated_resolution_engine import (
+from services.core.constitutional_ai.ac_service.services.automated_resolution_engine import (
     AutomatedResolutionEngine,
     ResolutionResult,
     ResolutionStrategy,
 )
-from .services.conflict_audit_system import (
+from services.core.constitutional_ai.ac_service.services.conflict_audit_system import (
     AuditEventType,
     ConflictAuditSystem,
     PerformanceMetrics,
 )
-from .services.conflict_resolution_orchestrator import ConflictResolutionOrchestrator
-from .services.human_escalation_system import (
+from services.core.constitutional_ai.ac_service.services.conflict_resolution_orchestrator import ConflictResolutionOrchestrator
+from services.core.constitutional_ai.ac_service.services.human_escalation_system import (
     EscalationLevel,
     EscalationRequest,
     HumanEscalationSystem,
 )
-from .services.intelligent_conflict_detector import (
+from services.core.constitutional_ai.ac_service.services.intelligent_conflict_detector import (
     ConflictDetectionResult,
     ConflictSeverity,
     ConflictType,

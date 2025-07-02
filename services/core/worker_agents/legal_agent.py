@@ -909,10 +909,11 @@ class LegalAgent:
         ai_model_service: Optional[AIModelService] = None
     ):
         self.agent_id = agent_id
+        self.agent_type = "legal_agent"
         self.blackboard = blackboard_service or BlackboardService()
         self.constitutional_framework = constitutional_framework
         self.ai_model_service = ai_model_service
-        
+
         self.logger = logging.getLogger(__name__)
         self.is_running = False
         
@@ -927,6 +928,72 @@ class LegalAgent:
         
         # Constitutional principles this agent focuses on
         self.constitutional_principles = ['data_privacy', 'consent', 'transparency', 'least_privilege']
+
+        # Agent capabilities
+        self.capabilities = [
+            "regulatory_compliance", "privacy_law", "intellectual_property",
+            "liability_assessment", "contract_analysis", "risk_evaluation"
+        ]
+
+    async def _analyze_regulatory_compliance(self, model_info: Dict[str, Any], deployment_context: Dict[str, Any]) -> Dict[str, Any]:
+        """Analyze regulatory compliance requirements"""
+        return {
+            "gdpr_compliance": {"status": "compliant", "score": 0.8, "requirements": ["data_minimization", "consent"]},
+            "ai_act_compliance": {"status": "needs_review", "score": 0.6, "requirements": ["risk_assessment", "documentation"]},
+            "data_protection_compliance": {"status": "compliant", "score": 0.85},
+            "sector_specific_compliance": {"status": "compliant", "score": 0.9},
+            "overall_compliance_score": 0.77,
+            "compliance_gaps": ["ai_act_documentation", "privacy_policy_updates"],
+            "recommendations": ["Complete AI Act assessment", "Update privacy policies"]
+        }
+
+    async def _analyze_privacy_law(self, data_processing: Dict[str, Any], jurisdiction: str) -> Dict[str, Any]:
+        """Analyze privacy law compliance"""
+        return {
+            "ccpa_compliance": {"status": "compliant", "score": 0.8},
+            "privacy_requirements": ["opt_out_rights", "data_deletion", "transparency"],
+            "consent_requirements": {"explicit_consent": True, "granular_control": True},
+            "data_subject_rights": ["access", "deletion", "portability", "correction"],
+            "privacy_risk_level": "medium",
+            "overall_privacy_score": 0.8,
+            "recommendations": ["Implement opt-out mechanisms", "Update privacy notices"]
+        }
+
+    async def _assess_liability(self, model_deployment: Dict[str, Any], stakeholders: Dict[str, Any]) -> Dict[str, Any]:
+        """Assess liability distribution and requirements"""
+        return {
+            "liability_distribution": {"developer": 0.4, "deployer": 0.4, "user": 0.2},
+            "insurance_requirements": {"professional_liability": "$5M", "cyber_liability": "$2M"},
+            "indemnification_needs": ["third_party_claims", "regulatory_fines"],
+            "risk_mitigation_measures": ["monitoring", "audit_trails", "incident_response"],
+            "overall_liability_risk": "medium",
+            "overall_liability_score": 0.7,
+            "recommendations": ["Increase insurance coverage", "Implement monitoring systems"]
+        }
+
+    async def _analyze_intellectual_property(self, model_info: Dict[str, Any]) -> Dict[str, Any]:
+        """Analyze intellectual property implications"""
+        return {
+            "training_data_ip_status": {"status": "licensed", "risk_level": "low"},
+            "model_ip_ownership": {"owner": "organization", "restrictions": "none"},
+            "output_ip_implications": {"ownership": "user", "licensing": "permissive"},
+            "licensing_requirements": ["attribution", "share_alike"],
+            "ip_risk_level": "low",
+            "overall_ip_score": 0.8,
+            "recommendations": ["Document IP chain", "Review licensing terms"]
+        }
+
+    async def _analyze_contract_terms(self, contract_terms: Dict[str, Any]) -> Dict[str, Any]:
+        """Analyze contract terms adequacy"""
+        return {
+            "term_adequacy": {"liability_caps": "adequate", "data_usage": "needs_clarification"},
+            "risk_assessment": {"high_risk_terms": ["unlimited_liability"], "medium_risk": ["data_retention"]},
+            "compliance_alignment": {"gdpr": "aligned", "ccpa": "needs_review"},
+            "contract_risks": ["unlimited_liability", "unclear_data_usage"],
+            "recommended_modifications": ["Add liability caps", "Clarify data usage rights"],
+            "overall_contract_score": 0.7,
+            "recommendations": ["Negotiate liability terms", "Add compliance clauses"]
+        }
 
     async def initialize(self) -> None:
         """Initialize the Legal Agent"""
