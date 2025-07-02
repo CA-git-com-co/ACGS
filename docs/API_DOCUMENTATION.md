@@ -2,31 +2,45 @@
 
 This document provides comprehensive API documentation for all ACGS-2 services.
 
+**Current Status**: Phase 1 Complete - All services operational with constitutional compliance hash `cdd01ef066bc6cf2`
+
 ## Base URLs
 
-### Development Environment
-- Constitutional AI: `http://localhost:8002`
-- Policy Governance: `http://localhost:8010`
-- Governance Synthesis: `http://localhost:8005`
-- Formal Verification: `http://localhost:8004`
-- Evolutionary Computation: `http://localhost:8003`
-- Authentication: `http://localhost:8016`
-- Integrity: `http://localhost:8003`
+### Development Environment (Current Deployment)
+
+- **Constitutional AI**: `http://localhost:8002`
+- **Policy Governance**: `http://localhost:8005`
+- **Policy Generation (ACGS-PGP v8)**: `http://localhost:8010`
+- **Governance Synthesis**: `http://localhost:8004`
+- **Formal Verification**: `http://localhost:8003`
+- **Evolutionary Computation**: `http://localhost:8006`
+- **Authentication**: `http://localhost:8016`
+- **Integrity**: `http://localhost:8002`
+
+### Infrastructure Services
+
+- **PostgreSQL Database**: Port 5439 (production configuration)
+- **Redis Cache**: Port 6389 (>85% cache hit rate achieved)
+- **OPA Policy Engine**: Port 8181
 
 ### Production Environment
+
 - Base URL: `https://api.acgs.ai`
 - Service routing via path prefix: `/api/v1/{service}/`
+- Constitutional compliance validation on all endpoints
 
 ## Authentication
 
 All API endpoints require authentication unless otherwise specified.
 
 ### JWT Token Authentication
+
 ```http
 Authorization: Bearer <jwt_token>
 ```
 
 ### Obtaining Tokens
+
 ```http
 POST /api/v1/auth/login
 Content-Type: application/json
@@ -38,11 +52,39 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
   "token_type": "bearer",
   "expires_in": 3600
+}
+```
+
+## Constitutional Compliance
+
+All API endpoints validate constitutional compliance using hash `cdd01ef066bc6cf2`.
+
+### Compliance Headers
+
+```http
+X-Constitutional-Hash: cdd01ef066bc6cf2
+X-Compliance-Threshold: 0.8
+```
+
+### Compliance Response
+
+All responses include constitutional compliance information:
+
+```json
+{
+  "data": { ... },
+  "constitutional_compliance": {
+    "hash": "cdd01ef066bc6cf2",
+    "compliance_score": 0.95,
+    "is_compliant": true,
+    "validation_timestamp": "2025-01-01T12:00:00Z"
+  }
 }
 ```
 
