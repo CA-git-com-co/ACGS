@@ -280,7 +280,7 @@ class UltraLowLatencyOptimizer:
         optimization_level: OptimizationLevel = OptimizationLevel.ENHANCED,
     ) -> OptimizationResult:
         """
-        Optimize policy decision for ultra-low latency.
+        Optimize policy decision for ultra-low latency with sub-5ms P99 target.
 
         Args:
             policy_request: Policy decision request
@@ -290,10 +290,20 @@ class UltraLowLatencyOptimizer:
             Optimization result with latency breakdown
         """
         operation_id = str(uuid.uuid4())
-        start_time = time.time()
+        start_time = time.perf_counter()  # Higher precision timing
         breakdown = {}
         cache_hit = False
         recommendations = []
+
+        # Pre-allocate result structure for performance
+        result_template = {
+            "decision": None,
+            "confidence": 0.0,
+            "latency_ms": 0.0,
+            "cache_hit": False,
+            "optimization_level": optimization_level.value,
+            "constitutional_hash": "cdd01ef066bc6cf2"
+        }
 
         try:
             # Step 1: Check multi-tier cache (target: <2ms)

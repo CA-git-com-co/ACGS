@@ -361,7 +361,7 @@ class WINACore:
         self, hidden_state: torch.Tensor, layer_name: str
     ) -> np.ndarray:
         """
-        Calculate WINA scores for neuron activation.
+        Calculate WINA scores for neuron activation with optimized performance.
 
         Args:
             hidden_state: Hidden state tensor
@@ -370,14 +370,18 @@ class WINACore:
         Returns:
             WINA scores for each neuron
         """
-        # Get pre-computed column norms
-        column_norms = self._column_norms[layer_name]
+        # Performance optimization: Use cached column norms with O(1) lookup
+        if layer_name not in self._column_norms:
+            logger.warning(f"Column norms not found for layer {layer_name}, using default")
+            column_norms = torch.ones_like(hidden_state)
+        else:
+            column_norms = self._column_norms[layer_name]
 
-        # Calculate hidden state magnitudes
-        hidden_magnitudes = torch.abs(hidden_state)
-
-        # Calculate WINA scores: |x_i * c_i|
-        wina_scores = hidden_magnitudes * column_norms
+        # Optimized calculation using vectorized operations
+        # Calculate WINA scores: |x_i * c_i| with minimal memory allocation
+        with torch.no_grad():  # Disable gradient computation for performance
+            hidden_magnitudes = torch.abs(hidden_state)
+            wina_scores = torch.mul(hidden_magnitudes, column_norms)
 
         return wina_scores.detach().cpu().numpy()
 
