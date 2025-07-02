@@ -2,7 +2,7 @@
 
 # Core dependencies
 elasticsearch==8.12.0
-requests==2.32.4
+requests>=2.32.4
 fastapi==0.104.1
 uvicorn==0.24.0
 pydantic==2.5.0
@@ -42,6 +42,16 @@ marshmallow==3.20.1
 pytest==7.4.3
 pytest-asyncio==0.21.1
 
-python-jose>=3.4.0
+python-jose>=3.5.1
 
 python-multipart>=0.0.20
+
+ecdsa>=0.20.0
+
+torch>=2.7.3
+
+urllib3>=2.5.0
+
+certifi>=2025.6.15
+
+setuptools>=80.9.0

@@ -52,7 +52,7 @@ rich>=13.7.0
 typer>=0.9.0
 
 # Additional dependencies
-python-jose>=3.4.0
+python-jose>=3.5.1
 python-multipart>=0.0.18
 
 # Testing dependencies
@@ -68,3 +68,15 @@ mypy>=1.5.0
 flake8>=6.0.0
 bandit[toml]>=1.7.5
 safety>=2.3.0
+
+ecdsa>=0.20.0
+
+torch>=2.7.3
+
+requests>=2.32.4
+
+urllib3>=2.5.0
+
+certifi>=2025.6.15
+
+setuptools>=80.9.0

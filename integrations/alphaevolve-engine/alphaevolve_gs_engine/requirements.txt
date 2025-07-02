@@ -10,13 +10,13 @@ anyio==4.9.0
 # via
 #   httpx
 #   openai
-certifi==2025.4.26
+certifi>=2025.6.15
 # via
 #   httpcore
 #   httpx
 cffi==1.17.1
 # via cryptography
-cryptography==45.0.4
+cryptography>=45.0.4
 # via -r integrations/alphaevolve-engine/requirements.txt
 distro==1.9.0
 # via openai
@@ -64,5 +64,14 @@ typing-extensions==4.13.2
 typing-inspection==0.4.1
 # via pydantic
 
-python-jose>=3.5.0
+python-jose>=3.5.1
 python-multipart>=0.0.20
+ecdsa>=0.20.0
+
+torch>=2.7.3
+
+requests>=2.32.4
+
+urllib3>=2.5.0
+
+setuptools>=80.9.0
