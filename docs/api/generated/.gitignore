@@ -1,8 +1,0 @@
-# Generated API documentation
-*.json
-*.yaml
-*.html
-
-# Keep directory structure
-!.gitignore
-!README.md

@@ -1,1 +1,1 @@
-# ACGS-1 Integration Tests Package
+# Multi-agent coordination integration tests
