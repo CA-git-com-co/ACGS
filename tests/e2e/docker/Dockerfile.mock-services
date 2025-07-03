@@ -1,0 +1,250 @@
+# Multi-stage Dockerfile for ACGS Mock Services
+# Provides lightweight mock implementations of ACGS services for E2E testing
+
+# =============================================================================
+# Base Stage - Common dependencies
+# =============================================================================
+FROM python:3.11-slim as base
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /app
+
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Install additional testing dependencies
+RUN pip install --no-cache-dir \
+    fastapi \
+    uvicorn[standard] \
+    httpx \
+    asyncpg \
+    redis \
+    prometheus-client
+
+# Copy framework code
+COPY tests/e2e/framework/ ./tests/e2e/framework/
+
+# Set Python path
+ENV PYTHONPATH=/app
+
+# =============================================================================
+# Mock Auth Service
+# =============================================================================
+FROM base as mock-auth
+
+# Copy mock service implementation
+COPY tests/e2e/framework/mocks.py ./mock_services.py
+
+# Create auth service startup script
+RUN cat > start_auth_service.py << 'EOF'
+import asyncio
+import os
+from tests.e2e.framework.mocks import MockAuthService
+from tests.e2e.framework.config import E2ETestConfig, ServiceType
+import uvicorn
+
+async def main():
+    config = E2ETestConfig.from_environment()
+    service = MockAuthService(config)
+    
+    port = int(os.getenv('SERVICE_PORT', 8016))
+    
+    # Configure uvicorn
+    uvicorn_config = uvicorn.Config(
+        service.app,
+        host="0.0.0.0",
+        port=port,
+        log_level="info",
+        access_log=True
+    )
+    
+    server = uvicorn.Server(uvicorn_config)
+    await server.serve()
+
+if __name__ == "__main__":
+    asyncio.run(main())
+EOF
+
+EXPOSE 8016
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:8016/health || exit 1
+
+CMD ["python", "start_auth_service.py"]
+
+# =============================================================================
+# Mock Constitutional AI Service
+# =============================================================================
+FROM base as mock-constitutional-ai
+
+# Copy mock service implementation
+COPY tests/e2e/framework/mocks.py ./mock_services.py
+
+# Create constitutional AI service startup script
+RUN cat > start_constitutional_ai_service.py << 'EOF'
+import asyncio
+import os
+from tests.e2e.framework.mocks import MockConstitutionalAIService
+from tests.e2e.framework.config import E2ETestConfig, ServiceType
+import uvicorn
+
+async def main():
+    config = E2ETestConfig.from_environment()
+    service = MockConstitutionalAIService(config)
+    
+    port = int(os.getenv('SERVICE_PORT', 8001))
+    
+    # Configure uvicorn
+    uvicorn_config = uvicorn.Config(
+        service.app,
+        host="0.0.0.0",
+        port=port,
+        log_level="info",
+        access_log=True
+    )
+    
+    server = uvicorn.Server(uvicorn_config)
+    await server.serve()
+
+if __name__ == "__main__":
+    asyncio.run(main())
+EOF
+
+EXPOSE 8001
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:8001/health || exit 1
+
+CMD ["python", "start_constitutional_ai_service.py"]
+
+# =============================================================================
+# Mock Policy Governance Service
+# =============================================================================
+FROM base as mock-policy-governance
+
+# Copy mock service implementation
+COPY tests/e2e/framework/mocks.py ./mock_services.py
+
+# Create policy governance service startup script
+RUN cat > start_policy_governance_service.py << 'EOF'
+import asyncio
+import os
+from tests.e2e.framework.mocks import MockPolicyGovernanceService
+from tests.e2e.framework.config import E2ETestConfig, ServiceType
+import uvicorn
+
+async def main():
+    config = E2ETestConfig.from_environment()
+    service = MockPolicyGovernanceService(config)
+    
+    port = int(os.getenv('SERVICE_PORT', 8005))
+    
+    # Configure uvicorn
+    uvicorn_config = uvicorn.Config(
+        service.app,
+        host="0.0.0.0",
+        port=port,
+        log_level="info",
+        access_log=True
+    )
+    
+    server = uvicorn.Server(uvicorn_config)
+    await server.serve()
+
+if __name__ == "__main__":
+    asyncio.run(main())
+EOF
+
+EXPOSE 8005
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:8005/health || exit 1
+
+CMD ["python", "start_policy_governance_service.py"]
+
+# =============================================================================
+# Mock Governance Synthesis Service
+# =============================================================================
+FROM base as mock-governance-synthesis
+
+# Copy mock service implementation
+COPY tests/e2e/framework/mocks.py ./mock_services.py
+
+# Create governance synthesis service startup script
+RUN cat > start_governance_synthesis_service.py << 'EOF'
+import asyncio
+import os
+from tests.e2e.framework.mocks import MockServiceBase
+from tests.e2e.framework.config import E2ETestConfig, ServiceType
+import uvicorn
+
+async def main():
+    config = E2ETestConfig.from_environment()
+    service = MockServiceBase(ServiceType.GOVERNANCE_SYNTHESIS, config)
+    
+    # Add governance synthesis specific endpoints
+    @service.app.post("/api/v1/governance/consensus")
+    async def consensus():
+        await service.simulate_latency()
+        service.increment_request_count()
+        
+        return {
+            "consensus_reached": True,
+            "final_score": 0.85,
+            "constitutional_compliance": True,
+            "constitutional_hash": config.constitutional_hash,
+            "participants": 3,
+            "consensus_time_ms": 150
+        }
+    
+    @service.app.post("/api/v1/synthesis/integrate")
+    async def integrate():
+        await service.simulate_latency()
+        service.increment_request_count()
+        
+        return {
+            "integration_status": "completed",
+            "constitutional_compliance": True,
+            "constitutional_hash": config.constitutional_hash,
+            "synthesis_score": 0.92
+        }
+    
+    @service.app.post("/api/v1/synthesis/decision")
+    async def decision():
+        await service.simulate_latency()
+        service.increment_request_count()
+        
+        return {
+            "decision_status": "completed",
+            "decision_confidence": 0.88,
+            "constitutional_compliance": True,
+            "constitutional_hash": config.constitutional_hash,
+            "decision_time_ms": 45
+        }
+    
+    port = int(os.getenv('SERVICE_PORT', 8004))
+    
+    # Configure uvicorn
+    uvicorn_config = uvicorn.Config(
+        service.app,
+        host="0.0.0.0",
+        port=port,
+        log_level="info",
+        access_log=True
+    )
+    
+    server = uvicorn.Server(uvicorn_config)
+    await server.serve()
+
+if __name__ == "__main__":
+    asyncio.run(main())
+EOF
+
+EXPOSE 8004
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:8004/health || exit 1
+
+CMD ["python", "start_governance_synthesis_service.py"]

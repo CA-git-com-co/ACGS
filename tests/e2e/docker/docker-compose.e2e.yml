@@ -1,0 +1,357 @@
+version: '3.8'
+
+# ACGS E2E Testing Docker Compose Configuration
+# Provides isolated testing environment with all required infrastructure
+
+services:
+  # =============================================================================
+  # Infrastructure Services
+  # =============================================================================
+  
+  # PostgreSQL for E2E testing
+  postgres-e2e:
+    image: postgres:15-alpine
+    container_name: acgs_postgres_e2e
+    environment:
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_password
+      POSTGRES_DB: acgs_e2e_test
+      POSTGRES_INITDB_ARGS: '--encoding=UTF8 --locale=C'
+    ports:
+      - "5439:5432"
+    volumes:
+      - postgres_e2e_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d:ro
+    networks:
+      - acgs_e2e_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test_user -d acgs_e2e_test"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+
+  # Redis for E2E testing
+  redis-e2e:
+    image: redis:7-alpine
+    container_name: acgs_redis_e2e
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    ports:
+      - "6389:6379"
+    volumes:
+      - redis_e2e_data:/data
+    networks:
+      - acgs_e2e_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.25'
+
+  # =============================================================================
+  # Mock ACGS Services for E2E Testing
+  # =============================================================================
+
+  # Mock Auth Service
+  mock-auth-service:
+    build:
+      context: ../../../
+      dockerfile: tests/e2e/docker/Dockerfile.mock-services
+      target: mock-auth
+    container_name: acgs_mock_auth_e2e
+    environment:
+      - SERVICE_NAME=auth_service
+      - SERVICE_PORT=8016
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - DATABASE_URL=postgresql+asyncpg://test_user:test_password@postgres-e2e:5432/acgs_e2e_test
+      - REDIS_URL=redis://redis-e2e:6379/0
+      - LOG_LEVEL=INFO
+    ports:
+      - "8016:8016"
+    networks:
+      - acgs_e2e_network
+    depends_on:
+      postgres-e2e:
+        condition: service_healthy
+      redis-e2e:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8016/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Mock Constitutional AI Service
+  mock-constitutional-ai:
+    build:
+      context: ../../../
+      dockerfile: tests/e2e/docker/Dockerfile.mock-services
+      target: mock-constitutional-ai
+    container_name: acgs_mock_constitutional_ai_e2e
+    environment:
+      - SERVICE_NAME=constitutional_ai_service
+      - SERVICE_PORT=8001
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - DATABASE_URL=postgresql+asyncpg://test_user:test_password@postgres-e2e:5432/acgs_e2e_test
+      - REDIS_URL=redis://redis-e2e:6379/1
+      - AUTH_SERVICE_URL=http://mock-auth-service:8016
+      - LOG_LEVEL=INFO
+    ports:
+      - "8001:8001"
+    networks:
+      - acgs_e2e_network
+    depends_on:
+      postgres-e2e:
+        condition: service_healthy
+      redis-e2e:
+        condition: service_healthy
+      mock-auth-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Mock Policy Governance Service
+  mock-policy-governance:
+    build:
+      context: ../../../
+      dockerfile: tests/e2e/docker/Dockerfile.mock-services
+      target: mock-policy-governance
+    container_name: acgs_mock_policy_governance_e2e
+    environment:
+      - SERVICE_NAME=policy_governance_service
+      - SERVICE_PORT=8005
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - DATABASE_URL=postgresql+asyncpg://test_user:test_password@postgres-e2e:5432/acgs_e2e_test
+      - REDIS_URL=redis://redis-e2e:6379/5
+      - AUTH_SERVICE_URL=http://mock-auth-service:8016
+      - CONSTITUTIONAL_AI_URL=http://mock-constitutional-ai:8001
+      - LOG_LEVEL=INFO
+    ports:
+      - "8005:8005"
+    networks:
+      - acgs_e2e_network
+    depends_on:
+      postgres-e2e:
+        condition: service_healthy
+      redis-e2e:
+        condition: service_healthy
+      mock-auth-service:
+        condition: service_healthy
+      mock-constitutional-ai:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8005/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Mock Governance Synthesis Service
+  mock-governance-synthesis:
+    build:
+      context: ../../../
+      dockerfile: tests/e2e/docker/Dockerfile.mock-services
+      target: mock-governance-synthesis
+    container_name: acgs_mock_governance_synthesis_e2e
+    environment:
+      - SERVICE_NAME=governance_synthesis_service
+      - SERVICE_PORT=8004
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - DATABASE_URL=postgresql+asyncpg://test_user:test_password@postgres-e2e:5432/acgs_e2e_test
+      - REDIS_URL=redis://redis-e2e:6379/4
+      - AUTH_SERVICE_URL=http://mock-auth-service:8016
+      - CONSTITUTIONAL_AI_URL=http://mock-constitutional-ai:8001
+      - POLICY_GOVERNANCE_URL=http://mock-policy-governance:8005
+      - LOG_LEVEL=INFO
+    ports:
+      - "8004:8004"
+    networks:
+      - acgs_e2e_network
+    depends_on:
+      postgres-e2e:
+        condition: service_healthy
+      redis-e2e:
+        condition: service_healthy
+      mock-auth-service:
+        condition: service_healthy
+      mock-constitutional-ai:
+        condition: service_healthy
+      mock-policy-governance:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8004/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # =============================================================================
+  # E2E Test Runner
+  # =============================================================================
+
+  e2e-test-runner:
+    build:
+      context: ../../../
+      dockerfile: tests/e2e/docker/Dockerfile.test-runner
+    container_name: acgs_e2e_test_runner
+    environment:
+      - E2E_TEST_MODE=online
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - POSTGRES_HOST=postgres-e2e
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=test_user
+      - POSTGRES_PASSWORD=test_password
+      - POSTGRES_DB=acgs_e2e_test
+      - REDIS_HOST=redis-e2e
+      - REDIS_PORT=6379
+      - AUTH_SERVICE_URL=http://mock-auth-service:8016
+      - CONSTITUTIONAL_AI_URL=http://mock-constitutional-ai:8001
+      - POLICY_GOVERNANCE_URL=http://mock-policy-governance:8005
+      - GOVERNANCE_SYNTHESIS_URL=http://mock-governance-synthesis:8004
+      - E2E_PARALLEL_WORKERS=2
+      - E2E_TEST_TIMEOUT=1800
+      - PYTHONPATH=/app
+    volumes:
+      - ../../../tests:/app/tests:ro
+      - ../../../services:/app/services:ro
+      - e2e_test_results:/app/reports
+    networks:
+      - acgs_e2e_network
+    depends_on:
+      postgres-e2e:
+        condition: service_healthy
+      redis-e2e:
+        condition: service_healthy
+      mock-auth-service:
+        condition: service_healthy
+      mock-constitutional-ai:
+        condition: service_healthy
+      mock-policy-governance:
+        condition: service_healthy
+      mock-governance-synthesis:
+        condition: service_healthy
+    command: >
+      sh -c "
+        echo 'Waiting for services to be ready...' &&
+        sleep 30 &&
+        echo 'Starting E2E test suite...' &&
+        python -m pytest tests/e2e/tests/ 
+          -v 
+          --tb=short 
+          --maxfail=10 
+          --timeout=300 
+          --junitxml=/app/reports/e2e-results.xml 
+          --cov=tests/e2e 
+          --cov-report=html:/app/reports/coverage 
+          --cov-report=xml:/app/reports/coverage.xml 
+          --cov-fail-under=80
+      "
+
+  # =============================================================================
+  # Monitoring and Observability (Optional)
+  # =============================================================================
+
+  # Prometheus for metrics collection during testing
+  prometheus-e2e:
+    image: prom/prometheus:latest
+    container_name: acgs_prometheus_e2e
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_e2e_data:/prometheus
+    networks:
+      - acgs_e2e_network
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=1h'
+      - '--web.enable-lifecycle'
+    profiles:
+      - monitoring
+
+  # Grafana for visualization during testing
+  grafana-e2e:
+    image: grafana/grafana:latest
+    container_name: acgs_grafana_e2e
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_e2e_data:/var/lib/grafana
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    networks:
+      - acgs_e2e_network
+    depends_on:
+      - prometheus-e2e
+    profiles:
+      - monitoring
+
+# =============================================================================
+# Networks and Volumes
+# =============================================================================
+
+networks:
+  acgs_e2e_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  postgres_e2e_data:
+    driver: local
+  redis_e2e_data:
+    driver: local
+  e2e_test_results:
+    driver: local
+  prometheus_e2e_data:
+    driver: local
+  grafana_e2e_data:
+    driver: local
+
+# =============================================================================
+# Profiles for different testing scenarios
+# =============================================================================
+
+# Usage examples:
+# 
+# 1. Run infrastructure only:
+#    docker-compose -f docker-compose.e2e.yml up postgres-e2e redis-e2e
+#
+# 2. Run full E2E test suite:
+#    docker-compose -f docker-compose.e2e.yml up --build
+#
+# 3. Run with monitoring:
+#    docker-compose -f docker-compose.e2e.yml --profile monitoring up --build
+#
+# 4. Run specific services:
+#    docker-compose -f docker-compose.e2e.yml up postgres-e2e redis-e2e mock-auth-service
+#
+# 5. Scale mock services:
+#    docker-compose -f docker-compose.e2e.yml up --scale mock-constitutional-ai=2
+#
+# 6. Run tests only (assumes infrastructure is running):
+#    docker-compose -f docker-compose.e2e.yml run --rm e2e-test-runner

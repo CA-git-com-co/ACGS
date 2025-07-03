@@ -1,0 +1,62 @@
+# Prometheus configuration for ACGS E2E testing
+# Collects metrics from mock services during testing
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Mock Auth Service
+  - job_name: 'mock-auth-service'
+    static_configs:
+      - targets: ['mock-auth-service:8016']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+  # Mock Constitutional AI Service
+  - job_name: 'mock-constitutional-ai'
+    static_configs:
+      - targets: ['mock-constitutional-ai:8001']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+  # Mock Policy Governance Service
+  - job_name: 'mock-policy-governance'
+    static_configs:
+      - targets: ['mock-policy-governance:8005']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+  # Mock Governance Synthesis Service
+  - job_name: 'mock-governance-synthesis'
+    static_configs:
+      - targets: ['mock-governance-synthesis:8004']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+  # PostgreSQL metrics (if postgres_exporter is available)
+  - job_name: 'postgres-e2e'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+    scrape_interval: 30s
+    scrape_timeout: 10s
+
+  # Redis metrics (if redis_exporter is available)
+  - job_name: 'redis-e2e'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+    scrape_interval: 30s
+    scrape_timeout: 10s

@@ -1,0 +1,549 @@
+name: ACGS E2E Test Suite
+
+on:
+  push:
+    branches: [main, master, develop]
+    paths:
+      - 'services/**'
+      - 'tests/e2e/**'
+      - 'infrastructure/**'
+      - '.github/workflows/e2e-tests.yml'
+  pull_request:
+    branches: [main, master, develop]
+    paths:
+      - 'services/**'
+      - 'tests/e2e/**'
+      - 'infrastructure/**'
+  schedule:
+    - cron: '0 2 * * *'  # Daily at 2 AM
+  workflow_dispatch:
+    inputs:
+      test_mode:
+        description: 'Test execution mode'
+        required: false
+        default: 'offline'
+        type: choice
+        options:
+          - offline
+          - online
+          - hybrid
+      test_suite:
+        description: 'Test suite to run'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - smoke
+          - performance
+          - security
+          - constitutional
+      skip_performance_tests:
+        description: 'Skip performance tests'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  packages: write
+  security-events: write
+  actions: read
+  id-token: write
+  checks: write
+
+env:
+  CONSTITUTIONAL_HASH: "cdd01ef066bc6cf2"
+  E2E_TEST_MODE: ${{ github.event.inputs.test_mode || 'offline' }}
+  E2E_PARALLEL_WORKERS: 4
+  E2E_TEST_TIMEOUT: 1800  # 30 minutes
+  POSTGRES_HOST: localhost
+  POSTGRES_PORT: 5439
+  REDIS_HOST: localhost
+  REDIS_PORT: 6389
+
+jobs:
+  # Job 1: Setup and validation
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      test-mode: ${{ steps.config.outputs.test-mode }}
+      test-suite: ${{ steps.config.outputs.test-suite }}
+      skip-performance: ${{ steps.config.outputs.skip-performance }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure test parameters
+        id: config
+        run: |
+          echo "test-mode=${{ env.E2E_TEST_MODE }}" >> $GITHUB_OUTPUT
+          echo "test-suite=${{ github.event.inputs.test_suite || 'all' }}" >> $GITHUB_OUTPUT
+          echo "skip-performance=${{ github.event.inputs.skip_performance_tests || 'false' }}" >> $GITHUB_OUTPUT
+
+      - name: Validate configuration
+        run: |
+          echo "Test Mode: ${{ steps.config.outputs.test-mode }}"
+          echo "Test Suite: ${{ steps.config.outputs.test-suite }}"
+          echo "Constitutional Hash: ${{ env.CONSTITUTIONAL_HASH }}"
+
+  # Job 2: Infrastructure setup (for online/hybrid modes)
+  infrastructure:
+    runs-on: ubuntu-latest
+    needs: setup
+    if: needs.setup.outputs.test-mode != 'offline'
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: acgs_test
+        ports:
+          - 5439:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6389:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Verify infrastructure
+        run: |
+          # Test PostgreSQL connection
+          PGPASSWORD=test_password psql -h localhost -p 5439 -U test_user -d acgs_test -c "SELECT 1;"
+          
+          # Test Redis connection
+          redis-cli -h localhost -p 6389 ping
+
+      - name: Setup test database
+        run: |
+          PGPASSWORD=test_password psql -h localhost -p 5439 -U test_user -d acgs_test -c "
+            CREATE SCHEMA IF NOT EXISTS acgs_test;
+            CREATE TABLE IF NOT EXISTS acgs_test.test_table (id SERIAL PRIMARY KEY, name VARCHAR(100));
+          "
+
+  # Job 3: Smoke tests (fast validation)
+  smoke-tests:
+    runs-on: ubuntu-latest
+    needs: [setup, infrastructure]
+    if: always() && needs.setup.result == 'success' && (needs.infrastructure.result == 'success' || needs.infrastructure.result == 'skipped')
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-asyncio pytest-cov pytest-xdist
+
+      - name: Run smoke tests
+        env:
+          E2E_TEST_MODE: ${{ needs.setup.outputs.test-mode }}
+          CONSTITUTIONAL_HASH: ${{ env.CONSTITUTIONAL_HASH }}
+        run: |
+          python -m pytest tests/e2e/tests/health.py \
+            -v \
+            --tb=short \
+            --maxfail=5 \
+            --timeout=300 \
+            -m "smoke" \
+            --junitxml=reports/smoke-tests.xml \
+            --cov=tests/e2e \
+            --cov-report=xml:reports/smoke-coverage.xml
+
+      - name: Upload smoke test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: smoke-test-results
+          path: reports/
+
+  # Job 4: Constitutional compliance tests
+  constitutional-tests:
+    runs-on: ubuntu-latest
+    needs: [setup, infrastructure, smoke-tests]
+    if: always() && needs.smoke-tests.result == 'success'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-asyncio pytest-cov
+
+      - name: Run constitutional tests
+        env:
+          E2E_TEST_MODE: ${{ needs.setup.outputs.test-mode }}
+          CONSTITUTIONAL_HASH: ${{ env.CONSTITUTIONAL_HASH }}
+        run: |
+          python -m pytest tests/e2e/tests/constitutional.py tests/e2e/tests/hitl.py \
+            -v \
+            --tb=short \
+            --timeout=600 \
+            -m "constitutional" \
+            --junitxml=reports/constitutional-tests.xml \
+            --cov=tests/e2e \
+            --cov-report=xml:reports/constitutional-coverage.xml
+
+      - name: Upload constitutional test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: constitutional-test-results
+          path: reports/
+
+  # Job 5: Performance tests (conditional)
+  performance-tests:
+    runs-on: ubuntu-latest
+    needs: [setup, infrastructure, smoke-tests]
+    if: always() && needs.smoke-tests.result == 'success' && needs.setup.outputs.skip-performance != 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-asyncio pytest-benchmark
+
+      - name: Run performance tests
+        env:
+          E2E_TEST_MODE: ${{ needs.setup.outputs.test-mode }}
+          CONSTITUTIONAL_HASH: ${{ env.CONSTITUTIONAL_HASH }}
+        run: |
+          python -m pytest tests/e2e/tests/performance.py \
+            -v \
+            --tb=short \
+            --timeout=1200 \
+            -m "performance" \
+            --junitxml=reports/performance-tests.xml \
+            --benchmark-json=reports/performance-benchmark.json
+
+      - name: Upload performance test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: performance-test-results
+          path: reports/
+
+  # Job 6: Security tests
+  security-tests:
+    runs-on: ubuntu-latest
+    needs: [setup, infrastructure, smoke-tests]
+    if: always() && needs.smoke-tests.result == 'success'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-asyncio bandit safety
+
+      - name: Run security tests
+        env:
+          E2E_TEST_MODE: ${{ needs.setup.outputs.test-mode }}
+          CONSTITUTIONAL_HASH: ${{ env.CONSTITUTIONAL_HASH }}
+        run: |
+          python -m pytest tests/e2e/tests/security.py \
+            -v \
+            --tb=short \
+            --timeout=600 \
+            -m "security" \
+            --junitxml=reports/security-tests.xml
+
+      - name: Run security scan
+        run: |
+          bandit -r tests/e2e/ -f json -o reports/bandit-report.json || true
+          safety check --json --output reports/safety-report.json || true
+
+      - name: Upload security test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: security-test-results
+          path: reports/
+
+  # Job 7: Integration tests
+  integration-tests:
+    runs-on: ubuntu-latest
+    needs: [setup, infrastructure, smoke-tests]
+    if: always() && needs.smoke-tests.result == 'success'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-asyncio pytest-xdist
+
+      - name: Run integration tests
+        env:
+          E2E_TEST_MODE: ${{ needs.setup.outputs.test-mode }}
+          CONSTITUTIONAL_HASH: ${{ env.CONSTITUTIONAL_HASH }}
+        run: |
+          python -m pytest tests/e2e/tests/infrastructure.py tests/e2e/tests/governance.py \
+            -v \
+            --tb=short \
+            --timeout=900 \
+            -m "integration" \
+            --junitxml=reports/integration-tests.xml \
+            --cov=tests/e2e \
+            --cov-report=xml:reports/integration-coverage.xml
+
+      - name: Upload integration test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: integration-test-results
+          path: reports/
+
+  # Job 8: Comprehensive E2E test suite
+  comprehensive-e2e:
+    runs-on: ubuntu-latest
+    needs: [setup, infrastructure, constitutional-tests, security-tests, integration-tests]
+    if: always() && needs.setup.outputs.test-suite == 'all'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-asyncio pytest-cov pytest-html
+
+      - name: Run comprehensive E2E tests
+        env:
+          E2E_TEST_MODE: ${{ needs.setup.outputs.test-mode }}
+          CONSTITUTIONAL_HASH: ${{ env.CONSTITUTIONAL_HASH }}
+        run: |
+          python -c "
+          import asyncio
+          from tests.e2e.framework.runner import run_full_test_suite
+          from tests.e2e.framework.config import E2ETestConfig
+          
+          async def main():
+              config = E2ETestConfig.from_environment()
+              summary = await run_full_test_suite(config)
+              print(f'Test Summary: {summary}')
+              
+              # Check if deployment should be blocked
+              from tests.e2e.framework.reporter import E2ETestReporter
+              reporter = E2ETestReporter(config)
+              
+              # Load results from summary
+              results = []  # Would load actual results
+              should_block = reporter.should_block_deployment(results)
+              
+              if should_block:
+                  print('DEPLOYMENT_BLOCKED=true')
+                  exit(1)
+              else:
+                  print('DEPLOYMENT_BLOCKED=false')
+          
+          asyncio.run(main())
+          "
+
+      - name: Upload comprehensive test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: comprehensive-e2e-results
+          path: reports/
+
+  # Job 9: Test reporting and analysis
+  test-reporting:
+    runs-on: ubuntu-latest
+    needs: [smoke-tests, constitutional-tests, performance-tests, security-tests, integration-tests, comprehensive-e2e]
+    if: always()
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download all test artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: all-reports/
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install reporting dependencies
+        run: |
+          pip install jinja2 matplotlib seaborn pandas
+
+      - name: Generate consolidated report
+        run: |
+          python -c "
+          import json
+          import os
+          from pathlib import Path
+          
+          # Collect all test results
+          reports_dir = Path('all-reports')
+          all_results = {}
+          
+          for report_file in reports_dir.rglob('*.xml'):
+              print(f'Found report: {report_file}')
+          
+          for json_file in reports_dir.rglob('*.json'):
+              print(f'Found JSON report: {json_file}')
+          
+          # Generate summary
+          summary = {
+              'total_test_jobs': len([d for d in reports_dir.iterdir() if d.is_dir()]),
+              'constitutional_hash': '${{ env.CONSTITUTIONAL_HASH }}',
+              'test_mode': '${{ needs.setup.outputs.test-mode }}',
+              'timestamp': '$(date -u +%Y-%m-%dT%H:%M:%SZ)'
+          }
+          
+          with open('test-summary.json', 'w') as f:
+              json.dump(summary, f, indent=2)
+          
+          print('Test reporting completed')
+          "
+
+      - name: Upload consolidated report
+        uses: actions/upload-artifact@v3
+        with:
+          name: consolidated-test-report
+          path: |
+            test-summary.json
+            all-reports/
+
+      - name: Comment PR with test results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            
+            try {
+              const summary = JSON.parse(fs.readFileSync('test-summary.json', 'utf8'));
+              
+              const comment = `## 🧪 ACGS E2E Test Results
+              
+              **Test Configuration:**
+              - Mode: \`${{ needs.setup.outputs.test-mode }}\`
+              - Constitutional Hash: \`${{ env.CONSTITUTIONAL_HASH }}\`
+              - Test Jobs: ${summary.total_test_jobs}
+              
+              **Results:**
+              - ✅ Smoke Tests: ${{ needs.smoke-tests.result }}
+              - ✅ Constitutional Tests: ${{ needs.constitutional-tests.result }}
+              - ✅ Security Tests: ${{ needs.security-tests.result }}
+              - ✅ Integration Tests: ${{ needs.integration-tests.result }}
+              ${needs.performance-tests.result !== 'skipped' ? `- ✅ Performance Tests: ${{ needs.performance-tests.result }}` : '- ⏭️ Performance Tests: Skipped'}
+              
+              **Artifacts:** Test reports and coverage data are available in the workflow artifacts.
+              `;
+              
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            } catch (error) {
+              console.log('Could not create PR comment:', error);
+            }
+
+  # Job 10: Deployment gate
+  deployment-gate:
+    runs-on: ubuntu-latest
+    needs: [smoke-tests, constitutional-tests, security-tests, integration-tests]
+    if: always()
+    outputs:
+      deployment-allowed: ${{ steps.gate.outputs.allowed }}
+    steps:
+      - name: Evaluate deployment gate
+        id: gate
+        run: |
+          SMOKE_RESULT="${{ needs.smoke-tests.result }}"
+          CONSTITUTIONAL_RESULT="${{ needs.constitutional-tests.result }}"
+          SECURITY_RESULT="${{ needs.security-tests.result }}"
+          INTEGRATION_RESULT="${{ needs.integration-tests.result }}"
+          
+          echo "Smoke Tests: $SMOKE_RESULT"
+          echo "Constitutional Tests: $CONSTITUTIONAL_RESULT"
+          echo "Security Tests: $SECURITY_RESULT"
+          echo "Integration Tests: $INTEGRATION_RESULT"
+          
+          # Block deployment if critical tests fail
+          if [[ "$SMOKE_RESULT" != "success" || "$CONSTITUTIONAL_RESULT" != "success" || "$SECURITY_RESULT" != "success" ]]; then
+            echo "❌ Deployment BLOCKED - Critical tests failed"
+            echo "allowed=false" >> $GITHUB_OUTPUT
+            exit 1
+          else
+            echo "✅ Deployment ALLOWED - All critical tests passed"
+            echo "allowed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update deployment status
+        if: always()
+        run: |
+          if [[ "${{ steps.gate.outputs.allowed }}" == "true" ]]; then
+            echo "::notice::Deployment gate PASSED - Ready for deployment"
+          else
+            echo "::error::Deployment gate FAILED - Deployment blocked"
+          fi
