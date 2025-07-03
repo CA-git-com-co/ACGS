@@ -10,7 +10,7 @@ import time
 import json
 from typing import List, Dict, Any, Optional
 
-from ..framework.base import BaseE2ETest, TestResult
+from ..framework.base import BaseE2ETest, E2ETestResult
 from ..framework.config import ServiceType
 from ..framework.utils import TestDataGenerator
 
@@ -21,7 +21,7 @@ class MultiAgentCoordinationTest(BaseE2ETest):
     test_type = "governance"
     tags = ["governance", "multi-agent", "coordination"]
     
-    async def run_test(self) -> List[TestResult]:
+    async def run_test(self) -> List[E2ETestResult]:
         """Run multi-agent coordination tests."""
         results = []
         
@@ -39,7 +39,7 @@ class MultiAgentCoordinationTest(BaseE2ETest):
         
         return results
     
-    async def _test_agent_communication(self) -> TestResult:
+    async def _test_agent_communication(self) -> E2ETestResult:
         """Test inter-agent communication protocols."""
         start_time = time.perf_counter()
         
@@ -95,7 +95,7 @@ class MultiAgentCoordinationTest(BaseE2ETest):
             
             overall_success = success_rate >= 0.8
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="multi_agent_communication",
                 success=overall_success,
                 duration_ms=duration_ms,
@@ -112,14 +112,14 @@ class MultiAgentCoordinationTest(BaseE2ETest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="multi_agent_communication",
                 success=False,
                 duration_ms=duration_ms,
                 error_message=f"Agent communication test failed: {str(e)}"
             )
     
-    async def _test_consensus_mechanisms(self) -> TestResult:
+    async def _test_consensus_mechanisms(self) -> E2ETestResult:
         """Test consensus building mechanisms."""
         start_time = time.perf_counter()
         
@@ -183,7 +183,7 @@ class MultiAgentCoordinationTest(BaseE2ETest):
             consensus_quality = final_score >= 0.7
             overall_success = consensus_success and consensus_reached and consensus_quality
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="consensus_mechanisms",
                 success=overall_success,
                 duration_ms=duration_ms,
@@ -201,14 +201,14 @@ class MultiAgentCoordinationTest(BaseE2ETest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="consensus_mechanisms",
                 success=False,
                 duration_ms=duration_ms,
                 error_message=f"Consensus mechanisms test failed: {str(e)}"
             )
     
-    async def _test_blackboard_architecture(self) -> TestResult:
+    async def _test_blackboard_architecture(self) -> E2ETestResult:
         """Test blackboard architecture for shared state management."""
         start_time = time.perf_counter()
         
@@ -310,7 +310,7 @@ class MultiAgentCoordinationTest(BaseE2ETest):
             
             overall_success = success_rate >= 0.8
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="blackboard_architecture",
                 success=overall_success,
                 duration_ms=duration_ms,
@@ -327,7 +327,7 @@ class MultiAgentCoordinationTest(BaseE2ETest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="blackboard_architecture",
                 success=False,
                 duration_ms=duration_ms,
@@ -341,7 +341,7 @@ class GovernanceWorkflowTest(BaseE2ETest):
     test_type = "governance"
     tags = ["governance", "workflow", "e2e"]
     
-    async def run_test(self) -> List[TestResult]:
+    async def run_test(self) -> List[E2ETestResult]:
         """Run governance workflow tests."""
         results = []
         
@@ -359,7 +359,7 @@ class GovernanceWorkflowTest(BaseE2ETest):
         
         return results
     
-    async def _test_policy_creation_workflow(self) -> TestResult:
+    async def _test_policy_creation_workflow(self) -> E2ETestResult:
         """Test complete policy creation workflow."""
         start_time = time.perf_counter()
         
@@ -458,7 +458,7 @@ class GovernanceWorkflowTest(BaseE2ETest):
             
             overall_success = workflow_success_rate >= 0.8
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="policy_creation_workflow",
                 success=overall_success,
                 duration_ms=duration_ms,
@@ -475,14 +475,14 @@ class GovernanceWorkflowTest(BaseE2ETest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="policy_creation_workflow",
                 success=False,
                 duration_ms=duration_ms,
                 error_message=f"Policy creation workflow failed: {str(e)}"
             )
     
-    async def _test_policy_validation_workflow(self) -> TestResult:
+    async def _test_policy_validation_workflow(self) -> E2ETestResult:
         """Test policy validation workflow with WINA optimization."""
         start_time = time.perf_counter()
         
@@ -570,7 +570,7 @@ class GovernanceWorkflowTest(BaseE2ETest):
             
             overall_success = workflow_success_rate >= 0.8 and wina_performance
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="policy_validation_workflow",
                 success=overall_success,
                 duration_ms=duration_ms,
@@ -588,14 +588,14 @@ class GovernanceWorkflowTest(BaseE2ETest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="policy_validation_workflow",
                 success=False,
                 duration_ms=duration_ms,
                 error_message=f"Policy validation workflow failed: {str(e)}"
             )
     
-    async def _test_governance_decision_workflow(self) -> TestResult:
+    async def _test_governance_decision_workflow(self) -> E2ETestResult:
         """Test complete governance decision workflow."""
         start_time = time.perf_counter()
         
@@ -700,7 +700,7 @@ class GovernanceWorkflowTest(BaseE2ETest):
             
             overall_success = workflow_success_rate >= 0.8
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="governance_decision_workflow",
                 success=overall_success,
                 duration_ms=duration_ms,
@@ -717,7 +717,7 @@ class GovernanceWorkflowTest(BaseE2ETest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="governance_decision_workflow",
                 success=False,
                 duration_ms=duration_ms,

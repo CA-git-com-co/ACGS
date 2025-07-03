@@ -11,7 +11,7 @@ import time
 import json
 from typing import List, Dict, Any, Optional
 
-from ..framework.base import SecurityTest, TestResult
+from ..framework.base import SecurityTest, E2ETestResult
 from ..framework.config import ServiceType
 
 
@@ -21,7 +21,7 @@ class AuthenticationSecurityTest(SecurityTest):
     test_type = "security"
     tags = ["security", "authentication", "authorization"]
     
-    async def run_test(self) -> List[TestResult]:
+    async def run_test(self) -> List[E2ETestResult]:
         """Run authentication security tests."""
         results = []
         
@@ -39,7 +39,7 @@ class AuthenticationSecurityTest(SecurityTest):
         
         return results
     
-    async def _test_authentication_requirements(self) -> TestResult:
+    async def _test_authentication_requirements(self) -> E2ETestResult:
         """Test that protected endpoints require authentication."""
         start_time = time.perf_counter()
         
@@ -84,7 +84,7 @@ class AuthenticationSecurityTest(SecurityTest):
             compliance_rate = len(compliant_endpoints) / len(auth_test_results) if auth_test_results else 0
             overall_success = compliance_rate >= 0.8
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="authentication_requirements",
                 success=overall_success,
                 duration_ms=duration_ms,
@@ -101,14 +101,14 @@ class AuthenticationSecurityTest(SecurityTest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="authentication_requirements",
                 success=False,
                 duration_ms=duration_ms,
                 error_message=f"Authentication requirements test failed: {str(e)}"
             )
     
-    async def _test_authorization_controls(self) -> TestResult:
+    async def _test_authorization_controls(self) -> E2ETestResult:
         """Test authorization controls and access restrictions."""
         start_time = time.perf_counter()
         
@@ -159,7 +159,7 @@ class AuthenticationSecurityTest(SecurityTest):
             compliance_rate = len(compliant_controls) / len(authorization_tests) if authorization_tests else 0
             overall_success = compliance_rate >= 0.8
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="authorization_controls",
                 success=overall_success,
                 duration_ms=duration_ms,
@@ -176,20 +176,20 @@ class AuthenticationSecurityTest(SecurityTest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="authorization_controls",
                 success=False,
                 duration_ms=duration_ms,
                 error_message=f"Authorization controls test failed: {str(e)}"
             )
     
-    async def _test_token_security(self) -> TestResult:
+    async def _test_token_security(self) -> E2ETestResult:
         """Test token security and validation."""
         start_time = time.perf_counter()
         
         try:
             if not self.config.is_service_enabled(ServiceType.AUTH):
-                return TestResult(
+                return E2ETestResult(
                     test_name="token_security",
                     success=False,
                     duration_ms=0,
@@ -267,7 +267,7 @@ class AuthenticationSecurityTest(SecurityTest):
             success_rate = len(successful_tests) / len(token_security_tests) if token_security_tests else 0
             overall_success = success_rate >= 0.8
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="token_security",
                 success=overall_success,
                 duration_ms=duration_ms,
@@ -284,7 +284,7 @@ class AuthenticationSecurityTest(SecurityTest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="token_security",
                 success=False,
                 duration_ms=duration_ms,
@@ -298,7 +298,7 @@ class InputValidationSecurityTest(SecurityTest):
     test_type = "security"
     tags = ["security", "input-validation", "injection"]
     
-    async def run_test(self) -> List[TestResult]:
+    async def run_test(self) -> List[E2ETestResult]:
         """Run input validation security tests."""
         results = []
         
@@ -316,7 +316,7 @@ class InputValidationSecurityTest(SecurityTest):
         
         return results
     
-    async def _test_sql_injection_protection(self) -> TestResult:
+    async def _test_sql_injection_protection(self) -> E2ETestResult:
         """Test SQL injection protection."""
         start_time = time.perf_counter()
         
@@ -363,7 +363,7 @@ class InputValidationSecurityTest(SecurityTest):
             protection_rate = len(protected_endpoints) / len(injection_tests) if injection_tests else 0
             overall_success = protection_rate >= 0.9  # High threshold for security
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="sql_injection_protection",
                 success=overall_success,
                 duration_ms=duration_ms,
@@ -380,14 +380,14 @@ class InputValidationSecurityTest(SecurityTest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="sql_injection_protection",
                 success=False,
                 duration_ms=duration_ms,
                 error_message=f"SQL injection protection test failed: {str(e)}"
             )
     
-    async def _test_input_validation(self) -> TestResult:
+    async def _test_input_validation(self) -> E2ETestResult:
         """Test input validation for API endpoints."""
         start_time = time.perf_counter()
         
@@ -437,7 +437,7 @@ class InputValidationSecurityTest(SecurityTest):
             validation_rate = len(compliant_validations) / len(validation_tests) if validation_tests else 0
             overall_success = validation_rate >= 0.8
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="input_validation",
                 success=overall_success,
                 duration_ms=duration_ms,
@@ -454,14 +454,14 @@ class InputValidationSecurityTest(SecurityTest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="input_validation",
                 success=False,
                 duration_ms=duration_ms,
                 error_message=f"Input validation test failed: {str(e)}"
             )
     
-    async def _test_payload_size_limits(self) -> TestResult:
+    async def _test_payload_size_limits(self) -> E2ETestResult:
         """Test payload size limits and DoS protection."""
         start_time = time.perf_counter()
         
@@ -512,7 +512,7 @@ class InputValidationSecurityTest(SecurityTest):
             enforcement_rate = len(enforced_limits) / len(size_limit_tests) if size_limit_tests else 0
             overall_success = enforcement_rate >= 0.8
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="payload_size_limits",
                 success=overall_success,
                 duration_ms=duration_ms,
@@ -529,7 +529,7 @@ class InputValidationSecurityTest(SecurityTest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="payload_size_limits",
                 success=False,
                 duration_ms=duration_ms,
@@ -543,7 +543,7 @@ class AuditTrailSecurityTest(SecurityTest):
     test_type = "security"
     tags = ["security", "audit", "compliance", "logging"]
     
-    async def run_test(self) -> List[TestResult]:
+    async def run_test(self) -> List[E2ETestResult]:
         """Run audit trail security tests."""
         results = []
         
@@ -557,7 +557,7 @@ class AuditTrailSecurityTest(SecurityTest):
         
         return results
     
-    async def _test_audit_logging(self) -> TestResult:
+    async def _test_audit_logging(self) -> E2ETestResult:
         """Test audit logging for security events."""
         start_time = time.perf_counter()
         
@@ -630,7 +630,7 @@ class AuditTrailSecurityTest(SecurityTest):
             logging_rate = len(logged_events) / len(audit_tests) if audit_tests else 0
             overall_success = logging_rate >= 0.9  # High threshold for audit compliance
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="audit_logging",
                 success=overall_success,
                 duration_ms=duration_ms,
@@ -647,14 +647,14 @@ class AuditTrailSecurityTest(SecurityTest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="audit_logging",
                 success=False,
                 duration_ms=duration_ms,
                 error_message=f"Audit logging test failed: {str(e)}"
             )
     
-    async def _test_constitutional_compliance_tracking(self) -> TestResult:
+    async def _test_constitutional_compliance_tracking(self) -> E2ETestResult:
         """Test constitutional compliance tracking and reporting."""
         start_time = time.perf_counter()
         
@@ -709,7 +709,7 @@ class AuditTrailSecurityTest(SecurityTest):
             compliance_rate = len(compliant_services) / len(compliance_tests) if compliance_tests else 0
             overall_success = compliance_rate >= 0.9
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="constitutional_compliance_tracking",
                 success=overall_success,
                 duration_ms=duration_ms,
@@ -727,7 +727,7 @@ class AuditTrailSecurityTest(SecurityTest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="constitutional_compliance_tracking",
                 success=False,
                 duration_ms=duration_ms,

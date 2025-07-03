@@ -143,9 +143,15 @@ class BlackboardService:
 
         # Set expiration if specified
         if knowledge.expires_at:
-            expire_seconds = int(
-                (knowledge.expires_at - datetime.now(timezone.utc)).total_seconds()
-            )
+            # Handle both timezone-aware and naive datetimes
+            current_time = datetime.now(timezone.utc)
+            expires_at = knowledge.expires_at
+
+            # Convert naive datetime to timezone-aware if needed
+            if expires_at.tzinfo is None:
+                expires_at = expires_at.replace(tzinfo=timezone.utc)
+
+            expire_seconds = int((expires_at - current_time).total_seconds())
             if expire_seconds > 0:
                 await self.redis_client.expire(key, expire_seconds)
 

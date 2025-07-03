@@ -10,7 +10,7 @@ import time
 import statistics
 from typing import List, Dict, Any, Optional
 
-from ..framework.base import PerformanceTest, TestResult, PerformanceMetrics
+from ..framework.base import PerformanceTest, E2ETestResult, PerformanceMetrics
 from ..framework.config import ServiceType
 from ..framework.utils import TestDataGenerator
 
@@ -25,7 +25,7 @@ class LatencyPerformanceTest(PerformanceTest):
         super().__init__(config, load_duration_seconds)
         self.target_p99_latency_ms = 5.0
     
-    async def run_test(self) -> List[TestResult]:
+    async def run_test(self) -> List[E2ETestResult]:
         """Run latency performance tests."""
         results = []
         
@@ -41,7 +41,7 @@ class LatencyPerformanceTest(PerformanceTest):
         
         return results
     
-    async def _test_service_latency(self, service_type: ServiceType) -> TestResult:
+    async def _test_service_latency(self, service_type: ServiceType) -> E2ETestResult:
         """Test latency for a specific service."""
         start_time = time.perf_counter()
         
@@ -100,7 +100,7 @@ class LatencyPerformanceTest(PerformanceTest):
             
             overall_success = p99_target_met and success_rate >= 0.95
             
-            return TestResult(
+            return E2ETestResult(
                 test_name=f"latency_performance_{service_type.value}",
                 success=overall_success,
                 duration_ms=total_duration_ms,
@@ -122,14 +122,14 @@ class LatencyPerformanceTest(PerformanceTest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name=f"latency_performance_{service_type.value}",
                 success=False,
                 duration_ms=duration_ms,
                 error_message=f"Latency test failed for {service_type.value}: {str(e)}"
             )
     
-    async def _test_e2e_workflow_latency(self) -> TestResult:
+    async def _test_e2e_workflow_latency(self) -> E2ETestResult:
         """Test end-to-end workflow latency."""
         start_time = time.perf_counter()
         
@@ -201,7 +201,7 @@ class LatencyPerformanceTest(PerformanceTest):
             
             overall_success = p99_target_met and success_rate >= 0.9
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="e2e_workflow_latency",
                 success=overall_success,
                 duration_ms=total_duration_ms,
@@ -222,7 +222,7 @@ class LatencyPerformanceTest(PerformanceTest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="e2e_workflow_latency",
                 success=False,
                 duration_ms=duration_ms,
@@ -240,7 +240,7 @@ class ThroughputPerformanceTest(PerformanceTest):
         super().__init__(config, load_duration_seconds)
         self.target_throughput_rps = 100.0
     
-    async def run_test(self) -> List[TestResult]:
+    async def run_test(self) -> List[E2ETestResult]:
         """Run throughput performance tests."""
         results = []
         
@@ -254,7 +254,7 @@ class ThroughputPerformanceTest(PerformanceTest):
         
         return results
     
-    async def _test_service_throughput(self) -> TestResult:
+    async def _test_service_throughput(self) -> E2ETestResult:
         """Test service throughput under sustained load."""
         start_time = time.perf_counter()
         
@@ -293,7 +293,7 @@ class ThroughputPerformanceTest(PerformanceTest):
             
             overall_success = throughput_target_met and latency_target_met and success_rate_target_met
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="service_throughput",
                 success=overall_success,
                 duration_ms=total_duration_ms,
@@ -312,14 +312,14 @@ class ThroughputPerformanceTest(PerformanceTest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="service_throughput",
                 success=False,
                 duration_ms=duration_ms,
                 error_message=f"Service throughput test failed: {str(e)}"
             )
     
-    async def _test_concurrent_load_handling(self) -> TestResult:
+    async def _test_concurrent_load_handling(self) -> E2ETestResult:
         """Test concurrent load handling capabilities."""
         start_time = time.perf_counter()
         
@@ -367,7 +367,7 @@ class ThroughputPerformanceTest(PerformanceTest):
             
             overall_success = max_throughput >= self.target_throughput_rps and acceptable_degradation and latency_stability
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="concurrent_load_handling",
                 success=overall_success,
                 duration_ms=total_duration_ms,
@@ -384,7 +384,7 @@ class ThroughputPerformanceTest(PerformanceTest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="concurrent_load_handling",
                 success=False,
                 duration_ms=duration_ms,
@@ -398,7 +398,7 @@ class CachePerformanceTest(PerformanceTest):
     test_type = "performance"
     tags = ["performance", "cache", "hit-rate"]
     
-    async def run_test(self) -> List[TestResult]:
+    async def run_test(self) -> List[E2ETestResult]:
         """Run cache performance tests."""
         results = []
         
@@ -412,13 +412,13 @@ class CachePerformanceTest(PerformanceTest):
         
         return results
     
-    async def _test_cache_hit_rate(self) -> TestResult:
+    async def _test_cache_hit_rate(self) -> E2ETestResult:
         """Test cache hit rate requirements."""
         start_time = time.perf_counter()
         
         try:
             if not self.config.is_service_enabled(ServiceType.POLICY_GOVERNANCE):
-                return TestResult(
+                return E2ETestResult(
                     test_name="cache_hit_rate",
                     success=False,
                     duration_ms=0,
@@ -469,7 +469,7 @@ class CachePerformanceTest(PerformanceTest):
                     end_time = time.perf_counter()
                     duration_ms = (end_time - start_time) * 1000
                     
-                    return TestResult(
+                    return E2ETestResult(
                         test_name="cache_hit_rate",
                         success=cache_target_met,
                         duration_ms=duration_ms,
@@ -485,7 +485,7 @@ class CachePerformanceTest(PerformanceTest):
                     end_time = time.perf_counter()
                     duration_ms = (end_time - start_time) * 1000
                     
-                    return TestResult(
+                    return E2ETestResult(
                         test_name="cache_hit_rate",
                         success=False,
                         duration_ms=duration_ms,
@@ -496,7 +496,7 @@ class CachePerformanceTest(PerformanceTest):
                 end_time = time.perf_counter()
                 duration_ms = (end_time - start_time) * 1000
                 
-                return TestResult(
+                return E2ETestResult(
                     test_name="cache_hit_rate",
                     success=False,
                     duration_ms=duration_ms,
@@ -507,20 +507,20 @@ class CachePerformanceTest(PerformanceTest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="cache_hit_rate",
                 success=False,
                 duration_ms=duration_ms,
                 error_message=f"Cache hit rate test failed: {str(e)}"
             )
     
-    async def _test_cache_performance_load(self) -> TestResult:
+    async def _test_cache_performance_load(self) -> E2ETestResult:
         """Test cache performance under load."""
         start_time = time.perf_counter()
         
         try:
             if not self.config.is_service_enabled(ServiceType.POLICY_GOVERNANCE):
-                return TestResult(
+                return E2ETestResult(
                     test_name="cache_performance_load",
                     success=False,
                     duration_ms=0,
@@ -574,7 +574,7 @@ class CachePerformanceTest(PerformanceTest):
             
             overall_success = throughput_target_met and latency_target_met and cache_target_met
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="cache_performance_load",
                 success=overall_success,
                 duration_ms=total_duration_ms,
@@ -593,7 +593,7 @@ class CachePerformanceTest(PerformanceTest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="cache_performance_load",
                 success=False,
                 duration_ms=duration_ms,

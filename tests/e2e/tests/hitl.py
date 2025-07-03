@@ -10,7 +10,7 @@ import time
 import statistics
 from typing import List, Dict, Any
 
-from ..framework.base import PerformanceTest, TestResult
+from ..framework.base import PerformanceTest, E2ETestResult
 from ..framework.config import ServiceType
 from ..framework.utils import TestDataGenerator
 
@@ -25,7 +25,7 @@ class HITLLatencyTest(PerformanceTest):
         super().__init__(config, load_duration_seconds)
         self.target_p99_latency_ms = 5.0  # Sub-5ms P99 requirement
     
-    async def run_test(self) -> List[TestResult]:
+    async def run_test(self) -> List[E2ETestResult]:
         """Run HITL latency tests."""
         results = []
         
@@ -43,13 +43,13 @@ class HITLLatencyTest(PerformanceTest):
         
         return results
     
-    async def _test_uncertainty_assessment_latency(self) -> TestResult:
+    async def _test_uncertainty_assessment_latency(self) -> E2ETestResult:
         """Test uncertainty assessment endpoint latency."""
         start_time = time.perf_counter()
         
         try:
             if not self.config.is_service_enabled(ServiceType.CONSTITUTIONAL_AI):
-                return TestResult(
+                return E2ETestResult(
                     test_name="hitl_uncertainty_assessment_latency",
                     success=False,
                     duration_ms=0,
@@ -115,7 +115,7 @@ class HITLLatencyTest(PerformanceTest):
             
             overall_success = latency_requirement_met and success_rate >= 0.9
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="hitl_uncertainty_assessment_latency",
                 success=overall_success,
                 duration_ms=total_duration_ms,
@@ -136,20 +136,20 @@ class HITLLatencyTest(PerformanceTest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="hitl_uncertainty_assessment_latency",
                 success=False,
                 duration_ms=duration_ms,
                 error_message=f"Uncertainty assessment latency test failed: {str(e)}"
             )
     
-    async def _test_hitl_decision_latency_load(self) -> TestResult:
+    async def _test_hitl_decision_latency_load(self) -> E2ETestResult:
         """Test HITL decision latency under sustained load."""
         start_time = time.perf_counter()
         
         try:
             if not self.config.is_service_enabled(ServiceType.CONSTITUTIONAL_AI):
-                return TestResult(
+                return E2ETestResult(
                     test_name="hitl_decision_latency_load",
                     success=False,
                     duration_ms=0,
@@ -191,7 +191,7 @@ class HITLLatencyTest(PerformanceTest):
             
             overall_success = latency_target_met and throughput_target_met and success_rate_target_met
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="hitl_decision_latency_load",
                 success=overall_success,
                 duration_ms=total_duration_ms,
@@ -212,20 +212,20 @@ class HITLLatencyTest(PerformanceTest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="hitl_decision_latency_load",
                 success=False,
                 duration_ms=duration_ms,
                 error_message=f"HITL decision latency load test failed: {str(e)}"
             )
     
-    async def _test_concurrent_hitl_requests(self) -> TestResult:
+    async def _test_concurrent_hitl_requests(self) -> E2ETestResult:
         """Test concurrent HITL requests for latency consistency."""
         start_time = time.perf_counter()
         
         try:
             if not self.config.is_service_enabled(ServiceType.CONSTITUTIONAL_AI):
-                return TestResult(
+                return E2ETestResult(
                     test_name="hitl_concurrent_requests",
                     success=False,
                     duration_ms=0,
@@ -273,7 +273,7 @@ class HITLLatencyTest(PerformanceTest):
             
             overall_success = success_rate >= 0.9 and latency_consistency
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="hitl_concurrent_requests",
                 success=overall_success,
                 duration_ms=total_duration_ms,
@@ -293,7 +293,7 @@ class HITLLatencyTest(PerformanceTest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="hitl_concurrent_requests",
                 success=False,
                 duration_ms=duration_ms,
@@ -338,7 +338,7 @@ class HITLFunctionalTest(PerformanceTest):
     test_type = "hitl"
     tags = ["hitl", "functional", "decision"]
     
-    async def run_test(self) -> List[TestResult]:
+    async def run_test(self) -> List[E2ETestResult]:
         """Run HITL functional tests."""
         results = []
         
@@ -356,13 +356,13 @@ class HITLFunctionalTest(PerformanceTest):
         
         return results
     
-    async def _test_uncertainty_quantification(self) -> TestResult:
+    async def _test_uncertainty_quantification(self) -> E2ETestResult:
         """Test uncertainty quantification accuracy."""
         start_time = time.perf_counter()
         
         try:
             if not self.config.is_service_enabled(ServiceType.CONSTITUTIONAL_AI):
-                return TestResult(
+                return E2ETestResult(
                     test_name="hitl_uncertainty_quantification",
                     success=False,
                     duration_ms=0,
@@ -446,7 +446,7 @@ class HITLFunctionalTest(PerformanceTest):
             
             overall_success = success_rate >= 0.8 and reasonable_scores
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="hitl_uncertainty_quantification",
                 success=overall_success,
                 duration_ms=duration_ms,
@@ -463,20 +463,20 @@ class HITLFunctionalTest(PerformanceTest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="hitl_uncertainty_quantification",
                 success=False,
                 duration_ms=duration_ms,
                 error_message=f"Uncertainty quantification test failed: {str(e)}"
             )
     
-    async def _test_human_escalation_triggers(self) -> TestResult:
+    async def _test_human_escalation_triggers(self) -> E2ETestResult:
         """Test human escalation trigger logic."""
         start_time = time.perf_counter()
         
         try:
             if not self.config.is_service_enabled(ServiceType.CONSTITUTIONAL_AI):
-                return TestResult(
+                return E2ETestResult(
                     test_name="hitl_human_escalation_triggers",
                     success=False,
                     duration_ms=0,
@@ -558,7 +558,7 @@ class HITLFunctionalTest(PerformanceTest):
             
             overall_success = success_rate >= 0.8 and escalation_accuracy >= 0.8
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="hitl_human_escalation_triggers",
                 success=overall_success,
                 duration_ms=duration_ms,
@@ -576,20 +576,20 @@ class HITLFunctionalTest(PerformanceTest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="hitl_human_escalation_triggers",
                 success=False,
                 duration_ms=duration_ms,
                 error_message=f"Human escalation triggers test failed: {str(e)}"
             )
     
-    async def _test_decision_confidence_scoring(self) -> TestResult:
+    async def _test_decision_confidence_scoring(self) -> E2ETestResult:
         """Test decision confidence scoring consistency."""
         start_time = time.perf_counter()
         
         try:
             if not self.config.is_service_enabled(ServiceType.CONSTITUTIONAL_AI):
-                return TestResult(
+                return E2ETestResult(
                     test_name="hitl_decision_confidence_scoring",
                     success=False,
                     duration_ms=0,
@@ -644,7 +644,7 @@ class HITLFunctionalTest(PerformanceTest):
             success_rate = successful_requests / total_requests
             overall_success = success_rate >= 0.9 and confidence_consistency
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="hitl_decision_confidence_scoring",
                 success=overall_success,
                 duration_ms=duration_ms,
@@ -663,7 +663,7 @@ class HITLFunctionalTest(PerformanceTest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="hitl_decision_confidence_scoring",
                 success=False,
                 duration_ms=duration_ms,

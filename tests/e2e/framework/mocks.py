@@ -250,11 +250,44 @@ class MockPolicyGovernanceService(MockServiceBase):
                 "wina_optimization_active": True
             }
         
+        @self.app.post("/api/v1/governance/policy")
+        async def validate_policy_governance():
+            """Mock policy governance validation endpoint."""
+            await self.simulate_latency()
+            self.increment_request_count()
+
+            # For mock service, we'll use default values
+            # In a real implementation, this would parse the request body
+            policy_id = 'test_policy'
+            context = 'test_context'
+
+            # Simulate governance validation with constitutional compliance
+            governance_result = {
+                "policy_id": policy_id,
+                "context": context,
+                "constitutional_compliance": True,
+                "constitutional_hash": self.config.constitutional_hash,
+                "governance_score": 0.92,
+                "wina_optimization_applied": True,
+                "validation_status": "approved",
+                "validation_time_ms": 1.2,  # Sub-5ms as required
+                "cache_utilized": True,
+                "compliance_checks": {
+                    "constitutional_alignment": True,
+                    "policy_consistency": True,
+                    "governance_rules": True,
+                    "security_validation": True
+                },
+                "timestamp": datetime.utcnow().isoformat()
+            }
+
+            return governance_result
+
         @self.app.get("/api/v1/governance/metrics")
         async def get_governance_metrics():
             """Get governance performance metrics."""
             cache_hit_rate = self.cache_hits / (self.cache_hits + self.cache_misses) if (self.cache_hits + self.cache_misses) > 0 else 0
-            
+
             return {
                 "cache_hit_rate": cache_hit_rate,
                 "cache_hits": self.cache_hits,

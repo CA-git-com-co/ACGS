@@ -45,9 +45,9 @@ mkdir -p "$LOG_DIR" "$PID_DIR"
 
 # Service configuration with correct paths
 declare -A SERVICES=(
-    ["auth_service"]="8000:services/platform/authentication/auth_service"
+    ["auth_service"]="8000:services/platform_services/authentication/auth_service"
     ["ac_service"]="8001:services/core/constitutional-ai/ac_service"
-    ["integrity_service"]="8002:services/platform/integrity/integrity_service"
+    ["integrity_service"]="8002:services/platform_services/integrity/integrity_service"
     ["fv_service"]="8003:services/core/formal-verification/fv_service"
     ["gs_service"]="8004:services/core/governance-synthesis/gs_service"
     ["pgc_service"]="8005:services/core/policy-governance/pgc_service"

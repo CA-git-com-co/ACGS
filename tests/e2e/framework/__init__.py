@@ -7,7 +7,7 @@ separation of concerns.
 """
 
 from .core import E2ETestFramework
-from .config import E2ETestConfig, TestMode
+from .config import E2ETestConfig, E2ETestMode
 from .runner import E2ETestRunner
 from .reporter import E2ETestReporter
 from .base import BaseE2ETest
@@ -15,7 +15,7 @@ from .base import BaseE2ETest
 __all__ = [
     "E2ETestFramework",
     "E2ETestConfig",
-    "TestMode", 
+    "E2ETestMode",
     "E2ETestRunner",
     "E2ETestReporter",
     "BaseE2ETest",

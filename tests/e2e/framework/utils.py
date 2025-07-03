@@ -20,7 +20,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from redis.asyncio import Redis
 
-from .config import E2ETestConfig, TestMode
+from .config import E2ETestConfig, E2ETestMode
 
 
 @dataclass
@@ -48,7 +48,7 @@ class TestEnvironmentManager:
         self.temp_dir = Path(tempfile.mkdtemp(prefix="acgs_e2e_"))
         
         # Setup database if needed
-        if self.config.test_mode in [TestMode.ONLINE, TestMode.HYBRID]:
+        if self.config.test_mode in [E2ETestMode.ONLINE, E2ETestMode.HYBRID]:
             await self._setup_database()
             await self._setup_redis()
         
@@ -76,7 +76,7 @@ class TestEnvironmentManager:
     
     async def _setup_database(self):
         """Setup test database."""
-        if self.config.test_mode == TestMode.OFFLINE:
+        if self.config.test_mode == E2ETestMode.OFFLINE:
             return
         
         # Create database engine
@@ -94,7 +94,7 @@ class TestEnvironmentManager:
     
     async def _setup_redis(self):
         """Setup test Redis connection."""
-        if self.config.test_mode == TestMode.OFFLINE:
+        if self.config.test_mode == E2ETestMode.OFFLINE:
             return
         
         self.redis_client = Redis.from_url(

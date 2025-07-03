@@ -747,6 +747,35 @@ class EthicsAgent:
                 self.logger.error(f"Error in task claiming loop: {str(e)}")
                 await asyncio.sleep(10)  # Wait longer on error
 
+    async def process_task(self, task_id: str) -> Any:
+        """Public method to process a task by ID"""
+        try:
+            # Get task from blackboard
+            task_data = await self.blackboard.get_task(task_id)
+            if not task_data:
+                raise ValueError(f"Task {task_id} not found")
+
+            # Convert to TaskDefinition if needed
+            if isinstance(task_data, dict):
+                from ...shared.blackboard.models import TaskDefinition
+                task = TaskDefinition(**task_data)
+            else:
+                task = task_data
+
+            # Get the appropriate handler and process the task directly
+            handler = self.task_handlers.get(task.task_type)
+            if not handler:
+                raise ValueError(f"No handler for task type: {task.task_type}")
+
+            # Process the task and return the actual result
+            result = await handler(task)
+
+            return result
+
+        except Exception as e:
+            self.logger.error(f"Error processing task {task_id}: {str(e)}")
+            raise e
+
     async def _process_task(self, task: TaskDefinition) -> None:
         """Process a claimed task"""
         start_time = time.time()

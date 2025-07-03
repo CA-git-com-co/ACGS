@@ -1,47 +1,140 @@
+version: '3.8'
+
 networks:
   acgs-monitoring:
     driver: bridge
+    name: acgs-enterprise-monitoring
+
+volumes:
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+  alertmanager_data:
+    driver: local
+
 services:
+  # Prometheus - Metrics Collection
+  prometheus:
+    container_name: acgs-prometheus
+    image: prom/prometheus:latest
+    restart: unless-stopped
+    networks:
+      - acgs-monitoring
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus_data:/prometheus
+      - ../monitoring/config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ../monitoring/rules:/etc/prometheus/rules:ro
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+    environment:
+      - PROMETHEUS_RETENTION=30d
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Grafana - Visualization & Dashboards
+  grafana:
+    container_name: acgs-grafana
+    image: grafana/grafana:latest
+    restart: unless-stopped
+    networks:
+      - acgs-monitoring
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ../monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ../monitoring/dashboards:/etc/grafana/provisioning/dashboards:ro
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+      - GF_FEATURE_TOGGLES_ENABLE=ngalert
+      - GF_UNIFIED_ALERTING_ENABLED=true
+      - GF_ALERTING_ENABLED=false
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Alertmanager - Alert Management
   alertmanager:
     container_name: acgs-alertmanager
     image: prom/alertmanager:latest
+    restart: unless-stopped
     networks:
       - acgs-monitoring
     ports:
-      - 9093:9093
+      - "9093:9093"
     volumes:
-      - ./monitoring/alertmanager.yml:/etc/alertmanager/alertmanager.yml
-  grafana:
-    container_name: acgs-grafana
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=acgs_admin
-    image: grafana/grafana:latest
-    networks:
-      - acgs-monitoring
-    ports:
-      - 3002:3000
-    volumes:
-      - grafana-storage:/var/lib/grafana
-      - ./config/monitoring/grafana/dashboards:/var/lib/grafana/dashboards
-      - ./monitoring/mab_dashboard.json:/var/lib/grafana/dashboards/mab_dashboard.json
-  prometheus:
+      - alertmanager_data:/alertmanager
+      - ../monitoring/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
     command:
-      - --config.file=/etc/prometheus/prometheus.yml
-      - --storage.tsdb.path=/prometheus
-      - --web.console.libraries=/etc/prometheus/console_libraries
-      - --web.console.templates=/etc/prometheus/consoles
-      - --storage.tsdb.retention.time=200h
-      - --web.enable-lifecycle
-    container_name: acgs-prometheus
-    image: prom/prometheus:latest
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+      - '--web.external-url=http://localhost:9093'
+      - '--cluster.advertise-address=0.0.0.0:9093'
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9093/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Node Exporter - System Metrics
+  node_exporter:
+    container_name: acgs-node-exporter
+    image: prom/node-exporter:latest
+    restart: unless-stopped
     networks:
       - acgs-monitoring
     ports:
-      - 9090:9090
+      - "9100:9100"
     volumes:
-      - ./config/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./config/monitoring/phase3_alert_rules.yml:/etc/prometheus/phase3_alert_rules.yml
-      - ./monitoring/mab_alert_rules.yml:/etc/prometheus/mab_alert_rules.yml
-version: '3.8'
-volumes:
-  grafana-storage: {}
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+
+  # Redis Exporter - Cache Metrics
+  redis_exporter:
+    container_name: acgs-redis-exporter
+    image: oliver006/redis_exporter:latest
+    restart: unless-stopped
+    networks:
+      - acgs-monitoring
+    ports:
+      - "9122:9121"
+    environment:
+      - REDIS_ADDR=redis://host.docker.internal:6389
+    command:
+      - '--redis.addr=redis://host.docker.internal:6389'
+      - '--web.listen-address=:9121'
+
+  # Postgres Exporter - Database Metrics
+  postgres_exporter:
+    container_name: acgs-postgres-exporter
+    image: prometheuscommunity/postgres-exporter:latest
+    restart: unless-stopped
+    networks:
+      - acgs-monitoring
+    ports:
+      - "9188:9187"
+    environment:
+      - DATA_SOURCE_NAME=postgresql://postgres:postgres@host.docker.internal:5439/acgs_db?sslmode=disable

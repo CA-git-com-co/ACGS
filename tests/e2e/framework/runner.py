@@ -15,8 +15,8 @@ from concurrent.futures import ThreadPoolExecutor
 import importlib
 import inspect
 
-from .config import E2ETestConfig, TestMode
-from .base import BaseE2ETest, TestResult
+from .config import E2ETestConfig, E2ETestMode
+from .base import BaseE2ETest, E2ETestResult
 from .core import E2ETestFramework
 from .utils import TestReportGenerator
 
@@ -65,7 +65,7 @@ class E2ETestRunner:
         self.framework = E2ETestFramework(self.config)
         self.test_filter: Optional[TestFilter] = None
         self.execution_plan: Optional[TestExecutionPlan] = None
-        self.results: List[TestResult] = []
+        self.results: List[E2ETestResult] = []
         self.start_time: Optional[float] = None
         self.end_time: Optional[float] = None
         
@@ -207,7 +207,7 @@ class E2ETestRunner:
         
         return self.execution_plan
     
-    async def run_tests(self, test_names: Optional[List[str]] = None) -> List[TestResult]:
+    async def run_tests(self, test_names: Optional[List[str]] = None) -> List[E2ETestResult]:
         """Run specified tests or all registered tests."""
         self.start_time = time.time()
         
@@ -229,7 +229,7 @@ class E2ETestRunner:
             self.end_time = time.time()
             await self.framework.cleanup()
     
-    async def run_parallel_tests(self) -> List[TestResult]:
+    async def run_parallel_tests(self) -> List[E2ETestResult]:
         """Run tests in parallel according to execution plan."""
         if not self.execution_plan:
             self.create_execution_plan()
@@ -255,7 +255,7 @@ class E2ETestRunner:
                 # Process results
                 for test_name, result in zip(test_group, group_results):
                     if isinstance(result, Exception):
-                        error_result = TestResult(
+                        error_result = E2ETestResult(
                             test_name=test_name,
                             success=False,
                             duration_ms=0.0,
@@ -272,21 +272,21 @@ class E2ETestRunner:
             self.end_time = time.time()
             await self.framework.cleanup()
     
-    async def run_smoke_tests(self) -> List[TestResult]:
+    async def run_smoke_tests(self) -> List[E2ETestResult]:
         """Run quick smoke tests for basic validation."""
         smoke_filter = TestFilter(tags=["smoke"])
         self.apply_filter(smoke_filter)
         
         return await self.run_tests()
     
-    async def run_performance_tests(self) -> List[TestResult]:
+    async def run_performance_tests(self) -> List[E2ETestResult]:
         """Run performance-focused tests."""
         perf_filter = TestFilter(test_types=["performance"])
         self.apply_filter(perf_filter)
         
         return await self.run_tests()
     
-    async def run_security_tests(self) -> List[TestResult]:
+    async def run_security_tests(self) -> List[E2ETestResult]:
         """Run security-focused tests."""
         security_filter = TestFilter(test_types=["security"])
         self.apply_filter(security_filter)

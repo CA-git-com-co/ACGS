@@ -1,0 +1,268 @@
+# ACGS Performance Monitoring and Alerting Configuration
+# Enhanced monitoring for optimized Policy Governance and Governance Synthesis services
+# Target: P99 latency <5ms, Cache hit rate >85%, Constitutional compliance 100%
+
+groups:
+  - name: acgs_performance_optimization
+    interval: 30s
+    rules:
+      # P99 Latency Alerts
+      - alert: PolicyGovernanceP99LatencyHigh
+        expr: histogram_quantile(0.99, rate(pgc_service_request_duration_seconds_bucket[5m])) * 1000 > 5
+        for: 2m
+        labels:
+          severity: critical
+          service: policy_governance
+          category: performance_sla
+        annotations:
+          summary: "Policy Governance Service P99 latency exceeds 5ms target"
+          description: "P99 latency is {{ $value }}ms, exceeding the 5ms target for 2 minutes"
+          runbook_url: "https://docs.acgs.ai/runbooks/performance-optimization"
+          business_impact: "Governance decisions may be delayed, affecting system responsiveness"
+
+      - alert: GovernanceSynthesisP99LatencyHigh
+        expr: histogram_quantile(0.99, rate(gs_service_request_duration_seconds_bucket[5m])) * 1000 > 5
+        for: 2m
+        labels:
+          severity: critical
+          service: governance_synthesis
+          category: performance_sla
+        annotations:
+          summary: "Governance Synthesis Service P99 latency exceeds 5ms target"
+          description: "P99 latency is {{ $value }}ms, exceeding the 5ms target for 2 minutes"
+          runbook_url: "https://docs.acgs.ai/runbooks/synthesis-optimization"
+          business_impact: "Policy synthesis operations may be delayed, affecting governance workflows"
+
+      # Cache Performance Alerts
+      - alert: PolicyGovernanceCacheHitRateLow
+        expr: (rate(pgc_cache_hits_total[5m]) / (rate(pgc_cache_hits_total[5m]) + rate(pgc_cache_misses_total[5m]))) < 0.85
+        for: 5m
+        labels:
+          severity: warning
+          service: policy_governance
+          category: performance_sla
+        annotations:
+          summary: "Policy Governance cache hit rate below 85% target"
+          description: "Cache hit rate is {{ $value | humanizePercentage }}, below the 85% target"
+          runbook_url: "https://docs.acgs.ai/runbooks/cache-optimization"
+          business_impact: "Increased database load and slower response times"
+
+      - alert: GovernanceSynthesisCacheHitRateLow
+        expr: (rate(gs_cache_hits_total[5m]) / (rate(gs_cache_hits_total[5m]) + rate(gs_cache_misses_total[5m]))) < 0.85
+        for: 5m
+        labels:
+          severity: warning
+          service: governance_synthesis
+          category: performance_sla
+        annotations:
+          summary: "Governance Synthesis cache hit rate below 85% target"
+          description: "Cache hit rate is {{ $value | humanizePercentage }}, below the 85% target"
+          runbook_url: "https://docs.acgs.ai/runbooks/synthesis-cache-optimization"
+          business_impact: "Increased synthesis computation time and resource usage"
+
+      # Constitutional Compliance Alerts
+      - alert: ConstitutionalHashMismatch
+        expr: increase(constitutional_hash_violations_total[5m]) > 0
+        for: 0s
+        labels:
+          severity: critical
+          service: constitutional_compliance
+          category: security
+        annotations:
+          summary: "Constitutional hash validation failures detected"
+          description: "{{ $value }} constitutional hash violations in the last 5 minutes"
+          runbook_url: "https://docs.acgs.ai/runbooks/constitutional-compliance"
+          business_impact: "Constitutional integrity compromised - immediate investigation required"
+
+      - alert: ConstitutionalComplianceDropped
+        expr: (rate(constitutional_validations_passed_total[5m]) / rate(constitutional_validations_total[5m])) < 0.95
+        for: 2m
+        labels:
+          severity: critical
+          service: constitutional_compliance
+          category: security
+        annotations:
+          summary: "Constitutional compliance rate below 95%"
+          description: "Compliance rate is {{ $value | humanizePercentage }}, below the 95% threshold"
+          runbook_url: "https://docs.acgs.ai/runbooks/constitutional-compliance"
+          business_impact: "System governance integrity at risk"
+
+      # WINA Optimization Alerts
+      - alert: WINAOptimizationFailureRate
+        expr: rate(wina_optimization_failures_total[5m]) / rate(wina_optimization_attempts_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          service: governance_synthesis
+          category: performance_sla
+        annotations:
+          summary: "WINA optimization failure rate above 10%"
+          description: "WINA optimization failing at {{ $value | humanizePercentage }} rate"
+          runbook_url: "https://docs.acgs.ai/runbooks/wina-optimization"
+          business_impact: "Reduced policy governance optimization effectiveness"
+
+      # Service Availability Alerts
+      - alert: PolicyGovernanceServiceDown
+        expr: up{job="pgc_service"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: policy_governance
+          category: service_availability
+        annotations:
+          summary: "Policy Governance Service is down"
+          description: "Policy Governance Service has been down for more than 1 minute"
+          runbook_url: "https://docs.acgs.ai/runbooks/service-recovery"
+          business_impact: "Policy governance operations unavailable"
+
+      - alert: GovernanceSynthesisServiceDown
+        expr: up{job="gs_service"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: governance_synthesis
+          category: service_availability
+        annotations:
+          summary: "Governance Synthesis Service is down"
+          description: "Governance Synthesis Service has been down for more than 1 minute"
+          runbook_url: "https://docs.acgs.ai/runbooks/service-recovery"
+          business_impact: "Governance synthesis operations unavailable"
+
+      # Resource Usage Alerts
+      - alert: HighMemoryUsage
+        expr: (process_resident_memory_bytes / 1024 / 1024) > 1000
+        for: 10m
+        labels:
+          severity: warning
+          category: capacity_planning
+        annotations:
+          summary: "Service memory usage above 1GB"
+          description: "{{ $labels.job }} memory usage is {{ $value }}MB"
+          runbook_url: "https://docs.acgs.ai/runbooks/resource-optimization"
+          business_impact: "Potential performance degradation due to high memory usage"
+
+      - alert: HighCPUUsage
+        expr: rate(process_cpu_seconds_total[5m]) * 100 > 80
+        for: 10m
+        labels:
+          severity: warning
+          category: capacity_planning
+        annotations:
+          summary: "Service CPU usage above 80%"
+          description: "{{ $labels.job }} CPU usage is {{ $value }}%"
+          runbook_url: "https://docs.acgs.ai/runbooks/resource-optimization"
+          business_impact: "Service may become unresponsive under high load"
+
+      # Redis Cache Health Alerts
+      - alert: RedisCacheConnectionFailure
+        expr: redis_connected_clients == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: redis_cache
+          category: service_availability
+        annotations:
+          summary: "Redis cache has no connected clients"
+          description: "Redis cache appears to be unreachable"
+          runbook_url: "https://docs.acgs.ai/runbooks/redis-recovery"
+          business_impact: "Caching unavailable - performance severely degraded"
+
+      - alert: RedisMemoryUsageHigh
+        expr: (redis_memory_used_bytes / redis_memory_max_bytes) > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          service: redis_cache
+          category: capacity_planning
+        annotations:
+          summary: "Redis memory usage above 90%"
+          description: "Redis memory usage is {{ $value | humanizePercentage }}"
+          runbook_url: "https://docs.acgs.ai/runbooks/redis-optimization"
+          business_impact: "Cache evictions may increase, reducing cache effectiveness"
+
+      # Database Performance Alerts
+      - alert: DatabaseConnectionPoolExhaustion
+        expr: pg_stat_activity_count > 80
+        for: 5m
+        labels:
+          severity: warning
+          service: postgresql
+          category: capacity_planning
+        annotations:
+          summary: "Database connection pool near exhaustion"
+          description: "{{ $value }} active database connections"
+          runbook_url: "https://docs.acgs.ai/runbooks/database-optimization"
+          business_impact: "New requests may be rejected due to connection limits"
+
+      - alert: SlowDatabaseQueries
+        expr: pg_stat_statements_mean_time_ms > 100
+        for: 5m
+        labels:
+          severity: warning
+          service: postgresql
+          category: performance_sla
+        annotations:
+          summary: "Slow database queries detected"
+          description: "Average query time is {{ $value }}ms"
+          runbook_url: "https://docs.acgs.ai/runbooks/query-optimization"
+          business_impact: "Database performance degradation affecting service response times"
+
+      # End-to-End Performance Alerts
+      - alert: EndToEndLatencyHigh
+        expr: histogram_quantile(0.95, rate(acgs_e2e_request_duration_seconds_bucket[5m])) * 1000 > 50
+        for: 5m
+        labels:
+          severity: warning
+          category: performance_sla
+        annotations:
+          summary: "End-to-end P95 latency above 50ms"
+          description: "E2E P95 latency is {{ $value }}ms"
+          runbook_url: "https://docs.acgs.ai/runbooks/e2e-optimization"
+          business_impact: "Overall system responsiveness degraded"
+
+      # Throughput Alerts
+      - alert: LowThroughput
+        expr: rate(acgs_requests_total[5m]) < 10
+        for: 10m
+        labels:
+          severity: warning
+          category: performance_sla
+        annotations:
+          summary: "Service throughput below 10 RPS"
+          description: "Current throughput is {{ $value }} requests per second"
+          runbook_url: "https://docs.acgs.ai/runbooks/throughput-optimization"
+          business_impact: "System may not be handling expected load"
+
+  - name: acgs_optimization_success_metrics
+    interval: 60s
+    rules:
+      # Success Rate Tracking
+      - record: acgs:p99_latency_target_met
+        expr: |
+          (
+            histogram_quantile(0.99, rate(pgc_service_request_duration_seconds_bucket[5m])) * 1000 < 5
+            and
+            histogram_quantile(0.99, rate(gs_service_request_duration_seconds_bucket[5m])) * 1000 < 5
+          )
+
+      - record: acgs:cache_hit_rate_target_met
+        expr: |
+          (
+            (rate(pgc_cache_hits_total[5m]) / (rate(pgc_cache_hits_total[5m]) + rate(pgc_cache_misses_total[5m]))) >= 0.85
+            and
+            (rate(gs_cache_hits_total[5m]) / (rate(gs_cache_hits_total[5m]) + rate(gs_cache_misses_total[5m]))) >= 0.85
+          )
+
+      - record: acgs:constitutional_compliance_target_met
+        expr: |
+          (rate(constitutional_validations_passed_total[5m]) / rate(constitutional_validations_total[5m])) >= 0.95
+
+      - record: acgs:optimization_success_rate
+        expr: |
+          (
+            acgs:p99_latency_target_met
+            and
+            acgs:cache_hit_rate_target_met
+            and
+            acgs:constitutional_compliance_target_met
+          )

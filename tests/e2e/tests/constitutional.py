@@ -9,7 +9,7 @@ import asyncio
 import time
 from typing import List, Dict, Any
 
-from ..framework.base import ConstitutionalComplianceTest, TestResult
+from ..framework.base import ConstitutionalComplianceTest, E2ETestResult
 from ..framework.config import ServiceType
 from ..framework.utils import TestDataGenerator
 
@@ -20,7 +20,7 @@ class BasicConstitutionalTest(ConstitutionalComplianceTest):
     test_type = "constitutional"
     tags = ["constitutional", "compliance", "basic"]
     
-    async def run_test(self) -> List[TestResult]:
+    async def run_test(self) -> List[E2ETestResult]:
         """Run basic constitutional compliance tests."""
         results = []
         
@@ -38,7 +38,7 @@ class BasicConstitutionalTest(ConstitutionalComplianceTest):
         
         return results
     
-    async def _test_constitutional_hash_consistency(self) -> TestResult:
+    async def _test_constitutional_hash_consistency(self) -> E2ETestResult:
         """Test that all services return consistent constitutional hash."""
         start_time = time.perf_counter()
         
@@ -70,7 +70,7 @@ class BasicConstitutionalTest(ConstitutionalComplianceTest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="constitutional_hash_consistency",
                 success=consistent_hashes,
                 duration_ms=duration_ms,
@@ -86,20 +86,20 @@ class BasicConstitutionalTest(ConstitutionalComplianceTest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="constitutional_hash_consistency",
                 success=False,
                 duration_ms=duration_ms,
                 error_message=f"Hash consistency check failed: {str(e)}"
             )
     
-    async def _test_policy_validation(self) -> TestResult:
+    async def _test_policy_validation(self) -> E2ETestResult:
         """Test constitutional policy validation."""
         start_time = time.perf_counter()
         
         try:
             if not self.config.is_service_enabled(ServiceType.CONSTITUTIONAL_AI):
-                return TestResult(
+                return E2ETestResult(
                     test_name="constitutional_policy_validation",
                     success=False,
                     duration_ms=0,
@@ -135,7 +135,7 @@ class BasicConstitutionalTest(ConstitutionalComplianceTest):
                 if response_hash != self.config.constitutional_hash:
                     constitutional_compliance = False
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="constitutional_policy_validation",
                 success=success and constitutional_compliance,
                 duration_ms=duration_ms,
@@ -151,20 +151,20 @@ class BasicConstitutionalTest(ConstitutionalComplianceTest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="constitutional_policy_validation",
                 success=False,
                 duration_ms=duration_ms,
                 error_message=f"Policy validation failed: {str(e)}"
             )
     
-    async def _test_compliance_endpoint(self) -> TestResult:
+    async def _test_compliance_endpoint(self) -> E2ETestResult:
         """Test constitutional compliance endpoint responsiveness."""
         start_time = time.perf_counter()
         
         try:
             if not self.config.is_service_enabled(ServiceType.CONSTITUTIONAL_AI):
-                return TestResult(
+                return E2ETestResult(
                     test_name="constitutional_compliance_endpoint",
                     success=False,
                     duration_ms=0,
@@ -199,7 +199,7 @@ class BasicConstitutionalTest(ConstitutionalComplianceTest):
                 except Exception:
                     constitutional_compliance = True  # Assume compliance if response is valid
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="constitutional_compliance_endpoint",
                 success=success,
                 duration_ms=duration_ms,
@@ -214,7 +214,7 @@ class BasicConstitutionalTest(ConstitutionalComplianceTest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="constitutional_compliance_endpoint",
                 success=False,
                 duration_ms=duration_ms,
@@ -228,7 +228,7 @@ class ConstitutionalComplianceStressTest(ConstitutionalComplianceTest):
     test_type = "constitutional"
     tags = ["constitutional", "stress", "performance"]
     
-    async def run_test(self) -> List[TestResult]:
+    async def run_test(self) -> List[E2ETestResult]:
         """Run constitutional compliance stress tests."""
         results = []
         
@@ -242,13 +242,13 @@ class ConstitutionalComplianceStressTest(ConstitutionalComplianceTest):
         
         return results
     
-    async def _test_concurrent_compliance_validation(self) -> TestResult:
+    async def _test_concurrent_compliance_validation(self) -> E2ETestResult:
         """Test constitutional compliance under concurrent load."""
         start_time = time.perf_counter()
         
         try:
             if not self.config.is_service_enabled(ServiceType.CONSTITUTIONAL_AI):
-                return TestResult(
+                return E2ETestResult(
                     test_name="constitutional_concurrent_compliance",
                     success=False,
                     duration_ms=0,
@@ -298,7 +298,7 @@ class ConstitutionalComplianceStressTest(ConstitutionalComplianceTest):
             
             overall_success = success_rate >= 0.9 and compliance_rate >= 0.9
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="constitutional_concurrent_compliance",
                 success=overall_success,
                 duration_ms=duration_ms,
@@ -316,20 +316,20 @@ class ConstitutionalComplianceStressTest(ConstitutionalComplianceTest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="constitutional_concurrent_compliance",
                 success=False,
                 duration_ms=duration_ms,
                 error_message=f"Concurrent compliance test failed: {str(e)}"
             )
     
-    async def _test_policy_type_compliance(self) -> TestResult:
+    async def _test_policy_type_compliance(self) -> E2ETestResult:
         """Test compliance validation for different policy types."""
         start_time = time.perf_counter()
         
         try:
             if not self.config.is_service_enabled(ServiceType.CONSTITUTIONAL_AI):
-                return TestResult(
+                return E2ETestResult(
                     test_name="constitutional_policy_type_compliance",
                     success=False,
                     duration_ms=0,
@@ -389,7 +389,7 @@ class ConstitutionalComplianceStressTest(ConstitutionalComplianceTest):
             
             overall_success = compliance_rate >= 0.8  # 80% of policy types should be compliant
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="constitutional_policy_type_compliance",
                 success=overall_success,
                 duration_ms=duration_ms,
@@ -406,7 +406,7 @@ class ConstitutionalComplianceStressTest(ConstitutionalComplianceTest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="constitutional_policy_type_compliance",
                 success=False,
                 duration_ms=duration_ms,

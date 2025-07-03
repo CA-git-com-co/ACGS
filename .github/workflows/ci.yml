@@ -441,7 +441,7 @@ jobs:
         timeout-minutes: 15
         run: |
           echo "📊 Running test coverage analysis..."
-          pytest --cov=services --cov-report=xml --cov-report=term-missing --cov-fail-under=80
+          pytest --cov=services --cov-report=xml --cov-report=term-missing --cov-fail-under=90
           COVERAGE=$(python -c "import xml.etree.ElementTree as ET; print(float(ET.parse('coverage.xml').getroot().attrib['line-rate']) * 100)")
           echo "score=$COVERAGE" >> $GITHUB_OUTPUT
           echo "Coverage: $COVERAGE%"
@@ -1134,6 +1134,161 @@ jobs:
             echo "📋 Detailed remediation plans available in artifacts"
           fi
 
+  # Enterprise Deployment Gates
+  deployment_gates:
+    runs-on: ubuntu-latest
+    name: Enterprise Deployment Gates
+    needs:
+      [
+        preflight,
+        code_quality_gates,
+        rust_quality_build,
+        enterprise_security_scan,
+        enterprise_reporting,
+      ]
+    if: needs.preflight.outputs.should_deploy == 'true'
+    outputs:
+      deployment_approved: ${{ steps.gates.outputs.approved }}
+      coverage_score: ${{ steps.gates.outputs.coverage_score }}
+      blocking_issues: ${{ steps.gates.outputs.blocking_issues }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .[dev,test]
+
+      - name: Download quality artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: /tmp/artifacts/
+
+      - name: Prepare artifacts for validation
+        run: |
+          echo "📋 Preparing artifacts for deployment gate validation..."
+
+          # Copy coverage reports if available
+          if [ -d "/tmp/artifacts/enterprise-quality-reports" ]; then
+            cp /tmp/artifacts/enterprise-quality-reports/coverage.* . 2>/dev/null || true
+            cp /tmp/artifacts/enterprise-quality-reports/*-report.json . 2>/dev/null || true
+          fi
+
+          # Copy security reports if available
+          if [ -d "/tmp/artifacts/enterprise-security-reports" ]; then
+            cp /tmp/artifacts/enterprise-security-reports/*.json . 2>/dev/null || true
+          fi
+
+          echo "✅ Artifacts prepared for validation"
+
+      - name: Run enterprise deployment gates
+        id: gates
+        env:
+          COVERAGE_THRESHOLD: 90
+        run: |
+          echo "🚀 Running enterprise deployment gates validation..."
+
+          # Make deployment gates script executable
+          chmod +x scripts/cicd/deployment_gates.py
+
+          # Run deployment gates validation
+          if python scripts/cicd/deployment_gates.py; then
+            echo "✅ All deployment gates passed"
+            echo "approved=true" >> $GITHUB_OUTPUT
+
+            # Extract coverage score if available
+            if [ -f "deployment-gates-results.json" ]; then
+              COVERAGE_SCORE=$(python -c "
+              import json
+              try:
+                  with open('deployment-gates-results.json') as f:
+                      data = json.load(f)
+                  score = data.get('coverage', {}).get('details', {}).get('total_coverage', 0)
+                  print(f'{score:.2f}')
+              except:
+                  print('0.0')
+              ")
+              echo "coverage_score=$COVERAGE_SCORE" >> $GITHUB_OUTPUT
+
+              # Extract blocking issues
+              BLOCKING_ISSUES=$(python -c "
+              import json
+              try:
+                  with open('deployment-gates-results.json') as f:
+                      data = json.load(f)
+                  issues = data.get('blocking_issues', [])
+                  print(','.join(issues) if issues else 'none')
+              except:
+                  print('unknown')
+              ")
+              echo "blocking_issues=$BLOCKING_ISSUES" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "❌ Deployment gates failed"
+            echo "approved=false" >> $GITHUB_OUTPUT
+            echo "coverage_score=0.0" >> $GITHUB_OUTPUT
+            echo "blocking_issues=deployment_gates_failed" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Upload deployment gate reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: deployment-gates-reports
+          path: |
+            deployment-gates-results.json
+            deployment-gates-report.md
+          retention-days: 30
+
+      - name: Comment PR with deployment status
+        uses: actions/github-script@v7
+        if: github.event_name == 'pull_request'
+        with:
+          script: |
+            const approved = '${{ steps.gates.outputs.approved }}' === 'true';
+            const coverage = '${{ steps.gates.outputs.coverage_score }}';
+            const issues = '${{ steps.gates.outputs.blocking_issues }}';
+
+            const status = approved ? '✅ APPROVED' : '❌ BLOCKED';
+            const emoji = approved ? '🚀' : '🚫';
+
+            let body = `## ${emoji} Enterprise Deployment Gates ${status}
+
+            ### Deployment Readiness
+            - **Status:** ${status}
+            - **Coverage:** ${coverage}%
+            - **Threshold:** 90%
+            `;
+
+            if (!approved && issues !== 'none') {
+              body += `
+            ### Blocking Issues
+            ${issues.split(',').map(issue => `- ❌ ${issue}`).join('\n')}
+            `;
+            }
+
+            body += `
+            ${approved ?
+              '🎉 **All deployment gates passed! This PR is ready for deployment.**' :
+              '⚠️ **Deployment is blocked until all issues are resolved.**'
+            }
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+
   # Multi-Environment Deployment
   multi_environment_deployment:
     runs-on: ubuntu-latest
@@ -1146,8 +1301,9 @@ jobs:
         rust_quality_build,
         enterprise_security_scan,
         enterprise_reporting,
+        deployment_gates,
       ]
-    if: needs.preflight.outputs.should_deploy == 'true' && needs.code_quality_gates.outputs.quality_passed == 'true' && (needs.enterprise_reporting.result == 'success' || github.event.inputs.skip_tests == 'true')
+    if: needs.preflight.outputs.should_deploy == 'true' && needs.deployment_gates.outputs.deployment_approved == 'true' && (needs.enterprise_reporting.result == 'success' || github.event.inputs.skip_tests == 'true')
     environment:
       name: ${{ needs.preflight.outputs.target_environment }}
       url: ${{ needs.preflight.outputs.target_environment == 'production' && 'https://api.acgs-pgp.com' || needs.preflight.outputs.target_environment == 'staging' && 'https://staging.acgs-pgp.com' || 'https://dev.acgs-pgp.com' }}

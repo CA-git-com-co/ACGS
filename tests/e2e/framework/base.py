@@ -19,11 +19,11 @@ import httpx
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from redis.asyncio import Redis
 
-from .config import E2ETestConfig, TestMode, ServiceType
+from .config import E2ETestConfig, E2ETestMode, ServiceType
 
 
 @dataclass
-class TestResult:
+class E2ETestResult:
     """Test execution result."""
     test_name: str
     success: bool
@@ -53,7 +53,7 @@ class BaseE2ETest(ABC):
         self.test_id = str(uuid.uuid4())
         self.start_time: Optional[datetime] = None
         self.end_time: Optional[datetime] = None
-        self.results: List[TestResult] = []
+        self.results: List[E2ETestResult] = []
         
         # HTTP client for service communication
         self.http_client: httpx.AsyncClient
@@ -73,7 +73,7 @@ class BaseE2ETest(ABC):
         )
         
         # Setup database connection if needed
-        if self.config.test_mode in [TestMode.ONLINE, TestMode.HYBRID]:
+        if self.config.test_mode in [E2ETestMode.ONLINE, E2ETestMode.HYBRID]:
             await self._setup_database()
             await self._setup_redis()
         
@@ -107,7 +107,7 @@ class BaseE2ETest(ABC):
     
     async def _setup_database(self):
         """Setup database connection."""
-        if self.config.test_mode == TestMode.OFFLINE:
+        if self.config.test_mode == E2ETestMode.OFFLINE:
             return
         
         database_url = self.config.get_test_database_url()
@@ -120,7 +120,7 @@ class BaseE2ETest(ABC):
     
     async def _setup_redis(self):
         """Setup Redis connection."""
-        if self.config.test_mode == TestMode.OFFLINE:
+        if self.config.test_mode == E2ETestMode.OFFLINE:
             return
         
         self.redis_client = Redis.from_url(
@@ -218,16 +218,16 @@ class BaseE2ETest(ABC):
                 f"Throughput {metrics.throughput_rps} RPS below target {targets.throughput_rps} RPS"
             )
     
-    def record_test_result(self, result: TestResult):
+    def record_test_result(self, result: E2ETestResult):
         """Record a test result."""
         self.results.append(result)
     
     @abstractmethod
-    async def run_test(self) -> List[TestResult]:
+    async def run_test(self) -> List[E2ETestResult]:
         """Run the actual test logic."""
         pass
     
-    async def execute(self) -> List[TestResult]:
+    async def execute(self) -> List[E2ETestResult]:
         """Execute the complete test with setup and teardown."""
         try:
             await self.setup()

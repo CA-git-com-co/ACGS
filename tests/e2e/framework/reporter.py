@@ -13,7 +13,7 @@ from dataclasses import dataclass, asdict
 from datetime import datetime, timedelta
 import statistics
 
-from .base import TestResult, PerformanceMetrics
+from .base import E2ETestResult, PerformanceMetrics
 from .config import E2ETestConfig
 
 
@@ -105,7 +105,7 @@ class E2ETestReporter:
         self.baselines[test_name] = baseline
         self._save_baselines()
     
-    def detect_regressions(self, results: List[TestResult]) -> List[RegressionAlert]:
+    def detect_regressions(self, results: List[E2ETestResult]) -> List[RegressionAlert]:
         """Detect performance regressions against baselines."""
         alerts = []
         
@@ -170,7 +170,7 @@ class E2ETestReporter:
         self.regression_alerts = alerts
         return alerts
     
-    def generate_performance_report(self, results: List[TestResult]) -> Dict[str, Any]:
+    def generate_performance_report(self, results: List[E2ETestResult]) -> Dict[str, Any]:
         """Generate comprehensive performance report."""
         performance_results = [r for r in results if r.performance_metrics]
         
@@ -248,7 +248,7 @@ class E2ETestReporter:
             "unit": unit
         }
     
-    def generate_constitutional_compliance_report(self, results: List[TestResult]) -> Dict[str, Any]:
+    def generate_constitutional_compliance_report(self, results: List[E2ETestResult]) -> Dict[str, Any]:
         """Generate constitutional compliance report."""
         constitutional_results = [r for r in results if r.constitutional_compliance is not None]
         
@@ -278,7 +278,7 @@ class E2ETestReporter:
         
         return report
     
-    def _generate_compliance_recommendations(self, non_compliant_tests: List[TestResult]) -> List[str]:
+    def _generate_compliance_recommendations(self, non_compliant_tests: List[E2ETestResult]) -> List[str]:
         """Generate recommendations for improving constitutional compliance."""
         recommendations = []
         
@@ -290,7 +290,7 @@ class E2ETestReporter:
         
         return recommendations
     
-    def generate_comprehensive_report(self, results: List[TestResult]) -> Dict[str, Any]:
+    def generate_comprehensive_report(self, results: List[E2ETestResult]) -> Dict[str, Any]:
         """Generate comprehensive test report with all metrics."""
         # Detect regressions
         self.detect_regressions(results)
@@ -363,7 +363,7 @@ class E2ETestReporter:
         else:
             raise ValueError(f"Unsupported format: {format_type}")
     
-    def should_block_deployment(self, results: List[TestResult]) -> bool:
+    def should_block_deployment(self, results: List[E2ETestResult]) -> bool:
         """Determine if deployment should be blocked based on test results."""
         # Check for test failures
         failed_tests = [r for r in results if not r.success]

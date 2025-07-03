@@ -37,8 +37,9 @@ RUN pip install --no-cache-dir \
     seaborn \
     pandas
 
-# Create reports directory
-RUN mkdir -p /app/reports
+# Create reports and cache directories
+RUN mkdir -p /app/reports /app/.pytest_cache
+RUN chmod 777 /app/.pytest_cache
 
 # Set environment variables
 ENV PYTHONPATH=/app
@@ -47,32 +48,8 @@ ENV PYTHONUNBUFFERED=1
 # Copy test framework and tests
 COPY tests/ ./tests/
 
-# Create test configuration
-RUN cat > pytest.ini << 'EOF'
-[tool:pytest]
-testpaths = tests/e2e/tests
-python_files = test_*.py *_test.py
-python_classes = Test* *Test
-python_functions = test_*
-addopts = 
-    -v
-    --tb=short
-    --strict-markers
-    --disable-warnings
-    --color=yes
-markers =
-    smoke: Quick smoke tests for basic validation
-    constitutional: Constitutional compliance tests
-    hitl: Human-in-the-loop tests
-    performance: Performance and load tests
-    security: Security and authentication tests
-    integration: Service integration tests
-    governance: Multi-agent governance tests
-    infrastructure: Infrastructure component tests
-    slow: Slow running tests
-asyncio_mode = auto
-timeout = 300
-EOF
+# Copy the pytest configuration from the local directory
+COPY tests/e2e/pytest.ini ./pytest.ini
 
 # Create test runner script
 RUN cat > run_e2e_tests.py << 'EOF'
@@ -94,7 +71,7 @@ from pathlib import Path
 sys.path.insert(0, '/app')
 
 from tests.e2e.framework.runner import E2ETestRunner, run_full_test_suite
-from tests.e2e.framework.config import E2ETestConfig, TestMode
+from tests.e2e.framework.config import E2ETestConfig, E2ETestMode
 from tests.e2e.framework.reporter import E2ETestReporter
 
 

@@ -10,7 +10,7 @@ import time
 import json
 from typing import List, Dict, Any, Optional
 
-from ..framework.base import BaseE2ETest, TestResult
+from ..framework.base import BaseE2ETest, E2ETestResult
 from ..framework.config import ServiceType
 
 
@@ -20,7 +20,7 @@ class InfrastructureComponentTest(BaseE2ETest):
     test_type = "infrastructure"
     tags = ["infrastructure", "database", "redis", "components"]
     
-    async def run_test(self) -> List[TestResult]:
+    async def run_test(self) -> List[E2ETestResult]:
         """Run infrastructure component tests."""
         results = []
         
@@ -38,7 +38,7 @@ class InfrastructureComponentTest(BaseE2ETest):
         
         return results
     
-    async def _test_postgresql_infrastructure(self) -> TestResult:
+    async def _test_postgresql_infrastructure(self) -> E2ETestResult:
         """Test PostgreSQL database infrastructure."""
         start_time = time.perf_counter()
         
@@ -48,7 +48,7 @@ class InfrastructureComponentTest(BaseE2ETest):
                 end_time = time.perf_counter()
                 duration_ms = (end_time - start_time) * 1000
                 
-                return TestResult(
+                return E2ETestResult(
                     test_name="postgresql_infrastructure",
                     success=True,
                     duration_ms=duration_ms,
@@ -60,7 +60,7 @@ class InfrastructureComponentTest(BaseE2ETest):
                 )
             
             if not self.db_engine:
-                return TestResult(
+                return E2ETestResult(
                     test_name="postgresql_infrastructure",
                     success=False,
                     duration_ms=0,
@@ -134,7 +134,7 @@ class InfrastructureComponentTest(BaseE2ETest):
             success_rate = len(successful_operations) / len(operations_results)
             overall_success = success_rate >= 0.8
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="postgresql_infrastructure",
                 success=overall_success,
                 duration_ms=duration_ms,
@@ -151,14 +151,14 @@ class InfrastructureComponentTest(BaseE2ETest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="postgresql_infrastructure",
                 success=False,
                 duration_ms=duration_ms,
                 error_message=f"PostgreSQL infrastructure test failed: {str(e)}"
             )
     
-    async def _test_redis_infrastructure(self) -> TestResult:
+    async def _test_redis_infrastructure(self) -> E2ETestResult:
         """Test Redis cache infrastructure."""
         start_time = time.perf_counter()
         
@@ -168,7 +168,7 @@ class InfrastructureComponentTest(BaseE2ETest):
                 end_time = time.perf_counter()
                 duration_ms = (end_time - start_time) * 1000
                 
-                return TestResult(
+                return E2ETestResult(
                     test_name="redis_infrastructure",
                     success=True,
                     duration_ms=duration_ms,
@@ -180,7 +180,7 @@ class InfrastructureComponentTest(BaseE2ETest):
                 )
             
             if not self.redis_client:
-                return TestResult(
+                return E2ETestResult(
                     test_name="redis_infrastructure",
                     success=False,
                     duration_ms=0,
@@ -264,7 +264,7 @@ class InfrastructureComponentTest(BaseE2ETest):
             success_rate = len(successful_operations) / len(operations_results)
             overall_success = success_rate >= 0.8
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="redis_infrastructure",
                 success=overall_success,
                 duration_ms=duration_ms,
@@ -281,14 +281,14 @@ class InfrastructureComponentTest(BaseE2ETest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="redis_infrastructure",
                 success=False,
                 duration_ms=duration_ms,
                 error_message=f"Redis infrastructure test failed: {str(e)}"
             )
     
-    async def _test_service_port_configuration(self) -> TestResult:
+    async def _test_service_port_configuration(self) -> E2ETestResult:
         """Test service port configuration and accessibility."""
         start_time = time.perf_counter()
         
@@ -339,7 +339,7 @@ class InfrastructureComponentTest(BaseE2ETest):
             success_rate = len(successful_ports) / len(port_test_results) if port_test_results else 0
             overall_success = success_rate >= 0.8
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="service_port_configuration",
                 success=overall_success,
                 duration_ms=duration_ms,
@@ -356,7 +356,7 @@ class InfrastructureComponentTest(BaseE2ETest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="service_port_configuration",
                 success=False,
                 duration_ms=duration_ms,
@@ -370,7 +370,7 @@ class ServiceIntegrationTest(BaseE2ETest):
     test_type = "integration"
     tags = ["integration", "services", "communication"]
     
-    async def run_test(self) -> List[TestResult]:
+    async def run_test(self) -> List[E2ETestResult]:
         """Run service integration tests."""
         results = []
         
@@ -388,7 +388,7 @@ class ServiceIntegrationTest(BaseE2ETest):
         
         return results
     
-    async def _test_service_mesh_integration(self) -> TestResult:
+    async def _test_service_mesh_integration(self) -> E2ETestResult:
         """Test service mesh integration and discovery."""
         start_time = time.perf_counter()
         
@@ -438,7 +438,7 @@ class ServiceIntegrationTest(BaseE2ETest):
             discovery_rate = len(discoverable_services) / len(service_discovery_results) if service_discovery_results else 0
             overall_success = discovery_rate >= 0.8
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="service_mesh_integration",
                 success=overall_success,
                 duration_ms=duration_ms,
@@ -455,14 +455,14 @@ class ServiceIntegrationTest(BaseE2ETest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="service_mesh_integration",
                 success=False,
                 duration_ms=duration_ms,
                 error_message=f"Service mesh integration test failed: {str(e)}"
             )
     
-    async def _test_inter_service_communication(self) -> TestResult:
+    async def _test_inter_service_communication(self) -> E2ETestResult:
         """Test communication between services."""
         start_time = time.perf_counter()
         
@@ -547,7 +547,7 @@ class ServiceIntegrationTest(BaseE2ETest):
             communication_success_rate = len(successful_communications) / len(communication_tests) if communication_tests else 0
             overall_success = communication_success_rate >= 0.8
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="inter_service_communication",
                 success=overall_success,
                 duration_ms=duration_ms,
@@ -564,14 +564,14 @@ class ServiceIntegrationTest(BaseE2ETest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="inter_service_communication",
                 success=False,
                 duration_ms=duration_ms,
                 error_message=f"Inter-service communication test failed: {str(e)}"
             )
     
-    async def _test_service_dependency_chain(self) -> TestResult:
+    async def _test_service_dependency_chain(self) -> E2ETestResult:
         """Test service dependency chain and cascading health."""
         start_time = time.perf_counter()
         
@@ -635,7 +635,7 @@ class ServiceIntegrationTest(BaseE2ETest):
             
             overall_success = chain_health_rate >= 0.8 and compliance_rate >= 0.8
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="service_dependency_chain",
                 success=overall_success,
                 duration_ms=duration_ms,
@@ -654,7 +654,7 @@ class ServiceIntegrationTest(BaseE2ETest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="service_dependency_chain",
                 success=False,
                 duration_ms=duration_ms,

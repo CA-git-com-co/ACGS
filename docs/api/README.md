@@ -13,11 +13,11 @@ This directory contains comprehensive API documentation for all ACGS-2 services,
 
 ### Core Services
 
-#### Authentication Service (Port 8016)
+##### Authentication Service (Port 8016)
 - **Base URL**: `http://localhost:8016`
 - **Health Check**: `GET /health`
 - **Metrics**: `GET /metrics`
-- **Documentation**: [Authentication API](./authentication.md)
+- **Documentation**: [Authentication API (Port 8016)](./authentication.md), [Constitutional AI API (Port 8001)](./constitutional-ai.md), [Policy Governance API (Port 8005)](./policy-governance.md), [API Documentation Index](api-docs-index.md)
 
 **Key Endpoints**:
 ```
@@ -26,9 +26,45 @@ POST /auth/refresh        - Token refresh
 POST /auth/logout         - User logout
 GET  /auth/profile        - User profile
 POST /auth/mfa/setup      - MFA configuration
+POST /auth/agents         - Agent management
+POST /auth/api-keys       - API key management
 ```
 
-#### Constitutional AI Service (Port 8001)
+**Example Request and Response**:
+```javascript
+// User authentication
+const auth = await fetch('http://localhost:8016/auth/login', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    username: 'user123',
+    password: 'password123'
+  })
+});
+
+const result = await auth.json();
+console.log(result);
+```
+```json
+// Successful response
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOi...c13Mtg",
+  "expiresIn": 3600,
+  "user": {
+    "id": 123,
+    "username": "user123",
+    "roles": ["user", "admin"]
+  }
+}
+```
+
+**Usage Notes**:
+- Request parameters include username and password.
+- Response format includes a JWT token, expiration time, user ID, username, and roles.
+
+##### Constitutional AI Service (Port 8001)
 - **Base URL**: `http://localhost:8001`
 - **Health Check**: `GET /health`
 - **Metrics**: `GET /metrics`
@@ -36,14 +72,46 @@ POST /auth/mfa/setup      - MFA configuration
 
 **Key Endpoints**:
 ```
-POST /api/v1/validate                    - Constitutional validation
-POST /api/v1/principles/evaluate         - Principle evaluation
-GET  /api/v1/principles                  - List principles
-POST /api/v1/constitutional-council      - Council operations
-GET  /api/v1/performance/metrics         - Performance metrics
+POST /api/v1/validate                    - Validate constitutional compliance
+
+**Example Request and Response**:
+```javascript
+// Validate constitutional compliance
+const validation = await fetch('http://localhost:8001/api/v1/validate', {
+  method: 'POST',
+  headers: {
+   'Content-Type': 'application/json',
+    'Authorization': 'Bearer <jwt_token>',
+  },
+  body: JSON.stringify({
+    policyContent: '...',
+    inputData: {...}
+  })
+});
+
+const validateResult = await validation.json();
+console.log(validateResult);
+```
+```json
+// Successful response
+{
+  "constitutionalCompliance": true,
+  "complianceRating": 0.95,
+  "principlesEvaluated": ["equality", "fairness", "transparency"]
+}
 ```
 
-#### Policy Governance Service (Port 8005)
+**Usage Notes**:
+- Request parameters include policy content and input data.
+- Response format includes constitutional compliance, compliance rating, and principles evaluated.
+POST /api/v1/principles/evaluate         - Evaluate constitutional principles
+GET  /api/v1/principles                  - List constitutional principles
+POST /api/v1/constitutional-council      - Council operations
+GET  /api/v1/performance/metrics         - Performance metrics
+POST /api/v1/wina/validate               - WINA model validation
+```
+
+##### Policy Governance Service (Port 8005)
 - **Base URL**: `http://localhost:8005`
 - **Health Check**: `GET /health`
 - **Metrics**: `GET /metrics`
@@ -56,38 +124,24 @@ GET  /api/v1/policies                    - List policies
 POST /api/v1/compliance/validate         - Compliance validation
 GET  /api/v1/governance/workflows        - Governance workflows
 POST /api/v1/constitutional-compliance   - Constitutional compliance
-```
-
-#### Governance Synthesis Service (Port 8004)
-- **Base URL**: `http://localhost:8004`
-- **Health Check**: `GET /health`
-- **Metrics**: `GET /metrics`
-- **Documentation**: [Governance Synthesis API](./governance-synthesis.md)
-
-**Key Endpoints**:
-```
-POST /api/v1/synthesis/policy            - Policy synthesis
-POST /api/v1/synthesis/governance        - Governance synthesis
-GET  /api/v1/synthesis/history           - Synthesis history
-POST /api/v1/wina/optimize               - WINA optimization
-GET  /api/v1/performance/metrics         - Performance metrics
+POST /api/v1/synthetic/governance        - Synthetic governance
 ```
 
 ### Platform Services
 
-#### Integrity Service (Port 8002)
+##### Integrity Service (Port 8002)
 - **Base URL**: `http://localhost:8002`
 - **Health Check**: `GET /health`
 - **Metrics**: `GET /metrics`
 - **Documentation**: [Integrity API](./integrity.md)
 
-#### Formal Verification Service (Port 8003)
+##### Formal Verification Service (Port 8003)
 - **Base URL**: `http://localhost:8003`
 - **Health Check**: `GET /health`
 - **Metrics**: `GET /metrics`
 - **Documentation**: [Formal Verification API](./formal-verification.md)
 
-#### Evolutionary Computation Service (Port 8006)
+##### Evolutionary Computation Service (Port 8006)
 - **Base URL**: `http://localhost:8006`
 - **Health Check**: `GET /health`
 - **Metrics**: `GET /metrics`
@@ -95,7 +149,7 @@ GET  /api/v1/performance/metrics         - Performance metrics
 
 ## Authentication
 
-### JWT Token Format
+##### JWT Token Format
 ```json
 {
   "header": {
@@ -113,7 +167,7 @@ GET  /api/v1/performance/metrics         - Performance metrics
 }
 ```
 
-### Authentication Headers
+##### Authentication Headers
 ```http
 Authorization: Bearer <jwt_token>
 Content-Type: application/json
@@ -123,19 +177,19 @@ X-Request-ID: <unique_request_id>
 
 ## Performance Specifications
 
-### Response Time Targets
+##### Response Time Targets
 - **P99 Latency**: ≤5ms for core operations
 - **Average Response**: ≤2ms for cached operations
 - **Constitutional Validation**: ≤3ms per request
 - **Policy Evaluation**: ≤5ms per policy
 
-### Throughput Capacity
+##### Throughput Capacity
 - **Sustained Load**: 100+ RPS per service
 - **Peak Capacity**: 500+ RPS with auto-scaling
 - **Concurrent Users**: 1000+ simultaneous connections
 - **Cache Hit Rate**: Target 85% (current 25%)
 
-### Error Handling
+##### Error Handling
 ```json
 {
   "error": {
@@ -154,13 +208,13 @@ X-Request-ID: <unique_request_id>
 
 ## Rate Limiting
 
-### Default Limits
+##### Default Limits
 - **Authenticated Users**: 1000 requests/minute
 - **Anonymous Users**: 100 requests/minute
 - **Admin Users**: 5000 requests/minute
 - **Service-to-Service**: 10000 requests/minute
 
-### Rate Limit Headers
+##### Rate Limit Headers
 ```http
 X-RateLimit-Limit: 1000
 X-RateLimit-Remaining: 999
@@ -170,7 +224,7 @@ X-RateLimit-Window: 60
 
 ## Monitoring and Metrics
 
-### Health Check Response
+##### Health Check Response
 ```json
 {
   "status": "healthy",
@@ -192,7 +246,7 @@ X-RateLimit-Window: 60
 }
 ```
 
-### Metrics Endpoint
+##### Metrics Endpoint
 All services expose Prometheus metrics at `/metrics`:
 
 ```
@@ -214,7 +268,7 @@ acgs_cache_hit_rate{cache_type="l2"} 0.25
 
 ## WebSocket Connections
 
-### Real-time Governance Events
+##### Real-time Governance Events
 ```javascript
 const ws = new WebSocket('ws://localhost:8005/api/v1/governance/events');
 
@@ -239,7 +293,7 @@ ws.onmessage = function(event) {
 
 ## SDK and Client Libraries
 
-### Python SDK
+##### Python SDK
 ```python
 from acgs_client import ACGSClient
 
@@ -262,7 +316,7 @@ evaluation = await client.policy_governance.evaluate(
 )
 ```
 
-### JavaScript SDK
+##### JavaScript SDK
 ```javascript
 import { ACGSClient } from '@acgs/client';
 
@@ -281,13 +335,13 @@ const result = await client.constitutionalAI.validate({
 
 ## Testing and Development
 
-### Test Environment
+##### Test Environment
 - **Base URL**: `http://localhost:8000-8006`
 - **Test Database**: PostgreSQL on port 5439
 - **Test Cache**: Redis on port 6389
 - **Mock Services**: Available for integration testing
 
-### API Testing Tools
+##### API Testing Tools
 ```bash
 # Health check all services
 curl http://localhost:8001/health

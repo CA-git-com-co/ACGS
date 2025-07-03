@@ -790,9 +790,20 @@ class ConsensusEngine:
         event_data: Optional[Dict[str, Any]] = None
     ) -> None:
         """Add session event knowledge to blackboard"""
-        
+
         from ...shared.blackboard import KnowledgeItem
-        
+        import json
+
+        # Serialize event_data to handle datetime objects
+        serialized_event_data = {}
+        if event_data:
+            try:
+                # Convert to JSON and back to handle datetime serialization
+                serialized_event_data = json.loads(json.dumps(event_data, default=str))
+            except (TypeError, ValueError):
+                # If serialization fails, convert all values to strings
+                serialized_event_data = {k: str(v) for k, v in event_data.items()}
+
         knowledge = KnowledgeItem(
             space='coordination',
             agent_id='consensus_engine',
@@ -801,7 +812,7 @@ class ConsensusEngine:
                 'session_id': session.session_id,
                 'conflict_id': session.conflict_id,
                 'event_type': event_type,
-                'event_data': event_data or {},
+                'event_data': serialized_event_data,
                 'session_status': session.status,
                 'algorithm': session.algorithm,
                 'participants_count': len(session.participants),
@@ -811,7 +822,7 @@ class ConsensusEngine:
             priority=2,
             tags={'consensus', 'coordination', event_type}
         )
-        
+
         await self.blackboard.add_knowledge(knowledge)
 
     async def _handle_failed_consensus(self, session: ConsensusSession) -> None:

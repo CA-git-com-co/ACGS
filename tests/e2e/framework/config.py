@@ -10,11 +10,11 @@ from enum import Enum
 from pathlib import Path
 from typing import Dict, List, Optional, Union
 from dataclasses import dataclass, field
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, ConfigDict
 
 
-class TestMode(str, Enum):
-    """Test execution modes."""
+class E2ETestMode(str, Enum):
+    """Test execution modes for E2E testing."""
     ONLINE = "online"      # Test against live infrastructure
     OFFLINE = "offline"    # Use mocked services and in-memory databases
     HYBRID = "hybrid"      # Mix of live and mocked components
@@ -97,7 +97,7 @@ class E2ETestConfig(BaseModel):
     """Comprehensive E2E test configuration."""
     
     # Core configuration
-    test_mode: TestMode = TestMode.OFFLINE
+    test_mode: E2ETestMode = E2ETestMode.OFFLINE
     constitutional_hash: str = "cdd01ef066bc6cf2"
     project_root: Path = Field(default_factory=lambda: Path.cwd())
     
@@ -127,10 +127,10 @@ class E2ETestConfig(BaseModel):
     debug_mode: bool = False
     verbose_logging: bool = True
     
-    class Config:
-        """Pydantic configuration."""
-        use_enum_values = True
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(
+        use_enum_values=True,
+        arbitrary_types_allowed=True
+    )
     
     def __post_init__(self):
         """Initialize default service endpoints."""
@@ -158,7 +158,7 @@ class E2ETestConfig(BaseModel):
         
         # Override from environment
         if mode := os.getenv("E2E_TEST_MODE"):
-            config.test_mode = TestMode(mode)
+            config.test_mode = E2ETestMode(mode)
         
         if hash_val := os.getenv("CONSTITUTIONAL_HASH"):
             config.constitutional_hash = hash_val

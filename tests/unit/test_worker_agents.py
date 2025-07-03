@@ -296,7 +296,7 @@ class TestLegalAgent:
         assert 0.0 <= result.confidence <= 1.0
         assert len(result.regulatory_compliance) > 0
         assert len(result.liability_assessment) > 0
-        assert len(result.privacy_analysis) > 0
+        assert len(result.data_protection_assessment) > 0
         assert len(result.recommendations) >= 0
     
     @pytest.mark.asyncio

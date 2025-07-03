@@ -11,8 +11,8 @@ from pathlib import Path
 from typing import Dict, List, Optional, Type, Union
 from datetime import datetime
 
-from .config import E2ETestConfig, TestMode, ServiceType
-from .base import BaseE2ETest, TestResult
+from .config import E2ETestConfig, E2ETestMode, ServiceType
+from .base import BaseE2ETest, E2ETestResult
 from .mocks import MockServiceManager
 from .utils import TestEnvironmentManager
 
@@ -37,7 +37,7 @@ class E2ETestFramework:
         self.mock_manager: Optional[MockServiceManager] = None
         self.env_manager = TestEnvironmentManager(self.config)
         self.test_registry: Dict[str, Type[BaseE2ETest]] = {}
-        self.results: List[TestResult] = []
+        self.results: List[E2ETestResult] = []
         
         # Setup logging
         self._setup_logging()
@@ -67,7 +67,7 @@ class E2ETestFramework:
         await self.env_manager.setup()
         
         # Initialize mock services if needed
-        if self.config.test_mode in [TestMode.OFFLINE, TestMode.HYBRID]:
+        if self.config.test_mode in [E2ETestMode.OFFLINE, E2ETestMode.HYBRID]:
             self.mock_manager = MockServiceManager(self.config)
             await self.mock_manager.start()
             logger.info("Mock services started")
@@ -93,7 +93,7 @@ class E2ETestFramework:
         """Validate required infrastructure components."""
         logger.info("Validating infrastructure components...")
         
-        if self.config.test_mode == TestMode.ONLINE:
+        if self.config.test_mode == E2ETestMode.ONLINE:
             # Check live services
             for service_type in ServiceType:
                 if self.config.is_service_enabled(service_type):
@@ -111,7 +111,7 @@ class E2ETestFramework:
         self.test_registry[test_name] = test_class
         logger.debug(f"Registered test: {test_name}")
     
-    async def run_test(self, test_name: str) -> List[TestResult]:
+    async def run_test(self, test_name: str) -> List[E2ETestResult]:
         """Run a specific test by name."""
         if test_name not in self.test_registry:
             raise ValueError(f"Test '{test_name}' not found in registry")
@@ -131,7 +131,7 @@ class E2ETestFramework:
             return results
         except Exception as e:
             logger.error(f"Test {test_name} failed with exception: {e}")
-            error_result = TestResult(
+            error_result = E2ETestResult(
                 test_name=test_name,
                 success=False,
                 duration_ms=0.0,
@@ -140,7 +140,7 @@ class E2ETestFramework:
             self.results.append(error_result)
             return [error_result]
     
-    async def run_all_tests(self) -> List[TestResult]:
+    async def run_all_tests(self) -> List[E2ETestResult]:
         """Run all registered tests."""
         logger.info(f"Running {len(self.test_registry)} registered tests...")
         
@@ -157,7 +157,7 @@ class E2ETestFramework:
         
         return all_results
     
-    async def run_test_suite(self, test_names: List[str]) -> List[TestResult]:
+    async def run_test_suite(self, test_names: List[str]) -> List[E2ETestResult]:
         """Run a specific suite of tests."""
         logger.info(f"Running test suite with {len(test_names)} tests...")
         

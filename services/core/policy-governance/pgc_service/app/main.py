@@ -198,17 +198,40 @@ async def metrics_middleware(request: Request, call_next):
     return response
 
 
-# Health check endpoint
+# Import performance optimization module
+from .performance_optimizer import (
+    cache_response,
+    get_performance_metrics,
+    initialize_redis_pool,
+    PerformanceMonitor,
+    DatabaseOptimizer
+)
+
+# Health check endpoint with caching
 @app.get("/health")
+@cache_response(ttl=60, key_prefix="pgc_health")
 async def health_check():
-    """Health check endpoint"""
-    return {
+    """Health check endpoint with performance optimization"""
+    start_time = time.time()
+
+    # Quick health check with minimal overhead
+    health_data = {
         "status": "healthy",
         "service": SERVICE_NAME,
         "version": SERVICE_VERSION,
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "constitutional_hash": "cdd01ef066bc6cf2",
+        "request_count": getattr(health_check, '_request_count', 0)
     }
+
+    # Increment request counter
+    health_check._request_count = getattr(health_check, '_request_count', 0) + 1
+
+    # Add performance metrics
+    response_time_ms = (time.time() - start_time) * 1000
+    health_data["response_time_ms"] = round(response_time_ms, 2)
+
+    return health_data
 
 
 # Metrics endpoint
@@ -407,26 +430,37 @@ async def validate_policies_batch(request: Request):
         }
 
 
-# Performance monitoring endpoint
+# Enhanced performance monitoring endpoint
 @app.get("/api/v1/performance/metrics")
+@cache_response(ttl=30, key_prefix="pgc_perf")
 async def get_performance_metrics():
-    """Get detailed performance metrics for the governance engine"""
-    try:
-        engine = await get_governance_engine()
-        metrics = engine.get_performance_metrics()
+    """Get detailed performance metrics for the governance engine with caching optimization"""
+    async with PerformanceMonitor("performance_metrics"):
+        try:
+            # Get performance metrics from optimizer
+            optimizer_metrics = await get_performance_metrics()
 
-        return {
-            "service": SERVICE_NAME,
-            "version": SERVICE_VERSION,
-            "optimization_status": "enabled",
-            "target_response_time_ms": 5.0,
-            **metrics,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-        }
+            # Get database health
+            db_health = await DatabaseOptimizer.health_check()
 
-    except Exception as e:
-        logger.error(f"Performance metrics error: {e}")
-        return {"error": str(e), "optimization_status": "error"}
+            return {
+                "service": SERVICE_NAME,
+                "version": SERVICE_VERSION,
+                "optimization_status": "enabled",
+                "target_response_time_ms": 5.0,
+                "performance_optimization": optimizer_metrics,
+                "database_optimization": db_health,
+                "constitutional_hash": "cdd01ef066bc6cf2",
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            }
+
+        except Exception as e:
+            logger.error(f"Performance metrics error: {e}")
+            return {
+                "error": str(e),
+                "optimization_status": "error",
+                "constitutional_hash": "cdd01ef066bc6cf2"
+            }
 
 
 # Performance health check endpoint

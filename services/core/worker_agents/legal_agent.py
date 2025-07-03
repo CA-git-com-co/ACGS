@@ -195,12 +195,12 @@ class RegulatoryFrameworkAnalyzer:
         
         # Check automated decision making
         automated_decisions = deployment_context.get('automated_decisions', False)
+        human_oversight = deployment_context.get('human_oversight', {})
         if automated_decisions:
-            human_oversight = deployment_context.get('human_oversight', {})
             if not human_oversight.get('enabled', False):
                 violations.append('Automated decision making without human oversight')
                 risk_score += 0.25
-        
+
         compliance_checks['automated_decision_making'] = {
             'status': 'compliant' if not automated_decisions or human_oversight.get('enabled', False) else 'non_compliant',
             'automated_decisions': automated_decisions,
@@ -920,6 +920,7 @@ class LegalAgent:
         # Task type handlers
         self.task_handlers = {
             'legal_compliance': self._handle_legal_compliance,
+            'legal_analysis': self._handle_legal_compliance,  # Alias for legal_compliance
             'regulatory_analysis': self._handle_regulatory_analysis,
             'policy_analysis': self._handle_policy_analysis,
             'contract_compliance': self._handle_contract_compliance,
@@ -1045,6 +1046,38 @@ class LegalAgent:
             except Exception as e:
                 self.logger.error(f"Error in task claiming loop: {str(e)}")
                 await asyncio.sleep(10)  # Wait longer on error
+
+    async def process_task(self, task_id: str) -> Any:
+        """Public method to process a task by ID"""
+        try:
+            # Get task from blackboard
+            task_data = await self.blackboard.get_task(task_id)
+            if not task_data:
+                raise ValueError(f"Task {task_id} not found")
+
+            # Convert to TaskDefinition if needed
+            if isinstance(task_data, dict):
+                from ...shared.blackboard.models import TaskDefinition
+                task = TaskDefinition(**task_data)
+            else:
+                task = task_data
+
+            # Get the appropriate handler and process the task directly
+            handler = self.task_handlers.get(task.task_type)
+            if not handler:
+                raise ValueError(f"No handler for task type: {task.task_type}")
+
+            # Process the task and return the actual result
+            result = await handler(task)
+
+            # Update task status in blackboard
+            await self.blackboard.update_task_status(task.id, 'completed', result.model_dump())
+
+            return result
+
+        except Exception as e:
+            self.logger.error(f"Error processing task {task_id}: {str(e)}")
+            raise e
 
     async def _process_task(self, task: TaskDefinition) -> None:
         """Process a claimed task"""
@@ -1186,7 +1219,22 @@ class LegalAgent:
             all_recommendations.append('Address all legal compliance violations before deployment')
         if risk_level in ['high', 'critical']:
             all_recommendations.append('Conduct legal review with qualified counsel')
-        
+
+        # Basic liability assessment
+        liability_assessment = {
+            'overall_liability_risk': risk_level,
+            'liability_factors': [],
+            'mitigation_strategies': []
+        }
+
+        if overall_risk > 0.5:
+            liability_assessment['liability_factors'].append('High regulatory compliance risk')
+            liability_assessment['mitigation_strategies'].append('Implement comprehensive compliance program')
+
+        if len(all_violations) > 5:
+            liability_assessment['liability_factors'].append('Multiple compliance violations identified')
+            liability_assessment['mitigation_strategies'].append('Address all identified violations before deployment')
+
         return LegalAnalysisResult(
             approved=approved,
             risk_level=risk_level,
@@ -1194,7 +1242,7 @@ class LegalAgent:
             regulatory_compliance=regulatory_compliance,
             jurisdiction_analysis=jurisdiction_analysis,
             data_protection_assessment=data_protection_assessment,
-            liability_assessment={},  # Could be expanded
+            liability_assessment=liability_assessment,
             contract_compliance={},   # Could be expanded
             recommendations=list(set(all_recommendations)),  # Remove duplicates
             constitutional_compliance=constitutional_compliance,

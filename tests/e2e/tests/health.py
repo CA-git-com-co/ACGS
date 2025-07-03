@@ -9,7 +9,7 @@ import asyncio
 import time
 from typing import List, Dict, Any
 
-from ..framework.base import BaseE2ETest, TestResult
+from ..framework.base import BaseE2ETest, E2ETestResult
 from ..framework.config import ServiceType
 
 
@@ -19,7 +19,7 @@ class HealthCheckTest(BaseE2ETest):
     test_type = "health"
     tags = ["smoke", "health", "basic"]
     
-    async def run_test(self) -> List[TestResult]:
+    async def run_test(self) -> List[E2ETestResult]:
         """Run health checks for all configured services."""
         results = []
         
@@ -30,7 +30,7 @@ class HealthCheckTest(BaseE2ETest):
         
         return results
     
-    async def _test_service_health(self, service_type: ServiceType) -> TestResult:
+    async def _test_service_health(self, service_type: ServiceType) -> E2ETestResult:
         """Test health of a specific service."""
         start_time = time.perf_counter()
         
@@ -56,7 +56,7 @@ class HealthCheckTest(BaseE2ETest):
                         health_data["constitutional_hash"] == self.config.constitutional_hash
                     )
                 
-                return TestResult(
+                return E2ETestResult(
                     test_name=f"health_check_{service_type.value}",
                     success=True,
                     duration_ms=duration_ms,
@@ -67,7 +67,7 @@ class HealthCheckTest(BaseE2ETest):
                     }
                 )
             else:
-                return TestResult(
+                return E2ETestResult(
                     test_name=f"health_check_{service_type.value}",
                     success=False,
                     duration_ms=duration_ms,
@@ -78,7 +78,7 @@ class HealthCheckTest(BaseE2ETest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name=f"health_check_{service_type.value}",
                 success=False,
                 duration_ms=duration_ms,
@@ -92,7 +92,7 @@ class ServiceConnectivityTest(BaseE2ETest):
     test_type = "connectivity"
     tags = ["smoke", "connectivity", "integration"]
     
-    async def run_test(self) -> List[TestResult]:
+    async def run_test(self) -> List[E2ETestResult]:
         """Test connectivity between services."""
         results = []
         
@@ -113,7 +113,7 @@ class ServiceConnectivityTest(BaseE2ETest):
         
         return results
     
-    async def _test_auth_connectivity(self) -> TestResult:
+    async def _test_auth_connectivity(self) -> E2ETestResult:
         """Test authentication service connectivity."""
         start_time = time.perf_counter()
         
@@ -128,7 +128,7 @@ class ServiceConnectivityTest(BaseE2ETest):
             
             success = response.status_code in [200, 401]  # 401 is expected without auth
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="connectivity_auth_service",
                 success=success,
                 duration_ms=duration_ms,
@@ -142,14 +142,14 @@ class ServiceConnectivityTest(BaseE2ETest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="connectivity_auth_service",
                 success=False,
                 duration_ms=duration_ms,
                 error_message=f"Auth connectivity failed: {str(e)}"
             )
     
-    async def _test_constitutional_ai_connectivity(self) -> TestResult:
+    async def _test_constitutional_ai_connectivity(self) -> E2ETestResult:
         """Test Constitutional AI service connectivity."""
         start_time = time.perf_counter()
         
@@ -177,7 +177,7 @@ class ServiceConnectivityTest(BaseE2ETest):
                 data = response.json()
                 constitutional_compliance = data.get("constitutional_compliance", False)
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="connectivity_constitutional_ai_service",
                 success=success,
                 duration_ms=duration_ms,
@@ -192,14 +192,14 @@ class ServiceConnectivityTest(BaseE2ETest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="connectivity_constitutional_ai_service",
                 success=False,
                 duration_ms=duration_ms,
                 error_message=f"Constitutional AI connectivity failed: {str(e)}"
             )
     
-    async def _test_policy_governance_connectivity(self) -> TestResult:
+    async def _test_policy_governance_connectivity(self) -> E2ETestResult:
         """Test Policy Governance service connectivity."""
         start_time = time.perf_counter()
         
@@ -221,7 +221,7 @@ class ServiceConnectivityTest(BaseE2ETest):
                 data = response.json()
                 cache_hit_rate = data.get("cache_hit_rate", 0)
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="connectivity_policy_governance_service",
                 success=success,
                 duration_ms=duration_ms,
@@ -236,7 +236,7 @@ class ServiceConnectivityTest(BaseE2ETest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="connectivity_policy_governance_service",
                 success=False,
                 duration_ms=duration_ms,
@@ -250,7 +250,7 @@ class InfrastructureHealthTest(BaseE2ETest):
     test_type = "infrastructure"
     tags = ["smoke", "infrastructure", "database", "redis"]
     
-    async def run_test(self) -> List[TestResult]:
+    async def run_test(self) -> List[E2ETestResult]:
         """Test infrastructure component health."""
         results = []
         
@@ -265,7 +265,7 @@ class InfrastructureHealthTest(BaseE2ETest):
         
         return results
     
-    async def _test_database_health(self) -> TestResult:
+    async def _test_database_health(self) -> E2ETestResult:
         """Test database connectivity and basic operations."""
         start_time = time.perf_counter()
         
@@ -283,7 +283,7 @@ class InfrastructureHealthTest(BaseE2ETest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="infrastructure_database_health",
                 success=success,
                 duration_ms=duration_ms,
@@ -297,14 +297,14 @@ class InfrastructureHealthTest(BaseE2ETest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="infrastructure_database_health",
                 success=False,
                 duration_ms=duration_ms,
                 error_message=f"Database health check failed: {str(e)}"
             )
     
-    async def _test_redis_health(self) -> TestResult:
+    async def _test_redis_health(self) -> E2ETestResult:
         """Test Redis connectivity and basic operations."""
         start_time = time.perf_counter()
         
@@ -330,7 +330,7 @@ class InfrastructureHealthTest(BaseE2ETest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="infrastructure_redis_health",
                 success=success,
                 duration_ms=duration_ms,
@@ -344,7 +344,7 @@ class InfrastructureHealthTest(BaseE2ETest):
             end_time = time.perf_counter()
             duration_ms = (end_time - start_time) * 1000
             
-            return TestResult(
+            return E2ETestResult(
                 test_name="infrastructure_redis_health",
                 success=False,
                 duration_ms=duration_ms,

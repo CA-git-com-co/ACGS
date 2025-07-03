@@ -1,5 +1,3 @@
-version: '3.8'
-
 # ACGS E2E Testing Docker Compose Configuration
 # Provides isolated testing environment with all required infrastructure
 
@@ -213,7 +211,7 @@ services:
       dockerfile: tests/e2e/docker/Dockerfile.test-runner
     container_name: acgs_e2e_test_runner
     environment:
-      - E2E_TEST_MODE=online
+      - E2E_TEST_MODE=offline
       - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
       - POSTGRES_HOST=postgres-e2e
       - POSTGRES_PORT=5432
@@ -229,6 +227,7 @@ services:
       - E2E_PARALLEL_WORKERS=2
       - E2E_TEST_TIMEOUT=1800
       - PYTHONPATH=/app
+      - PYTEST_CACHE_DIR=/app/.pytest_cache
     volumes:
       - ../../../tests:/app/tests:ro
       - ../../../services:/app/services:ro
@@ -318,7 +317,7 @@ networks:
     driver: bridge
     ipam:
       config:
-        - subnet: 172.20.0.0/16
+        - subnet: 192.168.100.0/24
 
 volumes:
   postgres_e2e_data:

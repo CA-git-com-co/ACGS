@@ -1,0 +1,21 @@
+🏥 ACGS Service Integration Report
+==================================================
+Overall Status: ❌ UNHEALTHY
+Constitutional Hash: cdd01ef066bc6cf2
+
+📊 Service Status:
+  Healthy: 5/7
+
+  ✅ auth_service (0.010s)
+  ✅ ac_service (0.008s)
+  ❌ integrity_service (0.007s) - HTTP 500
+  ✅ fv_service (0.007s)
+  ✅ gs_service (0.006s)
+  ✅ pgc_service (0.005s)
+  ❌ ec_service - Cannot connect to host localhost:8006 ssl:default [Connect call failed ('127.0.0.1', 8006)]
+
+🔧 Infrastructure Status:
+  Healthy: 2/2
+
+  ✅ postgres
+  ✅ redis
