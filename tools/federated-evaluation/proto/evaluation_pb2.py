@@ -5,6 +5,10 @@
 """Generated protocol buffer code."""
 
 from google.protobuf import (
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
     descriptor as _descriptor,
     descriptor_pool as _descriptor_pool,
     runtime_version as _runtime_version,

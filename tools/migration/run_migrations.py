@@ -10,6 +10,10 @@ import sys
 import time
 from pathlib import Path
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 def wait_for_postgres(
     host="localhost",

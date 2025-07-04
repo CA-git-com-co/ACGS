@@ -4,6 +4,10 @@
 import evaluation_pb2 as evaluation__pb2
 import grpc
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 GRPC_GENERATED_VERSION = "1.72.1"
 GRPC_VERSION = grpc.__version__
 _version_not_supported = False

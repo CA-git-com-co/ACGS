@@ -22,6 +22,10 @@ import subprocess
 import sys
 from pathlib import Path
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 def run_command(cmd: list[str], description: str, fix_mode: bool = False) -> bool:
     """Run a command and return success status."""

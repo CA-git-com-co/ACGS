@@ -13,6 +13,10 @@ import time
 from dataclasses import dataclass, field
 from typing import Any
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Add project root to path
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 

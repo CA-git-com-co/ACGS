@@ -8,6 +8,10 @@ and replace all timezone.utc usage with timezone.utc
 import re
 from pathlib import Path
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 def fix_utc_imports_in_file(file_path: Path) -> bool:
     """Fix timezone.utc imports in a single file."""

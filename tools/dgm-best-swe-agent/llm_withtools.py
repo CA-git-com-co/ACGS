@@ -10,6 +10,10 @@ from prompts.tooluse_prompt import get_tooluse_prompt
 
 from tools import load_all_tools
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 CLAUDE_MODEL = "bedrock/us.anthropic.claude-3-5-sonnet-20241022-v2:0"
 OPENAI_MODEL = "o3-mini-2025-01-31"
 

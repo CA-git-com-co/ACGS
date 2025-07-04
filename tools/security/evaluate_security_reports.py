@@ -8,6 +8,10 @@ import json
 import sys
 from pathlib import Path
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 def evaluate_security_reports():
     """Evaluate all security reports and determine if security gates pass."""

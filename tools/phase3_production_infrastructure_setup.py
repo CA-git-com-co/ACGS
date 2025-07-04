@@ -22,6 +22,10 @@ from datetime import datetime, timezone
 
 import psutil
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,

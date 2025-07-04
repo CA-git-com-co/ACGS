@@ -18,6 +18,10 @@ import time
 from datetime import datetime
 from pathlib import Path
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Configuration Variables
 # Auto-detect project root - use current working directory if it contains ACGS-1 structure
 current_dir = Path.cwd()

@@ -7,6 +7,10 @@ from pathlib import Path
 
 from utils.git_utils import diff_versus_commit
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 def modify_cmake_file(cmake_file_path, new_exercise_value):
     # Step 1: Read the CMake file

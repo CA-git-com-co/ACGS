@@ -12,6 +12,10 @@ from datetime import datetime
 
 import aiohttp
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 class PerformanceOptimizer:
     def __init__(self):

@@ -17,6 +17,10 @@ import re
 import sys
 from pathlib import Path
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Characters that are invalid on Windows
 INVALID_CHARS = r'[:<>"|?*]'
 

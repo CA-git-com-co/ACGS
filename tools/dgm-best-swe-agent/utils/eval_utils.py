@@ -5,6 +5,10 @@ from llm_withtools import convert_msg_history
 
 from utils.swe_log_parsers import MAP_REPO_TO_PARSER
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 def parse_eval_output(instance_id, eval_output):
     try:

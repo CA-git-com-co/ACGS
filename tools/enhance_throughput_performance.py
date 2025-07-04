@@ -14,6 +14,10 @@ import logging
 
 import aiohttp
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 <<<<<<< HEAD
 import statistics
 import time

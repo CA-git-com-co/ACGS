@@ -29,6 +29,10 @@ from typing import Any
 from dotenv import load_dotenv
 from openai import OpenAI
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Load environment variables from .env file
 load_dotenv()
 

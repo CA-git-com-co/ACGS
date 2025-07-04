@@ -9,6 +9,10 @@ import shutil
 from datetime import datetime
 from pathlib import Path
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 class FinalDuplicateCleanup:
     def __init__(self, project_root: str = "/home/dislove/ACGS-1"):

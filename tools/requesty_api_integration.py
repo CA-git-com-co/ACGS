@@ -7,6 +7,10 @@ This module provides a simplified interface for the DGM to interact with the Req
 
 from requesty_example import RequestyAPIClient
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 class RequestyAPI:
     """

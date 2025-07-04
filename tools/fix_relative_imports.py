@@ -7,6 +7,10 @@ Converts relative imports to absolute imports to fix pytest collection errors.
 import os
 import re
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 def fix_relative_imports_in_file(file_path):
     """Fix relative imports in a single file."""

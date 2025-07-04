@@ -12,6 +12,10 @@ from typing import Any
 
 import httpx
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 class EndToEndWorkflowCompletion:
     """Complete the remaining end-to-end governance workflows."""

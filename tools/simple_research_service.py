@@ -6,6 +6,10 @@ Minimal implementation to restore research service health status
 
 import time
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Enhanced Security Middleware
 try:
     from services.shared.input_validation_middleware import InputValidationMiddleware

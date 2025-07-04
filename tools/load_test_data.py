@@ -11,6 +11,10 @@ from datetime import datetime
 
 import requests
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 class TestDataLoader:
     def __init__(self):

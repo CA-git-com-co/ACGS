@@ -14,6 +14,10 @@ from pathlib import Path
 from typing import Dict, List, Set, Tuple
 import re
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 class VulnerabilityFixer:
     """Comprehensive vulnerability detection and remediation for ACGS-1."""
     

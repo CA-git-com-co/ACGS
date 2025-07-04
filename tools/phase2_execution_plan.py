@@ -14,6 +14,10 @@ from typing import Any
 
 import httpx
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 class Phase2ExecutionManager:
     """Manages Phase 2 execution with structured priorities and validation."""

@@ -32,6 +32,10 @@ from typing import Any
 
 import httpx
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Add project paths
 project_root = Path(__file__).parent
 # sys.path.append(str(project_root))  # Removed during reorganization

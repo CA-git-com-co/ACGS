@@ -11,6 +11,10 @@ from pathlib import Path
 
 import aiohttp
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 async def test_governance_workflows():
     """Test the actual governance workflow endpoints."""

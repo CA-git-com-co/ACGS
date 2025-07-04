@@ -7,6 +7,10 @@ Generates comprehensive API documentation for all services.
 from datetime import datetime
 from pathlib import Path
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 def create_service_api_doc(service_name, port, description, endpoints):
     """Create API documentation for a service."""

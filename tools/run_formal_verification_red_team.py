@@ -22,6 +22,10 @@ import time
 from pathlib import Path
 from typing import Any
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Add the formal verification enhanced service to path
 sys.path.append(
     str(Path(__file__).parent / "services/core/formal_verification_enhanced/app")

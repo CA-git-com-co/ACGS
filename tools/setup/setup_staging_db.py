@@ -11,6 +11,10 @@ import sys
 
 import psycopg2
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 def create_staging_database():
     """Create the staging database tables"""

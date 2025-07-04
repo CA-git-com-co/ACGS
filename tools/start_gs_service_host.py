@@ -15,6 +15,10 @@ from pathlib import Path
 
 import httpx
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Set up environment variables for localhost connectivity
 os.environ["AC_SERVICE_URL"] = "http://localhost:8001"
 os.environ["INTEGRITY_SERVICE_URL"] = "http://localhost:8002"

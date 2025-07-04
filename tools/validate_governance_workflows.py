@@ -10,6 +10,10 @@ from typing import Any
 
 import aiohttp
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 class GovernanceWorkflowValidator:
     def __init__(self):

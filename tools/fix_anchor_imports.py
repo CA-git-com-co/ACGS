@@ -5,6 +5,10 @@ Fix Anchor imports in test files to use the new @coral-xyz/anchor package
 
 from pathlib import Path
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 def fix_anchor_imports():
     """Fix Anchor imports in all TypeScript test files."""

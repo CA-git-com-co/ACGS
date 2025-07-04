@@ -2,6 +2,10 @@ import os
 
 from utils.common_utils import load_json_file, read_file
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 coding_agent_summary = """# Coding Agent Summary
 
 - **Main File**: `coding_agent.py`

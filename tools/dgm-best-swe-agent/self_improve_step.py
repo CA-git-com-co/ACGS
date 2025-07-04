@@ -8,6 +8,10 @@ from llm import create_client, extract_json_between_markers, get_response_from_l
 from polyglot.harness import harness as polyglot_harness
 from prompts.diagnose_improvement_prompt import get_diagnose_improvement_prompt
 from prompts.self_improvement_prompt import (
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
     get_diagnose_prompt_polyglot,
     get_diagnose_prompt_swe,
     get_problem_description_prompt,

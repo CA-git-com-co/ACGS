@@ -24,6 +24,10 @@ import sys
 import time
 from datetime import datetime
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Add the services directory to the path
 sys.path.append("/home/dislove/ACGS-1/services")
 

@@ -14,6 +14,10 @@ from typing import Any
 import requests
 import yaml
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 class HunyuanDeploymentManager:
     """Manages deployment of Hunyuan-A13B-Instruct model."""

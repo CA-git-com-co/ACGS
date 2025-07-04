@@ -7,6 +7,10 @@ import anthropic
 import backoff
 import openai
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 MAX_OUTPUT_TOKENS = 4096
 AVAILABLE_LLMS = [
     # Anthropic models

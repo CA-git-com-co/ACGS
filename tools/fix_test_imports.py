@@ -6,6 +6,10 @@ Systematically fixes import path issues in test files that use hyphens instead o
 
 import os
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 def fix_import_paths(file_path):
     """Fix import paths in a single file."""

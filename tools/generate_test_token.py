@@ -7,6 +7,10 @@ import time
 
 import jwt
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Use the same secret key as the services
 SECRET_KEY = "acgs-development-secret-key-2024-phase1-infrastructure-stabilization-jwt-token-signing"
 ALGORITHM = "HS256"

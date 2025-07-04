@@ -9,6 +9,10 @@ Tests basic functionality without requiring full test framework.
 import os
 import sys
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Add the backend path to sys.path
 sys.path.insert(
     0, os.path.join(os.path.dirname(__file__), "src", "backend", "gs_service")

@@ -9,6 +9,10 @@ import sys
 from pathlib import Path
 from typing import Any
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 def handle_compile_request(request: dict[str, Any]) -> dict[str, Any]:
     """Handle LaTeX compilation request via MCP protocol"""

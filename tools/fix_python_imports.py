@@ -8,6 +8,10 @@ import os
 import sys
 from pathlib import Path
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 def create_init_files():
     """Create __init__.py files to make directories proper Python packages."""

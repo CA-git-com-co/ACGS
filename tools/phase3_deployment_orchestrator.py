@@ -14,6 +14,10 @@ import time
 from datetime import datetime
 from typing import Any
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 class DeploymentOrchestrator:
     def __init__(self, environment: str = "staging"):

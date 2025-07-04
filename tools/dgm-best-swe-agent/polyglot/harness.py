@@ -7,6 +7,10 @@ from pathlib import Path
 
 from prompts.testrepo_prompt import get_test_description
 from swe_bench.utils import (
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
     copy_from_container,
     copy_to_container,
     log_container_output,

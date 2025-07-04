@@ -13,6 +13,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Add the monitoring directory to the path
 sys.path.append(
     os.path.join(os.path.dirname(__file__), "..", "infrastructure", "monitoring")

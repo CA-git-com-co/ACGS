@@ -15,6 +15,10 @@ from pathlib import Path
 
 import httpx
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 class Priority2ServiceIntegration:
     """Priority 2: Service Integration and Reliability implementation."""

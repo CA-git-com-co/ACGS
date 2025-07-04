@@ -15,6 +15,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 app = FastAPI(
     title="ACGS-1 Monitoring Dashboard",
     description="Simple monitoring dashboard for ACGS-1 services",

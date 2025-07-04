@@ -20,6 +20,10 @@ from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 class LargeFileAnalyzer:
     def __init__(self, project_root: str = "/home/ubuntu/ACGS", threshold_mb: int = 1):

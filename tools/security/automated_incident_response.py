@@ -8,6 +8,10 @@ import time
 from datetime import datetime
 from enum import Enum
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 class IncidentSeverity(Enum):
     LOW = "low"

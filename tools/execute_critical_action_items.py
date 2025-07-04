@@ -25,6 +25,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Import our custom modules
 sys.path.append(str(Path(__file__).parent))
 from scripts.critical_action_items_coordinator import CriticalActionItemsCoordinator

@@ -14,6 +14,10 @@ from typing import Any
 
 import aiohttp
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Add project root to path
 # sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # Removed during reorganization
 

@@ -10,6 +10,10 @@ import os
 import subprocess
 from pathlib import Path
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 def check_file_exists(file_path):
     """Check if a file exists and return status."""

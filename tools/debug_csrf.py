@@ -9,6 +9,10 @@ from urllib.parse import unquote
 
 import requests
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 BASE_URL = "http://localhost:8000/api/auth"
 
 

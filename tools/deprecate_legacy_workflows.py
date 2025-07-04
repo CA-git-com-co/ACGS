@@ -15,6 +15,10 @@ from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Optional
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 class WorkflowDeprecationManager:
     """Manage safe deprecation of legacy GitHub Actions workflows."""
     

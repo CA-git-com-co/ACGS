@@ -14,6 +14,10 @@ from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Optional
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 class WorkflowModernizationValidator:
     """Validate the complete workflow modernization process."""
     

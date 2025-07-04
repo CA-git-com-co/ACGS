@@ -28,6 +28,10 @@ from dotenv import load_dotenv
 from plots import plot_refactoring
 from rich.console import Console
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 BENCHMARK_DNAME = Path(os.environ.get("AIDER_BENCHMARK_DIR", "tmp.benchmarks"))
 
 EXERCISES_DIR_DEFAULT = "polyglot-benchmark"

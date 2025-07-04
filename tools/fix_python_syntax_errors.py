@@ -7,6 +7,10 @@ import re
 import subprocess
 from pathlib import Path
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 def fix_python_comments(file_path):
     """Fix invalid // comments in Python files."""

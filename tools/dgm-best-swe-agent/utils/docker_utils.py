@@ -6,6 +6,10 @@ from pathlib import Path
 
 import docker
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Thread-local storage for loggers
 _thread_local = threading.local()
 

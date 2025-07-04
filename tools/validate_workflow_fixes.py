@@ -9,6 +9,10 @@ from pathlib import Path
 
 import yaml
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 def validate_deprecated_actions(content: str, filepath: str) -> list[str]:
     """Validate that deprecated actions have been updated"""

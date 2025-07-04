@@ -16,6 +16,10 @@ from services.shared.database import PoolConfig, get_pool_manager
 
 # Import Phase 2 components
 from services.shared.di import (
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
     DIContainer,
     injectable,
 )

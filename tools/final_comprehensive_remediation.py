@@ -13,6 +13,10 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,

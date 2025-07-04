@@ -15,6 +15,10 @@ from .health_checker import HealthStatus, VersionHealthChecker
 from .migration_generator import MigrationGenerator, MigrationScript
 from .rollback_manager import RollbackManager, RollbackPlan
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 __all__ = [
     "APIDiffAnalyzer",
     "ChangeType",

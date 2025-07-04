@@ -9,6 +9,10 @@ from llm_withtools import CLAUDE_MODEL, chat_with_agent
 from utils.eval_utils import get_report_score, msg_history_to_report, score_tie_breaker
 from utils.git_utils import apply_patch, diff_versus_commit, reset_to_commit
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Thread-local storage for logger instances
 thread_local = threading.local()
 

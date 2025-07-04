@@ -9,6 +9,10 @@ to hardcode the localhost URLs and bypass environment variable issues.
 import sys
 from pathlib import Path
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 def apply_direct_fix():
     """Apply direct fix to GS Service main.py file."""

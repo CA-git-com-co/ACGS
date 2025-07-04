@@ -13,6 +13,10 @@ from pathlib import Path
 
 import aiohttp
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 def setup_environment():
     """Set up environment variables for PGC service."""

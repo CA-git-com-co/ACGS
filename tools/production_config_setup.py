@@ -10,6 +10,10 @@ import subprocess
 import sys
 from datetime import datetime
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 class ProductionConfigManager:
     def __init__(self):

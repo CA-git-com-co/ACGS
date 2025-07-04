@@ -18,6 +18,10 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 class DependencyScanningValidator:
     """Validates dependency vulnerability scanning setup."""

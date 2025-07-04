@@ -14,6 +14,10 @@ from pathlib import Path
 
 from dgm_best_swe_agent import DarwinGodelMachine, DGMConfig
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Import Requesty API integration
 try:
     from requesty_api_integration import RequestyAPI

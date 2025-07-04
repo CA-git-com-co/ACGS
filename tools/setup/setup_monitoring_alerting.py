@@ -9,6 +9,10 @@ import os
 
 import yaml
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 class MonitoringSetup:
     def __init__(self):

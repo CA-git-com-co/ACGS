@@ -11,6 +11,10 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Add the services directory to Python path
 sys.path.insert(0, str(Path(__file__).parent.parent / "services"))
 

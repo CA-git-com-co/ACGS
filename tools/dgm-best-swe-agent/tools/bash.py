@@ -1,6 +1,10 @@
 import asyncio
 import os
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 def tool_info():
     return {

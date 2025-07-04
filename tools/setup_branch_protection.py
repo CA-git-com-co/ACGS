@@ -11,6 +11,10 @@ import json
 import sys
 from typing import Dict, List
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 class BranchProtectionManager:
     """Manage GitHub branch protection rules for ACGS-1."""
     

@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 import base64
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # The CSRF cookie value from the login response
 csrf_cookie = "ImZkZTliODljNjVkZTRlZWRmZmIwMmI4ZTRlZWUyNTRhZWQ5NGIwYmIi.aDpI2Q._40Qru_FQeSqKc9xkkX_VuSzoqY"
 

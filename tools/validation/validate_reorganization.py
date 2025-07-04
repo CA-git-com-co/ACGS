@@ -10,6 +10,10 @@ import subprocess
 import sys
 from pathlib import Path
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 class ReorganizationValidator:
     """Validates the reorganized codebase structure"""

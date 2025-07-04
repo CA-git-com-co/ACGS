@@ -13,6 +13,10 @@ import time
 
 import httpx
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Service configuration
 SERVICES = {
     "gs_service": {"port": 8014, "name": "GS Service (Governance Synthesis)"},

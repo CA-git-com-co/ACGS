@@ -10,6 +10,10 @@ import asyncio
 import sys
 from pathlib import Path
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 

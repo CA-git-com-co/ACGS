@@ -14,6 +14,10 @@ import subprocess
 from pathlib import Path
 from typing import Dict, List, Any
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 def check_github_workflows() -> Dict[str, Any]:
     """Check GitHub Actions workflow configurations."""

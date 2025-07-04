@@ -12,6 +12,10 @@ Version: 1.0.0
 
 from pathlib import Path
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 def validate_service_structure() -> tuple[bool, list[str]]:
     """Validate that all 7 core services exist with correct structure."""

@@ -1,3 +1,7 @@
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
 # IF you change the base image, you need to rebuild all images (run with --force_rebuild)
 _DOCKERFILE_BASE = r"""
 FROM buildpack-deps:jammy

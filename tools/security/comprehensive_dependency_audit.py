@@ -8,6 +8,10 @@ import json
 import subprocess
 import sys
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 def run_dependency_audit():
     """Run comprehensive dependency vulnerability audit."""

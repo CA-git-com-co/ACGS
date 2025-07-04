@@ -13,6 +13,10 @@ from pathlib import Path
 
 import httpx
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 class ServiceStartupDebugger:
     """Debug service startup issues with detailed logging."""
