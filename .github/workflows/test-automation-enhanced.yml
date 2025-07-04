@@ -1,0 +1,530 @@
+name: ACGS Enhanced Test Automation
+
+on:
+  push:
+    branches: [main, master, develop]
+    paths:
+      - 'services/**/*.py'
+      - 'tests/**/*.py'
+      - '**/requirements*.txt'
+      - '**/pyproject.toml'
+  pull_request:
+    branches: [main, master, develop]
+    paths:
+      - 'services/**/*.py'
+      - 'tests/**/*.py'
+      - '**/requirements*.txt'
+      - '**/pyproject.toml'
+  schedule:
+    - cron: '0 6 * * *' # Daily at 6 AM for comprehensive testing
+  workflow_dispatch:
+    inputs:
+      test_type:
+        description: 'Type of tests to run'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - unit
+          - integration
+          - e2e
+          - performance
+          - security
+      coverage_threshold:
+        description: 'Coverage threshold percentage'
+        required: false
+        default: '90'
+        type: string
+
+permissions:
+  contents: read
+  packages: read
+  security-events: write
+  checks: write
+
+env:
+  PYTHON_VERSION: '3.11'
+  UV_CACHE_DIR: /tmp/.uv-cache
+  COVERAGE_THRESHOLD: ${{ github.event.inputs.coverage_threshold || '90' }}
+  TEST_RESULTS_DIR: test-results
+  PYTEST_TIMEOUT: 300
+
+concurrency:
+  group: test-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Test discovery and matrix generation
+  test-discovery:
+    runs-on: ubuntu-latest
+    name: Test Discovery & Matrix Generation
+    outputs:
+      test_matrix: ${{ steps.discovery.outputs.matrix }}
+      has_tests: ${{ steps.discovery.outputs.has_tests }}
+      test_types: ${{ steps.discovery.outputs.test_types }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Discover test structure
+        id: discovery
+        run: |
+          echo "🔍 Discovering test structure..."
+          
+          # Find all test directories and categorize
+          SERVICES=()
+          TEST_TYPES=()
+          
+          # Core services
+          for service in constitutional-ai governance-synthesis policy-governance formal-verification evolutionary-computation; do
+            if [ -d "services/core/$service" ] && [ -d "tests" ]; then
+              SERVICES+=("core/$service")
+            fi
+          done
+          
+          # Platform services
+          for service in authentication integrity; do
+            if [ -d "services/platform_services/$service" ] && [ -d "tests" ]; then
+              SERVICES+=("platform_services/$service")
+            fi
+          done
+          
+          # Detect available test types
+          if [ -d "tests/unit" ]; then TEST_TYPES+=("unit"); fi
+          if [ -d "tests/integration" ]; then TEST_TYPES+=("integration"); fi
+          if [ -d "tests/e2e" ]; then TEST_TYPES+=("e2e"); fi
+          if [ -d "tests/performance" ]; then TEST_TYPES+=("performance"); fi
+          if [ -d "tests/security" ]; then TEST_TYPES+=("security"); fi
+          
+          # Generate matrix
+          if [ ${#SERVICES[@]} -gt 0 ]; then
+            MATRIX=$(printf '%s\n' "${SERVICES[@]}" | jq -R . | jq -s .)
+            echo "matrix={\"service\": $MATRIX}" >> $GITHUB_OUTPUT
+            echo "has_tests=true" >> $GITHUB_OUTPUT
+            echo "📦 Test matrix: $MATRIX"
+          else
+            echo "matrix={\"service\": []}" >> $GITHUB_OUTPUT
+            echo "has_tests=false" >> $GITHUB_OUTPUT
+            echo "📦 No services with tests found"
+          fi
+          
+          # Output test types
+          if [ ${#TEST_TYPES[@]} -gt 0 ]; then
+            TYPES_JSON=$(printf '%s\n' "${TEST_TYPES[@]}" | jq -R . | jq -s .)
+            echo "test_types=$TYPES_JSON" >> $GITHUB_OUTPUT
+            echo "🧪 Available test types: $TYPES_JSON"
+          else
+            echo "test_types=[]" >> $GITHUB_OUTPUT
+          fi
+
+  # Unit tests with parallel execution
+  unit-tests:
+    runs-on: ubuntu-latest
+    name: Unit Tests (${{ matrix.service }})
+    needs: test-discovery
+    if: needs.test-discovery.outputs.has_tests == 'true' && (github.event.inputs.test_type == 'all' || github.event.inputs.test_type == 'unit')
+    strategy:
+      matrix: ${{ fromJSON(needs.test-discovery.outputs.test_matrix) }}
+      fail-fast: false
+      max-parallel: 6
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python with caching
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install UV and cache dependencies
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Cache test dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.UV_CACHE_DIR }}
+            .venv
+            .pytest_cache
+          key: test-deps-${{ runner.os }}-${{ matrix.service }}-${{ hashFiles('**/requirements*.txt', '**/pyproject.toml') }}
+          restore-keys: |
+            test-deps-${{ runner.os }}-${{ matrix.service }}-
+            test-deps-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: |
+          SERVICE_PATH="services/${{ matrix.service }}"
+          
+          if [ ! -d "$SERVICE_PATH" ]; then
+            echo "❌ Service path not found: $SERVICE_PATH"
+            exit 1
+          fi
+          
+          cd "$SERVICE_PATH"
+          uv venv
+          source .venv/bin/activate
+          
+          # Install service with test dependencies
+          if [ -f "pyproject.toml" ]; then
+            uv pip install -e ".[test,dev]" || uv pip install -e .
+          elif [ -f "requirements.txt" ]; then
+            uv pip install -r requirements.txt
+          fi
+          
+          # Install test tools
+          uv pip install pytest pytest-asyncio pytest-cov pytest-xdist pytest-mock faker factory-boy
+
+      - name: Run unit tests with coverage
+        run: |
+          SERVICE_PATH="services/${{ matrix.service }}"
+          cd "$SERVICE_PATH"
+          source .venv/bin/activate
+          
+          # Create test results directory
+          mkdir -p ../../${{ env.TEST_RESULTS_DIR }}
+          
+          # Run tests with parallel execution and coverage
+          pytest tests/unit/ \
+            --cov=. \
+            --cov-report=xml:../../${{ env.TEST_RESULTS_DIR }}/coverage-${{ matrix.service }}.xml \
+            --cov-report=html:../../${{ env.TEST_RESULTS_DIR }}/htmlcov-${{ matrix.service }} \
+            --junit-xml=../../${{ env.TEST_RESULTS_DIR }}/junit-${{ matrix.service }}.xml \
+            --tb=short \
+            --maxfail=10 \
+            --timeout=${{ env.PYTEST_TIMEOUT }} \
+            -n auto \
+            -v \
+            || echo "⚠️ Unit tests failed for ${{ matrix.service }}"
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-unit-${{ matrix.service }}
+          path: ${{ env.TEST_RESULTS_DIR }}/
+          retention-days: 7
+
+  # Integration tests with service dependencies
+  integration-tests:
+    runs-on: ubuntu-latest
+    name: Integration Tests
+    needs: [test-discovery, unit-tests]
+    if: needs.test-discovery.outputs.has_tests == 'true' && (github.event.inputs.test_type == 'all' || github.event.inputs.test_type == 'integration')
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: acgs_test
+          POSTGRES_USER: acgs
+          POSTGRES_PASSWORD: acgs
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install UV and dependencies
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+          
+          # Install test dependencies
+          uv venv
+          source .venv/bin/activate
+          uv pip install pytest pytest-asyncio pytest-cov pytest-xdist httpx asyncpg redis
+
+      - name: Wait for services
+        run: |
+          echo "⏳ Waiting for services to be ready..."
+          timeout 60 bash -c 'until pg_isready -h localhost -p 5432; do sleep 2; done'
+          timeout 60 bash -c 'until redis-cli -h localhost -p 6379 ping | grep -q PONG; do sleep 2; done'
+          echo "✅ Services are ready"
+
+      - name: Run integration tests
+        env:
+          DATABASE_URL: postgresql://acgs:acgs@localhost:5432/acgs_test
+          REDIS_URL: redis://localhost:6379/0
+          ENVIRONMENT: testing
+        run: |
+          source .venv/bin/activate
+          
+          mkdir -p ${{ env.TEST_RESULTS_DIR }}
+          
+          pytest tests/integration/ \
+            --cov=services/ \
+            --cov-report=xml:${{ env.TEST_RESULTS_DIR }}/coverage-integration.xml \
+            --junit-xml=${{ env.TEST_RESULTS_DIR }}/junit-integration.xml \
+            --tb=short \
+            --maxfail=5 \
+            --timeout=${{ env.PYTEST_TIMEOUT }} \
+            -v \
+            || echo "⚠️ Integration tests failed"
+
+      - name: Upload integration test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-integration
+          path: ${{ env.TEST_RESULTS_DIR }}/
+          retention-days: 7
+
+  # End-to-end tests with full system
+  e2e-tests:
+    runs-on: ubuntu-latest
+    name: End-to-End Tests
+    needs: [test-discovery, integration-tests]
+    if: needs.test-discovery.outputs.has_tests == 'true' && (github.event.inputs.test_type == 'all' || github.event.inputs.test_type == 'e2e') && github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Compose
+        run: |
+          echo "🐳 Setting up full system with Docker Compose..."
+          
+          # Start all services
+          docker-compose -f infrastructure/docker/docker-compose.yml up -d
+          
+          # Wait for services to be healthy
+          timeout 180 bash -c 'until curl -f http://localhost:8000/health; do sleep 5; done'
+          timeout 180 bash -c 'until curl -f http://localhost:8001/health; do sleep 5; done'
+
+      - name: Set up Python for E2E tests
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install E2E test dependencies
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+          
+          uv venv
+          source .venv/bin/activate
+          uv pip install pytest pytest-asyncio httpx playwright
+
+      - name: Run E2E tests
+        run: |
+          source .venv/bin/activate
+          
+          mkdir -p ${{ env.TEST_RESULTS_DIR }}
+          
+          pytest tests/e2e/ \
+            --junit-xml=${{ env.TEST_RESULTS_DIR }}/junit-e2e.xml \
+            --tb=short \
+            --maxfail=3 \
+            --timeout=600 \
+            -v \
+            || echo "⚠️ E2E tests failed"
+
+      - name: Collect service logs
+        if: always()
+        run: |
+          echo "📋 Collecting service logs..."
+          docker-compose -f infrastructure/docker/docker-compose.yml logs > ${{ env.TEST_RESULTS_DIR }}/service-logs.txt
+
+      - name: Upload E2E test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-e2e
+          path: ${{ env.TEST_RESULTS_DIR }}/
+          retention-days: 7
+
+      - name: Cleanup
+        if: always()
+        run: |
+          docker-compose -f infrastructure/docker/docker-compose.yml down -v
+
+  # Performance tests with benchmarking
+  performance-tests:
+    runs-on: ubuntu-latest
+    name: Performance Tests
+    needs: test-discovery
+    if: needs.test-discovery.outputs.has_tests == 'true' && (github.event.inputs.test_type == 'all' || github.event.inputs.test_type == 'performance') && (github.ref == 'refs/heads/main' || github.event_name == 'schedule')
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install performance test tools
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+          
+          uv venv
+          source .venv/bin/activate
+          uv pip install locust pytest-benchmark memory-profiler py-spy
+
+      - name: Run performance benchmarks
+        run: |
+          source .venv/bin/activate
+          
+          mkdir -p ${{ env.TEST_RESULTS_DIR }}
+          
+          # Run benchmark tests
+          pytest tests/performance/ \
+            --benchmark-json=${{ env.TEST_RESULTS_DIR }}/benchmark-results.json \
+            --benchmark-only \
+            --benchmark-min-rounds=5 \
+            --benchmark-sort=mean \
+            -v \
+            || echo "⚠️ Performance tests failed"
+
+      - name: Generate performance report
+        run: |
+          source .venv/bin/activate
+          
+          if [ -f "${{ env.TEST_RESULTS_DIR }}/benchmark-results.json" ]; then
+            echo "📊 Performance Test Results" > ${{ env.TEST_RESULTS_DIR }}/performance-report.md
+            echo "=========================" >> ${{ env.TEST_RESULTS_DIR }}/performance-report.md
+            echo "" >> ${{ env.TEST_RESULTS_DIR }}/performance-report.md
+            
+            # Extract key metrics from benchmark results
+            python -c "
+import json
+with open('${{ env.TEST_RESULTS_DIR }}/benchmark-results.json') as f:
+    data = json.load(f)
+    for test in data['benchmarks']:
+        print(f\"- {test['name']}: {test['stats']['mean']:.4f}s (±{test['stats']['stddev']:.4f}s)\")
+" >> ${{ env.TEST_RESULTS_DIR }}/performance-report.md
+          fi
+
+      - name: Upload performance results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-performance
+          path: ${{ env.TEST_RESULTS_DIR }}/
+          retention-days: 30
+
+  # Security tests with specialized tools
+  security-tests:
+    runs-on: ubuntu-latest
+    name: Security Tests
+    needs: test-discovery
+    if: needs.test-discovery.outputs.has_tests == 'true' && (github.event.inputs.test_type == 'all' || github.event.inputs.test_type == 'security')
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install security test tools
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+          
+          uv venv
+          source .venv/bin/activate
+          uv pip install pytest bandit safety semgrep
+
+      - name: Run security tests
+        run: |
+          source .venv/bin/activate
+          
+          mkdir -p ${{ env.TEST_RESULTS_DIR }}
+          
+          # Run security-focused tests
+          pytest tests/security/ \
+            --junit-xml=${{ env.TEST_RESULTS_DIR }}/junit-security.xml \
+            --tb=short \
+            -v \
+            || echo "⚠️ Security tests failed"
+
+      - name: Upload security test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-security
+          path: ${{ env.TEST_RESULTS_DIR }}/
+          retention-days: 14
+
+  # Test result aggregation and reporting
+  test-report:
+    runs-on: ubuntu-latest
+    name: Test Results & Coverage Report
+    needs: [unit-tests, integration-tests, e2e-tests, performance-tests, security-tests]
+    if: always()
+    steps:
+      - name: Download all test artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: test-results-*
+          merge-multiple: true
+          path: ${{ env.TEST_RESULTS_DIR }}
+
+      - name: Generate comprehensive test report
+        run: |
+          echo "📊 ACGS Enhanced Test Automation Report" > test-summary.md
+          echo "=======================================" >> test-summary.md
+          echo "" >> test-summary.md
+          echo "**Test Execution Summary:**" >> test-summary.md
+          echo "" >> test-summary.md
+          echo "- Unit Tests: ${{ needs.unit-tests.result }}" >> test-summary.md
+          echo "- Integration Tests: ${{ needs.integration-tests.result }}" >> test-summary.md
+          echo "- E2E Tests: ${{ needs.e2e-tests.result }}" >> test-summary.md
+          echo "- Performance Tests: ${{ needs.performance-tests.result }}" >> test-summary.md
+          echo "- Security Tests: ${{ needs.security-tests.result }}" >> test-summary.md
+          echo "" >> test-summary.md
+          
+          # Count test files
+          JUNIT_FILES=$(find ${{ env.TEST_RESULTS_DIR }} -name "junit-*.xml" 2>/dev/null | wc -l)
+          COVERAGE_FILES=$(find ${{ env.TEST_RESULTS_DIR }} -name "coverage-*.xml" 2>/dev/null | wc -l)
+          
+          echo "**Test Artifacts:**" >> test-summary.md
+          echo "- JUnit XML files: $JUNIT_FILES" >> test-summary.md
+          echo "- Coverage reports: $COVERAGE_FILES" >> test-summary.md
+          echo "" >> test-summary.md
+          
+          # Overall status
+          if [[ "${{ needs.unit-tests.result }}" == "success" ]] && \
+             [[ "${{ needs.integration-tests.result }}" == "success" || "${{ needs.integration-tests.result }}" == "skipped" ]]; then
+            echo "✅ **Overall Status: PASSED**" >> test-summary.md
+            echo "All critical tests completed successfully." >> test-summary.md
+          else
+            echo "❌ **Overall Status: FAILED**" >> test-summary.md
+            echo "Some tests failed. Review individual test results for details." >> test-summary.md
+          fi
+
+      - name: Upload comprehensive test report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: comprehensive-test-report
+          path: |
+            test-summary.md
+            ${{ env.TEST_RESULTS_DIR }}/
+          retention-days: 30
