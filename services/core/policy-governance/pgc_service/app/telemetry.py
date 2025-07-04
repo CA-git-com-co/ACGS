@@ -13,6 +13,10 @@ from typing import Any
 from fastapi import FastAPI, Request, Response
 from opentelemetry import metrics, trace
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Set up logger first
 logger = logging.getLogger(__name__)
 

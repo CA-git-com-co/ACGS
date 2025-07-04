@@ -14,6 +14,10 @@ from typing import Any
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..core.constitutional_council_scalability import (
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
     ConstitutionalCouncilScalabilityFramework,
 )
 from ..models import ACAmendmentVote, User

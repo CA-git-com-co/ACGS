@@ -7,6 +7,10 @@ import z3
 from ..schemas import SMTSolverInput, SMTSolverOutput
 from .policy_smt_compiler import PolicySMTCompiler, SMTConstraint
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

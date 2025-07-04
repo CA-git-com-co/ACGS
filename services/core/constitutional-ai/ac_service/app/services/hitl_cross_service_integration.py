@@ -26,6 +26,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from .human_in_the_loop_sampler import HumanInTheLoopSampler, UncertaintyAssessment
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 logger = logging.getLogger(__name__)
 config = get_config()
 

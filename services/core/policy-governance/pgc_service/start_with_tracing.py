@@ -9,6 +9,10 @@ from pathlib import Path
 
 import uvicorn
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Add the app directory to Python path
 app_dir = Path(__file__).parent / "app"
 sys.path.insert(0, str(app_dir))

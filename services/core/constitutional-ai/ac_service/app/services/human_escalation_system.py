@@ -26,6 +26,10 @@ from services.shared.models import ACConflictResolution
 from .automated_resolution_engine import ResolutionResult
 from .intelligent_conflict_detector import ConflictDetectionResult
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 logger = logging.getLogger(__name__)
 
 

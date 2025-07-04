@@ -1,4 +1,8 @@
 # backend/auth_service/app/crud/__init__.py
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
 from . import crud_refresh_token, crud_user
 from .crud_refresh_token import (
     create_user_refresh_token,

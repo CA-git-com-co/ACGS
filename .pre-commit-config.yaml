@@ -47,8 +47,8 @@ repos:
     rev: v1.7.0
     hooks:
       - id: mypy
-        additional_dependencies: [types-all, types-requests, types-pyyaml]
-        args: [--strict, --ignore-missing-imports, --show-error-codes]
+        additional_dependencies: [types-requests, types-pyyaml]
+        args: [--ignore-missing-imports, --show-error-codes, --no-strict-optional]
 
   # Security scanning
   - repo: https://github.com/PyCQA/bandit

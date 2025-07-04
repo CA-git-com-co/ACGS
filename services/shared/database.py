@@ -7,6 +7,9 @@ from sqlalchemy.orm import (  # Updated import for declarative_base
     sessionmaker,
 )
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
 # Import centralized configuration
 try:
     from .utils import get_config

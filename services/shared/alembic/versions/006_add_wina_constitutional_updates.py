@@ -10,6 +10,10 @@ import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.dialects import postgresql
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # revision identifiers, used by Alembic.
 revision = "006_add_wina_constitutional_updates"
 down_revision = "005_add_qec_conflict_resolution_fields"

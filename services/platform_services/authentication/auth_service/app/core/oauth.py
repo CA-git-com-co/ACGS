@@ -11,6 +11,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from ..crud import crud_user
 from .security import create_access_token, create_refresh_token
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 class OAuthProvider:
     """Base OAuth 2.0 provider implementation"""

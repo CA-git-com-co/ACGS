@@ -178,6 +178,12 @@ class MockRedis:
         if key in self._data and isinstance(self._data[key], set):
             return self._data[key].copy()
         return set()
+
+    async def scard(self, key: str) -> int:
+        """Mock Redis scard operation - return the number of elements in a set"""
+        if key in self._data and isinstance(self._data[key], set):
+            return len(self._data[key])
+        return 0
         
     async def srem(self, key: str, *values: str) -> int:
         """Mock Redis srem operation"""
@@ -300,6 +306,8 @@ class MockWINACore:
     
     def __init__(self):
         self.optimization_history = []
+        self.optimization_count = 0  # Track number of optimizations
+        self.performance_improvements = []  # Track improvements
         self.performance_metrics = {
             'response_time': 0.1,
             'throughput': 1000,
@@ -307,19 +315,37 @@ class MockWINACore:
             'memory_usage': 512
         }
         
-    async def optimize_performance(self, metrics: Dict[str, Any]) -> Dict[str, Any]:
-        """Mock performance optimization."""
+    async def optimize_performance(
+        self,
+        current_metrics: Dict[str, Any] = None,
+        historical_metrics: Dict[str, Any] = None,
+        optimization_targets: Dict[str, Any] = None,
+        metrics: Dict[str, Any] = None  # For backward compatibility
+    ) -> Dict[str, Any]:
+        """Mock performance optimization with flexible parameter support."""
+        # Use current_metrics if provided, otherwise fall back to metrics parameter
+        input_metrics = current_metrics or metrics or {}
+
+        # Increment optimization count
+        self.optimization_count += 1
+
         self.optimization_history.append({
             'timestamp': datetime.utcnow(),
-            'input_metrics': metrics,
+            'input_metrics': input_metrics,
+            'historical_metrics': historical_metrics,
+            'optimization_targets': optimization_targets,
             'optimization_applied': True
         })
-        
+
         # Simulate improvement
-        optimized_metrics = metrics.copy()
-        optimized_metrics['response_time'] = max(0.05, metrics.get('response_time', 0.1) * 0.9)
-        optimized_metrics['throughput'] = metrics.get('throughput', 1000) * 1.1
-        
+        optimized_metrics = input_metrics.copy()
+        optimized_metrics['response_time'] = max(0.05, input_metrics.get('response_time', 0.1) * 0.9)
+        optimized_metrics['throughput'] = input_metrics.get('throughput', 1000) * 1.1
+        optimized_metrics['performance_improvement'] = 0.1
+        optimized_metrics['resource_efficiency'] = 0.15
+        optimized_metrics['adaptation_effectiveness'] = 0.08
+        optimized_metrics['convergence_rate'] = 0.05
+
         return optimized_metrics
         
     async def get_performance_recommendations(self, current_metrics: Dict[str, Any]) -> List[str]:

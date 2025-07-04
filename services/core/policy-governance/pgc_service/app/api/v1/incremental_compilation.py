@@ -14,6 +14,10 @@ from typing import Any
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel, Field
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 sys.path.append("/home/dislove/ACGS-1/services/shared")
 
 from auth import User, get_current_user

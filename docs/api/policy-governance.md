@@ -16,43 +16,28 @@ This document provides comprehensive documentation for the Policy Governance Ser
 
 `GET /metrics`
 
-
 ## Key Endpoints
 
 ### Policy Evaluation
 
 **Endpoint:** `POST /api/v1/policies/evaluate`
-**Description:** Evaluate a policy against a set of governance rules
+
+**Description:** Evaluate a policy against governance criteria
 
 **Request Body:**
 ```json
 {
   "policy_id": "string",
-  "context": {
-    "region": "string",
-    "parameters": {
-      "year": 2025,
-      "budget": 1000000
-    }
-  }
+  "input_data": {}
 }
 ```
 
 **Response:**
 ```json
 {
-  "evaluation_results": {
-    "compliance": true,
-    "scores": {
-      "transparency": 0.9,
-      "fairness": 0.85
-    },
-    "details": {
-      "public_comment_period": true,
-      "minority_impact_analysis": false,
-      "algorithmic_bias_check": true
-    }
-  }
+  "evaluation_result": "approved",
+  "compliance_score": 0.85,
+  "reasons": ["string"]
 }
 ```
 
@@ -65,101 +50,172 @@ const evaluation = await fetch('http://localhost:8005/api/v1/policies/evaluate',
     'Authorization': 'Bearer <jwt_token>'
   },
   body: JSON.stringify({
-    policy_id: 'POL123',
-    context: {
-      region: 'US',
-      parameters: {
-        year: 2025,
-        budget: 1500000
-      }
-    }
+    policy_id: 'POL001',
+    input_data: { context: 'government' }
   })
 });
 
-const evalResults = await evaluation.json();
-console.log(evalResults);
+const result = await evaluation.json();
+console.log(result);
 ```
 
 **Example Response:**
 ```json
 {
-  "evaluation_results": {
-    "compliance": true,
-    "scores": {
-      "transparency": 0.92,
-      "public_participation": 0.78
-    },
-    "details": {
-      "citizen_engagement": true,
-      "stakeholder_feedback": "Positive feedback received",
-      "impact_assessment_approval": true
-    }
-  }
+  "evaluation_result": "approved",
+  "compliance_score": 0.9,
+  "reasons": ["Policy aligns with constitutional principles"]
 }
 ```
 
-### List Policies
+### Compliance Validation
 
-**Endpoint:** `GET /api/v1/policies`
-**Description:** Retrieve a list of current policies and their metadata
+**Endpoint:** `POST /api/v1/compliance/validate`
+
+**Description:** Validate policy compliance with constitutional standards
+
+**Request Body:**
+```json
+{
+  "policy_id": "string",
+  "compliance_checks": ["string"]
+}
+```
 
 **Response:**
 ```json
-[
-  {
-    "id": "POL001",
-    "title": "Public Health Directive",
-    "governance_area": "Healthcare",
-    "status": "active",
-    "compliance_score": 0.85
-  },
-  {
-    "id": "POL002",
-    "title": "Tax Policy",
-    "governance_area": "Finance",
-    "status": "inactive",
-    "compliance_score": 0.7
-  },
-  {
-    "id": "POL123",
-    "title": "Education Reform",
-    "governance_area": "Education",
-    "status": "pending",
-    "compliance_score": 0.95
-  }
-]
+{
+  "compliance_status": "compliant",
+  "violations": []
+}
 ```
 
 **Example Request:**
 ```javascript
-const policies = await fetch('http://localhost:8005/api/v1/policies', {
+const validation = await fetch('http://localhost:8005/api/v1/compliance/validate', {
+  method: 'POST',
   headers: {
+    'Content-Type': 'application/json',
     'Authorization': 'Bearer <jwt_token>'
-  }
+  },
+  body: JSON.stringify({
+    policy_id: 'POL001',
+    compliance_checks: ["equality", "transparency"]
+  })
 });
 
-const policyList = await policies.json();
-console.log(policyList);
+const result = await validation.json();
+console.log(result);
 ```
 
 **Example Response:**
 ```json
-[
-  {
-    "id": "POL456",
-    "title": "Energy Efficiency Act 2025",
-    "governance_area": "Environmental",
-    "status": "draft",
-    "compliance_score": null
-  }
-]
+{
+  "compliance_status": "compliant",
+  "violations": []
+}
 ```
 
+### Governance Workflow
+
+**Endpoint:** `POST /api/v1/governance/workflow`
+
+**Description:** Initiate a governance workflow for a policy
+
+**Request Body:**
+```json
+{
+  "policy_id": "string",
+  "workflow_steps": ["string"]
+}
+```
+
+**Response:**
+```json
+{
+  "workflow_id": "string",
+  "status": "pending"
+}
+```
+
+**Example Request:**
+```javascript
+const workflow = await fetch('http://localhost:8005/api/v1/governance/workflow', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer <jwt_token>'
+  },
+  body: JSON.stringify({
+    policy_id: 'POL001',
+    workflow_steps: ["evaluation", "compliance_check", "council_review"]
+  })
+});
+
+const result = await workflow.json();
+console.log(result);
+```
+
+**Example Response:**
+```json
+{
+  "workflow_id": "WF001",
+  "status": "pending"
+}
+```
+
+### Council Review
+
+**Endpoint:** `POST /api/v1/council/review`
+
+**Description:** Submit a policy for council review
+
+**Request Body:**
+```json
+{
+  "policy_id": "string",
+  "council_members": ["string"]
+}
+```
+
+**Response:**
+```json
+{
+  "review_id": "string",
+  "status": "submitted"
+}
+```
+
+**Example Request:**
+```javascript
+const review = await fetch('http://localhost:8005/api/v1/council/review', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer <jwt_token>'
+  },
+  body: JSON.stringify({
+    policy_id: 'POL001',
+    council_members: ["member1", "member2"]
+  })
+});
+
+const result = await review.json();
+console.log(result);
+```
+
+**Example Response:**
+```json
+{
+  "review_id": "REV001",
+  "status": "submitted"
+}
+```
 
 ## Additional Resources
 
-* [API Documentation Index](index.md)
-* [Policy Evaluation Framework](frameworks/governance-evaluation.md)
-* [Governance Workflow Automation](workflows/governance.md)
+- [API Documentation Index](index.md)
+- [Governance Workflow Design](workflow/design.md)
+- [Council Review Process](council/process.md)
 
-For implementation guidelines, data schema references, and service configuration details, see the Policy Governance service documentation repository.
+For system configuration details, deployment guides, and architecture diagrams, see the Policy Governance service documentation repository.

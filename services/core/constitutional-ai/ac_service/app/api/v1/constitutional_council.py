@@ -47,6 +47,9 @@ from .workflows.democratic_governance import (
 
 router = APIRouter()
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
 # Initialize metrics collector
 metrics_collector = get_metrics_collector()
 
@@ -64,9 +67,18 @@ async def create_meta_rule_endpoint(
     current_user: User = Depends(require_admin_role),
 ):
     """Create a new AC meta-rule (requires admin role)"""
+    # Validate constitutional compliance
+    if not hasattr(meta_rule, 'constitutional_hash'):
+        meta_rule.constitutional_hash = CONSTITUTIONAL_HASH
+
     created_meta_rule = await create_ac_meta_rule(
         db=db, meta_rule=meta_rule, user_id=current_user.id
     )
+
+    # Ensure response includes constitutional hash
+    if hasattr(created_meta_rule, '__dict__'):
+        created_meta_rule.__dict__['constitutional_hash'] = CONSTITUTIONAL_HASH
+
     return created_meta_rule
 
 

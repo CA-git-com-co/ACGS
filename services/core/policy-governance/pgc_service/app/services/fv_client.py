@@ -15,6 +15,10 @@ from httpx import AsyncClient, Timeout
 
 from ..config.service_config import get_service_config
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 logger = logging.getLogger(__name__)
 
 

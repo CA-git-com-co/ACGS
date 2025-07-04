@@ -15,6 +15,10 @@ import httpx
 
 from ..schemas import ACAmendmentVoteCreate
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # from services.shared.redis_client import get_redis_client
 
 logger = logging.getLogger(__name__)

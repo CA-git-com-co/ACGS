@@ -19,6 +19,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 # from services.shared.redis_client import get_redis_client
 from services.shared.metrics import get_metrics
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 logger = logging.getLogger(__name__)
 
 

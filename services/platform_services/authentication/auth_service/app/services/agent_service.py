@@ -373,7 +373,7 @@ class AgentService:
         old_values: dict[str, Any] | None = None,
         new_values: dict[str, Any] | None = None,
         client_ip: str | None = None,
-        metadata: dict[str, Any] | None = None,
+        audit_metadata: dict[str, Any] | None = None,
     ) -> AgentAuditLog:
         """Create an audit log entry for agent operations."""
         audit_log = AgentAuditLog(
@@ -387,7 +387,7 @@ class AgentService:
             client_ip=client_ip,
             constitutional_hash=self.constitutional_hash,
             compliance_verified=True,  # Could be enhanced with actual compliance checking
-            metadata=metadata,
+            audit_metadata=audit_metadata,
         )
 
         db.add(audit_log)

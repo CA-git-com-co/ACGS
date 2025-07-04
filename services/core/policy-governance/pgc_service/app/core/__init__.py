@@ -11,6 +11,10 @@ from .incremental_compiler import IncrementalCompiler
 from .redis_cache_manager import RedisCacheManager
 from .ultra_low_latency_optimizer import UltraLowLatencyOptimizer
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 __all__ = [
     "ConstitutionalHashValidator",
     "IncrementalCompiler",

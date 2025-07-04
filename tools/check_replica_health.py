@@ -10,6 +10,10 @@ import time
 
 import asyncpg
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 async def check_replica_health():
     """Check health of all read replicas."""

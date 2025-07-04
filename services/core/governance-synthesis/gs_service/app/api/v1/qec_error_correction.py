@@ -24,6 +24,10 @@ from services.shared.models import ConstitutionalPrinciple, Policy, User
 
 # Import QEC error correction services
 from .services.qec_error_correction_service import (
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
     ConflictDetectionResult,
     ConflictType,
     QECErrorCorrectionService,

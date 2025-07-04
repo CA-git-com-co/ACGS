@@ -31,6 +31,10 @@ from ..models import ConstitutionalPrinciple
 from ..services.constitutional_compliance import ConstitutionalComplianceService
 from ..services.formal_verification_integration import FormalVerificationService
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 logger = logging.getLogger(__name__)
 
 

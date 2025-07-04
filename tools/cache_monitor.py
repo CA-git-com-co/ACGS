@@ -8,6 +8,10 @@ import asyncio
 
 import redis
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 async def get_redis_info():
     """Get Redis server information."""

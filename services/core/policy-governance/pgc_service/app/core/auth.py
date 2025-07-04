@@ -1,6 +1,10 @@
 # Import shared authentication utilities
 import sys
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 sys.path.append("/home/dislove/ACGS-1/services/shared")
 from auth import (
     RoleChecker,

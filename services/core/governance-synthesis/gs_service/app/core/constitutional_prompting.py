@@ -19,6 +19,10 @@ import re
 from datetime import datetime, timezone
 from typing import Any
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 try:
     from services.core.governance_synthesis.gs_service.app.services.ac_client import (
         ac_service_client,

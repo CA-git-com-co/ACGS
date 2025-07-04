@@ -27,6 +27,10 @@ from datetime import datetime, timedelta
 from enum import Enum
 from typing import Any
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # WINA imports - using local WINA modules
 try:
     from ..wina.config import load_wina_config_from_env

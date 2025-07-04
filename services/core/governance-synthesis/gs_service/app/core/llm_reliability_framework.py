@@ -20,6 +20,10 @@ from enum import Enum
 from math import sqrt
 from typing import Any
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 try:
     import numpy as np
 except ImportError:

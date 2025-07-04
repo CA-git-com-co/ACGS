@@ -13,6 +13,10 @@ import structlog
 from fastapi import Request
 
 from services.shared.advanced_redis_client import (
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
     CACHE_TTL_POLICIES,
     AdvancedRedisClient,
     CacheConfig,

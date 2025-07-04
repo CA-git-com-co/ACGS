@@ -1,5 +1,9 @@
 from ..schemas import ACPrinciple, ProofObligation
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 # This is a very simplified mock. A real system would use NLP or structured data from principles.
 def generate_proof_obligations_from_principle(

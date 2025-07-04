@@ -33,6 +33,10 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from ..core.metrics import get_metrics
 from .enhanced_multi_model_validation import get_enhanced_multi_model_validator
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 logger = logging.getLogger(__name__)
 
 

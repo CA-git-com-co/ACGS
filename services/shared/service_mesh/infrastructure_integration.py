@@ -15,6 +15,10 @@ from services.shared.advanced_redis_client import AdvancedRedisClient
 
 from .common_types import ServiceInstance, ServiceType
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 logger = logging.getLogger(__name__)
 
 

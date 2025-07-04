@@ -7,6 +7,10 @@ import time
 from dataclasses import dataclass, field
 from enum import Enum
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 class ServiceType(str, Enum):
     AUTH = "auth"

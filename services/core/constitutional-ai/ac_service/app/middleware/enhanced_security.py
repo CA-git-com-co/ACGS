@@ -3,6 +3,10 @@ import re
 from fastapi import Request, status
 from fastapi.responses import JSONResponse
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 class EnhancedSecurityMiddleware:
     """Enhanced security middleware for input validation and HTTP method control."""

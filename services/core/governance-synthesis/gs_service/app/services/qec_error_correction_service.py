@@ -28,6 +28,10 @@ from typing import Any
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from integrations.alphaevolve_engine.services.qec_enhancement.constitutional_distance_calculator import (
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
     ConstitutionalDistanceCalculator,
 )
 

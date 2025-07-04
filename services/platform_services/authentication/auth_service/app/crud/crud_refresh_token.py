@@ -4,7 +4,11 @@ from datetime import datetime, timezone
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from services.shared.models import RefreshToken  # Ensure shared.models has RefreshToken
+from ..models import RefreshToken  # Import from local models
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
 
 
 async def create_refresh_token(

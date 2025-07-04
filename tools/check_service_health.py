@@ -7,6 +7,10 @@ This script checks the health and readiness of all 7 core services.
 
 import requests
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 def check_service_health():
     services = {

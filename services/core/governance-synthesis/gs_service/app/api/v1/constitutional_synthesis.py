@@ -15,6 +15,10 @@ from services.shared.database import get_async_db
 from ...core.contextual_analyzer import EnvironmentalFactor, contextual_analyzer
 from ...core.llm_integration import query_llm_for_constitutional_synthesis
 from ...schemas import (
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
     ConstitutionalSynthesisInput,
     ConstitutionalSynthesisOutput,
 )

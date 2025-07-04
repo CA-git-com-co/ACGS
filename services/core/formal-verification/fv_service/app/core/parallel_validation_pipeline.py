@@ -17,6 +17,10 @@ from typing import Any
 import httpx
 import psutil
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 # Mock classes for parallel processing
 class TaskStatus(Enum):

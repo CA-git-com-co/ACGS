@@ -1,5 +1,9 @@
 import numpy as np
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 def perform_svd(matrix: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """

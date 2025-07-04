@@ -5,6 +5,10 @@ Service Registry - Central service discovery and configuration
 import os
 from dataclasses import dataclass
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 @dataclass
 class ServiceConfig:

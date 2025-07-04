@@ -6,7 +6,7 @@ Implements various consensus algorithms for resolving conflicts between agents.
 import asyncio
 import logging
 import time
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional, Set, Tuple
 from enum import Enum
 from uuid import uuid4
@@ -14,6 +14,10 @@ from uuid import uuid4
 from pydantic import BaseModel, Field
 
 from ...shared.blackboard import BlackboardService, ConflictItem
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
 
 
 class ConsensusAlgorithm(str, Enum):
@@ -58,7 +62,7 @@ class ConsensusSession(BaseModel):
     options: List[VoteOption] = Field(default_factory=list)
     votes: List[Vote] = Field(default_factory=list)
     status: str = Field(default="active")  # 'active', 'completed', 'failed', 'escalated'
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     deadline: Optional[datetime] = None
     result: Optional[Dict[str, Any]] = None
     session_config: Dict[str, Any] = Field(default_factory=dict)
@@ -597,7 +601,7 @@ class ConsensusEngine:
             algorithm=algorithm,
             participants=participants,
             options=options,
-            deadline=datetime.utcnow() + timedelta(hours=deadline_hours),
+            deadline=datetime.now(timezone.utc) + timedelta(hours=deadline_hours),
             session_config=session_config or {}
         )
         
@@ -729,7 +733,7 @@ class ConsensusEngine:
     async def check_session_deadlines(self) -> List[str]:
         """Check for sessions that have passed their deadlines"""
         
-        current_time = datetime.utcnow()
+        current_time = datetime.now(timezone.utc)
         expired_sessions = []
         
         for session_id, session in self.active_sessions.items():
@@ -770,7 +774,7 @@ class ConsensusEngine:
         escalation_info = {
             'escalation_type': escalation_type,
             'escalation_data': escalation_data or {},
-            'escalated_at': datetime.utcnow().isoformat()
+            'escalated_at': datetime.now(timezone.utc).isoformat()
         }
         
         if session.result:
@@ -817,7 +821,7 @@ class ConsensusEngine:
                 'algorithm': session.algorithm,
                 'participants_count': len(session.participants),
                 'votes_count': len(session.votes),
-                'timestamp': datetime.utcnow().isoformat()
+                'timestamp': datetime.now(timezone.utc).isoformat()
             },
             priority=2,
             tags={'consensus', 'coordination', event_type}
@@ -874,7 +878,7 @@ class ConsensusEngine:
         resolution_times = []
         for session in completed_sessions:
             if session.result:
-                duration = (datetime.utcnow() - session.created_at).total_seconds() / 3600  # hours
+                duration = (datetime.now(timezone.utc) - session.created_at).total_seconds() / 3600  # hours
                 resolution_times.append(duration)
         
         avg_resolution_time = sum(resolution_times) / len(resolution_times) if resolution_times else 0.0
@@ -893,7 +897,7 @@ class ConsensusEngine:
     def cleanup_old_sessions(self, max_age_days: int = 7) -> int:
         """Clean up old sessions"""
         
-        cutoff_time = datetime.utcnow() - timedelta(days=max_age_days)
+        cutoff_time = datetime.now(timezone.utc) - timedelta(days=max_age_days)
         cleaned_count = 0
         
         sessions_to_remove = []

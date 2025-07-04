@@ -1,3 +1,7 @@
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
 # ACGS/shared/__init__.py
 # This file makes 'shared' a Python package.
 

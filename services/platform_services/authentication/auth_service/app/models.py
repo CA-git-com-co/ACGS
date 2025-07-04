@@ -14,6 +14,9 @@ from sqlalchemy.orm import relationship
 
 from services.shared.database import Base  # Assuming shared/database.py provides Base
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
 
 class User(Base):
     __tablename__ = "users"

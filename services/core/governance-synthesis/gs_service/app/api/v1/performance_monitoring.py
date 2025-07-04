@@ -18,6 +18,10 @@ from ...core.opa_integration import get_opa_client
 from ...services.performance_monitor import get_performance_monitor
 from ...services.security_compliance import get_security_service, security_required
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 logger = structlog.get_logger(__name__)
 
 router = APIRouter()

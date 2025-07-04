@@ -22,6 +22,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..schemas import ACConflictResolutionUpdate
 from .automated_resolution_engine import (
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
     AutomatedResolutionEngine,
     ResolutionResult,
 )

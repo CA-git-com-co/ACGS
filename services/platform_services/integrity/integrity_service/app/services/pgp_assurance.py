@@ -12,6 +12,10 @@ from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Optional
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Try to import cryptography library
 try:
     from cryptography.exceptions import InvalidSignature

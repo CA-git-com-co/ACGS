@@ -28,6 +28,10 @@ from services.shared.models import ACConflictResolution, Principle
 from ..schemas import ACConflictResolutionCreate
 from .qec_conflict_resolver import QECConflictResolver
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 logger = logging.getLogger(__name__)
 
 

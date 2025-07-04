@@ -6,12 +6,16 @@ Implements the Hybrid Hierarchical-Blackboard Policy for ACGS governance.
 import json
 import logging
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from typing import Any
 from uuid import uuid4
 
 import redis.asyncio as redis
 from pydantic import BaseModel, Field
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
 
 
 class KnowledgeItem(BaseModel):
@@ -742,6 +746,35 @@ class BlackboardService:
     async def get_active_agents(self) -> list[str]:
         """Get list of active agent IDs"""
         return await self.redis_client.smembers(f"{self.spaces['agents']}:active")
+
+    async def check_agent_timeouts(self, timeout_minutes: int = 5) -> list[str]:
+        """Check for agents that haven't sent heartbeat within timeout period"""
+        timed_out_agents = []
+        active_agents = await self.get_active_agents()
+
+        current_time = datetime.now(timezone.utc)
+        timeout_threshold = current_time - timedelta(minutes=timeout_minutes)
+
+        # Create a copy of the list to avoid modification during iteration
+        for agent_id in list(active_agents):
+            agent_key = f"{self.spaces['agents']}:{agent_id}"
+            agent_data_raw = await self.redis_client.hget(agent_key, "data")
+
+            if agent_data_raw:
+                try:
+                    agent_data = json.loads(agent_data_raw)
+                    last_heartbeat_str = agent_data.get("last_heartbeat")
+
+                    if last_heartbeat_str:
+                        last_heartbeat = datetime.fromisoformat(last_heartbeat_str.replace('Z', '+00:00'))
+                        if last_heartbeat < timeout_threshold:
+                            timed_out_agents.append(agent_id)
+                            # Remove from active agents
+                            await self.redis_client.srem(f"{self.spaces['agents']}:active", agent_id)
+                except (json.JSONDecodeError, ValueError) as e:
+                    self.logger.warning(f"Error parsing agent data for {agent_id}: {e}")
+
+        return timed_out_agents
 
     # Event and Notification Methods
 

@@ -7,6 +7,10 @@ Separated from security.py to avoid circular imports.
 import hashlib
 import secrets
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Simple password hashing for testing - use proper library in production
 SALT_LENGTH = 32
 

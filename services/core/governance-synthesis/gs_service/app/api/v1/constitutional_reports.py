@@ -21,6 +21,10 @@ from services.shared.metrics import get_metrics
 from services.shared.models import User
 
 from .services.constitutional_reporting_service import (
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
     ComplianceReport,
     ConstitutionalReportingService,
     ReportFormat,

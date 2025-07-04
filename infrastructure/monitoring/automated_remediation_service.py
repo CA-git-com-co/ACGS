@@ -25,6 +25,10 @@ import aiohttp
 from fastapi import BackgroundTasks, FastAPI
 from pydantic import BaseModel
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Configure logging
 os.makedirs("logs", exist_ok=True)
 logging.basicConfig(

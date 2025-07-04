@@ -19,6 +19,10 @@ from sqlalchemy.orm import selectinload
 from services.shared.auth import get_current_active_user
 from services.shared.database import get_async_db
 from services.shared.models import (
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
     ConstitutionalViolation,
     User,
     ViolationEscalation,

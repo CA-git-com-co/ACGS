@@ -14,6 +14,10 @@ from fastapi.security import OAuth2PasswordBearer
 from jwt import InvalidTokenError as JWTError
 from pydantic import BaseModel
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Environment variables
 AUTH_SERVICE_URL = os.getenv("AUTH_SERVICE_URL", "http://auth_service:8000")
 SECRET_KEY = os.getenv(

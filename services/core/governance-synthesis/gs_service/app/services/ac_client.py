@@ -4,6 +4,10 @@ import httpx
 
 from ..schemas import ACPrinciple  # Using the schema defined in gs_service
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 try:
     from services.shared.auth import get_auth_headers, get_service_token
 except ImportError:

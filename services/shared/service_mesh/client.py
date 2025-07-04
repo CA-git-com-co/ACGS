@@ -15,6 +15,10 @@ import httpx
 from tenacity import retry, stop_after_attempt, wait_exponential
 
 from services.shared.common.error_handling import (
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
     ACGSException,
     AuthenticationError,
     ServiceUnavailableError,

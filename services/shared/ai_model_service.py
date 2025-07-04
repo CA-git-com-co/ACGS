@@ -14,6 +14,10 @@ from uuid import uuid4
 from pydantic import BaseModel, Field
 from enum import Enum
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 try:
     from openai import OpenAI
 except ImportError:

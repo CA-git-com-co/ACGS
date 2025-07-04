@@ -13,6 +13,10 @@ from ..core import security
 from ..core.limiter import limiter  # Import the limiter instance
 from ..db.database import get_async_db
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 router = APIRouter()
 
 # Determine Secure flag based on environment. If ``APP_ENV`` is set to

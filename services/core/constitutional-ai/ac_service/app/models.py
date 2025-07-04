@@ -9,6 +9,9 @@ from services.shared.models import (
     User,
 )
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
 # Re-export models for use in this service
 __all__ = [
     "ACAmendment",
@@ -18,4 +21,5 @@ __all__ = [
     "ACMetaRule",
     "Principle",
     "User",
+    "CONSTITUTIONAL_HASH",
 ]

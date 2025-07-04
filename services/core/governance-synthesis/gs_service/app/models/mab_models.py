@@ -9,6 +9,10 @@ import uuid
 from datetime import datetime, timezone
 
 from sqlalchemy import (
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
     JSON,
     Boolean,
     Column,

@@ -9,6 +9,10 @@ Create Date: 2024-12-30 23:15:00.000000
 import sqlalchemy as sa
 from alembic import op
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # revision identifiers, used by Alembic.
 revision = "004_add_missing_user_columns"
 down_revision = "c2a48966"

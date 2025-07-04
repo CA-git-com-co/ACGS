@@ -15,6 +15,10 @@ from services.shared.database import get_async_db
 from .core.llm_integration import get_llm_client
 from .services.ac_client import ac_service_client as ac_client
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter()

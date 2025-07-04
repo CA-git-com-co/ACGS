@@ -24,6 +24,10 @@ import redis.asyncio as redis
 import structlog
 from redis.exceptions import RedisError
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 logger = structlog.get_logger(__name__)
 
 # Cache TTL policies for different data types
@@ -172,7 +176,7 @@ class LRUCache(Generic[T]):
 
             # Calculate size (rough estimate)
             try:
-                size_bytes = len(pickle.dumps(value))
+                size_bytes = len(json.dumps(value, default=str).encode("utf-8"))
             except Exception:
                 size_bytes = len(str(value).encode("utf-8"))
 
@@ -317,9 +321,11 @@ class RedisCache:
 
             # Deserialize data
             try:
-                value = pickle.loads(data)
-            except Exception:
                 value = json.loads(data.decode("utf-8"))
+            except Exception:
+                # Fallback for legacy pickle data
+                import pickle
+                value = pickle.loads(data)
 
             self.stats.cache_hits += 1
             self._update_hit_rate()
@@ -341,9 +347,11 @@ class RedisCache:
         try:
             # Serialize data
             try:
-                data = pickle.dumps(value)
+                data = json.dumps(value, default=str).encode("utf-8")
             except Exception:
-                data = json.dumps(value).encode("utf-8")
+                # Fallback to pickle for complex objects
+                import pickle
+                data = pickle.dumps(value)
 
             if ttl:
                 await self.redis_client.setex(redis_key, ttl, data)

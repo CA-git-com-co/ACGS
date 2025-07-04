@@ -16,6 +16,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from .database import get_async_db
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # from services.shared.models import ResearchDataExport
 # from .core.auth import require_integrity_admin, require_internal_service, User
 

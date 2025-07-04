@@ -12,6 +12,10 @@ from datetime import datetime
 from uuid import uuid4
 from pydantic import BaseModel, Field
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 class Event(BaseModel):
     """Represents an event in the system"""

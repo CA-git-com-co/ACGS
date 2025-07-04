@@ -16,6 +16,10 @@ from sqlalchemy.ext.asyncio import create_async_engine
 
 from .database import async_engine
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 logger = structlog.get_logger(__name__)
 
 

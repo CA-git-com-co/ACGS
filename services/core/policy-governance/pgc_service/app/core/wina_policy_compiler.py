@@ -20,6 +20,10 @@ from ..schemas import IntegrityPolicyRule
 from .incremental_compiler import CompilationMetrics, IncrementalCompiler
 from .policy_format_router import PolicyFormatRouter, PolicyValidationResult
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Import WINA components
 try:
     from ....shared.wina.config import load_wina_config_from_env

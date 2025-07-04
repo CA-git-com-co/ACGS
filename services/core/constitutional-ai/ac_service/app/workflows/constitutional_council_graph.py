@@ -19,6 +19,10 @@ import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Any, Literal
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 try:
     from langgraph.checkpoint.memory import MemorySaver
     from langgraph.graph import END, START, StateGraph

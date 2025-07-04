@@ -12,6 +12,10 @@ from pathlib import Path
 
 import yaml
 from prometheus_client import (
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
     CollectorRegistry,
     Gauge,
     start_http_server,

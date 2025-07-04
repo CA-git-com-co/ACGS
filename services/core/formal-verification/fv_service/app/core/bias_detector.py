@@ -12,6 +12,10 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 try:
     from fairlearn.metrics import (
         demographic_parity_difference,

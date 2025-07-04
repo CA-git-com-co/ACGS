@@ -20,6 +20,10 @@ from datetime import datetime, timezone
 from enum import Enum
 from typing import Any
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 try:
     from langchain_core.messages import AIMessage, HumanMessage
     from langchain_google_genai import ChatGoogleGenerativeAI

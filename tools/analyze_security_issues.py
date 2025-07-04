@@ -9,6 +9,10 @@ import sys
 from collections import Counter, defaultdict
 from datetime import datetime
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 def analyze_bandit_report(report_file):
     """Analyze Bandit security report and categorize issues."""

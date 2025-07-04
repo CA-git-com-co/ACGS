@@ -27,6 +27,10 @@ from typing import Any
 import structlog
 import yaml
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 logger = structlog.get_logger(__name__)
 
 

@@ -25,6 +25,10 @@ from .config import WINAConfig, WINAIntegrationConfig
 from .exceptions import WINAError, WINAOptimizationError
 from .metrics import GFLOPsTracker, PerformanceMonitor, WINAMetrics
 from .svd_transformation import (
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
     OrthogonalityProtocol,
     SVDTransformation,
     SVDTransformationResult,

@@ -20,6 +20,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from services.shared.auth import get_current_active_user as get_current_user
 from services.shared.auth import (
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
     require_admin,
 )
 from services.shared.database import get_async_db as get_db

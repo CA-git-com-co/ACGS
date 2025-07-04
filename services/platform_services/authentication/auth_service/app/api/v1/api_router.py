@@ -3,6 +3,10 @@ from fastapi import APIRouter
 # Import the router from endpoints.py file (now that endpoints directory is removed)
 from .endpoints import router as auth_router
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Note: users router was in the endpoints directory which we removed
 # For now, we'll just use the main auth router
 

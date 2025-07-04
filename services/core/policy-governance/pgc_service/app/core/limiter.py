@@ -2,6 +2,10 @@ from fastapi import Request
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # from ..auth import get_current_user_optional # Hypothetical: if pgc has its own auth user lookup
 
 

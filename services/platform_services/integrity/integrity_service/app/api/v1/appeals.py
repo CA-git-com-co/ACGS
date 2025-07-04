@@ -11,6 +11,10 @@ from app import crud, schemas
 
 from .database import get_async_db
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # from .core.explainability import explainability_engine
 
 

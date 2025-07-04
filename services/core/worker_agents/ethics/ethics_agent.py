@@ -18,6 +18,10 @@ from .analyzers import EthicalAnalyzer
 from .detectors import BiasDetector, FairnessAnalyzer
 from .models import EthicalAnalysisResult
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 class EthicsAgent:
     """

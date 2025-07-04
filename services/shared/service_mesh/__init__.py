@@ -11,6 +11,10 @@ from .client import ACGSServiceClient, ServiceMesh
 from .discovery import ServiceDiscovery
 from .registry import ServiceConfig, ServiceRegistry
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 __all__ = [
     "ACGSServiceClient",
     "CircuitBreaker",

@@ -2,6 +2,10 @@ from datetime import datetime
 
 from pydantic import BaseModel, EmailStr, Field
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 # Schema for token response
 class Token(BaseModel):

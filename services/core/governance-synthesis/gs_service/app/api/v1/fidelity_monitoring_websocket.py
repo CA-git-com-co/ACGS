@@ -24,6 +24,10 @@ from fastapi.websockets import WebSocketState
 from pydantic import BaseModel
 
 from .services.qec_error_correction_service import (
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
     QECErrorCorrectionService,
 )
 

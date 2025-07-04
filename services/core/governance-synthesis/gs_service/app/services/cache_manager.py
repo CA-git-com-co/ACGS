@@ -13,6 +13,10 @@ import structlog
 
 from .advanced_cache import CACHE_TTL_POLICIES, LRUCache, MultiTierCache, RedisCache
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 logger = structlog.get_logger(__name__)
 
 

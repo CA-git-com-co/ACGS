@@ -10,6 +10,10 @@ from typing import Any
 
 from .models import BiasAssessment
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 class BiasDetector:
     """

@@ -16,6 +16,10 @@ from pydantic import BaseModel, Field
 
 from ...core.opa_integration import OPAIntegrationError
 from ...services.enhanced_governance_synthesis import (
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
     EnhancedSynthesisRequest,
     get_enhanced_synthesis_service,
 )

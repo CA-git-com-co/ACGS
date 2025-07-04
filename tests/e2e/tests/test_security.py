@@ -24,11 +24,11 @@ async def test_authentication_security():
     """Test authentication security mechanisms."""
     config = E2ETestConfig.from_environment()
     
-    # Test endpoints that should require authentication
+    # Test endpoints that should require authentication (using actual available endpoints)
     protected_endpoints = [
-        "http://localhost:8016/api/v1/auth/validate",
+        "http://localhost:8016/api/v1/auth/verify",
         "http://localhost:8001/api/v1/constitutional/validate",
-        "http://localhost:8005/api/v1/compliance/validate",
+        "http://localhost:8005/api/v1/governance/policy",
     ]
     
     unauthorized_count = 0
@@ -82,22 +82,28 @@ async def test_input_validation():
                     # Test as query parameter
                     test_url = f"{endpoint}?test={malicious_input}"
                     async with session.get(test_url, timeout=aiohttp.ClientTimeout(total=5)) as response:
-                        # Should not return 500 (server error) or reflect the input
-                        if response.status != 500:
-                            safe_responses += 1
-                        
-                        # Check response doesn't reflect malicious input
+                        # Consider it safe if:
+                        # 1. No server error (500) AND
+                        # 2. Malicious input is not reflected in response
+                        is_safe = True
+
+                        if response.status == 500:
+                            is_safe = False
+
                         if response.content_type and 'text' in response.content_type:
                             text = await response.text()
-                            if malicious_input not in text:
-                                safe_responses += 1
-                                
+                            if malicious_input in text:
+                                is_safe = False
+
+                        if is_safe:
+                            safe_responses += 1
+
                 except Exception:
                     # Timeouts or connection errors are acceptable for malicious inputs
                     safe_responses += 1
-    
+
     # Most responses should handle malicious input safely
-    total_tests = len(test_endpoints) * len(malicious_inputs) * 2
+    total_tests = len(test_endpoints) * len(malicious_inputs)
     safety_rate = safe_responses / total_tests
     assert safety_rate > 0.8, f"Input validation safety rate too low: {safety_rate:.2f}"
 
@@ -109,11 +115,11 @@ async def test_constitutional_hash_integrity():
     config = E2ETestConfig.from_environment()
     expected_hash = "cdd01ef066bc6cf2"
     
-    # Test constitutional hash endpoints
+    # Test constitutional hash endpoints (using health endpoints that return the hash)
     constitutional_endpoints = [
-        "http://localhost:8001/api/v1/constitutional/status",
-        "http://localhost:8004/api/v1/governance/status",
-        "http://localhost:8005/api/v1/compliance/status",
+        "http://localhost:8001/health",
+        "http://localhost:8004/health",
+        "http://localhost:8005/health",
     ]
     
     valid_hashes = 0

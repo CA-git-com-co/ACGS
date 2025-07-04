@@ -9,6 +9,10 @@ import openai  # Placeholder for actual OpenAI client library
 from tenacity import RetryError, retry, stop_after_attempt, wait_exponential
 
 from ..schemas import (
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
     LLMInterpretationInput,
     LLMStructuredOutput,
     LLMSuggestedAtom,

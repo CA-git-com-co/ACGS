@@ -5,7 +5,7 @@ Mock services and fixtures for multi-agent coordination testing.
 import asyncio
 import pytest
 from unittest.mock import AsyncMock, MagicMock, Mock
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
@@ -23,10 +23,15 @@ class MockRedis:
     async def set(self, key: str, value: str, ex: Optional[int] = None):
         self.data[key] = value
         if ex:
-            self.ttls[key] = datetime.utcnow() + timedelta(seconds=ex)
+            self.ttls[key] = datetime.now(timezone.utc) + timedelta(seconds=ex)
+
+    async def setex(self, key: str, time: int, value: str):
+        """Set key with expiration time in seconds"""
+        self.data[key] = value
+        self.ttls[key] = datetime.now(timezone.utc) + timedelta(seconds=time)
     
     async def get(self, key: str) -> Optional[str]:
-        if key in self.ttls and datetime.utcnow() > self.ttls[key]:
+        if key in self.ttls and datetime.now(timezone.utc) > self.ttls[key]:
             del self.data[key]
             del self.ttls[key]
             return None
@@ -82,7 +87,7 @@ class MockRedis:
     
     async def hget(self, key: str, field: str) -> Optional[str]:
         # Check if key has expired
-        if key in self.ttls and datetime.utcnow() > self.ttls[key]:
+        if key in self.ttls and datetime.now(timezone.utc) > self.ttls[key]:
             # Remove expired data
             self.hashes.pop(key, None)
             del self.ttls[key]
@@ -101,7 +106,7 @@ class MockRedis:
     async def expire(self, key: str, seconds: int):
         """Set expiration for a key"""
         if key in self.data:
-            self.ttls[key] = datetime.utcnow() + timedelta(seconds=seconds)
+            self.ttls[key] = datetime.now(timezone.utc) + timedelta(seconds=seconds)
 
     def pipeline(self, transaction: bool = False):
         """Return a mock pipeline"""
@@ -231,28 +236,28 @@ class MockAIModelProvider:
                 "content": f"Ethical analysis from {self.model_name}: This appears to have moderate ethical implications.",
                 "confidence": self.response_quality,
                 "reasoning": "Based on ethical frameworks and principles",
-                "timestamp": datetime.utcnow().isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat()
             }
         elif "legal" in prompt.lower():
             response = {
                 "content": f"Legal analysis from {self.model_name}: This requires compliance review.",
                 "confidence": self.response_quality,
                 "reasoning": "Based on regulatory requirements",
-                "timestamp": datetime.utcnow().isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat()
             }
         elif "operational" in prompt.lower():
             response = {
                 "content": f"Operational analysis from {self.model_name}: System performance is acceptable.",
                 "confidence": self.response_quality,
                 "reasoning": "Based on performance metrics and requirements",
-                "timestamp": datetime.utcnow().isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat()
             }
         else:
             response = {
                 "content": f"Analysis from {self.model_name}: Standard response.",
                 "confidence": self.response_quality,
                 "reasoning": "General analysis",
-                "timestamp": datetime.utcnow().isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat()
             }
         
         self.responses.append(response)
@@ -279,7 +284,7 @@ class TestDataGenerator:
             "request_type": request_type,
             "description": f"Test {request_type} request",
             "requester": "test_user",
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "priority": {"low": 3, "normal": 2, "high": 1, "critical": 1}[urgency],
             "complexity": complexity,
             "requirements": {
@@ -315,7 +320,7 @@ class TestDataGenerator:
                 "domain": "ai_model_deployment",
                 "stakeholders": ["development_team", "compliance_team", "security_team"]
             },
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat()
         }
     
     @staticmethod
@@ -387,7 +392,7 @@ class MockAgentHarness:
                 "task_id": task.get("task_id"),
                 "result": self._generate_task_result(task),
                 "processing_time": self.processing_time,
-                "timestamp": datetime.utcnow().isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat()
             }
             self.completed_tasks.append(task)
         else:
@@ -397,7 +402,7 @@ class MockAgentHarness:
                 "task_id": task.get("task_id"),
                 "error": "Simulated task failure",
                 "processing_time": self.processing_time,
-                "timestamp": datetime.utcnow().isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat()
             }
             self.failed_tasks.append(task)
         

@@ -9,6 +9,10 @@ Placeholders are typically denoted by surrounding them with double curly braces,
 e.g., {{ENTITY}}, {{ACTION}}, {{RESOURCE}}, {{ATTRIBUTE}}, {{ROLE}}, {{PRINCIPLE_ID}}.
 """
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Template for asserting a user has a specific role based on an attribute
 USER_ROLE_ASSERTION = """\
 user_role_is({{USER_VAR}}, {{ROLE_VALUE}}) :-

@@ -1,6 +1,10 @@
 # This file makes the 'wina' directory a Python package.
 
 from .core import (
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
     analyze_neuron_activations,
     calculate_wina_weights,
 )

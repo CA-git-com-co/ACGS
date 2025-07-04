@@ -6,6 +6,10 @@ from sqlalchemy.future import select
 
 from . import models, schemas
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # --- PolicyRule CRUD operations ---
 
 

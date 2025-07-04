@@ -4,6 +4,10 @@ from sqlalchemy.orm import sessionmaker
 from ..core.config import settings
 from .base_class import Base  # Import Base for metadata
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Determine which database URL to use
 db_url_to_use: str | None = settings.SQLALCHEMY_DATABASE_URI
 

@@ -6,6 +6,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from services.shared.models import Policy, PolicyTemplate
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Placeholder for actual schema types if needed for validation or data shaping here,
 # though typically Pydantic schemas are handled at the API layer.
 # from . import schemas as gs_schemas

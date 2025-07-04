@@ -5,6 +5,10 @@ from sqlalchemy.orm import relationship
 
 from ..db.base_class import Base
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 class User(Base):
     __tablename__ = "users"
@@ -57,3 +61,4 @@ class User(Base):
     api_keys = relationship("ApiKey", back_populates="user")
     oauth_accounts = relationship("OAuthAccount", back_populates="user")
     sessions = relationship("UserSession", back_populates="user")
+    refresh_tokens = relationship("RefreshToken", back_populates="user", cascade="all, delete-orphan")

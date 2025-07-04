@@ -19,6 +19,10 @@ from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from .performance_monitoring import (
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
     WINAComponentType,
     WINAPerformanceCollector,
     get_wina_performance_collector,

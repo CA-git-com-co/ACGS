@@ -12,6 +12,10 @@ from typing import Any
 import redis.asyncio as redis
 from redis.asyncio import Redis
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 logger = logging.getLogger(__name__)
 
 # Redis configuration from environment

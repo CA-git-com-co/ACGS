@@ -23,6 +23,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from services.shared.models import ACConflictResolution, Principle
 
 from .intelligent_conflict_detector import (
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
     ConflictDetectionResult,
     ConflictType,
 )

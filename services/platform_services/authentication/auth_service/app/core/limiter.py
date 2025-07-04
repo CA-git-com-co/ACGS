@@ -3,6 +3,10 @@ from fastapi import Request
 # Import the new function from security.py
 from ..core.security import get_user_id_from_request_optional
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 # Mock classes for testing
 class MockLimiter:

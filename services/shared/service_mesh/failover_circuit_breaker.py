@@ -12,6 +12,10 @@ from enum import Enum
 from typing import Any
 
 from services.shared.service_mesh.circuit_breaker import (
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
     CircuitBreaker,
     CircuitBreakerState,
 )

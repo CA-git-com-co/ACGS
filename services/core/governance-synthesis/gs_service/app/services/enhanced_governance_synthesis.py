@@ -17,6 +17,10 @@ from typing import Any
 
 from ..core.opa_integration import get_opa_client
 from ..core.wina_rego_synthesis import (
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
     WINARegoSynthesisResult,
     WINARegoSynthesizer,
     get_wina_rego_synthesizer,

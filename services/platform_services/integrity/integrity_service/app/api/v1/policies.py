@@ -5,6 +5,10 @@ from app import crud, schemas  # Fixed import
 
 from .database import get_async_db  # Local database import
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # from .core.auth import require_internal_service, require_integrity_admin, User # Fixed import
 
 

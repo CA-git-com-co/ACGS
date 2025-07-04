@@ -2,6 +2,10 @@ from typing import Any
 
 from .models import GatingDecision, GatingThresholdConfig, WINAWeightOutput
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 async def determine_gating_decision(
     wina_weights: WINAWeightOutput, gating_config: GatingThresholdConfig

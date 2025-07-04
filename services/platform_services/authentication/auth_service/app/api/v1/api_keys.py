@@ -10,6 +10,10 @@ from ...core.security_audit import security_audit
 from ...db.session import get_async_db
 from ...models import User
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 router = APIRouter()
 
 

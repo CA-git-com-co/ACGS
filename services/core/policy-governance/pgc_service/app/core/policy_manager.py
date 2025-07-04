@@ -13,6 +13,10 @@ from .manifest_manager import ManifestManager
 from .opa_client import OPAClient, get_opa_client
 from .policy_format_router import PolicyFormatRouter, PolicyFramework
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 # Local mock implementation to avoid blocking imports
 class MockCryptoService:

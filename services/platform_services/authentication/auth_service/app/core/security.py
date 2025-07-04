@@ -9,6 +9,10 @@ from jwt import InvalidTokenError as JWTError
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Import password functions from separate module to avoid circular imports
 
 # Use local database and models instead of shared ones

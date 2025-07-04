@@ -20,6 +20,10 @@ from datetime import datetime, timezone
 
 import numpy as np
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 logger = logging.getLogger(__name__)
 
 

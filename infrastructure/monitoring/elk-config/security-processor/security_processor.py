@@ -30,6 +30,10 @@ from fastapi import BackgroundTasks, FastAPI, HTTPException
 from prometheus_client import Counter, Gauge, Histogram, start_http_server
 from pydantic import BaseModel, Field
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Configure structured logging
 structlog.configure(
     processors=[

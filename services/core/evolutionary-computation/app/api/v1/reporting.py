@@ -17,6 +17,10 @@ from ...services.ac_client import ac_service_client
 from ...services.gs_client import gs_service_client
 from ...services.pgc_client import pgc_service_client
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 logger = logging.getLogger(__name__)
 router = APIRouter()
 

@@ -21,6 +21,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from .database import get_async_db
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Import shared validation components
 sys.path.append("/home/dislove/ACGS-1/services/shared")
 from api_models import ErrorCode, create_error_response, create_success_response

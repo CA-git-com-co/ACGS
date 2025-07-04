@@ -16,6 +16,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from ..models import CryptoKey
 from .crypto_service import crypto_service
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 logger = logging.getLogger(__name__)
 
 

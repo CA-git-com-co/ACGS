@@ -12,6 +12,10 @@ from typing import Any
 
 from ..models import ACConflictResolution, Principle
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Import QEC enhancement components
 try:
     from integrations.alphaevolve_engine.core.constitutional_principle import (

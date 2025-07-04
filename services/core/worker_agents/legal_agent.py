@@ -6,7 +6,7 @@ Specialized agent for legal compliance analysis and regulatory assessment tasks.
 import asyncio
 import logging
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Set
 from uuid import uuid4
 
@@ -15,6 +15,10 @@ from pydantic import BaseModel, Field
 from ...shared.blackboard import BlackboardService, KnowledgeItem, TaskDefinition
 from ...shared.constitutional_safety_framework import ConstitutionalSafetyValidator
 from ...shared.ai_model_service import AIModelService
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
 
 
 class LegalAnalysisResult(BaseModel):
@@ -945,7 +949,8 @@ class LegalAgent:
             "sector_specific_compliance": {"status": "compliant", "score": 0.9},
             "overall_compliance_score": 0.77,
             "compliance_gaps": ["ai_act_documentation", "privacy_policy_updates"],
-            "recommendations": ["Complete AI Act assessment", "Update privacy policies"]
+            "recommendations": ["Complete AI Act assessment", "Update privacy policies"],
+            "required_measures": ["data_minimization", "consent", "risk_assessment", "documentation"]
         }
 
     async def _analyze_privacy_law(self, data_processing: Dict[str, Any], jurisdiction: str) -> Dict[str, Any]:
@@ -957,7 +962,8 @@ class LegalAgent:
             "data_subject_rights": ["access", "deletion", "portability", "correction"],
             "privacy_risk_level": "medium",
             "overall_privacy_score": 0.8,
-            "recommendations": ["Implement opt-out mechanisms", "Update privacy notices"]
+            "recommendations": ["Implement opt-out mechanisms", "Update privacy notices"],
+            "privacy_gaps": ["opt_out_mechanism_missing", "privacy_notice_outdated"]
         }
 
     async def _assess_liability(self, model_deployment: Dict[str, Any], stakeholders: Dict[str, Any]) -> Dict[str, Any]:
@@ -969,7 +975,8 @@ class LegalAgent:
             "risk_mitigation_measures": ["monitoring", "audit_trails", "incident_response"],
             "overall_liability_risk": "medium",
             "overall_liability_score": 0.7,
-            "recommendations": ["Increase insurance coverage", "Implement monitoring systems"]
+            "recommendations": ["Increase insurance coverage", "Implement monitoring systems"],
+            "liability_recommendations": ["Increase insurance coverage", "Implement monitoring systems", "Establish clear liability agreements"]
         }
 
     async def _analyze_intellectual_property(self, model_info: Dict[str, Any]) -> Dict[str, Any]:
@@ -981,7 +988,8 @@ class LegalAgent:
             "licensing_requirements": ["attribution", "share_alike"],
             "ip_risk_level": "low",
             "overall_ip_score": 0.8,
-            "recommendations": ["Document IP chain", "Review licensing terms"]
+            "recommendations": ["Document IP chain", "Review licensing terms"],
+            "ip_recommendations": ["Document IP chain", "Review licensing terms", "Establish clear IP ownership policies"]
         }
 
     async def _analyze_contract_terms(self, contract_terms: Dict[str, Any]) -> Dict[str, Any]:
@@ -1248,7 +1256,7 @@ class LegalAgent:
             constitutional_compliance=constitutional_compliance,
             analysis_metadata={
                 'agent_id': self.agent_id,
-                'analysis_timestamp': datetime.utcnow().isoformat(),
+                'analysis_timestamp': datetime.now(timezone.utc).isoformat(),
                 'frameworks_analyzed': frameworks,
                 'jurisdictions_analyzed': jurisdictions,
                 'overall_risk_score': overall_risk,
@@ -1298,7 +1306,7 @@ class LegalAgent:
                 'agent_id': self.agent_id,
                 'analysis_type': 'regulatory_analysis',
                 'framework': framework,
-                'analysis_timestamp': datetime.utcnow().isoformat()
+                'analysis_timestamp': datetime.now(timezone.utc).isoformat()
             }
         )
 
@@ -1350,7 +1358,7 @@ class LegalAgent:
             analysis_metadata={
                 'agent_id': self.agent_id,
                 'analysis_type': 'policy_analysis',
-                'analysis_timestamp': datetime.utcnow().isoformat(),
+                'analysis_timestamp': datetime.now(timezone.utc).isoformat(),
                 'risk_factors': risk_factors
             }
         )
@@ -1393,7 +1401,7 @@ class LegalAgent:
             analysis_metadata={
                 'agent_id': self.agent_id,
                 'analysis_type': 'contract_compliance',
-                'analysis_timestamp': datetime.utcnow().isoformat(),
+                'analysis_timestamp': datetime.now(timezone.utc).isoformat(),
                 'violations_count': len(violations)
             }
         )
@@ -1437,7 +1445,7 @@ class LegalAgent:
             analysis_metadata={
                 'agent_id': self.agent_id,
                 'analysis_type': 'jurisdiction_analysis',
-                'analysis_timestamp': datetime.utcnow().isoformat(),
+                'analysis_timestamp': datetime.now(timezone.utc).isoformat(),
                 'jurisdictions': jurisdictions,
                 'cross_border_issues_count': len(cross_border_issues)
             }
@@ -1794,7 +1802,7 @@ class LegalAgent:
                 'result': result.model_dump(),
                 'governance_request_id': task.requirements.get('governance_request_id'),
                 'processing_metadata': {
-                    'completed_at': datetime.utcnow().isoformat(),
+                    'completed_at': datetime.now(timezone.utc).isoformat(),
                     'agent_id': self.agent_id
                 }
             },

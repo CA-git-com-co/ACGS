@@ -10,6 +10,10 @@ from functools import wraps
 from fastapi import Request
 from fastapi.responses import PlainTextResponse
 from prometheus_client import (
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
     CONTENT_TYPE_LATEST,
     Counter,
     Gauge,

@@ -7,6 +7,10 @@ import logging
 import time
 
 from ..schemas import (
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
     ACPrinciple,
     PolicyRule,
     SafetyProperty,

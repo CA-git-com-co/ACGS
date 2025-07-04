@@ -16,12 +16,12 @@ This document provides comprehensive documentation for the Constitutional AI Ser
 
 `GET /metrics`
 
-
 ## Key Endpoints
 
 ### Validate Constitutional Compliance
 
 **Endpoint:** `POST /api/v1/validate`
+
 **Description:** Verify constitutional compliance of a policy
 
 **Request Body:**
@@ -55,8 +55,8 @@ const validation = await fetch('http://localhost:8001/api/v1/validate', {
   })
 });
 
-const validateResult = await validation.json();
-console.log(validateResult);
+const result = await validation.json();
+console.log(result);
 ```
 
 **Example Response:**
@@ -71,39 +71,30 @@ console.log(validateResult);
 ### Evaluate Constitutional Principles
 
 **Endpoint:** `POST /api/v1/principles/evaluate`
-**Description:** Evaluate specific constitutional principles against input criteria
+
+**Description:** Evaluate constitutional principles against input criteria
 
 **Request Body:**
 ```json
 {
-  "principles": ["equality", "free_speech"],
-  "input_data": {
-    "context": "education",
-    "parameters": { "age": 25, "region": "US" }
-  }
+  "principles": ["equality", "privacy"],
+  "input_data": {}
 }
 ```
 
 **Response:**
 ```json
 {
-  "principle_results": [
+  "evaluation_results": [
     {
       "principle": "equality",
-      "compliance": true,
-      "metrics": {
-        "discrimination_score": 0.05,
-        "accessibility": 0.9
-      }
+      "score": 0.85,
+      "violations": []
     },
     {
-      "principle": "free_speech",
-      "compliance": false,
-      "violation_type": "censorship",
-      "details": {
-        "censored_terms": ["democracy"],
-        "affected_groups": ["journalists"]
-      }
+      "principle": "privacy",
+      "score": 0.9,
+      "violations": ["data_leakage"]
     }
   ]
 }
@@ -118,38 +109,28 @@ const evaluation = await fetch('http://localhost:8001/api/v1/principles/evaluate
     'Authorization': 'Bearer <jwt_token>'
   },
   body: JSON.stringify({
-    principles: ["equality", "fairness"],
-    input_data: {
-      context: "government",
-      parameters: { region: "US", policy_id: "POL123" }
-    }
+    principles: ["equality", "privacy"],
+    input_data: { region: "US", parameters: { age: 25, budget: 1000000 } }
   })
 });
 
-const evalResults = await evaluation.json();
-console.log(evalResults);
+const result = await evaluation.json();
+console.log(result);
 ```
 
 **Example Response:**
 ```json
 {
-  "principle_results": [
+  "evaluation_results": [
     {
       "principle": "equality",
-      "compliance": true,
-      "metrics": {
-        "discrimination_index": 0.05,
-        "representation": 0.8
-      }
+      "score": 0.85,
+      "violations": []
     },
     {
-      "principle": "fairness",
-      "compliance": false,
-      "violation_type": "bias",
-      "details": {
-        "bias_factors": ["income", "race"],
-        "severity": "medium"
-      }
+      "principle": "privacy",
+      "score": 0.9,
+      "violations": ["data_leakage"]
     }
   ]
 }
@@ -158,19 +139,17 @@ console.log(evalResults);
 ### List Constitutional Principles
 
 **Endpoint:** `GET /api/v1/principles`
-**Description:** Retrieve a list of constitutional principles considered by the ACGS-2 system
+
+**Description:** Retrieve a list of constitutional principles considered by the system
 
 **Response:**
 ```json
-{
-  "principles": [
-    "equality",
-    "fairness",
-    "transparency",
-    "privacy",
-    "due_process"
-  ]
-}
+[
+  "equality",
+  "privacy",
+  "transparency",
+  "fairness"
+]
 ```
 
 **Example Request:**
@@ -181,28 +160,68 @@ const principles = await fetch('http://localhost:8001/api/v1/principles', {
   }
 });
 
-const principleList = await principles.json();
-console.log(principleList);
+const result = await principles.json();
+console.log(result);
 ```
 
 **Example Response:**
 ```json
-{
-  "principles": [
-    "equality",
-    "fairness",
-    "transparency",
-    "privacy",
-    "due_process"
-  ]
-}
+[
+  "equality",
+  "privacy",
+  "transparency",
+  "fairness"
+]
 ```
 
+### Get Council Decisions
+
+**Endpoint:** `GET /api/v1/council/decisions`
+
+**Description:** Retrieve a list of council decisions
+
+**Response:**
+```json
+[
+  {
+    "decision_id": "string",
+    "policy_id": "string",
+    "outcome": "approved",
+    "rationale": "string",
+    "council_members": ["string"]
+  }
+]
+```
+
+**Example Request:**
+```javascript
+const decisions = await fetch('http://localhost:8001/api/v1/council/decisions', {
+  headers: {
+    'Authorization': 'Bearer <jwt_token>'
+  }
+});
+
+const result = await decisions.json();
+console.log(result);
+```
+
+**Example Response:**
+```json
+[
+  {
+    "decision_id": "DEC001",
+    "policy_id": "POL001",
+    "outcome": "approved",
+    "rationale": "The policy aligns with constitutional principles of equality and privacy.",
+    "council_members": ["member1", "member2"]
+  }
+]
+```
 
 ## Additional Resources
 
-* [API Documentation Index](index.md)
-* [Principle Evaluation Model Paper](models/principle-eval.pdf)
-* [Constitutional Compliance Checks RFC](rfcs/compliance-checks.md)
+- [API Documentation Index](index.md)
+- [Principle Evaluation Model Paper](models/principle-eval.pdf)
+- [Constitutional Compliance Checks RFC](rfcs/compliance-checks.md)
 
 For system configuration details, deployment guides, and architecture diagrams, see the Constitutional AI service documentation repository.

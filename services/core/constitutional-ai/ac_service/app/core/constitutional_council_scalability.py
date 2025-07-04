@@ -22,6 +22,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from ..models import ACAmendment, ACAmendmentVote, User
 from ..schemas import ACAmendmentCreate, ACAmendmentVoteCreate
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # from services.shared.redis_client import get_redis_client
 
 logger = logging.getLogger(__name__)

@@ -138,7 +138,7 @@ class Agent(Base):
 
     # Metadata and configuration
     configuration = Column(JSON, nullable=True)  # Agent-specific configuration
-    metadata = Column(JSON, nullable=True)  # Additional metadata
+    agent_metadata = Column(JSON, nullable=True)  # Additional metadata
     tags = Column(JSON, nullable=False, default=list)  # Searchable tags
 
     # Relationships
@@ -276,7 +276,7 @@ class AgentAuditLog(Base):
     compliance_verified = Column(Boolean, default=False, nullable=False)
 
     # Additional context
-    metadata = Column(JSON, nullable=True)
+    audit_metadata = Column(JSON, nullable=True)
 
     # Relationships
     agent = relationship("Agent", back_populates="audit_logs")

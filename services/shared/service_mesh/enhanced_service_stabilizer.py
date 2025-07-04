@@ -30,6 +30,10 @@ from .common_types import ServiceType
 from .failover_circuit_breaker import FailoverConfig, FailoverManager, FailoverStrategy
 from .performance_monitor import PerformanceMonitor, get_performance_monitor
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 logger = logging.getLogger(__name__)
 
 

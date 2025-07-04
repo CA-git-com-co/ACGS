@@ -11,6 +11,10 @@ from collections.abc import Sequence
 import sqlalchemy as sa
 from alembic import op
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # revision identifiers, used by Alembic.
 revision: str = "f1a2b3c4d5e6"
 down_revision: str | None = "eaa5f6249b99"

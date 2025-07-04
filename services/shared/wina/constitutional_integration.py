@@ -13,6 +13,10 @@ from typing import Any
 from .config import WINAConfig, WINAIntegrationConfig
 from .exceptions import WINAConstitutionalError
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 logger = logging.getLogger(__name__)
 
 

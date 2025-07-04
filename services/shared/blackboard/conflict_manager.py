@@ -14,6 +14,10 @@ import redis.asyncio as redis
 
 from .models import ConflictItem
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 class ConflictManager:
     """

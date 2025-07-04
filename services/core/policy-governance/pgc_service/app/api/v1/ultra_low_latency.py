@@ -13,6 +13,10 @@ from pydantic import BaseModel, Field
 
 from ...core.auth import get_current_user_id
 from ...core.ultra_low_latency_optimizer import (
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
     CacheStrategy,
     OptimizationLevel,
     get_ultra_low_latency_optimizer,

@@ -4,6 +4,10 @@ import httpx
 
 from ..schemas import ACPrinciple  # Using the schema defined in fv_service
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # from services.shared.auth import get_service_token, get_auth_headers
 # from shared import get_config
 

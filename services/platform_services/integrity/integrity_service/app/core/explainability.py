@@ -11,6 +11,10 @@ from typing import Any
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..schemas import (
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
     ExplainabilityRequest,
     ExplainabilityResponse,
     RuleProvenanceResponse,

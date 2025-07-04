@@ -14,6 +14,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from ...core import security
 from ...core.config import settings
 from ...crud import (  # crud_refresh_token was created earlier
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
     crud_refresh_token,
     crud_user,
 )

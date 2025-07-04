@@ -13,6 +13,10 @@ from typing import Any
 
 from prometheus_client import REGISTRY, CollectorRegistry, Counter, Gauge, Histogram
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 logger = logging.getLogger(__name__)
 
 

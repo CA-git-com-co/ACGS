@@ -28,6 +28,10 @@ from typing import Any
 import numpy as np
 import psutil
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Hardware acceleration imports (conditional)
 try:
     import torch

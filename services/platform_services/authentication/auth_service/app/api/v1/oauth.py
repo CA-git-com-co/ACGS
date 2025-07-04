@@ -9,6 +9,10 @@ from ...core.security import get_current_active_user
 from ...core.security_audit import security_audit
 from ...db.session import get_async_db
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 router = APIRouter()
 
 # Initialize OAuth providers on module load

@@ -15,6 +15,9 @@ from sqlalchemy.orm import relationship
 
 from ..db.base_class import Base
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
 
 class SecurityEvent(Base):
     """Security audit event model for enterprise logging"""

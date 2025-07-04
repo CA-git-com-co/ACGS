@@ -14,6 +14,10 @@ from typing import Any
 import numpy as np
 from scipy import stats
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 logger = logging.getLogger(__name__)
 
 

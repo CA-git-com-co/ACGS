@@ -5,6 +5,10 @@ import numpy as np  # Added for type hinting and example matrix
 from .models import AnalyzedNeuronActivation, NeuronActivationInput, WINAWeightOutput
 from .svd_utils import apply_svd_transformation  # Added SVD import
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 async def analyze_neuron_activations(
     activation_input: NeuronActivationInput,

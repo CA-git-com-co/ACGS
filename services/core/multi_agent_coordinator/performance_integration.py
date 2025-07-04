@@ -6,7 +6,7 @@ Extends existing ACGS performance monitoring with multi-agent metrics and WINA o
 import asyncio
 import logging
 import time
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional, Tuple
 from dataclasses import dataclass
 from uuid import uuid4
@@ -15,6 +15,10 @@ from ...shared.blackboard import BlackboardService
 from ...shared.wina.core import WINACore
 from ...shared.wina.performance_monitoring import WINAPerformanceCollector
 from ...shared.performance_monitoring import PerformanceMonitor
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
 
 
 @dataclass
@@ -31,6 +35,7 @@ class AgentPerformanceMetrics:
     constitutional_compliance_rate: float
     efficiency_score: float
     collaboration_score: float
+    confidence: float = 0.8  # Default confidence score
 
 
 @dataclass
@@ -180,6 +185,9 @@ class MultiAgentPerformanceMonitor:
             # Get current load (active tasks)
             current_load = await self._get_agent_current_load(agent_id)
             
+            # Calculate confidence score based on performance metrics
+            confidence_score = min(1.0, (success_rate + efficiency_score + compliance_rate) / 3.0)
+
             # Update agent metrics
             metrics = AgentPerformanceMetrics(
                 agent_id=agent_id,
@@ -189,10 +197,11 @@ class MultiAgentPerformanceMonitor:
                 average_processing_time=avg_processing_time,
                 success_rate=success_rate,
                 current_load=current_load,
-                last_heartbeat=datetime.utcnow(),
+                last_heartbeat=datetime.now(timezone.utc),
                 constitutional_compliance_rate=compliance_rate,
                 efficiency_score=efficiency_score,
-                collaboration_score=collaboration_score
+                collaboration_score=collaboration_score,
+                confidence=confidence_score
             )
             
             self.agent_metrics[agent_id] = metrics
@@ -223,7 +232,7 @@ class MultiAgentPerformanceMonitor:
                 self.coordination_history.append(coordination_metrics)
                 
                 # Keep only recent history (last 24 hours)
-                cutoff_time = datetime.utcnow() - timedelta(hours=24)
+                cutoff_time = datetime.now(timezone.utc) - timedelta(hours=24)
                 self.coordination_history = [
                     m for m in self.coordination_history 
                     if hasattr(m, 'timestamp') and m.timestamp > cutoff_time

@@ -25,6 +25,10 @@ from ...services.democratic_governance import (
 
 # Security validation imports
 from services.shared.security_validation import (
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
     validate_user_input,
     validate_policy_input,
     validate_governance_input

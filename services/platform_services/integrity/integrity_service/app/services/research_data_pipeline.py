@@ -17,6 +17,10 @@ from typing import Any
 from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # from services.shared.models import (
 #     CrossDomainTestResult, DomainContext, Principle, ResearchDataExport
 # )

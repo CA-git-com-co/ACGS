@@ -100,7 +100,12 @@ class TestACGSPerformance:
     @pytest_asyncio.fixture
     async def constitutional_cache(self):
         """Create ConstitutionalCache for performance testing"""
-        return ConstitutionalCache()
+        from tests.fixtures.mock_services import MockRedis
+
+        cache = ConstitutionalCache()
+        # Use mock Redis for testing
+        cache.redis_client = MockRedis()
+        return cache
     
     @pytest_asyncio.fixture
     async def wina_core(self):

@@ -21,6 +21,10 @@ from typing import Any, Dict, List, Optional, Union
 import redis.asyncio as redis
 from redis.asyncio.cluster import RedisCluster
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 logger = logging.getLogger(__name__)
 
 

@@ -3,6 +3,10 @@
 from fastapi import HTTPException, status
 from pydantic import BaseModel
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 # Mock User class as Pydantic model
 class User(BaseModel):

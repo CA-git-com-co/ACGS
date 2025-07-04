@@ -17,6 +17,10 @@ from .crypto_service import crypto_service, merkle_service
 from .key_management import key_manager
 from .timestamp_service import timestamp_manager
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 logger = logging.getLogger(__name__)
 
 

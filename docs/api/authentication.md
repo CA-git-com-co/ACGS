@@ -6,7 +6,7 @@ This document provides comprehensive documentation for the Authentication Servic
 
 ### Base URL
 
-`http://localhost:8016`
+`http://localhost:8001`
 
 ### Health Check
 
@@ -16,12 +16,12 @@ This document provides comprehensive documentation for the Authentication Servic
 
 `GET /metrics`
 
-
 ## Key Endpoints
 
 ### User Authentication
 
 **Endpoint:** `POST /auth/login`
+
 **Description:** User login and token issuance
 
 **Request Body:**
@@ -47,7 +47,7 @@ This document provides comprehensive documentation for the Authentication Servic
 
 **Example Request:**
 ```javascript
-const auth = await fetch('http://localhost:8016/auth/login', {
+const auth = await fetch('http://localhost:8001/auth/login', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json'
@@ -65,10 +65,10 @@ console.log(result);
 **Example Response:**
 ```json
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOi...c13Mtg",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
   "expires_in": 3600,
   "user": {
-    "id": "123",
+    "id": "1234567890",
     "username": "user123",
     "roles": ["user", "admin"]
   }
@@ -78,6 +78,7 @@ console.log(result);
 ### Token Refresh
 
 **Endpoint:** `POST /auth/refresh`
+
 **Description:** Refresh a stale access token
 
 **Request Body:**
@@ -97,7 +98,7 @@ console.log(result);
 
 **Example Request:**
 ```javascript
-const refresh = await fetch('http://localhost:8016/auth/refresh', {
+const refresh = await fetch('http://localhost:8001/auth/refresh', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
@@ -108,14 +109,14 @@ const refresh = await fetch('http://localhost:8016/auth/refresh', {
   })
 });
 
-const refreshResult = await refresh.json();
-console.log(refreshResult);
+const result = await refresh.json();
+console.log(result);
 ```
 
 **Example Response:**
 ```json
 {
-  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOi...c13Mtg"
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
   "expires_in": 3600
 }
 ```
@@ -123,6 +124,7 @@ console.log(refreshResult);
 ### User Logout
 
 **Endpoint:** `POST /auth/logout`
+
 **Description:** Invalidate existing access tokens
 
 **Request Headers:**
@@ -136,6 +138,7 @@ Authorization: Bearer <access_token>
 ### Get User Profile
 
 **Endpoint:** `GET /auth/profile`
+
 **Description:** Retrieve current user profile data
 
 **Request Headers:**
@@ -156,20 +159,20 @@ Authorization: Bearer <access_token>
 
 **Example Request:**
 ```javascript
-const profile = await fetch('http://localhost:8016/auth/profile', {
+const profile = await fetch('http://localhost:8001/auth/profile', {
   headers: {
     'Authorization': 'Bearer <access_token>'
   }
 });
 
-const profileData = await profile.json();
-console.log(profileData);
+const result = await profile.json();
+console.log(result);
 ```
 
 **Example Response:**
 ```json
 {
-  "id": "123",
+  "id": "1234567890",
   "username": "user123",
   "email": "user@example.com",
   "roles": ["user", "admin"],
@@ -177,11 +180,10 @@ console.log(profileData);
 }
 ```
 
-
 ## Additional Resources
 
-* [API Documentation Index](index.md)
-* [JWT Token Reference](jwt.md)
-* [Role-based Access Control (RBAC) Design](rbac.md)
+- [API Documentation Index](index.md)
+- [JWT Token Reference](jwt.md)
+- [Role-based Access Control (RBAC) Design](rbac.md)
 
-For detailed specifications and implementation guidelines, see the ACGS-2 API documentation repository.
+For detailed specifications and implementation guidelines, see the Auth Service documentation repository.

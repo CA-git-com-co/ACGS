@@ -11,6 +11,9 @@ from typing import Any
 
 import yaml
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
 
 class ServiceConfig:
     """Service configuration for PGC Service with ACGS-1 enhancements."""
@@ -26,6 +29,7 @@ class ServiceConfig:
             "enable_docs": True,
             "cors_origins": ["*"],
             "timeout_seconds": 30,
+            "constitutional_hash": CONSTITUTIONAL_HASH,
         },
         "integrations": {
             "fv_service": {

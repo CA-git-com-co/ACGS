@@ -5,6 +5,10 @@ Custom exceptions for WINA (Weight Informed Neuron Activation) operations
 within the ACGS-PGP framework.
 """
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 class WINAError(Exception):
     """Base exception for all WINA-related errors."""

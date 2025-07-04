@@ -22,6 +22,10 @@ from pydantic import BaseModel, Field, field_validator
 
 # EC service imports
 from ...core.wina_oversight_coordinator import (
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
     ECOversightContext,
     ECOversightRequest,
     ECOversightStrategy,

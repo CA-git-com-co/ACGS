@@ -4,6 +4,10 @@ import os
 from pydantic import ConfigDict, model_validator
 from pydantic_settings import BaseSettings
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"

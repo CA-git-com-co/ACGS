@@ -9,6 +9,10 @@ import sys
 
 import uvicorn
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 # Add the service directory to Python path
 sys.path.insert(0, "/home/dislove/ACGS-1/services/core/governance-synthesis/gs_service")
 sys.path.insert(0, "/home/dislove/ACGS-1/services/shared")

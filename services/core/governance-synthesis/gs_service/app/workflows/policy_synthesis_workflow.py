@@ -12,6 +12,10 @@ Task 18.4: Reliability Enhancement with circuit breaker patterns
 import logging
 import time
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 try:
     from langgraph.graph import END, StateGraph
     from langgraph.graph.state import CompiledStateGraph

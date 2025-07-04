@@ -10,6 +10,10 @@ Checks for common issues in GitHub Actions workflows.
 import os
 from pathlib import Path
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 def check_workflow_files():
     """Check workflow files for common issues."""

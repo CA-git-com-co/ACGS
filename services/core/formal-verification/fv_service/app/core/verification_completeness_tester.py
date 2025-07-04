@@ -15,6 +15,10 @@ from typing import Any
 
 from .smt_solver_integration import verify_rules_against_obligations
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 logger = logging.getLogger(__name__)
 
 

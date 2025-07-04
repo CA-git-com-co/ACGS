@@ -12,6 +12,10 @@ from pydantic import BaseModel, EmailStr, Field, validator
 
 from ..models.agent import AgentStatus, AgentType
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 
 class AgentBase(BaseModel):
     """Base agent schema with common fields."""
@@ -204,7 +208,7 @@ class AgentResponse(AgentBase):
 
     # Configuration and metadata
     configuration: dict[str, Any] | None = None
-    metadata: dict[str, Any] | None = None
+    agent_metadata: dict[str, Any] | None = None
     tags: list[str]
 
     class Config:

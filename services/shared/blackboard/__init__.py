@@ -30,6 +30,10 @@ from .knowledge_manager import KnowledgeManager
 from .models import ConflictItem, KnowledgeItem, TaskDefinition
 from .task_manager import TaskManager
 
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+
 __all__ = [
     "BlackboardService",
     "ConflictItem",
