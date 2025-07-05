@@ -1,0 +1,253 @@
+# JMX to Prometheus exporter configuration for Kafka monitoring
+# This configuration exposes key Kafka metrics for production monitoring
+
+# Basic configuration
+startDelaySeconds: 0
+hostPort: localhost:9999
+username:
+password:
+jmxUrl: service:jmx:rmi:///jndi/rmi://localhost:9999/jmxrmi
+ssl: false
+lowercaseOutputName: false
+lowercaseOutputLabelNames: false
+
+# Kafka-specific metric rules
+rules:
+  # Broker metrics
+  - pattern: kafka.server<type=(.+), name=(.+)><>Count
+    name: kafka_server_$1_$2_total
+    type: COUNTER
+    help: "Kafka server $1 $2 total count"
+
+  - pattern: kafka.server<type=(.+), name=(.+)><>Value
+    name: kafka_server_$1_$2
+    type: GAUGE
+    help: "Kafka server $1 $2 value"
+
+  - pattern: kafka.server<type=(.+), name=(.+), (.+)=(.+)><>Count
+    name: kafka_server_$1_$2_total
+    type: COUNTER
+    labels:
+      "$3": "$4"
+    help: "Kafka server $1 $2 total count"
+
+  - pattern: kafka.server<type=(.+), name=(.+), (.+)=(.+)><>Value
+    name: kafka_server_$1_$2
+    type: GAUGE
+    labels:
+      "$3": "$4"
+    help: "Kafka server $1 $2 value"
+
+  # Network request metrics
+  - pattern: kafka.network<type=RequestMetrics, name=(.+), request=(.+)><>Count
+    name: kafka_network_request_$1_total
+    type: COUNTER
+    labels:
+      request: "$2"
+    help: "Kafka network request $1 total count"
+
+  - pattern: kafka.network<type=RequestMetrics, name=(.+), request=(.+)><>Mean
+    name: kafka_network_request_$1_mean
+    type: GAUGE
+    labels:
+      request: "$2"
+    help: "Kafka network request $1 mean"
+
+  - pattern: kafka.network<type=RequestMetrics, name=(.+), request=(.+)><>(\d+)thPercentile
+    name: kafka_network_request_$1_percentile
+    type: GAUGE
+    labels:
+      request: "$2"
+      percentile: "$3"
+    help: "Kafka network request $1 percentile"
+
+  # Topic and partition metrics
+  - pattern: kafka.log<type=Log, name=(.+), topic=(.+), partition=(.+)><>Value
+    name: kafka_log_$1
+    type: GAUGE
+    labels:
+      topic: "$2"
+      partition: "$3"
+    help: "Kafka log $1 value"
+
+  - pattern: kafka.log<type=LogFlushStats, name=(.+)><>Count
+    name: kafka_log_flush_$1_total
+    type: COUNTER
+    help: "Kafka log flush $1 total count"
+
+  - pattern: kafka.log<type=LogFlushStats, name=(.+)><>Mean
+    name: kafka_log_flush_$1_mean
+    type: GAUGE
+    help: "Kafka log flush $1 mean"
+
+  # Cluster and controller metrics
+  - pattern: kafka.controller<type=(.+), name=(.+)><>Count
+    name: kafka_controller_$1_$2_total
+    type: COUNTER
+    help: "Kafka controller $1 $2 total count"
+
+  - pattern: kafka.controller<type=(.+), name=(.+)><>Value
+    name: kafka_controller_$1_$2
+    type: GAUGE
+    help: "Kafka controller $1 $2 value"
+
+  # Producer and consumer group coordinator metrics
+  - pattern: kafka.coordinator.group<type=(.+), name=(.+)><>Count
+    name: kafka_coordinator_group_$1_$2_total
+    type: COUNTER
+    help: "Kafka group coordinator $1 $2 total count"
+
+  - pattern: kafka.coordinator.group<type=(.+), name=(.+)><>Value
+    name: kafka_coordinator_group_$1_$2
+    type: GAUGE
+    help: "Kafka group coordinator $1 $2 value"
+
+  # JVM metrics
+  - pattern: java.lang<type=Memory><HeapMemoryUsage>(\w+)
+    name: jvm_memory_heap_$1
+    type: GAUGE
+    help: "JVM heap memory $1"
+
+  - pattern: java.lang<type=Memory><NonHeapMemoryUsage>(\w+)
+    name: jvm_memory_nonheap_$1
+    type: GAUGE
+    help: "JVM non-heap memory $1"
+
+  - pattern: java.lang<type=MemoryPool, name=(.+)><Usage>(\w+)
+    name: jvm_memory_pool_$2
+    type: GAUGE
+    labels:
+      pool: "$1"
+    help: "JVM memory pool $2"
+
+  - pattern: java.lang<type=GarbageCollector, name=(.+)><>CollectionCount
+    name: jvm_gc_collection_total
+    type: COUNTER
+    labels:
+      gc: "$1"
+    help: "JVM garbage collection total count"
+
+  - pattern: java.lang<type=GarbageCollector, name=(.+)><>CollectionTime
+    name: jvm_gc_collection_time_total
+    type: COUNTER
+    labels:
+      gc: "$1"
+    help: "JVM garbage collection total time in milliseconds"
+
+  - pattern: java.lang<type=Threading><>ThreadCount
+    name: jvm_threads_current
+    type: GAUGE
+    help: "JVM current thread count"
+
+  - pattern: java.lang<type=Threading><>DaemonThreadCount
+    name: jvm_threads_daemon
+    type: GAUGE
+    help: "JVM daemon thread count"
+
+  # Specific high-priority Kafka metrics for ACGS monitoring
+
+  # Message throughput
+  - pattern: kafka.server<type=BrokerTopicMetrics, name=MessagesInPerSec, topic=(.+)><>Count
+    name: kafka_topic_messages_in_total
+    type: COUNTER
+    labels:
+      topic: "$1"
+    help: "Total number of messages received per topic"
+
+  - pattern: kafka.server<type=BrokerTopicMetrics, name=BytesInPerSec, topic=(.+)><>Count
+    name: kafka_topic_bytes_in_total
+    type: COUNTER
+    labels:
+      topic: "$1"
+    help: "Total bytes received per topic"
+
+  - pattern: kafka.server<type=BrokerTopicMetrics, name=BytesOutPerSec, topic=(.+)><>Count
+    name: kafka_topic_bytes_out_total
+    type: COUNTER
+    labels:
+      topic: "$1"
+    help: "Total bytes sent per topic"
+
+  # Consumer lag (critical for constitutional decision processing)
+  - pattern: kafka.consumer<type=consumer-fetch-manager-metrics, client-id=(.+)><>records-lag-max
+    name: kafka_consumer_lag_max
+    type: GAUGE
+    labels:
+      client_id: "$1"
+    help: "Maximum lag across all partitions"
+
+  - pattern: kafka.consumer<type=consumer-fetch-manager-metrics, client-id=(.+), topic=(.+), partition=(.+)><>records-lag
+    name: kafka_consumer_partition_lag
+    type: GAUGE
+    labels:
+      client_id: "$1"
+      topic: "$2"
+      partition: "$3"
+    help: "Lag for specific topic partition"
+
+  # Error rates (important for constitutional compliance monitoring)
+  - pattern: kafka.server<type=BrokerTopicMetrics, name=FailedProduceRequestsPerSec, topic=(.+)><>Count
+    name: kafka_topic_failed_produce_requests_total
+    type: COUNTER
+    labels:
+      topic: "$1"
+    help: "Total failed produce requests per topic"
+
+  - pattern: kafka.server<type=BrokerTopicMetrics, name=FailedFetchRequestsPerSec, topic=(.+)><>Count
+    name: kafka_topic_failed_fetch_requests_total
+    type: COUNTER
+    labels:
+      topic: "$1"
+    help: "Total failed fetch requests per topic"
+
+  # Partition count and leadership
+  - pattern: kafka.server<type=ReplicaManager, name=PartitionCount><>Value
+    name: kafka_server_partition_count
+    type: GAUGE
+    help: "Number of partitions on this broker"
+
+  - pattern: kafka.server<type=ReplicaManager, name=LeaderCount><>Value
+    name: kafka_server_leader_count
+    type: GAUGE
+    help: "Number of leader replicas on this broker"
+
+  - pattern: kafka.server<type=ReplicaManager, name=UnderReplicatedPartitions><>Value
+    name: kafka_server_under_replicated_partitions
+    type: GAUGE
+    help: "Number of under-replicated partitions"
+
+  # Request latency (critical for real-time constitutional decisions)
+  - pattern: kafka.network<type=RequestMetrics, name=TotalTimeMs, request=(.+)><>Mean
+    name: kafka_request_total_time_mean
+    type: GAUGE
+    labels:
+      request: "$1"
+    help: "Mean total time for request type"
+
+  - pattern: kafka.network<type=RequestMetrics, name=TotalTimeMs, request=(.+)><>99thPercentile
+    name: kafka_request_total_time_99p
+    type: GAUGE
+    labels:
+      request: "$1"
+    help: "99th percentile total time for request type"
+
+# Whitelist important MBean patterns
+whitelistObjectNames:
+  - "kafka.server:type=BrokerTopicMetrics,*"
+  - "kafka.server:type=ReplicaManager,*"
+  - "kafka.server:type=KafkaRequestHandlerPool,*"
+  - "kafka.server:type=Produce,*"
+  - "kafka.server:type=Fetch,*"
+  - "kafka.network:type=RequestMetrics,*"
+  - "kafka.network:type=SocketServer,*"
+  - "kafka.log:type=LogFlushStats,*"
+  - "kafka.log:type=Log,*"
+  - "kafka.controller:type=KafkaController,*"
+  - "kafka.controller:type=ControllerStats,*"
+  - "kafka.coordinator.group:type=GroupMetadataManager,*"
+  - "kafka.coordinator.group:type=GroupCoordinator,*"
+  - "java.lang:type=Memory,*"
+  - "java.lang:type=MemoryPool,*"
+  - "java.lang:type=GarbageCollector,*"
+  - "java.lang:type=Threading,*"
+  - "java.lang:type=OperatingSystem,*"

@@ -1,0 +1,21 @@
+"""
+Context Service Core Components
+
+Core functionality for the ACGS context engine including
+vector database integration, storage management, and optimization.
+"""
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+from .vector_store import QdrantVectorStore
+from .embedding_service import EmbeddingService
+from .storage_manager import MultiTierStorageManager
+from .context_engine import ContextEngine
+
+__all__ = [
+    "QdrantVectorStore",
+    "EmbeddingService", 
+    "MultiTierStorageManager",
+    "ContextEngine",
+]

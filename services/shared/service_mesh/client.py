@@ -15,10 +15,6 @@ import httpx
 from tenacity import retry, stop_after_attempt, wait_exponential
 
 from services.shared.common.error_handling import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
     ACGSException,
     AuthenticationError,
     ServiceUnavailableError,
@@ -27,6 +23,9 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 )
 from services.shared.common.formatting import format_response
 from services.shared.common.validation import validate_response
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 from services.shared.service_mesh.circuit_breaker import CircuitBreaker
 from services.shared.service_mesh.registry import (
     ServiceRegistry,

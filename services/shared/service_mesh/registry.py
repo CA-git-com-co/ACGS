@@ -30,6 +30,8 @@ class ServiceType(Enum):
     FEDERATED = "federated_service"
     RESEARCH = "research_service"
     WORKFLOW = "workflow_service"
+    APGF = "apgf_service"
+    CONTEXT = "context_service"
 
 
 class Environment(Enum):
@@ -151,6 +153,18 @@ class ServiceRegistry:
                 base_url="http://localhost:8010",
                 port=8010,
                 tags=["workflow", "orchestration", "langgraph"],
+            ),
+            ServiceType.APGF: ServiceConfig(
+                name="apgf_service",
+                base_url="http://localhost:8011",
+                port=8011,
+                tags=["apgf", "agents", "policy_generation", "constitutional_ai"],
+            ),
+            ServiceType.CONTEXT: ServiceConfig(
+                name="context_service",
+                base_url="http://localhost:8012",
+                port=8012,
+                tags=["context", "memory", "retrieval", "vector_search", "wina"],
             ),
         }
 

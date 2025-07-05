@@ -17,14 +17,13 @@ from services.shared.common.error_handling import ServiceUnavailableError
 from services.shared.service_mesh.registry import get_service_registry
 
 from .common_types import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
     LoadBalancingStrategy,
     ServiceInstance,
     ServiceType,
 )
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 from .failover_circuit_breaker import FailoverConfig, FailoverManager
 from .governance_session_manager import GovernanceSessionManager, GovernanceWorkflowType
 from .infrastructure_integration import (

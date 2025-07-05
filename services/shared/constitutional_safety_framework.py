@@ -281,3 +281,73 @@ class ConstitutionalSafetyValidator:
     def get_constitutional_hash(self) -> str:
         """Get the constitutional compliance hash"""
         return self.constitutional_hash
+
+
+class ConstitutionalSafetyFramework:
+    """
+    High-level Constitutional Safety Framework for ACGS.
+    
+    This class provides a comprehensive framework for constitutional compliance
+    across all ACGS operations, integrating multiple validators and providing
+    centralized safety management.
+    """
+    
+    def __init__(self):
+        self.logger = logging.getLogger(__name__)
+        self.validator = ConstitutionalSafetyValidator()
+        self.constitutional_hash = "cdd01ef066bc6cf2"
+        self.compliance_cache: Dict[str, ComplianceResult] = {}
+        self.cache_ttl = timedelta(minutes=10)
+        
+    async def validate_operation(
+        self, 
+        operation_type: str, 
+        operation_data: Dict[str, Any], 
+        context: Optional[Dict[str, Any]] = None
+    ) -> ComplianceResult:
+        """
+        Validate any ACGS operation for constitutional compliance.
+        
+        Args:
+            operation_type: Type of operation (e.g., 'agent_action', 'policy_decision')
+            operation_data: Data describing the operation
+            context: Additional context for validation
+            
+        Returns:
+            ComplianceResult indicating compliance status
+        """
+        # Check cache first
+        cache_key = self._generate_cache_key(operation_type, operation_data)
+        if cache_key in self.compliance_cache:
+            cached_result = self.compliance_cache[cache_key]
+            if datetime.utcnow() - cached_result.timestamp < self.cache_ttl:
+                return cached_result
+        
+        # Perform validation
+        result = await self.validator.validate_action(operation_data, context)
+        
+        # Cache result
+        self.compliance_cache[cache_key] = result
+        
+        # Log result
+        if not result.is_compliant:
+            self.logger.warning(
+                f"Constitutional compliance violation in {operation_type}: {result.violations}"
+            )
+        
+        return result
+    
+    def _generate_cache_key(self, operation_type: str, operation_data: Dict[str, Any]) -> str:
+        """Generate cache key for operation validation"""
+        import hashlib
+        data_str = f"{operation_type}:{str(sorted(operation_data.items()))}"
+        return hashlib.sha256(data_str.encode()).hexdigest()[:16]
+    
+    def get_framework_status(self) -> Dict[str, Any]:
+        """Get current framework status and statistics"""
+        return {
+            "constitutional_hash": self.constitutional_hash,
+            "active_rules": len(self.validator.get_rules()),
+            "cache_entries": len(self.compliance_cache),
+            "validator_status": "active"
+        }

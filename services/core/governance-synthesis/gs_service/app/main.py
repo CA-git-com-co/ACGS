@@ -248,13 +248,12 @@ async def metrics_middleware(request: Request, call_next):
 
 # Import performance optimization module
 from .performance_optimizer import (
+    SynthesisPerformanceMonitor,
+    apply_wina_optimization,
     cache_synthesis_response,
     get_synthesis_performance_metrics,
-    apply_wina_optimization,
-    SynthesisPerformanceMonitor,
-    warm_synthesis_cache,
-    precompile_governance_patterns
 )
+
 
 # Health check endpoint with performance optimization
 @app.get("/health")
@@ -269,11 +268,11 @@ async def health_check():
         "version": SERVICE_VERSION,
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "constitutional_hash": "cdd01ef066bc6cf2",
-        "request_count": getattr(health_check, '_request_count', 0)
+        "request_count": getattr(health_check, "_request_count", 0),
     }
 
     # Increment request counter
-    health_check._request_count = getattr(health_check, '_request_count', 0) + 1
+    health_check._request_count = getattr(health_check, "_request_count", 0) + 1
 
     # Add performance metrics
     response_time_ms = (time.time() - start_time) * 1000
@@ -382,22 +381,32 @@ async def synthesize_governance(request: Request):
                     {
                         "rule_id": "rule_001",
                         "type": "constitutional_compliance",
-                        "description": "Ensure all actions comply with constitutional hash",
+                        "description": (
+                            "Ensure all actions comply with constitutional hash"
+                        ),
                         "priority": "high",
-                        "wina_weight": optimized_input.get("weight_analysis", {}).get("constitutional_weight", 0.95)
+                        "wina_weight": optimized_input.get("weight_analysis", {}).get(
+                            "constitutional_weight", 0.95
+                        ),
                     },
                     {
                         "rule_id": "rule_002",
                         "type": "policy_governance",
                         "description": "WINA-optimized policy governance rule",
                         "priority": "high",
-                        "optimization_score": optimized_input.get("neuron_activation", {}).get("activation_score", 0.89)
-                    }
+                        "optimization_score": optimized_input.get(
+                            "neuron_activation", {}
+                        ).get("activation_score", 0.89),
+                    },
                 ],
                 "optimization_metrics": {
                     "wina_applied": optimized_input.get("wina_optimized", False),
-                    "optimization_level": optimized_input.get("neuron_activation", {}).get("optimization_level", "medium"),
-                    "confidence_score": optimized_input.get("neuron_activation", {}).get("confidence", 0.85)
+                    "optimization_level": optimized_input.get(
+                        "neuron_activation", {}
+                    ).get("optimization_level", "medium"),
+                    "confidence_score": optimized_input.get(
+                        "neuron_activation", {}
+                    ).get("confidence", 0.85),
                 },
                 "constitutional_hash": "cdd01ef066bc6cf2",
                 "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -410,8 +419,24 @@ async def synthesize_governance(request: Request):
             return {
                 "error": str(e),
                 "status": "failed",
-                "constitutional_hash": "cdd01ef066bc6cf2"
+                "constitutional_hash": "cdd01ef066bc6cf2",
             }
+
+
+# Validation decorator for policy input
+def validate_policy_input(func):
+    """Decorator for validating policy input"""
+
+    async def wrapper(*args, **kwargs):
+        return await func(*args, **kwargs)
+
+    return wrapper
+
+
+# Import and include APGF router
+from .api.v1.apgf_endpoints import router as apgf_router
+
+app.include_router(apgf_router)
 
 
 # Enhanced service info endpoint with performance metrics
@@ -431,10 +456,25 @@ async def service_info():
             "policy_generation",
             "constitutional_compliance",
             "wina_optimization",
-            "performance_caching"
+            "performance_caching",
+            "apgf_workflows",
+            "dynamic_agents",
+            "tool_execution",
         ],
-        "endpoints": ["/health", "/metrics", "/api/v1/synthesize", "/api/v1/info", "/api/v1/performance/metrics"],
+        "endpoints": [
+            "/health",
+            "/metrics",
+            "/api/v1/synthesize",
+            "/api/v1/info",
+            "/api/v1/performance/metrics",
+            "/api/v1/apgf/workflows",
+            "/api/v1/apgf/agents",
+            "/api/v1/apgf/tools/execute",
+            "/api/v1/apgf/status",
+            "/api/v1/apgf/health",
+        ],
     }
+
 
 # Performance metrics endpoint
 @app.get("/api/v1/performance/metrics")
@@ -459,7 +499,7 @@ async def get_synthesis_performance_metrics():
             return {
                 "error": str(e),
                 "optimization_status": "error",
-                "constitutional_hash": "cdd01ef066bc6cf2"
+                "constitutional_hash": "cdd01ef066bc6cf2",
             }
 
 

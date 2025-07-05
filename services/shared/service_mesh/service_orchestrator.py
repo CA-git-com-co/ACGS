@@ -24,14 +24,13 @@ from services.shared.service_mesh.discovery import ServiceDiscovery
 from services.shared.service_mesh.registry import ServiceType, get_service_registry
 
 from .enhanced_service_stabilizer import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
     EnhancedServiceStabilizer,
     StabilizationConfig,
     StabilizationLevel,
 )
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 from .failover_circuit_breaker import FailoverManager
 from .load_balancer import LoadBalancer, LoadBalancingStrategy
 from .performance_monitor import get_performance_monitor
