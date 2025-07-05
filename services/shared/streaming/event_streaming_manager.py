@@ -25,7 +25,9 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Optional
 
-from services.shared.monitoring.intelligent_alerting_system import IntelligentAlertingSystem
+from services.shared.monitoring.intelligent_alerting_system import (
+    IntelligentAlertingSystem,
+)
 from services.shared.security.enhanced_audit_logging import EnhancedAuditLogger
 
 from .kafka_config_manager import EnvironmentType, KafkaConfigManager

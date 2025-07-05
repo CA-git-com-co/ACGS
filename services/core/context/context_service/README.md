@@ -5,6 +5,7 @@ High-performance context management system providing sub-50ms context retrieval,
 ## Features
 
 ### Core Capabilities
+
 - **Sub-50ms Context Retrieval**: Optimized multi-tier storage architecture
 - **Multi-Modal Support**: Text, structured data, and metadata context handling
 - **Constitutional Compliance**: Real-time validation and audit trails
@@ -12,6 +13,7 @@ High-performance context management system providing sub-50ms context retrieval,
 - **Real-time Streaming**: Event-driven context updates via Kafka/NATS
 
 ### Architecture
+
 - **Multi-Tier Storage**: Redis (L1) → Qdrant (L2) → PostgreSQL (L3)
 - **Vector Search**: Qdrant with HNSW indexing for semantic retrieval
 - **WINA Optimization**: 65% efficiency gains through intelligent neuron gating
@@ -20,19 +22,23 @@ High-performance context management system providing sub-50ms context retrieval,
 ## Quick Start
 
 ### Prerequisites
+
 - Python 3.12+
 - Redis Cluster (existing ACGS infrastructure)
 - Qdrant Vector Database
 - Kafka/NATS Streaming (existing ACGS infrastructure)
 
 ### Installation
+
 ```bash
 cd /services/core/context/context_service
 pip install -r requirements.txt
 ```
 
 ### Configuration
+
 Set environment variables:
+
 ```bash
 export CONTEXT_SERVICE_PORT=8012
 export QDRANT_HOST=localhost
@@ -41,6 +47,7 @@ export REDIS_CLUSTER_NODES=localhost:7000,localhost:7001,localhost:7002
 ```
 
 ### Running the Service
+
 ```bash
 python main.py
 ```
@@ -48,6 +55,7 @@ python main.py
 ## API Endpoints
 
 ### Context Operations
+
 - `POST /api/v1/context/store` - Store new context
 - `GET /api/v1/context/retrieve` - Semantic search retrieval
 - `PUT /api/v1/context/update` - Update existing context
@@ -55,6 +63,7 @@ python main.py
 - `DELETE /api/v1/context/expire` - Manual context expiration
 
 ### Health and Monitoring
+
 - `GET /health` - Service health check
 - `GET /metrics` - Performance and usage metrics
 - `GET /api/v1/context/stats` - Context statistics
@@ -62,6 +71,7 @@ python main.py
 ## Context Types
 
 ### Hierarchical TTL Structure
+
 1. **ConversationContext** (TTL: 1-10 minutes) - Active dialogue context
 2. **DomainContext** (TTL: 1-24 hours) - Domain-specific knowledge
 3. **ConstitutionalContext** (TTL: weeks) - Constitutional principles and rules
@@ -79,6 +89,7 @@ python main.py
 ## Integration
 
 ### Service Registry
+
 The context service automatically registers with the ACGS ServiceRegistry on port 8012:
 
 ```python
@@ -89,6 +100,7 @@ context_url = registry.get_api_url(ServiceType.CONTEXT)
 ```
 
 ### Event Streaming
+
 Context updates are published to Kafka/NATS topics:
 
 ```python
@@ -104,6 +116,7 @@ from services.shared.streaming.event_streaming_manager import EventType
 ## Development
 
 ### Testing
+
 ```bash
 # Unit tests
 pytest tests/unit/
@@ -116,7 +129,9 @@ pytest tests/performance/
 ```
 
 ### Monitoring
+
 Context service integrates with existing ACGS monitoring:
+
 - Constitutional compliance validation
 - Performance metrics collection
 - Real-time alerting via existing AlertingSystem
@@ -132,6 +147,7 @@ Context service integrates with existing ACGS monitoring:
 ## Contributing
 
 Follow ACGS development standards:
+
 1. Constitutional compliance validation required
 2. Comprehensive testing (unit + integration)
 3. Performance benchmarking

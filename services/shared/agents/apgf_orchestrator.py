@@ -26,10 +26,14 @@ from typing import Any, Optional, Union
 from services.shared.constitutional_safety_framework import (
     ConstitutionalSafetyFramework,
 )
-from services.shared.monitoring.intelligent_alerting_system import IntelligentAlertingSystem
+from services.shared.monitoring.intelligent_alerting_system import (
+    IntelligentAlertingSystem,
+)
 from services.shared.security.enhanced_audit_logging import EnhancedAuditLogger
 from services.shared.security.unified_input_validation import EnhancedInputValidator
-from services.shared.service_mesh.service_orchestrator import ACGSServiceOrchestrator as ServiceOrchestrator
+from services.shared.service_mesh.service_orchestrator import (
+    ACGSServiceOrchestrator as ServiceOrchestrator,
+)
 
 from .apgf_event_publisher import APGFEventPublisher
 from .dynamic_agent import AgentCommunication, DynamicAgent

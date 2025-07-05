@@ -31,7 +31,9 @@ from services.shared.agents.tool_router import (
 from services.shared.constitutional_safety_framework import (
     ConstitutionalSafetyFramework,
 )
-from services.shared.monitoring.intelligent_alerting_system import IntelligentAlertingSystem
+from services.shared.monitoring.intelligent_alerting_system import (
+    IntelligentAlertingSystem,
+)
 from services.shared.security.enhanced_audit_logging import EnhancedAuditLogger
 from services.shared.security.unified_input_validation import EnhancedInputValidator
 

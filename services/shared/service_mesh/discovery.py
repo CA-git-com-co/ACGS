@@ -16,11 +16,7 @@ import httpx
 from services.shared.common.error_handling import ServiceUnavailableError
 from services.shared.service_mesh.registry import get_service_registry
 
-from .common_types import (
-    LoadBalancingStrategy,
-    ServiceInstance,
-    ServiceType,
-)
+from .common_types import LoadBalancingStrategy, ServiceInstance, ServiceType
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -168,7 +164,9 @@ class ServiceDiscovery:
                 self.instances[service_type].append(instance)
 
         logger.info(
-            f"Initialized {sum(len(instances) for instances in self.instances.values())} service instances"
+            "Initialized"
+            f" {sum(len(instances) for instances in self.instances.values())} service"
+            " instances"
         )
 
     async def _initialize_failover_breakers(self):

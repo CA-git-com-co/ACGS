@@ -25,7 +25,9 @@ from typing import Any, Optional
 from services.shared.constitutional_safety_framework import (
     ConstitutionalSafetyFramework,
 )
-from services.shared.monitoring.intelligent_alerting_system import IntelligentAlertingSystem
+from services.shared.monitoring.intelligent_alerting_system import (
+    IntelligentAlertingSystem,
+)
 from services.shared.security.enhanced_audit_logging import EnhancedAuditLogger
 
 from .policy_builder import AgentConfig, PolicyBuilder

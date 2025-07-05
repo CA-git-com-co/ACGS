@@ -24,7 +24,9 @@ from typing import Any, Optional, Union
 from services.shared.constitutional_safety_framework import (
     ConstitutionalSafetyFramework,
 )
-from services.shared.monitoring.intelligent_alerting_system import IntelligentAlertingSystem
+from services.shared.monitoring.intelligent_alerting_system import (
+    IntelligentAlertingSystem,
+)
 from services.shared.security.enhanced_audit_logging import EnhancedAuditLogger
 
 logger = logging.getLogger(__name__)

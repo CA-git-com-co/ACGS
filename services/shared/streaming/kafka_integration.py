@@ -37,7 +37,9 @@ except ImportError:
     KAFKA_AVAILABLE = False
     logging.warning("Kafka not available, using fallback implementations")
 
-from services.shared.monitoring.intelligent_alerting_system import IntelligentAlertingSystem
+from services.shared.monitoring.intelligent_alerting_system import (
+    IntelligentAlertingSystem,
+)
 from services.shared.security.enhanced_audit_logging import EnhancedAuditLogger
 
 logger = logging.getLogger(__name__)

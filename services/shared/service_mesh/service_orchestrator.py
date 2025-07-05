@@ -312,16 +312,14 @@ class ACGSServiceOrchestrator:
             # Collect service health metrics
             if self.service_stabilizer:
                 system_status = self.service_stabilizer.get_system_status()
-                self.orchestration_metrics.update(
-                    {
-                        "average_response_time_ms": system_status.get(
-                            "average_response_time_ms", 0
-                        ),
-                        "system_availability_percent": system_status.get(
-                            "average_availability_percent", 100
-                        ),
-                    }
-                )
+                self.orchestration_metrics.update({
+                    "average_response_time_ms": system_status.get(
+                        "average_response_time_ms", 0
+                    ),
+                    "system_availability_percent": system_status.get(
+                        "average_availability_percent", 100
+                    ),
+                })
 
             # Collect failover metrics
             if self.failover_manager:
@@ -404,24 +402,20 @@ class ACGSServiceOrchestrator:
         avg_availability = system_status.get("average_availability_percent", 100)
 
         if avg_response_time > self.config.target_response_time_ms:
-            recommendations.extend(
-                [
-                    "Consider scaling up service instances",
-                    "Review database query performance",
-                    "Enable request caching",
-                    "Optimize service communication",
-                ]
-            )
+            recommendations.extend([
+                "Consider scaling up service instances",
+                "Review database query performance",
+                "Enable request caching",
+                "Optimize service communication",
+            ])
 
         if avg_availability < self.config.target_availability_percent:
-            recommendations.extend(
-                [
-                    "Enable additional failover instances",
-                    "Review service dependencies",
-                    "Implement circuit breaker patterns",
-                    "Add health check redundancy",
-                ]
-            )
+            recommendations.extend([
+                "Enable additional failover instances",
+                "Review service dependencies",
+                "Implement circuit breaker patterns",
+                "Add health check redundancy",
+            ])
 
         return recommendations
 

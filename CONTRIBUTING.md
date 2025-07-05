@@ -14,6 +14,7 @@ Thank you for your interest in contributing to the AI Compliance and Governance 
 ## Getting Started
 
 ACGS-2 is a comprehensive AI governance system built with:
+
 - **Backend**: Python FastAPI microservices
 - **Database**: PostgreSQL with Redis caching
 - **Containerization**: Docker & Docker Compose
@@ -32,12 +33,14 @@ ACGS-2 is a comprehensive AI governance system built with:
 ### Quick Start
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/your-org/ACGS-2.git
    cd ACGS-2
    ```
 
 2. **Set up Python environment**
+
    ```bash
    uv venv
    source .venv/bin/activate  # On Windows: .venv\Scripts\activate
@@ -45,6 +48,7 @@ ACGS-2 is a comprehensive AI governance system built with:
    ```
 
 3. **Start development environment**
+
    ```bash
    docker-compose -f infrastructure/docker/docker-compose.development.yml up -d
    ```
@@ -57,12 +61,14 @@ ACGS-2 is a comprehensive AI governance system built with:
 ## Code Style
 
 ### Python
+
 - Follow [PEP 8](https://peps.python.org/pep-0008/)
 - Use [Black](https://black.readthedocs.io/) for formatting
 - Use [isort](https://pycqa.github.io/isort/) for import sorting
 - Use [mypy](https://mypy.readthedocs.io/) for type checking
 
 ### Format code before committing:
+
 ```bash
 black .
 isort .
@@ -70,6 +76,7 @@ mypy services/
 ```
 
 ### Documentation
+
 - Use docstrings for all public functions and classes
 - Follow [Google style](https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings) docstrings
 - Update API documentation when adding new endpoints
@@ -77,6 +84,7 @@ mypy services/
 ## Testing
 
 ### Test Structure
+
 ```
 tests/
 ├── unit/          # Unit tests for individual components
@@ -85,6 +93,7 @@ tests/
 ```
 
 ### Running Tests
+
 ```bash
 # All tests
 pytest
@@ -103,6 +112,7 @@ pytest --cov=services/
 ```
 
 ### Test Requirements
+
 - All new features must include tests
 - Maintain minimum 80% code coverage
 - Integration tests for service interactions
@@ -111,38 +121,43 @@ pytest --cov=services/
 ## Pull Request Process
 
 1. **Create a feature branch**
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
 
 2. **Make your changes**
+
    - Follow coding standards
    - Add tests for new functionality
    - Update documentation
 
 3. **Run pre-commit checks**
+
    ```bash
    # Format code
    black .
    isort .
-   
+
    # Type checking
    mypy services/
-   
+
    # Run tests
    pytest
-   
+
    # Security check
    bandit -r services/
    ```
 
 4. **Commit your changes**
+
    ```bash
    git add .
    git commit -m "feat: add your feature description"
    ```
-   
+
    Use [Conventional Commits](https://www.conventionalcommits.org/):
+
    - `feat:` for new features
    - `fix:` for bug fixes
    - `docs:` for documentation
@@ -150,17 +165,20 @@ pytest --cov=services/
    - `test:` for adding tests
 
 5. **Push and create PR**
+
    ```bash
    git push origin feature/your-feature-name
    ```
-   
+
    Create a pull request with:
+
    - Clear description of changes
    - Link to related issues
    - Screenshots for UI changes
    - Test results
 
 ### PR Review Criteria
+
 - [ ] Code follows style guidelines
 - [ ] Tests pass and coverage maintained
 - [ ] Documentation updated
@@ -171,6 +189,7 @@ pytest --cov=services/
 ## Service-Specific Guidelines
 
 ### Core Services
+
 - **Constitutional AI**: Constitutional compliance validation
 - **Governance Synthesis**: Policy generation and analysis
 - **Authentication**: Security and access control
@@ -179,6 +198,7 @@ pytest --cov=services/
 - **Integrity**: Data and process integrity
 
 ### Shared Components
+
 - Follow dependency injection patterns
 - Use centralized configuration
 - Implement proper logging and monitoring
@@ -204,6 +224,7 @@ pytest --cov=services/
 ## Documentation Updates
 
 When contributing:
+
 - Update API documentation for endpoint changes
 - Update architecture docs for design changes
 - Add deployment notes for infrastructure changes

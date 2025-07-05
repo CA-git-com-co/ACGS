@@ -117,8 +117,9 @@ class FailoverCircuitBreaker:
                 self.backup_instances.append(instance_id)
 
         logger.info(
-            f"Registered {len(self.primary_instances)} primary and "
-            f"{len(self.backup_instances)} backup instances for {self.service_type.value}"
+            f"Registered {len(self.primary_instances)} primary and"
+            f" {len(self.backup_instances)} backup instances for"
+            f" {self.service_type.value}"
         )
 
     async def execute_with_failover(
