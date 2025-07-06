@@ -5,6 +5,7 @@ This module implements a production-grade proof obligation verification pipeline
 that integrates with the Z3 SMT solver to formally verify constitutional policies,
 governance rules, and system properties within the ACGS framework.
 """
+# Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
 import json

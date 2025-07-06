@@ -1,3 +1,6 @@
+# ACGS Docker Compose Configuration
+# Constitutional Hash: cdd01ef066bc6cf2
+
 services:
   ac-service:
     build: ../../services/core/constitutional-ai

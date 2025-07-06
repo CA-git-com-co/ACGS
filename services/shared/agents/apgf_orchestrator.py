@@ -18,6 +18,7 @@ Key Features:
 - Document-based structured communication channels
 - MetaGPT assembly line paradigm implementation
 """
+# Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
 import logging

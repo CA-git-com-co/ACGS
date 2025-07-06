@@ -117,9 +117,9 @@ acgs:
 ```bash
 # .env file
 ACGS_AUTH_SERVICE_URL=http://localhost:8016
-ACGS_POLICY_SERVICE_URL=http://localhost:8002
-ACGS_AUDIT_SERVICE_URL=http://localhost:8004
-ACGS_HITL_SERVICE_URL=http://localhost:8006
+ACGS_POLICY_SERVICE_URL=http://localhost:8005
+ACGS_AUDIT_SERVICE_URL=http://localhost:8002
+ACGS_HITL_SERVICE_URL=http://localhost:8008
 ACGS_AGENT_ID=opencode-adapter
 ACGS_AGENT_SECRET=your-secret
 ```
@@ -304,6 +304,32 @@ Recommended migration timeline:
 - Week 3-4: Migrate non-critical workflows
 - Week 5-6: Migrate critical workflows with monitoring
 - Week 7-8: Decommission Gemini CLI
+
+## Support
+
+For migration assistance:
+1. Check OpenCode Adapter logs: `docker logs opencode-adapter`
+2. Review ACGS service logs for governance issues
+3. Monitor performance metrics dashboard
+
+## Timeline
+
+Recommended migration timeline:
+- Week 1-2: Deploy OpenCode Adapter in parallel
+- Week 3-4: Migrate non-critical workflows
+- Week 5-6: Migrate critical workflows with monitoring
+- Week 7-8: Decommission Gemini CLI
+
+## Related Information
+
+For a broader understanding of the ACGS platform and its components, refer to:
+
+- [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
+- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
+- [ACGE Strategic Implementation Plan - 24 Month Roadmap](../../docs/ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md)
+- [ACGE Testing and Validation Framework](../../docs/ACGE_TESTING_VALIDATION_FRAMEWORK.md)
+- [ACGE Cost Analysis and ROI Projections](../../docs/ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md)
+- [ACGS Comprehensive Task Completion - Final Report](../architecture/ACGS_COMPREHENSIVE_TASK_COMPLETION_FINAL_REPORT.md)
 
 ## Final Checklist
 

@@ -12,6 +12,7 @@ Key Features:
 - Integration with existing ACGS monitoring systems
 - Constitutional AI explanation validation
 """
+# Constitutional Hash: cdd01ef066bc6cf2
 
 import hashlib
 import logging

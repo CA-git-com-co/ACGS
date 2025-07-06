@@ -1,0 +1,243 @@
+# ACGS Constitutional Compliance Alert Rules
+# Constitutional Hash: cdd01ef066bc6cf2
+
+groups:
+  - name: constitutional_compliance
+    rules:
+      - alert: ConstitutionalHashMissing
+        expr: constitutional_hash_coverage < 0.95
+        for: 1m
+        labels:
+          severity: critical
+          component: constitutional_compliance
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Constitutional hash coverage below 95%"
+          description: "Constitutional hash cdd01ef066bc6cf2 coverage is {{ $value }}%, below the required 95% threshold"
+          runbook_url: "https://docs.acgs.soln.ai/runbooks/constitutional-compliance"
+
+      - alert: ConstitutionalViolationDetected
+        expr: constitutional_violations_total > 0
+        for: 30s
+        labels:
+          severity: critical
+          component: constitutional_compliance
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Constitutional violation detected"
+          description: "{{ $value }} constitutional violations detected in the last 5 minutes"
+          runbook_url: "https://docs.acgs.soln.ai/runbooks/constitutional-violations"
+
+      - alert: ConstitutionalComplianceServiceDown
+        expr: up{job="constitutional-ai-service"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          component: constitutional_ai
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Constitutional AI service is down"
+          description: "Constitutional AI service has been down for more than 30 seconds"
+          runbook_url: "https://docs.acgs.soln.ai/runbooks/service-recovery"
+
+  - name: performance_targets
+    rules:
+      - alert: P99LatencyExceeded
+        expr: histogram_quantile(0.99, rate(acgs_request_duration_seconds_bucket[5m])) > 0.005
+        for: 2m
+        labels:
+          severity: warning
+          component: performance
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "P99 latency exceeds 5ms target"
+          description: "P99 latency is {{ $value }}s, exceeding the 5ms constitutional requirement"
+          runbook_url: "https://docs.acgs.soln.ai/runbooks/performance-optimization"
+
+      - alert: CacheHitRateLow
+        expr: acgs_cache_hit_rate < 0.85
+        for: 5m
+        labels:
+          severity: warning
+          component: caching
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Cache hit rate below 85% target"
+          description: "Cache hit rate is {{ $value }}%, below the required 85% threshold"
+          runbook_url: "https://docs.acgs.soln.ai/runbooks/cache-optimization"
+
+      - alert: ThroughputBelowTarget
+        expr: rate(acgs_requests_total[5m]) < 100
+        for: 3m
+        labels:
+          severity: warning
+          component: performance
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Request throughput below 100 RPS target"
+          description: "Current throughput is {{ $value }} RPS, below the required 100 RPS"
+          runbook_url: "https://docs.acgs.soln.ai/runbooks/throughput-optimization"
+
+  - name: service_health
+    rules:
+      - alert: ACGSServiceDown
+        expr: up{job=~"acgs-.*"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: "{{ $labels.job }}"
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "ACGS service {{ $labels.job }} is down"
+          description: "Service {{ $labels.job }} has been down for more than 1 minute"
+          runbook_url: "https://docs.acgs.soln.ai/runbooks/service-recovery"
+
+      - alert: DatabaseConnectionFailure
+        expr: acgs_database_connections_failed_total > 0
+        for: 30s
+        labels:
+          severity: critical
+          component: database
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Database connection failures detected"
+          description: "{{ $value }} database connection failures in the last 5 minutes"
+          runbook_url: "https://docs.acgs.soln.ai/runbooks/database-recovery"
+
+      - alert: RedisConnectionFailure
+        expr: acgs_redis_connections_failed_total > 0
+        for: 30s
+        labels:
+          severity: warning
+          component: redis
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Redis connection failures detected"
+          description: "{{ $value }} Redis connection failures in the last 5 minutes"
+          runbook_url: "https://docs.acgs.soln.ai/runbooks/redis-recovery"
+
+  - name: hitl_oversight
+    rules:
+      - alert: HITLDecisionLatencyHigh
+        expr: histogram_quantile(0.99, rate(acgs_hitl_decision_duration_seconds_bucket[5m])) > 0.005
+        for: 1m
+        labels:
+          severity: warning
+          component: hitl
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "HITL decision latency exceeds 5ms target"
+          description: "HITL P99 decision latency is {{ $value }}s, exceeding constitutional requirement"
+          runbook_url: "https://docs.acgs.soln.ai/runbooks/hitl-optimization"
+
+      - alert: HITLQueueBacklog
+        expr: acgs_hitl_queue_size > 100
+        for: 2m
+        labels:
+          severity: warning
+          component: hitl
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "HITL queue backlog detected"
+          description: "HITL queue has {{ $value }} pending decisions, indicating potential bottleneck"
+          runbook_url: "https://docs.acgs.soln.ai/runbooks/hitl-scaling"
+
+      - alert: HITLServiceUnavailable
+        expr: up{job="hitl-service"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          component: hitl
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "HITL service is unavailable"
+          description: "Human-in-the-loop service has been down for more than 30 seconds"
+          runbook_url: "https://docs.acgs.soln.ai/runbooks/hitl-recovery"
+
+  - name: security_monitoring
+    rules:
+      - alert: UnauthorizedAccessAttempt
+        expr: increase(acgs_auth_failures_total[5m]) > 10
+        for: 1m
+        labels:
+          severity: warning
+          component: security
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Multiple unauthorized access attempts detected"
+          description: "{{ $value }} authentication failures in the last 5 minutes"
+          runbook_url: "https://docs.acgs.soln.ai/runbooks/security-incident"
+
+      - alert: ConstitutionalHashTampering
+        expr: acgs_invalid_constitutional_hash_total > 0
+        for: 0s
+        labels:
+          severity: critical
+          component: security
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Constitutional hash tampering detected"
+          description: "Invalid constitutional hash detected - potential security breach"
+          runbook_url: "https://docs.acgs.soln.ai/runbooks/security-breach"
+
+      - alert: AuditLogIntegrityFailure
+        expr: acgs_audit_log_integrity_failures_total > 0
+        for: 0s
+        labels:
+          severity: critical
+          component: audit
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Audit log integrity failure detected"
+          description: "Audit log integrity check failed - potential tampering"
+          runbook_url: "https://docs.acgs.soln.ai/runbooks/audit-integrity"
+
+  - name: operational_excellence
+    rules:
+      - alert: ErrorRateHigh
+        expr: rate(acgs_errors_total[5m]) / rate(acgs_requests_total[5m]) > 0.01
+        for: 2m
+        labels:
+          severity: warning
+          component: reliability
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Error rate exceeds 1% threshold"
+          description: "Current error rate is {{ $value }}%, above the 1% SLA threshold"
+          runbook_url: "https://docs.acgs.soln.ai/runbooks/error-investigation"
+
+      - alert: MemoryUsageHigh
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes > 0.85
+        for: 5m
+        labels:
+          severity: warning
+          component: resources
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Memory usage exceeds 85%"
+          description: "Memory usage is {{ $value }}%, approaching critical levels"
+          runbook_url: "https://docs.acgs.soln.ai/runbooks/resource-scaling"
+
+      - alert: DiskSpaceLow
+        expr: (node_filesystem_size_bytes - node_filesystem_free_bytes) / node_filesystem_size_bytes > 0.80
+        for: 5m
+        labels:
+          severity: warning
+          component: storage
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Disk space usage exceeds 80%"
+          description: "Disk usage is {{ $value }}% on {{ $labels.mountpoint }}"
+          runbook_url: "https://docs.acgs.soln.ai/runbooks/disk-cleanup"
+
+      - alert: CPUUsageHigh
+        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+          component: resources
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "CPU usage exceeds 80%"
+          description: "CPU usage is {{ $value }}% on {{ $labels.instance }}"
+          runbook_url: "https://docs.acgs.soln.ai/runbooks/cpu-optimization"

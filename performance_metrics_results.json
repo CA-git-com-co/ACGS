@@ -1,0 +1,135 @@
+{
+  "test_start": "2025-07-06T15:20:37.610391+00:00",
+  "test_end": "2025-07-06T15:20:58.926516+00:00",
+  "performance_metrics": {
+    "decision_latency": {
+      "total_requests": 200,
+      "successful_requests": 0,
+      "failed_requests": 200,
+      "success_rate": 0.0,
+      "error_rate": 1.0,
+      "latency_stats": {
+        "min_ms": 0.689321,
+        "max_ms": 45.097015,
+        "mean_ms": 1.152417955,
+        "median_ms": 0.840731,
+        "p50_ms": 0.841291,
+        "p90_ms": 1.249312,
+        "p95_ms": 1.476112,
+        "p99_ms": 3.492305,
+        "p999_ms": 45.097015,
+        "std_dev_ms": 3.1373060880487884,
+        "count": 200
+      }
+    },
+    "throughput": {
+      "duration_seconds": 20.00157618522644,
+      "total_requests": 3460,
+      "successful_requests": 3460,
+      "requests_per_second": 172.98636707219225,
+      "successful_rps": 172.98636707219225,
+      "success_rate": 1.0
+    },
+    "cache_performance": {
+      "cache_hit_rate": 1.0,
+      "cache_miss_rate": 0.0,
+      "write_latency_ms": {
+        "mean": 0.24584127124398947,
+        "p95": 0.16671099001541734
+      },
+      "read_latency_ms": {
+        "mean": 0.07310279412195086,
+        "p95": 0.12135098222643137
+      },
+      "redis_info": {
+        "used_memory_mb": 1.0862274169921875,
+        "connected_clients": 1,
+        "total_commands_processed": 49115
+      }
+    }
+  },
+  "system_metrics": {
+    "cpu": {
+      "usage_percent": 37.0,
+      "count": 16,
+      "load_average": [
+        7.17138671875,
+        5.76806640625,
+        5.513671875
+      ]
+    },
+    "memory": {
+      "total_gb": 125.5402603149414,
+      "available_gb": 36.33292007446289,
+      "used_gb": 86.52862167358398,
+      "usage_percent": 71.1
+    },
+    "disk": {
+      "total_gb": 876.1024169921875,
+      "free_gb": 841.4708251953125,
+      "used_gb": 34.631591796875,
+      "usage_percent": 3.9529159063127914
+    },
+    "network": {
+      "bytes_sent": 34375785200,
+      "bytes_recv": 48552289222,
+      "packets_sent": 104017459,
+      "packets_recv": 112194487
+    }
+  },
+  "service_metrics": {
+    "hitl_service": {
+      "healthy": true,
+      "response_time_ms": 1.4670019736513495,
+      "status_code": 200,
+      "response_data": {
+        "status": "healthy",
+        "timestamp": "1751815258.9203317",
+        "service": "agent-hitl-service",
+        "version": "1.0.0",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    "ac_service": {
+      "healthy": true,
+      "response_time_ms": 1.3298720004968345,
+      "status_code": 200,
+      "response_data": {
+        "status": "healthy",
+        "service": "ac",
+        "timestamp": "2025-07-06T15:20:58.921913",
+        "constitutional_hash": "cdd01ef066bc6cf2",
+        "request_count": 5
+      }
+    },
+    "auth_service": {
+      "healthy": true,
+      "response_time_ms": 4.125926003325731,
+      "status_code": 200,
+      "response_data": {
+        "status": "healthy",
+        "service": "auth_service",
+        "version": "3.1.0",
+        "timestamp": "2025-07-06T15:20:58.925589+00:00",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    }
+  },
+  "targets_met": {
+    "decision_latency_p99": true,
+    "decision_latency_p95": true,
+    "decision_latency_mean": true,
+    "throughput": true,
+    "cache_hit_rate": true,
+    "cpu_usage": true,
+    "memory_usage": true,
+    "error_rate": false
+  },
+  "summary": {
+    "targets_passed": 7,
+    "total_targets": 8,
+    "targets_pass_rate": 0.875,
+    "critical_p99_latency_met": true,
+    "performance_grade": "B"
+  }
+}

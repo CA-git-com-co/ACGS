@@ -14,6 +14,7 @@ Key Features:
 - Integration with existing NATS for lightweight events
 - Graceful degradation and circuit breaker patterns
 """
+# Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
 import json

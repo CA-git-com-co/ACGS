@@ -1,5 +1,6 @@
 # ACGS-PGP Fixed Docker Compose Configuration
 # Addresses cgroup v2 compatibility issues and environment variable loading
+# Constitutional Hash: cdd01ef066bc6cf2
 version: '3.8'
 
 services:

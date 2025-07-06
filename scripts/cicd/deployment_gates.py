@@ -5,6 +5,7 @@ ACGS Enterprise Deployment Gates
 This script implements automated deployment gates that prevent deployments
 when quality thresholds are not met, including the 90% test coverage requirement.
 """
+# Constitutional Hash: cdd01ef066bc6cf2
 
 import os
 import sys

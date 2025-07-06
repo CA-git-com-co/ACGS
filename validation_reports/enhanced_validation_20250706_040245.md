@@ -7,13 +7,13 @@
 
 ## Summary
 
-| Metric | Value |
-|--------|-------|
-| Total Files | 116 |
-| Passed Files | 81 |
-| Failed Files | 35 |
+| Metric       | Value |
+| ------------ | ----- |
+| Total Files  | 116   |
+| Passed Files | 81    |
+| Failed Files | 35    |
 | Success Rate | 69.8% |
-| Total Issues | 71 |
+| Total Issues | 71    |
 
 ## Issues by Severity
 
@@ -23,16 +23,16 @@
 - **docs/TASK_COMPLETION_SUMMARY.md**: Constitutional hash found but not in correct format
 - **docs/constitutional_compliance_validation_framework.md**: Constitutional hash found but not in correct format
 - **docs/CODE_QUALITY_IMPLEMENTATION_SUMMARY.md**: Constitutional hash found but not in correct format
-- **docs/QUARTERLY_DOCUMENTATION_AUDIT_PROCEDURES.md** (line 194): Broken link to '.*\.md' (text: '.*\')
+- **docs/QUARTERLY_DOCUMENTATION_AUDIT_PROCEDURES.md** (line 194): Broken link to '._\.md' (text: '._\')
 - **docs/PRODUCTION_READINESS_CHECKLIST.md**: Constitutional hash found but not in correct format
 - **docs/REMAINING_TASKS_COMPLETION_SUMMARY.md**: Constitutional hash found but not in correct format
-- **docs/DOCUMENTATION_QUALITY_METRICS.md** (line 63): Broken link to '.*\.md[^' (text: '.*\')
-- **docs/DOCUMENTATION_QUALITY_METRICS.md** (line 67): Broken link to '.*\.md[^' (text: '.*\')
+- **docs/DOCUMENTATION_QUALITY_METRICS.md** (line 63): Broken link to '._\.md[^' (text: '._\')
+- **docs/DOCUMENTATION_QUALITY_METRICS.md** (line 67): Broken link to '._\.md[^' (text: '._\')
 - **docs/prometheus_metrics_validation_report.md**: Constitutional hash found but not in correct format
 - **docs/gap_analysis_report.md**: Constitutional hash found but not in correct format
 - **docs/deployment/ACGS_PGP_PRODUCTION_DEPLOYMENT_EXECUTIVE_SUMMARY.md**: Constitutional hash found but not in correct format
 - **docs/deployment/GEMINI_CLI_DEPLOYMENT_SUCCESS.md**: Constitutional hash found but not in correct format
-- **docs/training/validation_tools_cheatsheet.md** (line 173): Broken link to '.*\.md[^' (text: '.*\')
+- **docs/training/validation_tools_cheatsheet.md** (line 173): Broken link to '._\.md[^' (text: '._\')
 - **docs/architecture/ACGE_PHASE4_CROSS_DOMAIN_PRODUCTION.md**: Constitutional hash found but not in correct format
 - **docs/training/ACGS_DOCUMENTATION_TEAM_TRAINING_GUIDE.md** (line 380): Broken link to 'training/validation_tools_cheatsheet.md' (text: 'Quality Metrics Dashboard')
 - **docs/architecture/ACGS_GITOPS_TASK_COMPLETION_REPORT.md**: Constitutional hash found but not in correct format

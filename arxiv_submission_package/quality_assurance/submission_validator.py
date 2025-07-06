@@ -55,8 +55,33 @@ class SubmissionValidator:
 
     def __init__(self, submission_path: str):
         self.submission_path = Path(submission_path)
+        if not self.submission_path.exists():
+            raise FileNotFoundError(f"Submission path does not exist: {submission_path}")
         self.results: list[ValidationResult] = []
         self.recommendations: list[str] = []
+
+    def _safe_read_text_file(self, file_path: Path) -> str:
+        """Safely read a text file with encoding error handling."""
+        try:
+            # First try UTF-8
+            with open(file_path, 'r', encoding='utf-8') as f:
+                return f.read()
+        except UnicodeDecodeError:
+            try:
+                # Try common encodings
+                for encoding in ['latin-1', 'cp1252', 'iso-8859-1']:
+                    try:
+                        with open(file_path, 'r', encoding=encoding) as f:
+                            return f.read()
+                    except UnicodeDecodeError:
+                        continue
+                # Last resort: read with error replacement
+                with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
+                    return f.read()
+            except Exception:
+                # Final fallback: read with error replacement
+                with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
+                    return f.read()
 
     def validate_submission(self) -> SubmissionReport:
         """Run comprehensive validation on academic submission."""
@@ -126,8 +151,7 @@ class SubmissionValidator:
 
         try:
             # Check for common LaTeX issues
-            with open(main_tex, encoding="utf-8") as f:
-                content = f.read()
+            content = self._safe_read_text_file(main_tex)
 
             issues = []
 
@@ -149,11 +173,17 @@ class SubmissionValidator:
                 issues.append("Citations found but no bibliography file")
 
             if issues:
+                # Create specific message based on the first issue
+                if len(issues) == 1:
+                    message = issues[0]
+                else:
+                    message = f"LaTeX syntax issues detected: {', '.join(issues)}"
+
                 self.results.append(
                     ValidationResult(
                         check_name="LaTeX Syntax",
                         status="WARNING",
-                        message="LaTeX syntax issues detected",
+                        message=message,
                         details={"issues": issues},
                     )
                 )
@@ -197,8 +227,7 @@ class SubmissionValidator:
             issues = []
 
             for bib_file in bib_files:
-                with open(bib_file, encoding="utf-8") as f:
-                    content = f.read()
+                content = self._safe_read_text_file(bib_file)
 
                 # Count bibliography entries
                 entries = re.findall(r"@\w+\{[^,]+,", content)
@@ -208,14 +237,13 @@ class SubmissionValidator:
                 if "url = {}" in content or "doi = {}" in content:
                     issues.append("Empty URL or DOI fields found")
 
-                # Check for missing required fields
-                incomplete_entries = re.findall(
-                    r"@article\{[^}]+\}[^@]*(?!.*author.*=).*?(?=@|\Z)",
-                    content,
-                    re.DOTALL,
-                )
-                if incomplete_entries:
-                    issues.append("Articles missing author field")
+                # Check for missing required fields in articles
+                # Find all @article entries
+                article_entries = re.findall(r"@article\{[^@]*?(?=@|\Z)", content, re.DOTALL)
+                for entry in article_entries:
+                    if "author" not in entry.lower():
+                        issues.append("Articles missing author field")
+                        break  # Only report once
 
             details = {
                 "total_entries": total_entries,
@@ -223,11 +251,17 @@ class SubmissionValidator:
             }
 
             if issues:
+                # Create specific message based on issues
+                if len(issues) == 1:
+                    message = f"Bibliography issues detected: {issues[0]}"
+                else:
+                    message = f"Bibliography issues detected: {', '.join(issues)}"
+
                 self.results.append(
                     ValidationResult(
                         check_name="Bibliography",
                         status="WARNING",
-                        message="Bibliography issues detected",
+                        message=message,
                         details={**details, "issues": issues},
                     )
                 )
@@ -269,7 +303,19 @@ class SubmissionValidator:
         for ext in ["*.png", "*.jpg", "*.jpeg", "*.pdf", "*.eps"]:
             figure_files.extend(list(self.submission_path.glob(ext)))
 
-        if not figure_files:
+        # Check if there are figure references in main.tex first
+        main_tex = self.submission_path / "main.tex"
+        figure_refs = []
+        if main_tex.exists():
+            try:
+                content = self._safe_read_text_file(main_tex)
+                figure_refs = re.findall(
+                    r"\\includegraphics(?:\[[^\]]*\])?\{([^}]+)\}", content
+                )
+            except Exception:
+                pass
+
+        if not figure_files and not figure_refs:
             self.results.append(
                 ValidationResult(
                     check_name="Figures",
@@ -278,54 +324,65 @@ class SubmissionValidator:
                 )
             )
             return
+        elif not figure_files and figure_refs:
+            # Referenced figures but no files - this is a FAIL
+            self.results.append(
+                ValidationResult(
+                    check_name="Figures",
+                    status="FAIL",
+                    message="Missing referenced figures",
+                    details={
+                        "total_figures": 0,
+                        "referenced_figures": len(figure_refs),
+                        "figure_files": [],
+                        "missing_figures": figure_refs,
+                    },
+                )
+            )
+            self.recommendations.append(
+                "Add missing figure files or fix references"
+            )
+            return
 
         try:
-            main_tex = self.submission_path / "main.tex"
-            if main_tex.exists():
-                with open(main_tex, encoding="utf-8") as f:
-                    content = f.read()
+            # Figure references already extracted above
+            missing_figures = []
 
-                # Check figure references
-                figure_refs = re.findall(
-                    r"\\includegraphics(?:\[[^\]]*\])?\{([^}]+)\}", content
+            for ref in figure_refs:
+                # Remove path prefixes and check if file exists
+                filename = Path(ref).name
+                if not any(filename in str(fig_file) for fig_file in figure_files):
+                    missing_figures.append(ref)
+
+            details = {
+                "total_figures": len(figure_files),
+                "referenced_figures": len(figure_refs),
+                "figure_files": [str(f) for f in figure_files],
+            }
+
+            if missing_figures:
+                self.results.append(
+                    ValidationResult(
+                        check_name="Figures",
+                        status="FAIL",
+                        message="Missing referenced figures",
+                        details={**details, "missing_figures": missing_figures},
+                    )
                 )
-                missing_figures = []
-
-                for ref in figure_refs:
-                    # Remove path prefixes and check if file exists
-                    filename = Path(ref).name
-                    if not any(filename in str(fig_file) for fig_file in figure_files):
-                        missing_figures.append(ref)
-
-                details = {
-                    "total_figures": len(figure_files),
-                    "referenced_figures": len(figure_refs),
-                    "figure_files": [str(f) for f in figure_files],
-                }
-
-                if missing_figures:
-                    self.results.append(
-                        ValidationResult(
-                            check_name="Figures",
-                            status="FAIL",
-                            message="Missing referenced figures",
-                            details={**details, "missing_figures": missing_figures},
-                        )
+                self.recommendations.append(
+                    "Add missing figure files or fix references"
+                )
+            else:
+                self.results.append(
+                    ValidationResult(
+                        check_name="Figures",
+                        status="PASS",
+                        message=(
+                            f"Figure validation passed ({len(figure_files)} files)"
+                        ),
+                        details=details,
                     )
-                    self.recommendations.append(
-                        "Add missing figure files or fix references"
-                    )
-                else:
-                    self.results.append(
-                        ValidationResult(
-                            check_name="Figures",
-                            status="PASS",
-                            message=(
-                                f"Figure validation passed ({len(figure_files)} files)"
-                            ),
-                            details=details,
-                        )
-                    )
+                )
 
         except Exception as e:
             self.results.append(
@@ -364,8 +421,11 @@ class SubmissionValidator:
         # Check main.tex structure
         main_tex = self.submission_path / "main.tex"
         if main_tex.exists():
-            with open(main_tex, encoding="utf-8") as f:
-                content = f.read()
+            try:
+                content = self._safe_read_text_file(main_tex)
+            except Exception as e:
+                compliance_issues.append(f"Error reading main.tex: {e}")
+                content = ""
 
             # Check for required elements
             if not re.search(r"\\title\{", content):
@@ -383,11 +443,17 @@ class SubmissionValidator:
         }
 
         if compliance_issues:
+            # Create specific message based on issues
+            if len(compliance_issues) == 1:
+                message = f"arXiv compliance issues detected: {compliance_issues[0]}"
+            else:
+                message = f"arXiv compliance issues detected: {', '.join(compliance_issues)}"
+
             self.results.append(
                 ValidationResult(
                     check_name="arXiv Compliance",
                     status="FAIL",
-                    message="arXiv compliance issues detected",
+                    message=message,
                     details={**details, "issues": compliance_issues},
                 )
             )
@@ -411,8 +477,7 @@ class SubmissionValidator:
             return
 
         try:
-            with open(main_tex, encoding="utf-8") as f:
-                content = f.read()
+            content = self._safe_read_text_file(main_tex)
 
             quality_issues = []
 
@@ -453,11 +518,17 @@ class SubmissionValidator:
             }
 
             if quality_issues:
+                # Create specific message based on issues
+                if len(quality_issues) == 1:
+                    message = f"Content quality issues detected: {quality_issues[0]}"
+                else:
+                    message = f"Content quality issues detected: {', '.join(quality_issues)}"
+
                 self.results.append(
                     ValidationResult(
                         check_name="Content Quality",
                         status="WARNING",
-                        message="Content quality issues detected",
+                        message=message,
                         details={**details, "issues": quality_issues},
                     )
                 )
@@ -490,8 +561,7 @@ class SubmissionValidator:
             return
 
         try:
-            with open(main_tex, encoding="utf-8") as f:
-                content = f.read()
+            content = self._safe_read_text_file(main_tex)
 
             accessibility_issues = []
 
@@ -577,8 +647,10 @@ class SubmissionValidator:
         # Check for data availability mentions
         main_tex = self.submission_path / "main.tex"
         if main_tex.exists():
-            with open(main_tex, encoding="utf-8") as f:
-                content = f.read()
+            try:
+                content = self._safe_read_text_file(main_tex)
+            except Exception:
+                content = ""
 
             # Check for reproducibility keywords
             repro_keywords = [
@@ -675,8 +747,8 @@ def generate_validation_report(
 
 **Submission**: {report.submission_path}
 **Validation Date**: {report.timestamp}
-**Overall Status**: {report.overall_status}
-**Compliance Score**: {report.compliance_score:.1f}%
+Overall Status: {report.overall_status}
+Compliance Score: {report.compliance_score:.1f}%
 
 ## Validation Results
 

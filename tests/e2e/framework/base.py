@@ -4,6 +4,7 @@ Base E2E Test Classes
 Provides base classes and utilities for ACGS end-to-end testing with
 standardized setup, teardown, and assertion patterns.
 """
+# Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
 import time

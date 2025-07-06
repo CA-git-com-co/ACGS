@@ -1,0 +1,73 @@
+# ACGS Cross-Reference Maintenance Configuration
+# Constitutional Hash: cdd01ef066bc6cf2
+
+# Patterns to track for cross-references
+link_patterns:
+  markdown_link: '\[([^\]]+)\]\(([^)]+)\)'
+  reference_link: '\[([^\]]+)\]:\s*([^\s]+)'
+  relative_path: '(?:\.{1,2}/)+[^)\s]+'
+  file_reference: '(?:src/|services/|docs/|tools/|tests/)[^)\s\'"]+' 
+  code_import: '(?:import|from)\s+["\']([^"\']+)["\']'
+  include_directive: '!\[.*?\]\(([^)]+)\)'
+  yaml_reference: '(?:file|path|src):\s*["\']?([^"\'>\s]+)["\']?'
+  config_path: '(?:config|template|schema).*?["\']([^"\']+)["\']'
+
+# File extensions to scan for cross-references
+scannable_extensions:
+  - '.md'
+  - '.py' 
+  - '.js'
+  - '.ts'
+  - '.yaml'
+  - '.yml'
+  - '.json'
+  - '.txt'
+  - '.rst'
+  - '.sh'
+  - '.dockerfile'
+  - '.tf'
+  - '.toml'
+
+# Directories to exclude from scanning
+exclude_patterns:
+  - 'node_modules/**'
+  - '__pycache__/**'
+  - '.git/**'
+  - '.*/**'
+  - 'build/**'
+  - 'dist/**'
+  - 'target/**'
+  - '*.egg-info/**'
+
+# Automatic update configuration
+auto_update:
+  enabled: true
+  git_hooks: true
+  commit_updates: true
+  commit_message_template: |
+    docs: Auto-update cross-references for file moves
+    
+    Constitutional Hash: {constitutional_hash}
+    
+    Updated references:
+    {updates}
+
+# Validation configuration
+validation:
+  check_extensions: ['.md', '.py', '.js', '.ts', '.yaml', '.yml']
+  report_orphaned_files: true
+  report_unused_assets: true
+  max_broken_refs_per_file: 10
+
+# Performance configuration
+performance:
+  max_workers: 8
+  cache_enabled: true
+  cache_ttl_hours: 24
+  scan_timeout_seconds: 300
+
+# Constitutional compliance
+constitutional:
+  hash: "cdd01ef066bc6cf2"
+  require_hash_in_commits: true
+  validate_constitutional_compliance: true

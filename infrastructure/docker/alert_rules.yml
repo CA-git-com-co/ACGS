@@ -1,0 +1,105 @@
+# ACGS Alert Rules Configuration
+# Constitutional Hash: cdd01ef066bc6cf2
+
+groups:
+  - name: constitutional_compliance
+    rules:
+      - alert: ConstitutionalHashMismatch
+        expr: constitutional_hash != "cdd01ef066bc6cf2"
+        for: 0m
+        labels:
+          severity: critical
+          service: constitutional-ai
+          constitutional_hash: "cdd01ef066bc6cf2"
+        annotations:
+          summary: "Constitutional hash mismatch detected"
+          description: "Service {{ $labels.instance }} has constitutional hash mismatch"
+
+      - alert: ConstitutionalComplianceViolation
+        expr: constitutional_compliance_score < 0.95
+        for: 1m
+        labels:
+          severity: high
+          service: constitutional-ai
+          constitutional_hash: "cdd01ef066bc6cf2"
+        annotations:
+          summary: "Constitutional compliance violation"
+          description: "Service {{ $labels.instance }} compliance score {{ $value }} below 95%"
+
+  - name: performance_targets
+    rules:
+      - alert: HighLatency
+        expr: histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m])) > 0.005
+        for: 2m
+        labels:
+          severity: warning
+          constitutional_hash: "cdd01ef066bc6cf2"
+        annotations:
+          summary: "P99 latency above 5ms target"
+          description: "Service {{ $labels.instance }} P99 latency {{ $value }}s exceeds 5ms target"
+
+      - alert: LowCacheHitRate
+        expr: cache_hit_rate < 0.85
+        for: 5m
+        labels:
+          severity: warning
+          constitutional_hash: "cdd01ef066bc6cf2"
+        annotations:
+          summary: "Cache hit rate below 85% target"
+          description: "Service {{ $labels.instance }} cache hit rate {{ $value }} below 85%"
+
+      - alert: LowThroughput
+        expr: rate(http_requests_total[5m]) < 100
+        for: 5m
+        labels:
+          severity: warning
+          constitutional_hash: "cdd01ef066bc6cf2"
+        annotations:
+          summary: "Throughput below 100 RPS target"
+          description: "Service {{ $labels.instance }} throughput {{ $value }} RPS below target"
+
+  - name: service_health
+    rules:
+      - alert: ServiceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+          constitutional_hash: "cdd01ef066bc6cf2"
+        annotations:
+          summary: "Service is down"
+          description: "Service {{ $labels.instance }} has been down for more than 1 minute"
+
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.01
+        for: 2m
+        labels:
+          severity: high
+          constitutional_hash: "cdd01ef066bc6cf2"
+        annotations:
+          summary: "High error rate detected"
+          description: "Service {{ $labels.instance }} error rate {{ $value }} above 1%"
+
+  - name: hitl_oversight
+    rules:
+      - alert: HITLDecisionLatency
+        expr: hitl_decision_latency_seconds > 5
+        for: 1m
+        labels:
+          severity: high
+          service: constitutional-ai
+          constitutional_hash: "cdd01ef066bc6cf2"
+        annotations:
+          summary: "HITL decision latency above target"
+          description: "HITL decision latency {{ $value }}s exceeds 5s target"
+
+      - alert: HITLQueueBacklog
+        expr: hitl_queue_size > 100
+        for: 5m
+        labels:
+          severity: warning
+          service: constitutional-ai
+          constitutional_hash: "cdd01ef066bc6cf2"
+        annotations:
+          summary: "HITL queue backlog detected"
+          description: "HITL queue size {{ $value }} exceeds 100 pending decisions"

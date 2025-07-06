@@ -431,56 +431,62 @@ async def get_symbol(
 ```python
 # Redis integration with ACGS Redis (Port 6389)
 import redis.asyncio as redis
-import json
-import hashlib
 from typing import Any, Optional
 import pickle
+import os
 
 class ACGSCacheClient:
     def __init__(self):
-        # ACGS Redis configuration
+        # ACGS Redis configuration with updated connection settings
         self.redis_client = redis.Redis(
             host=os.getenv('REDIS_HOST', 'localhost'),
             port=int(os.getenv('REDIS_PORT', '6389')),
             db=int(os.getenv('REDIS_DB', '3')),
             password=os.getenv('REDIS_PASSWORD'),
-            decode_responses=False,  # Handle binary data
-            socket_connect_timeout=5,
-            socket_timeout=5,
+            decode_responses=False,
+            socket_connect_timeout=3,
+            socket_timeout=3,
+            health_check_interval=30,
             retry_on_timeout=True,
-            max_connections=20
+            max_connections=50
         )
 
-        # Cache key prefixes for organization
+        # Updated cache key prefixes with namespacing
         self.key_prefixes = {
             "symbol": "acgs:code:symbol:",
             "search": "acgs:code:search:",
-            "dependencies": "acgs:code:deps:",
+            "deps": "acgs:code:deps:",
             "context": "acgs:code:context:",
-            "file": "acgs:code:file:"
+            "file": "acgs:code:file:",
+            "analysis": "acgs:code:analysis:"
         }
 
-        # Default TTL values (seconds)
+        # Optimized TTL values based on usage patterns
         self.ttl_config = {
-            "symbol": 3600,      # 1 hour
-            "search": 300,       # 5 minutes
-            "dependencies": 1800, # 30 minutes
+            "symbol": 7200,      # 2 hours
+            "search": 600,       # 10 minutes
+            "deps": 3600,        # 1 hour
             "context": 1800,     # 30 minutes
-            "file": 3600         # 1 hour
+            "file": 7200,        # 2 hours
+            "analysis": 1800     # 30 minutes
         }
 
     async def get(self, key_type: str, key: str) -> Optional[Any]:
-        """Get cached value with automatic deserialization"""
+        """Get cached value with improved error handling"""
         try:
-            cache_key = self.key_prefixes[key_type] + key
+            cache_key = f"{self.key_prefixes[key_type]}{key}"
             cached_data = await self.redis_client.get(cache_key)
 
             if cached_data:
                 return pickle.loads(cached_data)
             return None
 
-        except Exception as e:
-            print(f"Cache get error: {e}")
+        except redis.RedisError as e:
+            print(f"Redis get error: {e}")
+            return None
+        except pickle.UnpicklingError as e:
+            print(f"Deserialization error: {e}")
+            await self.redis_client.delete(cache_key)
             return None
 
     async def set(
@@ -490,113 +496,76 @@ class ACGSCacheClient:
         value: Any,
         ttl: Optional[int] = None
     ) -> bool:
-        """Set cached value with automatic serialization"""
+        """Set cached value with improved serialization"""
         try:
-            cache_key = self.key_prefixes[key_type] + key
-            serialized_value = pickle.dumps(value)
-
+            cache_key = f"{self.key_prefixes[key_type]}{key}"
             ttl = ttl or self.ttl_config.get(key_type, 3600)
+            
+            serialized_value = pickle.dumps(value)
+            return await self.redis_client.set(
+                cache_key,
+                serialized_value,
+                ex=ttl
+            )
 
-            await self.redis_client.setex(cache_key, ttl, serialized_value)
-            return True
-
-        except Exception as e:
+        except (redis.RedisError, pickle.PicklingError) as e:
             print(f"Cache set error: {e}")
             return False
 
     async def delete(self, key_type: str, key: str) -> bool:
         """Delete cached value"""
         try:
-            cache_key = self.key_prefixes[key_type] + key
-            result = await self.redis_client.delete(cache_key)
-            return result > 0
-
-        except Exception as e:
+            cache_key = f"{self.key_prefixes[key_type]}{key}"
+            return bool(await self.redis_client.delete(cache_key))
+        except redis.RedisError as e:
             print(f"Cache delete error: {e}")
             return False
-
-    async def invalidate_pattern(self, key_type: str, pattern: str) -> int:
-        """Invalidate multiple keys matching pattern"""
-        try:
-            cache_pattern = self.key_prefixes[key_type] + pattern
-            keys = await self.redis_client.keys(cache_pattern)
-
-            if keys:
-                return await self.redis_client.delete(*keys)
-            return 0
-
-        except Exception as e:
-            print(f"Cache invalidation error: {e}")
-            return 0
 
     async def health_check(self) -> bool:
         """Check Redis connectivity"""
         try:
-            await self.redis_client.ping()
-            return True
-        except Exception:
+            return await self.redis_client.ping()
+        except redis.RedisError:
             return False
 
-    def generate_search_key(self, query: str, filters: Dict) -> str:
-        """Generate consistent cache key for search queries"""
-        # Create deterministic key from query and filters
-        key_data = {
-            "query": query.lower().strip(),
-            "filters": sorted(filters.items())
-        }
+    async def close(self):
+        """Close Redis connections"""
+        await self.redis_client.close()
+```
 
-        key_string = json.dumps(key_data, sort_keys=True)
-        return hashlib.md5(key_string.encode()).hexdigest()
+### Usage Example
 
-# Usage example with caching decorator
-from functools import wraps
+```python
+# Example usage with FastAPI
+from fastapi import FastAPI, Depends
+from typing import Dict
 
+app = FastAPI()
 cache_client = ACGSCacheClient()
 
-def cached_search(cache_type: str, ttl: int = None):
-    """Decorator for caching search results"""
-    def decorator(func):
-        @wraps(func)
-        async def wrapper(*args, **kwargs):
-            # Generate cache key from function arguments
-            cache_key = cache_client.generate_search_key(
-                query=kwargs.get('query', ''),
-                filters={k: v for k, v in kwargs.items() if k != 'query'}
-            )
+@app.get("/api/v1/cached-symbols/{symbol_id}")
+async def get_cached_symbol(
+    symbol_id: str,
+    current_user: Dict = Depends(get_current_user)
+):
+    """Get symbol with caching integration"""
+    # Try cache first
+    cached_symbol = await cache_client.get("symbol", symbol_id)
+    if cached_symbol:
+        return {
+            "symbol": cached_symbol,
+            "cache_hit": True,
+            "constitutional_hash": "cdd01ef066bc6cf2"
+        }
 
-            # Try to get from cache
-            cached_result = await cache_client.get(cache_type, cache_key)
-            if cached_result:
-                cached_result['cache_hit'] = True
-                return cached_result
-
-            # Execute function and cache result
-            result = await func(*args, **kwargs)
-            result['cache_hit'] = False
-
-            await cache_client.set(cache_type, cache_key, result, ttl)
-            return result
-
-        return wrapper
-    return decorator
-
-# Example cached endpoint
-@cached_search("search", ttl=300)  # Cache for 5 minutes
-async def perform_semantic_search(
-    query: str,
-    limit: int = 10,
-    language: Optional[str] = None,
-    symbol_type: Optional[str] = None
-) -> Dict[str, Any]:
-    """Cached semantic search implementation"""
-    # Actual search logic here
-    results = await execute_vector_search(query, limit, language, symbol_type)
-
+    # Cache miss - fetch from database
+    symbol = await fetch_symbol_from_db(symbol_id)
+    if symbol:
+        await cache_client.set("symbol", symbol_id, symbol)
+        
     return {
-        "query": query,
-        "results": results,
-        "total_results": len(results),
-        "query_time_ms": 25,  # Example timing
-        "constitutional_signature": generate_constitutional_signature(results)
+        "symbol": symbol,
+        "cache_hit": False,
+        "constitutional_hash": "cdd01ef066bc6cf2"
     }
 ```

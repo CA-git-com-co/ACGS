@@ -1,12 +1,32 @@
-# ACGS-1 Data Flywheel Prometheus Configuration
+# ACGS Prometheus Configuration with Constitutional Compliance Tracking
+# Constitutional Hash: cdd01ef066bc6cf2
+#
+# Enhanced monitoring configuration for ACGS services with:
+# - Constitutional compliance tracking
+# - Sub-5ms P99 latency monitoring
+# - >100 RPS throughput monitoring
+# - >85% cache hit rate monitoring
+# - Performance regression detection
 
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
+  external_labels:
+    constitutional_hash: "cdd01ef066bc6cf2"
+    environment: "production"
+    cluster: "acgs-main"
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
 
 rule_files:
-  # - "first_rules.yml"
-  # - "second_rules.yml"
+  - "alert_rules.yml"
+  - "recording_rules.yml"
+  - "constitutional_compliance_rules.yml"
 
 scrape_configs:
   # Prometheus itself

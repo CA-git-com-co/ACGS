@@ -1,4 +1,5 @@
 # ACGS/docker-compose-test.yml - Simplified for testing shared module imports
+# Constitutional Hash: cdd01ef066bc6cf2
 version: '3.8'
 
 services:

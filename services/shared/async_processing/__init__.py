@@ -7,6 +7,7 @@ This module provides advanced async processing capabilities including:
 - Resource-aware task distribution
 - Performance monitoring and metrics
 """
+# Constitutional Hash: cdd01ef066bc6cf2
 
 from .enhanced_task_scheduler import (
     EnhancedTaskScheduler,

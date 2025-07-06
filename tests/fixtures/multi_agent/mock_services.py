@@ -1,4 +1,5 @@
 """Mock services for multi-agent testing."""
+# Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
 from typing import Dict, Any, List, Optional

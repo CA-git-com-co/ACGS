@@ -79,6 +79,7 @@ data:
   GOVERNANCE_SYNTHESIS_SERVICE_URL: "http://governance-synthesis-service.acgs-system.svc.cluster.local:8004"
   POLICY_GOVERNANCE_SERVICE_URL: "http://policy-governance-service.acgs-system.svc.cluster.local:8005"
   FORMAL_VERIFICATION_SERVICE_URL: "http://formal-verification-service.acgs-system.svc.cluster.local:8006"
+  OPENCODE_CLI_SERVICE_URL: "http://opencode-cli-service.acgs-system.svc.cluster.local:8020"
 
   # Gateway Configuration
   GATEWAY_HOST: "0.0.0.0"

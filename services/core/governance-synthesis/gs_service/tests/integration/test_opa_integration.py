@@ -6,6 +6,7 @@ policy evaluation, and performance requirements.
 
 Phase 2: Governance Synthesis Hardening with Rego/OPA Integration
 """
+# Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
 import time

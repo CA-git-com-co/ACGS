@@ -1,4 +1,6 @@
 # Grafana datasource configuration for Prometheus
+# Constitutional Hash: cdd01ef066bc6cf2
+
 apiVersion: 1
 
 datasources:

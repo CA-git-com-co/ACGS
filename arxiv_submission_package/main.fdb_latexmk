@@ -1,15 +1,15 @@
 # Fdb version 4
-["bibtex main"] 0 "main.aux" "main.bbl" "main" 0 -1
+["bibtex main"] 1751816367.78328 "main.aux" "main.bbl" "main" 1751816369.49474 0
   "./ACGS-PGP.bib" 1751702753.60228 19789 0fc01aac000eff9125a2c21201b22b0e ""
   "/usr/share/texlive/texmf-dist/bibtex/bst/acmart/ACM-Reference-Format.bst" 1680299675 90332 18dc4e5c9b5c2ddd337e9f97727d04f1 ""
-  "main.aux" 1751758131.94131 84820 07cbd37fee0f597b67e1f12ccb3c1387 "pdflatex"
+  "main.aux" 1751816369.21731 88913 f3b2fd37ae104d49d8e1d48afd72ee38 "pdflatex"
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["pdflatex"] 1751758130.45051 "/home/dislove/ACGS-2/arxiv_submission_package/main.tex" "main.pdf" "main" 1751758132.28882 2
+["pdflatex"] 1751816367.85125 "/home/dislove/ACGS-2/arxiv_submission_package/main.tex" "main.pdf" "main" 1751816369.49501 0
   "/etc/texmf/web2c/texmf.cnf" 1746903930.98296 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/home/dislove/ACGS-2/arxiv_submission_package/main.tex" 1751758128.36032 265145 7e65e9b94e1e5f3a32fee3d2933f8bac ""
+  "/home/dislove/ACGS-2/arxiv_submission_package/main.tex" 1751816364.17833 272744 ade8e0ff46e65ac3d2463079fc98b7d1 ""
   "/usr/share/texlive/texmf-dist/fonts/enc/dvips/inconsolata/i4-t1-4.enc" 1558214095 7693 0f2dce6d313c82989ec3a67fc24df2a0 ""
   "/usr/share/texlive/texmf-dist/fonts/enc/dvips/libertine/lbtn_25tcsq.enc" 1490131464 2921 8ca0eb0831f9bc5da080d3697cfe67bf ""
   "/usr/share/texlive/texmf-dist/fonts/enc/dvips/libertine/lbtn_76gpa5.enc" 1490131464 2933 9ad527ce78d7c5fa0a642dead095f172 ""
@@ -272,15 +272,11 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1707919699 40399 f2c302f7d2af602abb742093540a5834 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1748896237.34129 5472669 54eaf61a88b6b7896ebd0dac973cb29c ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1747083669 8211355 bc6dcf965fb56e15832c202c29bbd44b ""
-  "comment.cut" 1751758131.79531 1366 1695c817ff98fcfa54af59c40f26b78b "pdflatex"
-  "figs/Figure_2_Enhanced_Explainability_Dashboard_Mockup.png" 0 -1 0 ""
-  "figs/Figure_3_Rule_Synthesis_Success_Rate_per_Principle.png" 0 -1 0 ""
-  "figs/Figure_4_Constitutional_Compliance_Over_Generations.png" 0 -1 0 ""
-  "figs/Figure_5_compliance_generations.png" 0 -1 0 ""
-  "main.aux" 1751758131.94131 84820 07cbd37fee0f597b67e1f12ccb3c1387 "pdflatex"
-  "main.bbl" 1751758128.61332 29647 a8eed5e503f542f437fbc9f01fe35765 "bibtex main"
-  "main.out" 1751758131.94331 9574 afd4fd875a23ca9824a7ae4cf9c93686 "pdflatex"
-  "main.tex" 1751758128.36032 265145 7e65e9b94e1e5f3a32fee3d2933f8bac ""
+  "comment.cut" 1751816369.03931 1366 1695c817ff98fcfa54af59c40f26b78b "pdflatex"
+  "main.aux" 1751816369.21731 88913 f3b2fd37ae104d49d8e1d48afd72ee38 "pdflatex"
+  "main.bbl" 1751816367.84532 29647 a8eed5e503f542f437fbc9f01fe35765 "bibtex main"
+  "main.out" 1751816369.21931 9702 18a33e979321f2517e64287c3d33f617 "pdflatex"
+  "main.tex" 1751816364.17833 272744 ade8e0ff46e65ac3d2463079fc98b7d1 ""
   (generated)
   "comment.cut"
   "main.aux"
@@ -288,3 +284,4 @@
   "main.out"
   "main.pdf"
   (rewritten before read)
+  "comment.cut"

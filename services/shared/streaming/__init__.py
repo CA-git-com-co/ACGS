@@ -12,6 +12,7 @@ Key Components:
 - Event sourcing and message persistence
 - Production-ready configuration and management
 """
+# Constitutional Hash: cdd01ef066bc6cf2
 
 from .event_streaming_manager import EventStreamingManager
 from .kafka_config_manager import KafkaConfigManager

@@ -12,6 +12,7 @@ Key Features:
 - Production-ready caching and optimization
 - Integration with constitutional AI for explanation compliance
 """
+# Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
 import logging

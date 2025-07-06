@@ -1,0 +1,289 @@
+# Constitutional Compliance Alert Rules for ACGS
+# Constitutional Hash: cdd01ef066bc6cf2
+#
+# Alert rules for monitoring constitutional compliance across all ACGS services
+# including performance targets, compliance violations, and operational excellence
+
+groups:
+  - name: constitutional_compliance
+    rules:
+      # Constitutional Hash Validation Alerts
+      - alert: ConstitutionalHashMissing
+        expr: |
+          (
+            acgs_service_info{constitutional_hash!="cdd01ef066bc6cf2"} or
+            absent(acgs_service_info{constitutional_hash="cdd01ef066bc6cf2"})
+          )
+        for: 1m
+        labels:
+          severity: critical
+          constitutional_hash: "cdd01ef066bc6cf2"
+          category: "constitutional_compliance"
+        annotations:
+          summary: "Constitutional hash missing or invalid in service {{ $labels.service }}"
+          description: |
+            Service {{ $labels.service }} is missing the required constitutional hash 
+            'cdd01ef066bc6cf2' or has an invalid hash. This indicates a critical 
+            constitutional compliance violation.
+
+      - alert: ConstitutionalComplianceScoreLow
+        expr: |
+          acgs_constitutional_compliance_score < 0.8
+        for: 2m
+        labels:
+          severity: warning
+          constitutional_hash: "cdd01ef066bc6cf2"
+          category: "constitutional_compliance"
+        annotations:
+          summary: "Constitutional compliance score below threshold for {{ $labels.service }}"
+          description: |
+            Service {{ $labels.service }} has a constitutional compliance score of 
+            {{ $value | humanizePercentage }} which is below the required 80% threshold.
+
+      - alert: ConstitutionalViolationDetected
+        expr: |
+          increase(acgs_constitutional_violations_total[5m]) > 0
+        for: 0s  # Immediate alert for violations
+        labels:
+          severity: critical
+          constitutional_hash: "cdd01ef066bc6cf2"
+          category: "constitutional_compliance"
+        annotations:
+          summary: "Constitutional violation detected in {{ $labels.service }}"
+          description: |
+            {{ $value }} constitutional violation(s) detected in service {{ $labels.service }} 
+            in the last 5 minutes. Immediate investigation required.
+
+  - name: performance_targets
+    rules:
+      # P99 Latency Alerts (Sub-5ms target)
+      - alert: P99LatencyHigh
+        expr: |
+          histogram_quantile(0.99, 
+            rate(acgs_request_duration_seconds_bucket[5m])
+          ) * 1000 > 5
+        for: 2m
+        labels:
+          severity: warning
+          constitutional_hash: "cdd01ef066bc6cf2"
+          category: "performance"
+        annotations:
+          summary: "P99 latency exceeds 5ms target for {{ $labels.service }}"
+          description: |
+            Service {{ $labels.service }} P99 latency is {{ $value | printf "%.2f" }}ms, 
+            exceeding the 5ms target. This may impact constitutional compliance processing.
+
+      - alert: P99LatencyCritical
+        expr: |
+          histogram_quantile(0.99, 
+            rate(acgs_request_duration_seconds_bucket[5m])
+          ) * 1000 > 10
+        for: 1m
+        labels:
+          severity: critical
+          constitutional_hash: "cdd01ef066bc6cf2"
+          category: "performance"
+        annotations:
+          summary: "P99 latency critically high for {{ $labels.service }}"
+          description: |
+            Service {{ $labels.service }} P99 latency is {{ $value | printf "%.2f" }}ms, 
+            which is critically high and may severely impact system performance.
+
+      # Throughput Alerts (>100 RPS target)
+      - alert: ThroughputLow
+        expr: |
+          rate(acgs_requests_total[5m]) < 100
+        for: 5m
+        labels:
+          severity: warning
+          constitutional_hash: "cdd01ef066bc6cf2"
+          category: "performance"
+        annotations:
+          summary: "Throughput below 100 RPS target for {{ $labels.service }}"
+          description: |
+            Service {{ $labels.service }} throughput is {{ $value | printf "%.1f" }} RPS, 
+            below the 100 RPS target. This may indicate capacity or performance issues.
+
+      # Cache Hit Rate Alerts (>85% target)
+      - alert: CacheHitRateLow
+        expr: |
+          (
+            rate(acgs_cache_hits_total[5m]) / 
+            (rate(acgs_cache_hits_total[5m]) + rate(acgs_cache_misses_total[5m]))
+          ) < 0.85
+        for: 3m
+        labels:
+          severity: warning
+          constitutional_hash: "cdd01ef066bc6cf2"
+          category: "performance"
+        annotations:
+          summary: "Cache hit rate below 85% target for {{ $labels.service }}"
+          description: |
+            Service {{ $labels.service }} cache hit rate is {{ $value | humanizePercentage }}, 
+            below the 85% target. This may impact performance and constitutional compliance processing.
+
+  - name: service_health
+    rules:
+      # Service Availability Alerts
+      - alert: ServiceDown
+        expr: |
+          up{job=~"acgs-.*"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          constitutional_hash: "cdd01ef066bc6cf2"
+          category: "availability"
+        annotations:
+          summary: "ACGS service {{ $labels.service }} is down"
+          description: |
+            Service {{ $labels.service }} has been down for more than 1 minute. 
+            This may impact constitutional compliance operations.
+
+      - alert: ServiceHighErrorRate
+        expr: |
+          (
+            rate(acgs_requests_total{status=~"5.."}[5m]) / 
+            rate(acgs_requests_total[5m])
+          ) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+          constitutional_hash: "cdd01ef066bc6cf2"
+          category: "reliability"
+        annotations:
+          summary: "High error rate detected for {{ $labels.service }}"
+          description: |
+            Service {{ $labels.service }} has an error rate of {{ $value | humanizePercentage }}, 
+            which exceeds the 5% threshold.
+
+  - name: hitl_oversight
+    rules:
+      # HITL Decision Latency Alerts
+      - alert: HITLDecisionLatencyHigh
+        expr: |
+          histogram_quantile(0.99, 
+            rate(acgs_hitl_decision_duration_seconds_bucket[5m])
+          ) * 1000 > 5
+        for: 2m
+        labels:
+          severity: warning
+          constitutional_hash: "cdd01ef066bc6cf2"
+          category: "hitl"
+        annotations:
+          summary: "HITL decision latency exceeds 5ms target"
+          description: |
+            Human-in-the-loop decision processing latency is {{ $value | printf "%.2f" }}ms, 
+            exceeding the 5ms target for automated decisions.
+
+      - alert: HITLOversightRequired
+        expr: |
+          increase(acgs_hitl_oversight_requests_total[5m]) > 10
+        for: 1m
+        labels:
+          severity: info
+          constitutional_hash: "cdd01ef066bc6cf2"
+          category: "hitl"
+        annotations:
+          summary: "High volume of HITL oversight requests"
+          description: |
+            {{ $value }} HITL oversight requests in the last 5 minutes. 
+            This may indicate increased uncertainty in constitutional decisions.
+
+  - name: resource_utilization
+    rules:
+      # Memory Usage Alerts
+      - alert: HighMemoryUsage
+        expr: |
+          (
+            container_memory_usage_bytes{name=~"acgs-.*"} / 
+            container_spec_memory_limit_bytes{name=~"acgs-.*"}
+          ) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          constitutional_hash: "cdd01ef066bc6cf2"
+          category: "resources"
+        annotations:
+          summary: "High memory usage for {{ $labels.name }}"
+          description: |
+            Container {{ $labels.name }} is using {{ $value | humanizePercentage }} 
+            of its memory limit, which may impact performance.
+
+      # CPU Usage Alerts
+      - alert: HighCPUUsage
+        expr: |
+          rate(container_cpu_usage_seconds_total{name=~"acgs-.*"}[5m]) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          constitutional_hash: "cdd01ef066bc6cf2"
+          category: "resources"
+        annotations:
+          summary: "High CPU usage for {{ $labels.name }}"
+          description: |
+            Container {{ $labels.name }} is using {{ $value | humanizePercentage }} 
+            CPU, which may impact constitutional compliance processing.
+
+  - name: database_monitoring
+    rules:
+      # Database Connection Alerts
+      - alert: DatabaseConnectionsHigh
+        expr: |
+          pg_stat_activity_count > 80
+        for: 3m
+        labels:
+          severity: warning
+          constitutional_hash: "cdd01ef066bc6cf2"
+          category: "database"
+        annotations:
+          summary: "High number of database connections"
+          description: |
+            PostgreSQL has {{ $value }} active connections, approaching the limit. 
+            This may impact constitutional compliance data operations.
+
+      # Database Query Performance
+      - alert: SlowDatabaseQueries
+        expr: |
+          pg_stat_statements_mean_time_ms > 100
+        for: 2m
+        labels:
+          severity: warning
+          constitutional_hash: "cdd01ef066bc6cf2"
+          category: "database"
+        annotations:
+          summary: "Slow database queries detected"
+          description: |
+            Average query execution time is {{ $value | printf "%.2f" }}ms, 
+            which may impact constitutional compliance processing performance.
+
+  - name: redis_monitoring
+    rules:
+      # Redis Memory Usage
+      - alert: RedisMemoryHigh
+        expr: |
+          redis_memory_used_bytes / redis_memory_max_bytes > 0.8
+        for: 3m
+        labels:
+          severity: warning
+          constitutional_hash: "cdd01ef066bc6cf2"
+          category: "cache"
+        annotations:
+          summary: "Redis memory usage high"
+          description: |
+            Redis is using {{ $value | humanizePercentage }} of available memory. 
+            This may impact cache performance and constitutional compliance caching.
+
+      # Redis Connection Issues
+      - alert: RedisConnectionsHigh
+        expr: |
+          redis_connected_clients > 100
+        for: 2m
+        labels:
+          severity: warning
+          constitutional_hash: "cdd01ef066bc6cf2"
+          category: "cache"
+        annotations:
+          summary: "High number of Redis connections"
+          description: |
+            Redis has {{ $value }} connected clients, which may indicate 
+            connection pool issues or high load.

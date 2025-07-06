@@ -72,3 +72,9 @@ kafka-python>=2.0.2
 pytest>=7.4.0
 pytest-asyncio>=0.21.0
 pytest-cov>=4.1.0
+
+# Web Framework
+flask>=2.3.0
+
+# Performance Testing
+pytest-benchmark>=4.0.0

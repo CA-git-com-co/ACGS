@@ -40,7 +40,7 @@
 ```
 
 ### What it audits
-- Infrastructure alignment (PostgreSQL 5439, Redis 6389, Auth 8016)
+- Infrastructure alignment (PostgreSQL 5439, Redis 6389, Auth 8016, Constitutional AI 8001, Integrity 8002, Formal Verification 8003, Governance Synthesis 8004, Policy Governance 8005, Evolutionary Computation 8006, Consensus Engine 8007, Multi-Agent Coordinator 8008, Worker Agents 8009, Blackboard Service 8010, Code Analysis Service 8011, Context Service 8012)
 - Service API documentation accuracy
 - Cross-reference validation
 - Performance metrics consistency
@@ -180,6 +180,13 @@ grep -r "≥100.*RPS\|≤5ms\|≥85%.*cache\|≥80%.*coverage" docs/
 
 # Add missing targets to documentation
 ```
+
+## Related Information
+
+For a comprehensive overview of the documentation implementation and the services validated by these tools, refer to:
+
+- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
+- [ACGS Service Architecture Overview](../ACGS_SERVICE_OVERVIEW.md)
 
 ## Emergency Procedures
 

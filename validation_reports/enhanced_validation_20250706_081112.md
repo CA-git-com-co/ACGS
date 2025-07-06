@@ -7,22 +7,22 @@
 
 ## Summary
 
-| Metric | Value |
-|--------|-------|
-| Total Files | 116 |
-| Passed Files | 113 |
-| Failed Files | 3 |
+| Metric       | Value |
+| ------------ | ----- |
+| Total Files  | 116   |
+| Passed Files | 113   |
+| Failed Files | 3     |
 | Success Rate | 97.4% |
-| Total Issues | 4 |
+| Total Issues | 4     |
 
 ## Issues by Severity
 
 ### HIGH (4 issues)
 
-- **docs/QUARTERLY_DOCUMENTATION_AUDIT_PROCEDURES.md** (line 194): Broken link to '.*\.md' (text: '.*\')
-- **docs/DOCUMENTATION_QUALITY_METRICS.md** (line 63): Broken link to '.*\.md[^' (text: '.*\')
-- **docs/DOCUMENTATION_QUALITY_METRICS.md** (line 67): Broken link to '.*\.md[^' (text: '.*\')
-- **docs/training/validation_tools_cheatsheet.md** (line 173): Broken link to '.*\.md[^' (text: '.*\')
+- **docs/QUARTERLY_DOCUMENTATION_AUDIT_PROCEDURES.md** (line 194): Broken link to '._\.md' (text: '._\')
+- **docs/DOCUMENTATION_QUALITY_METRICS.md** (line 63): Broken link to '._\.md[^' (text: '._\')
+- **docs/DOCUMENTATION_QUALITY_METRICS.md** (line 67): Broken link to '._\.md[^' (text: '._\')
+- **docs/training/validation_tools_cheatsheet.md** (line 173): Broken link to '._\.md[^' (text: '._\')
 
 ## Performance Metrics
 

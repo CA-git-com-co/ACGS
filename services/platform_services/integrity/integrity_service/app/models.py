@@ -1,10 +1,6 @@
 from datetime import datetime
 
 from sqlalchemy import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
     JSON,
     Boolean,
     Column,
@@ -16,6 +12,9 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
     Text,
 )
 from sqlalchemy.orm import declarative_base
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 # Create a local Base for this service to avoid import issues
 Base = declarative_base()

@@ -4,6 +4,7 @@ ACGS Health Check Tests
 Basic health and connectivity tests for all ACGS services to ensure
 infrastructure is properly configured and services are responsive.
 """
+# Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
 import time

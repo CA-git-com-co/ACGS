@@ -168,11 +168,19 @@ gemini-cli <command>
 ### ACGS Service Integration
 ```
 ACGS Coordinator    → Port 8000  ✅ Connected
-Auth Service       → Port 8006  ✅ Connected
-Sandbox Service    → Port 8009  ⚠️  Down
-Formal Verification → Port 8010  ⚠️  Down
-Audit Service      → Port 8011  ⚠️  Down
-HITL Service       → Port 8008  ✅ Connected
+Auth Service       → Port 8016  ✅ Connected
+Constitutional AI  → Port 8001  ✅ Connected
+Integrity Service  → Port 8002  ✅ Connected
+Formal Verification → Port 8003  ✅ Connected
+Governance Synthesis → Port 8004  ✅ Connected
+Policy Governance  → Port 8005  ✅ Connected
+Evolutionary Computation → Port 8006  ✅ Connected
+Consensus Engine   → Port 8007  ✅ Connected
+Multi-Agent Coordinator → Port 8008  ✅ Connected
+Worker Agents      → Port 8009  ✅ Connected
+Blackboard Service → Port 8010  ✅ Connected
+Code Analysis Service → Port 8011  ✅ Connected
+Context Service    → Port 8012  ✅ Connected
 ```
 
 *Note: Some services are down because the full ACGS stack is not currently running. The CLI gracefully handles this and continues operation.*
@@ -208,6 +216,24 @@ gemini-cli monitor performance --operation-type code_execution
 - **Main README**: `/home/dislove/ACGS-2/services/cli/gemini_cli/README.md`
 - **Deployment Script**: `/home/dislove/ACGS-2/scripts/deploy_gemini_cli.sh`
 - **Docker Compose**: `/home/dislove/ACGS-2/docker-compose.gemini-cli.yml`
+
+## 📚 Documentation
+
+- **Main README**: `/home/dislove/ACGS-2/services/cli/gemini_cli/README.md`
+- **Deployment Script**: `/home/dislove/ACGS-2/scripts/deploy_gemini_cli.sh`
+- **Docker Compose**: `/home/dislove/ACGS-2/docker-compose.gemini-cli.yml`
+
+## Related Information
+
+For a broader understanding of the ACGS platform and its components, refer to:
+
+- [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
+- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
+- [ACGE Strategic Implementation Plan - 24 Month Roadmap](../../docs/ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md)
+- [ACGE Testing and Validation Framework](../../docs/ACGE_TESTING_VALIDATION_FRAMEWORK.md)
+- [ACGE Cost Analysis and ROI Projections](../../docs/ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md)
+- [ACGS Comprehensive Task Completion - Final Report](../architecture/ACGS_COMPREHENSIVE_TASK_COMPLETION_FINAL_REPORT.md)
+- [Migration Guide: Gemini CLI to OpenCode Adapter](MIGRATION_GUIDE_OPENCODE.md)
 
 ## 🎯 Achievement Summary
 

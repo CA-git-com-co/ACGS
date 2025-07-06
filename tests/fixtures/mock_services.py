@@ -1,6 +1,7 @@
 """
 Mock services and fixtures for multi-agent coordination testing.
 """
+# Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
 import pytest

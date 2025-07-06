@@ -4,6 +4,7 @@ ACGS Infrastructure Tests
 Tests for infrastructure components including PostgreSQL, Redis, Auth Service,
 core services, service mesh integration, and inter-service communication.
 """
+# Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
 import time

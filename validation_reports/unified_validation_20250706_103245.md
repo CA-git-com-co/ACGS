@@ -8,17 +8,17 @@
 
 ## Executive Summary
 
-| Metric | Value |
-|--------|-------|
-| Overall Status | ❌ FAILED |
-| Validators Run | 5/5 |
-| Total Files Checked | 367 |
-| Total Issues Found | 146 |
-| Critical Issues | 0 |
-| High Priority Issues | 45 |
-| Medium Priority Issues | 68 |
-| Low Priority Issues | 33 |
-| Constitutional Compliance | 100.0% |
+| Metric                    | Value     |
+| ------------------------- | --------- |
+| Overall Status            | ❌ FAILED |
+| Validators Run            | 5/5       |
+| Total Files Checked       | 367       |
+| Total Issues Found        | 146       |
+| Critical Issues           | 0         |
+| High Priority Issues      | 45        |
+| Medium Priority Issues    | 68        |
+| Low Priority Issues       | 33        |
+| Constitutional Compliance | 100.0%    |
 
 ## Validation Results
 
@@ -29,6 +29,7 @@
 **Files Processed**: 116
 **Success Rate**: 100.0%
 **Metrics**:
+
 - Performance: 43.4 files/second
 - Success Rate: 100.0%
 
@@ -39,10 +40,11 @@
 **Files Processed**: 14
 **Success Rate**: 0.0%
 **Metrics**:
+
 - Services Analyzed: 7
 - Docs Analyzed: 7
 - Endpoints Sync Rate: 61.64383561643836
-**Issues Found**: 94
+  **Issues Found**: 94
 
 ### Constitutional Compliance
 
@@ -51,6 +53,7 @@
 **Files Processed**: 116
 **Success Rate**: 100.0%
 **Metrics**:
+
 - Compliance Rate: 100.0%
 - Constitutional Hash: cdd01ef066bc6cf2
 - Non Compliant Files: 0
@@ -62,11 +65,12 @@
 **Files Processed**: 116
 **Success Rate**: 0.0%
 **Metrics**:
+
 - Total Cross References: 102
 - Semantic Relationships: 3698
 - Orphaned Documents: 91
 - Connected Components: 94
-**Issues Found**: 50
+  **Issues Found**: 50
 
 ### Consistency Validation
 
@@ -75,9 +79,10 @@
 **Files Processed**: 5
 **Success Rate**: 80.0%
 **Metrics**:
+
 - Consistency Rate: 80.0%
 - Checks Performed: 5
-**Issues Found**: 2
+  **Issues Found**: 2
 
 ## Issues by Category
 
@@ -91,63 +96,83 @@
 ## Critical and High Priority Issues
 
 **API-Code Sync Validation** - missing endpoint impl
+
 - Endpoint POST /auth/login documented but not implemented
 
 **API-Code Sync Validation** - missing endpoint impl
+
 - Endpoint POST /auth/logout documented but not implemented
 
 **API-Code Sync Validation** - missing endpoint impl
+
 - Endpoint GET /auth/profile documented but not implemented
 
 **API-Code Sync Validation** - missing endpoint impl
+
 - Endpoint POST /auth/refresh documented but not implemented
 
 **API-Code Sync Validation** - missing endpoint impl
+
 - Endpoint GET /api/v1/principles documented but not implemented
 
 **API-Code Sync Validation** - missing endpoint impl
+
 - Endpoint GET /api/v1/council/decisions documented but not implemented
 
 **API-Code Sync Validation** - missing endpoint impl
+
 - Endpoint POST /api/v1/principles/evaluate documented but not implemented
 
 **API-Code Sync Validation** - missing endpoint impl
+
 - Endpoint POST /integrity/constitutional documented but not implemented
 
 **API-Code Sync Validation** - missing endpoint impl
+
 - Endpoint POST /integrity/verify documented but not implemented
 
 **API-Code Sync Validation** - missing endpoint impl
+
 - Endpoint POST /integrity/hash documented but not implemented
 
 **API-Code Sync Validation** - missing endpoint impl
+
 - Endpoint POST /integrity/validate documented but not implemented
 
 **API-Code Sync Validation** - missing endpoint impl
+
 - Endpoint POST /integrity/sign documented but not implemented
 
 **API-Code Sync Validation** - missing endpoint impl
+
 - Endpoint POST /verification/constitutional documented but not implemented
 
 **API-Code Sync Validation** - missing endpoint impl
+
 - Endpoint POST /verification/policy documented but not implemented
 
 **API-Code Sync Validation** - missing endpoint impl
+
 - Endpoint POST /verification/proof documented but not implemented
 
 **API-Code Sync Validation** - missing endpoint impl
+
 - Endpoint POST /verification/consistency documented but not implemented
 
 **API-Code Sync Validation** - missing endpoint impl
+
 - Endpoint POST /verification/model-check documented but not implemented
 
 **API-Code Sync Validation** - missing endpoint impl
+
 - Endpoint POST /api/v1/synthesis/consensus documented but not implemented
 
 **API-Code Sync Validation** - missing endpoint impl
+
 - Endpoint GET /api/v1/models/status documented but not implemented
 
 **API-Code Sync Validation** - missing endpoint impl
+
 - Endpoint POST /api/v1/constitutional/analyze documented but not implemented
 
 ## Recommendations
@@ -161,7 +186,6 @@
 - **Total Execution Time**: 2.85 seconds
 - **Average Validator Time**: 0.57 seconds
 - **Files per Second**: 128.7
-
 
 ---
 

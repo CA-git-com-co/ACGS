@@ -1,3 +1,6 @@
+# ACGS Evolutionary Computation Service Dockerfile
+# Constitutional Hash: cdd01ef066bc6cf2
+
 FROM python:3.11-slim
 
 # Set working directory

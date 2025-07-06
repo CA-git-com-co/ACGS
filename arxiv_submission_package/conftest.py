@@ -177,6 +177,13 @@ submissions as referenced in Section~\\ref{sec:methodology}.
 This paper demonstrates a complete academic submission suitable for validation
 testing. Future work will extend the system capabilities~\\cite{jones2023}.
 
+\\section*{Data and Code Availability}
+
+The dataset used in this study is available at Zenodo (DOI: 10.5281/zenodo.123456).
+The source code for reproducible analysis is available on GitHub at
+\\texttt{https://github.com/example/validation-system}. All experiments are
+fully reproducible using the provided code and dataset.
+
 \\section*{Acknowledgments}
 
 We thank the reviewers for their valuable feedback.
@@ -227,6 +234,7 @@ Files:
 - main.tex: Main LaTeX source file
 - references.bib: Bibliography file
 - figs/workflow.png: Workflow diagram
+- analysis.py: Python analysis script
 - README.txt: This file
 
 Compilation:
@@ -235,7 +243,51 @@ Compilation:
 3. pdflatex main.tex
 4. pdflatex main.tex
 
+Reproducibility:
+Run 'python analysis.py' to reproduce the results.
+
 This paper includes all components needed for comprehensive validation testing.
+""")
+
+    # Create a Python code file for reproducibility
+    (paper_dir / "analysis.py").write_text("""#!/usr/bin/env python3
+\"\"\"
+Analysis script for the Academic Validation System paper.
+This script demonstrates reproducible research practices.
+\"\"\"
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+def calculate_validation_score(passed, warnings, total):
+    \"\"\"Calculate validation score as shown in the paper.\"\"\"
+    return (passed + 0.5 * warnings) / total * 100
+
+def main():
+    \"\"\"Main analysis function.\"\"\"
+    # Example validation results
+    passed = 6
+    warnings = 1
+    total = 8
+
+    score = calculate_validation_score(passed, warnings, total)
+    print(f"Validation Score: {score:.1f}%")
+
+    # Generate sample plot
+    categories = ['File Structure', 'LaTeX', 'Bibliography', 'Figures']
+    scores = [100, 95, 90, 85]
+
+    plt.figure(figsize=(8, 6))
+    plt.bar(categories, scores)
+    plt.title('Validation Category Scores')
+    plt.ylabel('Score (%)')
+    plt.ylim(0, 100)
+    plt.tight_layout()
+    plt.savefig('figs/validation_scores.png', dpi=300)
+    print("Generated validation_scores.png")
+
+if __name__ == "__main__":
+    main()
 """)
 
     return paper_dir

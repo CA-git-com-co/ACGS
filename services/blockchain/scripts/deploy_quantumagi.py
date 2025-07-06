@@ -3,6 +3,7 @@
 Quantumagi Deployment and Integration Script
 Handles deployment of Quantumagi programs and integration with ACGS
 """
+# Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
 import json

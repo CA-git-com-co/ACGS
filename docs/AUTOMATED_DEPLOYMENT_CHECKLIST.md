@@ -22,6 +22,12 @@
 - [ ] Governance Synthesis (Port 8004): Ready
 - [ ] Policy Governance (Port 8005): Ready
 - [ ] Evolutionary Computation (Port 8006): Ready
+- [ ] Consensus Engine (Port 8007): Ready
+- [ ] Multi-Agent Coordinator (Port 8008): Ready
+- [ ] Worker Agents (Port 8009): Ready
+- [ ] Blackboard Service (Port 8010): Ready
+- [ ] Code Analysis Service (Port 8011): Ready
+- [ ] Context Service (Port 8012): Ready
 
 ### Infrastructure Requirements
 - [ ] PostgreSQL (Port 5439): Available
@@ -113,6 +119,32 @@
 - Performance targets met
 - Documentation updated
 - Monitoring active
+
+## Success Criteria
+
+✅ **Deployment Successful When:**
+- All services healthy and responding
+- Constitutional compliance: 100%
+- Performance targets met
+- Documentation updated
+- Monitoring active
+
+## Related Information
+
+For a broader understanding of the ACGS platform and its components, refer to:
+
+- [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
+- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
+- [ACGE Strategic Implementation Plan - 24 Month Roadmap](../../docs/ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md)
+- [ACGE Testing and Validation Framework](../../docs/ACGE_TESTING_VALIDATION_FRAMEWORK.md)
+- [ACGE Cost Analysis and ROI Projections](../../docs/ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md)
+- [ACGS Comprehensive Task Completion - Final Report](../architecture/ACGS_COMPREHENSIVE_TASK_COMPLETION_FINAL_REPORT.md)
+- [ACGS-Claudia Integration Architecture Plan](../architecture/ACGS_CLAUDIA_INTEGRATION_ARCHITECTURE.md)
+- [ACGS Implementation Guide](../deployment/ACGS_IMPLEMENTATION_GUIDE.md)
+- [ACGS-PGP Operational Deployment Guide](../deployment/ACGS_PGP_OPERATIONAL_DEPLOYMENT_GUIDE.md)
+- [ACGS-PGP Troubleshooting Guide](../deployment/ACGS_PGP_TROUBLESHOOTING_GUIDE.md)
+- [ACGS-PGP Setup Guide](../deployment/ACGS_PGP_SETUP_GUIDE.md)
+- [Service Status Dashboard](../operations/SERVICE_STATUS.md)
 
 ---
 

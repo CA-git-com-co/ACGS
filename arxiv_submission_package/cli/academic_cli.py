@@ -44,8 +44,8 @@ class AcademicCLI:
     """Main CLI application for academic submission tools."""
 
     def __init__(self):
-        self.parser = self._create_parser()
         self.supported_venues = ["arxiv", "ieee", "acm"]
+        self.parser = self._create_parser()
 
     def _create_parser(self) -> argparse.ArgumentParser:
         """Create the main argument parser."""

@@ -13,6 +13,7 @@ Key Components:
 - Quality management system integration
 - Post-market monitoring and incident reporting
 """
+# Constitutional Hash: cdd01ef066bc6cf2
 
 from .compliance_monitor import (
     ComplianceMetrics,

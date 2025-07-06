@@ -12,15 +12,21 @@ This guide provides comprehensive instructions for setting up the ACGS-PGP (Auto
 
 ### 7-Service Architecture
 
-| Service           | Port | Description                                 | Constitutional Role            |
-| ----------------- | ---- | ------------------------------------------- | ------------------------------ |
-| auth_service      | 8000 | Authentication & Authorization              | Identity governance            |
-| ac_service        | 8001 | Constitutional AI                           | Core constitutional compliance |
-| integrity_service | 8002 | Data Integrity & Cryptographic Verification | Data governance                |
-| fv_service        | 8003 | Formal Verification                         | Policy verification            |
-| gs_service        | 8004 | Governance Synthesis                        | Policy synthesis               |
-| pgc_service       | 8005 | Policy Governance Compliance                | Compliance monitoring          |
-| ec_service        | 8006 | Evolutionary Computation                    | System evolution               |
+| Service | Port | Description | Constitutional Role |
+|---|---|---|---|
+| auth_service | 8000 | Authentication & Authorization | Identity governance |
+| ac_service | 8001 | Constitutional AI | Core constitutional compliance |
+| integrity_service | 8002 | Data Integrity & Cryptographic Verification | Data governance |
+| fv_service | 8003 | Formal Verification | Policy verification |
+| gs_service | 8004 | Governance Synthesis | Policy synthesis |
+| pgc_service | 8005 | Policy Governance Compliance | Compliance monitoring |
+| ec_service | 8006 | Evolutionary Computation | System evolution |
+| consensus_engine | 8007 | Enables agreement between different AI agents | Conflict resolution |
+| multi_agent_coordinator | 8008 | Coordinates the actions of multiple AI agents | Task orchestration |
+| worker_agents | 8009 | Perform various tasks as directed by the coordinator | Specialized analysis |
+| blackboard_service | 8010 | Redis-based shared knowledge | Knowledge sharing |
+| code_analysis_service | 8011 | Static analysis with tenant routing | Code understanding |
+| context_service | 8012 | Governance workflow integration | Context management |
 
 ### Constitutional Governance Features
 
@@ -432,6 +438,28 @@ For technical support and questions:
 - **[Service-Specific Documentation](services/)**: Individual service READMEs and API documentation
 - **[Test Suite Documentation](scripts/test_setup_scripts_comprehensive.sh)**: Comprehensive testing procedures
 - **[AI Model Integration Guide](config/ai-models/)**: AI model configuration and troubleshooting
+
+## Additional Resources
+
+- **[ACGS-PGP Troubleshooting Guide](ACGS_PGP_TROUBLESHOOTING_GUIDE.md)**: Detailed troubleshooting procedures
+- **[Service-Specific Documentation](services/)**: Individual service READMEs and API documentation
+- **[Test Suite Documentation](scripts/test_setup_scripts_comprehensive.sh)**: Comprehensive testing procedures
+- **[AI Model Integration Guide](config/ai-models/)**: AI model configuration and troubleshooting
+
+## Related Information
+
+For a broader understanding of the ACGS platform and its components, refer to:
+
+- [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
+- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
+- [ACGE Strategic Implementation Plan - 24 Month Roadmap](../../docs/ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md)
+- [ACGE Testing and Validation Framework](../../docs/ACGE_TESTING_VALIDATION_FRAMEWORK.md)
+- [ACGE Cost Analysis and ROI Projections](../../docs/ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md)
+- [ACGS Comprehensive Task Completion - Final Report](../architecture/ACGS_COMPREHENSIVE_TASK_COMPLETION_FINAL_REPORT.md)
+- [ACGS-Claudia Integration Architecture Plan](../architecture/ACGS_CLAUDIA_INTEGRATION_ARCHITECTURE.md)
+- [ACGS Implementation Guide](ACGS_IMPLEMENTATION_GUIDE.md)
+- [ACGS-PGP Operational Deployment Guide](ACGS_PGP_OPERATIONAL_DEPLOYMENT_GUIDE.md)
+- [Service Status Dashboard](../operations/SERVICE_STATUS.md)
 
 ---
 

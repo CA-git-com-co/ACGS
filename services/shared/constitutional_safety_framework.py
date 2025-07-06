@@ -88,6 +88,20 @@ class ConstitutionalSafetyValidator:
                 validation_function="validate_transparency",
             ),
             ConstitutionalRule(
+                name="operational_transparency",
+                description="All operations must be logged with full audit trails and be observable",
+                rule_type="operational",
+                severity=SafetyLevel.HIGH,
+                validation_function="validate_operational_transparency",
+            ),
+            ConstitutionalRule(
+                name="operation_reversibility",
+                description="Operations must be reversible or have rollback mechanisms",
+                rule_type="operational",
+                severity=SafetyLevel.HIGH,
+                validation_function="validate_operation_reversibility",
+            ),
+            ConstitutionalRule(
                 name="resource_usage_limits",
                 description="Resource usage must be within defined limits",
                 rule_type="operational",
@@ -169,6 +183,10 @@ class ConstitutionalSafetyValidator:
             return await self._validate_resource_usage(action_data, context)
         elif rule.validation_function == "validate_security_compliance":
             return await self._validate_security_compliance(action_data, context)
+        elif rule.validation_function == "validate_operational_transparency":
+            return await self._validate_operational_transparency(action_data, context)
+        elif rule.validation_function == "validate_operation_reversibility":
+            return await self._validate_operation_reversibility(action_data, context)
         else:
             return {
                 "is_compliant": True,
@@ -292,6 +310,96 @@ class ConstitutionalSafetyValidator:
                 ["Ensure proper security controls"] if violations else []
             ),
             "confidence": 0.95,
+        }
+
+    async def _validate_operational_transparency(
+        self, action_data: dict[str, Any], context: Optional[dict[str, Any]]
+    ) -> dict[str, Any]:
+        """Validate operational transparency requirements"""
+        violations = []
+        recommendations = []
+
+        # Check for operation logging
+        if not context or not context.get("logging_enabled", True):
+            violations.append("Operation logging not enabled")
+
+        # Check for audit trail with operation details
+        if not action_data.get("operation_id"):
+            violations.append("Missing operation identifier for audit trail")
+
+        # Check for observable metrics
+        if not context or not context.get("metrics_enabled", True):
+            violations.append("Operation metrics not enabled")
+
+        # Check for request tracing
+        if not context or not context.get("trace_id"):
+            violations.append("Missing trace ID for operation observability")
+
+        # Check for user context in audit
+        if not context or (not context.get("user_id") and action_data.get("requires_user_context", True)):
+            violations.append("Missing user context for operation transparency")
+
+        # Recommendations for better transparency
+        if not action_data.get("operation_description"):
+            recommendations.append("Add operation description for better transparency")
+
+        if not context or not context.get("correlation_id"):
+            recommendations.append("Add correlation ID for cross-service tracing")
+
+        return {
+            "is_compliant": len(violations) == 0,
+            "violations": violations,
+            "recommendations": recommendations,
+            "confidence": 0.9,
+        }
+
+    async def _validate_operation_reversibility(
+        self, action_data: dict[str, Any], context: Optional[dict[str, Any]]
+    ) -> dict[str, Any]:
+        """Validate operation reversibility requirements"""
+        violations = []
+        recommendations = []
+
+        operation_type = action_data.get("operation_type", "unknown")
+
+        # Check for state-changing operations
+        if operation_type in ["create", "update", "delete", "modify"]:
+            # Check for rollback mechanism
+            if not action_data.get("rollback_enabled", False):
+                violations.append("State-changing operation lacks rollback mechanism")
+
+            # Check for state backup before operation
+            if not action_data.get("state_backup_created", False):
+                violations.append("No state backup created before operation")
+
+            # Check for rollback procedure documentation
+            if not action_data.get("rollback_procedure"):
+                violations.append("Missing rollback procedure documentation")
+
+        # Check for transaction support
+        if operation_type in ["batch", "bulk", "transaction"]:
+            if not action_data.get("transaction_support", False):
+                violations.append("Batch operation lacks transaction support")
+
+        # Check for operation checkpoints
+        if action_data.get("long_running", False):
+            if not action_data.get("checkpoint_enabled", False):
+                recommendations.append("Enable checkpoints for long-running operations")
+
+        # Check for rollback testing
+        if not context or not context.get("rollback_tested", False):
+            recommendations.append("Test rollback procedures regularly")
+
+        # Check for emergency stop mechanism
+        if operation_type in ["critical", "high_impact"]:
+            if not action_data.get("emergency_stop_available", False):
+                violations.append("Critical operation lacks emergency stop mechanism")
+
+        return {
+            "is_compliant": len(violations) == 0,
+            "violations": violations,
+            "recommendations": recommendations,
+            "confidence": 0.85,
         }
 
     def _is_higher_severity(

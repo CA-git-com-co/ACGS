@@ -4,6 +4,7 @@ ACGS E2E Test Runner
 Provides test execution orchestration with support for parallel execution,
 test discovery, filtering, and comprehensive result collection.
 """
+# Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
 import logging

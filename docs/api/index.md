@@ -1,14 +1,5 @@
 # ACGS API Documentation Index
 
-## Service Overview
-
-This service provides core functionality for the ACGS platform with constitutional compliance validation.
-
-**Service**: API Index
-**Port**: 8000
-**Constitutional Hash**: `cdd01ef066bc6cf2`
-
-
 <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 **Last Updated**: 2025-07-05
 **API Version**: v1
@@ -23,7 +14,7 @@ This service provides core functionality for the ACGS platform with constitution
 | **Constitutional AI** | 8001 | [Constitutional AI API](constitutional-ai.md) | ✅ Available |
 | **Integrity Service** | 8002 | [Integrity API](integrity.md) | ✅ Available |
 | **Formal Verification** | 8003 | [Formal Verification API](formal-verification.md) | ✅ Available |
-| **Governance Synthesis** | 8004 | [Governance Synthesis API](governance_synthesis.md) | 📝 Planned |
+| **Governance Synthesis** | 8004 | [Governance Synthesis API](governance_synthesis.md) | ✅ Available |
 | **Policy Governance** | 8005 | [Policy Governance API](policy-governance.md) | ✅ Available |
 | **Evolutionary Computation** | 8006 | [Evolutionary Computation API](evolutionary-computation.md) | ✅ Available |
 
@@ -31,10 +22,10 @@ This service provides core functionality for the ACGS platform with constitution
 
 | API | Documentation | Purpose |
 |-----|---------------|---------|
-| **Cross-Service Integration** | [Integration API](#Integration API) | Service-to-service communication |
-| **Audit Logging** | [Audit Logging API](#Audit Logging API) | Compliance and audit trails |
-| **JWT Token Management** | [JWT Reference](#jwt-token-specification) | Token handling and validation |
-| **Role-Based Access Control** | [RBAC Design](#role-based-access-control) | Permission and role management |
+| **Cross-Service Integration** | [Integration Guide](../integration/ACGS_SERVICE_INTEGRATION_GUIDE.md) | Service-to-service communication |
+| **Audit Logging** | [Audit Logging API](#) | Compliance and audit trails (Documentation pending) |
+| **JWT Token Management** | [JWT Reference](jwt.md) | Token handling and validation |
+| **Role-Based Access Control** | [RBAC Design](rbac.md) | Permission and role management |
 
 ## 🏗️ API Architecture
 
@@ -66,9 +57,7 @@ X-Request-ID: <unique_request_id>
 ```json
 {
   "success": true,
-  "data": {,
-  "constitutional_hash": "cdd01ef066bc6cf2"
-},
+  "data": {},
   "constitutional_hash": "cdd01ef066bc6cf2",
   "timestamp": "2025-07-05T12:00:00Z",
   "request_id": "req_123456789"
@@ -88,8 +77,6 @@ X-Request-ID: <unique_request_id>
 |--------|--------|------------|
 | **Response Time** | P99 ≤5ms | `/metrics` endpoint |
 | **Throughput** | ≥100 RPS | Load balancer metrics |
-| **Availability** | ≥99.9% | Health check endpoints |
-| **Constitutional Compliance** | 100% | Hash validation |
 
 ## 🛠️ Development Resources
 
@@ -124,33 +111,29 @@ All APIs follow standard HTTP status codes:
 | 404 | Not Found | Resource not found |
 | 500 | Internal Error | Server error |
 
-## Performance Targets
-
-- **Latency**: P99 ≤ 5ms for cached queries
-- **Throughput**: ≥ 100 RPS sustained
-- **Cache Hit Rate**: ≥ 85%
-- **Test Coverage**: ≥ 80%
-- **Availability**: 99.9% uptime
-- **Constitutional Compliance**: 100% validation
-
-## 🔄 Workflow Documentation
-
-### Policy Governance Workflows
-
-- [Governance Workflow Design](#governance-workflow)
-- [Council Review Process](#council-review)
-
-### Constitutional Compliance
-
-- [Constitutional Compliance Checks RFC](#constitutional-compliance)
-- [Compliance Validation Framework](../constitutional_compliance_validation_framework.md)
-
 ## 📚 Additional Resources
 
 - [Configuration Guide](../configuration/README.md)
 - [Deployment Guide](../deployment/ACGS_PGP_SETUP_GUIDE.md)
 - [Service Status](../operations/SERVICE_STATUS.md)
 - [Architecture Documentation](../architecture/)
+
+## Related Information
+
+For a broader understanding of the ACGS platform and its components, refer to:
+
+- [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
+- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
+- [ACGE Strategic Implementation Plan - 24 Month Roadmap](../../docs/ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md)
+- [ACGE Testing and Validation Framework](../../docs/ACGE_TESTING_VALIDATION_FRAMEWORK.md)
+- [ACGE Cost Analysis and ROI Projections](../../docs/ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md)
+- [ACGS Comprehensive Task Completion - Final Report](../architecture/ACGS_COMPREHENSIVE_TASK_COMPLETION_FINAL_REPORT.md)
+- [ACGS-Claudia Integration Architecture Plan](../architecture/ACGS_CLAUDIA_INTEGRATION_ARCHITECTURE.md)
+- [ACGS Implementation Guide](../deployment/ACGS_IMPLEMENTATION_GUIDE.md)
+- [ACGS-PGP Operational Deployment Guide](../deployment/ACGS_PGP_OPERATIONAL_DEPLOYMENT_GUIDE.md)
+- [ACGS-PGP Troubleshooting Guide](../deployment/ACGS_PGP_TROUBLESHOOTING_GUIDE.md)
+- [ACGS-PGP Setup Guide](../deployment/ACGS_PGP_SETUP_GUIDE.md)
+- [ACGS-2 Technical Specifications - 2025 Edition](../TECHNICAL_SPECIFICATIONS_2025.md)
 
 ---
 

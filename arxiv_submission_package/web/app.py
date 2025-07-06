@@ -40,7 +40,9 @@ except ImportError as e:
     print("Please install Flask: pip install flask")
     sys.exit(1)
 
-app = Flask(__name__)
+# Configure Flask with correct template directory
+template_dir = Path(__file__).parent / "templates"
+app = Flask(__name__, template_folder=str(template_dir))
 app.secret_key = "academic_submission_tool_secret_key"
 app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024  # 50MB max file size
 

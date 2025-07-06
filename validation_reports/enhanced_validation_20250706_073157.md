@@ -7,22 +7,22 @@
 
 ## Summary
 
-| Metric | Value |
-|--------|-------|
-| Total Files | 116 |
-| Passed Files | 106 |
-| Failed Files | 10 |
+| Metric       | Value |
+| ------------ | ----- |
+| Total Files  | 116   |
+| Passed Files | 106   |
+| Failed Files | 10    |
 | Success Rate | 91.4% |
-| Total Issues | 18 |
+| Total Issues | 18    |
 
 ## Issues by Severity
 
 ### HIGH (9 issues)
 
-- **docs/QUARTERLY_DOCUMENTATION_AUDIT_PROCEDURES.md** (line 194): Broken link to '.*\.md' (text: '.*\')
-- **docs/DOCUMENTATION_QUALITY_METRICS.md** (line 63): Broken link to '.*\.md[^' (text: '.*\')
-- **docs/DOCUMENTATION_QUALITY_METRICS.md** (line 67): Broken link to '.*\.md[^' (text: '.*\')
-- **docs/training/validation_tools_cheatsheet.md** (line 173): Broken link to '.*\.md[^' (text: '.*\')
+- **docs/QUARTERLY_DOCUMENTATION_AUDIT_PROCEDURES.md** (line 194): Broken link to '._\.md' (text: '._\')
+- **docs/DOCUMENTATION_QUALITY_METRICS.md** (line 63): Broken link to '._\.md[^' (text: '._\')
+- **docs/DOCUMENTATION_QUALITY_METRICS.md** (line 67): Broken link to '._\.md[^' (text: '._\')
+- **docs/training/validation_tools_cheatsheet.md** (line 173): Broken link to '._\.md[^' (text: '._\')
 - **docs/api/index.md** (line 38): Broken link to 'api/authentication.md' (text: 'JWT Reference')
 - **docs/api/index.md** (line 39): Broken link to 'api/authentication.md' (text: 'RBAC Design')
 - **docs/api/index.md** (line 142): Broken link to 'api/policy-governance.md' (text: 'Governance Workflow Design')

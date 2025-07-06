@@ -186,11 +186,19 @@ CREATE TABLE governance_events (
 // src-tauri/acgs-config.json
 {
   "services": {
-    "auth": "http://localhost:8013",
-    "constitutional_ai": "http://localhost:8014",
-    "audit": "http://localhost:8026",
-    "formal_verification": "http://localhost:8025",
-    "governance": "http://localhost:8019"
+    "auth": "http://localhost:8016",
+    "constitutional_ai": "http://localhost:8001",
+    "integrity": "http://localhost:8002",
+    "formal_verification": "http://localhost:8003",
+    "governance_synthesis": "http://localhost:8004",
+    "policy_governance": "http://localhost:8005",
+    "evolutionary_computation": "http://localhost:8006",
+    "consensus_engine": "http://localhost:8007",
+    "multi_agent_coordinator": "http://localhost:8008",
+    "worker_agents": "http://localhost:8009",
+    "blackboard_service": "http://localhost:8010",
+    "code_analysis_service": "http://localhost:8011",
+    "context_service": "http://localhost:8012"
   },
   "constitutional": {
     "default_profile": "standard",
@@ -309,6 +317,33 @@ bun run tauri dev
 - [ ] Performance optimization
 - [ ] Comprehensive testing
 - [ ] Documentation and release
+
+## Timeline & Milestones
+
+### Month 1: Foundation
+- [ ] ACGS service integration
+- [ ] Basic constitutional validation
+- [ ] Core governance UI components
+
+### Month 2: Enhancement
+- [ ] Advanced governance dashboard
+- [ ] Real-time monitoring
+- [ ] Enhanced security integration
+
+### Month 3: Polish & Release
+- [ ] Performance optimization
+- [ ] Comprehensive testing
+- [ ] Documentation and release
+
+## Related Information
+
+For a broader understanding of the ACGS platform and its components, refer to:
+
+- [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
+- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
+- [ACGE Strategic Implementation Plan - 24 Month Roadmap](../../docs/ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md)
+- [ACGE Testing and Validation Framework](../../docs/ACGE_TESTING_VALIDATION_FRAMEWORK.md)
+- [ACGE Cost Analysis and ROI Projections](../../docs/ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md)
 
 ## Conclusion
 

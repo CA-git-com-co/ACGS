@@ -4,6 +4,7 @@ ACGS Multi-Agent Governance Tests
 Tests for multi-agent coordination, blackboard architecture, consensus
 mechanisms, and governance workflow validation.
 """
+# Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
 import time

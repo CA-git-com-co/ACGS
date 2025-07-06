@@ -4,6 +4,7 @@ Unit tests for APGF (Agentic Policy Generation Feature) integration.
 Tests the core functionality of the dynamic agent system, policy generation,
 and tool routing components within the ACGS constitutional AI framework.
 """
+# Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
 from datetime import datetime

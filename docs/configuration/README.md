@@ -19,6 +19,12 @@
 | **Governance Synthesis** | 8004 | Policy synthesis | ✅ Active |
 | **Policy Governance** | 8005 | Compliance monitoring | ✅ Active |
 | **Evolutionary Computation** | 8006 | WINA optimization | ✅ Active |
+| **Consensus Engine** | 8007 | Agreement between AI agents | ✅ Active |
+| **Multi-Agent Coordinator** | 8008 | Multi-agent coordination | ✅ Active |
+| **Worker Agents** | 8009 | Specialized analysis | ✅ Active |
+| **Blackboard Service** | 8010 | Shared knowledge | ✅ Active |
+| **Code Analysis Service** | 8011 | Code understanding | ✅ Active |
+| **Context Service** | 8012 | Governance workflow | ✅ Active |
 
 ### Performance Targets
 
@@ -215,6 +221,15 @@ grep -r "cdd01ef066bc6cf2" config/
 - [Deployment Guide](../deployment/ACGS_PGP_SETUP_GUIDE.md)
 - [Architecture Overview](../architecture/)
 - [Security Documentation](../security/SECURITY.md)
+
+## Related Information
+
+For a broader understanding of the ACGS platform and its operational aspects, refer to:
+
+- [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
+- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
+- [ACGE Testing and Validation Framework](../../docs/ACGE_TESTING_VALIDATION_FRAMEWORK.md)
+- [ACGE Cost Analysis and ROI Projections](../../docs/ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md)
 
 ---
 

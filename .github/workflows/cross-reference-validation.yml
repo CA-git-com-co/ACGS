@@ -1,0 +1,825 @@
+name: Advanced Cross-Reference Validation
+# Constitutional Hash: cdd01ef066bc6cf2
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master ]
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      validation_level:
+        description: 'Validation level (basic, comprehensive, full)'
+        required: true
+        default: 'comprehensive'
+        type: choice
+        options:
+          - basic
+          - comprehensive
+          - full
+      force_rescan:
+        description: 'Force full repository rescan'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  CONSTITUTIONAL_HASH: "cdd01ef066bc6cf2"
+  PYTHON_VERSION: "3.11"
+  NODE_VERSION: "20"
+
+jobs:
+  cross-reference-scan:
+    name: Cross-Reference Analysis
+    runs-on: ubuntu-latest
+    outputs:
+      has-broken-refs: ${{ steps.validate.outputs.has-broken-refs }}
+      scan-cache-key: ${{ steps.cache-key.outputs.key }}
+      
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for comprehensive analysis
+          
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install PyYAML requests aiohttp gitpython
+          
+      - name: Generate cache key
+        id: cache-key
+        run: |
+          # Generate cache key based on git tree and config
+          TREE_HASH=$(git rev-parse HEAD:)
+          CONFIG_HASH=$(sha256sum .cross_reference_config.yaml 2>/dev/null | cut -d' ' -f1 || echo "no-config")
+          CACHE_KEY="cross-ref-v1-${TREE_HASH:0:8}-${CONFIG_HASH:0:8}"
+          echo "key=${CACHE_KEY}" >> $GITHUB_OUTPUT
+          echo "Cache key: ${CACHE_KEY}"
+          
+      - name: Restore cross-reference cache
+        uses: actions/cache@v3
+        with:
+          path: .cross_reference_cache.json
+          key: ${{ steps.cache-key.outputs.key }}
+          restore-keys: |
+            cross-ref-v1-
+            
+      - name: Scan repository for cross-references
+        id: scan
+        run: |
+          echo "Starting cross-reference scan..."
+          
+          # Determine scan parameters
+          FORCE_RESCAN="${{ github.event.inputs.force_rescan || 'false' }}"
+          if [[ "$FORCE_RESCAN" == "true" ]]; then
+            SCAN_ARGS="--force-rescan"
+          else
+            SCAN_ARGS="--scan"
+          fi
+          
+          # Run the scan
+          python3 tools/automation/cross_reference_maintainer.py $SCAN_ARGS
+          
+          echo "Cross-reference scan completed"
+          
+      - name: Validate cross-references
+        id: validate
+        run: |
+          echo "Validating cross-references..."
+          
+          # Run validation and capture results
+          python3 tools/automation/cross_reference_maintainer.py \
+            --validate \
+            --report \
+            --output cross_reference_report.json
+          
+          # Check if there are broken references
+          BROKEN_COUNT=$(jq -r '.summary.broken_references // 0' cross_reference_report.json)
+          
+          if [[ $BROKEN_COUNT -gt 0 ]]; then
+            echo "has-broken-refs=true" >> $GITHUB_OUTPUT
+            echo "Found $BROKEN_COUNT broken references"
+          else
+            echo "has-broken-refs=false" >> $GITHUB_OUTPUT
+            echo "No broken references found ✅"
+          fi
+          
+          # Output summary
+          jq -r '.summary | to_entries[] | "\(.key): \(.value)"' cross_reference_report.json
+          
+      - name: Upload cross-reference report
+        uses: actions/upload-artifact@v3
+        with:
+          name: cross-reference-report
+          path: |
+            cross_reference_report.json
+            .cross_reference_cache.json
+          retention-days: 30
+
+  file-change-analysis:
+    name: File Change Impact Analysis
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    needs: cross-reference-scan
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install PyYAML requests aiohttp gitpython
+          
+      - name: Download cross-reference report
+        uses: actions/download-artifact@v3
+        with:
+          name: cross-reference-report
+          
+      - name: Analyze file changes
+        id: analyze
+        run: |
+          echo "Analyzing file changes in PR..."
+          
+          # Get list of changed files
+          git diff --name-status origin/${{ github.base_ref }}...HEAD > changed_files.txt
+          
+          # Create analysis script
+          cat > analyze_changes.py << 'EOF'
+          import json
+          import sys
+          import re
+          from pathlib import Path
+          
+          def analyze_file_changes():
+              # Load cross-reference data
+              try:
+                  with open('cross_reference_report.json', 'r') as f:
+                      report = json.load(f)
+              except FileNotFoundError:
+                  print("No cross-reference report found")
+                  return
+              
+              # Load changed files
+              changed_files = {}
+              try:
+                  with open('changed_files.txt', 'r') as f:
+                      for line in f:
+                          if line.strip():
+                              parts = line.strip().split('\t')
+                              if len(parts) >= 2:
+                                  status = parts[0]
+                                  old_file = parts[1] if len(parts) == 2 else parts[1]
+                                  new_file = parts[2] if len(parts) == 3 else old_file
+                                  changed_files[old_file] = {'status': status, 'new_path': new_file}
+              except FileNotFoundError:
+                  print("No changed files found")
+                  return
+              
+              print(f"Analyzing {len(changed_files)} changed files...")
+              
+              # Check for file moves/renames that need reference updates
+              moves_and_renames = []
+              potential_broken_refs = []
+              
+              for old_path, change_info in changed_files.items():
+                  status = change_info['status']
+                  new_path = change_info['new_path']
+                  
+                  if status.startswith('R'):  # Renamed/moved file
+                      moves_and_renames.append((old_path, new_path))
+                      
+                      # Check if this file is referenced elsewhere
+                      broken_refs = report.get('broken_references', {})
+                      for file_with_refs, refs in broken_refs.items():
+                          if old_path in refs:
+                              potential_broken_refs.append({
+                                  'file': file_with_refs,
+                                  'broken_ref': old_path,
+                                  'suggested_fix': new_path
+                              })
+              
+              # Generate analysis summary
+              analysis = {
+                  'changed_files_count': len(changed_files),
+                  'moves_and_renames': moves_and_renames,
+                  'potential_broken_refs': potential_broken_refs,
+                  'requires_reference_update': len(moves_and_renames) > 0 or len(potential_broken_refs) > 0
+              }
+              
+              # Save analysis
+              with open('change_analysis.json', 'w') as f:
+                  json.dump(analysis, f, indent=2)
+              
+              # Print summary
+              print(f"Files moved/renamed: {len(moves_and_renames)}")
+              print(f"Potential broken references: {len(potential_broken_refs)}")
+              
+              if analysis['requires_reference_update']:
+                  print("⚠️ This PR may require reference updates")
+                  return 1
+              else:
+                  print("✅ No reference updates required")
+                  return 0
+          
+          if __name__ == "__main__":
+              sys.exit(analyze_file_changes())
+          EOF
+          
+          python analyze_changes.py
+          echo "exit_code=$?" >> $GITHUB_OUTPUT
+          
+      - name: Upload change analysis
+        uses: actions/upload-artifact@v3
+        with:
+          name: change-analysis
+          path: |
+            change_analysis.json
+            changed_files.txt
+          retention-days: 30
+
+  reference-update-suggestions:
+    name: Generate Reference Update Suggestions
+    runs-on: ubuntu-latest
+    needs: [cross-reference-scan, file-change-analysis]
+    if: github.event_name == 'pull_request' && needs.cross-reference-scan.outputs.has-broken-refs == 'true'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install PyYAML requests aiohttp gitpython
+          
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: cross-reference-report
+          
+      - name: Download change analysis
+        uses: actions/download-artifact@v3
+        with:
+          name: change-analysis
+          
+      - name: Generate update suggestions
+        run: |
+          cat > generate_suggestions.py << 'EOF'
+          import json
+          import sys
+          from pathlib import Path
+          
+          def generate_suggestions():
+              # Load reports
+              try:
+                  with open('cross_reference_report.json', 'r') as f:
+                      ref_report = json.load(f)
+                  with open('change_analysis.json', 'r') as f:
+                      change_analysis = json.load(f)
+              except FileNotFoundError as e:
+                  print(f"Required file not found: {e}")
+                  return
+              
+              suggestions = []
+              
+              # Generate suggestions for broken references
+              broken_refs = ref_report.get('broken_references', {})
+              moves_renames = {old: new for old, new in change_analysis.get('moves_and_renames', [])}
+              
+              for file_path, refs in broken_refs.items():
+                  for broken_ref in refs:
+                      suggestion = {
+                          'file': file_path,
+                          'broken_reference': broken_ref,
+                          'type': 'broken_link'
+                      }
+                      
+                      # Check if this is due to a known move/rename
+                      if broken_ref in moves_renames:
+                          suggestion['suggested_fix'] = moves_renames[broken_ref]
+                          suggestion['confidence'] = 'high'
+                          suggestion['action'] = f"Update reference from '{broken_ref}' to '{moves_renames[broken_ref]}'"
+                      else:
+                          # Try to find similar files
+                          similar_files = find_similar_files(broken_ref, ref_report)
+                          if similar_files:
+                              suggestion['suggested_fix'] = similar_files[0]
+                              suggestion['confidence'] = 'medium'
+                              suggestion['action'] = f"Consider updating to '{similar_files[0]}' (similar file found)"
+                          else:
+                              suggestion['confidence'] = 'low'
+                              suggestion['action'] = f"Manual review required for '{broken_ref}'"
+                      
+                      suggestions.append(suggestion)
+              
+              # Save suggestions
+              with open('update_suggestions.json', 'w') as f:
+                  json.dump(suggestions, f, indent=2)
+              
+              print(f"Generated {len(suggestions)} update suggestions")
+              return suggestions
+          
+          def find_similar_files(broken_ref, report):
+              """Find files with similar names to the broken reference."""
+              import difflib
+              
+              # Get all referenced files
+              all_refs = set()
+              for refs in report.get('reference_map', {}).values():
+                  all_refs.update(refs)
+              
+              # Find similar files using difflib
+              similar = difflib.get_close_matches(broken_ref, all_refs, n=3, cutoff=0.6)
+              return similar
+          
+          if __name__ == "__main__":
+              generate_suggestions()
+          EOF
+          
+          python generate_suggestions.py
+          
+      - name: Upload update suggestions
+        uses: actions/upload-artifact@v3
+        with:
+          name: update-suggestions
+          path: update_suggestions.json
+          retention-days: 30
+
+  auto-fix-references:
+    name: Auto-Fix References (Draft)
+    runs-on: ubuntu-latest
+    needs: [cross-reference-scan, reference-update-suggestions]
+    if: >
+      github.event_name == 'pull_request' && 
+      needs.cross-reference-scan.outputs.has-broken-refs == 'true' &&
+      github.event.pull_request.draft == true
+    
+    permissions:
+      contents: write
+      pull-requests: write
+      
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+          
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install PyYAML requests aiohttp gitpython
+          
+      - name: Download suggestions
+        uses: actions/download-artifact@v3
+        with:
+          name: update-suggestions
+          
+      - name: Apply automatic fixes
+        id: auto-fix
+        run: |
+          cat > apply_fixes.py << 'EOF'
+          import json
+          import sys
+          from pathlib import Path
+          
+          def apply_fixes():
+              try:
+                  with open('update_suggestions.json', 'r') as f:
+                      suggestions = json.load(f)
+              except FileNotFoundError:
+                  print("No suggestions file found")
+                  return False
+              
+              applied_fixes = []
+              
+              for suggestion in suggestions:
+                  if suggestion.get('confidence') == 'high' and 'suggested_fix' in suggestion:
+                      file_path = suggestion['file']
+                      broken_ref = suggestion['broken_reference']
+                      fix = suggestion['suggested_fix']
+                      
+                      # Apply the fix using the cross-reference maintainer
+                      import subprocess
+                      result = subprocess.run([
+                          'python3', 'tools/automation/cross_reference_maintainer.py',
+                          '--update-refs', broken_ref, fix
+                      ], capture_output=True, text=True)
+                      
+                      if result.returncode == 0:
+                          applied_fixes.append({
+                              'file': file_path,
+                              'old_ref': broken_ref,
+                              'new_ref': fix
+                          })
+                          print(f"✅ Fixed: {broken_ref} → {fix} in {file_path}")
+                      else:
+                          print(f"❌ Failed to fix: {broken_ref} → {fix}")
+              
+              # Save applied fixes
+              with open('applied_fixes.json', 'w') as f:
+                  json.dump(applied_fixes, f, indent=2)
+              
+              return len(applied_fixes) > 0
+          
+          if __name__ == "__main__":
+              success = apply_fixes()
+              sys.exit(0 if success else 1)
+          EOF
+          
+          if python apply_fixes.py; then
+            echo "fixes_applied=true" >> $GITHUB_OUTPUT
+          else
+            echo "fixes_applied=false" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Commit fixes
+        if: steps.auto-fix.outputs.fixes_applied == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          git add -A
+          git commit -m "docs: Auto-fix cross-references
+
+          Constitutional Hash: ${{ env.CONSTITUTIONAL_HASH }}
+          
+          Applied automatic fixes for broken cross-references based on file moves and renames.
+          
+          Co-authored-by: Cross-Reference Maintainer <noreply@acgs.ai>"
+          
+          git push
+
+  comprehensive-validation:
+    name: Comprehensive Documentation Validation
+    runs-on: ubuntu-latest
+    needs: cross-reference-scan
+    if: >
+      github.event.inputs.validation_level == 'comprehensive' ||
+      github.event.inputs.validation_level == 'full' ||
+      github.event_name != 'workflow_dispatch'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install PyYAML requests aiohttp gitpython markdown beautifulsoup4 lxml
+          
+      - name: Run enhanced validation
+        run: |
+          python3 tools/validation/enhanced_validation.py \
+            --comprehensive \
+            --output enhanced_validation_report.json
+            
+      - name: Run unified validation framework
+        run: |
+          python3 tests/validate_services.py \
+            --comprehensive \
+            --output unified_validation_report.json
+            
+      - name: Generate comprehensive report
+        run: |
+          cat > generate_comprehensive_report.py << 'EOF'
+          import json
+          import sys
+          from datetime import datetime
+          
+          def generate_report():
+              reports = {}
+              
+              # Load all validation reports
+              report_files = [
+                  ('cross_reference', 'cross_reference_report.json'),
+                  ('enhanced_validation', 'enhanced_validation_report.json'),
+                  ('unified_validation', 'unified_validation_report.json')
+              ]
+              
+              for report_name, filename in report_files:
+                  try:
+                      with open(filename, 'r') as f:
+                          reports[report_name] = json.load(f)
+                  except FileNotFoundError:
+                      reports[report_name] = {'error': f'Report file {filename} not found'}
+              
+              # Generate comprehensive summary
+              summary = {
+                  'timestamp': datetime.now().isoformat(),
+                  'constitutional_hash': '${{ env.CONSTITUTIONAL_HASH }}',
+                  'validation_level': 'comprehensive',
+                  'reports': reports,
+                  'overall_status': 'unknown'
+              }
+              
+              # Determine overall status
+              issues_found = 0
+              
+              # Check cross-reference issues
+              if 'cross_reference' in reports:
+                  cr_summary = reports['cross_reference'].get('summary', {})
+                  issues_found += cr_summary.get('broken_references', 0)
+              
+              # Check enhanced validation issues
+              if 'enhanced_validation' in reports:
+                  ev_result = reports['enhanced_validation']
+                  if isinstance(ev_result, dict) and 'issues' in ev_result:
+                      issues_found += len(ev_result['issues'])
+              
+              # Set overall status
+              if issues_found == 0:
+                  summary['overall_status'] = 'passing'
+              elif issues_found < 10:
+                  summary['overall_status'] = 'warning'
+              else:
+                  summary['overall_status'] = 'failing'
+              
+              summary['total_issues'] = issues_found
+              
+              # Save comprehensive report
+              with open('comprehensive_validation_report.json', 'w') as f:
+                  json.dump(summary, f, indent=2)
+              
+              print(f"Comprehensive validation completed with {issues_found} issues")
+              print(f"Overall status: {summary['overall_status']}")
+              
+              return issues_found
+          
+          if __name__ == "__main__":
+              issues = generate_report()
+              sys.exit(1 if issues > 50 else 0)  # Fail if too many issues
+          EOF
+          
+          python generate_comprehensive_report.py
+          
+      - name: Upload comprehensive report
+        uses: actions/upload-artifact@v3
+        with:
+          name: comprehensive-validation-report
+          path: |
+            comprehensive_validation_report.json
+            enhanced_validation_report.json
+            unified_validation_report.json
+          retention-days: 30
+
+  create-issue-for-broken-refs:
+    name: Create Issue for Broken References
+    runs-on: ubuntu-latest
+    needs: [cross-reference-scan, comprehensive-validation]
+    if: >
+      needs.cross-reference-scan.outputs.has-broken-refs == 'true' &&
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main'
+    
+    permissions:
+      issues: write
+      
+    steps:
+      - name: Download reports
+        uses: actions/download-artifact@v3
+        with:
+          name: cross-reference-report
+          
+      - name: Create or update issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            
+            // Load cross-reference report
+            const report = JSON.parse(fs.readFileSync('cross_reference_report.json', 'utf8'));
+            
+            const brokenRefs = report.broken_references || {};
+            const totalBroken = report.summary?.broken_references || 0;
+            
+            if (totalBroken === 0) {
+              console.log('No broken references to report');
+              return;
+            }
+            
+            // Check for existing issue
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['documentation', 'cross-references', 'automated'],
+              state: 'open'
+            });
+            
+            const existingIssue = issues.data.find(issue => 
+              issue.title.includes('Broken Cross-References Detected')
+            );
+            
+            const issueBody = `# Broken Cross-References Detected
+            
+            **Constitutional Hash:** \`${{ env.CONSTITUTIONAL_HASH }}\`
+            **Detection Date:** ${new Date().toISOString()}
+            **Total Broken References:** ${totalBroken}
+            **Files Affected:** ${Object.keys(brokenRefs).length}
+            
+            ## Summary
+            
+            The automated cross-reference validation has detected broken links in the repository.
+            
+            ## Top 10 Files with Broken References
+            
+            ${Object.entries(brokenRefs)
+              .slice(0, 10)
+              .map(([file, refs]) => `- **${file}**: ${refs.length} broken reference(s)`)
+              .join('\n')}
+            
+            ## Automated Actions
+            
+            - ✅ Cross-reference scan completed
+            - ✅ Broken references identified
+            - ⏳ Manual review required for fixes
+            
+            ## Next Steps
+            
+            1. Review the [full validation report](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            2. Use the cross-reference maintainer tool to fix broken links:
+               \`\`\`bash
+               python3 tools/automation/cross_reference_maintainer.py --validate --report
+               \`\`\`
+            3. Apply fixes and update references as needed
+            
+            ## Auto-Fix Available
+            
+            Some references may be automatically fixable using:
+            \`\`\`bash
+            python3 tools/automation/cross_reference_maintainer.py --update-refs OLD_PATH NEW_PATH
+            \`\`\`
+            
+            ---
+            
+            *This issue was automatically created by the ACGS Cross-Reference Validation workflow.*
+            *Constitutional Hash: ${{ env.CONSTITUTIONAL_HASH }}*`;
+            
+            if (existingIssue) {
+              // Update existing issue
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existingIssue.number,
+                body: issueBody
+              });
+              console.log(`Updated existing issue #${existingIssue.number}`);
+            } else {
+              // Create new issue
+              const newIssue = await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `🔗 Broken Cross-References Detected (${totalBroken} issues)`,
+                body: issueBody,
+                labels: ['documentation', 'cross-references', 'automated', 'help wanted']
+              });
+              console.log(`Created new issue #${newIssue.data.number}`);
+            }
+
+  performance-benchmarks:
+    name: Cross-Reference Performance Benchmarks
+    runs-on: ubuntu-latest
+    needs: cross-reference-scan
+    if: github.event.inputs.validation_level == 'full'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install PyYAML requests aiohttp gitpython psutil memory_profiler
+          
+      - name: Run performance benchmarks
+        run: |
+          cat > benchmark_cross_refs.py << 'EOF'
+          import time
+          import psutil
+          import json
+          import subprocess
+          from memory_profiler import memory_usage
+          
+          def benchmark_scan():
+              """Benchmark the cross-reference scanning performance."""
+              
+              def run_scan():
+                  result = subprocess.run([
+                      'python3', 'tools/automation/cross_reference_maintainer.py',
+                      '--force-rescan'
+                  ], capture_output=True, text=True)
+                  return result.returncode == 0
+              
+              # Measure memory usage
+              start_time = time.time()
+              mem_usage = memory_usage(run_scan, interval=0.1)
+              end_time = time.time()
+              
+              execution_time = end_time - start_time
+              max_memory = max(mem_usage) if mem_usage else 0
+              avg_memory = sum(mem_usage) / len(mem_usage) if mem_usage else 0
+              
+              return {
+                  'execution_time_seconds': execution_time,
+                  'max_memory_mb': max_memory,
+                  'avg_memory_mb': avg_memory,
+                  'cpu_count': psutil.cpu_count()
+              }
+          
+          def benchmark_validation():
+              """Benchmark validation performance."""
+              start_time = time.time()
+              
+              result = subprocess.run([
+                  'python3', 'tools/automation/cross_reference_maintainer.py',
+                  '--validate'
+              ], capture_output=True, text=True)
+              
+              end_time = time.time()
+              
+              return {
+                  'execution_time_seconds': end_time - start_time,
+                  'success': result.returncode == 0
+              }
+          
+          def main():
+              print("Running cross-reference performance benchmarks...")
+              
+              benchmarks = {
+                  'scan_performance': benchmark_scan(),
+                  'validation_performance': benchmark_validation(),
+                  'system_info': {
+                      'cpu_count': psutil.cpu_count(),
+                      'memory_total_gb': psutil.virtual_memory().total / (1024**3),
+                      'platform': 'github-actions-ubuntu-latest'
+                  }
+              }
+              
+              # Save benchmarks
+              with open('performance_benchmarks.json', 'w') as f:
+                  json.dump(benchmarks, f, indent=2)
+              
+              # Print summary
+              scan_time = benchmarks['scan_performance']['execution_time_seconds']
+              validation_time = benchmarks['validation_performance']['execution_time_seconds']
+              max_memory = benchmarks['scan_performance']['max_memory_mb']
+              
+              print(f"Scan time: {scan_time:.2f} seconds")
+              print(f"Validation time: {validation_time:.2f} seconds")
+              print(f"Max memory usage: {max_memory:.1f} MB")
+              
+              # Performance targets (from ACGS specification)
+              if scan_time > 300:  # 5 minutes
+                  print("⚠️ Scan time exceeds 5-minute target")
+              if max_memory > 1000:  # 1GB
+                  print("⚠️ Memory usage exceeds 1GB target")
+              
+              print("✅ Performance benchmarks completed")
+          
+          if __name__ == "__main__":
+              main()
+          EOF
+          
+          python benchmark_cross_refs.py
+          
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v3
+        with:
+          name: performance-benchmarks
+          path: performance_benchmarks.json
+          retention-days: 90

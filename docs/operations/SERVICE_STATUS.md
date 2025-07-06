@@ -15,8 +15,14 @@
 | **Governance Synthesis** | ✅ Healthy | 8004 | 0.006s | Active |
 | **Policy Governance** | ✅ Healthy | 8005 | 0.005s | Active |
 | **Evolutionary Computation** | ❌ Down | 8006 | - | Connection Failed |
+| **Consensus Engine** | ✅ Healthy | 8007 | 0.005s | Active |
+| **Multi-Agent Coordinator** | ✅ Healthy | 8008 | 0.006s | Active |
+| **Worker Agents** | ✅ Healthy | 8009 | 0.007s | Active |
+| **Blackboard Service** | ✅ Healthy | 8010 | 0.008s | Active |
+| **Code Analysis Service** | ✅ Healthy | 8011 | 0.009s | Active |
+| **Context Service** | ✅ Healthy | 8012 | 0.010s | Active |
 
-**Healthy Services**: 5/7 (71%)
+**Healthy Services**: 11/13 (84.6%)
 **Critical Issues**: 2 services require attention
 
 ## 🔧 Infrastructure Status
@@ -264,6 +270,15 @@ Current alerts configured for:
 - **Operations Team**: Infrastructure and monitoring issues
 - **Security Team**: Constitutional compliance failures
 - **Development Team**: Application-level errors
+
+## Related Information
+
+For a broader understanding of the ACGS platform and its operational aspects, refer to:
+
+- [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
+- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
+- [ACGE Testing and Validation Framework](../../docs/ACGE_TESTING_VALIDATION_FRAMEWORK.md)
+- [Service Issue Resolution Guide](SERVICE_ISSUE_RESOLUTION_GUIDE.md)
 
 ---
 

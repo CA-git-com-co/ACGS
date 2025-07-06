@@ -23,6 +23,9 @@ The ACGS-2 system implements a microservices architecture with the following cor
 │ Integrity Service (8002)│ Formal Verification (8003)      │
 │ Governance Synthesis    │ Policy Governance (8005)        │
 │ (8004)                  │ Evolutionary Computation (8006) │
+│ Consensus Engine (8007) │ Multi-Agent Coordinator (8008)  │
+│ Worker Agents (8009)    │ Blackboard Service (8010)       │
+│ Code Analysis (8011)    │ Context Service (8012)          │
 ├─────────────────────────────────────────────────────────────┤
 │ PostgreSQL (5439)       │ Redis (6389)                    │
 │ Multi-Agent Coordinator │ WINA Optimization Engine        │
@@ -44,6 +47,12 @@ The ACGS-2 system implements a microservices architecture with the following cor
 - **Governance Synthesis Service**: Port 8004, policy synthesis and governance
 - **Policy Governance Service**: Port 8005, compliance monitoring and enforcement
 - **Evolutionary Computation Service**: Port 8006, WINA optimization and evolutionary algorithms
+- **Consensus Engine**: Port 8007, enables agreement between different AI agents
+- **Multi-Agent Coordinator**: Port 8008, coordinates the actions of multiple AI agents
+- **Worker Agents**: Port 8009, perform various tasks as directed by the coordinator
+- **Blackboard Service**: Port 8010, Redis-based shared knowledge
+- **Code Analysis Service**: Port 8011, static analysis with tenant routing
+- **Context Service**: Port 8012, governance workflow integration
 
 ## Performance Specifications
 
@@ -282,3 +291,20 @@ The ACGS-2 system has achieved significant performance optimizations while maint
 - Complete cache optimization to achieve 85% hit rate
 - Implement horizontal scaling for 1000+ RPS capacity
 - Prepare for edge deployment and global optimization
+
+## Related Information
+
+For a broader understanding of the ACGS platform and its components, refer to:
+
+- [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
+- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
+- [ACGE Strategic Implementation Plan - 24 Month Roadmap](../../docs/ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md)
+- [ACGE Testing and Validation Framework](../../docs/ACGE_TESTING_VALIDATION_FRAMEWORK.md)
+- [ACGE Cost Analysis and ROI Projections](../../docs/ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md)
+- [ACGS Comprehensive Task Completion - Final Report](../architecture/ACGS_COMPREHENSIVE_TASK_COMPLETION_FINAL_REPORT.md)
+- [ACGS-Claudia Integration Architecture Plan](../architecture/ACGS_CLAUDIA_INTEGRATION_ARCHITECTURE.md)
+- [ACGS Implementation Guide](../deployment/ACGS_IMPLEMENTATION_GUIDE.md)
+- [ACGS-PGP Operational Deployment Guide](../deployment/ACGS_PGP_OPERATIONAL_DEPLOYMENT_GUIDE.md)
+- [ACGS-PGP Troubleshooting Guide](../deployment/ACGS_PGP_TROUBLESHOOTING_GUIDE.md)
+- [ACGS-PGP Setup Guide](../deployment/ACGS_PGP_SETUP_GUIDE.md)
+- [Service Status Dashboard](../operations/SERVICE_STATUS.md)

@@ -1,4 +1,6 @@
 # ACGS/auth_service/app/tests/test_auth_flows.py
+# Constitutional Hash: cdd01ef066bc6cf2
+
 import uuid
 
 import pytest

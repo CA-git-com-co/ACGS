@@ -1,0 +1,34 @@
+{
+  "acgs": {
+    "constitutional_hash": "cdd01ef066bc6cf2",
+    "services": {
+      "auth_service_url": "http://localhost:8016",
+      "constitutional_ai_url": "http://localhost:8001", 
+      "integrity_service_url": "http://localhost:8002",
+      "formal_verification_url": "http://localhost:8003",
+      "governance_synthesis_url": "http://localhost:8004",
+      "policy_governance_url": "http://localhost:8005",
+      "evolutionary_computation_url": "http://localhost:8006"
+    },
+    "performance_targets": {
+      "p99_latency_ms": 5,
+      "cache_hit_rate": 0.85,
+      "throughput_rps": 1000
+    },
+    "constitutional_principles": {
+      "safety_first": true,
+      "operational_transparency": true,
+      "user_consent": true,
+      "data_privacy": true,
+      "resource_constraints": true,
+      "operation_reversibility": true,
+      "least_privilege": true
+    },
+    "compliance_validation": {
+      "validate_all_operations": true,
+      "audit_trail": true,
+      "human_in_the_loop": true,
+      "formal_verification": true
+    }
+  }
+}

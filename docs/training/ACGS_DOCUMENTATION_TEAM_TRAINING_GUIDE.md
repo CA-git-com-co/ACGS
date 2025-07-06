@@ -177,7 +177,7 @@ All documentation must reference these standard performance targets:
 ```
 
 **What it audits:**
-- Infrastructure alignment
+- Infrastructure alignment (PostgreSQL 5439, Redis 6389, Auth 8016, Constitutional AI 8001, Integrity 8002, Formal Verification 8003, Governance Synthesis 8004, Policy Governance 8005, Evolutionary Computation 8006, Consensus Engine 8007, Multi-Agent Coordinator 8008, Worker Agents 8009, Blackboard Service 8010, Code Analysis Service 8011, Context Service 8012)
 - Service API documentation accuracy
 - Cross-reference validation
 - Performance metrics consistency
@@ -384,6 +384,14 @@ Overall Score = (
 - [Quarterly Audit Script](../audit/quarterly_audit.sh)
 - [Daily Metrics Collection](../metrics/collect_daily_metrics.sh)
 - [Quality Alert Monitor](../monitoring/quality_alert_monitor.py)
+
+### Related Information
+
+For a broader understanding of the ACGS platform and its documentation ecosystem, refer to:
+
+- [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
+- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
+- [ACGE Testing and Validation Framework](../../docs/ACGE_TESTING_VALIDATION_FRAMEWORK.md)
 
 ### Support Contacts
 - **Documentation Team Lead**: [Contact Information]

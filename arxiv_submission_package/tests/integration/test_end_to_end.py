@@ -284,7 +284,7 @@ class TestCLIIntegration:
         # Run CLI validation
         result = subprocess.run(
             [
-                "python",
+                "python3",
                 "cli/academic_cli.py",
                 "validate",
                 str(complete_paper),
@@ -321,7 +321,7 @@ class TestCLIIntegration:
         # Run CLI compliance check
         result = subprocess.run(
             [
-                "python",
+                "python3",
                 "cli/academic_cli.py",
                 "compliance",
                 str(complete_paper),
@@ -349,7 +349,7 @@ class TestCLIIntegration:
         """Test CLI status command integration."""
         # Run CLI status check
         result = subprocess.run(
-            ["python", "cli/academic_cli.py", "status", str(complete_paper)],
+            ["python3", "cli/academic_cli.py", "status", str(complete_paper)],
             check=False,
             capture_output=True,
             text=True,
@@ -367,7 +367,7 @@ class TestCLIIntegration:
         """Test CLI error handling with invalid inputs."""
         # Test with non-existent path
         result = subprocess.run(
-            ["python", "cli/academic_cli.py", "validate", "/nonexistent/path"],
+            ["python3", "cli/academic_cli.py", "validate", "/nonexistent/path"],
             check=False,
             capture_output=True,
             text=True,

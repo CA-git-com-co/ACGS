@@ -13,6 +13,7 @@ Key Features:
 - Oversight effectiveness monitoring
 - Integration with constitutional AI decision pipeline
 """
+# Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
 import logging

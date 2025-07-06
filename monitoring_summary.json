@@ -1,0 +1,30 @@
+{
+  "timestamp": "2025-07-06 20:58:09 UTC",
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "monitoring_services": {
+    "prometheus": "http://localhost:9090",
+    "grafana": "http://localhost:3000",
+    "alertmanager": "http://localhost:9093"
+  },
+  "acgs_services": {
+    "auth_service": "http://localhost:8016",
+    "constitutional_ai": "http://localhost:8001",
+    "integrity_service": "http://localhost:8002",
+    "formal_verification": "http://localhost:8003",
+    "governance_synthesis": "http://localhost:8004",
+    "policy_governance": "http://localhost:8005",
+    "evolutionary_computation": "http://localhost:8006"
+  },
+  "configuration_files": {
+    "prometheus_config": "infrastructure/monitoring/prometheus.yml",
+    "alert_rules": "infrastructure/monitoring/constitutional_compliance_rules.yml",
+    "grafana_dashboards": "infrastructure/monitoring/grafana/dashboards",
+    "service_discovery": "infrastructure/monitoring/service_discovery.json"
+  },
+  "performance_targets": {
+    "p99_latency_ms": 5.0,
+    "throughput_rps": 100.0,
+    "cache_hit_rate": 0.85,
+    "constitutional_compliance": 1.0
+  }
+}

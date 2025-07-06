@@ -78,14 +78,14 @@ _Did the documentation appear up-to-date and current?_
 
 ### 9. Most Helpful Documentation Section
 
-**Section**: ******\_\_\_******
+**Section**: **\*\***\_\_\_**\*\***
 
 **Why**:
 _What made this section particularly useful?_
 
 ### 10. Most Problematic Documentation Section
 
-**Section**: ******\_\_\_******
+**Section**: **\*\***\_\_\_**\*\***
 
 **Issues**:
 _What problems did you encounter?_
@@ -107,7 +107,7 @@ _What problems did you encounter?_
 [ ] Product Manager
 [ ] QA Engineer
 [ ] Technical Writer
-[ ] Other: ******\_\_\_******
+[ ] Other: **\*\***\_\_\_**\*\***
 
 ### 14. Experience Level with ACGS
 
@@ -123,7 +123,7 @@ _What problems did you encounter?_
 [ ] Configuration Management
 [ ] Troubleshooting
 [ ] Learning/Training
-[ ] Other: ******\_\_\_******
+[ ] Other: **\*\***\_\_\_**\*\***
 
 ## Overall Satisfaction
 
@@ -144,9 +144,9 @@ _What problems did you encounter?_
 
 ## Survey Submission
 
-**Submission Date**: ******\_\_\_******
-**Submitted By**: ******\_\_\_****** (optional)
-**Contact Email**: ******\_\_\_****** (optional, for follow-up)
+**Submission Date**: **\*\***\_\_\_**\*\***
+**Submitted By**: **\*\***\_\_\_**\*\*** (optional)
+**Contact Email**: **\*\***\_\_\_**\*\*** (optional, for follow-up)
 
 **Constitutional Hash**: `cdd01ef066bc6cf2` ✅
 

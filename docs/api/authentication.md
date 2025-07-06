@@ -44,7 +44,7 @@ This document provides comprehensive documentation for the Authentication Servic
   "username": "string",
   "password": "string"
 ,
-  "constitutional_hash": "cdd01ef066bc6cf2"
+  "constitutional_hash": "[cdd01ef066bc6cf2](docs/architecture/ACGS_CODE_ANALYSIS_ENGINE_ARCHITECTURE.md#constitutional-compliance)"
 }
 ```
 
@@ -217,7 +217,7 @@ console.log(result);
 For detailed specifications and implementation guidelines, see the Auth Service documentation repository.
 ## Performance Targets
 
-- **Latency**: P99 ≤ 5ms for cached queries (latency_p99: ≤5ms)
+- **Latency**: P99 ≤ 5ms for cached queries
 - **Throughput**: ≥ 100 RPS sustained
 - **Cache Hit Rate**: ≥ 85%
 - **Test Coverage**: ≥ 80%
@@ -245,3 +245,30 @@ Service health and performance metrics:
 - Metrics endpoint: `/metrics`
 - Constitutional compliance status: `/compliance`
 - Performance dashboard integration available
+
+## Detailed Explanation of Constitutional Hash
+
+The constitutional hash 'cdd01ef066bc6cf2' is a core identifier for the ACGS platform's constitutional compliance mechanism. It ensures that all authentication processes adhere to predefined rules and standards for security and governance. This hash is referenced throughout the API to validate operations against the platform's architectural guidelines.
+
+For further details, refer to the [ACGS Code Analysis Engine Architecture](docs/architecture/ACGS_CODE_ANALYSIS_ENGINE_ARCHITECTURE.md).
+
+This addition integrates the researched references without impacting other sections of the document.
+
+## Related Information
+
+For a broader understanding of the ACGS platform and its components, refer to:
+
+- [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
+- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
+- [ACGE Strategic Implementation Plan - 24 Month Roadmap](../../docs/ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md)
+- [ACGE Testing and Validation Framework](../../docs/ACGE_TESTING_VALIDATION_FRAMEWORK.md)
+- [ACGE Cost Analysis and ROI Projections](../../docs/ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md)
+- [ACGS Comprehensive Task Completion - Final Report](../architecture/ACGS_COMPREHENSIVE_TASK_COMPLETION_FINAL_REPORT.md)
+- [ACGS-Claudia Integration Architecture Plan](../architecture/ACGS_CLAUDIA_INTEGRATION_ARCHITECTURE.md)
+- [ACGS Implementation Guide](../deployment/ACGS_IMPLEMENTATION_GUIDE.md)
+- [ACGS-PGP Operational Deployment Guide](../deployment/ACGS_PGP_OPERATIONAL_DEPLOYMENT_GUIDE.md)
+- [ACGS-PGP Troubleshooting Guide](../deployment/ACGS_PGP_TROUBLESHOOTING_GUIDE.md)
+- [ACGS-PGP Setup Guide](../deployment/ACGS_PGP_SETUP_GUIDE.md)
+- [Service Status Dashboard](../operations/SERVICE_STATUS.md)
+- [ACGS Configuration Guide](../configuration/README.md)
+- [ACGS-2 Technical Specifications - 2025 Edition](../TECHNICAL_SPECIFICATIONS_2025.md)

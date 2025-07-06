@@ -26,7 +26,7 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
 # Import shared validation components
-sys.path.append("/home/dislove/ACGS-1/services/shared")
+sys.path.append("/home/dislove/ACGS-2/services/shared")
 from api_models import ErrorCode, create_error_response, create_success_response
 from validation_helpers import handle_validation_errors
 from validation_models import SignatureRequest

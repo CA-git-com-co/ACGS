@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+
 from uuid import uuid4  # For generating unique emails
 
 import pytest

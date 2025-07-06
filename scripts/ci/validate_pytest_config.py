@@ -5,6 +5,7 @@ CI/CD Pytest Configuration Validation Script
 This script validates that the pytest configuration works correctly in CI/CD environments
 and ensures compatibility with all GitHub Actions workflows.
 """
+# Constitutional Hash: cdd01ef066bc6cf2
 
 import subprocess
 import sys

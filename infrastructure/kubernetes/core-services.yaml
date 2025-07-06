@@ -760,6 +760,138 @@ spec:
     app.kubernetes.io/component: verification
 
 ---
+# OpenCode CLI Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opencode-cli-service
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/name: opencode-cli-service
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: cli
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: opencode-cli-service
+      app.kubernetes.io/component: cli
+  template:
+    metadata:
+      labels:
+        constitutional-hash: "cdd01ef066bc6cf2"
+        app.kubernetes.io/name: opencode-cli-service
+        app.kubernetes.io/part-of: acgs
+        app.kubernetes.io/component: cli
+      annotations:
+        acgs.ai/constitutional-compliance: "required"
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+      containers:
+        - name: opencode-cli-service
+          image: acgs/opencode-cli:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8020
+              protocol: TCP
+            - name: metrics
+              containerPort: 9090
+              protocol: TCP
+          env:
+            - name: CONSTITUTIONAL_HASH
+              valueFrom:
+                configMapKeyRef:
+                  name: acgs-config
+                  key: CONSTITUTIONAL_HASH
+            - name: ACGS_CONFIG_PATH
+              value: "/app/acgs-config.json"
+            - name: AUTH_SERVICE_URL
+              value: "http://auth-service:8000"
+            - name: CONSTITUTIONAL_AI_URL
+              value: "http://constitutional-ai-service:8001"
+            - name: INTEGRITY_SERVICE_URL
+              value: "http://integrity-service:8002"
+            - name: FORMAL_VERIFICATION_URL
+              value: "http://formal-verification-service:8006"
+            - name: GOVERNANCE_SYNTHESIS_URL
+              value: "http://governance-synthesis-service:8004"
+            - name: POLICY_GOVERNANCE_URL
+              value: "http://policy-governance-service:8005"
+            - name: EVOLUTIONARY_COMPUTATION_URL
+              value: "http://evolutionary-computation-service:8007"
+          envFrom:
+            - configMapRef:
+                name: acgs-config
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "250m"
+          livenessProbe:
+            exec:
+              command:
+                - bun
+                - run
+                - acgs-health
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+                - bun
+                - run
+                - acgs-health
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: opencode-cli-service
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/name: opencode-cli-service
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: cli
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8020
+      targetPort: http
+      protocol: TCP
+    - name: metrics
+      port: 9090
+      targetPort: metrics
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: opencode-cli-service
+    app.kubernetes.io/component: cli
+
+---
 # Audit Logs PVC for Integrity Service
 apiVersion: v1
 kind: PersistentVolumeClaim

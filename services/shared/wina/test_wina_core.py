@@ -4,6 +4,7 @@ Test script for WINA core functionality.
 This script tests the basic functionality of the WINA (Weight Informed Neuron Activation)
 core library to ensure proper setup and integration.
 """
+# Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
 import logging

@@ -1,6 +1,7 @@
 """
 Unit tests for BlackboardService - the core communication hub for multi-agent coordination.
 """
+# Constitutional Hash: cdd01ef066bc6cf2
 
 import pytest
 import pytest_asyncio

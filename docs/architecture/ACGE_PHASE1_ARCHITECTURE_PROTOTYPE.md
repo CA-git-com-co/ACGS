@@ -89,7 +89,13 @@ class ACGECoreModel:
             "fv_service": "constitutional_formal_verification",
             "gs_service": "constitutional_governance_synthesis",
             "pgc_service": "constitutional_policy_compilation",
-            "ec_service": "constitutional_evolution_guidance"
+            "ec_service": "constitutional_evolution_guidance",
+            "consensus_engine": "constitutional_consensus_integration",
+            "multi_agent_coordinator": "constitutional_multi_agent_coordination",
+            "worker_agents": "constitutional_worker_agent_tasks",
+            "blackboard_service": "constitutional_blackboard_knowledge_sharing",
+            "code_analysis_service": "constitutional_code_analysis_integration",
+            "context_service": "constitutional_context_enrichment"
         }
 
     async def constitutional_inference(
@@ -717,3 +723,16 @@ Phase 1 establishes the foundation for ACGE implementation. Upon completion, Pha
 4. **Zero-Downtime Deployment**: Implement blue-green deployment strategy
 
 The successful completion of Phase 1 provides the architectural foundation and validated prototype necessary for confident progression to production integration in Phase 2.
+
+## Related Information
+
+For a deeper dive into the various aspects and related initiatives mentioned in this report, please refer to the following documents:
+
+- **ACGS Service Architecture Overview**: For a comprehensive understanding of the ACGS platform and its services, see [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md).
+- **ACGE Strategic Implementation Plan**: For the overarching strategic context and roadmap, see [ACGE Strategic Implementation Plan - 24 Month Roadmap](../../docs/ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md).
+- **ACGE Testing and Validation Framework**: For details on the testing methodologies and validation processes, refer to the [ACGE Testing and Validation Framework](../../docs/ACGE_TESTING_VALIDATION_FRAMEWORK.md).
+- **ACGE Cost Analysis and ROI Projections**: For information on the financial impact and benefits of these enhancements, see [ACGE Cost Analysis and ROI Projections](../../docs/ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md).
+- **ACGS Comprehensive Task Completion - Final Report**: For an overview of all completed tasks, see [ACGS Comprehensive Task Completion - Final Report](ACGS_COMPREHENSIVE_TASK_COMPLETION_FINAL_REPORT.md).
+- **ACGS Platform Analytical Enhancements - Phase 1 Completion Report**: For details on the initial analytical enhancements, see [ACGS Platform Analytical Enhancements - Phase 1 Completion Report](ACGS_ANALYTICAL_ENHANCEMENTS_PHASE1_COMPLETION_REPORT.md).
+- **ACGS Platform Analytical Enhancements - Phase 2 Completion Report**: For details on the event-driven architecture enhancements, see [ACGS Platform Analytical Enhancements - Phase 2 Completion Report](ACGS_ANALYTICAL_ENHANCEMENTS_PHASE2_COMPLETION_REPORT.md).
+- **ACGE Phase 2: Production Integration**: For the next phase of ACGE implementation, see [ACGE Phase 2: Production Integration](ACGE_PHASE2_PRODUCTION_INTEGRATION.md).

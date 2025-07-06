@@ -1,4 +1,6 @@
 # acgs-pgp/auth_service/app/tests/conftest.py
+# Constitutional Hash: cdd01ef066bc6cf2
+
 import asyncio
 import os
 from collections.abc import (  # AsyncGenerator for async fixture

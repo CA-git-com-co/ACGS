@@ -4,6 +4,7 @@ ACGS Constitutional AI Tests
 Comprehensive tests for constitutional AI policy validation, compliance
 verification, and constitutional hash consistency across the system.
 """
+# Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
 import time

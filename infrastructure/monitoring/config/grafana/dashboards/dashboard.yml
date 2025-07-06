@@ -1,0 +1,15 @@
+# ACGS Grafana Dashboard Provisioning Configuration
+# Constitutional Hash: cdd01ef066bc6cf2
+
+apiVersion: 1
+
+providers:
+  - name: 'ACGS Dashboards'
+    orgId: 1
+    folder: 'ACGS'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards

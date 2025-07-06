@@ -4,6 +4,7 @@ ACGS Human-in-the-Loop (HITL) Tests
 Comprehensive tests for HITL decision processing, uncertainty assessment,
 and sub-5ms P99 latency validation for human oversight integration.
 """
+# Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
 import time

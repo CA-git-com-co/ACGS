@@ -2,6 +2,7 @@
 """
 Test server for ACGS Code Analysis Engine - Minimal version for testing
 """
+# Constitutional Hash: cdd01ef066bc6cf2
 
 import logging
 import os

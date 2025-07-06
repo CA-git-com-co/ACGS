@@ -3,6 +3,7 @@
 Quantumagi Constitution Initialization Script
 Initializes the constitutional governance system on Solana devnet
 """
+# Constitutional Hash: cdd01ef066bc6cf2
 
 import argparse
 import asyncio

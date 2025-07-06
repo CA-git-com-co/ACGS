@@ -38,6 +38,30 @@ The Autonomous Coding Governance System (ACGS) is a comprehensive governance fra
    - End-to-end operation management
    - Unified API for agent operations
 
+7. **Consensus Engine** - Port 8007
+   - Enables agreement between different AI agents
+   - Implements various consensus algorithms
+
+8. **Multi-Agent Coordinator** - Port 8008
+   - Coordinates the actions of multiple AI agents
+   - Dynamic hierarchy creation
+
+9. **Worker Agents** - Port 8009
+   - Specialized agents for ethical, legal, and operational analysis
+   - Perform core analysis and assessment tasks
+
+10. **Blackboard Service** - Port 8010
+    - Redis-based shared knowledge system
+    - Facilitates knowledge sharing between agents
+
+11. **Code Analysis Service** - Port 8011
+    - Static analysis with tenant routing
+    - Semantic code search and dependency mapping
+
+12. **Context Service** - Port 8012
+    - Governance workflow integration
+    - Bidirectional context enrichment
+
 ### Supporting Infrastructure
 
 - **PostgreSQL Database** - Centralized data storage
@@ -358,6 +382,51 @@ This implementation is part of the ACGS research project. For support and questi
 - Machine learning for confidence score optimization
 - Multi-tenancy support
 - Advanced analytics and reporting
+
+## License and Support
+
+This implementation is part of the ACGS research project. For support and questions:
+
+- Check service logs for error details
+- Review monitoring dashboards for performance issues
+- Consult the architecture documentation for design decisions
+
+## Implementation Status
+
+### ✅ Completed Components
+
+- **Agent Identity Management**: Full CRUD operations, authentication, audit logging
+- **HITL Service**: Decision engine, confidence scoring, escalation system
+- **Sandbox Execution**: Docker-based isolation, resource limits, security policies
+- **Agent Authentication Middleware**: Cross-service agent authentication
+- **ACGS Coordinator**: End-to-end operation orchestration
+- **Docker Deployment**: Complete containerized deployment stack
+
+### 🚧 In Progress
+
+- **Formal Verification Service**: Z3 integration (partial implementation)
+- **Audit Integrity Service**: Cryptographic integrity (partial implementation)
+- **Human Review Interface**: Web dashboard for HITL reviews
+
+### 📋 Future Enhancements
+
+- Advanced policy language for formal verification
+- Real blockchain integration (Solana/Ethereum)
+- Machine learning for confidence score optimization
+- Multi-tenancy support
+- Advanced analytics and reporting
+
+## Related Information
+
+For a broader understanding of the ACGS platform and its components, refer to:
+
+- [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
+- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
+- [ACGE Strategic Implementation Plan - 24 Month Roadmap](../../docs/ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md)
+- [ACGE Testing and Validation Framework](../../docs/ACGE_TESTING_VALIDATION_FRAMEWORK.md)
+- [ACGE Cost Analysis and ROI Projections](../../docs/ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md)
+- [ACGS Comprehensive Task Completion - Final Report](../architecture/ACGS_COMPREHENSIVE_TASK_COMPLETION_FINAL_REPORT.md)
+- [ACGS-Claudia Integration Architecture Plan](../architecture/ACGS_CLAUDIA_INTEGRATION_ARCHITECTURE.md)
 
 ---
 

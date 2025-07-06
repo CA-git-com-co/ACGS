@@ -5,6 +5,7 @@ Agent Identity Management System Test
 Simple test script to validate the agent management system functionality.
 Tests agent creation, authentication, and basic operations.
 """
+# Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
 import sys

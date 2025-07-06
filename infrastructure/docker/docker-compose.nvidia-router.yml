@@ -1,6 +1,7 @@
 # NVIDIA LLM Router Docker Compose Configuration
 # This file defines the NVIDIA LLM Router services for ACGS-PGP integration
 
+# Constitutional Hash: cdd01ef066bc6cf2
 version: '3.8'
 
 services:

@@ -5,6 +5,7 @@ ACGS Enterprise Monitoring Dashboard Deployment Script
 This script deploys the enterprise monitoring dashboard with real-time tracking
 of P99 latency (<5ms), cache hit rates (>85%), and constitutional compliance.
 """
+# Constitutional Hash: cdd01ef066bc6cf2
 
 import os
 import sys

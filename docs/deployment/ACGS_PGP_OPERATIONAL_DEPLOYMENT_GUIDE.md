@@ -117,13 +117,14 @@ curl http://localhost:8181/health  # OPA
 ```bash
 # Deploy core constitutional services first
 docker-compose -f infrastructure/docker/docker-compose.production.yml up -d \
-  auth_service ac_service integrity_service
+  auth_service ac_service integrity_service fv_service gs_service pgc_service ec_service \
+  consensus_engine multi_agent_coordinator worker_agents blackboard_service code_analysis_service context_service
 
 # Wait for services to stabilize
 sleep 60
 
 # Validate constitutional compliance
-for port in 8000 8001 8002; do
+for port in 8000 8001 8002 8003 8004 8005 8006 8007 8008 8009 8010 8011 8012; do
   curl -s http://localhost:$port/constitutional/compliance
 done
 ```
@@ -132,24 +133,16 @@ done
 
 ```bash
 # Deploy policy services
-docker-compose -f infrastructure/docker/docker-compose.production.yml up -d \
-  fv_service gs_service pgc_service
-
-# Validate policy services
-for port in 8003 8004 8005; do
-  curl -s http://localhost:$port/health
-done
+# (No separate deployment needed as all services are started in 2.1)
 ```
 
 #### 2.3 Evolution and Computation Services
 
 ```bash
 # Deploy evolution service
-docker-compose -f infrastructure/docker/docker-compose.production.yml up -d ec_service
-
-# Validate all services
-./scripts/test_setup_scripts_comprehensive.sh
+# (No separate deployment needed as all services are started in 2.1)
 ```
+
 
 ### Phase 3: Validation and Testing
 
@@ -530,6 +523,56 @@ docker exec acgs_postgres psql -U acgs_user -d acgs_db -c "ANALYZE;"
 - **Full System**: 8 hours
 - **Emergency Shutdown**: 30 minutes
 - **Constitutional Compliance**: 2 hours
+
+## Disaster Recovery
+
+### Backup Strategy
+
+- **Database**: Daily full backups, hourly incremental
+- **Configuration**: Version controlled in Git
+- **Logs**: Centralized logging with retention
+- **Secrets**: Secure backup of encryption keys
+
+### Recovery Procedures
+
+1. **Infrastructure Recovery**
+
+   - Restore from infrastructure as code
+   - Deploy base services
+   - Validate network connectivity
+
+2. **Data Recovery**
+
+   - Restore database from backup
+   - Validate data integrity
+   - Apply any missing transactions
+
+3. **Service Recovery**
+   - Deploy services in dependency order
+   - Validate constitutional compliance
+   - Perform comprehensive testing
+
+### Recovery Time Objectives (RTO)
+
+- **Critical Services**: 4 hours
+- **Full System**: 8 hours
+- **Emergency Shutdown**: 30 minutes
+- **Constitutional Compliance**: 2 hours
+
+## Related Information
+
+For a broader understanding of the ACGS platform and its components, refer to:
+
+- [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
+- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
+- [ACGE Strategic Implementation Plan - 24 Month Roadmap](../../docs/ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md)
+- [ACGE Testing and Validation Framework](../../docs/ACGE_TESTING_VALIDATION_FRAMEWORK.md)
+- [ACGE Cost Analysis and ROI Projections](../../docs/ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md)
+- [ACGS Comprehensive Task Completion - Final Report](../architecture/ACGS_COMPREHENSIVE_TASK_COMPLETION_FINAL_REPORT.md)
+- [ACGS-Claudia Integration Architecture Plan](../architecture/ACGS_CLAUDIA_INTEGRATION_ARCHITECTURE.md)
+- [ACGS Implementation Guide](ACGS_IMPLEMENTATION_GUIDE.md)
+- [ACGS-PGP Troubleshooting Guide](ACGS_PGP_TROUBLESHOOTING_GUIDE.md)
+- [Service Status Dashboard](../operations/SERVICE_STATUS.md)
 
 ---
 

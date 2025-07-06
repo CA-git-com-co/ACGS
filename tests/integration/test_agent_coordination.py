@@ -2,6 +2,7 @@
 Integration tests for multi-agent coordination workflows.
 Tests the complete interaction between coordinator, worker agents, blackboard, and consensus engine.
 """
+# Constitutional Hash: cdd01ef066bc6cf2
 
 import pytest
 import pytest_asyncio

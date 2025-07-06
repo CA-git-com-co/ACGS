@@ -4,6 +4,7 @@ ACGS E2E Test Framework Core
 Main framework class that orchestrates end-to-end testing with support for
 different testing modes and comprehensive validation capabilities.
 """
+# Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
 import logging

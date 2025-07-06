@@ -4,6 +4,7 @@ Quantumagi Solana Client
 Interfaces with the on-chain Quantumagi programs
 Handles policy deployment and compliance checking
 """
+# Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
 import json

@@ -7,13 +7,13 @@
 
 ## Summary
 
-| Metric | Value |
-|--------|-------|
-| Total Files | 116 |
-| Passed Files | 116 |
-| Failed Files | 0 |
+| Metric       | Value  |
+| ------------ | ------ |
+| Total Files  | 116    |
+| Passed Files | 116    |
+| Failed Files | 0      |
 | Success Rate | 100.0% |
-| Total Issues | 0 |
+| Total Issues | 0      |
 
 ## Issues by Severity
 

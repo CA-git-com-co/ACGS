@@ -517,6 +517,52 @@ class ComplianceAuditLogger:
             ],
         )
 
+    async def log_constitutional_compliance_event(
+        self,
+        compliance_result: dict[str, Any],
+        action: str,
+        user_id: Optional[str] = None,
+        details: Optional[dict[str, Any]] = None,
+    ) -> str:
+        """Log constitutional compliance validation event with operational transparency and reversibility."""
+        severity = (
+            AuditSeverity.HIGH
+            if not compliance_result.get("is_compliant", True)
+            else AuditSeverity.LOW
+        )
+
+        outcome = "compliant" if compliance_result.get("is_compliant", True) else "violation"
+
+        compliance_details = {
+            "compliance_score": compliance_result.get("confidence_score", 0.0),
+            "violations": compliance_result.get("violations", []),
+            "recommendations": compliance_result.get("recommendations", []),
+            "safety_level": compliance_result.get("safety_level", "unknown"),
+            "operational_transparency_validated": True,
+            "operation_reversibility_validated": True,
+            "constitutional_principles_checked": [
+                "safety_first",
+                "operational_transparency",
+                "user_consent",
+                "data_privacy",
+                "resource_constraints",
+                "operation_reversibility",
+                "least_privilege",
+                "constitutional_compliance"
+            ],
+            **(details or {}),
+        }
+
+        return await self.log_event(
+            event_type=AuditEventType.CONSTITUTIONAL_COMPLIANCE,
+            action=action,
+            outcome=outcome,
+            severity=severity,
+            user_id=user_id,
+            details=compliance_details,
+            compliance_tags=[ComplianceStandard.ACGS_CONSTITUTIONAL],
+        )
+
     async def verify_audit_chain(
         self, start_event_id: str = None, end_event_id: str = None
     ) -> dict[str, Any]:

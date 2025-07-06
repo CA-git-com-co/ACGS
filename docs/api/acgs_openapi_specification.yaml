@@ -1,0 +1,450 @@
+openapi: 3.0.3
+info:
+  title: ACGS (Autonomous Constitutional Governance System) API
+  description: |
+    Comprehensive API specification for ACGS services implementing constitutional AI governance
+    with sub-5ms P99 latency targets, >100 RPS throughput, and >85% cache hit rates.
+    
+    **Constitutional Hash**: cdd01ef066bc6cf2
+    
+    ## Key Features
+    - Constitutional compliance validation in all operations
+    - Sub-5ms P99 latency for critical operations
+    - >100 RPS throughput capacity
+    - >85% cache hit rate optimization
+    - O(1) lookup patterns for service state tracking
+    - Human-in-the-loop (HITL) oversight integration
+    - Comprehensive audit logging and monitoring
+    
+    ## Service Architecture
+    - **Authentication Service** (Port 8016): JWT-based authentication and authorization
+    - **Constitutional AI Service** (Port 8001): Constitutional compliance validation
+    - **Integrity Service** (Port 8002): Cryptographic integrity and hash chaining
+    - **Formal Verification Service** (Port 8003): Formal proof generation and verification
+    - **Governance Synthesis Service** (Port 8004): Policy synthesis and OPA integration
+    - **Policy Governance Service** (Port 8005): Governance decision engine
+    - **Evolutionary Computation Service** (Port 8006): Evolutionary algorithms with constitutional compliance
+    - **Consensus Engine** (Port 8007): Enables agreement between different AI agents
+    - **Multi-Agent Coordinator** (Port 8008): Coordinates the actions of multiple AI agents
+    - **Worker Agents** (Port 8009): Perform various tasks as directed by the coordinator
+    - **Blackboard Service** (Port 8010): Redis-based shared knowledge
+    - **Code Analysis Service** (Port 8011): Static analysis with tenant routing
+    - **Context Service** (Port 8012): Governance workflow integration
+    
+    ## Performance Targets
+    - P99 Latency: <5ms for critical operations
+    - Throughput: >100 RPS sustained
+    - Cache Hit Rate: >85% for cached operations
+    - Constitutional Compliance: 100% validation coverage
+  version: 3.0.0
+  contact:
+    name: ACGS Team
+    email: info@soln.ai
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+servers:
+  - url: http://localhost:8000
+    description: Development API Gateway
+  - url: https://api.acgs.dev
+    description: Staging Environment
+  - url: https://api.acgs.prod
+    description: Production Environment
+
+security:
+  - BearerAuth: []
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from authentication service
+
+  schemas:
+    ConstitutionalHash:
+      type: string
+      pattern: '^[a-f0-9]{16}$'
+      example: "cdd01ef066bc6cf2"
+      description: Constitutional compliance hash for ACGS operations
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+        - constitutional_hash
+        - timestamp
+      properties:
+        error:
+          type: string
+          description: Error code
+        message:
+          type: string
+          description: Human-readable error message
+        constitutional_hash:
+          $ref: '#/components/schemas/ConstitutionalHash'
+        timestamp:
+          type: string
+          format: date-time
+        details:
+          type: object
+          description: Additional error details
+
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - service
+        - constitutional_hash
+        - timestamp
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+        service:
+          type: string
+          description: Service name
+        constitutional_hash:
+          $ref: '#/components/schemas/ConstitutionalHash'
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+        uptime_seconds:
+          type: number
+        performance_metrics:
+          type: object
+          properties:
+            p99_latency_ms:
+              type: number
+              description: P99 latency in milliseconds
+            throughput_rps:
+              type: number
+              description: Current throughput in requests per second
+            cache_hit_rate:
+              type: number
+              description: Cache hit rate percentage
+
+    ConstitutionalComplianceRequest:
+      type: object
+      required:
+        - content
+        - constitutional_hash
+      properties:
+        content:
+          type: string
+          description: Content to validate for constitutional compliance
+        constitutional_hash:
+          $ref: '#/components/schemas/ConstitutionalHash'
+        context:
+          type: string
+          description: Context for compliance validation
+        validation_level:
+          type: string
+          enum: [basic, comprehensive, strict]
+          default: comprehensive
+
+    ConstitutionalComplianceResponse:
+      type: object
+      required:
+        - is_compliant
+        - compliance_score
+        - constitutional_hash
+        - validation_id
+      properties:
+        is_compliant:
+          type: boolean
+          description: Whether content meets constitutional requirements
+        compliance_score:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Compliance score (0-1)
+        constitutional_hash:
+          $ref: '#/components/schemas/ConstitutionalHash'
+        validation_id:
+          type: string
+          description: Unique validation identifier
+        violations:
+          type: array
+          items:
+            type: object
+            properties:
+              principle:
+                type: string
+              severity:
+                type: string
+                enum: [low, medium, high, critical]
+              description:
+                type: string
+        processing_time_ms:
+          type: number
+          description: Processing time in milliseconds
+
+    EvolutionRequest:
+      type: object
+      required:
+        - evolution_type
+        - population_size
+        - generations
+        - constitutional_hash
+      properties:
+        evolution_type:
+          type: string
+          enum: [genetic_algorithm, multi_objective, differential_evolution]
+        population_size:
+          type: integer
+          minimum: 10
+          maximum: 1000
+        generations:
+          type: integer
+          minimum: 1
+          maximum: 10000
+        mutation_rate:
+          type: number
+          minimum: 0
+          maximum: 1
+          default: 0.1
+        crossover_rate:
+          type: number
+          minimum: 0
+          maximum: 1
+          default: 0.8
+        fitness_objectives:
+          type: array
+          items:
+            type: string
+          example: ["performance", "constitutional_compliance", "safety"]
+        constitutional_hash:
+          $ref: '#/components/schemas/ConstitutionalHash'
+        constraints:
+          type: object
+          description: Evolution constraints and parameters
+
+    EvolutionResponse:
+      type: object
+      required:
+        - evolution_id
+        - status
+        - constitutional_hash
+      properties:
+        evolution_id:
+          type: string
+          description: Unique evolution identifier
+        status:
+          type: string
+          enum: [submitted, running, completed, failed]
+        constitutional_hash:
+          $ref: '#/components/schemas/ConstitutionalHash'
+        estimated_completion_time:
+          type: string
+          format: date-time
+        progress:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Evolution progress (0-1)
+
+    PolicyRequest:
+      type: object
+      required:
+        - policy_content
+        - constitutional_hash
+      properties:
+        policy_content:
+          type: object
+          description: Policy definition and rules
+        constitutional_hash:
+          $ref: '#/components/schemas/ConstitutionalHash'
+        policy_type:
+          type: string
+          enum: [governance, security, operational, compliance]
+        scope:
+          type: string
+          description: Policy scope and applicability
+        priority:
+          type: string
+          enum: [low, medium, high, critical]
+          default: medium
+
+    PolicyResponse:
+      type: object
+      required:
+        - policy_id
+        - status
+        - constitutional_hash
+      properties:
+        policy_id:
+          type: string
+          description: Unique policy identifier
+        status:
+          type: string
+          enum: [draft, under_review, approved, rejected, active, deprecated]
+        constitutional_hash:
+          $ref: '#/components/schemas/ConstitutionalHash'
+        compliance_score:
+          type: number
+          minimum: 0
+          maximum: 1
+        verification_result:
+          type: object
+          properties:
+            is_valid:
+              type: boolean
+            proof_generated:
+              type: boolean
+            consistency_check:
+              type: string
+              enum: [passed, failed, warning]
+
+paths:
+  /health:
+    get:
+      summary: Service Health Check
+      description: Get health status of ACGS services with performance metrics
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Service health information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /api/v1/constitutional-ai/validate:
+    post:
+      summary: Validate Constitutional Compliance
+      description: |
+        Validate content for constitutional compliance with sub-5ms P99 latency target.
+        Returns compliance score and detailed violation analysis.
+      tags:
+        - Constitutional AI
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConstitutionalComplianceRequest'
+      responses:
+        '200':
+          description: Constitutional compliance validation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConstitutionalComplianceResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+        '429':
+          description: Rate limit exceeded
+
+  /api/v1/evolutionary-computation/evolve:
+    post:
+      summary: Submit Evolution Request
+      description: |
+        Submit evolutionary computation request with constitutional compliance integration.
+        Supports genetic algorithms, multi-objective optimization, and differential evolution.
+      tags:
+        - Evolutionary Computation
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EvolutionRequest'
+      responses:
+        '200':
+          description: Evolution request submitted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EvolutionResponse'
+        '400':
+          description: Invalid evolution parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/evolutionary-computation/status/{evolution_id}:
+    get:
+      summary: Get Evolution Status
+      description: Get current status and progress of evolution request
+      tags:
+        - Evolutionary Computation
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: evolution_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Evolution request identifier
+      responses:
+        '200':
+          description: Evolution status information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EvolutionResponse'
+        '404':
+          description: Evolution not found
+
+  /api/v1/policy-governance/evaluate:
+    post:
+      summary: Evaluate Policy Request
+      description: |
+        Evaluate policy request through governance decision engine with
+        constitutional compliance validation and formal verification.
+      tags:
+        - Policy Governance
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PolicyRequest'
+      responses:
+        '200':
+          description: Policy evaluation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyResponse'
+        '400':
+          description: Invalid policy request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+tags:
+  - name: Health
+    description: Service health and monitoring endpoints
+  - name: Constitutional AI
+    description: Constitutional compliance validation and analysis
+  - name: Evolutionary Computation
+    description: Evolutionary algorithms with constitutional compliance
+  - name: Policy Governance
+    description: Policy evaluation and governance decisions
+  - name: Formal Verification
+    description: Formal proof generation and verification
+  - name: Authentication
+    description: User authentication and authorization

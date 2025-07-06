@@ -386,6 +386,10 @@ financial_kpis:
     month_24: '300-500% ROI achievement'
 ```
 
+## Related Information
+
+For a detailed breakdown of the strategic phases, technical specifications, and implementation roadmap that underpin these cost analyses and ROI projections, please refer to the [ACGE Strategic Implementation Plan - 24 Month Roadmap](ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md).
+
 ## Conclusion
 
 The ACGE strategic implementation presents a compelling financial opportunity with **200-500% ROI within 6 months** of full deployment. The $2.4M investment over 24 months will generate $4.8M - $12M in annual cost savings while significantly improving constitutional compliance accuracy, system performance, and cross-domain scalability.

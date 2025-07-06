@@ -1,4 +1,6 @@
 # ACGS-PGP Multi-stage Dockerfile with UV package manager
+# Constitutional Hash: cdd01ef066bc6cf2
+
 FROM python:3.11-slim as base
 
 # Install system dependencies

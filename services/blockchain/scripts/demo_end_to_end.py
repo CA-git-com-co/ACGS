@@ -3,6 +3,7 @@
 Quantumagi End-to-End Demonstration Script
 Showcases the complete constitutional governance workflow from principle to enforcement
 """
+# Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
 import json

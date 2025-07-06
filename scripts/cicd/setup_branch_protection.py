@@ -5,6 +5,7 @@ ACGS Enterprise Branch Protection Setup Script
 This script configures GitHub branch protection rules to enforce quality gates
 and prevent merges when test coverage falls below 90% threshold.
 """
+# Constitutional Hash: cdd01ef066bc6cf2
 
 import os
 import sys

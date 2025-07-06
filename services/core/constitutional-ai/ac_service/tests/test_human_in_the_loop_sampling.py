@@ -8,6 +8,7 @@ Tests all components of the HITL sampling system including:
 - Performance metrics and targets
 - API endpoints and integration
 """
+# Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
 from datetime import datetime

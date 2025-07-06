@@ -1,12 +1,11 @@
 apiVersion: 1
-
 providers:
-  - name: 'ACGS Dashboards'
-    orgId: 1
-    folder: 'ACGS-1'
-    type: file
-    disableDeletion: false
-    updateIntervalSeconds: 10
-    allowUiUpdates: true
-    options:
-      path: /etc/grafana/provisioning/dashboards
+- allowUiUpdates: true
+  disableDeletion: false
+  folder: ''
+  name: ACGS Dashboards
+  options:
+    path: /etc/grafana/provisioning/dashboards
+  orgId: 1
+  type: file
+  updateIntervalSeconds: 10

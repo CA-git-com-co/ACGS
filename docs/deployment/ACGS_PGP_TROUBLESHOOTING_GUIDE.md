@@ -53,16 +53,10 @@ This guide provides comprehensive troubleshooting procedures for the ACGS-PGP sy
 
 ```bash
 # Check constitutional compliance across all services
-for port in {8000..8006}; do
+for port in 8000 8001 8002 8003 8004 8005 8006 8007 8008 8009 8010 8011 8012; do
   echo "Service on port $port:"
   curl -s http://localhost:$port/constitutional/compliance | jq .
 done
-
-# Verify constitutional hash consistency
-grep -r "cdd01ef066bc6cf2" config/ services/ scripts/
-
-# Check OPA policy status
-curl -s http://localhost:8181/v1/policies | jq .
 ```
 
 #### Resolution Steps
@@ -525,6 +519,36 @@ git checkout HEAD -- config/ infrastructure/
 - **Security Team**: For security incidents
 - **Operations Team**: For infrastructure issues
 - **AI Team**: For model integration problems
+
+## Escalation Procedures
+
+### When to Escalate
+
+- Constitutional compliance cannot be restored within 2 hours
+- Emergency shutdown procedures fail
+- Security vulnerabilities detected
+- Data integrity compromised
+
+### Escalation Contacts
+
+- **Technical Lead**: For architectural decisions
+- **Security Team**: For security incidents
+- **Operations Team**: For infrastructure issues
+- **AI Team**: For model integration problems
+
+## Related Information
+
+For a broader understanding of the ACGS platform and its components, refer to:
+
+- [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
+- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
+- [ACGE Strategic Implementation Plan - 24 Month Roadmap](../../docs/ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md)
+- [ACGE Testing and Validation Framework](../../docs/ACGE_TESTING_VALIDATION_FRAMEWORK.md)
+- [ACGE Cost Analysis and ROI Projections](../../docs/ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md)
+- [ACGS Comprehensive Task Completion - Final Report](../architecture/ACGS_COMPREHENSIVE_TASK_COMPLETION_FINAL_REPORT.md)
+- [ACGS-Claudia Integration Architecture Plan](../architecture/ACGS_CLAUDIA_INTEGRATION_ARCHITECTURE.md)
+- [ACGS Implementation Guide](ACGS_IMPLEMENTATION_GUIDE.md)
+- [Service Status Dashboard](../operations/SERVICE_STATUS.md)
 
 ---
 

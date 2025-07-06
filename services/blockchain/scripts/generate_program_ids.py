@@ -2,6 +2,7 @@
 """
 Generate valid Solana program IDs for Quantumagi programs
 """
+# Constitutional Hash: cdd01ef066bc6cf2
 
 import hashlib
 import os
