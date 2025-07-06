@@ -1559,6 +1559,22 @@ async def get_metrics():
 
 
 if __name__ == "__main__":
-    uvicorn.run(
-        "main:app", host="0.0.0.0", port=SERVICE_PORT, log_level="info", reload=False
-    )
+    # Legacy service - redirects to unified service
+    import sys
+    import os
+    
+    print(f"⚠️  Legacy Evolution Service on port {SERVICE_PORT}")
+    print(f"🔄 Please use the new Unified Evolution/Compiler Service on port 8006")
+    print(f"📍 Run: python unified_main.py")
+    print(f"🔗 API Docs: http://localhost:8006/docs")
+    
+    # Option to auto-redirect to unified service
+    if "--redirect" in sys.argv:
+        print("🚀 Starting unified service...")
+        os.system("python unified_main.py")
+    else:
+        print("💡 Add --redirect flag to automatically start unified service")
+        
+    # uvicorn.run(
+    #     "main:app", host="0.0.0.0", port=SERVICE_PORT, log_level="info", reload=False
+    # )

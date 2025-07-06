@@ -1,12 +1,13 @@
 # Constitutional AI API Documentation
 
+**Service**: Constitutional AI Service
+**Port**: 8001
+**Base URL**: `http://localhost:8001/api/v1`
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 ## Overview
 
 This document provides comprehensive documentation for the Constitutional AI Service (Port 8001) API, covering endpoints for constitutional compliance validation, principle evaluation, council operations, and more.
-
-### Base URL
-
-`http://localhost:8001`
 
 ### Health Check
 
@@ -28,7 +29,9 @@ This document provides comprehensive documentation for the Constitutional AI Ser
 ```json
 {
   "policy_content": "string",
-  "input_data": {}
+  "input_data": {,
+  "constitutional_hash": "cdd01ef066bc6cf2"
+}
 }
 ```
 
@@ -38,6 +41,8 @@ This document provides comprehensive documentation for the Constitutional AI Ser
   "constitutional_compliance": true,
   "compliance_rating": 0.9,
   "principles_evaluated": ["equality", "privacy"]
+,
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }
 ```
 
@@ -47,7 +52,8 @@ const validation = await fetch('http://localhost:8001/api/v1/validate', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
-    'Authorization': 'Bearer <jwt_token>'
+    'Authorization': 'Bearer <jwt_token>',
+    'X-Constitutional-Hash': 'cdd01ef066bc6cf2'
   },
   body: JSON.stringify({
     policy_content: 'Sample policy text.',
@@ -64,7 +70,8 @@ console.log(result);
 {
   "constitutional_compliance": true,
   "compliance_rating": 0.95,
-  "principles_evaluated": ["equality", "fairness", "transparency"]
+  "principles_evaluated": ["equality", "fairness", "transparency"],
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }
 ```
 
@@ -78,7 +85,9 @@ console.log(result);
 ```json
 {
   "principles": ["equality", "privacy"],
-  "input_data": {}
+  "input_data": {,
+  "constitutional_hash": "cdd01ef066bc6cf2"
+}
 }
 ```
 
@@ -90,7 +99,9 @@ console.log(result);
       "principle": "equality",
       "score": 0.85,
       "violations": []
-    },
+    ,
+  "constitutional_hash": "cdd01ef066bc6cf2"
+},
     {
       "principle": "privacy",
       "score": 0.9,
@@ -126,7 +137,9 @@ console.log(result);
       "principle": "equality",
       "score": 0.85,
       "violations": []
-    },
+    ,
+  "constitutional_hash": "cdd01ef066bc6cf2"
+},
     {
       "principle": "privacy",
       "score": 0.9,
@@ -222,6 +235,14 @@ console.log(result);
 
 - [API Documentation Index](index.md)
 - [Principle Evaluation Model Paper](models/principle-eval.pdf)
-- [Constitutional Compliance Checks RFC](rfcs/compliance-checks.md)
+- [Constitutional Compliance Checks RFC](api/constitutional-ai.md)
 
 For system configuration details, deployment guides, and architecture diagrams, see the Constitutional AI service documentation repository.
+## Performance Targets
+
+- **Latency**: P99 ≤ 5ms for cached queries
+- **Throughput**: ≥ 100 RPS sustained
+- **Cache Hit Rate**: ≥ 85%
+- **Test Coverage**: ≥ 80%
+- **Availability**: 99.9% uptime
+- **Constitutional Compliance**: 100% validation

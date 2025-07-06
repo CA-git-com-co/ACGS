@@ -15,6 +15,9 @@ from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from z3 import Int, Solver, sat
 
+# Import new API routers
+from app.api.v1 import v1_router
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -34,6 +37,9 @@ app = FastAPI(
     version=SERVICE_VERSION,
     openapi_url="/openapi.json",
 )
+
+# Include the new API routers
+app.include_router(v1_router, prefix="/api")
 
 # Add secure CORS middleware with environment-based configuration
 import os

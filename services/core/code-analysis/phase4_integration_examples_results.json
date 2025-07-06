@@ -1,0 +1,79 @@
+{
+  "overall_success": true,
+  "constitutional_compliant": true,
+  "examples_results": {
+    "basic_health_monitoring": {
+      "status": "success",
+      "constitutional_compliant": true,
+      "checks_completed": 5
+    },
+    "code_search_integration": {
+      "status": "success",
+      "searches_completed": 5,
+      "search_results": [
+        {
+          "query": "function definition",
+          "total_results": 0,
+          "search_time_ms": 1.4216899871826172,
+          "constitutional_compliant": true
+        },
+        {
+          "query": "class inheritance",
+          "total_results": 0,
+          "search_time_ms": 0.4260540008544922,
+          "constitutional_compliant": true
+        },
+        {
+          "query": "async await pattern",
+          "total_results": 0,
+          "search_time_ms": 0.45180320739746094,
+          "constitutional_compliant": true
+        },
+        {
+          "query": "error handling",
+          "total_results": 0,
+          "search_time_ms": 0.4665851593017578,
+          "constitutional_compliant": true
+        },
+        {
+          "query": "database connection",
+          "total_results": 0,
+          "search_time_ms": 0.3764629364013672,
+          "constitutional_compliant": true
+        }
+      ],
+      "constitutional_compliant": true
+    },
+    "code_analysis_integration": {
+      "status": "success",
+      "analyses_completed": 3,
+      "analysis_results": [
+        {
+          "name": "Simple Function",
+          "language": "python",
+          "analysis_time_ms": 0.7760524749755859,
+          "constitutional_compliant": true
+        },
+        {
+          "name": "Async Function",
+          "language": "python",
+          "analysis_time_ms": 0.39267539978027344,
+          "constitutional_compliant": true
+        },
+        {
+          "name": "Class Definition",
+          "language": "python",
+          "analysis_time_ms": 0.32639503479003906,
+          "constitutional_compliant": true
+        }
+      ],
+      "constitutional_compliant": true
+    },
+    "synchronous_integration": {
+      "status": "success",
+      "checks_completed": 3,
+      "constitutional_compliant": true
+    }
+  },
+  "timestamp": "2025-07-05T09:06:28.257311"
+}

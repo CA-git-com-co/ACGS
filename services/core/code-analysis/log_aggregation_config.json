@@ -1,0 +1,25 @@
+{
+  "log_aggregation": {
+    "service": "acgs-code-analysis-engine",
+    "constitutional_hash": "cdd01ef066bc6cf2",
+    "log_sources": [
+      {
+        "type": "docker_logs",
+        "container": "acgs-code-analysis-engine",
+        "format": "json"
+      },
+      {
+        "type": "application_logs",
+        "path": "/app/logs/",
+        "format": "structured"
+      }
+    ],
+    "log_levels": [
+      "ERROR",
+      "WARNING",
+      "INFO"
+    ],
+    "retention_days": 30,
+    "constitutional_compliance_monitoring": true
+  }
+}

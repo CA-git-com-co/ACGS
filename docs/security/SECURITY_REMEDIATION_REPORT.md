@@ -1,4 +1,7 @@
 # ACGS-1 Security Vulnerability Remediation Report
+
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 Generated: Tue 01 Jul 2025 07:40:32 PM EDT
 
 ## Executive Summary

@@ -2,7 +2,7 @@
 
 **Last Updated**: July 2, 2025
 **Version**: 2.0.0
-**Constitutional Hash**: `cdd01ef066bc6cf2`
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 **Performance Targets**: P99 ≤5ms, 100+ RPS, 85% cache hit rate
 
 This comprehensive guide provides step-by-step instructions for deploying the ACGS-2 system with current performance optimizations and infrastructure specifications.

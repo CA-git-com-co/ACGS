@@ -1,0 +1,47 @@
+{
+  "dashboard": {
+    "title": "ACGS Code Analysis Engine Monitoring",
+    "panels": [
+      {
+        "title": "Request Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(http_requests_total[5m])",
+            "legendFormat": "Requests/sec"
+          }
+        ]
+      },
+      {
+        "title": "Response Time P99",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "P99 Latency"
+          }
+        ]
+      },
+      {
+        "title": "Constitutional Compliance",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "constitutional_compliance_total",
+            "legendFormat": "Compliance Rate"
+          }
+        ]
+      },
+      {
+        "title": "Memory Usage",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "process_resident_memory_bytes",
+            "legendFormat": "Memory (bytes)"
+          }
+        ]
+      }
+    ]
+  }
+}

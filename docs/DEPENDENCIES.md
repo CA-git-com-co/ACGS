@@ -1,5 +1,8 @@
 # ACGS-PGP Dependency Management
 
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
+
 This document outlines the dependency management strategy for ACGS-PGP using modern tools like `uv` for Python and `npm` for JavaScript/TypeScript.
 
 ## Overview

@@ -1,5 +1,8 @@
 # ACGS Emergency Rollback Procedures
 
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
+
 **Date:** 2025-06-26
 
 **Author:** Gemini

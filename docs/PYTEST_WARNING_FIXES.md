@@ -1,5 +1,8 @@
 # ACGS Pytest Warning Resolution Summary
 
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
+
 ## Overview
 
 Successfully resolved all pytest warnings in the ACGS E2E test suite, achieving clean test collection and execution without configuration errors or unknown marker warnings.

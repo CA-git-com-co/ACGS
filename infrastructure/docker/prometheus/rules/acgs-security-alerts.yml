@@ -1,0 +1,247 @@
+# ACGS Security Monitoring and Constitutional Compliance Alerts
+# Production-grade alerting rules for security incidents and constitutional violations
+
+groups:
+  - name: acgs.security.critical
+    interval: 15s
+    rules:
+      # Critical Security Alerts
+      - alert: ACGSServiceDown
+        expr: up{job=~"acgs-.*"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          service: "{{ $labels.service }}"
+          constitutional_hash: "cdd01ef066bc6cf2"
+          alert_type: "availability"
+        annotations:
+          summary: "ACGS {{ $labels.service }} service is down"
+          description: "ACGS {{ $labels.service }} has been down for more than 30 seconds. Constitutional compliance may be impacted."
+          constitutional_impact: "Service unavailability may prevent constitutional validation"
+          remediation: "Check service health, logs, and dependencies"
+
+      - alert: ACGSHighErrorRate
+        expr: (rate(http_requests_total{job=~"acgs-.*",code=~"5.."}[5m]) / rate(http_requests_total{job=~"acgs-.*"}[5m])) > 0.1
+        for: 2m
+        labels:
+          severity: critical
+          service: "{{ $labels.service }}"
+          constitutional_hash: "cdd01ef066bc6cf2"
+          alert_type: "error_rate"
+        annotations:
+          summary: "High error rate detected in {{ $labels.service }}"
+          description: "Error rate is {{ $value | humanizePercentage }} for {{ $labels.service }}"
+          constitutional_impact: "High error rates may indicate security compromise or constitutional violations"
+
+      - alert: ACGSConstitutionalHashMismatch
+        expr: constitutional_compliance_violations_total > 0
+        for: 0s
+        labels:
+          severity: critical
+          service: "{{ $labels.service }}"
+          constitutional_hash: "cdd01ef066bc6cf2"
+          alert_type: "constitutional_violation"
+        annotations:
+          summary: "Constitutional hash mismatch detected"
+          description: "Service {{ $labels.service }} reported constitutional compliance violation"
+          constitutional_impact: "CRITICAL - Constitutional integrity compromised"
+          remediation: "Immediate investigation required - potential security breach"
+
+      - alert: ACGSUnauthorizedAccess
+        expr: rate(http_requests_total{job=~"acgs-.*",code="401"}[5m]) > 10
+        for: 1m
+        labels:
+          severity: critical
+          service: "{{ $labels.service }}"
+          constitutional_hash: "cdd01ef066bc6cf2"
+          alert_type: "unauthorized_access"
+        annotations:
+          summary: "Suspicious unauthorized access attempts"
+          description: "High rate of 401 errors: {{ $value }} per second"
+          constitutional_impact: "Potential security breach attempt"
+
+  - name: acgs.security.warning
+    interval: 30s
+    rules:
+      # Warning Level Security Alerts
+      - alert: ACGSHighResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=~"acgs-.*"}[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+          service: "{{ $labels.service }}"
+          constitutional_hash: "cdd01ef066bc6cf2"
+          alert_type: "performance"
+        annotations:
+          summary: "High response time in {{ $labels.service }}"
+          description: "95th percentile response time is {{ $value }}s"
+          constitutional_impact: "Performance degradation may affect constitutional validation timeliness"
+
+      - alert: ACGSHighMemoryUsage
+        expr: (container_memory_usage_bytes{name=~"acgs-.*"} / container_spec_memory_limit_bytes{name=~"acgs-.*"}) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          service: "{{ $labels.name }}"
+          constitutional_hash: "cdd01ef066bc6cf2"
+          alert_type: "resource_usage"
+        annotations:
+          summary: "High memory usage in {{ $labels.name }}"
+          description: "Memory usage is {{ $value | humanizePercentage }}"
+          constitutional_impact: "Resource exhaustion may impact service availability"
+
+      - alert: ACGSHighCPUUsage
+        expr: (rate(container_cpu_usage_seconds_total{name=~"acgs-.*"}[5m]) / container_spec_cpu_quota{name=~"acgs-.*"} * container_spec_cpu_period{name=~"acgs-.*"}) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          service: "{{ $labels.name }}"
+          constitutional_hash: "cdd01ef066bc6cf2"
+          alert_type: "resource_usage"
+        annotations:
+          summary: "High CPU usage in {{ $labels.name }}"
+          description: "CPU usage is {{ $value | humanizePercentage }}"
+
+      - alert: ACGSDatabaseConnectionsHigh
+        expr: postgres_stat_database_numbackends > 80
+        for: 3m
+        labels:
+          severity: warning
+          service: "postgres"
+          constitutional_hash: "cdd01ef066bc6cf2"
+          alert_type: "database"
+        annotations:
+          summary: "High number of database connections"
+          description: "Current connections: {{ $value }}"
+          constitutional_impact: "Database performance may be affected"
+
+  - name: acgs.multi_tenant.security
+    interval: 20s
+    rules:
+      # Multi-tenant Security Alerts
+      - alert: ACGSTenantIsolationViolation
+        expr: tenant_isolation_violations_total > 0
+        for: 0s
+        labels:
+          severity: critical
+          service: "{{ $labels.service }}"
+          tenant_id: "{{ $labels.tenant_id }}"
+          constitutional_hash: "cdd01ef066bc6cf2"
+          alert_type: "tenant_isolation"
+        annotations:
+          summary: "Tenant isolation violation detected"
+          description: "Service {{ $labels.service }} violated tenant isolation for tenant {{ $labels.tenant_id }}"
+          constitutional_impact: "CRITICAL - Multi-tenant security compromised"
+          remediation: "Immediate isolation and investigation required"
+
+      - alert: ACGSCrossTenantDataAccess
+        expr: cross_tenant_access_attempts_total > 0
+        for: 0s
+        labels:
+          severity: critical
+          service: "{{ $labels.service }}"
+          constitutional_hash: "cdd01ef066bc6cf2"
+          alert_type: "data_breach"
+        annotations:
+          summary: "Cross-tenant data access attempt"
+          description: "Unauthorized cross-tenant data access detected"
+          constitutional_impact: "CRITICAL - Data breach potential"
+
+      - alert: ACGSJWTTokenAnomalies
+        expr: rate(jwt_validation_failures_total[5m]) > 5
+        for: 2m
+        labels:
+          severity: warning
+          service: "auth-service"
+          constitutional_hash: "cdd01ef066bc6cf2"
+          alert_type: "authentication"
+        annotations:
+          summary: "High rate of JWT token validation failures"
+          description: "JWT validation failures: {{ $value }} per second"
+          constitutional_impact: "Authentication system may be under attack"
+
+  - name: acgs.constitutional.compliance
+    interval: 10s
+    rules:
+      # Constitutional Compliance Monitoring
+      - alert: ACGSConstitutionalComplianceScore
+        expr: constitutional_compliance_score < 0.8
+        for: 1m
+        labels:
+          severity: warning
+          service: "{{ $labels.service }}"
+          constitutional_hash: "cdd01ef066bc6cf2"
+          alert_type: "compliance_score"
+        annotations:
+          summary: "Low constitutional compliance score"
+          description: "Compliance score {{ $value }} below threshold"
+          constitutional_impact: "Constitutional compliance degraded"
+
+      - alert: ACGSFormalVerificationFailure
+        expr: formal_verification_failures_total > 0
+        for: 0s
+        labels:
+          severity: critical
+          service: "formal-verification"
+          constitutional_hash: "cdd01ef066bc6cf2"
+          alert_type: "formal_verification"
+        annotations:
+          summary: "Formal verification failure"
+          description: "Z3 SMT solver failed verification"
+          constitutional_impact: "CRITICAL - Mathematical proofs failed"
+
+      - alert: ACGSAuditTrailIntegrityFailure
+        expr: audit_trail_integrity_violations_total > 0
+        for: 0s
+        labels:
+          severity: critical
+          service: "integrity"
+          constitutional_hash: "cdd01ef066bc6cf2"
+          alert_type: "audit_integrity"
+        annotations:
+          summary: "Audit trail integrity violation"
+          description: "Cryptographic audit chain compromised"
+          constitutional_impact: "CRITICAL - Audit integrity compromised"
+
+  - name: acgs.infrastructure.alerts
+    interval: 60s
+    rules:
+      # Infrastructure Security
+      - alert: ACGSNginxSecurityEvents
+        expr: rate(nginx_http_requests_total{status=~"4.."}[5m]) > 20
+        for: 3m
+        labels:
+          severity: warning
+          service: "nginx"
+          constitutional_hash: "cdd01ef066bc6cf2"
+          alert_type: "gateway_security"
+        annotations:
+          summary: "High rate of HTTP 4xx errors in gateway"
+          description: "Gateway errors: {{ $value }} per second"
+          constitutional_impact: "Potential security scanning or attack"
+
+      - alert: ACGSRedisSecurityAlert
+        expr: redis_connected_clients > 50
+        for: 5m
+        labels:
+          severity: warning
+          service: "redis"
+          constitutional_hash: "cdd01ef066bc6cf2"
+          alert_type: "cache_security"
+        annotations:
+          summary: "Unusual Redis connection count"
+          description: "Redis connections: {{ $value }}"
+          constitutional_impact: "Potential unauthorized cache access"
+
+      - alert: ACGSDockerContainerRestart
+        expr: increase(container_last_seen{name=~"acgs-.*"}[5m]) > 0
+        for: 0s
+        labels:
+          severity: warning
+          service: "{{ $labels.name }}"
+          constitutional_hash: "cdd01ef066bc6cf2"
+          alert_type: "container_restart"
+        annotations:
+          summary: "Container {{ $labels.name }} restarted"
+          description: "Container restart detected"
+          constitutional_impact: "Service disruption may affect constitutional processes"

@@ -1,0 +1,137 @@
+# ACGS Code Owners - Documentation Review Requirements
+# Constitutional Hash: cdd01ef066bc6cf2
+#
+# This file defines mandatory reviewers for different parts of the ACGS codebase
+# to ensure proper documentation review and constitutional compliance.
+#
+# Format: path/pattern @reviewer1 @reviewer2
+# 
+# Global fallback - requires at least one review for any change
+* @acgs-maintainers
+
+# Documentation - Requires documentation team review
+docs/ @acgs-docs-team @acgs-platform-team
+README.md @acgs-docs-team @acgs-platform-team
+
+# Configuration Documentation - Requires platform and security review
+docs/configuration/ @acgs-platform-team @acgs-security-team
+docs/deployment/ @acgs-devops-team @acgs-platform-team
+
+# API Documentation - Requires API team and service owner review
+docs/api/ @acgs-api-team @acgs-service-owners
+
+# Operations Documentation - Requires SRE and operations team review
+docs/operations/ @acgs-sre-team @acgs-operations-team
+
+# Architecture Documentation - Requires architecture team review
+docs/architecture/ @acgs-architecture-team @acgs-platform-team
+
+# Security Documentation - Requires security team review
+docs/security/ @acgs-security-team @acgs-compliance-team
+
+# Infrastructure - Requires DevOps and security review
+infrastructure/ @acgs-devops-team @acgs-security-team
+docker-compose*.yml @acgs-devops-team @acgs-platform-team
+Dockerfile* @acgs-devops-team @acgs-security-team
+
+# Service Configuration - Requires service owners and platform review
+services/*/config/ @acgs-service-owners @acgs-platform-team
+services/*/docker/ @acgs-devops-team @acgs-service-owners
+
+# Core Services - Requires service-specific review
+services/auth/ @acgs-auth-team @acgs-security-team
+services/constitutional_ai/ @acgs-ai-team @acgs-security-team
+services/integrity/ @acgs-integrity-team @acgs-security-team
+services/formal_verification/ @acgs-verification-team @acgs-security-team
+services/governance_synthesis/ @acgs-governance-team @acgs-security-team
+services/policy_governance/ @acgs-policy-team @acgs-security-team
+services/evolutionary_computation/ @acgs-evolution-team @acgs-performance-team
+
+# Configuration Files - Requires platform and security review
+config/ @acgs-platform-team @acgs-security-team
+*.env* @acgs-security-team @acgs-platform-team
+pyproject.toml @acgs-platform-team @acgs-devops-team
+pytest.ini @acgs-qa-team @acgs-platform-team
+
+# GitHub Workflows - Requires DevOps and security review
+.github/workflows/ @acgs-devops-team @acgs-security-team
+.github/CODEOWNERS @acgs-platform-team @acgs-security-team
+
+# Performance and Monitoring - Requires SRE team review
+monitoring/ @acgs-sre-team @acgs-operations-team
+grafana/ @acgs-sre-team @acgs-operations-team
+prometheus/ @acgs-sre-team @acgs-operations-team
+
+# Database - Requires data team and security review
+database/ @acgs-data-team @acgs-security-team
+migrations/ @acgs-data-team @acgs-platform-team
+
+# Scripts and Tools - Requires platform team review
+scripts/ @acgs-platform-team @acgs-devops-team
+tools/ @acgs-platform-team @acgs-devops-team
+
+# Validation Tools - Requires documentation and platform review
+tools/validation/ @acgs-docs-team @acgs-platform-team
+
+# Security-sensitive files - Requires security team review
+**/secrets/ @acgs-security-team
+**/certs/ @acgs-security-team
+**/keys/ @acgs-security-team
+
+# Constitutional Compliance Files - Requires security and compliance review
+**/*constitutional* @acgs-security-team @acgs-compliance-team
+**/*compliance* @acgs-security-team @acgs-compliance-team
+
+# Performance-critical files - Requires performance team review
+**/*performance* @acgs-performance-team @acgs-sre-team
+**/*benchmark* @acgs-performance-team @acgs-qa-team
+
+# Test files - Requires QA team review
+tests/ @acgs-qa-team @acgs-service-owners
+**/test_* @acgs-qa-team
+**/*_test.* @acgs-qa-team
+
+# Package and dependency files - Requires security review
+requirements*.txt @acgs-security-team @acgs-platform-team
+package*.json @acgs-security-team @acgs-platform-team
+Pipfile* @acgs-security-team @acgs-platform-team
+poetry.lock @acgs-security-team @acgs-platform-team
+
+# License and legal files - Requires legal review
+LICENSE* @acgs-legal-team
+NOTICE* @acgs-legal-team
+COPYRIGHT* @acgs-legal-team
+
+# Release and changelog files - Requires product and platform review
+CHANGELOG* @acgs-product-team @acgs-platform-team
+RELEASE* @acgs-product-team @acgs-platform-team
+
+# Team Definitions (GitHub teams should be created to match these)
+#
+# @acgs-maintainers - Core maintainers with overall repository access
+# @acgs-docs-team - Documentation team responsible for content quality
+# @acgs-platform-team - Platform engineering team
+# @acgs-security-team - Security engineering team
+# @acgs-devops-team - DevOps and infrastructure team
+# @acgs-api-team - API design and integration team
+# @acgs-service-owners - Service owners and developers
+# @acgs-sre-team - Site reliability engineering team
+# @acgs-operations-team - Operations and support team
+# @acgs-architecture-team - Architecture and design team
+# @acgs-compliance-team - Compliance and audit team
+# @acgs-auth-team - Authentication service team
+# @acgs-ai-team - Constitutional AI service team
+# @acgs-integrity-team - Integrity service team
+# @acgs-verification-team - Formal verification service team
+# @acgs-governance-team - Governance synthesis service team
+# @acgs-policy-team - Policy governance service team
+# @acgs-evolution-team - Evolutionary computation service team
+# @acgs-performance-team - Performance engineering team
+# @acgs-qa-team - Quality assurance team
+# @acgs-data-team - Data engineering team
+# @acgs-legal-team - Legal and compliance team
+# @acgs-product-team - Product management team
+
+# Constitutional Hash Validation
+# All changes must maintain constitutional hash: cdd01ef066bc6cf2
+# Security team has override authority for constitutional compliance issues

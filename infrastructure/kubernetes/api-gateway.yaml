@@ -1,0 +1,245 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/name: api-gateway
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: gateway
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: api-gateway
+      app.kubernetes.io/component: gateway
+  template:
+    metadata:
+      labels:
+        constitutional-hash: "cdd01ef066bc6cf2"
+        app.kubernetes.io/name: api-gateway
+        app.kubernetes.io/part-of: acgs
+        app.kubernetes.io/component: gateway
+      annotations:
+        acgs.ai/constitutional-compliance: "required"
+        acgs.ai/security-level: "strict"
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
+        prometheus.io/path: "/metrics"
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+      - name: api-gateway
+        image: acgs/api-gateway:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        - name: metrics
+          containerPort: 9090
+          protocol: TCP
+        env:
+        - name: CONSTITUTIONAL_HASH
+          valueFrom:
+            configMapKeyRef:
+              name: acgs-config
+              key: CONSTITUTIONAL_HASH
+        - name: ENVIRONMENT
+          valueFrom:
+            configMapKeyRef:
+              name: acgs-config
+              key: ENVIRONMENT
+        - name: DEBUG
+          valueFrom:
+            configMapKeyRef:
+              name: acgs-config
+              key: DEBUG
+        - name: GATEWAY_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: acgs-service-urls
+              key: GATEWAY_HOST
+        - name: GATEWAY_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: acgs-service-urls
+              key: GATEWAY_PORT
+        - name: JWT_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: acgs-secrets
+              key: JWT_SECRET_KEY
+        - name: JWT_ALGORITHM
+          valueFrom:
+            secretKeyRef:
+              name: acgs-secrets
+              key: JWT_ALGORITHM
+        - name: RATE_LIMIT_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              name: acgs-config
+              key: RATE_LIMIT_ENABLED
+        - name: RATE_LIMIT_REQUESTS_PER_MINUTE
+          valueFrom:
+            configMapKeyRef:
+              name: acgs-config
+              key: RATE_LIMIT_REQUESTS_PER_MINUTE
+        - name: REDIS_URL
+          value: "redis://redis.acgs-system.svc.cluster.local:6379"
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: redis-secret
+              key: REDIS_PASSWORD
+        envFrom:
+        - configMapRef:
+            name: acgs-service-urls
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /gateway/health
+            port: http
+            httpHeaders:
+            - name: X-Constitutional-Hash
+              value: "cdd01ef066bc6cf2"
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /gateway/health
+            port: http
+            httpHeaders:
+            - name: X-Constitutional-Hash
+              value: "cdd01ef066bc6cf2"
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 3
+        startupProbe:
+          httpGet:
+            path: /gateway/health
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 30
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-gateway
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/name: api-gateway
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: gateway
+  annotations:
+    acgs.ai/constitutional-compliance: "required"
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9090"
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8080
+    targetPort: http
+    protocol: TCP
+  - name: metrics
+    port: 9090
+    targetPort: metrics
+    protocol: TCP
+  selector:
+    app.kubernetes.io/name: api-gateway
+    app.kubernetes.io/component: gateway
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: api-gateway-pdb
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: gateway
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: api-gateway
+      app.kubernetes.io/component: gateway
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: api-gateway-hpa
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: gateway
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: api-gateway
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 10
+        periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 30

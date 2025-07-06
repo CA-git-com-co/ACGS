@@ -69,7 +69,7 @@ claims/                           # Directory monitored by ArgoCD
   - gs: 8004, pgc: 8005, ec: 8006, dgm: 8007
 - **Resource Limits**: CPU (200m-500m), Memory (512Mi-1Gi)
 - **Health Check**: `/health` endpoint with configurable parameters
-- **Constitutional Hash**: `cdd01ef066bc6cf2` for governance validation
+- <!-- Constitutional Hash: cdd01ef066bc6cf2 --> for governance validation
 
 ### Provider Versions
 

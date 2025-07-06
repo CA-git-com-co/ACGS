@@ -25,7 +25,7 @@
 - **Environment**: staging
 - **Database**: PostgreSQL (staging database)
 - **Cache**: Redis (staging instance)
-- **Constitutional Hash**: cdd01ef066bc6cf2
+- <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 
 ### Monitoring Stack Status
 

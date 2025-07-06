@@ -1,5 +1,8 @@
 # Security Policy - ACGS-1 Quantumagi Constitutional Governance System
 
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
+
 ## 🔒 Security Overview
 
 The ACGS-1 Quantumagi system implements enterprise-grade security measures for constitutional governance operations on the Solana blockchain. This document outlines our security policies, procedures, and contact information.

@@ -1,5 +1,8 @@
 # OpenRouter Integration for ACGS Constitutional AI
 
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
+
 This document describes the OpenRouter integration in the ACGS AI Model Service, enabling external model access for constitutional AI validation and governance decisions.
 
 ## Overview
@@ -290,4 +293,4 @@ await asyncio.sleep(0.1)
 3. **Advanced Features** - Add custom constitutional rules
 4. **Monitoring Dashboard** - Create real-time monitoring interface
 
-For more information, see the [ACGS Documentation](../README.md) and [API Reference](api_reference.md).
+For more information, see the [ACGS Documentation](../README.md) and [API Reference](api/index.md).

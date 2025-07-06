@@ -21,6 +21,7 @@ This document outlines the migration plan for evolving the ACGS-PGP from its cur
 ### 2. Constitutional Compliance Integration
 
 - **Objective:** Validate the feasibility of integrating democratic governance platforms and ensure constitutional hash compatibility.
+- <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 - **Plan:**
   - **Tier 1 (Critical):** Centralize constitutional hash validation in a shared library.
   - **Tier 2 (High):** Develop a prototype integration with Pol.is or Decidim.

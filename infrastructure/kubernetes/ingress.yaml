@@ -1,0 +1,450 @@
+---
+# Nginx Ingress Controller Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-ingress-controller
+  namespace: acgs-ingress
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/name: nginx-ingress-controller
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: ingress
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: nginx-ingress-controller
+      app.kubernetes.io/component: ingress
+  template:
+    metadata:
+      labels:
+        constitutional-hash: "cdd01ef066bc6cf2"
+        app.kubernetes.io/name: nginx-ingress-controller
+        app.kubernetes.io/part-of: acgs
+        app.kubernetes.io/component: ingress
+      annotations:
+        acgs.ai/constitutional-compliance: "required"
+        acgs.ai/network-security: "strict"
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "10254"
+    spec:
+      serviceAccountName: nginx-ingress-serviceaccount
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        runAsGroup: 101
+        fsGroup: 101
+      containers:
+      - name: nginx-ingress-controller
+        image: nginx/nginx-ingress:3.2.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 80
+          protocol: TCP
+        - name: https
+          containerPort: 443
+          protocol: TCP
+        - name: metrics
+          containerPort: 10254
+          protocol: TCP
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: CONSTITUTIONAL_HASH
+          value: "cdd01ef066bc6cf2"
+        args:
+        - -nginx-configmaps=$(POD_NAMESPACE)/nginx-config
+        - -default-server-tls-secret=$(POD_NAMESPACE)/acgs-tls
+        - -ingress-class=acgs-nginx
+        - -health-status
+        - -ready-status
+        - -nginx-status
+        - -nginx-status-allow-cidrs=127.0.0.1,10.0.0.0/8
+        - -enable-prometheus-metrics
+        - -prometheus-metrics-listen-port=10254
+        volumeMounts:
+        - name: nginx-config
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+        - name: tls-certs
+          mountPath: /etc/ssl/certs
+          readOnly: true
+        - name: tls-private
+          mountPath: /etc/ssl/private
+          readOnly: true
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "250m"
+        livenessProbe:
+          httpGet:
+            path: /nginx-health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /nginx-ready
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - NET_BIND_SERVICE
+      volumes:
+      - name: nginx-config
+        configMap:
+          name: nginx-config
+      - name: tls-certs
+        secret:
+          secretName: acgs-tls
+          items:
+          - key: tls.crt
+            path: server.crt
+      - name: tls-private
+        secret:
+          secretName: acgs-tls
+          items:
+          - key: tls.key
+            path: server.key
+
+---
+# Nginx Ingress Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-ingress
+  namespace: acgs-ingress
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/name: nginx-ingress-controller
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: ingress
+  annotations:
+    acgs.ai/constitutional-compliance: "required"
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "10254"
+spec:
+  type: LoadBalancer
+  ports:
+  - name: http
+    port: 80
+    targetPort: http
+    protocol: TCP
+  - name: https
+    port: 443
+    targetPort: https
+    protocol: TCP
+  - name: metrics
+    port: 10254
+    targetPort: metrics
+    protocol: TCP
+  selector:
+    app.kubernetes.io/name: nginx-ingress-controller
+    app.kubernetes.io/component: ingress
+  loadBalancerSourceRanges:
+  # Restrict access to specific IP ranges for production
+  - 10.0.0.0/8
+  - 172.16.0.0/12
+  - 192.168.0.0/16
+
+---
+# Service Account for Nginx Ingress
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nginx-ingress-serviceaccount
+  namespace: acgs-ingress
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: ingress
+
+---
+# ClusterRole for Nginx Ingress
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: nginx-ingress-clusterrole
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: ingress
+rules:
+- apiGroups: [""]
+  resources: ["configmaps", "endpoints", "nodes", "pods", "secrets"]
+  verbs: ["list", "watch"]
+- apiGroups: [""]
+  resources: ["services"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["networking.k8s.io"]
+  resources: ["ingresses"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create", "patch"]
+- apiGroups: ["networking.k8s.io"]
+  resources: ["ingresses/status"]
+  verbs: ["update"]
+
+---
+# ClusterRoleBinding for Nginx Ingress
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: nginx-ingress-clusterrolebinding
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: ingress
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: nginx-ingress-clusterrole
+subjects:
+- kind: ServiceAccount
+  name: nginx-ingress-serviceaccount
+  namespace: acgs-ingress
+
+---
+# Role for Nginx Ingress (namespace-specific)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: nginx-ingress-role
+  namespace: acgs-ingress
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: ingress
+rules:
+- apiGroups: [""]
+  resources: ["configmaps", "pods", "secrets", "namespaces"]
+  verbs: ["get"]
+- apiGroups: [""]
+  resources: ["configmaps"]
+  resourceNames: ["ingress-controller-leader-acgs-nginx"]
+  verbs: ["get", "update"]
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["create"]
+- apiGroups: [""]
+  resources: ["endpoints"]
+  verbs: ["get"]
+
+---
+# RoleBinding for Nginx Ingress
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: nginx-ingress-rolebinding
+  namespace: acgs-ingress
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: ingress
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: nginx-ingress-role
+subjects:
+- kind: ServiceAccount
+  name: nginx-ingress-serviceaccount
+  namespace: acgs-ingress
+
+---
+# Main ACGS Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: acgs-ingress
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: ingress
+  annotations:
+    acgs.ai/constitutional-compliance: "required"
+    kubernetes.io/ingress.class: "acgs-nginx"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/secure-backends: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    nginx.ingress.kubernetes.io/rate-limit: "1000"
+    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      add_header X-Constitutional-Hash "cdd01ef066bc6cf2" always;
+      add_header X-Frame-Options "DENY" always;
+      add_header X-Content-Type-Options "nosniff" always;
+      add_header X-XSS-Protection "1; mode=block" always;
+      add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+      add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'" always;
+spec:
+  tls:
+  - hosts:
+    - acgs.example.com
+    - api.acgs.example.com
+    secretName: acgs-tls
+  rules:
+  - host: acgs.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: api-gateway
+            port:
+              number: 8080
+  - host: api.acgs.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: api-gateway
+            port:
+              number: 8080
+
+---
+# Monitoring Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: acgs-monitoring-ingress
+  namespace: acgs-monitoring
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: monitoring
+  annotations:
+    acgs.ai/constitutional-compliance: "required"
+    kubernetes.io/ingress.class: "acgs-nginx"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: monitoring-basic-auth
+    nginx.ingress.kubernetes.io/auth-realm: "ACGS Monitoring - Authentication Required"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      add_header X-Constitutional-Hash "cdd01ef066bc6cf2" always;
+spec:
+  tls:
+  - hosts:
+    - grafana.acgs.example.com
+    - prometheus.acgs.example.com
+    secretName: acgs-tls
+  rules:
+  - host: grafana.acgs.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: grafana
+            port:
+              number: 3000
+  - host: prometheus.acgs.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: prometheus
+            port:
+              number: 9090
+
+---
+# Basic Auth Secret for Monitoring
+apiVersion: v1
+kind: Secret
+metadata:
+  name: monitoring-basic-auth
+  namespace: acgs-monitoring
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: monitoring
+type: Opaque
+stringData:
+  # Basic auth credentials (admin:admin_password)
+  # Generate with: htpasswd -c auth admin
+  auth: "admin:$2y$10$hqZ3HqAKBz.Q8eF8LK0K6OE1R9vT2nJ8Y3XqA1P9b4eL7zN8qY9aC"
+
+---
+# Network Policy for Ingress
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: acgs-ingress-netpol
+  namespace: acgs-ingress
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: ingress
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/component: ingress
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from: []  # Allow all inbound traffic (internet-facing)
+    ports:
+    - protocol: TCP
+      port: 80
+    - protocol: TCP
+      port: 443
+    - protocol: TCP
+      port: 10254
+  egress:
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: acgs-system
+    ports:
+    - protocol: TCP
+      port: 8080  # API Gateway
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: acgs-monitoring
+    ports:
+    - protocol: TCP
+      port: 3000  # Grafana
+    - protocol: TCP
+      port: 9090  # Prometheus
+  - to: []  # Allow DNS
+    ports:
+    - protocol: UDP
+      port: 53

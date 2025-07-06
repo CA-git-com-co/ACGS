@@ -1,3 +1,5 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 Alternative AI Governance Frameworks for Real-Time Policy Compliance
 Introduction
 

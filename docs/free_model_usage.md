@@ -1,5 +1,8 @@
 # Free Model Usage Guide for ACGS OpenRouter Integration
 
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
+
 This guide shows how to use the free OpenRouter model (`openrouter/cypher-alpha:free`) for constitutional AI validation in ACGS.
 
 ## Quick Start

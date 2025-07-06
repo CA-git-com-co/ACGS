@@ -1,40 +1,71 @@
 """
-Simplified Authentication Service - Production Fix
-Streamlined configuration to resolve middleware conflicts
+Multi-Tenant Authentication Service for ACGS
+
+Enhanced authentication service with complete multi-tenant support,
+constitutional compliance, and enterprise-grade security isolation.
+
+Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import logging
 import os
+import sys
 import time
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 
+# Add shared module path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', '..', 'services', 'shared'))
+
+# Import multi-tenant components
+try:
+    from middleware.tenant_middleware import (
+        TenantContextMiddleware,
+        TenantSecurityMiddleware,
+        get_tenant_context,
+        get_optional_tenant_context,
+        get_tenant_db
+    )
+    from auth.tenant_auth import TenantAuthenticationService, get_tenant_auth_service
+    from models.multi_tenant import Organization, Tenant, TenantUser
+    from repositories.tenant_repository import TenantRepository
+    from services.tenant_management import TenantManagementService
+    
+    MULTI_TENANT_AVAILABLE = True
+    print("✅ Multi-tenant components loaded successfully")
+except ImportError as e:
+    print(f"⚠️ Multi-tenant components not available: {e}")
+    MULTI_TENANT_AVAILABLE = False
+
 # Import production security middleware
 try:
-    import sys
-
-    sys.path.append("/home/ubuntu/ACGS/services/shared")
     from security_middleware import (
         apply_production_security_middleware,
         create_security_config,
     )
-
     SECURITY_MIDDLEWARE_AVAILABLE = True
     print("✅ Production security middleware loaded successfully")
 except ImportError as e:
     print(f"⚠️ Production security middleware not available: {e}")
     SECURITY_MIDDLEWARE_AVAILABLE = False
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from fastapi.security import HTTPBearer
 from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
 from starlette.responses import PlainTextResponse
+from sqlalchemy.ext.asyncio import AsyncSession
 
 # Service configuration
 SERVICE_NAME = "auth_service"
-SERVICE_VERSION = "3.1.0"
+SERVICE_VERSION = "4.0.0"  # Upgraded for multi-tenant support
 SERVICE_PORT = 8000
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+# JWT configuration for multi-tenant tokens
+JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key-here")
+JWT_ALGORITHM = "HS256"
 
 # Configure logging
 logging.basicConfig(
@@ -61,13 +92,38 @@ async def lifespan(app: FastAPI):
 
 # Create FastAPI application
 app = FastAPI(
-    title="ACGS-PGP Authentication Service",
-    description="Simplified authentication service for ACGS-PGP system",
+    title="ACGS Multi-Tenant Authentication Service",
+    description="Enterprise authentication service with multi-tenant support and constitutional compliance",
     version=SERVICE_VERSION,
     docs_url="/docs",
     redoc_url="/redoc",
     lifespan=lifespan,
 )
+
+# Add multi-tenant middleware
+if MULTI_TENANT_AVAILABLE:
+    # Add tenant context middleware (before other middleware)
+    app.add_middleware(
+        TenantContextMiddleware,
+        jwt_secret_key=JWT_SECRET_KEY,
+        jwt_algorithm=JWT_ALGORITHM,
+        exclude_paths=[
+            "/docs", "/redoc", "/openapi.json", "/health", "/metrics",
+            "/auth/login", "/auth/register", "/organizations/create"
+        ],
+        require_tenant=False,  # Auth service handles tenant-less operations
+        bypass_paths=[
+            "/auth/login", "/auth/register", "/auth/refresh",
+            "/tenants/validate", "/organizations"
+        ]
+    )
+    
+    # Add tenant security middleware
+    app.add_middleware(TenantSecurityMiddleware)
+    
+    print("✅ Multi-tenant middleware applied to auth service")
+else:
+    print("⚠️ Multi-tenant middleware not available for auth service")
 # Apply production-grade security middleware
 if SECURITY_MIDDLEWARE_AVAILABLE:
     security_config = create_security_config(
@@ -234,22 +290,189 @@ async def generate_token(request: Request):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# Multi-Tenant Authentication Endpoints
+if MULTI_TENANT_AVAILABLE:
+    
+    @app.post("/api/v1/auth/tenant-login")
+    async def tenant_login(
+        username: str,
+        password: str,
+        tenant_id: str = None,
+        session: AsyncSession = Depends(get_tenant_db)
+    ):
+        """Login with tenant context support."""
+        try:
+            auth_service = get_tenant_auth_service(JWT_SECRET_KEY)
+            
+            # Convert tenant_id to UUID if provided
+            tenant_uuid = None
+            if tenant_id:
+                import uuid
+                tenant_uuid = uuid.UUID(tenant_id)
+            
+            # Authenticate user for tenant
+            user_info = await auth_service.authenticate_user_for_tenant(
+                session, username, password, tenant_uuid
+            )
+            
+            if not user_info:
+                raise HTTPException(status_code=401, detail="Invalid credentials")
+            
+            # Create tokens
+            access_token = auth_service.create_tenant_access_token(user_info)
+            refresh_token = auth_service.create_tenant_refresh_token(user_info)
+            
+            return {
+                "access_token": access_token,
+                "refresh_token": refresh_token,
+                "token_type": "bearer",
+                "user_info": {
+                    "user_id": user_info.user_id,
+                    "username": user_info.username,
+                    "tenant_id": str(user_info.tenant_id) if user_info.tenant_id else None,
+                    "tenant_name": user_info.tenant_name,
+                    "role": user_info.role,
+                    "permissions": user_info.permissions
+                },
+                "constitutional_hash": CONSTITUTIONAL_HASH
+            }
+            
+        except Exception as e:
+            logger.error(f"Tenant login error: {e}")
+            raise HTTPException(status_code=401, detail="Authentication failed")
+    
+    @app.post("/api/v1/auth/tenant-refresh")
+    async def tenant_refresh(
+        refresh_token: str,
+        session: AsyncSession = Depends(get_tenant_db)
+    ):
+        """Refresh access token with tenant context."""
+        try:
+            auth_service = get_tenant_auth_service(JWT_SECRET_KEY)
+            
+            tokens = await auth_service.refresh_tenant_access_token(session, refresh_token)
+            tokens["constitutional_hash"] = CONSTITUTIONAL_HASH
+            
+            return tokens
+            
+        except Exception as e:
+            logger.error(f"Token refresh error: {e}")
+            raise HTTPException(status_code=401, detail="Token refresh failed")
+    
+    @app.post("/api/v1/auth/switch-tenant")
+    async def switch_tenant(
+        new_tenant_id: str,
+        current_token: str,
+        session: AsyncSession = Depends(get_tenant_db)
+    ):
+        """Switch user's active tenant context."""
+        try:
+            auth_service = get_tenant_auth_service(JWT_SECRET_KEY)
+            import uuid
+            
+            tenant_uuid = uuid.UUID(new_tenant_id)
+            tokens = await auth_service.switch_tenant_context(
+                session, current_token, tenant_uuid
+            )
+            
+            return tokens
+            
+        except Exception as e:
+            logger.error(f"Tenant switch error: {e}")
+            raise HTTPException(status_code=403, detail="Tenant switch failed")
+    
+    @app.get("/api/v1/auth/user-tenants")
+    async def get_user_tenants(
+        token: str,
+        session: AsyncSession = Depends(get_tenant_db)
+    ):
+        """Get all tenants accessible by the authenticated user."""
+        try:
+            auth_service = get_tenant_auth_service(JWT_SECRET_KEY)
+            
+            tenants = await auth_service.get_user_tenants(session, token)
+            
+            return {
+                "tenants": tenants,
+                "constitutional_hash": CONSTITUTIONAL_HASH
+            }
+            
+        except Exception as e:
+            logger.error(f"Get user tenants error: {e}")
+            raise HTTPException(status_code=401, detail="Failed to get user tenants")
+    
+    @app.post("/api/v1/tenants")
+    async def create_tenant(
+        organization_id: str,
+        name: str,
+        slug: str = None,
+        description: str = None,
+        tier: str = "basic",
+        security_level: str = "basic",
+        session: AsyncSession = Depends(get_tenant_db),
+        tenant_context = Depends(get_optional_tenant_context)
+    ):
+        """Create a new tenant within an organization."""
+        try:
+            import uuid
+            from services.tenant_management import TenantCreateRequest
+            
+            tenant_service = TenantManagementService(session)
+            org_uuid = uuid.UUID(organization_id)
+            
+            request = TenantCreateRequest(
+                name=name,
+                slug=slug,
+                description=description,
+                tier=tier,
+                security_level=security_level
+            )
+            
+            tenant = await tenant_service.create_tenant(
+                org_uuid, request, 
+                created_by_user_id=tenant_context.user_id if tenant_context else None
+            )
+            
+            return {
+                "tenant_id": str(tenant.id),
+                "name": tenant.name,
+                "slug": tenant.slug,
+                "status": tenant.status,
+                "constitutional_hash": CONSTITUTIONAL_HASH
+            }
+            
+        except Exception as e:
+            logger.error(f"Tenant creation error: {e}")
+            raise HTTPException(status_code=400, detail="Tenant creation failed")
+
 # Service info endpoint
 @app.get("/api/v1/auth/info")
 async def service_info():
     """Service information endpoint"""
+    endpoints = [
+        "/health",
+        "/metrics", 
+        "/api/v1/auth/validate",
+        "/api/v1/auth/token",
+        "/api/v1/auth/info",
+    ]
+    
+    if MULTI_TENANT_AVAILABLE:
+        endpoints.extend([
+            "/api/v1/auth/tenant-login",
+            "/api/v1/auth/tenant-refresh", 
+            "/api/v1/auth/switch-tenant",
+            "/api/v1/auth/user-tenants",
+            "/api/v1/tenants"
+        ])
+    
     return {
         "service": SERVICE_NAME,
         "version": SERVICE_VERSION,
         "status": "operational",
-        "constitutional_hash": "cdd01ef066bc6cf2",
-        "endpoints": [
-            "/health",
-            "/metrics",
-            "/api/v1/auth/validate",
-            "/api/v1/auth/token",
-            "/api/v1/auth/info",
-        ],
+        "constitutional_hash": CONSTITUTIONAL_HASH,
+        "multi_tenant_enabled": MULTI_TENANT_AVAILABLE,
+        "endpoints": endpoints,
     }
 
 

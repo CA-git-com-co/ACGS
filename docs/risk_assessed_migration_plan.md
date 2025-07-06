@@ -1,5 +1,8 @@
 # ACGS Risk-Assessed Migration Plan
 
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
+
 **Date:** 2025-06-26
 
 **Author:** Gemini

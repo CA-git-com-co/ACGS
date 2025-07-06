@@ -1,0 +1,265 @@
+# ACGS Code Analysis Engine - Python Dependencies
+# Constitutional Hash: cdd01ef066bc6cf2
+
+# ============================================================================
+# CORE WEB FRAMEWORK
+# ============================================================================
+
+# FastAPI and ASGI server
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic[email]==2.5.0
+pydantic-settings==2.1.0
+
+# ============================================================================
+# DATABASE AND CACHING
+# ============================================================================
+
+# PostgreSQL with async support and pgvector
+asyncpg==0.29.0
+sqlalchemy[asyncio]==2.0.23
+alembic==1.13.1
+psycopg2-binary==2.9.9
+pgvector==0.2.4
+
+# Redis for caching
+redis[hiredis]==5.0.1
+aioredis==2.0.1
+
+# ============================================================================
+# CODE ANALYSIS AND PARSING
+# ============================================================================
+
+# Tree-sitter for AST parsing
+tree-sitter==0.20.4
+tree-sitter-python==0.23.6
+tree-sitter-javascript==0.23.1
+tree-sitter-typescript==0.20.3
+tree-sitter-yaml==0.5.0
+
+# File watching
+watchdog==6.0.0
+
+# ============================================================================
+# MACHINE LEARNING AND EMBEDDINGS
+# ============================================================================
+
+# Sentence transformers for embeddings
+sentence-transformers==2.2.2
+transformers==4.36.0
+torch==2.1.1
+numpy==1.24.4
+scikit-learn==1.3.2
+
+# Vector similarity and search
+faiss-cpu==1.7.4
+
+# ============================================================================
+# HTTP CLIENT AND SERVICE INTEGRATION
+# ============================================================================
+
+# HTTP client for service integration
+httpx==0.25.2
+aiohttp==3.9.1
+
+# ============================================================================
+# MONITORING AND OBSERVABILITY
+# ============================================================================
+
+# Prometheus metrics
+prometheus-client==0.19.0
+prometheus-fastapi-instrumentator==6.1.0
+
+# Structured logging
+structlog==25.4.0
+python-json-logger==3.3.0
+
+# ============================================================================
+# SECURITY AND AUTHENTICATION
+# ============================================================================
+
+# JWT handling
+pyjwt[crypto]==2.8.0
+cryptography==41.0.8
+
+# Password hashing
+passlib[bcrypt]==1.7.4
+
+# ============================================================================
+# UTILITIES AND HELPERS
+# ============================================================================
+
+# Configuration management
+python-dotenv==1.0.0
+
+# Date and time handling
+python-dateutil==2.8.2
+pytz==2023.3
+
+# JSON handling
+orjson==3.9.10
+
+# Async utilities
+asyncio-throttle==1.0.2
+
+# File handling
+pathlib2==2.3.7.post1
+aiofiles==23.2.1
+
+# ============================================================================
+# DEVELOPMENT AND TESTING
+# ============================================================================
+
+# Testing framework
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+pytest-mock==3.12.0
+pytest-benchmark==4.0.0
+
+# HTTP testing
+httpx==0.25.2
+respx==0.20.2
+
+# Fixtures and factories
+factory-boy==3.3.0
+faker==20.1.0
+
+# ============================================================================
+# CODE QUALITY AND FORMATTING
+# ============================================================================
+
+# Linting and formatting
+ruff==0.1.6
+black==23.11.0
+isort==5.12.0
+
+# Type checking
+mypy==1.7.1
+types-redis==4.6.0.11
+types-requests==2.31.0.10
+
+# ============================================================================
+# DOCUMENTATION
+# ============================================================================
+
+# API documentation
+mkdocs==1.5.3
+mkdocs-material==9.4.8
+
+# ============================================================================
+# PRODUCTION DEPLOYMENT
+# ============================================================================
+
+# Process management
+gunicorn==21.2.0
+
+# Health checks
+psutil==5.9.6
+
+# ============================================================================
+# CONSTITUTIONAL COMPLIANCE DEPENDENCIES
+# ============================================================================
+
+# Cryptographic hashing for constitutional compliance
+hashlib2==1.0.1
+
+# ============================================================================
+# VERSION CONSTRAINTS FOR SECURITY
+# ============================================================================
+
+# Ensure secure versions
+certifi>=2023.7.22
+urllib3>=2.0.7
+requests>=2.31.0
+
+# ============================================================================
+# OPTIONAL DEPENDENCIES FOR ENHANCED FEATURES
+# ============================================================================
+
+# GPU acceleration (optional)
+# torch-audio==2.1.1  # Uncomment if GPU support needed
+# torch-vision==0.16.1  # Uncomment if GPU support needed
+
+# Advanced NLP models (optional)
+# spacy==3.7.2  # Uncomment for advanced NLP features
+# en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
+
+# Graph analysis (optional)
+# networkx==3.2.1  # Uncomment for advanced dependency graph analysis
+
+# ============================================================================
+# PINNED VERSIONS FOR REPRODUCIBILITY
+# ============================================================================
+
+# Core dependencies with exact versions for production stability
+click==8.1.7
+anyio==3.7.1
+sniffio==1.3.0
+idna==3.6
+h11==0.14.0
+typing-extensions==4.8.0
+
+# ============================================================================
+# DEVELOPMENT ENVIRONMENT SETUP
+# ============================================================================
+
+# Pre-commit hooks (development only)
+# pre-commit==3.5.0  # Uncomment for development environment
+
+# Jupyter notebooks (development only)
+# jupyter==1.0.0  # Uncomment for development environment
+# ipykernel==6.26.0  # Uncomment for development environment
+
+# ============================================================================
+# COMPATIBILITY NOTES
+# ============================================================================
+
+# Python version requirement: >=3.11
+# This requirements.txt is tested with Python 3.11 and 3.12
+
+# For Apple Silicon (M1/M2) Macs, you may need to install some packages differently:
+# pip install --no-deps torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+
+# For CUDA support on Linux/Windows:
+# pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+
+# ============================================================================
+# INSTALLATION INSTRUCTIONS
+# ============================================================================
+
+# 1. Create virtual environment:
+#    python -m venv venv
+#    source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# 2. Upgrade pip:
+#    pip install --upgrade pip
+
+# 3. Install dependencies:
+#    pip install -r requirements.txt
+
+# 4. Install tree-sitter language grammars:
+#    python -c "import tree_sitter_python; import tree_sitter_javascript"
+
+# 5. Set up environment variables:
+#    cp .env.example .env
+#    # Edit .env with your configuration
+
+# 6. Initialize database:
+#    alembic upgrade head
+
+# 7. Run the service:
+#    python main.py
+
+# ============================================================================
+# SECURITY CONSIDERATIONS
+# ============================================================================
+
+# All dependencies are pinned to specific versions to ensure reproducible builds
+# and prevent supply chain attacks. Update versions carefully and test thoroughly.
+
+# For production deployment:
+# 1. Use pip-audit to check for known vulnerabilities
+# 2. Regularly update dependencies following security advisories
+# 3. Use dependency scanning tools in CI/CD pipeline
+# 4. Consider using pip-tools for dependency management

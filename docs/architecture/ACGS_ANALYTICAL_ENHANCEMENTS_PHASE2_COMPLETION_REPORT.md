@@ -1,7 +1,7 @@
 # ACGS Platform Analytical Enhancements - Phase 2 Completion Report
 
 **Date**: 2025-06-28  
-**Constitutional Hash**: `cdd01ef066bc6cf2`  
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->  
 **Phase**: 2 - Event-Driven Architecture Enhancements (4-week completion target)  
 **Status**: ✅ **COMPLETED**
 
@@ -270,7 +270,7 @@ Phase 2 of the ACGS platform analytical enhancements has been successfully compl
 
 **Phase 2 Status**: ✅ **COMPLETED SUCCESSFULLY**  
 **Next Phase**: Phase 3 - Advanced Analytics and AI Integration (6-week target)  
-**Constitutional Hash**: `cdd01ef066bc6cf2`  
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->  
 **Report Generated**: 2025-06-28
 
 ## 📈 Metrics Summary

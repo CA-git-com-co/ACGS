@@ -5,7 +5,7 @@
 This document provides comprehensive technical specifications for the ACGS-2 (AI Constitutional Governance System) production deployment, including current performance metrics, infrastructure specifications, and optimization achievements as of July 2025.
 
 **System Status**: Production-ready with comprehensive performance optimizations
-**Constitutional Hash**: `cdd01ef066bc6cf2`
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 **Last Updated**: July 2, 2025
 
 ## Architecture Overview

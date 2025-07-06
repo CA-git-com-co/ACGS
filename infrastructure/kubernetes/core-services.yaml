@@ -1,0 +1,779 @@
+---
+# Auth Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/name: auth-service
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: auth
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: auth-service
+      app.kubernetes.io/component: auth
+  template:
+    metadata:
+      labels:
+        constitutional-hash: "cdd01ef066bc6cf2"
+        app.kubernetes.io/name: auth-service
+        app.kubernetes.io/part-of: acgs
+        app.kubernetes.io/component: auth
+      annotations:
+        acgs.ai/constitutional-compliance: "required"
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+      - name: auth-service
+        image: acgs/auth-service:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 8000
+          protocol: TCP
+        - name: metrics
+          containerPort: 9090
+          protocol: TCP
+        env:
+        - name: CONSTITUTIONAL_HASH
+          valueFrom:
+            configMapKeyRef:
+              name: acgs-config
+              key: CONSTITUTIONAL_HASH
+        - name: DATABASE_URL
+          value: "postgresql://$(DATABASE_USERNAME):$(DATABASE_PASSWORD)@postgresql.acgs-system.svc.cluster.local:5432/acgs"
+        - name: DATABASE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: acgs-secrets
+              key: DATABASE_USERNAME
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: acgs-secrets
+              key: DATABASE_PASSWORD
+        - name: JWT_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: acgs-secrets
+              key: JWT_SECRET_KEY
+        envFrom:
+        - configMapRef:
+            name: acgs-config
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "250m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/name: auth-service
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: auth
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8000
+    targetPort: http
+    protocol: TCP
+  - name: metrics
+    port: 9090
+    targetPort: metrics
+    protocol: TCP
+  selector:
+    app.kubernetes.io/name: auth-service
+    app.kubernetes.io/component: auth
+
+---
+# Constitutional AI Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: constitutional-ai-service
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/name: constitutional-ai-service
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: constitutional-ai
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: constitutional-ai-service
+      app.kubernetes.io/component: constitutional-ai
+  template:
+    metadata:
+      labels:
+        constitutional-hash: "cdd01ef066bc6cf2"
+        app.kubernetes.io/name: constitutional-ai-service
+        app.kubernetes.io/part-of: acgs
+        app.kubernetes.io/component: constitutional-ai
+      annotations:
+        acgs.ai/constitutional-compliance: "required"
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+      - name: constitutional-ai-service
+        image: acgs/constitutional-ai-service:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 8001
+          protocol: TCP
+        - name: metrics
+          containerPort: 9090
+          protocol: TCP
+        env:
+        - name: CONSTITUTIONAL_HASH
+          valueFrom:
+            configMapKeyRef:
+              name: acgs-config
+              key: CONSTITUTIONAL_HASH
+        - name: DATABASE_URL
+          value: "postgresql://$(DATABASE_USERNAME):$(DATABASE_PASSWORD)@postgresql.acgs-system.svc.cluster.local:5432/acgs"
+        - name: DATABASE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: acgs-secrets
+              key: DATABASE_USERNAME
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: acgs-secrets
+              key: DATABASE_PASSWORD
+        envFrom:
+        - configMapRef:
+            name: acgs-config
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: constitutional-ai-service
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/name: constitutional-ai-service
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: constitutional-ai
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8001
+    targetPort: http
+    protocol: TCP
+  - name: metrics
+    port: 9090
+    targetPort: metrics
+    protocol: TCP
+  selector:
+    app.kubernetes.io/name: constitutional-ai-service
+    app.kubernetes.io/component: constitutional-ai
+
+---
+# Integrity Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: integrity-service
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/name: integrity-service
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: integrity
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: integrity-service
+      app.kubernetes.io/component: integrity
+  template:
+    metadata:
+      labels:
+        constitutional-hash: "cdd01ef066bc6cf2"
+        app.kubernetes.io/name: integrity-service
+        app.kubernetes.io/part-of: acgs
+        app.kubernetes.io/component: integrity
+      annotations:
+        acgs.ai/constitutional-compliance: "required"
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+      - name: integrity-service
+        image: acgs/integrity-service:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 8002
+          protocol: TCP
+        - name: metrics
+          containerPort: 9090
+          protocol: TCP
+        env:
+        - name: CONSTITUTIONAL_HASH
+          valueFrom:
+            configMapKeyRef:
+              name: acgs-config
+              key: CONSTITUTIONAL_HASH
+        - name: DATABASE_URL
+          value: "postgresql://$(DATABASE_USERNAME):$(DATABASE_PASSWORD)@postgresql.acgs-system.svc.cluster.local:5432/acgs"
+        - name: DATABASE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: acgs-secrets
+              key: DATABASE_USERNAME
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: acgs-secrets
+              key: DATABASE_PASSWORD
+        - name: AUDIT_ENCRYPTION_KEY
+          valueFrom:
+            secretKeyRef:
+              name: acgs-secrets
+              key: AUDIT_ENCRYPTION_KEY
+        envFrom:
+        - configMapRef:
+            name: acgs-config
+        volumeMounts:
+        - name: audit-logs
+          mountPath: /app/audit-logs
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+      volumes:
+      - name: audit-logs
+        persistentVolumeClaim:
+          claimName: audit-logs-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: integrity-service
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/name: integrity-service
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: integrity
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8002
+    targetPort: http
+    protocol: TCP
+  - name: metrics
+    port: 9090
+    targetPort: metrics
+    protocol: TCP
+  selector:
+    app.kubernetes.io/name: integrity-service
+    app.kubernetes.io/component: integrity
+
+---
+# Governance Synthesis Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: governance-synthesis-service
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/name: governance-synthesis-service
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: governance
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: governance-synthesis-service
+      app.kubernetes.io/component: governance
+  template:
+    metadata:
+      labels:
+        constitutional-hash: "cdd01ef066bc6cf2"
+        app.kubernetes.io/name: governance-synthesis-service
+        app.kubernetes.io/part-of: acgs
+        app.kubernetes.io/component: governance
+      annotations:
+        acgs.ai/constitutional-compliance: "required"
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+      - name: governance-synthesis-service
+        image: acgs/governance-synthesis-service:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 8004
+          protocol: TCP
+        - name: metrics
+          containerPort: 9090
+          protocol: TCP
+        env:
+        - name: CONSTITUTIONAL_HASH
+          valueFrom:
+            configMapKeyRef:
+              name: acgs-config
+              key: CONSTITUTIONAL_HASH
+        - name: DATABASE_URL
+          value: "postgresql://$(DATABASE_USERNAME):$(DATABASE_PASSWORD)@postgresql.acgs-system.svc.cluster.local:5432/acgs"
+        - name: DATABASE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: acgs-secrets
+              key: DATABASE_USERNAME
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: acgs-secrets
+              key: DATABASE_PASSWORD
+        envFrom:
+        - configMapRef:
+            name: acgs-config
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: governance-synthesis-service
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/name: governance-synthesis-service
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: governance
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8004
+    targetPort: http
+    protocol: TCP
+  - name: metrics
+    port: 9090
+    targetPort: metrics
+    protocol: TCP
+  selector:
+    app.kubernetes.io/name: governance-synthesis-service
+    app.kubernetes.io/component: governance
+
+---
+# Policy Governance Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: policy-governance-service
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/name: policy-governance-service
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: policy
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: policy-governance-service
+      app.kubernetes.io/component: policy
+  template:
+    metadata:
+      labels:
+        constitutional-hash: "cdd01ef066bc6cf2"
+        app.kubernetes.io/name: policy-governance-service
+        app.kubernetes.io/part-of: acgs
+        app.kubernetes.io/component: policy
+      annotations:
+        acgs.ai/constitutional-compliance: "required"
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+      - name: policy-governance-service
+        image: acgs/policy-governance-service:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 8005
+          protocol: TCP
+        - name: metrics
+          containerPort: 9090
+          protocol: TCP
+        env:
+        - name: CONSTITUTIONAL_HASH
+          valueFrom:
+            configMapKeyRef:
+              name: acgs-config
+              key: CONSTITUTIONAL_HASH
+        - name: DATABASE_URL
+          value: "postgresql://$(DATABASE_USERNAME):$(DATABASE_PASSWORD)@postgresql.acgs-system.svc.cluster.local:5432/acgs"
+        - name: DATABASE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: acgs-secrets
+              key: DATABASE_USERNAME
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: acgs-secrets
+              key: DATABASE_PASSWORD
+        envFrom:
+        - configMapRef:
+            name: acgs-config
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: policy-governance-service
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/name: policy-governance-service
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: policy
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8005
+    targetPort: http
+    protocol: TCP
+  - name: metrics
+    port: 9090
+    targetPort: metrics
+    protocol: TCP
+  selector:
+    app.kubernetes.io/name: policy-governance-service
+    app.kubernetes.io/component: policy
+
+---
+# Formal Verification Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: formal-verification-service
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/name: formal-verification-service
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: verification
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: formal-verification-service
+      app.kubernetes.io/component: verification
+  template:
+    metadata:
+      labels:
+        constitutional-hash: "cdd01ef066bc6cf2"
+        app.kubernetes.io/name: formal-verification-service
+        app.kubernetes.io/part-of: acgs
+        app.kubernetes.io/component: verification
+      annotations:
+        acgs.ai/constitutional-compliance: "required"
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+      - name: formal-verification-service
+        image: acgs/formal-verification-service:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 8006
+          protocol: TCP
+        - name: metrics
+          containerPort: 9090
+          protocol: TCP
+        env:
+        - name: CONSTITUTIONAL_HASH
+          valueFrom:
+            configMapKeyRef:
+              name: acgs-config
+              key: CONSTITUTIONAL_HASH
+        - name: DATABASE_URL
+          value: "postgresql://$(DATABASE_USERNAME):$(DATABASE_PASSWORD)@postgresql.acgs-system.svc.cluster.local:5432/acgs"
+        - name: DATABASE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: acgs-secrets
+              key: DATABASE_USERNAME
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: acgs-secrets
+              key: DATABASE_PASSWORD
+        envFrom:
+        - configMapRef:
+            name: acgs-config
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: formal-verification-service
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/name: formal-verification-service
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: verification
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8006
+    targetPort: http
+    protocol: TCP
+  - name: metrics
+    port: 9090
+    targetPort: metrics
+    protocol: TCP
+  selector:
+    app.kubernetes.io/name: formal-verification-service
+    app.kubernetes.io/component: verification
+
+---
+# Audit Logs PVC for Integrity Service
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: audit-logs-pvc
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: audit
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: acgs-audit
+  resources:
+    requests:
+      storage: 500Gi

@@ -1,0 +1,896 @@
+---
+# ACGS Kubernetes Deployment Scripts ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: acgs-deployment-scripts
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: deployment
+data:
+  deploy.sh: |
+    #!/bin/bash
+    # ACGS Kubernetes Deployment Script
+    # Constitutional Hash: cdd01ef066bc6cf2
+    
+    set -euo pipefail
+    
+    # Color codes for output
+    RED='\033[0;31m'
+    GREEN='\033[0;32m'
+    YELLOW='\033[1;33m'
+    BLUE='\033[0;34m'
+    NC='\033[0m' # No Color
+    
+    # Configuration
+    NAMESPACE_SYSTEM="acgs-system"
+    NAMESPACE_MONITORING="acgs-monitoring"
+    NAMESPACE_INGRESS="acgs-ingress"
+    CONSTITUTIONAL_HASH="cdd01ef066bc6cf2"
+    
+    # Logging function
+    log() {
+        echo -e "${BLUE}[$(date +'%Y-%m-%d %H:%M:%S')]${NC} $1"
+    }
+    
+    error() {
+        echo -e "${RED}[ERROR]${NC} $1" >&2
+    }
+    
+    success() {
+        echo -e "${GREEN}[SUCCESS]${NC} $1"
+    }
+    
+    warn() {
+        echo -e "${YELLOW}[WARNING]${NC} $1"
+    }
+    
+    # Check prerequisites
+    check_prerequisites() {
+        log "Checking prerequisites..."
+        
+        # Check kubectl
+        if ! command -v kubectl &> /dev/null; then
+            error "kubectl is not installed or not in PATH"
+            exit 1
+        fi
+        
+        # Check cluster connectivity
+        if ! kubectl cluster-info &> /dev/null; then
+            error "Cannot connect to Kubernetes cluster"
+            exit 1
+        fi
+        
+        # Check if cluster meets minimum requirements
+        local node_count=$(kubectl get nodes --no-headers | wc -l)
+        if [ "$node_count" -lt 3 ]; then
+            warn "Cluster has less than 3 nodes. High availability may be compromised."
+        fi
+        
+        success "Prerequisites check passed"
+    }
+    
+    # Validate constitutional compliance
+    validate_constitutional_compliance() {
+        log "Validating constitutional compliance..."
+        
+        # Check all YAML files contain the constitutional hash
+        local files_without_hash=0
+        for file in *.yaml; do
+            if [ -f "$file" ]; then
+                if ! grep -q "$CONSTITUTIONAL_HASH" "$file"; then
+                    error "File $file missing constitutional hash: $CONSTITUTIONAL_HASH"
+                    ((files_without_hash++))
+                fi
+            fi
+        done
+        
+        if [ "$files_without_hash" -gt 0 ]; then
+            error "Constitutional compliance validation failed: $files_without_hash files missing hash"
+            exit 1
+        fi
+        
+        success "Constitutional compliance validation passed"
+    }
+    
+    # Create namespaces
+    create_namespaces() {
+        log "Creating namespaces..."
+        
+        kubectl apply -f namespace.yaml
+        
+        # Wait for namespaces to be ready
+        kubectl wait --for=condition=Ready namespace/$NAMESPACE_SYSTEM --timeout=60s
+        kubectl wait --for=condition=Ready namespace/$NAMESPACE_MONITORING --timeout=60s
+        kubectl wait --for=condition=Ready namespace/$NAMESPACE_INGRESS --timeout=60s
+        
+        success "Namespaces created successfully"
+    }
+    
+    # Deploy storage
+    deploy_storage() {
+        log "Deploying storage components..."
+        
+        kubectl apply -f persistent-volumes.yaml
+        
+        # Wait for PVs to be available
+        sleep 10
+        
+        success "Storage components deployed"
+    }
+    
+    # Deploy secrets and config
+    deploy_config() {
+        log "Deploying configuration and secrets..."
+        
+        # Apply ConfigMaps first
+        kubectl apply -f configmap.yaml
+        
+        # Apply secrets (warn about default values)
+        warn "SECURITY WARNING: Default secrets are being used. Change these in production!"
+        kubectl apply -f secrets.yaml
+        
+        success "Configuration and secrets deployed"
+    }
+    
+    # Deploy RBAC
+    deploy_rbac() {
+        log "Deploying RBAC policies..."
+        
+        kubectl apply -f rbac.yaml
+        
+        success "RBAC policies deployed"
+    }
+    
+    # Deploy database
+    deploy_database() {
+        log "Deploying database components..."
+        
+        kubectl apply -f database.yaml
+        kubectl apply -f redis.yaml
+        
+        # Wait for database to be ready
+        log "Waiting for PostgreSQL to be ready..."
+        kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=postgresql -n $NAMESPACE_SYSTEM --timeout=300s
+        
+        log "Waiting for Redis to be ready..."
+        kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=redis -n $NAMESPACE_SYSTEM --timeout=180s
+        
+        success "Database components deployed and ready"
+    }
+    
+    # Deploy core services
+    deploy_core_services() {
+        log "Deploying ACGS core services..."
+        
+        kubectl apply -f core-services.yaml
+        
+        # Wait for services to be ready
+        log "Waiting for core services to be ready..."
+        local services=("auth-service" "constitutional-ai-service" "integrity-service" "governance-synthesis-service" "policy-governance-service" "formal-verification-service")
+        
+        for service in "${services[@]}"; do
+            log "Waiting for $service..."
+            kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=$service -n $NAMESPACE_SYSTEM --timeout=300s
+        done
+        
+        success "Core services deployed and ready"
+    }
+    
+    # Deploy API Gateway
+    deploy_api_gateway() {
+        log "Deploying API Gateway..."
+        
+        kubectl apply -f api-gateway.yaml
+        
+        # Wait for API Gateway to be ready
+        log "Waiting for API Gateway to be ready..."
+        kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=api-gateway -n $NAMESPACE_SYSTEM --timeout=300s
+        
+        success "API Gateway deployed and ready"
+    }
+    
+    # Deploy monitoring
+    deploy_monitoring() {
+        log "Deploying monitoring stack..."
+        
+        kubectl apply -f monitoring.yaml
+        
+        # Wait for monitoring services
+        log "Waiting for Prometheus to be ready..."
+        kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=prometheus -n $NAMESPACE_MONITORING --timeout=300s
+        
+        log "Waiting for Grafana to be ready..."
+        kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=grafana -n $NAMESPACE_MONITORING --timeout=300s
+        
+        success "Monitoring stack deployed and ready"
+    }
+    
+    # Deploy networking
+    deploy_networking() {
+        log "Deploying networking components..."
+        
+        # Apply network policies
+        kubectl apply -f network-policies.yaml
+        
+        # Apply ingress
+        kubectl apply -f ingress.yaml
+        
+        # Wait for ingress controller
+        log "Waiting for ingress controller to be ready..."
+        kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=nginx-ingress-controller -n $NAMESPACE_INGRESS --timeout=300s
+        
+        success "Networking components deployed"
+    }
+    
+    # Deploy autoscaling
+    deploy_autoscaling() {
+        log "Deploying autoscaling policies..."
+        
+        kubectl apply -f hpa-vpa.yaml
+        
+        success "Autoscaling policies deployed"
+    }
+    
+    # Run health checks
+    run_health_checks() {
+        log "Running comprehensive health checks..."
+        
+        # Check all pods are running
+        local failed_pods=$(kubectl get pods --all-namespaces --field-selector=status.phase!=Running --no-headers 2>/dev/null | wc -l)
+        if [ "$failed_pods" -gt 0 ]; then
+            error "Health check failed: $failed_pods pods are not running"
+            kubectl get pods --all-namespaces --field-selector=status.phase!=Running
+            return 1
+        fi
+        
+        # Check constitutional compliance endpoints
+        log "Checking constitutional compliance endpoints..."
+        local api_gateway_pod=$(kubectl get pods -n $NAMESPACE_SYSTEM -l app.kubernetes.io/name=api-gateway -o jsonpath='{.items[0].metadata.name}')
+        
+        if [ -n "$api_gateway_pod" ]; then
+            local constitutional_response=$(kubectl exec -n $NAMESPACE_SYSTEM $api_gateway_pod -- curl -s http://localhost:8080/gateway/health 2>/dev/null || echo "failed")
+            if [[ "$constitutional_response" == *"$CONSTITUTIONAL_HASH"* ]]; then
+                success "Constitutional compliance endpoint responding correctly"
+            else
+                error "Constitutional compliance check failed"
+                return 1
+            fi
+        fi
+        
+        success "All health checks passed"
+    }
+    
+    # Display deployment status
+    display_status() {
+        log "ACGS Deployment Status:"
+        echo ""
+        
+        echo "=== Namespaces ==="
+        kubectl get namespaces -l constitutional-hash=$CONSTITUTIONAL_HASH
+        echo ""
+        
+        echo "=== Core Services ==="
+        kubectl get pods -n $NAMESPACE_SYSTEM -o wide
+        echo ""
+        
+        echo "=== Services ==="
+        kubectl get svc -n $NAMESPACE_SYSTEM
+        echo ""
+        
+        echo "=== Ingress ==="
+        kubectl get ingress --all-namespaces
+        echo ""
+        
+        echo "=== Storage ==="
+        kubectl get pv,pvc --all-namespaces
+        echo ""
+        
+        # Get external IP for ingress
+        local external_ip=$(kubectl get svc nginx-ingress -n $NAMESPACE_INGRESS -o jsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null || echo "pending")
+        
+        echo "=== Access Information ==="
+        echo "External IP: $external_ip"
+        echo "API Gateway: https://$external_ip/ (or use configured domain)"
+        echo "Grafana: https://$external_ip:3000/ (admin/admin - change in production)"
+        echo "Prometheus: https://$external_ip:9090/"
+        echo ""
+        
+        echo "=== Constitutional Compliance ==="
+        echo "Constitutional Hash: $CONSTITUTIONAL_HASH"
+        echo "All services deployed with constitutional compliance validation"
+        echo ""
+    }
+    
+    # Main deployment function
+    main() {
+        log "Starting ACGS Kubernetes deployment..."
+        log "Constitutional Hash: $CONSTITUTIONAL_HASH"
+        
+        check_prerequisites
+        validate_constitutional_compliance
+        
+        create_namespaces
+        deploy_storage
+        deploy_config
+        deploy_rbac
+        deploy_database
+        deploy_core_services
+        deploy_api_gateway
+        deploy_monitoring
+        deploy_networking
+        deploy_autoscaling
+        
+        run_health_checks
+        display_status
+        
+        success "ACGS deployment completed successfully!"
+        warn "IMPORTANT: Change default passwords and secrets before production use!"
+        warn "IMPORTANT: Configure proper TLS certificates for production!"
+        warn "IMPORTANT: Update ingress hostnames for your domain!"
+    }
+    
+    # Script execution
+    if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+        main "$@"
+    fi
+
+  undeploy.sh: |
+    #!/bin/bash
+    # ACGS Kubernetes Undeployment Script
+    # Constitutional Hash: cdd01ef066bc6cf2
+    
+    set -euo pipefail
+    
+    # Color codes
+    RED='\033[0;31m'
+    GREEN='\033[0;32m'
+    YELLOW='\033[1;33m'
+    BLUE='\033[0;34m'
+    NC='\033[0m'
+    
+    # Configuration
+    NAMESPACE_SYSTEM="acgs-system"
+    NAMESPACE_MONITORING="acgs-monitoring"
+    NAMESPACE_INGRESS="acgs-ingress"
+    CONSTITUTIONAL_HASH="cdd01ef066bc6cf2"
+    
+    log() {
+        echo -e "${BLUE}[$(date +'%Y-%m-%d %H:%M:%S')]${NC} $1"
+    }
+    
+    error() {
+        echo -e "${RED}[ERROR]${NC} $1" >&2
+    }
+    
+    success() {
+        echo -e "${GREEN}[SUCCESS]${NC} $1"
+    }
+    
+    warn() {
+        echo -e "${YELLOW}[WARNING]${NC} $1"
+    }
+    
+    # Confirmation prompt
+    confirm_undeployment() {
+        echo ""
+        warn "This will completely remove the ACGS deployment!"
+        warn "All data will be lost unless you have backups!"
+        echo ""
+        read -p "Are you sure you want to continue? (type 'yes' to confirm): " confirm
+        
+        if [ "$confirm" != "yes" ]; then
+            log "Undeployment cancelled"
+            exit 0
+        fi
+    }
+    
+    # Remove components in reverse order
+    remove_autoscaling() {
+        log "Removing autoscaling policies..."
+        kubectl delete -f hpa-vpa.yaml --ignore-not-found=true || true
+        success "Autoscaling policies removed"
+    }
+    
+    remove_networking() {
+        log "Removing networking components..."
+        kubectl delete -f ingress.yaml --ignore-not-found=true || true
+        kubectl delete -f network-policies.yaml --ignore-not-found=true || true
+        success "Networking components removed"
+    }
+    
+    remove_monitoring() {
+        log "Removing monitoring stack..."
+        kubectl delete -f monitoring.yaml --ignore-not-found=true || true
+        success "Monitoring stack removed"
+    }
+    
+    remove_api_gateway() {
+        log "Removing API Gateway..."
+        kubectl delete -f api-gateway.yaml --ignore-not-found=true || true
+        success "API Gateway removed"
+    }
+    
+    remove_core_services() {
+        log "Removing core services..."
+        kubectl delete -f core-services.yaml --ignore-not-found=true || true
+        success "Core services removed"
+    }
+    
+    remove_database() {
+        log "Removing database components..."
+        kubectl delete -f database.yaml --ignore-not-found=true || true
+        kubectl delete -f redis.yaml --ignore-not-found=true || true
+        success "Database components removed"
+    }
+    
+    remove_rbac() {
+        log "Removing RBAC policies..."
+        kubectl delete -f rbac.yaml --ignore-not-found=true || true
+        success "RBAC policies removed"
+    }
+    
+    remove_config() {
+        log "Removing configuration and secrets..."
+        kubectl delete -f configmap.yaml --ignore-not-found=true || true
+        kubectl delete -f secrets.yaml --ignore-not-found=true || true
+        success "Configuration and secrets removed"
+    }
+    
+    remove_storage() {
+        log "Removing storage components..."
+        warn "PersistentVolumes will be retained for data safety"
+        kubectl delete -f persistent-volumes.yaml --ignore-not-found=true || true
+        success "Storage components removed"
+    }
+    
+    remove_namespaces() {
+        log "Removing namespaces..."
+        kubectl delete namespace $NAMESPACE_SYSTEM --ignore-not-found=true || true
+        kubectl delete namespace $NAMESPACE_MONITORING --ignore-not-found=true || true
+        kubectl delete namespace $NAMESPACE_INGRESS --ignore-not-found=true || true
+        success "Namespaces removed"
+    }
+    
+    # Main undeployment function
+    main() {
+        log "Starting ACGS Kubernetes undeployment..."
+        
+        confirm_undeployment
+        
+        remove_autoscaling
+        remove_networking
+        remove_monitoring
+        remove_api_gateway
+        remove_core_services
+        remove_database
+        remove_rbac
+        remove_config
+        remove_storage
+        remove_namespaces
+        
+        success "ACGS undeployment completed!"
+        warn "PersistentVolumes may still exist - remove manually if needed"
+    }
+    
+    if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+        main "$@"
+    fi
+
+  validate.sh: |
+    #!/bin/bash
+    # ACGS Kubernetes Validation Script
+    # Constitutional Hash: cdd01ef066bc6cf2
+    
+    set -euo pipefail
+    
+    # Configuration
+    CONSTITUTIONAL_HASH="cdd01ef066bc6cf2"
+    
+    # Color codes
+    RED='\033[0;31m'
+    GREEN='\033[0;32m'
+    YELLOW='\033[1;33m'
+    BLUE='\033[0;34m'
+    NC='\033[0m'
+    
+    log() {
+        echo -e "${BLUE}[$(date +'%Y-%m-%d %H:%M:%S')]${NC} $1"
+    }
+    
+    error() {
+        echo -e "${RED}[ERROR]${NC} $1" >&2
+    }
+    
+    success() {
+        echo -e "${GREEN}[SUCCESS]${NC} $1"
+    }
+    
+    warn() {
+        echo -e "${YELLOW}[WARNING]${NC} $1"
+    }
+    
+    # Validation functions
+    validate_yaml_syntax() {
+        log "Validating YAML syntax..."
+        local errors=0
+        
+        for file in *.yaml; do
+            if [ -f "$file" ]; then
+                if ! kubectl apply --dry-run=client -f "$file" &>/dev/null; then
+                    error "YAML syntax error in $file"
+                    ((errors++))
+                fi
+            fi
+        done
+        
+        if [ $errors -eq 0 ]; then
+            success "All YAML files have valid syntax"
+        else
+            error "Found $errors YAML syntax errors"
+            return 1
+        fi
+    }
+    
+    validate_constitutional_compliance() {
+        log "Validating constitutional compliance..."
+        local errors=0
+        
+        for file in *.yaml; do
+            if [ -f "$file" ]; then
+                if ! grep -q "$CONSTITUTIONAL_HASH" "$file"; then
+                    error "Missing constitutional hash in $file"
+                    ((errors++))
+                fi
+            fi
+        done
+        
+        if [ $errors -eq 0 ]; then
+            success "All files contain required constitutional hash"
+        else
+            error "Found $errors files missing constitutional hash"
+            return 1
+        fi
+    }
+    
+    validate_security_policies() {
+        log "Validating security policies..."
+        
+        # Check for security contexts
+        if ! grep -q "securityContext" *.yaml; then
+            error "No security contexts found in deployments"
+            return 1
+        fi
+        
+        # Check for network policies
+        if ! grep -q "NetworkPolicy" network-policies.yaml; then
+            error "Network policies not properly defined"
+            return 1
+        fi
+        
+        # Check for RBAC
+        if ! grep -q "ServiceAccount\|Role\|ClusterRole" rbac.yaml; then
+            error "RBAC policies not properly defined"
+            return 1
+        fi
+        
+        success "Security policies validation passed"
+    }
+    
+    validate_resource_limits() {
+        log "Validating resource limits..."
+        
+        if ! grep -q "resources:" *.yaml; then
+            warn "Some deployments may be missing resource limits"
+        fi
+        
+        if ! grep -q "limits:" *.yaml; then
+            warn "Some deployments may be missing resource limits"
+        fi
+        
+        success "Resource limits validation completed"
+    }
+    
+    validate_monitoring_configuration() {
+        log "Validating monitoring configuration..."
+        
+        if ! grep -q "prometheus.io/scrape" *.yaml; then
+            warn "Some services may not be configured for Prometheus scraping"
+        fi
+        
+        if ! grep -q "metrics" *.yaml; then
+            warn "Metrics endpoints may not be properly configured"
+        fi
+        
+        success "Monitoring configuration validation completed"
+    }
+    
+    main() {
+        log "Starting ACGS Kubernetes validation..."
+        log "Constitutional Hash: $CONSTITUTIONAL_HASH"
+        
+        validate_yaml_syntax
+        validate_constitutional_compliance
+        validate_security_policies
+        validate_resource_limits
+        validate_monitoring_configuration
+        
+        success "ACGS Kubernetes validation completed successfully!"
+    }
+    
+    if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+        main "$@"
+    fi
+
+  README.md: |
+    # ACGS Kubernetes Deployment
+    
+    Constitutional Hash: `cdd01ef066bc6cf2`
+    
+    ## Overview
+    
+    This directory contains comprehensive Kubernetes manifests for deploying the Autonomous Coding Governance System (ACGS) in production environments.
+    
+    ## Prerequisites
+    
+    - Kubernetes cluster (v1.24+)
+    - kubectl configured
+    - Minimum 3 nodes for high availability
+    - 16GB+ RAM and 8+ CPU cores per node
+    - Persistent storage provisioner
+    
+    ## Quick Start
+    
+    1. **Validate Configuration**:
+       ```bash
+       kubectl create configmap acgs-scripts --from-file=.
+       kubectl exec -it deploy/acgs-scripts -- /scripts/validate.sh
+       ```
+    
+    2. **Deploy ACGS**:
+       ```bash
+       kubectl exec -it deploy/acgs-scripts -- /scripts/deploy.sh
+       ```
+    
+    3. **Check Status**:
+       ```bash
+       kubectl get pods --all-namespaces -l constitutional-hash=cdd01ef066bc6cf2
+       ```
+    
+    ## Manual Deployment Order
+    
+    If you prefer manual deployment:
+    
+    ```bash
+    # 1. Create namespaces
+    kubectl apply -f namespace.yaml
+    
+    # 2. Storage
+    kubectl apply -f persistent-volumes.yaml
+    
+    # 3. Configuration
+    kubectl apply -f configmap.yaml
+    kubectl apply -f secrets.yaml
+    
+    # 4. RBAC
+    kubectl apply -f rbac.yaml
+    
+    # 5. Database
+    kubectl apply -f database.yaml
+    kubectl apply -f redis.yaml
+    
+    # 6. Core Services
+    kubectl apply -f core-services.yaml
+    
+    # 7. API Gateway
+    kubectl apply -f api-gateway.yaml
+    
+    # 8. Monitoring
+    kubectl apply -f monitoring.yaml
+    
+    # 9. Networking
+    kubectl apply -f network-policies.yaml
+    kubectl apply -f ingress.yaml
+    
+    # 10. Autoscaling
+    kubectl apply -f hpa-vpa.yaml
+    ```
+    
+    ## Configuration
+    
+    ### Secrets (IMPORTANT - Change in Production!)
+    
+    Default secrets are provided for development. **MUST** be changed for production:
+    
+    ```bash
+    # Update secrets
+    kubectl create secret generic acgs-secrets \
+      --from-literal=JWT_SECRET_KEY="your-production-secret" \
+      --from-literal=DATABASE_PASSWORD="your-production-password" \
+      --dry-run=client -o yaml | kubectl apply -f -
+    ```
+    
+    ### Ingress Hostnames
+    
+    Update `ingress.yaml` with your actual domain names:
+    
+    ```yaml
+    spec:
+      rules:
+      - host: your-domain.com  # Update this
+        http:
+          paths:
+          - path: /
+            backend:
+              service:
+                name: api-gateway
+    ```
+    
+    ### TLS Certificates
+    
+    Replace placeholder certificates in `secrets.yaml`:
+    
+    ```bash
+    kubectl create secret tls acgs-tls \
+      --cert=path/to/your/cert.pem \
+      --key=path/to/your/key.pem \
+      -n acgs-ingress
+    ```
+    
+    ## Architecture
+    
+    ### Namespaces
+    - `acgs-system`: Core ACGS services
+    - `acgs-monitoring`: Prometheus, Grafana
+    - `acgs-ingress`: Nginx ingress controller
+    
+    ### Services
+    - **API Gateway** (port 8080): Main entry point
+    - **Auth Service** (port 8000): Authentication & authorization
+    - **Constitutional AI** (port 8001): Constitutional compliance
+    - **Integrity Service** (port 8002): Audit trail & integrity
+    - **Governance Synthesis** (port 8004): Decision synthesis
+    - **Policy Governance** (port 8005): Policy management
+    - **Formal Verification** (port 8006): Z3 SMT solver
+    
+    ### Storage
+    - PostgreSQL: Primary database with RLS
+    - Redis: Caching and session storage
+    - Audit Logs: Persistent audit trail storage
+    
+    ### Monitoring
+    - Prometheus: Metrics collection
+    - Grafana: Dashboards and visualization
+    - Constitutional compliance monitoring
+    
+    ## Security Features
+    
+    ### Constitutional Compliance
+    - All components tagged with constitutional hash
+    - Automated compliance validation
+    - Constitutional principle enforcement
+    
+    ### Network Security
+    - Network policies for micro-segmentation
+    - TLS encryption for all traffic
+    - Ingress-level rate limiting
+    
+    ### RBAC
+    - Least-privilege service accounts
+    - Namespace-scoped permissions
+    - Constitutional compliance roles
+    
+    ### Pod Security
+    - Security contexts for all pods
+    - Non-root containers
+    - Read-only root filesystems
+    - Dropped capabilities
+    
+    ## Scaling
+    
+    ### Horizontal Pod Autoscaling (HPA)
+    - CPU and memory-based scaling
+    - Custom metrics for constitutional compliance
+    - Different scaling policies per service
+    
+    ### Vertical Pod Autoscaling (VPA)
+    - Automatic resource optimization
+    - Database and cache optimization
+    
+    ### Manual Scaling
+    ```bash
+    kubectl scale deployment api-gateway --replicas=5 -n acgs-system
+    ```
+    
+    ## Monitoring and Observability
+    
+    ### Access Grafana
+    ```bash
+    kubectl port-forward svc/grafana 3000:3000 -n acgs-monitoring
+    # Open http://localhost:3000 (admin/admin)
+    ```
+    
+    ### Access Prometheus
+    ```bash
+    kubectl port-forward svc/prometheus 9090:9090 -n acgs-monitoring
+    # Open http://localhost:9090
+    ```
+    
+    ### Constitutional Compliance Metrics
+    - `constitutional_compliance_score`: Overall compliance score
+    - `constitutional_hash_verifications_total`: Hash verification count
+    - `audit_events_total`: Audit events processed
+    - `tenant_isolation_violations_total`: Isolation violations
+    
+    ## Troubleshooting
+    
+    ### Check Pod Status
+    ```bash
+    kubectl get pods --all-namespaces -l constitutional-hash=cdd01ef066bc6cf2
+    ```
+    
+    ### View Logs
+    ```bash
+    kubectl logs -f deployment/api-gateway -n acgs-system
+    ```
+    
+    ### Debug Network Issues
+    ```bash
+    kubectl exec -it deployment/api-gateway -n acgs-system -- nslookup postgresql
+    ```
+    
+    ### Validate Constitutional Compliance
+    ```bash
+    kubectl exec -it deployment/api-gateway -n acgs-system -- \
+      curl http://localhost:8080/gateway/health
+    ```
+    
+    ## Backup and Recovery
+    
+    ### Database Backup
+    ```bash
+    kubectl exec postgresql-0 -n acgs-system -- \
+      pg_dump -U acgs_user acgs > backup.sql
+    ```
+    
+    ### Audit Logs Backup
+    ```bash
+    kubectl cp acgs-system/integrity-service-xxx:/app/audit-logs ./audit-backup/
+    ```
+    
+    ## Upgrading
+    
+    ### Rolling Updates
+    ```bash
+    kubectl set image deployment/api-gateway api-gateway=acgs/api-gateway:new-version -n acgs-system
+    ```
+    
+    ### Zero-downtime Updates
+    - Use rolling update strategy (default)
+    - Pod disruption budgets prevent service interruption
+    - Health checks ensure readiness
+    
+    ## Production Checklist
+    
+    - [ ] Change all default passwords and secrets
+    - [ ] Configure proper TLS certificates
+    - [ ] Update ingress hostnames
+    - [ ] Configure persistent storage
+    - [ ] Set up monitoring alerts
+    - [ ] Configure backup procedures
+    - [ ] Review resource limits
+    - [ ] Test disaster recovery
+    - [ ] Validate constitutional compliance
+    - [ ] Security audit and penetration testing
+    
+    ## Support
+    
+    For issues with the ACGS Kubernetes deployment:
+    1. Check logs and pod status
+    2. Validate constitutional compliance
+    3. Review security policies
+    4. Check resource utilization
+    
+    Constitutional Hash: `cdd01ef066bc6cf2`

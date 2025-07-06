@@ -1,5 +1,8 @@
 # Migration Guide: Gemini CLI to OpenCode Adapter
 
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
+
 This guide helps you migrate from the Gemini CLI to the new OpenCode Adapter service while maintaining ACGS compliance and governance.
 
 ## Overview

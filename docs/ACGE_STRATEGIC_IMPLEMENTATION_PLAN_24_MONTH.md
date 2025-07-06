@@ -19,7 +19,7 @@ This comprehensive 24-month strategic implementation plan outlines the integrati
 ### ACGS-PGP Production Architecture
 
 - **7 Microservices**: auth:8000, ac:8001, integrity:8002, fv:8003, gs:8004, pgc:8005, ec:8006
-- **Constitutional Hash**: `cdd01ef066bc6cf2` (validated across all services)
+- <!-- Constitutional Hash: cdd01ef066bc6cf2 --> (validated across all services)
 - **Resource Limits**: 200m/500m CPU, 512Mi/1Gi memory per service
 - **Performance Targets**: ≤2s response time, >95% constitutional compliance
 - **Emergency Capabilities**: <30min RTO with automated rollback

@@ -1,0 +1,44 @@
+# ACGS Load Test Results Analyzer Container
+# Constitutional Hash: cdd01ef066bc6cf2
+
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies for analysis
+RUN pip install --no-cache-dir \
+    pandas==2.0.3 \
+    matplotlib==3.7.2 \
+    seaborn==0.12.2 \
+    numpy==1.24.3 \
+    scipy==1.11.1 \
+    jinja2==3.1.2 \
+    pyyaml==6.0.1
+
+# Copy analyzer files
+COPY performance_analyzer.py .
+COPY distributed_config.py .
+
+# Create directories
+RUN mkdir -p /app/reports /app/analysis /app/charts
+
+# Set environment variables
+ENV PYTHONPATH=/app
+ENV CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+ENV RESULTS_DIR=/app/reports
+
+# Add non-root user for security
+RUN groupadd -r analyzer && useradd -r -g analyzer analyzer
+RUN chown -R analyzer:analyzer /app
+USER analyzer
+
+# Default command - analyze results
+CMD ["python", "performance_analyzer.py"]

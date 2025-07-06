@@ -9,10 +9,35 @@ import time
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 
+# Import multi-tenant components
+try:
+    import os
+    import sys
+    from pathlib import Path
+
+    # Add project root to path
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.join(current_dir, "..", "..", "..", "..", "..")
+    shared_path = os.path.join(project_root, "services", "shared")
+    sys.path.insert(0, os.path.abspath(shared_path))
+
+    from middleware.tenant_middleware import (
+        TenantContextMiddleware,
+        TenantSecurityMiddleware,
+        get_tenant_context,
+        get_optional_tenant_context,
+        get_tenant_db
+    )
+    from clients.tenant_service_client import TenantServiceClient, service_registry
+    
+    MULTI_TENANT_AVAILABLE = True
+    print("✅ Multi-tenant components loaded successfully")
+except ImportError as e:
+    print(f"⚠️ Multi-tenant components not available: {e}")
+    MULTI_TENANT_AVAILABLE = False
+
 # Import production security middleware
 try:
-    import sys
-
     sys.path.append("/home/dislove/ACGS-1/services/shared")
     from security_middleware import (
         apply_production_security_middleware,
@@ -36,16 +61,21 @@ except ImportError as e:
     print(f"⚠️ Leader election service not available: {e}")
     LEADER_ELECTION_AVAILABLE = False
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
 from starlette.responses import PlainTextResponse
+from sqlalchemy.ext.asyncio import AsyncSession
 
 # Service configuration
 SERVICE_NAME = "gs_service"
-SERVICE_VERSION = "3.1.0"
+SERVICE_VERSION = "4.0.0"  # Upgraded for multi-tenant support
 SERVICE_PORT = 8004
+
+# JWT configuration for multi-tenant tokens
+JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key-here")
+JWT_ALGORITHM = "HS256"
 
 # Leader election configuration
 import os
@@ -132,6 +162,28 @@ app = FastAPI(
     redoc_url="/redoc",
     lifespan=lifespan,
 )
+
+# Add multi-tenant middleware
+if MULTI_TENANT_AVAILABLE:
+    # Add tenant context middleware (before other middleware)
+    app.add_middleware(
+        TenantContextMiddleware,
+        jwt_secret_key=JWT_SECRET_KEY,
+        jwt_algorithm=JWT_ALGORITHM,
+        exclude_paths=[
+            "/docs", "/redoc", "/openapi.json", "/health", "/metrics",
+            "/leader-election/status", "/leader-election/health"
+        ],
+        require_tenant=True,  # Governance synthesis requires tenant context
+        bypass_paths=["/health", "/metrics", "/leader-election/status", "/leader-election/health"]
+    )
+    
+    # Add tenant security middleware
+    app.add_middleware(TenantSecurityMiddleware)
+    
+    print("✅ Multi-tenant middleware applied to governance synthesis service")
+else:
+    print("⚠️ Multi-tenant middleware not available for governance synthesis service")
 
 
 @app.middleware("http")
@@ -268,6 +320,7 @@ async def health_check():
         "version": SERVICE_VERSION,
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "constitutional_hash": "cdd01ef066bc6cf2",
+        "multi_tenant_enabled": MULTI_TENANT_AVAILABLE,
         "request_count": getattr(health_check, "_request_count", 0),
     }
 
@@ -363,7 +416,11 @@ async def synthesize_governance_as_leader(request: Request):
 @validate_policy_input
 @app.post("/api/v1/synthesize")
 @cache_synthesis_response(ttl=300, key_prefix="gs_synthesis")
-async def synthesize_governance(request: Request):
+async def synthesize_governance(
+    request: Request,
+    session: AsyncSession = Depends(get_tenant_db) if MULTI_TENANT_AVAILABLE else None,
+    tenant_context = Depends(get_tenant_context) if MULTI_TENANT_AVAILABLE else None
+):
     """Optimized governance synthesis endpoint with WINA optimization and caching"""
     async with SynthesisPerformanceMonitor("governance_synthesis"):
         try:

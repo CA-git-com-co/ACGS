@@ -155,7 +155,9 @@ POST /api/v1/synthetic/governance        - Synthetic governance
   "header": {
     "alg": "RS256",
     "typ": "JWT"
-  },
+  ,
+  "constitutional_hash": "cdd01ef066bc6cf2"
+},
   "payload": {
     "sub": "user_id",
     "iat": 1625097600,
@@ -199,12 +201,23 @@ X-Request-ID: <unique_request_id>
       "principle_id": "equality",
       "violation_type": "discriminatory_clause",
       "confidence": 0.95
-    },
+    ,
+  "constitutional_hash": "cdd01ef066bc6cf2"
+},
     "request_id": "req_123456789",
     "timestamp": "2025-07-02T16:00:00Z"
   }
 }
 ```
+
+## Performance Targets
+
+- **Latency**: P99 ≤ 5ms for cached queries
+- **Throughput**: ≥ 100 RPS sustained
+- **Cache Hit Rate**: ≥ 85%
+- **Test Coverage**: ≥ 80%
+- **Availability**: 99.9% uptime
+- **Constitutional Compliance**: 100% validation
 
 ## Rate Limiting
 

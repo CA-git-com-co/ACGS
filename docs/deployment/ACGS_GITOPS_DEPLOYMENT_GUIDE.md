@@ -1,5 +1,8 @@
 # ACGS GitOps Workflow Deployment Guide
 
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
+
 This guide provides step-by-step instructions for deploying the ACGS GitOps workflow using Crossplane and ArgoCD.
 
 ## Overview

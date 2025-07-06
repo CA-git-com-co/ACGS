@@ -1,0 +1,66 @@
+# ACGS Compliance Testing Requirements
+# Constitutional Hash: cdd01ef066bc6cf2
+
+# Core testing framework
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-mock>=3.11.0
+pytest-cov>=4.1.0
+pytest-html>=3.2.0
+pytest-json-report>=1.5.0
+pytest-xdist>=3.3.0
+
+# Async testing support
+asyncio-mqtt>=0.13.0
+aiofiles>=23.0.0
+
+# Mock and testing utilities
+responses>=0.23.0
+httpx>=0.24.0
+factory-boy>=3.3.0
+faker>=19.0.0
+
+# Compliance and security testing
+cryptography>=41.0.0
+pyjwt>=2.8.0
+z3-solver>=4.12.0
+
+# Data validation and serialization
+pydantic>=2.0.0
+marshmallow>=3.20.0
+
+# Database testing
+pytest-postgresql>=5.0.0
+pytest-redis>=3.0.0
+sqlalchemy>=2.0.0
+asyncpg>=0.28.0
+
+# Monitoring and metrics testing
+prometheus-client>=0.17.0
+grafana-api>=1.0.3
+
+# Report generation
+jinja2>=3.1.0
+weasyprint>=59.0
+plotly>=5.15.0
+pandas>=2.0.0
+
+# Load and performance testing
+locust>=2.16.0
+aiohttp>=3.8.0
+
+# Configuration and environment
+python-dotenv>=1.0.0
+pyyaml>=6.0
+
+# Logging and debugging
+structlog>=23.1.0
+colorlog>=6.7.0
+
+# Time and date utilities
+arrow>=1.2.0
+python-dateutil>=2.8.0
+
+# Development and debugging
+ipdb>=0.13.0
+memory-profiler>=0.61.0

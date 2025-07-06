@@ -4,7 +4,7 @@
 
 This document summarizes the comprehensive dependency managers update completed for ACGS-2 on July 2, 2025. The update focused on security improvements, performance optimization, and modernization of package management across all supported languages.
 
-**Constitutional Hash**: `cdd01ef066bc6cf2`  
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->  
 **Update Status**: ✅ **COMPLETED SUCCESSFULLY**  
 **Total Updates Applied**: 6 major updates  
 **Security Fixes**: 3 critical packages updated  
@@ -86,7 +86,7 @@ The dependency managers update successfully modernized the ACGS-2 project's pack
 
 #### Security Configuration File
 Created `.acgs-security.json` with:
-- **Constitutional Hash**: `cdd01ef066bc6cf2`
+- <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 - **Security Scanning**: Enabled vulnerability monitoring
 - **Critical Packages**: Tracked security-sensitive dependencies
 - **Last Update**: Timestamp tracking for security updates

@@ -139,7 +139,7 @@ Port 8010 (ACGS-PGP-v8):           ✅ HEALTHY ("healthy")
 
 ### ✅ System Security
 - **Service Authentication**: Operational across all endpoints
-- **Constitutional Hash**: cdd01ef066bc6cf2 validated
+- <!-- Constitutional Hash: cdd01ef066bc6cf2 --> validated
 - **Security Headers**: Implemented across all services
 - **Access Control**: Proper endpoint protection
 

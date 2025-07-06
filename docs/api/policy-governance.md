@@ -1,5 +1,10 @@
 # Policy Governance API Documentation
 
+**Service**: Policy Governance Service
+**Port**: 8005
+**Base URL**: `http://localhost:8005/api/v1`
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 ## Overview
 
 This document provides comprehensive documentation for the Policy Governance Service (Port 8005) API, covering endpoints for policy evaluation, compliance validation, governance workflows, and more.
@@ -28,7 +33,9 @@ This document provides comprehensive documentation for the Policy Governance Ser
 ```json
 {
   "policy_id": "string",
-  "input_data": {}
+  "input_data": {,
+  "constitutional_hash": "cdd01ef066bc6cf2"
+}
 }
 ```
 
@@ -37,7 +44,8 @@ This document provides comprehensive documentation for the Policy Governance Ser
 {
   "evaluation_result": "approved",
   "compliance_score": 0.85,
-  "reasons": ["string"]
+  "reasons": ["string"],
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }
 ```
 
@@ -64,7 +72,8 @@ console.log(result);
 {
   "evaluation_result": "approved",
   "compliance_score": 0.9,
-  "reasons": ["Policy aligns with constitutional principles"]
+  "reasons": ["Policy aligns with constitutional principles"],
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }
 ```
 
@@ -79,6 +88,8 @@ console.log(result);
 {
   "policy_id": "string",
   "compliance_checks": ["string"]
+,
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }
 ```
 
@@ -86,7 +97,8 @@ console.log(result);
 ```json
 {
   "compliance_status": "compliant",
-  "violations": []
+  "violations": [],
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }
 ```
 
@@ -112,7 +124,8 @@ console.log(result);
 ```json
 {
   "compliance_status": "compliant",
-  "violations": []
+  "violations": [],
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }
 ```
 
@@ -127,6 +140,8 @@ console.log(result);
 {
   "policy_id": "string",
   "workflow_steps": ["string"]
+,
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }
 ```
 
@@ -134,7 +149,8 @@ console.log(result);
 ```json
 {
   "workflow_id": "string",
-  "status": "pending"
+  "status": "pending",
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }
 ```
 
@@ -160,7 +176,8 @@ console.log(result);
 ```json
 {
   "workflow_id": "WF001",
-  "status": "pending"
+  "status": "pending",
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }
 ```
 
@@ -175,6 +192,8 @@ console.log(result);
 {
   "policy_id": "string",
   "council_members": ["string"]
+,
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }
 ```
 
@@ -182,7 +201,8 @@ console.log(result);
 ```json
 {
   "review_id": "string",
-  "status": "submitted"
+  "status": "submitted",
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }
 ```
 
@@ -208,14 +228,23 @@ console.log(result);
 ```json
 {
   "review_id": "REV001",
-  "status": "submitted"
+  "status": "submitted",
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }
 ```
 
 ## Additional Resources
 
 - [API Documentation Index](index.md)
-- [Governance Workflow Design](workflow/design.md)
-- [Council Review Process](council/process.md)
+- [Governance Workflow Design](api/policy-governance.md)
+- [Council Review Process](api/policy-governance.md)
 
 For system configuration details, deployment guides, and architecture diagrams, see the Policy Governance service documentation repository.
+## Performance Targets
+
+- **Latency**: P99 ≤ 5ms for cached queries
+- **Throughput**: ≥ 100 RPS sustained
+- **Cache Hit Rate**: ≥ 85%
+- **Test Coverage**: ≥ 80%
+- **Availability**: 99.9% uptime
+- **Constitutional Compliance**: 100% validation

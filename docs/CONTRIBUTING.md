@@ -357,7 +357,7 @@ python -m pytest tests/security/ -v
 - **Redis Cache**: Port 6389 (optimized for >85% cache hit rates)
 - **Authentication Service**: Port 8016 (JWT-based with RBAC)
 - **Core Services**: Ports 8002-8005 and 8010
-- **Constitutional Hash**: `cdd01ef066bc6cf2` (validated across all services)
+- <!-- Constitutional Hash: cdd01ef066bc6cf2 --> (validated across all services)
 
 ## 🤝 Community Guidelines
 

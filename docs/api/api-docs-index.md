@@ -1,5 +1,8 @@
 # API Documentation Index
 
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
+
 This index provides an overview and navigation links for the ACGS-2 API documentation set. Refer to these files for endpoint details, request schemas, and usage examples for all core services.
 
 ## Core Services
@@ -9,14 +12,14 @@ This index provides an overview and navigation links for the ACGS-2 API document
 
 ## Auxiliary Services
 
-- **[Integration API](integration.md)** - Cross-service workflows, data sharing, and event subscriptions
-- **[Audit Logging API](audit-logging.md)** - Compliance records, user activity tracking, and event audit trails
-- **[Alert Management API](alert-management.md)** - Policy violation alerts, constitutional breach monitoring, and governance notifications
+- **[Integration API](api/index.md)** - Cross-service workflows, data sharing, and event subscriptions
+- **[Audit Logging API](api/index.md)** - Compliance records, user activity tracking, and event audit trails
+- **[Alert Management API](api/index.md)** - Policy violation alerts, constitutional breach monitoring, and governance notifications
 
 ## System Services
 
-- **[Health Checks & Metrics](health-metrics.md)** - Service status verification, performance metrics, and system health checks
-- **[Service Discovery](service-discovery.md)** - API endpoints discovery, endpoint lifecycle management, and service registry access
+- **[Health Checks & Metrics](api/index.md)** - Service status verification, performance metrics, and system health checks
+- **[Service Discovery](api/index.md)** - API endpoints discovery, endpoint lifecycle management, and service registry access
 
 ## Reference Materials
 
@@ -37,3 +40,11 @@ This index provides an overview and navigation links for the ACGS-2 API document
 - **[Governance Policies Reference](policies/governance.md)** - Data governance, policy lifecycle management, and constitutional compliance guidelines
 
 For detailed system architecture, deployment guides, and full technical specifications, see the ACGS-2 project documentation repository.
+## Performance Targets
+
+- **Latency**: P99 ≤ 5ms for cached queries
+- **Throughput**: ≥ 100 RPS sustained
+- **Cache Hit Rate**: ≥ 85%
+- **Test Coverage**: ≥ 80%
+- **Availability**: 99.9% uptime
+- **Constitutional Compliance**: 100% validation

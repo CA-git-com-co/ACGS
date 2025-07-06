@@ -80,7 +80,7 @@ The ACGS-PGP system consists of 7 core microservices, each running on dedicated 
 
 ## Constitutional Framework
 
-### Constitutional Hash: `cdd01ef066bc6cf2`
+### <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 
 This 16-character hexadecimal hash represents the current constitutional framework state and is used for:
 

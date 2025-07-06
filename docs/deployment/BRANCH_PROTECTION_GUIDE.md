@@ -1,5 +1,8 @@
 # ACGS-1 Branch Protection Configuration Guide
 
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
+
 Since branch protection is currently disabled on this repository, here's a comprehensive guide for setting up proper branch protection rules when it's enabled.
 
 ## 🛡️ **Recommended Branch Protection Settings**

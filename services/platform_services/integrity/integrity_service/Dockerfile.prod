@@ -1,28 +1,73 @@
-FROM python:3.11-slim
+# Production Dockerfile for ACGS Integrity Service
+# Multi-stage build with security hardening
 
+# Stage 1: Build stage
+FROM python:3.11-slim as builder
+
+# Security: Create non-root user early
+RUN groupadd -g 1001 acgs && \
+    useradd -r -u 1001 -g acgs acgs
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    curl \
+    git \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Set working directory
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
+# Copy and install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir --user -r requirements.txt
+
+# Stage 2: Production stage
+FROM python:3.11-slim as production
+
+# Security: Install only runtime dependencies and security updates
+RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy shared module first
-COPY shared/ ./shared/
-
-# Copy Integrity service requirements and install Python dependencies
-COPY integrity_service/requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy Integrity service application code
-COPY integrity_service/ ./
-
-# Set Python path to include shared module
-ENV PYTHONPATH="/app:/app/services/shared:$PYTHONPATH"
+    ca-certificates \
+    libpq5 \
+    && apt-get upgrade -y \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
 
 # Create non-root user
-RUN useradd --create-home --shell /bin/bash acgs
-RUN chown -R acgs:acgs /app
+RUN groupadd -g 1001 acgs && \
+    useradd -r -u 1001 -g acgs -m -d /app acgs
+
+# Set working directory
+WORKDIR /app
+
+# Copy Python packages from builder stage
+COPY --from=builder /root/.local /home/acgs/.local
+
+# Make sure scripts in .local are usable
+ENV PATH=/home/acgs/.local/bin:$PATH
+
+# Copy shared modules first
+COPY --chown=acgs:acgs ../../../shared/ ./shared/
+
+# Copy application code
+COPY --chown=acgs:acgs . .
+
+# Set Python path to include shared modules
+ENV PYTHONPATH="/app:/app/shared:$PYTHONPATH"
+
+# Security: Remove unnecessary files and set permissions
+RUN find /app -type f -name "*.pyc" -delete \
+    && find /app -type d -name "__pycache__" -delete \
+    && chmod -R 755 /app \
+    && chmod +x /app/app/main.py
+
+# Create logs directory
+RUN mkdir -p /app/logs && chown -R acgs:acgs /app/logs
+
+# Security: Switch to non-root user
 USER acgs
 
 # Health check
@@ -32,5 +77,17 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
 # Expose port
 EXPOSE 8002
 
-# Run application
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8002", "--workers", "2"]
+# Set production environment variables
+ENV ENVIRONMENT=production
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+
+# Run application with production settings
+CMD ["python", "-m", "uvicorn", "app.main:app", \
+     "--host", "0.0.0.0", \
+     "--port", "8002", \
+     "--workers", "4", \
+     "--worker-class", "uvicorn.workers.UvicornWorker", \
+     "--access-log", \
+     "--log-level", "info"]

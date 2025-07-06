@@ -1,41 +1,41 @@
-# Evolution Oversight Service Dependencies
+# ACGS Unified Evolution/Compiler Service Dependencies
 
 # FastAPI and web framework
-fastapi==0.104.1
-uvicorn[standard]==0.24.0
-pydantic==2.5.0
+fastapi>=0.104.1
+uvicorn[standard]>=0.24.0
+pydantic>=2.5.0
 
 # Database
-asyncpg==0.29.0
+asyncpg>=0.29.0
+sqlalchemy>=2.0.23
 
 # Cache and Redis
-aioredis==2.0.1
+aioredis>=2.0.1
 
 # HTTP client
-httpx==0.25.2
+httpx>=0.25.2
 
 # Logging and monitoring
-structlog==23.2.0
-prometheus-client==0.19.0
+structlog>=23.2.0
+prometheus-client>=0.19.0
 
 # Data handling
-python-multipart==0.0.6
+python-multipart>=0.0.6
 
-# Development and testing
-pytest==7.4.3
-pytest-asyncio==0.21.1
+# Security
 python-jose>=3.5.1
-
 ecdsa>=0.20.0
-
-torch>=2.7.3
-
 cryptography>=45.0.4
 
+# Core dependencies
 requests>=2.32.4
-
 urllib3>=2.5.0
-
 certifi>=2025.6.15
-
 setuptools>=80.9.0
+
+# Development and testing
+pytest>=7.4.3
+pytest-asyncio>=0.21.1
+
+# Optional: ML/AI dependencies (for advanced evolution)
+# torch>=2.7.3  # Uncomment if needed for ML features

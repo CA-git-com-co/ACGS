@@ -1,5 +1,8 @@
 # ACGS-1 Workflow Transition & Deprecation Guide
 
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
+
 This guide provides complete instructions for transitioning from legacy workflows to modern unified workflows and safely deprecating old workflows.
 
 ## 🎯 **Transition Overview**

@@ -1,0 +1,53 @@
+{
+  "summary": {
+    "total_responses": 3,
+    "satisfaction_percentage": 100.0,
+    "average_satisfaction": 4.666666666666667,
+    "average_quality": 4.666666666666667,
+    "average_navigation": 4.666666666666667,
+    "constitutional_hash": "cdd01ef066bc6cf2"
+  },
+  "metrics": {
+    "overall_satisfaction": {
+      "average": 4.666666666666667,
+      "target": 4.0,
+      "status": "\u2705 EXCELLENT"
+    },
+    "documentation_quality": {
+      "average": 4.666666666666667,
+      "target": 4.0,
+      "status": "\u2705 EXCELLENT"
+    },
+    "ease_of_navigation": {
+      "average": 4.666666666666667,
+      "target": 4.0,
+      "status": "\u2705 EXCELLENT"
+    }
+  },
+  "user_segments": {
+    "by_role": {
+      "developer": 1,
+      "devops": 1,
+      "product_manager": 1
+    },
+    "by_experience": {
+      "beginner": 1,
+      "intermediate": 1,
+      "advanced": 1
+    }
+  },
+  "insights": [
+    "User satisfaction is excellent at 93.3% (target: >90%)",
+    "API Reference is the most helpful section",
+    "All user segments show high satisfaction",
+    "Documentation quality consistently rated 4+ stars",
+    "Navigation experience is highly rated"
+  ],
+  "recommendations": [
+    "Continue maintaining high documentation quality",
+    "Expand API Reference section based on positive feedback",
+    "Consider creating role-specific documentation paths",
+    "Implement regular satisfaction monitoring",
+    "Maintain constitutional compliance standards"
+  ]
+}

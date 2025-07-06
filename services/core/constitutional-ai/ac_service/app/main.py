@@ -21,9 +21,11 @@ import time
 from contextlib import asynccontextmanager
 from typing import Any
 
-# Import production security middleware
+# Import multi-tenant components
 try:
     import os
+    import sys
+    from pathlib import Path
 
     # Add the correct path to services/shared
     current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -32,6 +34,23 @@ try:
     )
     sys.path.insert(0, os.path.abspath(shared_path))
 
+    from middleware.tenant_middleware import (
+        TenantContextMiddleware,
+        TenantSecurityMiddleware,
+        get_tenant_context,
+        get_optional_tenant_context,
+        get_tenant_db
+    )
+    from clients.tenant_service_client import TenantServiceClient, service_registry
+    
+    MULTI_TENANT_AVAILABLE = True
+    print("✅ Multi-tenant components loaded successfully")
+except ImportError as e:
+    print(f"⚠️ Multi-tenant components not available: {e}")
+    MULTI_TENANT_AVAILABLE = False
+
+# Import production security middleware
+try:
     from services.shared.security_middleware import (
         apply_production_security_middleware,
         create_security_config,
@@ -114,10 +133,11 @@ except ImportError as e:
     print(f"⚠️ Comprehensive audit logging not available: {e}")
     AUDIT_LOGGING_AVAILABLE = False
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from .schemas import (
     ConstitutionalComplianceRequest,
@@ -212,16 +232,42 @@ async def lifespan(app: FastAPI):
         logger.info("🔄 Shutting down AC service")
 
 
+# Service configuration for multi-tenant support
+JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key-here")
+JWT_ALGORITHM = "HS256"
+
 # Create FastAPI application with enhanced configuration
 app = FastAPI(
     title="ACGS-1 Production Constitutional AI Service",
     description="Advanced constitutional compliance validation with formal verification and real-time monitoring",
-    version="3.0.0",
+    version="4.0.0",  # Upgraded for multi-tenant support
     docs_url="/docs",
     redoc_url="/redoc",
     openapi_url="/openapi.json",
     lifespan=lifespan,
 )
+
+# Add multi-tenant middleware
+if MULTI_TENANT_AVAILABLE:
+    # Add tenant context middleware (before other middleware)
+    app.add_middleware(
+        TenantContextMiddleware,
+        jwt_secret_key=JWT_SECRET_KEY,
+        jwt_algorithm=JWT_ALGORITHM,
+        exclude_paths=[
+            "/docs", "/redoc", "/openapi.json", "/health", "/metrics",
+            "/", "/api/v1/status"
+        ],
+        require_tenant=True,  # Constitutional AI requires tenant context
+        bypass_paths=["/health", "/metrics", "/", "/api/v1/status"]
+    )
+    
+    # Add tenant security middleware
+    app.add_middleware(TenantSecurityMiddleware)
+    
+    print("✅ Multi-tenant middleware applied to constitutional ai service")
+else:
+    print("⚠️ Multi-tenant middleware not available for constitutional ai service")
 
 # Setup standardized error handling
 if ERROR_HANDLING_AVAILABLE:
@@ -496,7 +542,8 @@ async def health_check():
     health_status = {
         "status": "healthy",
         "service": "ac_service_production",
-        "version": "3.0.0",
+        "version": "4.0.0",
+        "multi_tenant_enabled": MULTI_TENANT_AVAILABLE,
         "port": 8001,
         "timestamp": time.time(),
         "constitutional_hash": "cdd01ef066bc6cf2",
@@ -1083,7 +1130,11 @@ def _calculate_average_severity(validation_results) -> str:
 
 
 @app.post("/api/v1/validate", response_model=ContentValidationResponse)
-async def validate_content_simple(request: ContentValidationRequest):
+async def validate_content_simple(
+    request: ContentValidationRequest,
+    session: AsyncSession = Depends(get_tenant_db) if MULTI_TENANT_AVAILABLE else None,
+    tenant_context = Depends(get_tenant_context) if MULTI_TENANT_AVAILABLE else None
+):
     """Simple content validation endpoint for red-teaming and security testing."""
     try:
         content = request.content
@@ -1192,7 +1243,11 @@ async def validate_content_simple(request: ContentValidationRequest):
 
 
 @app.post("/api/v1/constitutional/validate")
-async def validate_constitutional_compliance(request: ConstitutionalComplianceRequest):
+async def validate_constitutional_compliance(
+    request: ConstitutionalComplianceRequest,
+    session: AsyncSession = Depends(get_tenant_db) if MULTI_TENANT_AVAILABLE else None,
+    tenant_context = Depends(get_tenant_context) if MULTI_TENANT_AVAILABLE else None
+):
     """Enhanced constitutional compliance validation with sophisticated algorithms."""
     try:
         # Import the refactored validation service

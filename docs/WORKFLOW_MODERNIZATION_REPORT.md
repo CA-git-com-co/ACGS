@@ -1,4 +1,7 @@
 # ACGS-1 Workflow Modernization Validation Report
+
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 Generated: 2025-07-01 19:46:26 UTC
 
 ## 🎯 Executive Summary

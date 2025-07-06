@@ -41,7 +41,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./scripts/docker/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
     ports:
-      - '5432:5432'
+      - '5439:5432'
     networks:
       - acgs_network
     healthcheck:
@@ -65,7 +65,7 @@ services:
     volumes:
       - redis_data:/data
     ports:
-      - '6379:6379'
+      - '6389:6379'
     networks:
       - acgs_network
     healthcheck:
@@ -178,7 +178,7 @@ services:
   # ACGS Core Services (in dependency order)
   # =============================================================================
 
-  # Auth Service (Port 8000) - Authentication and Authorization
+  # Auth Service (Port 8016) - Authentication and Authorization
   auth_service:
     build:
       context: .
@@ -187,7 +187,7 @@ services:
     container_name: acgs_auth_service
     environment:
       - SERVICE_NAME=auth_service
-      - SERVICE_PORT=8000
+      - SERVICE_PORT=8016
       - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres:5432/${POSTGRES_DB:-acgs_db}
       - REDIS_URL=redis://redis:6379/0
       - SECRET_KEY=${AUTH_SECRET_KEY:-acgs-development-secret-key-2024}
@@ -202,9 +202,9 @@ services:
       - NVIDIA_QWEN_ENABLED=${NVIDIA_QWEN_ENABLED:-true}
       - NANO_VLLM_ENABLED=${NANO_VLLM_ENABLED:-true}
     working_dir: /app/services/platform/authentication/auth_service
-    command: ['uvicorn', 'app.main:app', '--host', '0.0.0.0', '--port', '8000']
+    command: ['uvicorn', 'app.main:app', '--host', '0.0.0.0', '--port', '8016']
     ports:
-      - '8000:8000'
+      - '8016:8016'
     volumes:
       - acgs_logs:/app/logs
       - acgs_data:/app/data
@@ -245,7 +245,7 @@ services:
       - SERVICE_PORT=8001
       - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres:5432/${POSTGRES_DB:-acgs_db}
       - REDIS_URL=redis://redis:6379/1
-      - AUTH_SERVICE_URL=http://auth_service:8000
+      - AUTH_SERVICE_URL=http://auth_service:8016
       - ENVIRONMENT=${ENVIRONMENT:-development}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - CONSTITUTIONAL_FIDELITY_THRESHOLD=${CONSTITUTIONAL_FIDELITY_THRESHOLD:-0.85}
@@ -296,7 +296,7 @@ services:
       - SERVICE_PORT=8002
       - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres:5432/${POSTGRES_DB:-acgs_db}
       - REDIS_URL=redis://redis:6379/2
-      - AUTH_SERVICE_URL=http://auth_service:8000
+      - AUTH_SERVICE_URL=http://auth_service:8016
       - AC_SERVICE_URL=http://ac_service:8001
       - ENVIRONMENT=${ENVIRONMENT:-development}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
@@ -347,7 +347,7 @@ services:
       - SERVICE_PORT=8003
       - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres:5432/${POSTGRES_DB:-acgs_db}
       - REDIS_URL=redis://redis:6379/3
-      - AUTH_SERVICE_URL=http://auth_service:8000
+      - AUTH_SERVICE_URL=http://auth_service:8016
       - AC_SERVICE_URL=http://ac_service:8001
       - INTEGRITY_SERVICE_URL=http://integrity_service:8002
       - ENVIRONMENT=${ENVIRONMENT:-development}
@@ -399,7 +399,7 @@ services:
       - SERVICE_PORT=8004
       - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres:5432/${POSTGRES_DB:-acgs_db}
       - REDIS_URL=redis://redis:6379/4
-      - AUTH_SERVICE_URL=http://auth_service:8000
+      - AUTH_SERVICE_URL=http://auth_service:8016
       - AC_SERVICE_URL=http://ac_service:8001
       - INTEGRITY_SERVICE_URL=http://integrity_service:8002
       - FV_SERVICE_URL=http://fv_service:8003
@@ -454,7 +454,7 @@ services:
       - SERVICE_PORT=8005
       - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres:5432/${POSTGRES_DB:-acgs_db}
       - REDIS_URL=redis://redis:6379/5
-      - AUTH_SERVICE_URL=http://auth_service:8000
+      - AUTH_SERVICE_URL=http://auth_service:8016
       - AC_SERVICE_URL=http://ac_service:8001
       - INTEGRITY_SERVICE_URL=http://integrity_service:8002
       - FV_SERVICE_URL=http://fv_service:8003
@@ -509,7 +509,7 @@ services:
       - SERVICE_PORT=8006
       - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres:5432/${POSTGRES_DB:-acgs_db}
       - REDIS_URL=redis://redis:6379/6
-      - AUTH_SERVICE_URL=http://auth_service:8000
+      - AUTH_SERVICE_URL=http://auth_service:8016
       - AC_SERVICE_URL=http://ac_service:8001
       - GS_SERVICE_URL=http://gs_service:8004
       - PGC_SERVICE_URL=http://pgc_service:8005
@@ -616,7 +616,7 @@ services:
       - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
       - DATABASE_URL=postgresql+asyncpg://postgres:${POSTGRES_PASSWORD:-acgs_secure_2024}@postgres:5432/agent_hitl
       - REDIS_URL=redis://redis:6379
-      - AGENT_IDENTITY_SERVICE_URL=http://auth_service:8000
+      - AGENT_IDENTITY_SERVICE_URL=http://auth_service:8016
       - CONSTITUTIONAL_AI_SERVICE_URL=http://ac_service:8001
       - POLICY_GOVERNANCE_SERVICE_URL=http://pgc_service:8005
       - AGENT_HITL_SERVICE_PORT=8008

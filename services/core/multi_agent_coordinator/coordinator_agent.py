@@ -1,6 +1,13 @@
 """
 Enhanced Coordinator Agent with Hybrid Hierarchical-Blackboard Policy
 Extends existing ACGS coordination capabilities with multi-agent governance.
+
+Enhanced with full hierarchical structure supporting:
+- Orchestrator agents (top-level coordination)
+- Domain specialist agents (middle-tier expertise)
+- Worker agents (bottom-tier execution)
+- Complexity-based hierarchy creation
+- Advanced performance monitoring and optimization
 """
 
 import asyncio
@@ -9,6 +16,7 @@ import time
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional, Set, Tuple
 from uuid import uuid4
+from enum import Enum
 
 from pydantic import BaseModel, Field
 
@@ -16,6 +24,9 @@ from ...shared.blackboard import BlackboardService, KnowledgeItem, TaskDefinitio
 from ...shared.events.bus import EventBus
 from ...shared.constitutional_safety_framework import ConstitutionalSafetyValidator
 from ...shared.performance_monitoring import PerformanceMonitor
+from ...shared.monitoring.enhanced_performance_monitor import (
+    EnhancedPerformanceMonitor, MetricType
+)
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -151,6 +162,315 @@ class TaskDecompositionStrategy:
         return tasks
 
 
+# Enhanced Hierarchical Coordination Classes
+
+class AgentTier(Enum):
+    """Agent hierarchy tiers"""
+
+    ORCHESTRATOR = "orchestrator"
+    DOMAIN_SPECIALIST = "domain_specialist"
+    WORKER = "worker"
+
+
+class HierarchicalAgent(BaseModel):
+    """Agent in hierarchical structure"""
+
+    agent_id: str = Field(..., description="Unique agent identifier")
+    tier: AgentTier = Field(..., description="Hierarchical tier")
+    domain: str = Field(..., description="Domain of expertise")
+    capabilities: List[str] = Field(default_factory=list)
+    parent_agent_id: Optional[str] = Field(None, description="Parent in hierarchy")
+    child_agent_ids: List[str] = Field(default_factory=list)
+    workload_capacity: int = Field(default=5, description="Maximum concurrent tasks")
+    current_workload: int = Field(default=0, description="Current active tasks")
+    performance_score: float = Field(default=1.0, description="Performance rating")
+    constitutional_compliance_score: float = Field(default=1.0)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    last_active: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class HierarchyStructure(BaseModel):
+    """Complete hierarchy structure"""
+
+    hierarchy_id: str = Field(..., description="Unique hierarchy identifier")
+    orchestrator: HierarchicalAgent = Field(..., description="Top-level orchestrator")
+    domain_specialists: Dict[str, HierarchicalAgent] = Field(default_factory=dict)
+    workers: Dict[str, HierarchicalAgent] = Field(default_factory=dict)
+    complexity_level: int = Field(..., description="Task complexity (1-10)")
+    created_for_task: str = Field(..., description="Task that triggered creation")
+    performance_metrics: Dict[str, float] = Field(default_factory=dict)
+    constitutional_hash: str = Field(default=CONSTITUTIONAL_HASH)
+
+
+class HierarchicalCoordinationManager:
+    """
+    Manages hierarchical agent coordination with complexity-based structure creation.
+    Implements orchestrator -> domain specialists -> workers pattern.
+    """
+
+    def __init__(self,
+                 blackboard_service: BlackboardService,
+                 event_bus: EventBus,
+                 safety_validator: ConstitutionalSafetyValidator):
+        self.blackboard = blackboard_service
+        self.event_bus = event_bus
+        self.safety_validator = safety_validator
+        self.performance_monitor = PerformanceMonitor()
+
+        # Active hierarchies
+        self.active_hierarchies: Dict[str, HierarchyStructure] = {}
+
+        # Agent registry
+        self.agent_registry: Dict[str, HierarchicalAgent] = {}
+
+        # Performance tracking
+        self.hierarchy_metrics = {
+            "hierarchies_created": 0,
+            "tasks_completed": 0,
+            "average_completion_time": 0.0,
+            "coordination_efficiency": 1.0,
+            "constitutional_compliance_rate": 1.0
+        }
+
+        logger.info("Hierarchical Coordination Manager initialized")
+
+    async def create_agent_hierarchy(self, task_description: str,
+                                   complexity_level: int) -> HierarchyStructure:
+        """Create hierarchical agent structure based on task complexity"""
+        try:
+            hierarchy_id = str(uuid4())
+
+            if complexity_level <= 2:
+                # Simple task - flat structure with minimal hierarchy
+                return await self._create_flat_agent_team(hierarchy_id, task_description)
+            elif complexity_level <= 5:
+                # Medium complexity - two-tier hierarchy
+                return await self._create_two_tier_hierarchy(hierarchy_id, task_description, complexity_level)
+            else:
+                # Complex task - full hierarchical structure
+                return await self._create_full_hierarchy(hierarchy_id, task_description, complexity_level)
+
+        except Exception as e:
+            logger.error(f"Failed to create agent hierarchy: {e!s}")
+            raise
+
+    async def _create_flat_agent_team(self, hierarchy_id: str,
+                                    task_description: str) -> HierarchyStructure:
+        """Create a flat team structure for simple tasks"""
+        try:
+            # Create single orchestrator that also acts as worker
+            orchestrator = HierarchicalAgent(
+                agent_id=f"orchestrator_{hierarchy_id[:8]}",
+                tier=AgentTier.ORCHESTRATOR,
+                domain="general",
+                capabilities=["task_coordination", "execution", "monitoring"],
+                workload_capacity=3,
+                constitutional_compliance_score=1.0
+            )
+
+            # Register orchestrator
+            self.agent_registry[orchestrator.agent_id] = orchestrator
+
+            # Create hierarchy structure
+            hierarchy = HierarchyStructure(
+                hierarchy_id=hierarchy_id,
+                orchestrator=orchestrator,
+                complexity_level=1,
+                created_for_task=task_description,
+                performance_metrics={"coordination_overhead": 0.1}
+            )
+
+            self.active_hierarchies[hierarchy_id] = hierarchy
+            self.hierarchy_metrics["hierarchies_created"] += 1
+
+            logger.info(f"Created flat agent team {hierarchy_id}")
+            return hierarchy
+
+        except Exception as e:
+            logger.error(f"Failed to create flat agent team: {e!s}")
+            raise
+
+    async def _create_two_tier_hierarchy(self, hierarchy_id: str,
+                                       task_description: str,
+                                       complexity_level: int) -> HierarchyStructure:
+        """Create a two-tier hierarchy for medium complexity tasks"""
+        try:
+            # Create orchestrator
+            orchestrator = HierarchicalAgent(
+                agent_id=f"orchestrator_{hierarchy_id[:8]}",
+                tier=AgentTier.ORCHESTRATOR,
+                domain="coordination",
+                capabilities=["task_coordination", "resource_allocation", "monitoring"],
+                workload_capacity=2,
+                constitutional_compliance_score=1.0
+            )
+
+            # Create domain specialists based on task requirements
+            domain_analysis = await self._analyze_task_domains(task_description)
+            domain_specialists = {}
+
+            for domain, requirements in domain_analysis.items():
+                specialist = HierarchicalAgent(
+                    agent_id=f"{domain}_specialist_{hierarchy_id[:8]}",
+                    tier=AgentTier.DOMAIN_SPECIALIST,
+                    domain=domain,
+                    capabilities=requirements.get("capabilities", []),
+                    parent_agent_id=orchestrator.agent_id,
+                    workload_capacity=4,
+                    constitutional_compliance_score=1.0
+                )
+
+                domain_specialists[domain] = specialist
+                orchestrator.child_agent_ids.append(specialist.agent_id)
+                self.agent_registry[specialist.agent_id] = specialist
+
+            # Register orchestrator
+            self.agent_registry[orchestrator.agent_id] = orchestrator
+
+            # Create hierarchy structure
+            hierarchy = HierarchyStructure(
+                hierarchy_id=hierarchy_id,
+                orchestrator=orchestrator,
+                domain_specialists=domain_specialists,
+                complexity_level=complexity_level,
+                created_for_task=task_description,
+                performance_metrics={
+                    "coordination_overhead": 0.2,
+                    "specialization_efficiency": 0.8
+                }
+            )
+
+            self.active_hierarchies[hierarchy_id] = hierarchy
+            self.hierarchy_metrics["hierarchies_created"] += 1
+
+            logger.info(f"Created two-tier hierarchy {hierarchy_id} with {len(domain_specialists)} specialists")
+            return hierarchy
+
+        except Exception as e:
+            logger.error(f"Failed to create two-tier hierarchy: {e!s}")
+            raise
+
+    async def _create_full_hierarchy(self, hierarchy_id: str,
+                                   task_description: str,
+                                   complexity_level: int) -> HierarchyStructure:
+        """Create a full three-tier hierarchy for complex tasks"""
+        try:
+            # Create orchestrator
+            orchestrator = HierarchicalAgent(
+                agent_id=f"orchestrator_{hierarchy_id[:8]}",
+                tier=AgentTier.ORCHESTRATOR,
+                domain="strategic_coordination",
+                capabilities=["strategic_planning", "resource_optimization", "quality_assurance"],
+                workload_capacity=1,  # Focus on coordination only
+                constitutional_compliance_score=1.0
+            )
+
+            # Create domain specialists
+            domain_analysis = await self._analyze_task_domains(task_description)
+            domain_specialists = {}
+            workers = {}
+
+            for domain, requirements in domain_analysis.items():
+                # Create domain specialist
+                specialist = HierarchicalAgent(
+                    agent_id=f"{domain}_specialist_{hierarchy_id[:8]}",
+                    tier=AgentTier.DOMAIN_SPECIALIST,
+                    domain=domain,
+                    capabilities=requirements.get("specialist_capabilities", []),
+                    parent_agent_id=orchestrator.agent_id,
+                    workload_capacity=3,
+                    constitutional_compliance_score=1.0
+                )
+
+                domain_specialists[domain] = specialist
+                orchestrator.child_agent_ids.append(specialist.agent_id)
+
+                # Create workers for this domain
+                worker_count = min(3, max(1, complexity_level - 3))  # 1-3 workers per domain
+                for i in range(worker_count):
+                    worker = HierarchicalAgent(
+                        agent_id=f"{domain}_worker_{i}_{hierarchy_id[:8]}",
+                        tier=AgentTier.WORKER,
+                        domain=domain,
+                        capabilities=requirements.get("worker_capabilities", []),
+                        parent_agent_id=specialist.agent_id,
+                        workload_capacity=5,
+                        constitutional_compliance_score=1.0
+                    )
+
+                    workers[worker.agent_id] = worker
+                    specialist.child_agent_ids.append(worker.agent_id)
+                    self.agent_registry[worker.agent_id] = worker
+
+                self.agent_registry[specialist.agent_id] = specialist
+
+            # Register orchestrator
+            self.agent_registry[orchestrator.agent_id] = orchestrator
+
+            # Create hierarchy structure
+            hierarchy = HierarchyStructure(
+                hierarchy_id=hierarchy_id,
+                orchestrator=orchestrator,
+                domain_specialists=domain_specialists,
+                workers=workers,
+                complexity_level=complexity_level,
+                created_for_task=task_description,
+                performance_metrics={
+                    "coordination_overhead": 0.3,
+                    "specialization_efficiency": 0.9,
+                    "parallel_execution_capability": 0.8
+                }
+            )
+
+            self.active_hierarchies[hierarchy_id] = hierarchy
+            self.hierarchy_metrics["hierarchies_created"] += 1
+
+            logger.info(f"Created full hierarchy {hierarchy_id}: 1 orchestrator, {len(domain_specialists)} specialists, {len(workers)} workers")
+            return hierarchy
+
+        except Exception as e:
+            logger.error(f"Failed to create full hierarchy: {e!s}")
+            raise
+
+    async def _analyze_task_domains(self, task_description: str) -> Dict[str, Dict[str, Any]]:
+        """Analyze task to identify required domains and capabilities"""
+        try:
+            # Simplified domain analysis - in production this would use NLP/ML
+            domains = {}
+
+            # Check for common domain keywords
+            if any(keyword in task_description.lower() for keyword in ["policy", "governance", "compliance"]):
+                domains["governance"] = {
+                    "specialist_capabilities": ["policy_analysis", "compliance_checking", "governance_design"],
+                    "worker_capabilities": ["document_processing", "data_validation", "reporting"]
+                }
+
+            if any(keyword in task_description.lower() for keyword in ["security", "safety", "risk"]):
+                domains["security"] = {
+                    "specialist_capabilities": ["security_analysis", "risk_assessment", "threat_modeling"],
+                    "worker_capabilities": ["vulnerability_scanning", "log_analysis", "monitoring"]
+                }
+
+            if any(keyword in task_description.lower() for keyword in ["performance", "optimization", "efficiency"]):
+                domains["performance"] = {
+                    "specialist_capabilities": ["performance_analysis", "optimization_design", "metrics_evaluation"],
+                    "worker_capabilities": ["data_collection", "benchmarking", "testing"]
+                }
+
+            # Default domain if no specific domains identified
+            if not domains:
+                domains["general"] = {
+                    "specialist_capabilities": ["task_analysis", "solution_design", "quality_control"],
+                    "worker_capabilities": ["task_execution", "data_processing", "validation"]
+                }
+
+            return domains
+
+        except Exception as e:
+            logger.error(f"Failed to analyze task domains: {e!s}")
+            return {"general": {"specialist_capabilities": [], "worker_capabilities": []}}
+
+
 class CoordinatorAgent:
     """
     Enhanced Coordinator Agent implementing Hybrid Hierarchical-Blackboard Policy.
@@ -191,23 +511,36 @@ class CoordinatorAgent:
             'monitoring_agent': ['compliance_monitoring', 'performance_monitoring', 'audit_analysis']
         }
 
+        # Enhanced Hierarchical Coordination Manager
+        self.hierarchy_manager = HierarchicalCoordinationManager(
+            blackboard_service=self.blackboard,
+            event_bus=self.event_bus,
+            safety_validator=self.constitutional_framework
+        )
+
+        # Enhanced Performance Monitor for revolutionary metrics
+        self.enhanced_performance_monitor = EnhancedPerformanceMonitor(retention_hours=24)
+
     async def initialize(self) -> None:
         """Initialize the Coordinator Agent"""
         await self.blackboard.initialize()
-        
+
+        # Initialize enhanced performance monitor
+        await self.enhanced_performance_monitor.start()
+
         # Register with blackboard
         await self.blackboard.register_agent(
             agent_id=self.agent_id,
             agent_type='coordinator',
             capabilities=['task_decomposition', 'conflict_resolution', 'integration_management']
         )
-        
+
         # Subscribe to relevant events
         if self.event_bus:
             await self.event_bus.subscribe('governance_request', self._handle_governance_request)
             await self.event_bus.subscribe('task_completed', self._handle_task_completion)
             await self.event_bus.subscribe('conflict_detected', self._handle_conflict_detection)
-        
+
         self.logger.info(f"Coordinator Agent {self.agent_id} initialized successfully")
 
     async def start(self) -> None:
@@ -1233,3 +1566,147 @@ class CoordinatorAgent:
                 'rationale': 'Unknown conflict type requires human intervention',
                 'constitutional_principle': 'human_oversight'
             }
+
+    # Enhanced Hierarchical Coordination Methods
+
+    async def _calculate_task_complexity(self, request: GovernanceRequest,
+                                       tasks: List[Dict[str, Any]]) -> int:
+        """Calculate task complexity level (1-10) for hierarchy creation"""
+        try:
+            complexity_score = 0
+
+            # Base complexity from request
+            complexity_score += request.complexity_score * 5  # Scale to 0-5
+
+            # Add complexity based on number of tasks
+            complexity_score += min(3, len(tasks) / 2)  # Up to 3 points for task count
+
+            # Add complexity based on dependencies
+            total_dependencies = sum(len(task.get('dependencies', [])) for task in tasks)
+            complexity_score += min(2, total_dependencies / 3)  # Up to 2 points for dependencies
+
+            # Constitutional requirements add complexity
+            if request.constitutional_requirements:
+                complexity_score += min(1, len(request.constitutional_requirements) / 3)
+
+            # Deadline pressure adds complexity
+            if request.deadline:
+                time_pressure = (request.deadline - datetime.now(timezone.utc)).total_seconds()
+                if time_pressure < 3600:  # Less than 1 hour
+                    complexity_score += 2
+                elif time_pressure < 86400:  # Less than 1 day
+                    complexity_score += 1
+
+            # Ensure complexity is in valid range
+            complexity_level = max(1, min(10, int(complexity_score)))
+
+            self.logger.info(f"Calculated complexity level {complexity_level} for request {request.id}")
+            return complexity_level
+
+        except Exception as e:
+            self.logger.error(f"Failed to calculate task complexity: {e!s}")
+            return 5  # Default to medium complexity
+
+    async def _coordinate_hierarchical_execution(self, hierarchy: HierarchyStructure,
+                                               task_ids: List[str]) -> None:
+        """Coordinate task execution using hierarchical structure"""
+        try:
+            # Assign tasks to hierarchy levels based on complexity and requirements
+            orchestrator_tasks = []
+            specialist_tasks = {}
+            worker_tasks = {}
+
+            # Get task details from blackboard
+            for task_id in task_ids:
+                task = await self.blackboard.get_task(task_id)
+                if not task:
+                    continue
+
+                task_type = task.get('task_type', 'general')
+                task_priority = task.get('priority', 3)
+
+                # High-priority coordination tasks go to orchestrator
+                if task_priority <= 2 or 'coordination' in task_type:
+                    orchestrator_tasks.append(task_id)
+                # Domain-specific tasks go to specialists
+                elif any(domain in task_type for domain in hierarchy.domain_specialists.keys()):
+                    for domain in hierarchy.domain_specialists.keys():
+                        if domain in task_type:
+                            if domain not in specialist_tasks:
+                                specialist_tasks[domain] = []
+                            specialist_tasks[domain].append(task_id)
+                            break
+                # Execution tasks go to workers
+                else:
+                    # Distribute among available workers
+                    if hierarchy.workers:
+                        worker_id = min(hierarchy.workers.keys(),
+                                      key=lambda w: hierarchy.workers[w].current_workload)
+                        if worker_id not in worker_tasks:
+                            worker_tasks[worker_id] = []
+                        worker_tasks[worker_id].append(task_id)
+                    else:
+                        # Fallback to specialists if no workers
+                        domain = next(iter(hierarchy.domain_specialists.keys()), 'general')
+                        if domain not in specialist_tasks:
+                            specialist_tasks[domain] = []
+                        specialist_tasks[domain].append(task_id)
+
+            # Update workloads
+            hierarchy.orchestrator.current_workload = len(orchestrator_tasks)
+            for domain, tasks in specialist_tasks.items():
+                hierarchy.domain_specialists[domain].current_workload = len(tasks)
+            for worker_id, tasks in worker_tasks.items():
+                hierarchy.workers[worker_id].current_workload = len(tasks)
+
+            # Log task distribution
+            self.logger.info(f"Hierarchical task distribution for {hierarchy.hierarchy_id}:")
+            self.logger.info(f"  Orchestrator: {len(orchestrator_tasks)} tasks")
+            self.logger.info(f"  Specialists: {sum(len(tasks) for tasks in specialist_tasks.values())} tasks")
+            self.logger.info(f"  Workers: {sum(len(tasks) for tasks in worker_tasks.values())} tasks")
+
+            # Store task assignments in blackboard
+            await self._store_hierarchy_assignments(hierarchy, {
+                'orchestrator_tasks': orchestrator_tasks,
+                'specialist_tasks': specialist_tasks,
+                'worker_tasks': worker_tasks
+            })
+
+        except Exception as e:
+            self.logger.error(f"Failed to coordinate hierarchical execution: {e!s}")
+            raise
+
+    async def _store_hierarchy_assignments(self, hierarchy: HierarchyStructure,
+                                         assignments: Dict[str, Any]) -> None:
+        """Store hierarchy task assignments in blackboard"""
+        try:
+            knowledge_item = KnowledgeItem(
+                id=f"hierarchy_assignments_{hierarchy.hierarchy_id}",
+                space="coordination",
+                knowledge_type="hierarchy_assignments",
+                agent_id=self.agent_id,
+                content={
+                    "hierarchy_id": hierarchy.hierarchy_id,
+                    "assignments": assignments,
+                    "created_at": datetime.now(timezone.utc).isoformat(),
+                    "constitutional_hash": CONSTITUTIONAL_HASH
+                },
+                priority=2,
+                expires_at=datetime.now(timezone.utc) + timedelta(hours=24)
+            )
+
+            await self.blackboard.add_knowledge(knowledge_item)
+
+            self.logger.debug(f"Stored hierarchy assignments for {hierarchy.hierarchy_id}")
+
+        except Exception as e:
+            self.logger.error(f"Failed to store hierarchy assignments: {e!s}")
+
+    def get_hierarchy_metrics(self) -> Dict[str, Any]:
+        """Get hierarchical coordination performance metrics"""
+        return {
+            **self.hierarchy_manager.hierarchy_metrics,
+            "active_hierarchies": len(self.hierarchy_manager.active_hierarchies),
+            "total_agents_managed": len(self.hierarchy_manager.agent_registry),
+            "coordination_efficiency": self.hierarchy_manager.hierarchy_metrics.get("coordination_efficiency", 1.0)
+        }

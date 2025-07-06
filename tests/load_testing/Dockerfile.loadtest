@@ -1,0 +1,43 @@
+# ACGS Load Test Container
+# Constitutional Hash: cdd01ef066bc6cf2
+
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy load test files
+COPY locustfile.py .
+COPY distributed_config.py .
+COPY performance_analyzer.py .
+COPY run_load_test.py .
+
+# Create directories
+RUN mkdir -p /app/reports /app/logs /app/data
+
+# Set environment variables
+ENV PYTHONPATH=/app
+ENV CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+
+# Add non-root user for security
+RUN groupadd -r locust && useradd -r -g locust locust
+RUN chown -R locust:locust /app
+USER locust
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8089/ || exit 1
+
+# Default command
+CMD ["locust", "--help"]

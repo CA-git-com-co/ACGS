@@ -24,7 +24,7 @@
 
 #### 3. **Constitutional Framework Integration** ✅ 100%
 
-- ✅ Constitutional Hash: `cdd01ef066bc6cf2` integrated throughout
+- ✅ <!-- Constitutional Hash: cdd01ef066bc6cf2 --> integrated throughout
 - ✅ Chinese governance specialist role
 - ✅ Multilingual translator capabilities
 - ✅ Cross-cultural analysis support

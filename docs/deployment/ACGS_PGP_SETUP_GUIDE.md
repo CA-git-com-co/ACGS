@@ -2,7 +2,7 @@
 
 **Version**: 1.0.0  
 **Date**: 2025-06-27  
-**Constitutional Hash**: cdd01ef066bc6cf2
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 
 ## Overview
 
@@ -24,7 +24,7 @@ This guide provides comprehensive instructions for setting up the ACGS-PGP (Auto
 
 ### Constitutional Governance Features
 
-- **Constitutional Hash**: `cdd01ef066bc6cf2`
+- <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 - **Compliance Threshold**: >95%
 - **DGM Safety Patterns**: Sandbox + Human Review + Rollback
 - **Emergency Shutdown**: <30min RTO
@@ -435,6 +435,6 @@ For technical support and questions:
 
 ---
 
-**Constitutional Hash**: cdd01ef066bc6cf2
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 **Last Updated**: 2025-06-27
 **Version**: 1.0.0

@@ -361,6 +361,6 @@ This implementation is part of the ACGS research project. For support and questi
 
 ---
 
-**Constitutional Hash**: `cdd01ef066bc6cf2`  
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->  
 **Implementation Version**: 1.0.0  
 **Last Updated**: 2025-06-30

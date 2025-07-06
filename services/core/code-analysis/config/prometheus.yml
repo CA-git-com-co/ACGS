@@ -1,0 +1,75 @@
+# Prometheus Configuration for ACGS Code Analysis Engine
+# Constitutional Hash: cdd01ef066bc6cf2
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'acgs-code-analysis'
+    constitutional_hash: 'cdd01ef066bc6cf2'
+
+rule_files:
+  - "alert_rules.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  # ACGS Code Analysis Engine
+  - job_name: 'acgs-code-analysis-engine'
+    static_configs:
+      - targets: ['code-analysis-engine:9091']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    honor_labels: true
+    params:
+      constitutional_hash: ['cdd01ef066bc6cf2']
+
+  # ACGS Code Analysis Engine Health
+  - job_name: 'acgs-code-analysis-health'
+    static_configs:
+      - targets: ['code-analysis-engine:8007']
+    metrics_path: '/health'
+    scrape_interval: 30s
+    scrape_timeout: 10s
+
+  # PostgreSQL Exporter
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+    scrape_interval: 30s
+
+  # Redis Exporter
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+    scrape_interval: 30s
+
+  # Node Exporter (System Metrics)
+  - job_name: 'node'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 30s
+
+  # Prometheus Self-Monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 30s
+
+  # Mock Services (for testing)
+  - job_name: 'acgs-auth-service'
+    static_configs:
+      - targets: ['auth-service:80']
+    metrics_path: '/health'
+    scrape_interval: 60s
+
+  - job_name: 'acgs-context-service'
+    static_configs:
+      - targets: ['context-service:80']
+    metrics_path: '/health'
+    scrape_interval: 60s

@@ -8,7 +8,7 @@ import time
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 
-# Import standardized security middleware
+# Import multi-tenant components
 try:
     import os
     import sys
@@ -17,7 +17,25 @@ try:
     # Add project root to path
     project_root = Path(__file__).parent.parent.parent.parent.parent.absolute()
     sys.path.insert(0, str(project_root))
+    sys.path.insert(0, str(project_root / "services" / "shared"))
 
+    from middleware.tenant_middleware import (
+        TenantContextMiddleware,
+        TenantSecurityMiddleware,
+        get_tenant_context,
+        get_optional_tenant_context,
+        get_tenant_db
+    )
+    from clients.tenant_service_client import TenantServiceClient, service_registry
+    
+    MULTI_TENANT_AVAILABLE = True
+    print("✅ Multi-tenant components loaded successfully")
+except ImportError as e:
+    print(f"⚠️ Multi-tenant components not available: {e}")
+    MULTI_TENANT_AVAILABLE = False
+
+# Import standardized security middleware
+try:
     from services.shared.security.standardized_security import (
         CONSTITUTIONAL_HASH,
         apply_standardized_security,
@@ -53,11 +71,12 @@ import os
 # Import optimized governance engine
 import sys
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
 from starlette.responses import PlainTextResponse
+from sqlalchemy.ext.asyncio import AsyncSession
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from optimized_governance_engine import (
@@ -67,8 +86,12 @@ from optimized_governance_engine import (
 
 # Service configuration
 SERVICE_NAME = "pgc_service"
-SERVICE_VERSION = "3.1.0"
+SERVICE_VERSION = "4.0.0"  # Upgraded for multi-tenant support
 SERVICE_PORT = 8005
+
+# JWT configuration for multi-tenant tokens
+JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key-here")
+JWT_ALGORITHM = "HS256"
 
 # Configure logging
 logging.basicConfig(
@@ -100,6 +123,27 @@ app = FastAPI(
     redoc_url="/redoc",
     lifespan=lifespan,
 )
+# Add multi-tenant middleware
+if MULTI_TENANT_AVAILABLE:
+    # Add tenant context middleware (before other middleware)
+    app.add_middleware(
+        TenantContextMiddleware,
+        jwt_secret_key=JWT_SECRET_KEY,
+        jwt_algorithm=JWT_ALGORITHM,
+        exclude_paths=[
+            "/docs", "/redoc", "/openapi.json", "/health", "/metrics"
+        ],
+        require_tenant=True,  # Policy governance requires tenant context
+        bypass_paths=["/health", "/metrics"]
+    )
+    
+    # Add tenant security middleware
+    app.add_middleware(TenantSecurityMiddleware)
+    
+    print("✅ Multi-tenant middleware applied to pgc service")
+else:
+    print("⚠️ Multi-tenant middleware not available for pgc service")
+
 # Apply standardized security middleware
 if SECURITY_MIDDLEWARE_AVAILABLE:
     app = apply_standardized_security(app, "pgc_service", SERVICE_VERSION)
@@ -244,7 +288,11 @@ async def metrics():
 # Optimized policy compliance validation endpoint (target: <5ms)
 @validate_policy_input
 @app.post("/api/v1/validate")
-async def validate_policy_compliance(request: Request):
+async def validate_policy_compliance(
+    request: Request,
+    session: AsyncSession = Depends(get_tenant_db) if MULTI_TENANT_AVAILABLE else None,
+    tenant_context = Depends(get_tenant_context) if MULTI_TENANT_AVAILABLE else None
+):
     """High-performance policy compliance validation endpoint (target: <5ms)"""
     start_time = time.time()
 
@@ -305,7 +353,11 @@ async def validate_policy_compliance(request: Request):
 # Policy governance endpoint
 @validate_policy_input
 @app.post("/api/v1/govern")
-async def govern_policy(request: Request):
+async def govern_policy(
+    request: Request,
+    session: AsyncSession = Depends(get_tenant_db) if MULTI_TENANT_AVAILABLE else None,
+    tenant_context = Depends(get_tenant_context) if MULTI_TENANT_AVAILABLE else None
+):
     """Policy governance endpoint"""
     try:
         body = await request.json()
@@ -338,6 +390,7 @@ async def service_info():
         "version": SERVICE_VERSION,
         "status": "operational",
         "constitutional_hash": "cdd01ef066bc6cf2",
+        "multi_tenant_enabled": MULTI_TENANT_AVAILABLE,
         "capabilities": [
             "policy_compliance_validation",
             "policy_governance",

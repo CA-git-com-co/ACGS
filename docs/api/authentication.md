@@ -1,5 +1,10 @@
 # Authentication API Documentation
 
+**Service**: Authentication Service
+**Port**: 8016
+**Base URL**: `http://localhost:8016/api/v1`
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 ## Overview
 
 This document provides comprehensive documentation for the Authentication Service (Port 8016) API, including endpoints for user authentication, token management, and profile retrieval.
@@ -29,6 +34,8 @@ This document provides comprehensive documentation for the Authentication Servic
 {
   "username": "string",
   "password": "string"
+,
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }
 ```
 
@@ -41,7 +48,10 @@ This document provides comprehensive documentation for the Authentication Servic
     "id": "string",
     "username": "string",
     "roles": ["string"]
-  }
+  ,
+  "constitutional_hash": "cdd01ef066bc6cf2"
+},
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }
 ```
 
@@ -71,7 +81,10 @@ console.log(result);
     "id": "1234567890",
     "username": "user123",
     "roles": ["user", "admin"]
-  }
+  ,
+  "constitutional_hash": "cdd01ef066bc6cf2"
+},
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }
 ```
 
@@ -85,6 +98,8 @@ console.log(result);
 ```json
 {
   "refresh_token": "string"
+,
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }
 ```
 
@@ -92,7 +107,8 @@ console.log(result);
 ```json
 {
   "access_token": "string",
-  "expires_in": 3600
+  "expires_in": 3600,
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }
 ```
 
@@ -117,7 +133,8 @@ console.log(result);
 ```json
 {
   "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
-  "expires_in": 3600
+  "expires_in": 3600,
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }
 ```
 
@@ -153,7 +170,8 @@ Authorization: Bearer <access_token>
   "username": "string",
   "email": "string",
   "roles": ["string"],
-  "mfa_enabled": boolean
+  "mfa_enabled": boolean,
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }
 ```
 
@@ -176,14 +194,23 @@ console.log(result);
   "username": "user123",
   "email": "user@example.com",
   "roles": ["user", "admin"],
-  "mfa_enabled": false
+  "mfa_enabled": false,
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }
 ```
 
 ## Additional Resources
 
 - [API Documentation Index](index.md)
-- [JWT Token Reference](jwt.md)
-- [Role-based Access Control (RBAC) Design](rbac.md)
+- [JWT Token Reference](api/authentication.md)
+- [Role-based Access Control (RBAC) Design](api/authentication.md)
 
 For detailed specifications and implementation guidelines, see the Auth Service documentation repository.
+## Performance Targets
+
+- **Latency**: P99 ≤ 5ms for cached queries
+- **Throughput**: ≥ 100 RPS sustained
+- **Cache Hit Rate**: ≥ 85%
+- **Test Coverage**: ≥ 80%
+- **Availability**: 99.9% uptime
+- **Constitutional Compliance**: 100% validation

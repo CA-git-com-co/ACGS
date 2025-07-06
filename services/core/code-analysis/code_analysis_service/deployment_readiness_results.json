@@ -1,0 +1,82 @@
+{
+  "deployment_ready": true,
+  "success_rate": 100.0,
+  "passed_tests": [
+    "configuration_loading",
+    "service_imports",
+    "database_configuration",
+    "cache_configuration",
+    "constitutional_compliance",
+    "acgs_infrastructure_readiness"
+  ],
+  "failed_tests": [],
+  "test_results": {
+    "configuration_loading": {
+      "status": "pass",
+      "checks": {
+        "service_name": true,
+        "port": true,
+        "constitutional_hash": true,
+        "postgresql_port": true,
+        "redis_port": true,
+        "database_url_format": true,
+        "redis_url_format": true
+      },
+      "settings": {
+        "service_name": "acgs-code-analysis-engine",
+        "port": 8007,
+        "constitutional_hash": "cdd01ef066bc6cf2",
+        "postgresql_port": 5439,
+        "redis_port": 6389
+      }
+    },
+    "service_imports": {
+      "status": "pass",
+      "constitutional_hash": "cdd01ef066bc6cf2",
+      "imports_successful": true
+    },
+    "database_configuration": {
+      "status": "pass",
+      "database_url": "postgresql+asyncpg://acgs_user:test_password@localhost:5439/acgs",
+      "host": "localhost",
+      "port": 5439,
+      "database": "acgs"
+    },
+    "cache_configuration": {
+      "status": "pass",
+      "redis_url": "redis://localhost:6389/3",
+      "redis_host": "localhost",
+      "redis_port": 6389,
+      "redis_db": 3
+    },
+    "constitutional_compliance": {
+      "status": "pass",
+      "expected_hash": "cdd01ef066bc6cf2",
+      "settings_hash": "cdd01ef066bc6cf2",
+      "utility_hash": "cdd01ef066bc6cf2",
+      "settings_hash_valid": true,
+      "utility_hash_valid": true,
+      "hash_consistency": true
+    },
+    "acgs_infrastructure_readiness": {
+      "status": "pass",
+      "infrastructure_config": {
+        "auth_service_url": "http://localhost:8016/",
+        "context_service_url": "http://localhost:8012/",
+        "service_registry_url": "http://localhost:8001/registry",
+        "postgresql_configured": "localhost:5439",
+        "redis_configured": "localhost:6389"
+      },
+      "port_checks": {
+        "auth_service_port": true,
+        "context_service_port": true,
+        "postgresql_port": true,
+        "redis_port": true,
+        "service_port": true
+      },
+      "all_ports_correct": true
+    }
+  },
+  "timestamp": "2025-07-05T08:32:51.495929",
+  "constitutional_hash": "cdd01ef066bc6cf2"
+}

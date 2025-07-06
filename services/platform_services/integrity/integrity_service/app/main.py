@@ -17,6 +17,36 @@ import logging
 import sys
 import time
 from contextlib import asynccontextmanager
+import asyncpg
+import os
+
+# Import multi-tenant components
+try:
+    import os
+    import sys
+    from pathlib import Path
+
+    # Add the correct path to services/shared
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    shared_path = os.path.join(
+        current_dir, "..", "..", "..", "..", "services", "shared"
+    )
+    sys.path.insert(0, os.path.abspath(shared_path))
+
+    from middleware.tenant_middleware import (
+        TenantContextMiddleware,
+        TenantSecurityMiddleware,
+        get_tenant_context,
+        get_optional_tenant_context,
+        get_tenant_db
+    )
+    from clients.tenant_service_client import TenantServiceClient, service_registry
+    
+    MULTI_TENANT_AVAILABLE = True
+    print("✅ Multi-tenant components loaded successfully")
+except ImportError as e:
+    print(f"⚠️ Multi-tenant components not available: {e}")
+    MULTI_TENANT_AVAILABLE = False
 
 # Import production security middleware
 try:
@@ -59,9 +89,10 @@ except ImportError as e:
     print(f"⚠️ Comprehensive audit logging not available: {e}")
     AUDIT_LOGGING_AVAILABLE = False
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from sqlalchemy.ext.asyncio import AsyncSession
 
 # Import shared components
 try:
@@ -109,12 +140,20 @@ logger = logging.getLogger("integrity_service")
 
 # Service configuration
 SERVICE_NAME = "integrity_service"
-SERVICE_VERSION = "3.0.0"
+SERVICE_VERSION = "4.0.0"  # Upgraded for multi-tenant support
 SERVICE_PORT = 8002
 SERVICE_PHASE = "Phase A3 - Production Implementation"
 
+# JWT configuration for multi-tenant tokens
+JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key-here")
+JWT_ALGORITHM = "HS256"
+
 # Global service state
 service_start_time = time.time()
+
+# Database configuration
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://acgs_user:acgs_password@localhost:5439/acgs_integrity")
+db_pool = None
 
 
 @asynccontextmanager
@@ -124,9 +163,37 @@ async def lifespan(app: FastAPI):
     # sha256: func_hash
     """Application lifespan management with service initialization."""
     logger.info(f"🚀 Starting ACGS-1 {SERVICE_PHASE} Integrity Service")
-
+    
+    global db_pool
+    
     try:
-        # Initialize service components
+        # Initialize database connection pool
+        logger.info("🔌 Initializing database connection pool...")
+        db_pool = await asyncpg.create_pool(
+            DATABASE_URL,
+            min_size=5,
+            max_size=20,
+            command_timeout=30,
+            server_settings={
+                'application_name': 'acgs_integrity_service',
+                'tcp_keepalives_idle': '600',
+                'tcp_keepalives_interval': '30',
+                'tcp_keepalives_count': '3'
+            }
+        )
+        logger.info("✅ Database connection pool initialized")
+        
+        # Initialize audit trail database schema
+        from .core.persistent_audit_trail import create_audit_tables, CryptographicAuditChain
+        await create_audit_tables(db_pool)
+        logger.info("✅ Audit trail database schema initialized")
+        
+        # Initialize audit chain
+        audit_chain = CryptographicAuditChain(db_pool)
+        from .api.v1.persistent_audit import set_audit_chain
+        set_audit_chain(audit_chain)
+        logger.info("✅ Cryptographic audit chain initialized")
+        
         logger.info("✅ Integrity Service initialized successfully")
         yield
     except Exception as e:
@@ -134,6 +201,9 @@ async def lifespan(app: FastAPI):
         yield
     finally:
         logger.info("🔄 Shutting down Integrity Service")
+        if db_pool:
+            await db_pool.close()
+            logger.info("✅ Database connection pool closed")
 
 
 # Create FastAPI application with enhanced configuration
@@ -146,6 +216,28 @@ app = FastAPI(
     openapi_url="/openapi.json",
     lifespan=lifespan,
 )
+
+# Add multi-tenant middleware
+if MULTI_TENANT_AVAILABLE:
+    # Add tenant context middleware (before other middleware)
+    app.add_middleware(
+        TenantContextMiddleware,
+        jwt_secret_key=JWT_SECRET_KEY,
+        jwt_algorithm=JWT_ALGORITHM,
+        exclude_paths=[
+            "/docs", "/redoc", "/openapi.json", "/health", "/metrics",
+            "/", "/api/v1/status"
+        ],
+        require_tenant=True,  # Integrity service requires tenant context
+        bypass_paths=["/health", "/metrics", "/", "/api/v1/status"]
+    )
+    
+    # Add tenant security middleware
+    app.add_middleware(TenantSecurityMiddleware)
+    
+    print("✅ Multi-tenant middleware applied to integrity service")
+else:
+    print("⚠️ Multi-tenant middleware not available for integrity service")
 
 
 @app.middleware("http")
@@ -323,6 +415,7 @@ try:
     from .api.v1.crypto import router as crypto_router
     from .api.v1.integrity import router as integrity_router
     from .api.v1.research_data import router as research_router
+    from .api.v1.persistent_audit import router as persistent_audit_router
 
     ROUTERS_AVAILABLE = True
     logger.info("All API routers imported successfully")
@@ -350,6 +443,7 @@ async def root(request: Request):
             "Cryptographic Integrity Verification",
             "Digital Signature Management",
             "Audit Trail with Blockchain Verification",
+            "Persistent Audit Trail with Hash Chaining",
             "PGP Assurance and Key Management",
             "Appeals and Dispute Resolution",
             "Research Data Pipeline",
@@ -378,6 +472,7 @@ async def health_check(request: Request):
         port=SERVICE_PORT,
         uptime_seconds=uptime_seconds,
         constitutional_hash="cdd01ef066bc6cf2",
+        multi_tenant_enabled=MULTI_TENANT_AVAILABLE,
         dependencies={
             "database": "connected",
             "crypto_service": "operational",
@@ -448,11 +543,24 @@ async def api_status(request: Request):
                 if ROUTERS_AVAILABLE
                 else []
             ),
+            "persistent_audit": (
+                [
+                    "/api/v1/persistent-audit/events",
+                    "/api/v1/persistent-audit/verify-integrity",
+                    "/api/v1/persistent-audit/stats",
+                    "/api/v1/persistent-audit/emergency-seal",
+                    "/api/v1/persistent-audit/health",
+                ]
+                if ROUTERS_AVAILABLE
+                else []
+            ),
         },
         "capabilities": {
             "cryptographic_integrity": True,
             "digital_signatures": True,
             "audit_trail": True,
+            "persistent_audit_trail": True,
+            "hash_chaining": True,
             "pgp_assurance": True,
             "appeals_processing": ROUTERS_AVAILABLE,
             "research_pipeline": ROUTERS_AVAILABLE,
@@ -527,6 +635,9 @@ if ROUTERS_AVAILABLE:
         )
         app.include_router(
             research_router, prefix="/api/v1/research", tags=["Research Data Pipeline"]
+        )
+        app.include_router(
+            persistent_audit_router, prefix="/api/v1", tags=["Persistent Audit Trail"]
         )
         logger.info("✅ All API routers included successfully")
     except Exception as e:

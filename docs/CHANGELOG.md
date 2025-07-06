@@ -1,5 +1,8 @@
 # Changelog
 
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
+
 All notable changes to the ACGS-1 project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
