@@ -236,7 +236,7 @@ services:
    curl -X POST http://localhost:8020/execute \
      -H "Content-Type: application/json" \
      -d '{"command": "version", "args": []}'
-   
+
    # Test permission check
    curl -X POST http://localhost:8020/check-permission \
      -H "Content-Type: application/json" \
@@ -247,7 +247,7 @@ services:
    ```bash
    # Check metrics
    curl http://localhost:8020/metrics | jq .
-   
+
    # Verify P99 latency < 5ms
    # Verify cache hit rate > 85%
    ```

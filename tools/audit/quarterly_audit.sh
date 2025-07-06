@@ -49,9 +49,9 @@ AUDIT_REPORT="$AUDIT_REPORTS_DIR/quarterly_audit_${AUDIT_QUARTER}_${AUDIT_DATE}.
 cat > "$AUDIT_REPORT" << EOF
 # ACGS Quarterly Documentation Audit Report
 
-**Audit Period**: $AUDIT_QUARTER  
-**Audit Date**: $(date)  
-**Constitutional Hash**: $CONSTITUTIONAL_HASH  
+**Audit Period**: $AUDIT_QUARTER
+**Audit Date**: $(date)
+**Constitutional Hash**: $CONSTITUTIONAL_HASH
 **Auditor**: $(whoami)
 
 ## Executive Summary
@@ -152,17 +152,17 @@ echo "" >> "$AUDIT_REPORT"
 for service in "${SERVICES[@]}"; do
     SERVICE_NAME="${service%%:*}"
     SERVICE_PORT="${service##*:}"
-    
+
     log_info "Auditing $SERVICE_NAME service..."
-    
+
     API_TOTAL=$((API_TOTAL + 3)) # 3 checks per service
-    
+
     # Check if documentation exists
     if [ -f "$REPO_ROOT/docs/api/${SERVICE_NAME}.md" ]; then
         log_success "Documentation exists for $SERVICE_NAME"
         API_SCORE=$((API_SCORE + 1))
         echo "- ✅ $SERVICE_NAME documentation exists" >> "$AUDIT_REPORT"
-        
+
         # Check if port is correct in documentation
         if grep -q "$SERVICE_PORT" "$REPO_ROOT/docs/api/${SERVICE_NAME}.md"; then
             log_success "Port $SERVICE_PORT correctly documented for $SERVICE_NAME"
@@ -172,7 +172,7 @@ for service in "${SERVICES[@]}"; do
             log_warning "Port $SERVICE_PORT missing in documentation for $SERVICE_NAME"
             echo "- ⚠️ $SERVICE_NAME port $SERVICE_PORT missing in documentation" >> "$AUDIT_REPORT"
         fi
-        
+
         # Check constitutional hash in examples
         if grep -q "$CONSTITUTIONAL_HASH" "$REPO_ROOT/docs/api/${SERVICE_NAME}.md"; then
             log_success "Constitutional hash present in $SERVICE_NAME documentation"
@@ -222,13 +222,13 @@ while IFS= read -r file; do
     if [ -f "$file" ]; then
         TOTAL_FILES=$((TOTAL_FILES + 1))
         RELATIVE_FILE=$(echo "$file" | sed "s|$REPO_ROOT/||")
-        
+
         # Simple link validation (check for broken internal references)
         INTERNAL_LINKS=$(grep -o '\[.*\](.*\.md[^)]*)' "$file" 2>/dev/null || true)
-        
+
         if [ -n "$INTERNAL_LINKS" ]; then
             LINK_TOTAL=$((LINK_TOTAL + 1))
-            
+
             # Check if internal links are valid (simplified check)
             BROKEN_IN_FILE=false
             while IFS= read -r link; do
@@ -244,7 +244,7 @@ while IFS= read -r file; do
                     fi
                 fi
             done <<< "$INTERNAL_LINKS"
-            
+
             if [ "$BROKEN_IN_FILE" = false ]; then
                 LINK_SCORE=$((LINK_SCORE + 1))
                 echo "- ✅ $RELATIVE_FILE: All internal links valid" >> "$AUDIT_REPORT"
@@ -291,14 +291,14 @@ echo "" >> "$AUDIT_REPORT"
 for target in "${PERFORMANCE_TARGETS[@]}"; do
     TARGET_PATTERN="${target%%:*}"
     TARGET_TYPE="${target##*:}"
-    
+
     PERFORMANCE_TOTAL=$((PERFORMANCE_TOTAL + 1))
-    
+
     log_info "Validating $TARGET_TYPE target pattern: $TARGET_PATTERN"
-    
+
     # Count occurrences across documentation
     COUNT=$(grep -r "$TARGET_PATTERN" "$REPO_ROOT/docs/" 2>/dev/null | wc -l || echo "0")
-    
+
     if [ "$COUNT" -ge 2 ]; then
         log_success "$TARGET_TYPE target consistently documented ($COUNT occurrences)"
         PERFORMANCE_SCORE=$((PERFORMANCE_SCORE + 1))
@@ -339,7 +339,7 @@ echo "" >> "$AUDIT_REPORT"
 for file in "${CRITICAL_FILES[@]}"; do
     COMPLIANCE_TOTAL=$((COMPLIANCE_TOTAL + 1))
     FULL_PATH="$REPO_ROOT/$file"
-    
+
     if [ -f "$FULL_PATH" ]; then
         if grep -q "$CONSTITUTIONAL_HASH" "$FULL_PATH"; then
             log_success "Constitutional hash found in $file"
@@ -369,7 +369,7 @@ if [ -n "$API_FILES" ]; then
         if [ -f "$api_file" ]; then
             API_TOTAL_COUNT=$((API_TOTAL_COUNT + 1))
             RELATIVE_API_FILE=$(echo "$api_file" | sed "s|$REPO_ROOT/||")
-            
+
             if grep -q "$CONSTITUTIONAL_HASH" "$api_file"; then
                 API_WITH_HASH=$((API_WITH_HASH + 1))
                 echo "- ✅ $RELATIVE_API_FILE: Constitutional hash present" >> "$AUDIT_REPORT"
@@ -431,8 +431,8 @@ cat >> "$AUDIT_REPORT" << EOF
 
 ## Overall Audit Summary
 
-**Overall Score**: $TOTAL_SCORE/$TOTAL_POSSIBLE ($OVERALL_PERCENTAGE%)  
-**Status**: $STATUS_EMOJI $OVERALL_STATUS  
+**Overall Score**: $TOTAL_SCORE/$TOTAL_POSSIBLE ($OVERALL_PERCENTAGE%)
+**Status**: $STATUS_EMOJI $OVERALL_STATUS
 **Constitutional Hash**: $CONSTITUTIONAL_HASH ✅
 
 ### Detailed Scores
@@ -491,8 +491,8 @@ cat >> "$AUDIT_REPORT" << EOF
 
 ---
 
-**Audit Completed**: $(date)  
-**Next Audit**: $(date -d "+3 months" +%Y-%m-%d)  
+**Audit Completed**: $(date)
+**Next Audit**: $(date -d "+3 months" +%Y-%m-%d)
 **Constitutional Hash**: $CONSTITUTIONAL_HASH ✅
 EOF
 

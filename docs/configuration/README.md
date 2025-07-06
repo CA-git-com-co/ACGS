@@ -1,7 +1,7 @@
 # ACGS Configuration Guide
 
-<!-- Constitutional Hash: cdd01ef066bc6cf2 -->  
-**Last Updated**: 2025-07-05  
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+**Last Updated**: 2025-07-05
 **Status**: Production Ready
 
 ## 🎯 Quick Reference
@@ -194,7 +194,7 @@ make test-coverage
    ```bash
    # Test PostgreSQL connection
    pg_isready -h localhost -p 5439 -U acgs_user
-   
+
    # Test Redis connection
    redis-cli -h localhost -p 6389 ping
    ```

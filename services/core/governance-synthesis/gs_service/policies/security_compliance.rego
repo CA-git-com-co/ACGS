@@ -115,22 +115,22 @@ allow_security_operation if {
     operation := input.operation
     requestor := input.requestor
     context := input.context
-    
+
     # Validate requestor authorization
     requestor_security_authorized(requestor, operation)
-    
+
     # Check operation security requirements
     security_requirements_met(operation, context)
-    
+
     # Verify constitutional compliance
     constitutional_security_compliant(operation, context)
-    
+
     # Compliance framework requirements satisfied
     compliance_requirements_satisfied(operation, context)
-    
+
     # Risk assessment completed
     risk_assessment_adequate(operation, context)
-    
+
     # Audit trail enabled
     security_audit_trail_enabled(operation, context)
 }
@@ -139,22 +139,22 @@ allow_security_operation if {
 security_posture_adequate if {
     organization := input.organization
     assessment_scope := input.assessment_scope
-    
+
     # All critical security controls implemented
     critical_controls_implemented(organization, assessment_scope)
-    
+
     # Security metrics within acceptable ranges
     security_metrics_acceptable(organization)
-    
+
     # Incident response capability verified
     incident_response_capability_verified(organization)
-    
+
     # Vulnerability management effective
     vulnerability_management_effective(organization)
-    
+
     # Security awareness and training adequate
     security_training_adequate(organization)
-    
+
     # Constitutional security principles upheld
     constitutional_security_principles_upheld(organization)
 }
@@ -163,17 +163,17 @@ security_posture_adequate if {
 compliance_framework_satisfied if {
     organization := input.organization
     target_frameworks := input.target_frameworks
-    
+
     # All target frameworks meet requirements
     all(framework, framework in target_frameworks;
         framework_requirements_met(organization, framework))
-    
+
     # Continuous monitoring in place
     continuous_monitoring_operational(organization)
-    
+
     # Audit evidence available
     audit_evidence_adequate(organization, target_frameworks)
-    
+
     # Remediation plans for gaps exist
     remediation_plans_adequate(organization)
 }
@@ -182,16 +182,16 @@ compliance_framework_satisfied if {
 requestor_security_authorized(requestor, operation) if {
     # Role-based authorization
     requestor.role in operation.authorized_roles
-    
+
     # Security clearance adequate
     requestor.security_clearance >= operation.required_clearance
-    
+
     # Multi-factor authentication verified
     requestor.mfa_verified == true
-    
+
     # No recent security violations
     count(requestor.recent_security_violations) == 0
-    
+
     # Constitutional compliance verified
     requestor.constitutional_compliance_score >= 0.8
 }
@@ -199,13 +199,13 @@ requestor_security_authorized(requestor, operation) if {
 security_requirements_met(operation, context) if {
     # Operation classification requirements
     classification_requirements_met(operation, context)
-    
+
     # Security controls appropriate for operation
     security_controls_appropriate(operation, context)
-    
+
     # Environment security adequate
     environment_security_adequate(operation, context)
-    
+
     # Data handling requirements met
     data_handling_requirements_met(operation, context)
 }
@@ -213,10 +213,10 @@ security_requirements_met(operation, context) if {
 classification_requirements_met(operation, context) if {
     operation_classification := determine_operation_classification(operation)
     context_classification := context.security_classification
-    
+
     # Context must support operation classification
     context_classification >= operation_classification
-    
+
     # Appropriate protective measures in place
     protective_measures_adequate(operation_classification, context)
 }
@@ -227,11 +227,11 @@ determine_operation_classification(operation) := classification if {
 
 determine_operation_classification(operation) := classification if {
     not operation.security_classification
-    
+
     # Determine based on data and impact
     data_sensitivity := max([d.classification | d := operation.data_accessed[_]])
     impact_level := operation.impact_level
-    
+
     classification := max(data_sensitivity, impact_level)
 }
 
@@ -273,7 +273,7 @@ security_requirement_met("proportionate_measures", operation, context) if {
     # Security measures proportionate to risk
     risk_level := operation.risk_assessment.overall_risk
     security_level := operation.security_level
-    
+
     proportionality_verified(risk_level, security_level)
 }
 
@@ -321,17 +321,17 @@ security_requirement_met("audit_trails", operation, context) if {
 # Compliance framework validation
 framework_requirements_met(organization, framework) if {
     framework_config := compliance_frameworks[framework]
-    
+
     # All framework categories satisfied
     all(category, category in framework_config.categories;
         framework_category_satisfied(organization, framework, category))
-    
+
     # Risk threshold not exceeded
     organization.risk_scores[framework] <= framework_config.risk_threshold
-    
+
     # Audit requirements met
     framework_audit_requirements_met(organization, framework)
-    
+
     # Continuous monitoring if required
     framework_monitoring_adequate(organization, framework)
 }
@@ -339,18 +339,18 @@ framework_requirements_met(organization, framework) if {
 framework_category_satisfied(organization, framework, category) if {
     category_controls := organization.compliance_controls[framework][category]
     category_requirements := determine_category_requirements(framework, category)
-    
+
     # All required controls implemented
     all(requirement, requirement in category_requirements;
         control_requirement_satisfied(category_controls, requirement))
-    
+
     # Category compliance score adequate
     category_score := organization.compliance_scores[framework][category]
     category_score >= framework_category_threshold(framework, category)
 }
 
 determine_category_requirements("soc2", "security") := [
-    "access_controls", "multi_factor_authentication", "encryption", 
+    "access_controls", "multi_factor_authentication", "encryption",
     "vulnerability_management", "incident_response", "security_monitoring"
 ]
 
@@ -387,11 +387,11 @@ framework_category_threshold("fedramp", category) := 0.95
 
 # Critical controls assessment
 critical_controls_implemented(organization, scope) if {
-    critical_categories := [cat | 
+    critical_categories := [cat |
         some cat, config in security_control_categories
         config.criticality == "critical"
     ]
-    
+
     all(category, category in critical_categories;
         security_category_implemented(organization, category, scope))
 }
@@ -399,11 +399,11 @@ critical_controls_implemented(organization, scope) if {
 security_category_implemented(organization, category, scope) if {
     category_config := security_control_categories[category]
     implemented_controls := organization.security_controls[category]
-    
+
     # All required controls implemented
     all(control, control in category_config.controls;
         security_control_implemented(implemented_controls, control))
-    
+
     # Category compliance threshold met
     category_score := organization.security_scores[category]
     category_score >= category_config.compliance_threshold
@@ -418,14 +418,14 @@ security_control_implemented(implemented_controls, control) if {
 # Security metrics assessment
 security_metrics_acceptable(organization) if {
     metrics := organization.security_metrics
-    
+
     # Key performance indicators within range
     metrics.mean_time_to_detect <= 300 # 5 minutes
     metrics.mean_time_to_respond <= 900 # 15 minutes
     metrics.vulnerability_remediation_rate >= 0.95
     metrics.security_incident_rate <= 0.01
     metrics.compliance_score >= 0.85
-    
+
     # Trend analysis positive
     security_trends_positive(metrics)
 }
@@ -433,13 +433,13 @@ security_metrics_acceptable(organization) if {
 security_trends_positive(metrics) if {
     # Incident rate decreasing or stable
     metrics.incident_rate_trend <= 0
-    
+
     # Response times improving or stable
     metrics.response_time_trend <= 0
-    
+
     # Vulnerability remediation improving
     metrics.remediation_rate_trend >= 0
-    
+
     # Overall security posture improving
     metrics.security_posture_trend >= 0
 }
@@ -447,19 +447,19 @@ security_trends_positive(metrics) if {
 # Incident response capability
 incident_response_capability_verified(organization) if {
     ir_capability := organization.incident_response
-    
+
     # IR plan exists and is current
     ir_capability.plan_exists == true
     ir_capability.plan_last_updated > time.now_ns() - (365 * 24 * 60 * 60 * 1000000000) # 1 year
-    
+
     # IR team trained and available
     ir_capability.team_trained == true
     ir_capability.team_available_24x7 == true
-    
+
     # IR procedures tested
     ir_capability.procedures_tested == true
     ir_capability.last_exercise > time.now_ns() - (180 * 24 * 60 * 60 * 1000000000) # 6 months
-    
+
     # IR tools and capabilities operational
     ir_capability.tools_operational == true
     ir_capability.communication_channels_tested == true
@@ -468,20 +468,20 @@ incident_response_capability_verified(organization) if {
 # Vulnerability management effectiveness
 vulnerability_management_effective(organization) if {
     vm_program := organization.vulnerability_management
-    
+
     # Regular vulnerability assessments
     vm_program.scanning_frequency >= "weekly"
     vm_program.assessment_coverage >= 0.95
-    
+
     # Timely remediation
     vm_program.critical_remediation_sla <= 24 # hours
     vm_program.high_remediation_sla <= 168 # 1 week
     vm_program.medium_remediation_sla <= 720 # 1 month
-    
+
     # Remediation rate adequate
     vm_program.remediation_rate >= 0.9
     vm_program.false_positive_rate <= 0.1
-    
+
     # Threat intelligence integrated
     vm_program.threat_intelligence_integrated == true
     vm_program.risk_based_prioritization == true
@@ -490,19 +490,19 @@ vulnerability_management_effective(organization) if {
 # Security training adequacy
 security_training_adequate(organization) if {
     training_program := organization.security_training
-    
+
     # All personnel trained
     training_program.coverage_rate >= 0.95
     training_program.completion_rate >= 0.9
-    
+
     # Training current and relevant
     training_program.content_current == true
     training_program.role_specific_training == true
-    
+
     # Training effectiveness measured
     training_program.effectiveness_measured == true
     training_program.knowledge_retention_rate >= 0.8
-    
+
     # Phishing simulation program
     training_program.phishing_simulation_enabled == true
     training_program.phishing_success_rate <= 0.05
@@ -511,19 +511,19 @@ security_training_adequate(organization) if {
 # Continuous monitoring
 continuous_monitoring_operational(organization) if {
     monitoring := organization.continuous_monitoring
-    
+
     # Automated monitoring tools deployed
     monitoring.tools_deployed == true
     monitoring.coverage_comprehensive == true
-    
+
     # Real-time alerting configured
     monitoring.real_time_alerting == true
     monitoring.alert_response_automated == true
-    
+
     # Monitoring data analyzed
     monitoring.data_analysis_automated == true
     monitoring.anomaly_detection_enabled == true
-    
+
     # Constitutional compliance monitored
     monitoring.constitutional_compliance_tracked == true
     monitoring.governance_metrics_tracked == true
@@ -532,19 +532,19 @@ continuous_monitoring_operational(organization) if {
 # Risk assessment adequacy
 risk_assessment_adequate(operation, context) if {
     risk_assessment := operation.risk_assessment
-    
+
     # Risk assessment methodology sound
     risk_assessment.methodology_documented == true
     risk_assessment.methodology_validated == true
-    
+
     # All risk categories assessed
     required_risk_categories := ["technical", "operational", "legal", "constitutional"]
     all(category, category in required_risk_categories;
         category in risk_assessment.categories_assessed)
-    
+
     # Risk assessment current
     risk_assessment.last_updated > time.now_ns() - (90 * 24 * 60 * 60 * 1000000000) # 90 days
-    
+
     # Risk mitigation plans exist
     risk_assessment.mitigation_plans_exist == true
     risk_assessment.residual_risk_acceptable == true
@@ -553,28 +553,28 @@ risk_assessment_adequate(operation, context) if {
 # Security compliance scoring
 security_compliance_score := score if {
     organization := input.organization
-    
+
     # Framework compliance scores
     framework_scores := [score |
         some framework in organization.target_frameworks
         score := organization.compliance_scores[framework]
     ]
-    
+
     # Security control scores
     control_scores := [score |
         some category, config in security_control_categories
         score := organization.security_scores[category] * control_category_weight(config.criticality)
     ]
-    
+
     # Constitutional compliance score
     constitutional_score := organization.constitutional_security_score
-    
+
     # Calculate weighted average
-    total_weight := count(framework_scores) + sum([control_category_weight(config.criticality) | 
+    total_weight := count(framework_scores) + sum([control_category_weight(config.criticality) |
                                                    some category, config in security_control_categories]) + 1
-    
+
     weighted_sum := sum(framework_scores) + sum(control_scores) + constitutional_score
-    
+
     score := weighted_sum / total_weight
 }
 
@@ -586,7 +586,7 @@ control_category_weight("low") := 0.5
 # Security violations detection
 security_violations := violations if {
     organization := input.organization
-    
+
     violations := [violation |
         some control_category, controls in organization.security_controls
         some control, status in controls.status
@@ -613,7 +613,7 @@ assess_constitutional_impact(category, control) := impact if {
         some principle_name, principle in constitutional_security_principles
         control_impacts_principle(category, control, principle_name, principle)
     ]
-    
+
     impact := {
         "impacted_principles": impacted_principles,
         "severity": calculate_constitutional_impact_severity(impacted_principles)

@@ -11,6 +11,7 @@ import time
 
 import psutil
 import pytest
+
 from quality_assurance.submission_validator import SubmissionValidator
 
 
@@ -94,7 +95,8 @@ class TestValidationPerformance:
         assert report.overall_status is not None
 
         print(
-            f"Memory usage: {initial_memory:.1f}MB -> {peak_memory:.1f}MB (+{memory_increase:.1f}MB)"
+            f"Memory usage: {initial_memory:.1f}MB -> {peak_memory:.1f}MB"
+            f" (+{memory_increase:.1f}MB)"
         )
 
     @pytest.mark.performance
@@ -122,7 +124,8 @@ class TestValidationPerformance:
         ), f"Memory increased by {memory_increase:.1f}MB after 10 validations"
 
         print(
-            f"Memory after 10 validations: {initial_memory:.1f}MB -> {final_memory:.1f}MB (+{memory_increase:.1f}MB)"
+            f"Memory after 10 validations: {initial_memory:.1f}MB ->"
+            f" {final_memory:.1f}MB (+{memory_increase:.1f}MB)"
         )
 
     @pytest.mark.performance
@@ -166,7 +169,8 @@ class TestValidationPerformance:
         ), f"Concurrency efficiency {efficiency:.2f}, expected > 1.5x"
 
         print(
-            f"Concurrent validation: {total_time:.2f}s total, {avg_time:.2f}s average, {efficiency:.2f}x efficiency"
+            f"Concurrent validation: {total_time:.2f}s total, {avg_time:.2f}s average,"
+            f" {efficiency:.2f}x efficiency"
         )
 
     @pytest.mark.performance
@@ -200,8 +204,7 @@ class TestValidationPerformance:
             content_size = size_kb * 1024  # bytes
             content = "Test content. " * (content_size // 13)  # Approximate size
 
-            (paper_dir / "main.tex").write_text(
-                f"""
+            (paper_dir / "main.tex").write_text(f"""
 \\documentclass{{article}}
 \\begin{{document}}
 \\title{{Test Paper {size_kb}KB}}
@@ -212,8 +215,7 @@ Test abstract.
 \\section{{Content}}
 {content}
 \\end{{document}}
-"""
-            )
+""")
 
             (paper_dir / "README.txt").write_text(f"Test paper {size_kb}KB")
 
@@ -257,7 +259,8 @@ Test abstract.
         assert avg_time < 3.0, f"Average validation time {avg_time:.3f}s, expected < 3s"
 
         print(
-            f"Stress test: {num_validations} validations in {total_time:.2f}s (avg: {avg_time:.3f}s)"
+            f"Stress test: {num_validations} validations in {total_time:.2f}s (avg:"
+            f" {avg_time:.3f}s)"
         )
 
 
@@ -276,8 +279,7 @@ class TestScalabilityPerformance:
             paper_dir.mkdir()
 
             # Create main.tex
-            (paper_dir / "main.tex").write_text(
-                """
+            (paper_dir / "main.tex").write_text("""
 \\documentclass{article}
 \\begin{document}
 \\title{Bibliography Scaling Test}
@@ -288,14 +290,12 @@ Test abstract.
 \\section{Introduction}
 Test content.
 \\end{document}
-"""
-            )
+""")
 
             # Create large bibliography
             bib_entries = []
             for i in range(num_refs):
-                bib_entries.append(
-                    f"""
+                bib_entries.append(f"""
 @article{{ref{i:04d},
     title={{Reference {i}: A Comprehensive Study}},
     author={{Author {i}, First and Author {i}, Second}},
@@ -305,8 +305,7 @@ Test content.
     pages={{{i * 10}--{i * 10 + 15}}},
     year={{2023}},
     doi={{10.1000/ref.{i:04d}}}
-}}"""
-                )
+}}""")
 
             (paper_dir / "references.bib").write_text("\n".join(bib_entries))
             (paper_dir / "README.txt").write_text(
@@ -361,8 +360,7 @@ Test content.
                 figure_refs.append(f"\\includegraphics{{figs/figure_{i:03d}.png}}")
 
             # Create main.tex with figure references
-            (paper_dir / "main.tex").write_text(
-                f"""
+            (paper_dir / "main.tex").write_text(f"""
 \\documentclass{{article}}
 \\usepackage{{graphicx}}
 \\begin{{document}}
@@ -374,8 +372,7 @@ Test abstract with {num_figures} figures.
 \\section{{Figures}}
 {chr(10).join(figure_refs)}
 \\end{{document}}
-"""
-            )
+""")
 
             (paper_dir / "README.txt").write_text(
                 f"Test paper with {num_figures} figures"

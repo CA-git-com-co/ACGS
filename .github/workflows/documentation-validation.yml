@@ -4,22 +4,22 @@ on:
   push:
     branches: [main, master, develop]
     paths:
-      - 'docs/**'
-      - 'README.md'
-      - 'infrastructure/**'
-      - 'config/**'
-      - 'services/**'
+      - "docs/**"
+      - "README.md"
+      - "infrastructure/**"
+      - "config/**"
+      - "services/**"
   pull_request:
     branches: [main, master, develop]
     paths:
-      - 'docs/**'
-      - 'README.md'
-      - 'infrastructure/**'
-      - 'config/**'
+      - "docs/**"
+      - "README.md"
+      - "infrastructure/**"
+      - "config/**"
   workflow_dispatch:
   schedule:
     # Run daily at 2 AM UTC for continuous validation
-    - cron: '0 2 * * *'
+    - cron: "0 2 * * *"
 
 permissions:
   contents: read
@@ -27,9 +27,9 @@ permissions:
   pull-requests: write
 
 env:
-  CONSTITUTIONAL_HASH: 'cdd01ef066bc6cf2'
-  PYTHON_VERSION: '3.11'
-  NODE_VERSION: '18'
+  CONSTITUTIONAL_HASH: "cdd01ef066bc6cf2"
+  PYTHON_VERSION: "3.11"
+  NODE_VERSION: "18"
 
 jobs:
   # Markdown Link Validation
@@ -88,11 +88,11 @@ jobs:
       - name: Validate internal documentation links
         run: |
           echo "🔗 Validating internal documentation links..."
-          
+
           # Find all markdown files
           find docs -name "*.md" -type f > markdown_files.txt
           echo "README.md" >> markdown_files.txt
-          
+
           # Check each file
           FAILED_FILES=""
           while IFS= read -r file; do
@@ -101,7 +101,7 @@ jobs:
               FAILED_FILES="$FAILED_FILES\n$file"
             fi
           done < markdown_files.txt
-          
+
           if [ -n "$FAILED_FILES" ]; then
             echo "❌ Link validation failed for files:$FAILED_FILES"
             exit 1
@@ -135,7 +135,7 @@ jobs:
           import yaml
           import json
           from pathlib import Path
-          
+
           CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
           PRODUCTION_PORTS = {
               "postgresql": 5439,
@@ -148,14 +148,14 @@ jobs:
               "policy_governance": 8005,
               "evolutionary_computation": 8006
           }
-          
+
           def validate_constitutional_hash():
               """Validate constitutional hash consistency across all files"""
               print("🔍 Validating constitutional hash consistency...")
-              
+
               hash_files = []
               missing_files = []
-              
+
               # Check documentation files
               for md_file in Path("docs").rglob("*.md"):
                   content = md_file.read_text()
@@ -163,13 +163,13 @@ jobs:
                       hash_files.append(str(md_file))
                   elif "constitutional" in content.lower() and "hash" in content.lower():
                       missing_files.append(str(md_file))
-              
+
               # Check configuration files
               config_files = [
                   "infrastructure/docker/docker-compose.acgs.yml",
                   "docs/configuration/README.md"
               ]
-              
+
               for config_file in config_files:
                   if Path(config_file).exists():
                       content = Path(config_file).read_text()
@@ -177,53 +177,53 @@ jobs:
                           hash_files.append(config_file)
                       else:
                           missing_files.append(config_file)
-              
+
               print(f"✅ Files with correct constitutional hash: {len(hash_files)}")
               if missing_files:
                   print(f"❌ Files missing constitutional hash: {missing_files}")
                   return False
               return True
-          
+
           def validate_port_consistency():
               """Validate port consistency across documentation and configuration"""
               print("🔍 Validating port consistency...")
-              
+
               # Check docker-compose file
               compose_file = "infrastructure/docker/docker-compose.acgs.yml"
               if not Path(compose_file).exists():
                   print(f"❌ Docker compose file not found: {compose_file}")
                   return False
-              
+
               content = Path(compose_file).read_text()
-              
+
               # Check PostgreSQL port
               if "5439:5432" not in content:
                   print("❌ PostgreSQL port mapping incorrect (should be 5439:5432)")
                   return False
-              
-              # Check Redis port  
+
+              # Check Redis port
               if "6389:6379" not in content:
                   print("❌ Redis port mapping incorrect (should be 6389:6379)")
                   return False
-              
+
               # Check Auth service port
               if "8016:8016" not in content:
                   print("❌ Auth service port mapping incorrect (should be 8016:8016)")
                   return False
-              
+
               print("✅ Port configurations are consistent")
               return True
-          
+
           def validate_test_coverage():
               """Validate test coverage targets consistency"""
               print("🔍 Validating test coverage targets...")
-              
+
               files_to_check = [
                   "pytest.ini",
                   "pyproject.toml",
                   "docs/configuration/README.md"
               ]
-              
+
               coverage_targets = []
               for file_path in files_to_check:
                   if Path(file_path).exists():
@@ -231,31 +231,31 @@ jobs:
                       # Look for 80% coverage target
                       if "80" in content and ("coverage" in content.lower() or "cov" in content.lower()):
                           coverage_targets.append(file_path)
-              
+
               if len(coverage_targets) < 2:
                   print("❌ Test coverage targets not consistently set to 80%")
                   return False
-              
+
               print("✅ Test coverage targets are consistent (80%)")
               return True
-          
+
           def main():
               """Main validation function"""
               print("🚀 Starting ACGS configuration consistency validation...")
               print(f"Constitutional Hash: {CONSTITUTIONAL_HASH}")
-              
+
               results = []
               results.append(validate_constitutional_hash())
               results.append(validate_port_consistency())
               results.append(validate_test_coverage())
-              
+
               if all(results):
                   print("✅ All configuration consistency checks passed!")
                   return 0
               else:
                   print("❌ Configuration consistency validation failed!")
                   return 1
-          
+
           if __name__ == "__main__":
               exit(main())
           EOF
@@ -276,7 +276,7 @@ jobs:
       - name: Validate performance targets consistency
         run: |
           echo "📊 Validating performance targets consistency..."
-          
+
           # Expected performance targets
           EXPECTED_TARGETS=(
             "≥100 RPS"
@@ -284,43 +284,43 @@ jobs:
             "≥85%"
             "≥80%"
           )
-          
+
           # Files to check
           FILES=(
             "README.md"
             "docs/configuration/README.md"
             "docs/operations/SERVICE_STATUS.md"
           )
-          
+
           VALIDATION_PASSED=true
-          
+
           for file in "${FILES[@]}"; do
             if [ -f "$file" ]; then
               echo "Checking performance targets in: $file"
-              
+
               # Check for throughput target (≥100 RPS)
               if ! grep -q "≥100.*RPS\|≥100.*requests" "$file"; then
                 echo "❌ Missing throughput target (≥100 RPS) in $file"
                 VALIDATION_PASSED=false
               fi
-              
+
               # Check for latency target (≤5ms)
               if ! grep -q "≤5ms\|P99.*5ms" "$file"; then
                 echo "❌ Missing latency target (≤5ms P99) in $file"
                 VALIDATION_PASSED=false
               fi
-              
+
               # Check for cache hit rate (≥85%)
               if ! grep -q "≥85%.*cache\|cache.*≥85%" "$file"; then
                 echo "❌ Missing cache hit rate target (≥85%) in $file"
                 VALIDATION_PASSED=false
               fi
-              
+
             else
               echo "⚠️ File not found: $file"
             fi
           done
-          
+
           if [ "$VALIDATION_PASSED" = true ]; then
             echo "✅ Performance targets are consistent across documentation"
           else
@@ -349,7 +349,7 @@ jobs:
       - name: Run markdown linting
         run: |
           echo "📝 Running markdown quality checks..."
-          
+
           # Create markdownlint configuration
           cat > .markdownlint.json << 'EOF'
           {
@@ -361,14 +361,14 @@ jobs:
             "MD022": false
           }
           EOF
-          
+
           # Lint all markdown files
           markdownlint docs/ README.md --config .markdownlint.json || true
 
       - name: Check documentation completeness
         run: |
           echo "📊 Checking documentation completeness..."
-          
+
           # Required documentation files
           REQUIRED_FILES=(
             "README.md"
@@ -377,14 +377,14 @@ jobs:
             "docs/operations/SERVICE_STATUS.md"
             "docs/deployment/ACGS_PGP_SETUP_GUIDE.md"
           )
-          
+
           MISSING_FILES=""
           for file in "${REQUIRED_FILES[@]}"; do
             if [ ! -f "$file" ]; then
               MISSING_FILES="$MISSING_FILES\n$file"
             fi
           done
-          
+
           if [ -n "$MISSING_FILES" ]; then
             echo "❌ Missing required documentation files:$MISSING_FILES"
             exit 1
@@ -396,7 +396,13 @@ jobs:
   generate_report:
     runs-on: ubuntu-latest
     name: Generate Validation Report
-    needs: [markdown_link_validation, configuration_consistency, performance_targets_validation, documentation_quality]
+    needs:
+      [
+        markdown_link_validation,
+        configuration_consistency,
+        performance_targets_validation,
+        documentation_quality,
+      ]
     if: always()
     steps:
       - name: Check out repository
@@ -405,35 +411,35 @@ jobs:
       - name: Generate validation report
         run: |
           echo "📋 Generating documentation validation report..."
-          
+
           cat > validation_report.md << EOF
           # ACGS Documentation Validation Report
-          
+
           **Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
           **Commit**: ${{ github.sha }}
           **Constitutional Hash**: ${{ env.CONSTITUTIONAL_HASH }}
-          
+
           ## Validation Results
-          
+
           | Check | Status |
           |-------|--------|
           | Markdown Links | ${{ needs.markdown_link_validation.result == 'success' && '✅ Passed' || '❌ Failed' }} |
           | Configuration Consistency | ${{ needs.configuration_consistency.result == 'success' && '✅ Passed' || '❌ Failed' }} |
           | Performance Targets | ${{ needs.performance_targets_validation.result == 'success' && '✅ Passed' || '❌ Failed' }} |
           | Documentation Quality | ${{ needs.documentation_quality.result == 'success' && '✅ Passed' || '❌ Failed' }} |
-          
+
           ## Summary
-          
+
           Overall Status: ${{ (needs.markdown_link_validation.result == 'success' && needs.configuration_consistency.result == 'success' && needs.performance_targets_validation.result == 'success' && needs.documentation_quality.result == 'success') && '✅ All Checks Passed' || '❌ Some Checks Failed' }}
-          
+
           ## Next Steps
-          
+
           ${{ (needs.markdown_link_validation.result == 'success' && needs.configuration_consistency.result == 'success' && needs.performance_targets_validation.result == 'success' && needs.documentation_quality.result == 'success') && '- Documentation is ready for deployment\n- No action required' || '- Review failed checks above\n- Fix identified issues\n- Re-run validation' }}
-          
+
           ---
           Generated by ACGS Documentation Validation Pipeline
           EOF
-          
+
           echo "✅ Validation report generated"
 
       - name: Upload validation report

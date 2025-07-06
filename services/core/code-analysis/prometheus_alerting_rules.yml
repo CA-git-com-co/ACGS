@@ -1,41 +1,42 @@
 groups:
-- name: acgs_code_analysis_alerts
-  rules:
-  - alert: HighLatency
-    annotations:
-      description: P99 latency is above 10ms for more than 2 minutes
-      summary: High latency detected in ACGS Code Analysis Engine
-    expr: histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m]))
-      > 0.01
-    for: 2m
-    labels:
-      constitutional_hash: cdd01ef066bc6cf2
-      service: acgs-code-analysis-engine
-      severity: warning
-  - alert: LowThroughput
-    annotations:
-      description: Request rate is below 10 RPS for more than 5 minutes
-      summary: Low throughput in ACGS Code Analysis Engine
-    expr: rate(http_requests_total[5m]) < 10
-    for: 5m
-    labels:
-      service: acgs-code-analysis-engine
-      severity: warning
-  - alert: ConstitutionalComplianceViolation
-    annotations:
-      description: Constitutional compliance violation in ACGS Code Analysis Engine
-      summary: Constitutional compliance violation detected
-    expr: constitutional_compliance_violations_total > 0
-    for: 0m
-    labels:
-      service: acgs-code-analysis-engine
-      severity: critical
-  - alert: ServiceDown
-    annotations:
-      description: Service has been down for more than 1 minute
-      summary: ACGS Code Analysis Engine is down
-    expr: up{job="acgs-code-analysis-engine"} == 0
-    for: 1m
-    labels:
-      service: acgs-code-analysis-engine
-      severity: critical
+  - name: acgs_code_analysis_alerts
+    rules:
+      - alert: HighLatency
+        annotations:
+          description: P99 latency is above 10ms for more than 2 minutes
+          summary: High latency detected in ACGS Code Analysis Engine
+        expr:
+          histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m]))
+          > 0.01
+        for: 2m
+        labels:
+          constitutional_hash: cdd01ef066bc6cf2
+          service: acgs-code-analysis-engine
+          severity: warning
+      - alert: LowThroughput
+        annotations:
+          description: Request rate is below 10 RPS for more than 5 minutes
+          summary: Low throughput in ACGS Code Analysis Engine
+        expr: rate(http_requests_total[5m]) < 10
+        for: 5m
+        labels:
+          service: acgs-code-analysis-engine
+          severity: warning
+      - alert: ConstitutionalComplianceViolation
+        annotations:
+          description: Constitutional compliance violation in ACGS Code Analysis Engine
+          summary: Constitutional compliance violation detected
+        expr: constitutional_compliance_violations_total > 0
+        for: 0m
+        labels:
+          service: acgs-code-analysis-engine
+          severity: critical
+      - alert: ServiceDown
+        annotations:
+          description: Service has been down for more than 1 minute
+          summary: ACGS Code Analysis Engine is down
+        expr: up{job="acgs-code-analysis-engine"} == 0
+        for: 1m
+        labels:
+          service: acgs-code-analysis-engine
+          severity: critical

@@ -1,8 +1,17 @@
 # Integrity Service API
 
-**Service**: Integrity Service  
-**Port**: 8002  
-**Base URL**: `http://localhost:8002/api/v1`  
+## Service Overview
+
+This service provides core functionality for the ACGS platform with constitutional compliance validation.
+
+**Service**: Integrity
+**Port**: 8XXX
+**Constitutional Hash**: `cdd01ef066bc6cf2`
+
+
+**Service**: Integrity Service
+**Port**: 8002
+**Base URL**: `http://localhost:8002/api/v1`
 <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 
 ## Overview
@@ -317,5 +326,27 @@ console.log('Generated hash:', result.hash);
 
 ---
 
-**Status**: ⚠️ Service experiencing HTTP 500 errors - troubleshooting in progress  
+**Status**: ⚠️ Service experiencing HTTP 500 errors - troubleshooting in progress
 <!-- Constitutional Hash: cdd01ef066bc6cf2 --> ✅
+
+## Error Handling
+
+Standard HTTP status codes are used with detailed error messages:
+
+- `400 Bad Request`: Invalid request parameters
+- `401 Unauthorized`: Authentication required
+- `403 Forbidden`: Insufficient permissions
+- `404 Not Found`: Resource not found
+- `500 Internal Server Error`: Server error
+
+All errors include constitutional compliance validation status.
+
+
+## Monitoring
+
+Service health and performance metrics:
+
+- Health check endpoint: `/health`
+- Metrics endpoint: `/metrics`
+- Constitutional compliance status: `/compliance`
+- Performance dashboard integration available

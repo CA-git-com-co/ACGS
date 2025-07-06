@@ -39,67 +39,67 @@ spec:
         runAsGroup: 1000
         fsGroup: 1000
       containers:
-      - name: auth-service
-        image: acgs/auth-service:latest
-        imagePullPolicy: IfNotPresent
-        ports:
-        - name: http
-          containerPort: 8000
-          protocol: TCP
-        - name: metrics
-          containerPort: 9090
-          protocol: TCP
-        env:
-        - name: CONSTITUTIONAL_HASH
-          valueFrom:
-            configMapKeyRef:
-              name: acgs-config
-              key: CONSTITUTIONAL_HASH
-        - name: DATABASE_URL
-          value: "postgresql://$(DATABASE_USERNAME):$(DATABASE_PASSWORD)@postgresql.acgs-system.svc.cluster.local:5432/acgs"
-        - name: DATABASE_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: acgs-secrets
-              key: DATABASE_USERNAME
-        - name: DATABASE_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: acgs-secrets
-              key: DATABASE_PASSWORD
-        - name: JWT_SECRET_KEY
-          valueFrom:
-            secretKeyRef:
-              name: acgs-secrets
-              key: JWT_SECRET_KEY
-        envFrom:
-        - configMapRef:
-            name: acgs-config
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "100m"
-          limits:
-            memory: "512Mi"
-            cpu: "250m"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: http
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: http
-          initialDelaySeconds: 5
-          periodSeconds: 5
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-            - ALL
+        - name: auth-service
+          image: acgs/auth-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+            - name: metrics
+              containerPort: 9090
+              protocol: TCP
+          env:
+            - name: CONSTITUTIONAL_HASH
+              valueFrom:
+                configMapKeyRef:
+                  name: acgs-config
+                  key: CONSTITUTIONAL_HASH
+            - name: DATABASE_URL
+              value: "postgresql://$(DATABASE_USERNAME):$(DATABASE_PASSWORD)@postgresql.acgs-system.svc.cluster.local:5432/acgs"
+            - name: DATABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: acgs-secrets
+                  key: DATABASE_USERNAME
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: acgs-secrets
+                  key: DATABASE_PASSWORD
+            - name: JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: acgs-secrets
+                  key: JWT_SECRET_KEY
+          envFrom:
+            - configMapRef:
+                name: acgs-config
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "250m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
 
 ---
 apiVersion: v1
@@ -115,14 +115,14 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - name: http
-    port: 8000
-    targetPort: http
-    protocol: TCP
-  - name: metrics
-    port: 9090
-    targetPort: metrics
-    protocol: TCP
+    - name: http
+      port: 8000
+      targetPort: http
+      protocol: TCP
+    - name: metrics
+      port: 9090
+      targetPort: metrics
+      protocol: TCP
   selector:
     app.kubernetes.io/name: auth-service
     app.kubernetes.io/component: auth
@@ -168,62 +168,62 @@ spec:
         runAsGroup: 1000
         fsGroup: 1000
       containers:
-      - name: constitutional-ai-service
-        image: acgs/constitutional-ai-service:latest
-        imagePullPolicy: IfNotPresent
-        ports:
-        - name: http
-          containerPort: 8001
-          protocol: TCP
-        - name: metrics
-          containerPort: 9090
-          protocol: TCP
-        env:
-        - name: CONSTITUTIONAL_HASH
-          valueFrom:
-            configMapKeyRef:
-              name: acgs-config
-              key: CONSTITUTIONAL_HASH
-        - name: DATABASE_URL
-          value: "postgresql://$(DATABASE_USERNAME):$(DATABASE_PASSWORD)@postgresql.acgs-system.svc.cluster.local:5432/acgs"
-        - name: DATABASE_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: acgs-secrets
-              key: DATABASE_USERNAME
-        - name: DATABASE_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: acgs-secrets
-              key: DATABASE_PASSWORD
-        envFrom:
-        - configMapRef:
-            name: acgs-config
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "250m"
-          limits:
-            memory: "1Gi"
-            cpu: "500m"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: http
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: http
-          initialDelaySeconds: 5
-          periodSeconds: 5
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-            - ALL
+        - name: constitutional-ai-service
+          image: acgs/constitutional-ai-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8001
+              protocol: TCP
+            - name: metrics
+              containerPort: 9090
+              protocol: TCP
+          env:
+            - name: CONSTITUTIONAL_HASH
+              valueFrom:
+                configMapKeyRef:
+                  name: acgs-config
+                  key: CONSTITUTIONAL_HASH
+            - name: DATABASE_URL
+              value: "postgresql://$(DATABASE_USERNAME):$(DATABASE_PASSWORD)@postgresql.acgs-system.svc.cluster.local:5432/acgs"
+            - name: DATABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: acgs-secrets
+                  key: DATABASE_USERNAME
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: acgs-secrets
+                  key: DATABASE_PASSWORD
+          envFrom:
+            - configMapRef:
+                name: acgs-config
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
 
 ---
 apiVersion: v1
@@ -239,14 +239,14 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - name: http
-    port: 8001
-    targetPort: http
-    protocol: TCP
-  - name: metrics
-    port: 9090
-    targetPort: metrics
-    protocol: TCP
+    - name: http
+      port: 8001
+      targetPort: http
+      protocol: TCP
+    - name: metrics
+      port: 9090
+      targetPort: metrics
+      protocol: TCP
   selector:
     app.kubernetes.io/name: constitutional-ai-service
     app.kubernetes.io/component: constitutional-ai
@@ -292,74 +292,74 @@ spec:
         runAsGroup: 1000
         fsGroup: 1000
       containers:
-      - name: integrity-service
-        image: acgs/integrity-service:latest
-        imagePullPolicy: IfNotPresent
-        ports:
-        - name: http
-          containerPort: 8002
-          protocol: TCP
-        - name: metrics
-          containerPort: 9090
-          protocol: TCP
-        env:
-        - name: CONSTITUTIONAL_HASH
-          valueFrom:
-            configMapKeyRef:
-              name: acgs-config
-              key: CONSTITUTIONAL_HASH
-        - name: DATABASE_URL
-          value: "postgresql://$(DATABASE_USERNAME):$(DATABASE_PASSWORD)@postgresql.acgs-system.svc.cluster.local:5432/acgs"
-        - name: DATABASE_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: acgs-secrets
-              key: DATABASE_USERNAME
-        - name: DATABASE_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: acgs-secrets
-              key: DATABASE_PASSWORD
-        - name: AUDIT_ENCRYPTION_KEY
-          valueFrom:
-            secretKeyRef:
-              name: acgs-secrets
-              key: AUDIT_ENCRYPTION_KEY
-        envFrom:
-        - configMapRef:
-            name: acgs-config
-        volumeMounts:
-        - name: audit-logs
-          mountPath: /app/audit-logs
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "250m"
-          limits:
-            memory: "1Gi"
-            cpu: "500m"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: http
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: http
-          initialDelaySeconds: 5
-          periodSeconds: 5
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-            - ALL
+        - name: integrity-service
+          image: acgs/integrity-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8002
+              protocol: TCP
+            - name: metrics
+              containerPort: 9090
+              protocol: TCP
+          env:
+            - name: CONSTITUTIONAL_HASH
+              valueFrom:
+                configMapKeyRef:
+                  name: acgs-config
+                  key: CONSTITUTIONAL_HASH
+            - name: DATABASE_URL
+              value: "postgresql://$(DATABASE_USERNAME):$(DATABASE_PASSWORD)@postgresql.acgs-system.svc.cluster.local:5432/acgs"
+            - name: DATABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: acgs-secrets
+                  key: DATABASE_USERNAME
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: acgs-secrets
+                  key: DATABASE_PASSWORD
+            - name: AUDIT_ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: acgs-secrets
+                  key: AUDIT_ENCRYPTION_KEY
+          envFrom:
+            - configMapRef:
+                name: acgs-config
+          volumeMounts:
+            - name: audit-logs
+              mountPath: /app/audit-logs
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
       volumes:
-      - name: audit-logs
-        persistentVolumeClaim:
-          claimName: audit-logs-pvc
+        - name: audit-logs
+          persistentVolumeClaim:
+            claimName: audit-logs-pvc
 
 ---
 apiVersion: v1
@@ -375,14 +375,14 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - name: http
-    port: 8002
-    targetPort: http
-    protocol: TCP
-  - name: metrics
-    port: 9090
-    targetPort: metrics
-    protocol: TCP
+    - name: http
+      port: 8002
+      targetPort: http
+      protocol: TCP
+    - name: metrics
+      port: 9090
+      targetPort: metrics
+      protocol: TCP
   selector:
     app.kubernetes.io/name: integrity-service
     app.kubernetes.io/component: integrity
@@ -428,62 +428,62 @@ spec:
         runAsGroup: 1000
         fsGroup: 1000
       containers:
-      - name: governance-synthesis-service
-        image: acgs/governance-synthesis-service:latest
-        imagePullPolicy: IfNotPresent
-        ports:
-        - name: http
-          containerPort: 8004
-          protocol: TCP
-        - name: metrics
-          containerPort: 9090
-          protocol: TCP
-        env:
-        - name: CONSTITUTIONAL_HASH
-          valueFrom:
-            configMapKeyRef:
-              name: acgs-config
-              key: CONSTITUTIONAL_HASH
-        - name: DATABASE_URL
-          value: "postgresql://$(DATABASE_USERNAME):$(DATABASE_PASSWORD)@postgresql.acgs-system.svc.cluster.local:5432/acgs"
-        - name: DATABASE_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: acgs-secrets
-              key: DATABASE_USERNAME
-        - name: DATABASE_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: acgs-secrets
-              key: DATABASE_PASSWORD
-        envFrom:
-        - configMapRef:
-            name: acgs-config
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "250m"
-          limits:
-            memory: "1Gi"
-            cpu: "500m"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: http
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: http
-          initialDelaySeconds: 5
-          periodSeconds: 5
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-            - ALL
+        - name: governance-synthesis-service
+          image: acgs/governance-synthesis-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8004
+              protocol: TCP
+            - name: metrics
+              containerPort: 9090
+              protocol: TCP
+          env:
+            - name: CONSTITUTIONAL_HASH
+              valueFrom:
+                configMapKeyRef:
+                  name: acgs-config
+                  key: CONSTITUTIONAL_HASH
+            - name: DATABASE_URL
+              value: "postgresql://$(DATABASE_USERNAME):$(DATABASE_PASSWORD)@postgresql.acgs-system.svc.cluster.local:5432/acgs"
+            - name: DATABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: acgs-secrets
+                  key: DATABASE_USERNAME
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: acgs-secrets
+                  key: DATABASE_PASSWORD
+          envFrom:
+            - configMapRef:
+                name: acgs-config
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
 
 ---
 apiVersion: v1
@@ -499,14 +499,14 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - name: http
-    port: 8004
-    targetPort: http
-    protocol: TCP
-  - name: metrics
-    port: 9090
-    targetPort: metrics
-    protocol: TCP
+    - name: http
+      port: 8004
+      targetPort: http
+      protocol: TCP
+    - name: metrics
+      port: 9090
+      targetPort: metrics
+      protocol: TCP
   selector:
     app.kubernetes.io/name: governance-synthesis-service
     app.kubernetes.io/component: governance
@@ -552,62 +552,62 @@ spec:
         runAsGroup: 1000
         fsGroup: 1000
       containers:
-      - name: policy-governance-service
-        image: acgs/policy-governance-service:latest
-        imagePullPolicy: IfNotPresent
-        ports:
-        - name: http
-          containerPort: 8005
-          protocol: TCP
-        - name: metrics
-          containerPort: 9090
-          protocol: TCP
-        env:
-        - name: CONSTITUTIONAL_HASH
-          valueFrom:
-            configMapKeyRef:
-              name: acgs-config
-              key: CONSTITUTIONAL_HASH
-        - name: DATABASE_URL
-          value: "postgresql://$(DATABASE_USERNAME):$(DATABASE_PASSWORD)@postgresql.acgs-system.svc.cluster.local:5432/acgs"
-        - name: DATABASE_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: acgs-secrets
-              key: DATABASE_USERNAME
-        - name: DATABASE_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: acgs-secrets
-              key: DATABASE_PASSWORD
-        envFrom:
-        - configMapRef:
-            name: acgs-config
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "250m"
-          limits:
-            memory: "1Gi"
-            cpu: "500m"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: http
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: http
-          initialDelaySeconds: 5
-          periodSeconds: 5
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-            - ALL
+        - name: policy-governance-service
+          image: acgs/policy-governance-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8005
+              protocol: TCP
+            - name: metrics
+              containerPort: 9090
+              protocol: TCP
+          env:
+            - name: CONSTITUTIONAL_HASH
+              valueFrom:
+                configMapKeyRef:
+                  name: acgs-config
+                  key: CONSTITUTIONAL_HASH
+            - name: DATABASE_URL
+              value: "postgresql://$(DATABASE_USERNAME):$(DATABASE_PASSWORD)@postgresql.acgs-system.svc.cluster.local:5432/acgs"
+            - name: DATABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: acgs-secrets
+                  key: DATABASE_USERNAME
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: acgs-secrets
+                  key: DATABASE_PASSWORD
+          envFrom:
+            - configMapRef:
+                name: acgs-config
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
 
 ---
 apiVersion: v1
@@ -623,14 +623,14 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - name: http
-    port: 8005
-    targetPort: http
-    protocol: TCP
-  - name: metrics
-    port: 9090
-    targetPort: metrics
-    protocol: TCP
+    - name: http
+      port: 8005
+      targetPort: http
+      protocol: TCP
+    - name: metrics
+      port: 9090
+      targetPort: metrics
+      protocol: TCP
   selector:
     app.kubernetes.io/name: policy-governance-service
     app.kubernetes.io/component: policy
@@ -676,62 +676,62 @@ spec:
         runAsGroup: 1000
         fsGroup: 1000
       containers:
-      - name: formal-verification-service
-        image: acgs/formal-verification-service:latest
-        imagePullPolicy: IfNotPresent
-        ports:
-        - name: http
-          containerPort: 8006
-          protocol: TCP
-        - name: metrics
-          containerPort: 9090
-          protocol: TCP
-        env:
-        - name: CONSTITUTIONAL_HASH
-          valueFrom:
-            configMapKeyRef:
-              name: acgs-config
-              key: CONSTITUTIONAL_HASH
-        - name: DATABASE_URL
-          value: "postgresql://$(DATABASE_USERNAME):$(DATABASE_PASSWORD)@postgresql.acgs-system.svc.cluster.local:5432/acgs"
-        - name: DATABASE_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: acgs-secrets
-              key: DATABASE_USERNAME
-        - name: DATABASE_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: acgs-secrets
-              key: DATABASE_PASSWORD
-        envFrom:
-        - configMapRef:
-            name: acgs-config
-        resources:
-          requests:
-            memory: "1Gi"
-            cpu: "500m"
-          limits:
-            memory: "2Gi"
-            cpu: "1000m"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: http
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: http
-          initialDelaySeconds: 5
-          periodSeconds: 5
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-            - ALL
+        - name: formal-verification-service
+          image: acgs/formal-verification-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8006
+              protocol: TCP
+            - name: metrics
+              containerPort: 9090
+              protocol: TCP
+          env:
+            - name: CONSTITUTIONAL_HASH
+              valueFrom:
+                configMapKeyRef:
+                  name: acgs-config
+                  key: CONSTITUTIONAL_HASH
+            - name: DATABASE_URL
+              value: "postgresql://$(DATABASE_USERNAME):$(DATABASE_PASSWORD)@postgresql.acgs-system.svc.cluster.local:5432/acgs"
+            - name: DATABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: acgs-secrets
+                  key: DATABASE_USERNAME
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: acgs-secrets
+                  key: DATABASE_PASSWORD
+          envFrom:
+            - configMapRef:
+                name: acgs-config
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "500m"
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
 
 ---
 apiVersion: v1
@@ -747,14 +747,14 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - name: http
-    port: 8006
-    targetPort: http
-    protocol: TCP
-  - name: metrics
-    port: 9090
-    targetPort: metrics
-    protocol: TCP
+    - name: http
+      port: 8006
+      targetPort: http
+      protocol: TCP
+    - name: metrics
+      port: 9090
+      targetPort: metrics
+      protocol: TCP
   selector:
     app.kubernetes.io/name: formal-verification-service
     app.kubernetes.io/component: verification

@@ -19,7 +19,7 @@ PytestUnknownMarkWarning: Unknown pytest.mark.smoke - is this a typo?
 
 **Root Cause**: The `tests/e2e/pytest.ini` file was using incorrect section header format `[tool:pytest]` instead of `[pytest]`.
 
-**Solution**: 
+**Solution**:
 - Fixed pytest.ini section header from `[tool:pytest]` to `[pytest]`
 - Verified markers were already properly defined in the configuration
 - Removed the warning suppression for `pytest.PytestUnknownMarkWarning` to validate the fix
@@ -46,8 +46,8 @@ ERROR: Unknown config option: benchmark_json
    ```ini
    # Before
    [tool:pytest]
-   
-   # After  
+
+   # After
    [pytest]
    ```
 
@@ -96,7 +96,7 @@ python -m pytest tests/e2e/tests/ --collect-only -q
 python -m pytest tests/e2e/tests/ -m "smoke" --collect-only -q
 # Result: 12/21 tests collected (9 deselected)
 
-# Constitutional tests filtering  
+# Constitutional tests filtering
 python -m pytest tests/e2e/tests/ -m "constitutional" --collect-only -q
 # Result: 9/21 tests collected (12 deselected)
 ```
@@ -156,8 +156,8 @@ python -m pytest tests/e2e/tests/test_smoke.py::test_framework_initialization -v
 
 ---
 
-**Fix Date**: 2025-07-03  
-**Status**: Pytest Warnings Resolved ✅  
-**Test Collection**: 21 tests (clean, no warnings)  
-**Marker Functionality**: All custom markers working ✅  
+**Fix Date**: 2025-07-03
+**Status**: Pytest Warnings Resolved ✅
+**Test Collection**: 21 tests (clean, no warnings)
+**Marker Functionality**: All custom markers working ✅
 **Next Phase**: Performance validation and CI/CD integration

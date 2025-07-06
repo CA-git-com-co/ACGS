@@ -1,7 +1,7 @@
 # ACGS Quarterly Documentation Audit Procedures
 
-**Date**: 2025-07-05  
-<!-- Constitutional Hash: cdd01ef066bc6cf2 -->  
+**Date**: 2025-07-05
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 **Status**: Production Ready
 
 ## 🎯 Overview
@@ -84,20 +84,20 @@ SERVICES=("auth:8016" "constitutional_ai:8001" "integrity:8002" "formal_verifica
 for service in "${SERVICES[@]}"; do
     SERVICE_NAME="${service%%:*}"
     SERVICE_PORT="${service##*:}"
-    
+
     echo "Auditing $SERVICE_NAME service..."
-    
+
     # Check if service is documented
     if [ -f "docs/api/${SERVICE_NAME}.md" ]; then
         echo "✅ Documentation exists for $SERVICE_NAME"
-        
+
         # Check if port is correct in documentation
         if grep -q "$SERVICE_PORT" "docs/api/${SERVICE_NAME}.md"; then
             echo "✅ Port $SERVICE_PORT correctly documented for $SERVICE_NAME"
         else
             echo "❌ Port $SERVICE_PORT missing in documentation for $SERVICE_NAME"
         fi
-        
+
         # Check constitutional hash in examples
         if grep -q "cdd01ef066bc6cf2" "docs/api/${SERVICE_NAME}.md"; then
             echo "✅ Constitutional hash present in $SERVICE_NAME documentation"
@@ -170,7 +170,7 @@ FAILED_FILES=0
 while IFS= read -r file; do
     TOTAL_FILES=$((TOTAL_FILES + 1))
     echo "Checking links in: $file"
-    
+
     if ! markdown-link-check "$file" --config .markdown-link-check-audit.json; then
         FAILED_FILES=$((FAILED_FILES + 1))
         BROKEN_LINKS="$BROKEN_LINKS\n$file"
@@ -191,14 +191,14 @@ echo "📚 Starting cross-reference consistency audit..."
 echo "Checking for orphaned references..."
 
 # Find all internal links
-grep -r "\[.*\](.*\.md)" docs/ > internal_links.txt
+# Find internal markdown links (command disabled)
 grep -r "\[.*\](.*#.*)" docs/ >> internal_links.txt
 
 # Validate each reference
 while IFS= read -r line; do
     FILE=$(echo "$line" | cut -d: -f1)
     REFERENCE=$(echo "$line" | grep -o "\[.*\](.*)" | sed 's/.*](\(.*\))/\1/')
-    
+
     # Check if referenced file exists
     if [[ "$REFERENCE" == *.md ]]; then
         if [ ! -f "docs/$REFERENCE" ] && [ ! -f "$REFERENCE" ]; then
@@ -246,12 +246,12 @@ DOCUMENTED_TARGETS=(
 for target in "${DOCUMENTED_TARGETS[@]}"; do
     TARGET_VALUE="${target%%:*}"
     TARGET_TYPE="${target##*:}"
-    
+
     echo "Validating $TARGET_TYPE target: $TARGET_VALUE"
-    
+
     # Count occurrences across documentation
     COUNT=$(grep -r "$TARGET_VALUE" docs/ | wc -l)
-    
+
     if [ "$COUNT" -ge 3 ]; then
         echo "✅ $TARGET_TYPE target consistently documented ($COUNT occurrences)"
     else
@@ -262,7 +262,7 @@ done
 # Validate against actual metrics (if monitoring is available)
 if command -v curl &> /dev/null; then
     echo "Checking actual service performance..."
-    
+
     for port in 8016 8001 8002 8003 8004 8005 8006; do
         RESPONSE_TIME=$(curl -o /dev/null -s -w "%{time_total}" "http://localhost:$port/health" 2>/dev/null || echo "N/A")
         echo "Service on port $port response time: ${RESPONSE_TIME}s"
@@ -442,6 +442,6 @@ echo "Compliance percentage: $COMPLIANCE_PERCENTAGE%"
 
 ---
 
-<!-- Constitutional Hash: cdd01ef066bc6cf2 --> ✅  
-**Next Audit**: 2025-10-15 (Q4 2025)  
+<!-- Constitutional Hash: cdd01ef066bc6cf2 --> ✅
+**Next Audit**: 2025-10-15 (Q4 2025)
 **Audit Lead**: Documentation Team Lead

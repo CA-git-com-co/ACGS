@@ -5,15 +5,15 @@ global:
   scrape_interval: 15s
   evaluation_interval: 15s
   external_labels:
-    cluster: 'acgs-production'
-    constitutional_hash: 'cdd01ef066bc6cf2'
+    cluster: "acgs-production"
+    constitutional_hash: "cdd01ef066bc6cf2"
 
 # Alertmanager configuration
 alerting:
   alertmanagers:
     - static_configs:
         - targets:
-          - alertmanager:9093
+            - alertmanager:9093
 
 # Load alerting rules
 rule_files:
@@ -22,39 +22,39 @@ rule_files:
 # Scrape configurations
 scrape_configs:
   # Prometheus self-monitoring
-  - job_name: 'prometheus'
+  - job_name: "prometheus"
     static_configs:
-      - targets: ['localhost:9090']
+      - targets: ["localhost:9090"]
     metrics_path: /metrics
     scrape_interval: 30s
 
   # ACGS Authentication Service
-  - job_name: 'acgs-auth-service'
+  - job_name: "acgs-auth-service"
     static_configs:
-      - targets: ['auth-service:8000']
+      - targets: ["auth-service:8000"]
     metrics_path: /metrics
     scrape_interval: 15s
     scrape_timeout: 10s
     honor_labels: true
     params:
-      format: ['prometheus']
+      format: ["prometheus"]
     relabel_configs:
       - source_labels: [__address__]
         target_label: service
-        replacement: 'auth-service'
+        replacement: "auth-service"
       - source_labels: [__address__]
         target_label: layer
-        replacement: 'platform'
+        replacement: "platform"
     metric_relabel_configs:
       - source_labels: [__name__]
-        regex: 'acgs_.*'
+        regex: "acgs_.*"
         target_label: constitutional_compliance
-        replacement: 'monitored'
+        replacement: "monitored"
 
   # ACGS Constitutional AI Service
-  - job_name: 'acgs-constitutional-ai'
+  - job_name: "acgs-constitutional-ai"
     static_configs:
-      - targets: ['constitutional-ai-service:8001']
+      - targets: ["constitutional-ai-service:8001"]
     metrics_path: /metrics
     scrape_interval: 15s
     scrape_timeout: 10s
@@ -62,20 +62,20 @@ scrape_configs:
     relabel_configs:
       - source_labels: [__address__]
         target_label: service
-        replacement: 'constitutional-ai'
+        replacement: "constitutional-ai"
       - source_labels: [__address__]
         target_label: layer
-        replacement: 'core'
+        replacement: "core"
     metric_relabel_configs:
       - source_labels: [__name__]
-        regex: 'constitutional_.*'
+        regex: "constitutional_.*"
         target_label: compliance_category
-        replacement: 'constitutional'
+        replacement: "constitutional"
 
   # ACGS Integrity Service
-  - job_name: 'acgs-integrity'
+  - job_name: "acgs-integrity"
     static_configs:
-      - targets: ['integrity-service:8002']
+      - targets: ["integrity-service:8002"]
     metrics_path: /metrics
     scrape_interval: 15s
     scrape_timeout: 10s
@@ -83,15 +83,15 @@ scrape_configs:
     relabel_configs:
       - source_labels: [__address__]
         target_label: service
-        replacement: 'integrity'
+        replacement: "integrity"
       - source_labels: [__address__]
         target_label: layer
-        replacement: 'platform'
+        replacement: "platform"
 
   # ACGS Governance Synthesis Service
-  - job_name: 'acgs-governance-synthesis'
+  - job_name: "acgs-governance-synthesis"
     static_configs:
-      - targets: ['governance-synthesis-service:8004']
+      - targets: ["governance-synthesis-service:8004"]
     metrics_path: /metrics
     scrape_interval: 15s
     scrape_timeout: 10s
@@ -99,15 +99,15 @@ scrape_configs:
     relabel_configs:
       - source_labels: [__address__]
         target_label: service
-        replacement: 'governance-synthesis'
+        replacement: "governance-synthesis"
       - source_labels: [__address__]
         target_label: layer
-        replacement: 'core'
+        replacement: "core"
 
   # ACGS Policy Governance Service
-  - job_name: 'acgs-policy-governance'
+  - job_name: "acgs-policy-governance"
     static_configs:
-      - targets: ['policy-governance-service:8005']
+      - targets: ["policy-governance-service:8005"]
     metrics_path: /metrics
     scrape_interval: 15s
     scrape_timeout: 10s
@@ -115,93 +115,93 @@ scrape_configs:
     relabel_configs:
       - source_labels: [__address__]
         target_label: service
-        replacement: 'policy-governance'
+        replacement: "policy-governance"
       - source_labels: [__address__]
         target_label: layer
-        replacement: 'core'
+        replacement: "core"
 
   # Nginx Gateway
-  - job_name: 'acgs-nginx'
+  - job_name: "acgs-nginx"
     static_configs:
-      - targets: ['nginx:80']
+      - targets: ["nginx:80"]
     metrics_path: /nginx_status
     scrape_interval: 30s
     scrape_timeout: 10s
     relabel_configs:
       - source_labels: [__address__]
         target_label: service
-        replacement: 'nginx-gateway'
+        replacement: "nginx-gateway"
       - source_labels: [__address__]
         target_label: layer
-        replacement: 'gateway'
+        replacement: "gateway"
 
   # PostgreSQL Database
-  - job_name: 'acgs-postgres'
+  - job_name: "acgs-postgres"
     static_configs:
-      - targets: ['postgres-exporter:9187']
+      - targets: ["postgres-exporter:9187"]
     scrape_interval: 30s
     scrape_timeout: 10s
     relabel_configs:
       - source_labels: [__address__]
         target_label: service
-        replacement: 'postgres'
+        replacement: "postgres"
       - source_labels: [__address__]
         target_label: layer
-        replacement: 'database'
+        replacement: "database"
 
   # Redis Cache
-  - job_name: 'acgs-redis'
+  - job_name: "acgs-redis"
     static_configs:
-      - targets: ['redis-exporter:9121']
+      - targets: ["redis-exporter:9121"]
     scrape_interval: 30s
     scrape_timeout: 10s
     relabel_configs:
       - source_labels: [__address__]
         target_label: service
-        replacement: 'redis'
+        replacement: "redis"
       - source_labels: [__address__]
         target_label: layer
-        replacement: 'cache'
+        replacement: "cache"
 
   # Docker Container Metrics (cAdvisor)
-  - job_name: 'acgs-containers'
+  - job_name: "acgs-containers"
     static_configs:
-      - targets: ['cadvisor:8080']
+      - targets: ["cadvisor:8080"]
     metrics_path: /metrics
     scrape_interval: 30s
     scrape_timeout: 10s
     relabel_configs:
       - source_labels: [__address__]
         target_label: service
-        replacement: 'containers'
+        replacement: "containers"
       - source_labels: [__address__]
         target_label: layer
-        replacement: 'infrastructure'
+        replacement: "infrastructure"
 
   # Node/Host Metrics (Node Exporter)
-  - job_name: 'acgs-host'
+  - job_name: "acgs-host"
     static_configs:
-      - targets: ['node-exporter:9100']
+      - targets: ["node-exporter:9100"]
     scrape_interval: 30s
     scrape_timeout: 10s
     relabel_configs:
       - source_labels: [__address__]
         target_label: service
-        replacement: 'host'
+        replacement: "host"
       - source_labels: [__address__]
         target_label: layer
-        replacement: 'infrastructure'
+        replacement: "infrastructure"
 
   # Blackbox monitoring for external health checks
-  - job_name: 'acgs-blackbox'
+  - job_name: "acgs-blackbox"
     metrics_path: /probe
     params:
       module: [http_2xx]
     static_configs:
       - targets:
-        - https://acgs.local/health
-        - https://acgs.local/api/v1/auth/info
-        - https://acgs.local/api/v1/constitutional/validate
+          - https://acgs.local/health
+          - https://acgs.local/api/v1/auth/info
+          - https://acgs.local/api/v1/constitutional/validate
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target

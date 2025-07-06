@@ -1,7 +1,7 @@
 # ACGS-PGP System Setup Guide
 
-**Version**: 1.0.0  
-**Date**: 2025-06-27  
+**Version**: 1.0.0
+**Date**: 2025-06-27
 <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 
 ## Overview

@@ -1,4 +1,6 @@
 # ACGS-PGP Production Readiness Checklist
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 
 This checklist outlines the criteria for declaring the ACGS-PGP system ready for production deployment. All items must be validated and signed off by the respective stakeholders.
 

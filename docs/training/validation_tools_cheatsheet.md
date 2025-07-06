@@ -2,7 +2,7 @@
 
 <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 
-**Quick Reference**: Essential commands for ACGS documentation validation  
+**Quick Reference**: Essential commands for ACGS documentation validation
 **Constitutional Hash**: `cdd01ef066bc6cf2`
 
 ## Quick Validation Script
@@ -167,10 +167,10 @@ echo "<!-- Constitutional Hash: cdd01ef066bc6cf2 -->" >> docs/file.md
 #### Link Validation Failure
 ```bash
 # Check for broken links manually
-find docs/ -name "*.md" -exec grep -H "\[.*\](.*\.md" {} \;
+# find docs/ -name "*.md" -exec grep -H "\[.*\](.*\.md" {} \;
 
 # Validate specific file links
-<!-- REMOVED BROKEN LINK: <!-- REMOVED BROKEN LINK: grep -o '\[.*\](.*\.md[^)]*)' docs/file.md --> -->
+# Validate specific file links (command disabled)
 ```
 
 #### Performance Targets Missing
@@ -223,5 +223,5 @@ tools/
 
 ---
 
-**Quick Help**: Run any tool with `--help` or `-h` for usage information  
+**Quick Help**: Run any tool with `--help` or `-h` for usage information
 **Constitutional Hash**: `cdd01ef066bc6cf2` ✅

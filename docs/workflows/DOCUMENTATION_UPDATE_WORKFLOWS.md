@@ -1,7 +1,7 @@
 # ACGS Documentation Update Workflows
 
-**Date**: 2025-07-05  
-<!-- Constitutional Hash: cdd01ef066bc6cf2 -->  
+**Date**: 2025-07-05
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 **Status**: Production Ready
 
 ## 🎯 Overview
@@ -45,11 +45,11 @@ grep -r "old_config_value" docs/
    ```bash
    # Validate configuration consistency
    ./tools/validation/quick_validation.sh
-   
+
    # Test deployment with new configuration
    docker-compose -f infrastructure/docker/docker-compose.acgs.yml down
    docker-compose -f infrastructure/docker/docker-compose.acgs.yml up -d
-   
+
    # Verify service health
    curl http://localhost:NEW_PORT/health
    ```
@@ -321,6 +321,6 @@ echo "✅ Performance target change workflow completed"
 
 ---
 
-<!-- Constitutional Hash: cdd01ef066bc6cf2 --> ✅  
-**Next Review**: 2025-08-05  
+<!-- Constitutional Hash: cdd01ef066bc6cf2 --> ✅
+**Next Review**: 2025-08-05
 **Owner**: Documentation Team

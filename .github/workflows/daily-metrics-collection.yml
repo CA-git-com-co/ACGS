@@ -3,8 +3,8 @@ name: ACGS Daily Documentation Metrics Collection
 on:
   # Run daily at 1 AM UTC
   schedule:
-    - cron: '0 1 * * *'
-  
+    - cron: "0 1 * * *"
+
   # Allow manual triggering
   workflow_dispatch:
 
@@ -14,13 +14,13 @@ permissions:
   pull-requests: write
 
 env:
-  CONSTITUTIONAL_HASH: 'cdd01ef066bc6cf2'
+  CONSTITUTIONAL_HASH: "cdd01ef066bc6cf2"
 
 jobs:
   collect_metrics:
     runs-on: ubuntu-latest
     name: Collect Daily Documentation Metrics
-    
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -30,13 +30,13 @@ jobs:
       - name: Setup metrics collection environment
         run: |
           echo "🔧 Setting up metrics collection environment..."
-          
+
           # Install jq for JSON processing
           sudo apt-get update && sudo apt-get install -y jq
-          
+
           # Create metrics directory
           mkdir -p metrics
-          
+
           # Set environment variables
           echo "METRICS_DATE=$(date +%Y-%m-%d)" >> $GITHUB_ENV
           echo "METRICS_TIMESTAMP=$(date)" >> $GITHUB_ENV
@@ -47,10 +47,10 @@ jobs:
           echo "📊 Starting daily documentation metrics collection..."
           echo "Constitutional Hash: $CONSTITUTIONAL_HASH"
           echo "Date: $METRICS_DATE"
-          
+
           # Make metrics script executable
           chmod +x tools/metrics/collect_daily_metrics.sh
-          
+
           # Run metrics collection
           if ./tools/metrics/collect_daily_metrics.sh; then
             echo "metrics_status=success" >> $GITHUB_OUTPUT
@@ -59,10 +59,10 @@ jobs:
             echo "metrics_status=failure" >> $GITHUB_OUTPUT
             echo "❌ Metrics collection failed"
           fi
-          
+
           # Extract key metrics from the results
           METRICS_FILE="metrics/daily_metrics_${METRICS_DATE}.json"
-          
+
           if [ -f "$METRICS_FILE" ]; then
             # Extract metrics using jq
             COMPLIANCE_RATE=$(jq -r '.metrics.constitutional_compliance.rate // 0' "$METRICS_FILE")
@@ -71,14 +71,14 @@ jobs:
             COVERAGE_RATE=$(jq -r '.metrics.documentation_coverage.rate // 0' "$METRICS_FILE")
             OVERALL_SCORE=$(jq -r '.metrics.overall_quality.score // 0' "$METRICS_FILE")
             OVERALL_STATUS=$(jq -r '.metrics.overall_quality.status // "UNKNOWN"' "$METRICS_FILE")
-            
+
             echo "compliance_rate=$COMPLIANCE_RATE" >> $GITHUB_OUTPUT
             echo "link_validity_rate=$LINK_VALIDITY_RATE" >> $GITHUB_OUTPUT
             echo "freshness_rate=$FRESHNESS_RATE" >> $GITHUB_OUTPUT
             echo "coverage_rate=$COVERAGE_RATE" >> $GITHUB_OUTPUT
             echo "overall_score=$OVERALL_SCORE" >> $GITHUB_OUTPUT
             echo "overall_status=$OVERALL_STATUS" >> $GITHUB_OUTPUT
-            
+
             # Determine status emoji
             if [ "$OVERALL_STATUS" = "EXCELLENT" ]; then
               echo "status_emoji=🟢" >> $GITHUB_OUTPUT
@@ -104,28 +104,28 @@ jobs:
         id: quality_check
         run: |
           echo "🔍 Checking for quality issues..."
-          
+
           COMPLIANCE_RATE="${{ steps.metrics.outputs.compliance_rate }}"
           LINK_VALIDITY_RATE="${{ steps.metrics.outputs.link_validity_rate }}"
           OVERALL_SCORE="${{ steps.metrics.outputs.overall_score }}"
-          
+
           ISSUES_FOUND=""
-          
+
           # Check constitutional compliance
           if [ "$COMPLIANCE_RATE" -lt 100 ]; then
             ISSUES_FOUND="$ISSUES_FOUND\n- ❌ Constitutional compliance below 100% ($COMPLIANCE_RATE%)"
           fi
-          
+
           # Check link validity
           if [ "$LINK_VALIDITY_RATE" -lt 100 ]; then
             ISSUES_FOUND="$ISSUES_FOUND\n- ❌ Link validity below 100% ($LINK_VALIDITY_RATE%)"
           fi
-          
+
           # Check overall score
           if [ "$OVERALL_SCORE" -lt 85 ]; then
             ISSUES_FOUND="$ISSUES_FOUND\n- ⚠️ Overall quality score below 85% ($OVERALL_SCORE%)"
           fi
-          
+
           if [ -n "$ISSUES_FOUND" ]; then
             echo "quality_issues_found=true" >> $GITHUB_OUTPUT
             echo "quality_issues<<EOF" >> $GITHUB_OUTPUT
@@ -146,54 +146,54 @@ jobs:
             const overallScore = '${{ steps.metrics.outputs.overall_score }}';
             const overallStatus = '${{ steps.metrics.outputs.overall_status }}';
             const statusEmoji = '${{ steps.metrics.outputs.status_emoji }}';
-            
+
             const issueTitle = `${statusEmoji} Documentation Quality Alert - ${metricsDate}`;
-            
+
             const issueBody = `# Documentation Quality Alert
-            
-            **Date**: ${metricsDate}  
-            **Constitutional Hash**: \`${constitutionalHash}\`  
-            **Overall Score**: ${overallScore}%  
+
+            **Date**: ${metricsDate}
+            **Constitutional Hash**: \`${constitutionalHash}\`
+            **Overall Score**: ${overallScore}%
             **Status**: ${statusEmoji} ${overallStatus}
-            
+
             ## Quality Issues Detected
-            
+
             ${qualityIssues}
-            
+
             ## Metrics Summary
-            
+
             | Metric | Value | Target | Status |
             |--------|-------|--------|--------|
             | Constitutional Compliance | ${{ steps.metrics.outputs.compliance_rate }}% | 100% | ${{ steps.metrics.outputs.compliance_rate == '100' ? '✅' : '❌' }} |
             | Link Validity | ${{ steps.metrics.outputs.link_validity_rate }}% | 100% | ${{ steps.metrics.outputs.link_validity_rate == '100' ? '✅' : '❌' }} |
             | Documentation Freshness | ${{ steps.metrics.outputs.freshness_rate }}% | 85% | ${{ steps.metrics.outputs.freshness_rate >= '85' ? '✅' : '⚠️' }} |
             | Documentation Coverage | ${{ steps.metrics.outputs.coverage_rate }}% | 80% | ${{ steps.metrics.outputs.coverage_rate >= '80' ? '✅' : '⚠️' }} |
-            
+
             ## Immediate Actions Required
-            
+
             ${{ steps.metrics.outputs.compliance_rate < '100' ? '🚨 **CRITICAL**: Constitutional compliance must be 100%. Add constitutional hash `' + constitutionalHash + '` to all missing documentation files.' : '' }}
-            
+
             ${{ steps.metrics.outputs.link_validity_rate < '100' ? '🔗 **HIGH PRIORITY**: Fix broken documentation links to maintain navigation integrity.' : '' }}
-            
+
             ${{ steps.metrics.outputs.overall_score < '85' ? '📊 **ATTENTION**: Overall quality score is below target. Review and improve documentation quality.' : '' }}
-            
+
             ## Next Steps
-            
+
             1. **Review Metrics**: Download detailed metrics from workflow artifacts
             2. **Fix Critical Issues**: Address constitutional compliance and broken links immediately
             3. **Improve Quality**: Work on documentation freshness and coverage
             4. **Monitor Progress**: Check tomorrow's metrics for improvement
-            
+
             ## Constitutional Compliance
-            
+
             All ACGS documentation must include constitutional hash \`${constitutionalHash}\` to maintain compliance and security standards.
-            
+
             ---
-            
-            **Automated Alert**: This issue was created by the daily documentation metrics workflow.  
+
+            **Automated Alert**: This issue was created by the daily documentation metrics workflow.
             **Workflow Run**: https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}
             `;
-            
+
             // Create the issue
             const issue = await github.rest.issues.create({
               owner: context.repo.owner,
@@ -208,20 +208,20 @@ jobs:
                 overallStatus.toLowerCase().replace('_', '-')
               ]
             });
-            
+
             console.log(`Created quality alert issue: ${issue.data.html_url}`);
 
       - name: Commit metrics to repository
         run: |
           echo "💾 Committing metrics to repository..."
-          
+
           # Configure git
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          
+
           # Add metrics files
           git add metrics/
-          
+
           # Check if there are changes to commit
           if git diff --staged --quiet; then
             echo "No changes to commit"
@@ -231,13 +231,13 @@ jobs:
             Constitutional Hash: $CONSTITUTIONAL_HASH
             Overall Score: ${{ steps.metrics.outputs.overall_score }}%
             Status: ${{ steps.metrics.outputs.overall_status }}
-            
+
             Metrics:
             - Constitutional Compliance: ${{ steps.metrics.outputs.compliance_rate }}%
             - Link Validity: ${{ steps.metrics.outputs.link_validity_rate }}%
             - Documentation Freshness: ${{ steps.metrics.outputs.freshness_rate }}%
             - Documentation Coverage: ${{ steps.metrics.outputs.coverage_rate }}%"
-            
+
             git push
             echo "✅ Metrics committed and pushed to repository"
           fi
@@ -267,12 +267,12 @@ jobs:
           echo "🎯 Overall Quality Score: ${{ steps.metrics.outputs.overall_score }}%"
           echo "📈 Status: ${{ steps.metrics.outputs.status_emoji }} ${{ steps.metrics.outputs.overall_status }}"
           echo ""
-          
+
           if [ "${{ steps.quality_check.outputs.quality_issues_found }}" = "true" ]; then
             echo "⚠️ Quality issues detected - review and address immediately"
           else
             echo "✅ All quality metrics within acceptable ranges"
           fi
-          
+
           echo ""
           echo "Constitutional Hash: $CONSTITUTIONAL_HASH ✅"

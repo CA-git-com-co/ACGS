@@ -1,5 +1,14 @@
 # Policy Governance API Documentation
 
+## Service Overview
+
+This service provides core functionality for the ACGS platform with constitutional compliance validation.
+
+**Service**: Policy Governance
+**Port**: 8XXX
+**Constitutional Hash**: `cdd01ef066bc6cf2`
+
+
 **Service**: Policy Governance Service
 **Port**: 8005
 **Base URL**: `http://localhost:8005/api/v1`
@@ -236,15 +245,37 @@ console.log(result);
 ## Additional Resources
 
 - [API Documentation Index](index.md)
-- [Governance Workflow Design](api/policy-governance.md)
-- [Council Review Process](api/policy-governance.md)
+- [Governance Workflow Design](#Governance Workflow Design)
+- [Council Review Process](#Council Review Process)
 
 For system configuration details, deployment guides, and architecture diagrams, see the Policy Governance service documentation repository.
 ## Performance Targets
 
-- **Latency**: P99 ≤ 5ms for cached queries
+- **Latency**: P99 ≤ 5ms for cached queries (latency_p99: ≤5ms)
 - **Throughput**: ≥ 100 RPS sustained
 - **Cache Hit Rate**: ≥ 85%
 - **Test Coverage**: ≥ 80%
 - **Availability**: 99.9% uptime
 - **Constitutional Compliance**: 100% validation
+
+## Error Handling
+
+Standard HTTP status codes are used with detailed error messages:
+
+- `400 Bad Request`: Invalid request parameters
+- `401 Unauthorized`: Authentication required
+- `403 Forbidden`: Insufficient permissions
+- `404 Not Found`: Resource not found
+- `500 Internal Server Error`: Server error
+
+All errors include constitutional compliance validation status.
+
+
+## Monitoring
+
+Service health and performance metrics:
+
+- Health check endpoint: `/health`
+- Metrics endpoint: `/metrics`
+- Constitutional compliance status: `/compliance`
+- Performance dashboard integration available

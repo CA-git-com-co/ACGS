@@ -7,11 +7,9 @@ Constitutional Hash: cdd01ef066bc6cf2
 Service Port: 8007
 """
 
-import os
-import sys
 import logging
+import os
 from datetime import datetime
-from typing import Dict, Any
 
 import uvicorn
 from fastapi import FastAPI, Request
@@ -21,10 +19,12 @@ from fastapi.responses import JSONResponse
 # Initialize FastAPI app
 app = FastAPI(
     title="ACGS Code Analysis Engine",
-    description="Intelligent code analysis, semantic search, and dependency mapping service",
+    description=(
+        "Intelligent code analysis, semantic search, and dependency mapping service"
+    ),
     version="1.0.0",
     docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url="/redoc",
 )
 
 # Add CORS middleware
@@ -41,8 +41,7 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 # Setup basic logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -56,10 +55,7 @@ async def health_check():
         "version": "1.0.0",
         "constitutional_hash": CONSTITUTIONAL_HASH,
         "timestamp": datetime.now().isoformat(),
-        "checks": {
-            "service": "ok",
-            "constitutional_compliance": "ok"
-        }
+        "checks": {"service": "ok", "constitutional_compliance": "ok"},
     }
 
 
@@ -70,7 +66,7 @@ async def root():
         "message": "ACGS Code Analysis Engine",
         "constitutional_hash": CONSTITUTIONAL_HASH,
         "version": "1.0.0",
-        "docs": "/docs"
+        "docs": "/docs",
     }
 
 
@@ -81,7 +77,7 @@ async def metrics():
         "service_name": "acgs-code-analysis-engine",
         "constitutional_hash": CONSTITUTIONAL_HASH,
         "status": "healthy",
-        "timestamp": datetime.now().isoformat()
+        "timestamp": datetime.now().isoformat(),
     }
 
 
@@ -92,7 +88,7 @@ async def search(request: Request):
         "results": [],
         "total": 0,
         "constitutional_hash": CONSTITUTIONAL_HASH,
-        "message": "Search functionality not yet implemented"
+        "message": "Search functionality not yet implemented",
     }
 
 
@@ -102,7 +98,7 @@ async def analyze(request: Request):
     return {
         "analysis": "mock_analysis",
         "constitutional_hash": CONSTITUTIONAL_HASH,
-        "message": "Analysis functionality not yet implemented"
+        "message": "Analysis functionality not yet implemented",
     }
 
 
@@ -114,8 +110,8 @@ async def not_found_handler(request: Request, exc):
         content={
             "error": "endpoint_not_found",
             "constitutional_hash": CONSTITUTIONAL_HASH,
-            "timestamp": datetime.now().isoformat()
-        }
+            "timestamp": datetime.now().isoformat(),
+        },
     )
 
 
@@ -127,8 +123,8 @@ async def internal_error_handler(request: Request, exc):
         content={
             "error": "internal_server_error",
             "constitutional_hash": CONSTITUTIONAL_HASH,
-            "timestamp": datetime.now().isoformat()
-        }
+            "timestamp": datetime.now().isoformat(),
+        },
     )
 
 
@@ -138,11 +134,11 @@ def main():
     host = os.getenv("ACGS_CODE_ANALYSIS_HOST", "0.0.0.0")
     port = int(os.getenv("ACGS_CODE_ANALYSIS_PORT", "8007"))
     workers = int(os.getenv("ACGS_CODE_ANALYSIS_WORKERS", "1"))
-    
+
     logger.info(f"Starting ACGS Code Analysis Engine on {host}:{port}")
     logger.info(f"Constitutional Hash: {CONSTITUTIONAL_HASH}")
     logger.info(f"Workers: {workers}")
-    
+
     # Run the application
     uvicorn.run(
         "main_simple:app",
@@ -150,7 +146,7 @@ def main():
         port=port,
         workers=workers,
         log_level="info",
-        access_log=True
+        access_log=True,
     )
 
 

@@ -7,42 +7,61 @@ This tool automatically generates and updates documentation based on
 code changes, service configurations, and deployment status.
 """
 
-import json
-import os
-import re
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any
 
 # Configuration
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 REPO_ROOT = Path(__file__).parent.parent.parent
 DOCS_DIR = REPO_ROOT / "docs"
 
+
 class AutoDocGenerator:
     def __init__(self):
         self.generated_files = []
         self.updated_files = []
-        
+
     def generate_service_overview(self) -> str:
         """Generate comprehensive service overview documentation."""
         services = {
-            "authentication": {"port": 8016, "description": "Authentication and authorization service"},
-            "constitutional-ai": {"port": 8001, "description": "Constitutional AI compliance service"},
-            "integrity": {"port": 8002, "description": "Data integrity validation service"},
-            "formal-verification": {"port": 8003, "description": "Formal verification service"},
-            "governance_synthesis": {"port": 8004, "description": "Governance policy synthesis service"},
-            "policy-governance": {"port": 8005, "description": "Policy governance and management service"},
-            "evolutionary-computation": {"port": 8006, "description": "Evolutionary computation service"}
+            "authentication": {
+                "port": 8016,
+                "description": "Authentication and authorization service",
+            },
+            "constitutional-ai": {
+                "port": 8001,
+                "description": "Constitutional AI compliance service",
+            },
+            "integrity": {
+                "port": 8002,
+                "description": "Data integrity validation service",
+            },
+            "formal-verification": {
+                "port": 8003,
+                "description": "Formal verification service",
+            },
+            "governance_synthesis": {
+                "port": 8004,
+                "description": "Governance policy synthesis service",
+            },
+            "policy-governance": {
+                "port": 8005,
+                "description": "Policy governance and management service",
+            },
+            "evolutionary-computation": {
+                "port": 8006,
+                "description": "Evolutionary computation service",
+            },
         }
-        
+
         overview = f"""# ACGS Service Architecture Overview
 
 <!-- Constitutional Hash: {CONSTITUTIONAL_HASH} -->
 
-**Generated**: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}  
-**Constitutional Hash**: `{CONSTITUTIONAL_HASH}`  
+**Generated**: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+**Constitutional Hash**: `{CONSTITUTIONAL_HASH}`
 **Total Services**: {len(services)}
 
 ## Service Architecture
@@ -54,13 +73,16 @@ The ACGS (Autonomous Coding Governance System) consists of {len(services)} core 
 | Service | Port | Status | Description |
 |---------|------|--------|-------------|
 """
-        
+
         for service_name, config in services.items():
             api_file = DOCS_DIR / "api" / f"{service_name}.md"
             status = "✅ Documented" if api_file.exists() else "⚠️ Missing Docs"
-            overview += f"| {service_name.replace('_', ' ').title()} | {config['port']} | {status} | {config['description']} |\n"
-        
-        overview += f"""
+            overview += (
+                f"| {service_name.replace('_', ' ').title()} | {config['port']} |"
+                f" {status} | {config['description']} |\n"
+            )
+
+        overview += """
 
 ### Infrastructure Components
 
@@ -98,11 +120,13 @@ graph TD
 Each service provides comprehensive API documentation:
 
 """
-        
-        for service_name in services.keys():
+
+        for service_name in services:
             api_file = f"{service_name}.md"
-            overview += f"- [{service_name.replace('_', ' ').title()} API](api/{api_file})\n"
-        
+            overview += (
+                f"- [{service_name.replace('_', ' ').title()} API](api/{api_file})\n"
+            )
+
         overview += f"""
 
 ### Constitutional Compliance
@@ -123,19 +147,19 @@ All services implement constitutional compliance with hash `{CONSTITUTIONAL_HASH
 
 ---
 
-**Auto-Generated**: This overview is automatically updated during deployment  
+**Auto-Generated**: This overview is automatically updated during deployment
 **Constitutional Hash**: `{CONSTITUTIONAL_HASH}` ✅
 """
-        
+
         return overview
-    
+
     def generate_deployment_checklist(self) -> str:
         """Generate automated deployment checklist."""
         checklist = f"""# ACGS Deployment Checklist (Auto-Generated)
 
 <!-- Constitutional Hash: {CONSTITUTIONAL_HASH} -->
 
-**Generated**: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}  
+**Generated**: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 **Constitutional Hash**: `{CONSTITUTIONAL_HASH}`
 
 ## Pre-Deployment Validation
@@ -249,45 +273,61 @@ All services implement constitutional compliance with hash `{CONSTITUTIONAL_HASH
 
 ---
 
-**Auto-Generated**: This checklist is automatically updated for each deployment  
+**Auto-Generated**: This checklist is automatically updated for each deployment
 **Constitutional Hash**: `{CONSTITUTIONAL_HASH}` ✅
 """
-        
+
         return checklist
-    
+
     def generate_api_index(self) -> str:
         """Generate comprehensive API documentation index."""
         api_files = list((DOCS_DIR / "api").glob("*.md"))
-        api_files = [f for f in api_files if f.name not in ["automated_index.md", "index.md"]]
-        
+        api_files = [
+            f for f in api_files if f.name not in ["automated_index.md", "index.md"]
+        ]
+
         index = f"""# ACGS API Documentation Index
 
 <!-- Constitutional Hash: {CONSTITUTIONAL_HASH} -->
 
-**Generated**: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}  
-**Constitutional Hash**: `{CONSTITUTIONAL_HASH}`  
+**Generated**: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+**Constitutional Hash**: `{CONSTITUTIONAL_HASH}`
 **Total APIs**: {len(api_files)}
 
 ## Quick Navigation
 
 ### Core Services
 """
-        
-        core_services = ["authentication", "constitutional-ai", "integrity", "formal-verification"]
+
+        core_services = [
+            "authentication",
+            "constitutional-ai",
+            "integrity",
+            "formal-verification",
+        ]
         for service in core_services:
             service_file = f"{service}.md"
             if (DOCS_DIR / "api" / service_file).exists():
                 title = service.replace("-", " ").title()
-                index += f"- [{title} API]({service_file}) - Core {title.lower()} functionality\n"
-        
+                index += (
+                    f"- [{title} API]({service_file}) - Core"
+                    f" {title.lower()} functionality\n"
+                )
+
         index += "\n### Governance Services\n"
-        governance_services = ["governance_synthesis", "policy-governance", "evolutionary-computation"]
+        governance_services = [
+            "governance_synthesis",
+            "policy-governance",
+            "evolutionary-computation",
+        ]
         for service in governance_services:
             service_file = f"{service}.md"
             if (DOCS_DIR / "api" / service_file).exists():
                 title = service.replace("_", " ").replace("-", " ").title()
-                index += f"- [{title} API]({service_file}) - {title.lower()} capabilities\n"
-        
+                index += (
+                    f"- [{title} API]({service_file}) - {title.lower()} capabilities\n"
+                )
+
         index += f"""
 
 ## API Standards
@@ -356,61 +396,57 @@ All APIs implement constitutional compliance:
 
 ---
 
-**Auto-Generated**: This index is automatically updated during deployment  
+**Auto-Generated**: This index is automatically updated during deployment
 **Constitutional Hash**: `{CONSTITUTIONAL_HASH}` ✅
 """
-        
+
         return index
-    
-    def generate_all_documentation(self) -> Dict[str, Any]:
+
+    def generate_all_documentation(self) -> dict[str, Any]:
         """Generate all automated documentation."""
         print("📚 ACGS Automated Documentation Generator")
         print("=" * 50)
         print(f"Constitutional Hash: {CONSTITUTIONAL_HASH}")
         print(f"Repository: {REPO_ROOT}")
         print()
-        
-        results = {
-            "generated_files": 0,
-            "updated_files": 0,
-            "total_files": 0
-        }
-        
+
+        results = {"generated_files": 0, "updated_files": 0, "total_files": 0}
+
         # Generate service overview
         print("📊 Generating service overview...")
         service_overview = self.generate_service_overview()
         overview_file = DOCS_DIR / "ACGS_SERVICE_OVERVIEW.md"
-        
-        with open(overview_file, 'w') as f:
+
+        with open(overview_file, "w") as f:
             f.write(service_overview)
         self.generated_files.append(str(overview_file))
         results["generated_files"] += 1
         print(f"✅ Generated: {overview_file.relative_to(REPO_ROOT)}")
-        
+
         # Generate deployment checklist
         print("📋 Generating deployment checklist...")
         deployment_checklist = self.generate_deployment_checklist()
         checklist_file = DOCS_DIR / "AUTOMATED_DEPLOYMENT_CHECKLIST.md"
-        
-        with open(checklist_file, 'w') as f:
+
+        with open(checklist_file, "w") as f:
             f.write(deployment_checklist)
         self.generated_files.append(str(checklist_file))
         results["generated_files"] += 1
         print(f"✅ Generated: {checklist_file.relative_to(REPO_ROOT)}")
-        
+
         # Generate API index
         print("📚 Generating API documentation index...")
         api_index = self.generate_api_index()
         api_index_file = DOCS_DIR / "api" / "AUTOMATED_API_INDEX.md"
-        
-        with open(api_index_file, 'w') as f:
+
+        with open(api_index_file, "w") as f:
             f.write(api_index)
         self.generated_files.append(str(api_index_file))
         results["generated_files"] += 1
         print(f"✅ Generated: {api_index_file.relative_to(REPO_ROOT)}")
-        
+
         results["total_files"] = results["generated_files"] + results["updated_files"]
-        
+
         print()
         print("=" * 50)
         print("📊 GENERATION SUMMARY")
@@ -424,19 +460,21 @@ All APIs implement constitutional compliance:
             print(f"  - {Path(file_path).relative_to(REPO_ROOT)}")
         print()
         print(f"🔗 Constitutional Hash: {CONSTITUTIONAL_HASH}")
-        
+
         return results
+
 
 def main():
     """Main execution function."""
     generator = AutoDocGenerator()
     results = generator.generate_all_documentation()
-    
-    print(f"\n✅ Documentation generation completed!")
+
+    print("\n✅ Documentation generation completed!")
     print(f"📚 Generated {results['total_files']} documentation files")
     print(f"🔗 Constitutional Hash: {CONSTITUTIONAL_HASH}")
-    
+
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

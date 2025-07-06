@@ -50,61 +50,61 @@ spec:
         runAsGroup: 999
         fsGroup: 999
       containers:
-      - name: redis
-        image: redis:7-alpine
-        imagePullPolicy: IfNotPresent
-        command:
-        - redis-server
-        - /etc/redis/redis.conf
-        ports:
         - name: redis
-          containerPort: 6379
-          protocol: TCP
-        env:
-        - name: REDIS_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: redis-secret
-              key: REDIS_PASSWORD
-        volumeMounts:
-        - name: redis-storage
-          mountPath: /data
-        - name: redis-config
-          mountPath: /etc/redis
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "250m"
-          limits:
-            memory: "1Gi"
-            cpu: "500m"
-        livenessProbe:
-          exec:
-            command:
-            - redis-cli
-            - ping
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 5
-        readinessProbe:
-          exec:
-            command:
-            - redis-cli
-            - ping
-          initialDelaySeconds: 5
-          periodSeconds: 10
-          timeoutSeconds: 1
-          successThreshold: 1
-          failureThreshold: 5
+          image: redis:7-alpine
+          imagePullPolicy: IfNotPresent
+          command:
+            - redis-server
+            - /etc/redis/redis.conf
+          ports:
+            - name: redis
+              containerPort: 6379
+              protocol: TCP
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis-secret
+                  key: REDIS_PASSWORD
+          volumeMounts:
+            - name: redis-storage
+              mountPath: /data
+            - name: redis-config
+              mountPath: /etc/redis
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+          livenessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 5
+          readinessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 5
       volumes:
-      - name: redis-storage
-        persistentVolumeClaim:
-          claimName: redis-pvc
-      - name: redis-config
-        configMap:
-          name: redis-config
+        - name: redis-storage
+          persistentVolumeClaim:
+            claimName: redis-pvc
+        - name: redis-config
+          configMap:
+            name: redis-config
 
 ---
 apiVersion: v1
@@ -122,10 +122,10 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - name: redis
-    port: 6379
-    targetPort: redis
-    protocol: TCP
+    - name: redis
+      port: 6379
+      targetPort: redis
+      protocol: TCP
   selector:
     app.kubernetes.io/name: redis
     app.kubernetes.io/component: cache
@@ -144,22 +144,22 @@ data:
   redis.conf: |
     # Constitutional Compliance Redis Configuration
     # Constitutional Hash: cdd01ef066bc6cf2
-    
+
     # Network
     bind 0.0.0.0
     port 6379
     protected-mode yes
-    
+
     # Security
     requirepass ${REDIS_PASSWORD}
-    
+
     # General
     daemonize no
     supervised no
     pidfile /var/run/redis.pid
     loglevel notice
     logfile ""
-    
+
     # Persistence
     save 900 1
     save 300 10
@@ -169,7 +169,7 @@ data:
     rdbchecksum yes
     dbfilename dump.rdb
     dir /data
-    
+
     # AOF Persistence for Constitutional Audit
     appendonly yes
     appendfilename "appendonly.aof"
@@ -178,30 +178,30 @@ data:
     auto-aof-rewrite-percentage 100
     auto-aof-rewrite-min-size 64mb
     aof-load-truncated yes
-    
+
     # Memory Management
     maxmemory 512mb
     maxmemory-policy allkeys-lru
-    
+
     # Slow Log
     slowlog-log-slower-than 10000
     slowlog-max-len 128
-    
+
     # Constitutional Compliance Settings
     # Track commands for audit trail
     latency-monitor-threshold 100
-    
+
     # Client Output Buffer Limits
     client-output-buffer-limit normal 0 0 0
     client-output-buffer-limit replica 256mb 64mb 60
     client-output-buffer-limit pubsub 32mb 8mb 60
-    
+
     # TCP Keepalive
     tcp-keepalive 300
-    
+
     # Timeout
     timeout 0
-    
+
     # Security enhancements
     rename-command FLUSHDB ""
     rename-command FLUSHALL ""

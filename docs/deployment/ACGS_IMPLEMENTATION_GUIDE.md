@@ -52,7 +52,7 @@ The Autonomous Coding Governance System (ACGS) is a comprehensive governance fra
 All services operate under constitutional principles:
 
 1. **Non-Maleficence** - Agents must not cause harm
-2. **Human Autonomy** - Respect human decision-making authority  
+2. **Human Autonomy** - Respect human decision-making authority
 3. **Transparency** - All actions must be auditable and explainable
 4. **Least Privilege** - Minimum necessary permissions
 5. **Data Protection** - Protect sensitive data and privacy
@@ -83,7 +83,7 @@ All services operate under constitutional principles:
    ```bash
    # Check all services are healthy
    docker-compose -f docker-compose.acgs.yml ps
-   
+
    # Test coordinator endpoint
    curl http://localhost:8000/
    ```
@@ -92,7 +92,7 @@ All services operate under constitutional principles:
    ```bash
    # Run database migrations
    docker-compose -f docker-compose.acgs.yml exec acgs-database psql -U acgs_user -d acgs_db -f /docker-entrypoint-initdb.d/01-auth/add_agent_tables.sql
-   
+
    # Create first agent
    curl -X POST http://localhost:8006/api/v1/agents \
      -H "Content-Type: application/json" \
@@ -136,7 +136,7 @@ curl -X POST http://localhost:8000/api/v1/operations \
   -H "Content-Type: application/json" \
   -d '{
     "agent_id": "demo-agent-001",
-    "agent_type": "coding_agent", 
+    "agent_type": "coding_agent",
     "operation_type": "system_command",
     "operation_description": "Update system configuration file",
     "requires_human_approval": true,
@@ -157,7 +157,7 @@ curl http://localhost:8000/api/v1/operations/{operation_id}
 
 ### ACGS Coordinator (Port 8000)
 - `POST /api/v1/operations` - Execute governed operation
-- `GET /api/v1/operations/{id}` - Get operation status  
+- `GET /api/v1/operations/{id}` - Get operation status
 - `GET /api/v1/agents/{id}/operations` - List agent operations
 
 ### Agent Identity Management (Port 8006)
@@ -208,7 +208,7 @@ curl http://localhost:8009/health  # Sandbox Service
 View service logs:
 ```bash
 docker-compose -f docker-compose.acgs.yml logs -f acgs-coordinator
-docker-compose -f docker-compose.acgs.yml logs -f acgs-agent-hitl  
+docker-compose -f docker-compose.acgs.yml logs -f acgs-agent-hitl
 docker-compose -f docker-compose.acgs.yml logs -f acgs-sandbox-execution
 ```
 
@@ -252,7 +252,7 @@ Code execution is isolated using Docker containers with:
 
 - **SOC2 Type II** controls implementation
 - **ISO 27001** security frameworks
-- **GDPR** data protection compliance  
+- **GDPR** data protection compliance
 - **Constitutional AI** governance principles
 - **Immutable audit trails** with cryptographic integrity
 - **Blockchain anchoring** for external verification
@@ -361,6 +361,6 @@ This implementation is part of the ACGS research project. For support and questi
 
 ---
 
-<!-- Constitutional Hash: cdd01ef066bc6cf2 -->  
-**Implementation Version**: 1.0.0  
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+**Implementation Version**: 1.0.0
 **Last Updated**: 2025-06-30

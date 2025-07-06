@@ -14,7 +14,7 @@ permissions:
   deployments: write
 
 env:
-  CONSTITUTIONAL_HASH: 'cdd01ef066bc6cf2'
+  CONSTITUTIONAL_HASH: "cdd01ef066bc6cf2"
 
 jobs:
   pre_deployment_validation:
@@ -44,7 +44,7 @@ jobs:
         id: validation
         run: |
           echo "🔍 Running comprehensive documentation validation..."
-          
+
           # Run enhanced validation
           if python tools/validation/enhanced_validation.py; then
             echo "status=pass" >> $GITHUB_OUTPUT
@@ -53,7 +53,7 @@ jobs:
             echo "status=fail" >> $GITHUB_OUTPUT
             echo "❌ Enhanced validation failed"
           fi
-          
+
           # Run quick validation for constitutional compliance
           if ./tools/validation/quick_validation.sh; then
             echo "constitutional_compliance=pass" >> $GITHUB_OUTPUT
@@ -65,21 +65,21 @@ jobs:
         id: metrics
         run: |
           echo "📊 Collecting deployment metrics..."
-          
+
           # Run metrics collection
           ./tools/metrics/collect_daily_metrics.sh
-          
+
           # Extract metrics
           METRICS_FILE="metrics/daily_metrics_$(date +%Y-%m-%d).json"
           if [ -f "$METRICS_FILE" ]; then
             COMPLIANCE_RATE=$(jq -r '.metrics.constitutional_compliance.rate // 0' "$METRICS_FILE")
             OVERALL_SCORE=$(jq -r '.metrics.overall_quality.score // 0' "$METRICS_FILE")
             OVERALL_STATUS=$(jq -r '.metrics.overall_quality.status // "UNKNOWN"' "$METRICS_FILE")
-            
+
             echo "compliance_rate=$COMPLIANCE_RATE" >> $GITHUB_OUTPUT
             echo "overall_score=$OVERALL_SCORE" >> $GITHUB_OUTPUT
             echo "overall_status=$OVERALL_STATUS" >> $GITHUB_OUTPUT
-            
+
             echo "📊 Deployment Metrics:"
             echo "  Constitutional Compliance: $COMPLIANCE_RATE%"
             echo "  Overall Quality Score: $OVERALL_SCORE%"
@@ -97,12 +97,12 @@ jobs:
           VALIDATION_STATUS="${{ steps.validation.outputs.status }}"
           CONSTITUTIONAL_STATUS="${{ steps.validation.outputs.constitutional_compliance }}"
           OVERALL_SCORE="${{ steps.metrics.outputs.overall_score }}"
-          
+
           echo "🔍 Checking deployment approval criteria..."
           echo "  Validation Status: $VALIDATION_STATUS"
           echo "  Constitutional Compliance: $CONSTITUTIONAL_STATUS"
           echo "  Overall Score: $OVERALL_SCORE%"
-          
+
           # Deployment approval criteria
           if [ "$CONSTITUTIONAL_STATUS" = "pass" ] && [ "$OVERALL_SCORE" -ge 85 ]; then
             echo "approved=true" >> $GITHUB_OUTPUT
@@ -110,7 +110,7 @@ jobs:
           else
             echo "approved=false" >> $GITHUB_OUTPUT
             echo "❌ Deployment blocked - criteria not met"
-            
+
             if [ "$CONSTITUTIONAL_STATUS" != "pass" ]; then
               echo "  🚨 CRITICAL: Constitutional compliance failure"
             fi
@@ -157,26 +157,26 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Generate API documentation index
         run: |
           echo "📚 Generating automated API documentation index..."
-          
+
           # Create automated API index
           cat > docs/api/automated_index.md << 'EOF'
           # ACGS API Documentation Index (Auto-Generated)
-          
+
           <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
-          
-          **Generated**: $(date +"%Y-%m-%d %H:%M:%S")  
-          **Constitutional Hash**: `cdd01ef066bc6cf2`  
+
+          **Generated**: $(date +"%Y-%m-%d %H:%M:%S")
+          **Constitutional Hash**: `cdd01ef066bc6cf2`
           **Quality Score**: ${{ needs.pre_deployment_validation.outputs.quality_score }}%
-          
+
           ## Available APIs
-          
+
           EOF
-          
+
           # Add all API documentation files
           for api_file in docs/api/*.md; do
             if [ -f "$api_file" ] && [ "$(basename "$api_file")" != "automated_index.md" ]; then
@@ -185,7 +185,7 @@ jobs:
               echo "- [$title]($filename.md)" >> docs/api/automated_index.md
             fi
           done
-          
+
           echo "" >> docs/api/automated_index.md
           echo "---" >> docs/api/automated_index.md
           echo "" >> docs/api/automated_index.md
@@ -195,42 +195,42 @@ jobs:
       - name: Generate deployment status report
         run: |
           echo "📊 Generating deployment status report..."
-          
+
           cat > docs/deployment_status_report.md << EOF
           # ACGS Deployment Status Report
-          
+
           <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
-          
-          **Generated**: $(date +"%Y-%m-%d %H:%M:%S")  
-          **Deployment**: ${{ github.sha }}  
-          **Branch**: ${{ github.ref_name }}  
+
+          **Generated**: $(date +"%Y-%m-%d %H:%M:%S")
+          **Deployment**: ${{ github.sha }}
+          **Branch**: ${{ github.ref_name }}
           **Constitutional Hash**: \`cdd01ef066bc6cf2\`
-          
+
           ## Validation Results
-          
+
           | Metric | Status | Score |
           |--------|--------|-------|
           | Documentation Validation | ${{ needs.pre_deployment_validation.outputs.validation_status == 'pass' && '✅ PASS' || '❌ FAIL' }} | - |
           | Overall Quality Score | ✅ PASS | ${{ needs.pre_deployment_validation.outputs.quality_score }}% |
           | Constitutional Compliance | ✅ PASS | 100% |
           | Deployment Approval | ✅ APPROVED | - |
-          
+
           ## Deployment Criteria
-          
-          ✅ Constitutional compliance: 100% (Required: 100%)  
-          ✅ Overall quality score: ${{ needs.pre_deployment_validation.outputs.quality_score }}% (Required: ≥85%)  
-          ✅ Documentation validation: PASSED  
+
+          ✅ Constitutional compliance: 100% (Required: 100%)
+          ✅ Overall quality score: ${{ needs.pre_deployment_validation.outputs.quality_score }}% (Required: ≥85%)
+          ✅ Documentation validation: PASSED
           ✅ All deployment gates: PASSED
-          
+
           ## Next Steps
-          
+
           1. ✅ Pre-deployment validation completed
           2. ✅ Documentation generation completed
           3. 🚀 Ready for deployment
-          
+
           ---
-          
-          **Automated Report**: Generated during CI/CD pipeline  
+
+          **Automated Report**: Generated during CI/CD pipeline
           **Constitutional Hash**: \`cdd01ef066bc6cf2\` ✅
           EOF
 
@@ -238,22 +238,22 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          
+
           git add docs/api/automated_index.md docs/deployment_status_report.md
-          
+
           if git diff --staged --quiet; then
             echo "No documentation changes to commit"
           else
             git commit -m "📚 Auto-generate documentation for deployment ${{ github.sha }}
-            
+
             Constitutional Hash: $CONSTITUTIONAL_HASH
             Quality Score: ${{ needs.pre_deployment_validation.outputs.quality_score }}%
             Validation Status: ${{ needs.pre_deployment_validation.outputs.validation_status }}
-            
+
             - Updated API documentation index
             - Generated deployment status report
             - All validation criteria met"
-            
+
             git push
             echo "✅ Generated documentation committed and pushed"
           fi
@@ -271,17 +271,17 @@ jobs:
           echo "===================================="
           echo "Constitutional Hash: $CONSTITUTIONAL_HASH"
           echo ""
-          
+
           VALIDATION_STATUS="${{ needs.pre_deployment_validation.outputs.validation_status }}"
           QUALITY_SCORE="${{ needs.pre_deployment_validation.outputs.quality_score }}"
           DEPLOYMENT_APPROVED="${{ needs.pre_deployment_validation.outputs.deployment_approved }}"
-          
+
           echo "📊 Validation Results:"
           echo "  Documentation Validation: $VALIDATION_STATUS"
           echo "  Quality Score: $QUALITY_SCORE%"
           echo "  Deployment Approved: $DEPLOYMENT_APPROVED"
           echo ""
-          
+
           if [ "$DEPLOYMENT_APPROVED" = "true" ]; then
             echo "✅ DEPLOYMENT GATE: OPEN"
             echo "🚀 All documentation criteria met - deployment approved"
@@ -290,7 +290,7 @@ jobs:
             echo "🚫 Documentation criteria not met - deployment blocked"
             exit 1
           fi
-          
+
           echo ""
           echo "Constitutional Hash: $CONSTITUTIONAL_HASH ✅"
 
@@ -300,12 +300,12 @@ jobs:
           script: |
             const deploymentApproved = '${{ needs.pre_deployment_validation.outputs.deployment_approved }}' === 'true';
             const qualityScore = '${{ needs.pre_deployment_validation.outputs.quality_score }}';
-            
+
             const state = deploymentApproved ? 'success' : 'failure';
-            const description = deploymentApproved ? 
-              `Documentation validation passed - Quality: ${qualityScore}%` : 
+            const description = deploymentApproved ?
+              `Documentation validation passed - Quality: ${qualityScore}%` :
               'Documentation validation failed - deployment blocked';
-            
+
             await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,

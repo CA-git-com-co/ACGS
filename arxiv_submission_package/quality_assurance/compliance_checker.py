@@ -206,7 +206,10 @@ class ComplianceChecker:
         return ComplianceResult(
             rule_id=rule.rule_id,
             status="FAIL",
-            message=f"File size exceeds limit ({total_size / 1024 / 1024:.1f}MB > {max_size / 1024 / 1024}MB)",
+            message=(
+                f"File size exceeds limit ({total_size / 1024 / 1024:.1f}MB >"
+                f" {max_size / 1024 / 1024}MB)"
+            ),
             details={
                 "size_mb": total_size / 1024 / 1024,
                 "limit_mb": max_size / 1024 / 1024,
@@ -479,7 +482,7 @@ def generate_compliance_report(
 
     report_content = f"""# {venue.upper()} Compliance Report
 
-**Generated**: {timestamp}  
+**Generated**: {timestamp}
 **Venue**: {venue}
 
 ## Compliance Results

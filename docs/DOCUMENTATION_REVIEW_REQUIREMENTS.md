@@ -1,7 +1,7 @@
 # ACGS Documentation Review Requirements
 
-**Date**: 2025-07-05  
-<!-- Constitutional Hash: cdd01ef066bc6cf2 -->  
+**Date**: 2025-07-05
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 **Status**: Production Ready
 
 ## 🎯 Overview
@@ -276,9 +276,9 @@ jobs:
               repo: context.repo.repo,
               pull_number: context.issue.number
             });
-            
+
             const reviewers = [];
-            
+
             for (const file of changedFiles.data) {
               if (file.filename.startsWith('docs/configuration/')) {
                 reviewers.push('platform-team', 'security-team');
@@ -290,7 +290,7 @@ jobs:
                 reviewers.push('devops-team', 'security-team');
               }
             }
-            
+
             if (reviewers.length > 0) {
               await github.rest.pulls.requestReviewers({
                 owner: context.repo.owner,
@@ -339,6 +339,6 @@ jobs:
 
 ---
 
-<!-- Constitutional Hash: cdd01ef066bc6cf2 --> ✅  
-**Next Review**: 2025-08-05  
+<!-- Constitutional Hash: cdd01ef066bc6cf2 --> ✅
+**Next Review**: 2025-08-05
 **Owner**: Documentation Team & Engineering Management

@@ -14,11 +14,7 @@
         "format": "structured"
       }
     ],
-    "log_levels": [
-      "ERROR",
-      "WARNING",
-      "INFO"
-    ],
+    "log_levels": ["ERROR", "WARNING", "INFO"],
     "retention_days": 30,
     "constitutional_compliance_monitoring": true
   }

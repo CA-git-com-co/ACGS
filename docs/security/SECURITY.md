@@ -308,7 +308,7 @@ We appreciate security researchers who responsibly disclose vulnerabilities. We 
 
 ---
 
-**Last Updated**: 2025-06-13  
-**Next Review**: 2025-07-13  
-**Document Version**: 1.0  
+**Last Updated**: 2025-06-13
+**Next Review**: 2025-07-13
+**Document Version**: 1.0
 **Classification**: Public

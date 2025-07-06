@@ -14,11 +14,12 @@ Key Features:
 """
 
 import logging
+import os
 import sys
 import time
 from contextlib import asynccontextmanager
+
 import asyncpg
-import os
 
 # Import multi-tenant components
 try:
@@ -33,15 +34,15 @@ try:
     )
     sys.path.insert(0, os.path.abspath(shared_path))
 
+    from clients.tenant_service_client import TenantServiceClient, service_registry
     from middleware.tenant_middleware import (
         TenantContextMiddleware,
         TenantSecurityMiddleware,
-        get_tenant_context,
         get_optional_tenant_context,
-        get_tenant_db
+        get_tenant_context,
+        get_tenant_db,
     )
-    from clients.tenant_service_client import TenantServiceClient, service_registry
-    
+
     MULTI_TENANT_AVAILABLE = True
     print("✅ Multi-tenant components loaded successfully")
 except ImportError as e:
@@ -89,20 +90,15 @@ except ImportError as e:
     print(f"⚠️ Comprehensive audit logging not available: {e}")
     AUDIT_LOGGING_AVAILABLE = False
 
-from fastapi import FastAPI, Request, Depends
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from sqlalchemy.ext.asyncio import AsyncSession
 
 # Import shared components
 try:
     # Try to import from services.shared first
     sys.path.insert(0, os.path.abspath(shared_path))
-    from api_models import (
-        HealthCheckResponse,
-        ServiceInfo,
-        create_success_response,
-    )
+    from api_models import HealthCheckResponse, ServiceInfo, create_success_response
     from middleware import add_production_middleware, create_exception_handlers
 
     SHARED_AVAILABLE = True
@@ -133,7 +129,9 @@ except ImportError:
 # Configure structured logging
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s - %(funcName)s:%(lineno)d",
+    format=(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s - %(funcName)s:%(lineno)d"
+    ),
     stream=sys.stdout,
 )
 logger = logging.getLogger("integrity_service")
@@ -152,7 +150,9 @@ JWT_ALGORITHM = "HS256"
 service_start_time = time.time()
 
 # Database configuration
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://acgs_user:acgs_password@localhost:5439/acgs_integrity")
+DATABASE_URL = os.getenv(
+    "DATABASE_URL", "postgresql://acgs_user:acgs_password@localhost:5439/acgs_integrity"
+)
 db_pool = None
 
 
@@ -163,9 +163,9 @@ async def lifespan(app: FastAPI):
     # sha256: func_hash
     """Application lifespan management with service initialization."""
     logger.info(f"🚀 Starting ACGS-1 {SERVICE_PHASE} Integrity Service")
-    
+
     global db_pool
-    
+
     try:
         # Initialize database connection pool
         logger.info("🔌 Initializing database connection pool...")
@@ -175,25 +175,30 @@ async def lifespan(app: FastAPI):
             max_size=20,
             command_timeout=30,
             server_settings={
-                'application_name': 'acgs_integrity_service',
-                'tcp_keepalives_idle': '600',
-                'tcp_keepalives_interval': '30',
-                'tcp_keepalives_count': '3'
-            }
+                "application_name": "acgs_integrity_service",
+                "tcp_keepalives_idle": "600",
+                "tcp_keepalives_interval": "30",
+                "tcp_keepalives_count": "3",
+            },
         )
         logger.info("✅ Database connection pool initialized")
-        
+
         # Initialize audit trail database schema
-        from .core.persistent_audit_trail import create_audit_tables, CryptographicAuditChain
+        from .core.persistent_audit_trail import (
+            CryptographicAuditChain,
+            create_audit_tables,
+        )
+
         await create_audit_tables(db_pool)
         logger.info("✅ Audit trail database schema initialized")
-        
+
         # Initialize audit chain
         audit_chain = CryptographicAuditChain(db_pool)
         from .api.v1.persistent_audit import set_audit_chain
+
         set_audit_chain(audit_chain)
         logger.info("✅ Cryptographic audit chain initialized")
-        
+
         logger.info("✅ Integrity Service initialized successfully")
         yield
     except Exception as e:
@@ -225,16 +230,21 @@ if MULTI_TENANT_AVAILABLE:
         jwt_secret_key=JWT_SECRET_KEY,
         jwt_algorithm=JWT_ALGORITHM,
         exclude_paths=[
-            "/docs", "/redoc", "/openapi.json", "/health", "/metrics",
-            "/", "/api/v1/status"
+            "/docs",
+            "/redoc",
+            "/openapi.json",
+            "/health",
+            "/metrics",
+            "/",
+            "/api/v1/status",
         ],
         require_tenant=True,  # Integrity service requires tenant context
-        bypass_paths=["/health", "/metrics", "/", "/api/v1/status"]
+        bypass_paths=["/health", "/metrics", "/", "/api/v1/status"],
     )
-    
+
     # Add tenant security middleware
     app.add_middleware(TenantSecurityMiddleware)
-    
+
     print("✅ Multi-tenant middleware applied to integrity service")
 else:
     print("⚠️ Multi-tenant middleware not available for integrity service")
@@ -414,8 +424,8 @@ try:
     from .api.v1.appeals import router as appeals_router
     from .api.v1.crypto import router as crypto_router
     from .api.v1.integrity import router as integrity_router
-    from .api.v1.research_data import router as research_router
     from .api.v1.persistent_audit import router as persistent_audit_router
+    from .api.v1.research_data import router as research_router
 
     ROUTERS_AVAILABLE = True
     logger.info("All API routers imported successfully")

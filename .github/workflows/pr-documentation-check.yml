@@ -11,7 +11,7 @@ permissions:
   checks: write
 
 env:
-  CONSTITUTIONAL_HASH: 'cdd01ef066bc6cf2'
+  CONSTITUTIONAL_HASH: "cdd01ef066bc6cf2"
 
 jobs:
   # Check PR Template Compliance
@@ -31,7 +31,7 @@ jobs:
               repo: context.repo.repo,
               pull_number: context.issue.number
             });
-            
+
             const body = pr.body || '';
             const requiredSections = [
               'Constitutional Compliance',
@@ -40,25 +40,25 @@ jobs:
               'Validation Checklist',
               'Constitutional Hash'
             ];
-            
-            const missingSections = requiredSections.filter(section => 
+
+            const missingSections = requiredSections.filter(section =>
               !body.includes(section)
             );
-            
+
             if (missingSections.length > 0) {
               core.setFailed(`PR description missing required sections: ${missingSections.join(', ')}`);
-              
+
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: context.issue.number,
                 body: `❌ **PR Template Compliance Check Failed**
-                
+
                 Your PR description is missing the following required sections:
                 ${missingSections.map(s => `- ${s}`).join('\n')}
-                
+
                 Please update your PR description to include all required sections from the PR template.
-                
+
                 **Constitutional Hash**: \`${process.env.CONSTITUTIONAL_HASH}\` must be validated in all changes.`
               });
             } else {
@@ -79,17 +79,17 @@ jobs:
         id: analyze
         run: |
           echo "🔍 Analyzing changed files for documentation impact..."
-          
+
           # Get list of changed files
           git diff --name-only origin/${{ github.base_ref }}...HEAD > changed_files.txt
-          
+
           # Categorize changes
           INFRASTRUCTURE_CHANGED=false
           API_CHANGED=false
           CONFIG_CHANGED=false
           SERVICE_CHANGED=false
           DOC_CHANGED=false
-          
+
           while IFS= read -r file; do
             case "$file" in
               infrastructure/*|docker-compose*|Dockerfile*)
@@ -109,13 +109,13 @@ jobs:
                 ;;
             esac
           done < changed_files.txt
-          
+
           echo "infrastructure_changed=$INFRASTRUCTURE_CHANGED" >> $GITHUB_OUTPUT
           echo "api_changed=$API_CHANGED" >> $GITHUB_OUTPUT
           echo "config_changed=$CONFIG_CHANGED" >> $GITHUB_OUTPUT
           echo "service_changed=$SERVICE_CHANGED" >> $GITHUB_OUTPUT
           echo "doc_changed=$DOC_CHANGED" >> $GITHUB_OUTPUT
-          
+
           echo "📊 Change Analysis Results:"
           echo "Infrastructure: $INFRASTRUCTURE_CHANGED"
           echo "API: $API_CHANGED"
@@ -126,45 +126,45 @@ jobs:
       - name: Check required documentation updates
         run: |
           echo "📚 Checking required documentation updates..."
-          
+
           MISSING_DOCS=""
-          
+
           # Check infrastructure changes
           if [ "${{ steps.analyze.outputs.infrastructure_changed }}" = "true" ]; then
             echo "🏗️ Infrastructure changes detected - checking documentation..."
-            
+
             if ! git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -q "docs/deployment\|docs/configuration\|README.md"; then
               MISSING_DOCS="$MISSING_DOCS\n- Infrastructure changes require deployment/configuration documentation updates"
             fi
           fi
-          
+
           # Check API changes
           if [ "${{ steps.analyze.outputs.api_changed }}" = "true" ]; then
             echo "🔌 API changes detected - checking documentation..."
-            
+
             if ! git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -q "docs/api"; then
               MISSING_DOCS="$MISSING_DOCS\n- API changes require docs/api/ documentation updates"
             fi
           fi
-          
+
           # Check configuration changes
           if [ "${{ steps.analyze.outputs.config_changed }}" = "true" ]; then
             echo "⚙️ Configuration changes detected - checking documentation..."
-            
+
             if ! git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -q "docs/configuration"; then
               MISSING_DOCS="$MISSING_DOCS\n- Configuration changes require docs/configuration/ documentation updates"
             fi
           fi
-          
+
           # Check service changes
           if [ "${{ steps.analyze.outputs.service_changed }}" = "true" ]; then
             echo "🔧 Service changes detected - checking documentation..."
-            
+
             if ! git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -q "docs/operations\|docs/api"; then
               MISSING_DOCS="$MISSING_DOCS\n- Service changes may require operations/API documentation updates"
             fi
           fi
-          
+
           if [ -n "$MISSING_DOCS" ]; then
             echo "❌ Missing required documentation updates:$MISSING_DOCS"
             echo "missing_docs<<EOF" >> $GITHUB_ENV
@@ -185,17 +185,17 @@ jobs:
               repo: context.repo.repo,
               issue_number: context.issue.number,
               body: `❌ **Documentation Requirements Check Failed**
-              
+
               Based on the files changed in this PR, the following documentation updates are required:
-              
+
               ${process.env.missing_docs}
-              
+
               Please update the relevant documentation files and ensure:
               - Constitutional hash \`${process.env.CONSTITUTIONAL_HASH}\` is included where appropriate
               - Performance targets are updated if changed
               - Port configurations are documented if modified
               - API examples include constitutional hash in responses
-              
+
               Run \`./tools/validation/quick_validation.sh\` to validate your documentation changes.`
             });
 
@@ -212,12 +212,12 @@ jobs:
       - name: Validate constitutional hash consistency
         run: |
           echo "🔍 Validating constitutional hash consistency in changed files..."
-          
+
           # Get changed files that should contain constitutional hash
           git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -E "\.(md|yml|yaml|py|js|ts)$" > changed_files.txt || true
-          
+
           HASH_VIOLATIONS=""
-          
+
           while IFS= read -r file; do
             if [ -f "$file" ]; then
               # Check if file mentions constitutional hash but doesn't have the correct value
@@ -226,7 +226,7 @@ jobs:
                   HASH_VIOLATIONS="$HASH_VIOLATIONS\n- $file: mentions constitutional hash but missing value $CONSTITUTIONAL_HASH"
                 fi
               fi
-              
+
               # Check API files specifically
               if [[ "$file" == docs/api/*.md ]]; then
                 if ! grep -q "$CONSTITUTIONAL_HASH" "$file"; then
@@ -235,7 +235,7 @@ jobs:
               fi
             fi
           done < changed_files.txt
-          
+
           if [ -n "$HASH_VIOLATIONS" ]; then
             echo "❌ Constitutional hash violations found:$HASH_VIOLATIONS"
             echo "hash_violations<<EOF" >> $GITHUB_ENV
@@ -256,16 +256,16 @@ jobs:
               repo: context.repo.repo,
               issue_number: context.issue.number,
               body: `❌ **Constitutional Hash Validation Failed**
-              
+
               The following files have constitutional hash violations:
-              
+
               ${process.env.hash_violations}
-              
+
               **Required Action:**
               - Add constitutional hash \`${process.env.CONSTITUTIONAL_HASH}\` to all files that reference constitutional compliance
               - Include constitutional hash in all API response examples
               - Ensure consistency across all documentation files
-              
+
               **Constitutional Hash**: \`${process.env.CONSTITUTIONAL_HASH}\``
             });
 
@@ -282,12 +282,12 @@ jobs:
       - name: Validate performance targets
         run: |
           echo "📊 Validating performance targets in changed documentation..."
-          
+
           # Get changed documentation files
           git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -E "\.md$" > changed_docs.txt || true
-          
+
           TARGET_VIOLATIONS=""
-          
+
           while IFS= read -r file; do
             if [ -f "$file" ]; then
               # Check for performance targets in documentation
@@ -296,18 +296,18 @@ jobs:
                 if grep -q "100.*RPS\|RPS.*100" "$file" && ! grep -q "≥100.*RPS\|≥100.*requests" "$file"; then
                   TARGET_VIOLATIONS="$TARGET_VIOLATIONS\n- $file: throughput target should be ≥100 RPS"
                 fi
-                
+
                 if grep -q "5ms\|latency" "$file" && ! grep -q "≤5ms\|P99.*5ms" "$file"; then
                   TARGET_VIOLATIONS="$TARGET_VIOLATIONS\n- $file: latency target should be ≤5ms P99"
                 fi
-                
+
                 if grep -q "85%\|cache" "$file" && ! grep -q "≥85%.*cache\|cache.*≥85%" "$file"; then
                   TARGET_VIOLATIONS="$TARGET_VIOLATIONS\n- $file: cache hit rate target should be ≥85%"
                 fi
               fi
             fi
           done < changed_docs.txt
-          
+
           if [ -n "$TARGET_VIOLATIONS" ]; then
             echo "❌ Performance target violations found:$TARGET_VIOLATIONS"
             echo "target_violations<<EOF" >> $GITHUB_ENV
@@ -322,7 +322,13 @@ jobs:
   documentation_status:
     runs-on: ubuntu-latest
     name: Documentation Status Summary
-    needs: [pr_template_check, documentation_impact_analysis, constitutional_hash_validation, performance_target_validation]
+    needs:
+      [
+        pr_template_check,
+        documentation_impact_analysis,
+        constitutional_hash_validation,
+        performance_target_validation,
+      ]
     if: always()
     steps:
       - name: Generate status summary
@@ -335,21 +341,21 @@ jobs:
               'Constitutional Hash Validation': '${{ needs.constitutional_hash_validation.result }}',
               'Performance Target Validation': '${{ needs.performance_target_validation.result }}'
             };
-            
+
             const passed = Object.values(results).filter(r => r === 'success').length;
             const total = Object.keys(results).length;
             const allPassed = passed === total;
-            
+
             const statusEmoji = allPassed ? '✅' : '❌';
             const statusText = allPassed ? 'PASSED' : 'FAILED';
-            
+
             let summary = `${statusEmoji} **Documentation Requirements Check ${statusText}** (${passed}/${total})\n\n`;
-            
+
             for (const [check, result] of Object.entries(results)) {
               const emoji = result === 'success' ? '✅' : result === 'failure' ? '❌' : '⚠️';
               summary += `${emoji} ${check}: ${result}\n`;
             }
-            
+
             if (allPassed) {
               summary += `\n🎉 All documentation requirements satisfied!\n`;
               summary += `Constitutional Hash: \`${process.env.CONSTITUTIONAL_HASH}\` ✅`;
@@ -357,14 +363,14 @@ jobs:
               summary += `\n📋 Please address the issues above before merging.\n`;
               summary += `Constitutional Hash: \`${process.env.CONSTITUTIONAL_HASH}\` must be validated.`;
             }
-            
+
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
               body: summary
             });
-            
+
             if (!allPassed) {
               core.setFailed('Documentation requirements check failed');
             }

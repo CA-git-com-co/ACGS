@@ -3,15 +3,15 @@ name: ACGS Quarterly Documentation Audit
 on:
   # Run quarterly on the 15th of Jan, Apr, Jul, Oct at 2 AM UTC
   schedule:
-    - cron: '0 2 15 1,4,7,10 *'
-  
+    - cron: "0 2 15 1,4,7,10 *"
+
   # Allow manual triggering
   workflow_dispatch:
     inputs:
       audit_type:
-        description: 'Type of audit to run'
+        description: "Type of audit to run"
         required: true
-        default: 'full'
+        default: "full"
         type: choice
         options:
           - full
@@ -27,13 +27,13 @@ permissions:
   pull-requests: write
 
 env:
-  CONSTITUTIONAL_HASH: 'cdd01ef066bc6cf2'
+  CONSTITUTIONAL_HASH: "cdd01ef066bc6cf2"
 
 jobs:
   quarterly_audit:
     runs-on: ubuntu-latest
     name: Quarterly Documentation Audit
-    
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -43,13 +43,13 @@ jobs:
       - name: Setup audit environment
         run: |
           echo "🔧 Setting up audit environment..."
-          
+
           # Create audit reports directory
           mkdir -p audit_reports
-          
+
           # Install required tools
           npm install -g markdown-link-check
-          
+
           # Set audit metadata
           echo "AUDIT_DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
           echo "AUDIT_QUARTER=Q$((($(date +%-m)-1)/3+1))_$(date +%Y)" >> $GITHUB_ENV
@@ -61,10 +61,10 @@ jobs:
           echo "🚀 Starting ACGS Quarterly Documentation Audit..."
           echo "Constitutional Hash: $CONSTITUTIONAL_HASH"
           echo "Audit Quarter: $AUDIT_QUARTER"
-          
+
           # Make audit script executable
           chmod +x tools/audit/quarterly_audit.sh
-          
+
           # Run the audit and capture results
           if ./tools/audit/quarterly_audit.sh > audit_output.log 2>&1; then
             echo "audit_status=success" >> $GITHUB_OUTPUT
@@ -73,18 +73,18 @@ jobs:
             echo "audit_status=failure" >> $GITHUB_OUTPUT
             echo "⚠️ Quarterly audit completed with issues"
           fi
-          
+
           # Extract key metrics from audit report
           AUDIT_REPORT="audit_reports/quarterly_audit_${AUDIT_QUARTER}_${AUDIT_DATE}.md"
-          
+
           if [ -f "$AUDIT_REPORT" ]; then
             # Extract overall score
             OVERALL_SCORE=$(grep "Overall Score" "$AUDIT_REPORT" | grep -o "[0-9]*\/[0-9]*" | head -1 || echo "0/0")
             OVERALL_PERCENTAGE=$(grep "Overall Score" "$AUDIT_REPORT" | grep -o "([0-9]*%)" | tr -d "()" || echo "0%")
-            
+
             echo "overall_score=$OVERALL_SCORE" >> $GITHUB_OUTPUT
             echo "overall_percentage=$OVERALL_PERCENTAGE" >> $GITHUB_OUTPUT
-            
+
             # Extract status
             if grep -q "EXCELLENT" "$AUDIT_REPORT"; then
               echo "audit_grade=EXCELLENT" >> $GITHUB_OUTPUT
@@ -127,56 +127,56 @@ jobs:
             const auditGrade = '${{ steps.audit.outputs.audit_grade }}';
             const statusEmoji = '${{ steps.audit.outputs.status_emoji }}';
             const auditStatus = '${{ steps.audit.outputs.audit_status }}';
-            
+
             const issueTitle = `${statusEmoji} Quarterly Documentation Audit ${auditQuarter} - ${auditGrade}`;
-            
+
             const issueBody = `# ACGS Quarterly Documentation Audit Report
-            
-            **Audit Period**: ${auditQuarter}  
-            **Audit Date**: ${auditDate}  
-            **Constitutional Hash**: \`${constitutionalHash}\`  
-            **Overall Score**: ${overallScore} (${overallPercentage})  
+
+            **Audit Period**: ${auditQuarter}
+            **Audit Date**: ${auditDate}
+            **Constitutional Hash**: \`${constitutionalHash}\`
+            **Overall Score**: ${overallScore} (${overallPercentage})
             **Grade**: ${statusEmoji} **${auditGrade}**
-            
+
             ## Quick Summary
-            
+
             This automated quarterly audit has been completed for the ACGS documentation system. The audit covers:
-            
+
             - ✅ Infrastructure documentation alignment
-            - ✅ Service API documentation accuracy  
+            - ✅ Service API documentation accuracy
             - ✅ Cross-reference validation
             - ✅ Performance metrics consistency
             - ✅ Constitutional compliance verification
-            
+
             ## Results Overview
-            
+
             | Category | Status |
             |----------|--------|
             | **Overall Status** | ${statusEmoji} ${auditGrade} |
             | **Overall Score** | ${overallScore} (${overallPercentage}) |
             | **Constitutional Hash** | \`${constitutionalHash}\` ✅ |
             | **Audit Status** | ${auditStatus === 'success' ? '✅ Completed Successfully' : '⚠️ Completed with Issues'} |
-            
+
             ## Next Steps
-            
-            ${auditStatus === 'success' ? 
+
+            ${auditStatus === 'success' ?
               '🎉 **Excellent work!** The documentation audit passed with flying colors. No immediate action required.' :
               '📋 **Action Required**: Please review the detailed audit report and address the identified issues.'
             }
-            
+
             ### Immediate Actions Required
-            
-            ${auditGrade === 'CRITICAL' ? 
+
+            ${auditGrade === 'CRITICAL' ?
               '🚨 **CRITICAL**: Immediate attention required for constitutional compliance and documentation accuracy.' :
               auditGrade === 'NEEDS IMPROVEMENT' ?
               '⚠️ **IMPROVEMENT NEEDED**: Several documentation issues need to be addressed.' :
               '✅ **MAINTENANCE**: Regular maintenance and minor improvements recommended.'
             }
-            
+
             ## Detailed Report
-            
+
             📊 **Download the complete audit report** from the [GitHub Actions artifacts](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}).
-            
+
             The detailed report includes:
             - Infrastructure alignment analysis
             - Service API documentation review
@@ -184,29 +184,29 @@ jobs:
             - Performance metrics consistency check
             - Constitutional compliance verification
             - Specific recommendations and action items
-            
+
             ## Constitutional Compliance
-            
+
             ${auditGrade === 'EXCELLENT' || auditGrade === 'GOOD' ?
               '✅ **Constitutional compliance verified** - Hash `' + constitutionalHash + '` is properly maintained across all documentation.' :
               '❌ **Constitutional compliance issues detected** - Hash `' + constitutionalHash + '` may be missing from some documentation files.'
             }
-            
+
             ## Follow-up Actions
-            
+
             - [ ] Review detailed audit report
             - [ ] Address critical issues (if any)
             - [ ] Update documentation as recommended
             - [ ] Verify constitutional hash compliance
             - [ ] Schedule next quarterly audit review
-            
+
             ---
-            
-            **Automated Audit**: This issue was created automatically by the ACGS Quarterly Documentation Audit workflow.  
-            **Next Audit**: Scheduled for next quarter (${new Date(Date.now() + 90*24*60*60*1000).toISOString().split('T')[0]})  
+
+            **Automated Audit**: This issue was created automatically by the ACGS Quarterly Documentation Audit workflow.
+            **Next Audit**: Scheduled for next quarter (${new Date(Date.now() + 90*24*60*60*1000).toISOString().split('T')[0]})
             **Constitutional Hash**: \`${constitutionalHash}\` ✅
             `;
-            
+
             // Create the issue
             const issue = await github.rest.issues.create({
               owner: context.repo.owner,
@@ -221,7 +221,7 @@ jobs:
                 auditGrade.toLowerCase().replace(' ', '-')
               ]
             });
-            
+
             console.log(`Created audit summary issue: ${issue.data.html_url}`);
 
       - name: Send Slack notification
@@ -231,7 +231,7 @@ jobs:
           echo "📢 Quarterly audit completed: ${{ steps.audit.outputs.audit_grade }}"
           echo "Score: ${{ steps.audit.outputs.overall_score }} (${{ steps.audit.outputs.overall_percentage }})"
           echo "Constitutional Hash: $CONSTITUTIONAL_HASH ✅"
-          
+
           # Example Slack webhook call (uncomment and configure webhook URL)
           # curl -X POST -H 'Content-type: application/json' \
           #   --data "{\"text\":\"${{ steps.audit.outputs.status_emoji }} ACGS Quarterly Audit $AUDIT_QUARTER: ${{ steps.audit.outputs.audit_grade }} (${{ steps.audit.outputs.overall_percentage }})\\nConstitutional Hash: \`$CONSTITUTIONAL_HASH\` ✅\"}" \
@@ -240,14 +240,14 @@ jobs:
       - name: Update audit tracking
         run: |
           echo "📊 Updating audit tracking metrics..."
-          
+
           # Create or update audit tracking file
           TRACKING_FILE="audit_reports/audit_tracking.json"
-          
+
           if [ ! -f "$TRACKING_FILE" ]; then
             echo '{"audits": []}' > "$TRACKING_FILE"
           fi
-          
+
           # Add current audit results
           AUDIT_ENTRY=$(cat << EOF
           {
@@ -262,7 +262,7 @@ jobs:
           }
           EOF
           )
-          
+
           # Update tracking file (simplified - in production, use jq for proper JSON manipulation)
           echo "Audit entry created for tracking: $AUDIT_ENTRY"
 
@@ -281,7 +281,7 @@ jobs:
           echo "📋 Summary issue created for tracking"
           echo "🔄 Next audit scheduled for next quarter"
           echo ""
-          
+
           if [ "${{ steps.audit.outputs.audit_status }}" = "success" ]; then
             echo "✅ Audit completed successfully - no immediate action required"
           else

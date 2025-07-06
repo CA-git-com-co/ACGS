@@ -24,7 +24,7 @@ evolution_risk_categories := {
         "rollback_plan_required": true
     },
     "behavior_modification": {
-        "risk_level": "high", 
+        "risk_level": "high",
         "approval_required": true,
         "testing_required": true,
         "constitutional_review_required": true
@@ -77,22 +77,22 @@ constitutional_evolution_constraints := {
 allow_evolution if {
     agent := input.agent
     evolution_request := input.evolution_request
-    
+
     # Validate agent eligibility for evolution
     agent_eligible_for_evolution(agent)
-    
+
     # Check evolution request validity
     evolution_request_valid(evolution_request)
-    
+
     # Risk assessment passed
     evolution_risk_acceptable(evolution_request)
-    
+
     # Constitutional constraints satisfied
     constitutional_constraints_satisfied(evolution_request)
-    
+
     # Required approvals obtained
     required_approvals_obtained(evolution_request)
-    
+
     # Rollback plan exists
     rollback_plan_exists(evolution_request)
 }
@@ -102,19 +102,19 @@ allow_capability_upgrade if {
     agent := input.agent
     capability := input.capability
     upgrade_request := input.upgrade_request
-    
+
     # Agent must be in good standing
     agent_in_good_standing(agent)
-    
+
     # Capability upgrade must be compatible
     capability_compatible(agent, capability)
-    
+
     # Safety checks passed
     capability_safety_verified(capability, upgrade_request)
-    
+
     # Resource constraints satisfied
     resource_constraints_satisfied(agent, capability)
-    
+
     # Constitutional compliance verified
     capability_constitutional_compliant(capability)
 }
@@ -123,19 +123,19 @@ allow_capability_upgrade if {
 allow_autonomous_adaptation if {
     agent := input.agent
     adaptation := input.adaptation
-    
+
     # Agent has autonomous adaptation privileges
     agent_has_adaptation_privileges(agent)
-    
+
     # Adaptation within allowed parameters
     adaptation_within_bounds(agent, adaptation)
-    
+
     # No constitutional violations
     adaptation_constitutional_safe(adaptation)
-    
+
     # Continuous monitoring enabled
     monitoring_enabled(agent, adaptation)
-    
+
     # Emergency stop mechanism available
     emergency_stop_available(agent, adaptation)
 }
@@ -176,10 +176,10 @@ evolution_request_valid(request) if {
 evolution_risk_acceptable(request) if {
     risk_category := evolution_risk_categories[request.type]
     risk_score := calculate_evolution_risk_score(request)
-    
+
     # Risk score within acceptable bounds
     risk_score <= acceptable_risk_threshold(risk_category.risk_level)
-    
+
     # All required risk mitigation measures in place
     risk_mitigation_adequate(request, risk_category)
 }
@@ -189,7 +189,7 @@ calculate_evolution_risk_score(request) := score if {
     complexity_factor := complexity_risk_factor(request)
     novelty_factor := novelty_risk_factor(request)
     impact_factor := impact_risk_factor(request)
-    
+
     score := base_risk * (1 + complexity_factor + novelty_factor + impact_factor)
 }
 
@@ -220,9 +220,9 @@ acceptable_risk_threshold("critical") := 0.8
 
 risk_mitigation_adequate(request, risk_category) if {
     # Check all required mitigation measures are present
-    all(measure, measure in risk_category.required_mitigations; 
+    all(measure, measure in risk_category.required_mitigations;
         measure in request.mitigation_measures)
-    
+
     # Validate mitigation effectiveness
     all(measure, measure in request.mitigation_measures;
         mitigation_measure_effective(measure, request))
@@ -251,19 +251,19 @@ constraint_satisfied(constraint_name, constraint, request) if {
 required_approvals_obtained(request) if {
     risk_category := evolution_risk_categories[request.type]
     approvals_required := determine_required_approvals(risk_category)
-    
+
     all(approval_type, approval_type in approvals_required;
         approval_obtained(request, approval_type))
 }
 
 determine_required_approvals(risk_category) := approvals if {
     base_approvals := ["technical_review", "constitutional_review"]
-    
+
     additional_approvals := [approval |
         some condition, approval in additional_approval_conditions
         condition_met(risk_category, condition)
     ]
-    
+
     approvals := array.concat(base_approvals, additional_approvals)
 }
 
@@ -315,10 +315,10 @@ capability_compatible(agent, capability) if {
     compatibility := data.capability_compatibility[agent.type][capability.type]
     compatibility.compatible == true
     compatibility.version_compatible == true
-    
+
     # Check resource requirements
     agent.available_resources >= capability.resource_requirements
-    
+
     # Check dependency satisfaction
     all(dep, dep in capability.dependencies; dependency_satisfied(agent, dep))
 }
@@ -351,7 +351,7 @@ resource_constraints_satisfied(agent, capability) if {
 calculate_total_resource_usage(agent, capability) := total_usage if {
     current_usage := agent.current_resource_usage
     capability_usage := capability.resource_requirements
-    
+
     total_usage := {resource_type: current_usage[resource_type] + capability_usage[resource_type] |
                    some resource_type in object.keys(current_usage)}
 }
@@ -371,14 +371,14 @@ capability_respects_principle(capability, principle) if {
 # Autonomous adaptation validation
 adaptation_within_bounds(agent, adaptation) if {
     adaptation_bounds := agent.adaptation_bounds
-    
+
     # Check parameter bounds
     all(param, value in adaptation.parameters;
         param_within_bounds(param, value, adaptation_bounds))
-    
+
     # Check rate limits
     adaptation_rate_acceptable(agent, adaptation)
-    
+
     # Check scope limits
     adaptation_scope_acceptable(agent, adaptation)
 }
@@ -432,12 +432,12 @@ emergency_stop_available(agent, adaptation) if {
 evolution_outcome_acceptable := outcome if {
     evolution_result := input.evolution_result
     baseline_metrics := input.baseline_metrics
-    
+
     # Compare post-evolution metrics with baseline
     performance_improvement := calculate_performance_improvement(evolution_result, baseline_metrics)
     constitutional_compliance_maintained := constitutional_compliance_check(evolution_result)
     safety_maintained := safety_check(evolution_result)
-    
+
     outcome := {
         "acceptable": performance_improvement >= 0.05,  # 5% improvement required
         "constitutional_compliant": constitutional_compliance_maintained,

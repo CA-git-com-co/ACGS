@@ -36,42 +36,42 @@ command_exists() {
 # Function to check dependencies
 check_dependencies() {
     print_status "Checking dependencies..."
-    
+
     local missing_deps=()
-    
+
     # Check Python
     if ! command_exists python3; then
         missing_deps+=("python3")
     fi
-    
+
     # Check LaTeX
     if ! command_exists pdflatex; then
         missing_deps+=("pdflatex (TeX Live)")
     fi
-    
+
     # Check BibTeX
     if ! command_exists bibtex; then
         missing_deps+=("bibtex")
     fi
-    
+
     if [ ${#missing_deps[@]} -ne 0 ]; then
         print_error "Missing dependencies: ${missing_deps[*]}"
         echo "Please install the missing dependencies and try again."
         exit 1
     fi
-    
+
     print_success "All dependencies found"
 }
 
 # Function to compile LaTeX
 compile_latex() {
     print_status "Compiling LaTeX paper..."
-    
+
     if [ ! -f "main.tex" ]; then
         print_error "main.tex not found in current directory"
         exit 1
     fi
-    
+
     # Use Python compiler if available, otherwise fallback to direct LaTeX
     if [ -f "latex_compiler.py" ]; then
         python3 latex_compiler.py --verbose "$@"
@@ -79,19 +79,19 @@ compile_latex() {
         # Fallback to direct LaTeX compilation
         print_status "Running pdflatex (1st pass)..."
         pdflatex -interaction=nonstopmode main.tex
-        
+
         if [ -f "*.bib" ]; then
             print_status "Running bibtex..."
             bibtex main || print_warning "BibTeX had warnings"
-            
+
             print_status "Running pdflatex (2nd pass)..."
             pdflatex -interaction=nonstopmode main.tex
         fi
-        
+
         print_status "Running pdflatex (final pass)..."
         pdflatex -interaction=nonstopmode main.tex
     fi
-    
+
     if [ -f "main.pdf" ]; then
         local pdf_size=$(du -h main.pdf | cut -f1)
         print_success "LaTeX compilation completed! PDF size: $pdf_size"
@@ -104,12 +104,12 @@ compile_latex() {
 # Function to build Python package
 build_package() {
     print_status "Building Python package..."
-    
+
     if [ ! -f "setup.py" ]; then
         print_error "setup.py not found in current directory"
         exit 1
     fi
-    
+
     # Use Python compiler if available
     if [ -f "compiler.py" ]; then
         python3 compiler.py package --verbose
@@ -117,7 +117,7 @@ build_package() {
         # Fallback to direct setup.py
         python3 setup.py sdist bdist_wheel
     fi
-    
+
     if [ -d "dist" ] && [ "$(ls -A dist)" ]; then
         print_success "Package build completed!"
         echo "Distribution files:"
@@ -131,7 +131,7 @@ build_package() {
 # Function to run tests
 run_tests() {
     print_status "Running tests..."
-    
+
     if [ -d "tests" ]; then
         if command_exists pytest; then
             pytest tests/ -v --tb=short
@@ -147,7 +147,7 @@ run_tests() {
 # Function to validate submission
 validate_submission() {
     print_status "Validating submission..."
-    
+
     if [ -f "cli/academic_cli.py" ]; then
         python3 cli/academic_cli.py validate . --output validation_report.md
         print_success "Validation completed! Check validation_report.md"
@@ -159,14 +159,14 @@ validate_submission() {
 # Function to clean build artifacts
 clean_build() {
     print_status "Cleaning build artifacts..."
-    
+
     # LaTeX artifacts
     rm -f *.aux *.bbl *.blg *.fdb_latexmk *.fls *.log *.out *.toc *.synctex.gz
-    
+
     # Python artifacts
     rm -rf build/ dist/ *.egg-info/ __pycache__/ .pytest_cache/
     find . -name "*.pyc" -delete
-    
+
     print_success "Cleanup completed!"
 }
 
@@ -202,7 +202,7 @@ main() {
     local command="all"
     local engine_arg=""
     local venue_arg=""
-    
+
     # Parse arguments
     while [[ $# -gt 0 ]]; do
         case $1 in
@@ -229,17 +229,17 @@ main() {
                 ;;
         esac
     done
-    
+
     # Print header
     echo "=================================================="
     echo "Academic Submission System Compiler"
     echo "=================================================="
     echo ""
-    
+
     # Check dependencies
     check_dependencies
     echo ""
-    
+
     # Execute command
     case $command in
         latex)
@@ -277,10 +277,10 @@ main() {
             exit 1
             ;;
     esac
-    
+
     echo ""
     print_success "Compilation script completed!"
-    
+
     # Show summary of generated files
     echo ""
     echo "Generated files:"

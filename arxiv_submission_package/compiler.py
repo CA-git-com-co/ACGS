@@ -165,9 +165,9 @@ class AcademicCompiler:
         # Step 3: Second LaTeX run (for bibliography)
         if exit_code == 0:
             self.log("Running second LaTeX compilation")
-            exit_code, stdout, stderr = self.run_command(
-                [self.latex_engine, "main.tex"]
-            )
+            exit_code, stdout, stderr = self.run_command([
+                self.latex_engine, "main.tex"
+            ])
 
             if exit_code != 0:
                 errors.append(f"Second LaTeX run failed: {stderr}")
@@ -178,9 +178,9 @@ class AcademicCompiler:
         # Step 4: Third LaTeX run (for cross-references)
         if exit_code == 0:
             self.log("Running final LaTeX compilation")
-            exit_code, stdout, stderr = self.run_command(
-                [self.latex_engine, "main.tex"]
-            )
+            exit_code, stdout, stderr = self.run_command([
+                self.latex_engine, "main.tex"
+            ])
 
             if exit_code != 0:
                 errors.append(f"Final LaTeX run failed: {stderr}")
@@ -250,9 +250,9 @@ class AcademicCompiler:
 
         # Build source distribution
         self.log("Building source distribution")
-        exit_code, stdout, stderr = self.run_command(
-            [sys.executable, "setup.py", "sdist"]
-        )
+        exit_code, stdout, stderr = self.run_command([
+            sys.executable, "setup.py", "sdist"
+        ])
 
         if exit_code != 0:
             errors.append(f"Source distribution build failed: {stderr}")
@@ -266,9 +266,9 @@ class AcademicCompiler:
         # Build wheel distribution
         if exit_code == 0:
             self.log("Building wheel distribution")
-            exit_code, stdout, stderr = self.run_command(
-                [sys.executable, "setup.py", "bdist_wheel"]
-            )
+            exit_code, stdout, stderr = self.run_command([
+                sys.executable, "setup.py", "bdist_wheel"
+            ])
 
             if exit_code != 0:
                 warnings.append(f"Wheel build had issues: {stderr}")
@@ -282,9 +282,9 @@ class AcademicCompiler:
         # Validate distributions
         if output_files:
             self.log("Validating distributions with twine")
-            exit_code, stdout, stderr = self.run_command(
-                [sys.executable, "-m", "twine", "check", "dist/*"]
-            )
+            exit_code, stdout, stderr = self.run_command([
+                sys.executable, "-m", "twine", "check", "dist/*"
+            ])
 
             if exit_code != 0:
                 warnings.append(f"Distribution validation issues: {stderr}")
@@ -499,9 +499,9 @@ class AcademicCompiler:
         # Run basic tests if available
         if (self.base_dir / "tests").exists():
             self.log("Running basic validation tests")
-            exit_code, stdout, stderr = self.run_command(
-                [sys.executable, "-m", "pytest", "tests/", "-x", "--tb=short"]
-            )
+            exit_code, stdout, stderr = self.run_command([
+                sys.executable, "-m", "pytest", "tests/", "-x", "--tb=short"
+            ])
 
             if exit_code != 0:
                 warnings.append(f"Some tests failed: {stderr}")
@@ -570,28 +570,27 @@ class AcademicCompiler:
         successful_steps = sum(1 for result in results.values() if result.success)
         total_steps = len(results)
 
-        report_lines.extend(
-            [
-                f"- **Total Duration**: {total_duration:.2f} seconds",
-                f"- **Successful Steps**: {successful_steps}/{total_steps}",
-                f"- **Overall Status**: {'✅ SUCCESS' if successful_steps == total_steps else '❌ PARTIAL FAILURE'}",
-                "",
-            ]
-        )
+        report_lines.extend([
+            f"- **Total Duration**: {total_duration:.2f} seconds",
+            f"- **Successful Steps**: {successful_steps}/{total_steps}",
+            (
+                "- **Overall Status**:"
+                f" {'✅ SUCCESS' if successful_steps == total_steps else '❌ PARTIAL FAILURE'}"
+            ),
+            "",
+        ])
 
         for step_name, result in results.items():
             status = "✅ SUCCESS" if result.success else "❌ FAILED"
-            report_lines.extend(
-                [
-                    f"## {step_name.title()} Compilation",
-                    f"- **Status**: {status}",
-                    f"- **Duration**: {result.duration:.2f} seconds",
-                    f"- **Output Files**: {len(result.output_files)}",
-                    f"- **Warnings**: {len(result.warnings)}",
-                    f"- **Errors**: {len(result.errors)}",
-                    "",
-                ]
-            )
+            report_lines.extend([
+                f"## {step_name.title()} Compilation",
+                f"- **Status**: {status}",
+                f"- **Duration**: {result.duration:.2f} seconds",
+                f"- **Output Files**: {len(result.output_files)}",
+                f"- **Warnings**: {len(result.warnings)}",
+                f"- **Errors**: {len(result.errors)}",
+                "",
+            ])
 
             if result.output_files:
                 report_lines.append("**Output Files:**")
@@ -624,7 +623,7 @@ def main():
         epilog="""
 Examples:
   python compiler.py latex          # Compile LaTeX paper
-  python compiler.py package        # Build Python package  
+  python compiler.py package        # Build Python package
   python compiler.py docs           # Generate documentation
   python compiler.py all            # Compile everything
   python compiler.py clean          # Clean build artifacts

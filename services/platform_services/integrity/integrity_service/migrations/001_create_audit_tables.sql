@@ -53,15 +53,15 @@ CREATE SEQUENCE IF NOT EXISTS audit_block_sequence START 1;
 
 -- Insert initial genesis block
 INSERT INTO audit_blocks (
-    block_id, 
-    block_number, 
-    timestamp, 
-    previous_hash, 
-    merkle_root, 
-    block_hash, 
-    signature, 
-    constitutional_hash, 
-    event_count, 
+    block_id,
+    block_number,
+    timestamp,
+    previous_hash,
+    merkle_root,
+    block_hash,
+    signature,
+    constitutional_hash,
+    event_count,
     finalized
 ) VALUES (
     gen_random_uuid(),
@@ -78,7 +78,7 @@ INSERT INTO audit_blocks (
 
 -- Create audit trail statistics view
 CREATE OR REPLACE VIEW audit_trail_stats AS
-SELECT 
+SELECT
     'cdd01ef066bc6cf2' as constitutional_hash,
     (SELECT COUNT(*) FROM audit_blocks) as total_blocks,
     (SELECT COUNT(*) FROM audit_events) as total_events,

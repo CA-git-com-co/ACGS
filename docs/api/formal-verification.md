@@ -1,8 +1,17 @@
 # Formal Verification Service API
 
-**Service**: Formal Verification Service  
-**Port**: 8003  
-**Base URL**: `http://localhost:8003/api/v1`  
+## Service Overview
+
+This service provides core functionality for the ACGS platform with constitutional compliance validation.
+
+**Service**: Formal Verification
+**Port**: 8XXX
+**Constitutional Hash**: `cdd01ef066bc6cf2`
+
+
+**Service**: Formal Verification Service
+**Port**: 8003
+**Base URL**: `http://localhost:8003/api/v1`
 <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 
 ## Overview
@@ -323,5 +332,14 @@ console.log('Consistency check:', result.consistent);
 
 ---
 
-**Status**: ✅ Healthy and operational  
+**Status**: ✅ Healthy and operational
 <!-- Constitutional Hash: cdd01ef066bc6cf2 --> ✅
+
+## Monitoring
+
+Service health and performance metrics:
+
+- Health check endpoint: `/health`
+- Metrics endpoint: `/metrics`
+- Constitutional compliance status: `/compliance`
+- Performance dashboard integration available

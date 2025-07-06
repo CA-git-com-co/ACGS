@@ -142,7 +142,7 @@ Replace these legacy checks in branch protection:
    ```bash
    # Copy workflow from archive
    cp .github/workflows/deprecated/ci-legacy.yml .github/workflows/
-   
+
    # Remove deprecation notice from file header
    # Update GitHub Actions versions if needed
    ```
@@ -151,7 +151,7 @@ Replace these legacy checks in branch protection:
    ```bash
    # Restore all legacy workflows
    cp .github/workflows/deprecated/*.yml .github/workflows/
-   
+
    # Update branch protection to use legacy workflow names
    # Notify team of rollback
    ```

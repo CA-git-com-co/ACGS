@@ -31,18 +31,21 @@
 <!-- MANDATORY: Documentation must be updated for all changes -->
 
 ### Infrastructure/Configuration Changes
+
 - [ ] **Port Configuration**: Updated documentation if ports changed (PostgreSQL 5439, Redis 6389, Auth 8016)
 - [ ] **Environment Variables**: Updated `docs/configuration/README.md` if new env vars added
 - [ ] **Docker Compose**: Updated documentation if container configurations changed
 - [ ] **Service Dependencies**: Updated service integration documentation
 
 ### API/Service Changes
+
 - [ ] **API Documentation**: Updated relevant files in `docs/api/` directory
 - [ ] **Service Status**: Updated `docs/operations/SERVICE_STATUS.md` if service health changed
 - [ ] **Performance Metrics**: Updated performance documentation if targets changed
 - [ ] **Constitutional Hash**: Added constitutional hash to all API response examples
 
 ### Feature/Code Changes
+
 - [ ] **README Updates**: Updated main README.md if user-facing changes
 - [ ] **Architecture Documentation**: Updated `docs/architecture/` if system design changed
 - [ ] **Deployment Guides**: Updated deployment documentation if procedures changed
@@ -59,6 +62,7 @@
 - [ ] **Configuration Tests**: Validated configuration consistency across all files
 
 ### Test Results
+
 <!-- Provide test execution results -->
 
 ```bash
@@ -84,6 +88,7 @@ Cache Hit Rate: __% (Target: ≥85%)
 ## 📊 Impact Assessment
 
 ### Services Affected
+
 <!-- List all services impacted by this change -->
 
 - [ ] Authentication Service (Port 8016)
@@ -97,6 +102,7 @@ Cache Hit Rate: __% (Target: ≥85%)
 - [ ] Redis (Port 6389)
 
 ### Risk Level
+
 <!-- Mark the appropriate risk level -->
 
 - [ ] 🟢 **Low Risk**: Documentation/minor changes only
@@ -141,6 +147,6 @@ Related to #
 
 ---
 
-**Constitutional Hash**: `cdd01ef066bc6cf2` ✅  
-**Documentation Validation**: Required ✅  
+**Constitutional Hash**: `cdd01ef066bc6cf2` ✅
+**Documentation Validation**: Required ✅
 **Performance Targets**: P99 ≤5ms, ≥100 RPS, ≥85% cache hit rate ✅

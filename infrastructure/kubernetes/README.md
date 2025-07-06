@@ -27,22 +27,22 @@ kubectl apply -f hpa-vpa.yaml
 
 ## File Descriptions
 
-| File | Description |
-|------|-------------|
-| `namespace.yaml` | Kubernetes namespaces with constitutional labels |
-| `configmap.yaml` | Configuration data and Nginx config |
-| `secrets.yaml` | Encrypted secrets (change for production!) |
-| `persistent-volumes.yaml` | Storage classes and persistent volumes |
-| `database.yaml` | PostgreSQL StatefulSet with RLS |
-| `redis.yaml` | Redis deployment for caching |
-| `api-gateway.yaml` | API Gateway with HPA and PDB |
-| `core-services.yaml` | All ACGS microservices |
-| `monitoring.yaml` | Prometheus and Grafana stack |
-| `ingress.yaml` | Nginx ingress with TLS and security headers |
-| `rbac.yaml` | Role-based access control policies |
-| `network-policies.yaml` | Network micro-segmentation |
-| `hpa-vpa.yaml` | Horizontal and vertical pod autoscaling |
-| `deployment-scripts.yaml` | Automated deployment scripts |
+| File                      | Description                                      |
+| ------------------------- | ------------------------------------------------ |
+| `namespace.yaml`          | Kubernetes namespaces with constitutional labels |
+| `configmap.yaml`          | Configuration data and Nginx config              |
+| `secrets.yaml`            | Encrypted secrets (change for production!)       |
+| `persistent-volumes.yaml` | Storage classes and persistent volumes           |
+| `database.yaml`           | PostgreSQL StatefulSet with RLS                  |
+| `redis.yaml`              | Redis deployment for caching                     |
+| `api-gateway.yaml`        | API Gateway with HPA and PDB                     |
+| `core-services.yaml`      | All ACGS microservices                           |
+| `monitoring.yaml`         | Prometheus and Grafana stack                     |
+| `ingress.yaml`            | Nginx ingress with TLS and security headers      |
+| `rbac.yaml`               | Role-based access control policies               |
+| `network-policies.yaml`   | Network micro-segmentation                       |
+| `hpa-vpa.yaml`            | Horizontal and vertical pod autoscaling          |
+| `deployment-scripts.yaml` | Automated deployment scripts                     |
 
 ## Key Features
 
@@ -56,6 +56,7 @@ kubectl apply -f hpa-vpa.yaml
 ## Production Requirements
 
 ⚠️ **MUST CHANGE FOR PRODUCTION**:
+
 - Update secrets in `secrets.yaml` with strong passwords
 - Configure real TLS certificates in ingress
 - Update hostnames in `ingress.yaml`

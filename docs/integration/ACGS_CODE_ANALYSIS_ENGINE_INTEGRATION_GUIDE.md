@@ -1,4 +1,6 @@
 # ACGS Code Analysis Engine - Integration Guide
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 
 ## Overview
 
@@ -13,15 +15,15 @@ graph TD
     B --> D[Context Service :8012]
     B --> E[PostgreSQL :5439]
     B --> F[Redis :6389]
-    
+
     G[File Watcher] --> B
     H[CI/CD Pipeline] --> B
     I[IDE Plugin] --> B
-    
+
     B --> J[Constitutional Compliance]
     B --> K[Audit Logging]
     B --> L[Monitoring Stack]
-    
+
     style B fill:#e1f5fe
     style C fill:#f3e5f5
     style D fill:#e8f5e8
@@ -41,7 +43,7 @@ class ACGSAuthClient:
     def __init__(self, auth_service_url: str = "http://localhost:8016"):
         self.auth_service_url = auth_service_url
         self.client = httpx.AsyncClient(timeout=5.0)
-    
+
     async def validate_token(self, token: str) -> Optional[Dict]:
         """Validate JWT token with ACGS Auth Service"""
         try:
@@ -50,15 +52,15 @@ class ACGSAuthClient:
                 headers={"Authorization": f"Bearer {token}"},
                 json={"constitutional_hash": "cdd01ef066bc6cf2"}
             )
-            
+
             if response.status_code == 200:
                 return response.json()
             return None
-            
+
         except httpx.RequestError as e:
             print(f"Auth service error: {e}")
             return None
-    
+
     async def get_user_permissions(self, token: str) -> Dict:
         """Get user permissions for code analysis operations"""
         try:
@@ -66,25 +68,25 @@ class ACGSAuthClient:
                 f"{self.auth_service_url}/api/v1/auth/permissions",
                 headers={"Authorization": f"Bearer {token}"}
             )
-            
+
             if response.status_code == 200:
                 return response.json()
             return {"permissions": []}
-            
+
         except httpx.RequestError:
             return {"permissions": []}
 
 # Usage Example
 async def main():
     auth_client = ACGSAuthClient()
-    
+
     # Validate token
     token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
     user_info = await auth_client.validate_token(token)
-    
+
     if user_info:
         print(f"Authenticated user: {user_info['username']}")
-        
+
         # Get permissions
         permissions = await auth_client.get_user_permissions(token)
         print(f"User permissions: {permissions['permissions']}")
@@ -111,27 +113,27 @@ class AuthenticationMiddleware(BaseHTTPMiddleware):
     def __init__(self, app, auth_client: ACGSAuthClient):
         super().__init__(app)
         self.auth_client = auth_client
-    
+
     async def dispatch(self, request: Request, call_next):
         # Skip auth for health and metrics endpoints
         if request.url.path in ["/health", "/metrics"]:
             return await call_next(request)
-        
+
         # Extract and validate token
         auth_header = request.headers.get("Authorization")
         if not auth_header or not auth_header.startswith("Bearer "):
             raise HTTPException(status_code=401, detail="Authentication required")
-        
+
         token = auth_header.split(" ")[1]
         user_info = await self.auth_client.validate_token(token)
-        
+
         if not user_info:
             raise HTTPException(status_code=401, detail="Invalid token")
-        
+
         # Add user info to request state
         request.state.user = user_info
         request.state.token = token
-        
+
         return await call_next(request)
 
 # Add middleware to app
@@ -168,10 +170,10 @@ class ACGSContextClient:
     def __init__(self, context_service_url: str = "http://localhost:8012"):
         self.context_service_url = context_service_url
         self.client = httpx.AsyncClient(timeout=10.0)
-    
+
     async def enrich_code_analysis(
-        self, 
-        symbol_id: str, 
+        self,
+        symbol_id: str,
         analysis_result: Dict[str, Any],
         auth_token: str
     ) -> Dict[str, Any]:
@@ -188,10 +190,10 @@ class ACGSContextClient:
                     "min_relevance": 0.7
                 }
             )
-            
+
             if response.status_code == 200:
                 context_data = response.json()
-                
+
                 # Add context enrichment to analysis result
                 analysis_result["context_enrichment"] = {
                     "related_contexts": context_data.get("results", []),
@@ -199,20 +201,20 @@ class ACGSContextClient:
                     "constitutional_compliance": context_data.get("constitutional_compliance", {}),
                     "enriched_at": time.time()
                 }
-                
+
                 # Store bidirectional link
                 await self._store_context_link(symbol_id, context_data, auth_token)
-            
+
             return analysis_result
-            
+
         except httpx.RequestError as e:
             # Log error but don't fail the analysis
             print(f"Context enrichment failed for {symbol_id}: {e}")
             return analysis_result
-    
+
     async def notify_code_changes(
-        self, 
-        file_path: str, 
+        self,
+        file_path: str,
         changed_symbols: List[str],
         auth_token: str
     ):
@@ -232,7 +234,7 @@ class ACGSContextClient:
             )
         except httpx.RequestError as e:
             print(f"Context invalidation notification failed: {e}")
-    
+
     async def create_context_links(
         self,
         code_symbol_id: str,
@@ -241,7 +243,7 @@ class ACGSContextClient:
     ) -> List[str]:
         """Create bidirectional links between code symbols and contexts"""
         created_links = []
-        
+
         for mapping in context_mappings:
             try:
                 response = await self.client.post(
@@ -258,35 +260,35 @@ class ACGSContextClient:
                         "constitutional_hash": "cdd01ef066bc6cf2"
                     }
                 )
-                
+
                 if response.status_code == 201:
                     link_data = response.json()
                     created_links.append(link_data["link_id"])
-                    
+
             except httpx.RequestError as e:
                 print(f"Failed to create context link: {e}")
-        
+
         return created_links
-    
+
     def _calculate_enrichment_score(self, context_data: Dict) -> float:
         """Calculate enrichment quality score"""
         results = context_data.get("results", [])
         if not results:
             return 0.0
-        
+
         # Calculate based on relevance scores and context diversity
         total_relevance = sum(r.get("relevance_score", 0) for r in results)
         context_types = set(r.get("context_type") for r in results)
-        
+
         base_score = total_relevance / len(results)
         diversity_bonus = len(context_types) * 0.1
-        
+
         return min(base_score + diversity_bonus, 1.0)
-    
+
     async def _store_context_link(
-        self, 
-        symbol_id: str, 
-        context_data: Dict, 
+        self,
+        symbol_id: str,
+        context_data: Dict,
         auth_token: str
     ):
         """Store context link in local database"""
@@ -298,7 +300,7 @@ class ACGSContextClient:
 async def enrich_search_results():
     context_client = ACGSContextClient()
     auth_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
-    
+
     # Example analysis result
     analysis_result = {
         "symbol_id": "123e4567-e89b-12d3-a456-426614174000",
@@ -306,14 +308,14 @@ async def enrich_search_results():
         "symbol_type": "function",
         "file_path": "services/core/auth/permissions.py"
     }
-    
+
     # Enrich with context
     enriched_result = await context_client.enrich_code_analysis(
         symbol_id=analysis_result["symbol_id"],
         analysis_result=analysis_result,
         auth_token=auth_token
     )
-    
+
     print("Enriched analysis result:")
     print(json.dumps(enriched_result, indent=2))
 ```
@@ -341,7 +343,7 @@ class ACGSDatabaseClient:
             f"{os.getenv('POSTGRESQL_PORT', '5439')}/"
             f"{os.getenv('POSTGRESQL_DATABASE', 'acgs')}"
         )
-        
+
         # Create engine with connection pooling
         self.engine = create_async_engine(
             self.database_url,
@@ -352,14 +354,14 @@ class ACGSDatabaseClient:
             pool_recycle=3600,  # Recycle connections every hour
             echo=os.getenv('SQL_DEBUG', 'false').lower() == 'true'
         )
-        
+
         # Create session factory
         self.AsyncSessionLocal = sessionmaker(
-            self.engine, 
-            class_=AsyncSession, 
+            self.engine,
+            class_=AsyncSession,
             expire_on_commit=False
         )
-    
+
     async def get_session(self) -> AsyncGenerator[AsyncSession, None]:
         """Get database session with proper cleanup"""
         async with self.AsyncSessionLocal() as session:
@@ -370,7 +372,7 @@ class ACGSDatabaseClient:
                 raise
             finally:
                 await session.close()
-    
+
     async def health_check(self) -> bool:
         """Check database connectivity"""
         try:
@@ -379,7 +381,7 @@ class ACGSDatabaseClient:
                 return result.scalar() == 1
         except Exception:
             return False
-    
+
     async def close(self):
         """Close database connections"""
         await self.engine.dispose()
@@ -404,19 +406,19 @@ async def get_symbol(
     """Get symbol with database integration"""
     from sqlalchemy import select
     from models.database import CodeSymbol
-    
+
     # Query with constitutional compliance
     query = select(CodeSymbol).where(
         CodeSymbol.id == symbol_id,
         CodeSymbol.constitutional_hash == "cdd01ef066bc6cf2"
     )
-    
+
     result = await db.execute(query)
     symbol = result.scalar_one_or_none()
-    
+
     if not symbol:
         raise HTTPException(status_code=404, detail="Symbol not found")
-    
+
     return {
         "symbol": symbol,
         "constitutional_signature": generate_constitutional_signature(symbol),
@@ -448,7 +450,7 @@ class ACGSCacheClient:
             retry_on_timeout=True,
             max_connections=20
         )
-        
+
         # Cache key prefixes for organization
         self.key_prefixes = {
             "symbol": "acgs:code:symbol:",
@@ -457,7 +459,7 @@ class ACGSCacheClient:
             "context": "acgs:code:context:",
             "file": "acgs:code:file:"
         }
-        
+
         # Default TTL values (seconds)
         self.ttl_config = {
             "symbol": 3600,      # 1 hour
@@ -466,67 +468,67 @@ class ACGSCacheClient:
             "context": 1800,     # 30 minutes
             "file": 3600         # 1 hour
         }
-    
+
     async def get(self, key_type: str, key: str) -> Optional[Any]:
         """Get cached value with automatic deserialization"""
         try:
             cache_key = self.key_prefixes[key_type] + key
             cached_data = await self.redis_client.get(cache_key)
-            
+
             if cached_data:
                 return pickle.loads(cached_data)
             return None
-            
+
         except Exception as e:
             print(f"Cache get error: {e}")
             return None
-    
+
     async def set(
-        self, 
-        key_type: str, 
-        key: str, 
-        value: Any, 
+        self,
+        key_type: str,
+        key: str,
+        value: Any,
         ttl: Optional[int] = None
     ) -> bool:
         """Set cached value with automatic serialization"""
         try:
             cache_key = self.key_prefixes[key_type] + key
             serialized_value = pickle.dumps(value)
-            
+
             ttl = ttl or self.ttl_config.get(key_type, 3600)
-            
+
             await self.redis_client.setex(cache_key, ttl, serialized_value)
             return True
-            
+
         except Exception as e:
             print(f"Cache set error: {e}")
             return False
-    
+
     async def delete(self, key_type: str, key: str) -> bool:
         """Delete cached value"""
         try:
             cache_key = self.key_prefixes[key_type] + key
             result = await self.redis_client.delete(cache_key)
             return result > 0
-            
+
         except Exception as e:
             print(f"Cache delete error: {e}")
             return False
-    
+
     async def invalidate_pattern(self, key_type: str, pattern: str) -> int:
         """Invalidate multiple keys matching pattern"""
         try:
             cache_pattern = self.key_prefixes[key_type] + pattern
             keys = await self.redis_client.keys(cache_pattern)
-            
+
             if keys:
                 return await self.redis_client.delete(*keys)
             return 0
-            
+
         except Exception as e:
             print(f"Cache invalidation error: {e}")
             return 0
-    
+
     async def health_check(self) -> bool:
         """Check Redis connectivity"""
         try:
@@ -534,7 +536,7 @@ class ACGSCacheClient:
             return True
         except Exception:
             return False
-    
+
     def generate_search_key(self, query: str, filters: Dict) -> str:
         """Generate consistent cache key for search queries"""
         # Create deterministic key from query and filters
@@ -542,7 +544,7 @@ class ACGSCacheClient:
             "query": query.lower().strip(),
             "filters": sorted(filters.items())
         }
-        
+
         key_string = json.dumps(key_data, sort_keys=True)
         return hashlib.md5(key_string.encode()).hexdigest()
 
@@ -561,20 +563,20 @@ def cached_search(cache_type: str, ttl: int = None):
                 query=kwargs.get('query', ''),
                 filters={k: v for k, v in kwargs.items() if k != 'query'}
             )
-            
+
             # Try to get from cache
             cached_result = await cache_client.get(cache_type, cache_key)
             if cached_result:
                 cached_result['cache_hit'] = True
                 return cached_result
-            
+
             # Execute function and cache result
             result = await func(*args, **kwargs)
             result['cache_hit'] = False
-            
+
             await cache_client.set(cache_type, cache_key, result, ttl)
             return result
-            
+
         return wrapper
     return decorator
 
@@ -589,7 +591,7 @@ async def perform_semantic_search(
     """Cached semantic search implementation"""
     # Actual search logic here
     results = await execute_vector_search(query, limit, language, symbol_type)
-    
+
     return {
         "query": query,
         "results": results,

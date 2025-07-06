@@ -1,7 +1,7 @@
 # ACGS Service Issue Resolution Guide
 
-**Date**: 2025-07-05  
-<!-- Constitutional Hash: cdd01ef066bc6cf2 -->  
+**Date**: 2025-07-05
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 **Status**: Production Ready
 
 ## 🎯 Quick Reference
@@ -229,7 +229,7 @@ echo "=================================="
 for service in "${services[@]}"; do
     port="${service%%:*}"
     name="${service##*:}"
-    
+
     if curl -f -s "http://localhost:$port/health" > /dev/null; then
         echo "✅ $name (Port $port) - Healthy"
     else

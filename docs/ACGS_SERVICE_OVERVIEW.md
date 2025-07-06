@@ -2,8 +2,8 @@
 
 <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 
-**Generated**: 2025-07-05 19:55:49  
-**Constitutional Hash**: `cdd01ef066bc6cf2`  
+**Generated**: 2025-07-05 19:55:49
+**Constitutional Hash**: `cdd01ef066bc6cf2`
 **Total Services**: 7
 
 ## Service Architecture
@@ -85,5 +85,5 @@ All services implement constitutional compliance with hash `cdd01ef066bc6cf2`:
 
 ---
 
-**Auto-Generated**: This overview is automatically updated during deployment  
+**Auto-Generated**: This overview is automatically updated during deployment
 **Constitutional Hash**: `cdd01ef066bc6cf2` ✅

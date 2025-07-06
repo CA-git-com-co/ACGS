@@ -1,7 +1,16 @@
 # ACGS API Documentation Index
 
-<!-- Constitutional Hash: cdd01ef066bc6cf2 -->  
-**Last Updated**: 2025-07-05  
+## Service Overview
+
+This service provides core functionality for the ACGS platform with constitutional compliance validation.
+
+**Service**: API Index
+**Port**: 8000
+**Constitutional Hash**: `cdd01ef066bc6cf2`
+
+
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+**Last Updated**: 2025-07-05
 **API Version**: v1
 
 ## 🎯 Quick Navigation
@@ -22,10 +31,10 @@
 
 | API | Documentation | Purpose |
 |-----|---------------|---------|
-| **Cross-Service Integration** | [Integration API](api/index.md) | Service-to-service communication |
-| **Audit Logging** | [Audit Logging API](api/index.md) | Compliance and audit trails |
-| **JWT Token Management** | [JWT Reference](api/authentication.md) | Token handling and validation |
-| **Role-Based Access Control** | [RBAC Design](api/authentication.md) | Permission and role management |
+| **Cross-Service Integration** | [Integration API](#Integration API) | Service-to-service communication |
+| **Audit Logging** | [Audit Logging API](#Audit Logging API) | Compliance and audit trails |
+| **JWT Token Management** | [JWT Reference](#jwt-token-specification) | Token handling and validation |
+| **Role-Based Access Control** | [RBAC Design](#role-based-access-control) | Permission and role management |
 
 ## 🏗️ API Architecture
 
@@ -128,12 +137,12 @@ All APIs follow standard HTTP status codes:
 
 ### Policy Governance Workflows
 
-- [Governance Workflow Design](api/policy-governance.md)
-- [Council Review Process](api/policy-governance.md)
+- [Governance Workflow Design](#governance-workflow)
+- [Council Review Process](#council-review)
 
 ### Constitutional Compliance
 
-- [Constitutional Compliance Checks RFC](api/constitutional-ai.md)
+- [Constitutional Compliance Checks RFC](#constitutional-compliance)
 - [Compliance Validation Framework](../constitutional_compliance_validation_framework.md)
 
 ## 📚 Additional Resources
@@ -145,5 +154,5 @@ All APIs follow standard HTTP status codes:
 
 ---
 
-**Constitutional Compliance**: All APIs validate hash `cdd01ef066bc6cf2`  
+**Constitutional Compliance**: All APIs validate hash `cdd01ef066bc6cf2`
 **Support**: Check service logs and health endpoints for troubleshooting

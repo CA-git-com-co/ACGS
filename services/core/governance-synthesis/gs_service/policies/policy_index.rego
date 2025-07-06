@@ -30,7 +30,7 @@ policy_catalog := {
         "constitutional_hash": "cdd01ef066bc6cf2"
     },
     "governance_compliance": {
-        "package": "acgs.governance_compliance", 
+        "package": "acgs.governance_compliance",
         "version": "2.0.0",
         "description": "Comprehensive governance compliance validation framework",
         "scope": ["regulatory_compliance", "operational_governance", "risk_management"],
@@ -40,7 +40,7 @@ policy_catalog := {
     },
     "policy_synthesis": {
         "package": "acgs.policy_synthesis",
-        "version": "2.0.0", 
+        "version": "2.0.0",
         "description": "Policy synthesis validation and conflict detection",
         "scope": ["policy_creation", "policy_validation", "conflict_resolution"],
         "priority": "high",
@@ -99,7 +99,7 @@ policy_decision := decision if {
     request := input.request
     policy_type := input.policy_type
     context := input.context
-    
+
     # Route to appropriate policy based on type
     decision := route_policy_decision(request, policy_type, context)
 }
@@ -144,7 +144,7 @@ route_policy_decision(request, "security_operation", context) := decision if {
 
 route_policy_decision(request, "agent_lifecycle", context) := decision if {
     lifecycle_stage := request.lifecycle_stage
-    
+
     decision := lifecycle_stage_decision(request, lifecycle_stage, context)
 }
 
@@ -184,17 +184,17 @@ lifecycle_stage_decision(request, "decommission", context) := decision if {
 comprehensive_policy_validation := result if {
     request := input.request
     validation_scope := input.validation_scope
-    
+
     # Run all applicable policy validations
     validation_results := run_applicable_validations(request, validation_scope)
-    
+
     # Aggregate results
     result := aggregate_validation_results(validation_results)
 }
 
 run_applicable_validations(request, scope) := results if {
     applicable_policies := determine_applicable_policies(request, scope)
-    
+
     results := [validation_result |
         some policy_name in applicable_policies
         validation_result := run_policy_validation(policy_name, request)
@@ -257,12 +257,12 @@ run_policy_validation(policy_name, request) := result if {
 aggregate_validation_results(results) := aggregated if {
     total_score := sum([r.result | r := results[_]; is_number(r.result)])
     policy_count := count([r | r := results[_]; is_number(r.result)])
-    
+
     average_score := total_score / policy_count
-    
-    failed_policies := [r.policy | r := results[_]; 
+
+    failed_policies := [r.policy | r := results[_];
                       is_boolean(r.result); r.result == false]
-    
+
     aggregated := {
         "overall_score": average_score,
         "individual_results": results,
@@ -276,7 +276,7 @@ aggregate_validation_results(results) := aggregated if {
 # Policy conflict detection across all policies
 policy_conflicts := conflicts if {
     policies := input.policies
-    
+
     conflicts := [conflict |
         some i, j
         i < j
@@ -291,7 +291,7 @@ detect_policy_conflict(policy_a, policy_b) := conflict if {
     # Check for logical conflicts
     logical_conflict := detect_logical_conflict(policy_a, policy_b)
     logical_conflict != null
-    
+
     conflict := {
         "type": "logical_conflict",
         "policy_a": policy_a.id,
@@ -306,7 +306,7 @@ detect_policy_conflict(policy_a, policy_b) := conflict if {
     # Check for constitutional conflicts
     constitutional_conflict := detect_constitutional_conflict(policy_a, policy_b)
     constitutional_conflict != null
-    
+
     conflict := {
         "type": "constitutional_conflict",
         "policy_a": policy_a.id,
@@ -322,9 +322,9 @@ detect_logical_conflict(policy_a, policy_b) := conflict if {
     policy_a.action == "allow"
     policy_b.action == "deny"
     policy_a.scope == policy_b.scope
-    
+
     conflict := {
-        "description": sprintf("Policy %s allows while policy %s denies the same scope", 
+        "description": sprintf("Policy %s allows while policy %s denies the same scope",
                               [policy_a.id, policy_b.id]),
         "severity": "high"
     }
@@ -334,12 +334,12 @@ detect_constitutional_conflict(policy_a, policy_b) := conflict if {
     # Policies violate constitutional principles in conflicting ways
     a_principles := policy_a.constitutional_impact
     b_principles := policy_b.constitutional_impact
-    
+
     conflicting_principle := find_conflicting_principle(a_principles, b_principles)
     conflicting_principle != null
-    
+
     conflict := {
-        "description": sprintf("Policies have conflicting constitutional impacts on %s", 
+        "description": sprintf("Policies have conflicting constitutional impacts on %s",
                               [conflicting_principle]),
         "severity": "critical"
     }
@@ -357,13 +357,13 @@ find_conflicting_principle(a_principles, b_principles) := principle if {
 policy_performance_metrics := metrics if {
     request_history := input.request_history
     time_window := input.time_window
-    
+
     metrics := calculate_policy_performance(request_history, time_window)
 }
 
 calculate_policy_performance(history, time_window) := metrics if {
     recent_requests := filter_recent_requests(history, time_window)
-    
+
     metrics := {
         "total_requests": count(recent_requests),
         "policy_evaluation_times": calculate_evaluation_times(recent_requests),
@@ -376,7 +376,7 @@ calculate_policy_performance(history, time_window) := metrics if {
 
 filter_recent_requests(history, time_window) := recent if {
     cutoff_time := time.now_ns() - (time_window * 1000000000)
-    recent := [req | 
+    recent := [req |
                some req in history
                req.timestamp > cutoff_time]
 }
@@ -394,7 +394,7 @@ calculate_decision_distribution(requests) := distribution if {
     total_count := count(requests)
     allow_count := count([req | req := requests[_]; req.decision == "allow"])
     deny_count := count([req | req := requests[_]; req.decision == "deny"])
-    
+
     distribution := {
         "allow_percentage": (allow_count / total_count) * 100,
         "deny_percentage": (deny_count / total_count) * 100,
@@ -403,22 +403,22 @@ calculate_decision_distribution(requests) := distribution if {
 }
 
 calculate_compliance_rate(requests) := rate if {
-    compliant_requests := count([req | 
+    compliant_requests := count([req |
                                 req := requests[_]
                                 req.constitutional_compliance == true])
     total_requests := count(requests)
-    
+
     rate := (compliant_requests / total_requests) * 100
 }
 
 calculate_usage_statistics(requests) := stats if {
     policy_usage := {}
-    
+
     # Count usage per policy
     policy_counts := [policy |
                      some req in requests
                      some policy in req.policies_evaluated]
-    
+
     stats := {
         "most_used_policies": get_top_policies(policy_counts, 5),
         "policy_evaluation_frequency": count_policy_evaluations(policy_counts),
@@ -430,7 +430,7 @@ calculate_usage_statistics(requests) := stats if {
 constitutional_compliance_monitoring := monitoring if {
     current_state := input.current_state
     historical_data := input.historical_data
-    
+
     monitoring := {
         "current_compliance_score": calculate_current_compliance(current_state),
         "compliance_trends": analyze_compliance_trends(historical_data),
@@ -445,17 +445,17 @@ calculate_current_compliance(state) := score if {
         some principle_name, principle_data in state.constitutional_principles
         score := principle_data.compliance_score * principle_data.weight
     ]
-    
-    total_weight := sum([principle_data.weight | 
+
+    total_weight := sum([principle_data.weight |
                         some principle_name, principle_data in state.constitutional_principles])
-    
+
     score := sum(principle_scores) / total_weight
 }
 
 verify_constitutional_hash(state) := verification if {
     expected_hash := "cdd01ef066bc6cf2"
     actual_hash := state.constitutional_hash
-    
+
     verification := {
         "hash_matches": expected_hash == actual_hash,
         "expected_hash": expected_hash,
@@ -496,16 +496,16 @@ min(values) := min_value if {
 policy_effectiveness_score := score if {
     policy_metrics := input.policy_metrics
     compliance_data := input.compliance_data
-    
+
     # Calculate effectiveness based on multiple factors
     decision_accuracy := policy_metrics.decision_accuracy
     performance_efficiency := policy_metrics.performance_efficiency
     constitutional_alignment := compliance_data.constitutional_alignment
     stakeholder_satisfaction := policy_metrics.stakeholder_satisfaction
-    
+
     # Weighted average
-    score := (decision_accuracy * 0.3) + 
-             (performance_efficiency * 0.2) + 
-             (constitutional_alignment * 0.4) + 
+    score := (decision_accuracy * 0.3) +
+             (performance_efficiency * 0.2) +
+             (constitutional_alignment * 0.4) +
              (stakeholder_satisfaction * 0.1)
 }

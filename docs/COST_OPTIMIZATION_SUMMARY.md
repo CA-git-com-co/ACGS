@@ -11,7 +11,7 @@
 ### Previous State (Estimated Monthly Cost: $2,820)
 - **39 active workflows** with significant redundancy
 - **5 workflows running daily** (expensive scheduled runs)
-- **Multiple overlapping CI/CD pipelines** 
+- **Multiple overlapping CI/CD pipelines**
 - **Inefficient caching strategies**
 - **Excessive artifact retention periods**
 
@@ -47,11 +47,11 @@
 ✅ **Path-based filtering**:
 ```yaml
 # Only run Python tests when Python files change
-python: 
+python:
   - 'services/**/*.py'
   - '**/requirements*.txt'
 
-# Only run Rust builds when blockchain code changes  
+# Only run Rust builds when blockchain code changes
 rust:
   - 'blockchain/**/*.rs'
   - '**/Cargo.toml'

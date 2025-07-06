@@ -1,5 +1,14 @@
 # Constitutional AI API Documentation
 
+## Service Overview
+
+This service provides core functionality for the ACGS platform with constitutional compliance validation.
+
+**Service**: Constitutional Ai
+**Port**: 8XXX
+**Constitutional Hash**: `cdd01ef066bc6cf2`
+
+
 **Service**: Constitutional AI Service
 **Port**: 8001
 **Base URL**: `http://localhost:8001/api/v1`
@@ -235,14 +244,36 @@ console.log(result);
 
 - [API Documentation Index](index.md)
 - [Principle Evaluation Model Paper](models/principle-eval.pdf)
-- [Constitutional Compliance Checks RFC](api/constitutional-ai.md)
+- [Constitutional Compliance Checks RFC](#Constitutional Compliance Checks RFC)
 
 For system configuration details, deployment guides, and architecture diagrams, see the Constitutional AI service documentation repository.
 ## Performance Targets
 
-- **Latency**: P99 ≤ 5ms for cached queries
+- **Latency**: P99 ≤ 5ms for cached queries (latency_p99: ≤5ms)
 - **Throughput**: ≥ 100 RPS sustained
 - **Cache Hit Rate**: ≥ 85%
 - **Test Coverage**: ≥ 80%
 - **Availability**: 99.9% uptime
 - **Constitutional Compliance**: 100% validation
+
+## Error Handling
+
+Standard HTTP status codes are used with detailed error messages:
+
+- `400 Bad Request`: Invalid request parameters
+- `401 Unauthorized`: Authentication required
+- `403 Forbidden`: Insufficient permissions
+- `404 Not Found`: Resource not found
+- `500 Internal Server Error`: Server error
+
+All errors include constitutional compliance validation status.
+
+
+## Monitoring
+
+Service health and performance metrics:
+
+- Health check endpoint: `/health`
+- Metrics endpoint: `/metrics`
+- Constitutional compliance status: `/compliance`
+- Performance dashboard integration available

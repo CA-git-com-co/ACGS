@@ -19,15 +19,15 @@ try:
     sys.path.insert(0, str(project_root))
     sys.path.insert(0, str(project_root / "services" / "shared"))
 
+    from clients.tenant_service_client import TenantServiceClient, service_registry
     from middleware.tenant_middleware import (
         TenantContextMiddleware,
         TenantSecurityMiddleware,
-        get_tenant_context,
         get_optional_tenant_context,
-        get_tenant_db
+        get_tenant_context,
+        get_tenant_db,
     )
-    from clients.tenant_service_client import TenantServiceClient, service_registry
-    
+
     MULTI_TENANT_AVAILABLE = True
     print("✅ Multi-tenant components loaded successfully")
 except ImportError as e:
@@ -71,18 +71,15 @@ import os
 # Import optimized governance engine
 import sys
 
-from fastapi import FastAPI, Request, Depends
+from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
-from starlette.responses import PlainTextResponse
 from sqlalchemy.ext.asyncio import AsyncSession
+from starlette.responses import PlainTextResponse
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from optimized_governance_engine import (
-    PolicyValidationRequest,
-    get_governance_engine,
-)
+from optimized_governance_engine import PolicyValidationRequest, get_governance_engine
 
 # Service configuration
 SERVICE_NAME = "pgc_service"
@@ -117,7 +114,9 @@ async def lifespan(app: FastAPI):
 # Create FastAPI application
 app = FastAPI(
     title="ACGS-PGP Policy Governance & Compliance Service",
-    description="Simplified policy governance and compliance service for ACGS-PGP system",
+    description=(
+        "Simplified policy governance and compliance service for ACGS-PGP system"
+    ),
     version=SERVICE_VERSION,
     docs_url="/docs",
     redoc_url="/redoc",
@@ -130,16 +129,14 @@ if MULTI_TENANT_AVAILABLE:
         TenantContextMiddleware,
         jwt_secret_key=JWT_SECRET_KEY,
         jwt_algorithm=JWT_ALGORITHM,
-        exclude_paths=[
-            "/docs", "/redoc", "/openapi.json", "/health", "/metrics"
-        ],
+        exclude_paths=["/docs", "/redoc", "/openapi.json", "/health", "/metrics"],
         require_tenant=True,  # Policy governance requires tenant context
-        bypass_paths=["/health", "/metrics"]
+        bypass_paths=["/health", "/metrics"],
     )
-    
+
     # Add tenant security middleware
     app.add_middleware(TenantSecurityMiddleware)
-    
+
     print("✅ Multi-tenant middleware applied to pgc service")
 else:
     print("⚠️ Multi-tenant middleware not available for pgc service")
@@ -244,12 +241,12 @@ async def metrics_middleware(request: Request, call_next):
 
 # Import performance optimization module
 from .performance_optimizer import (
+    DatabaseOptimizer,
+    PerformanceMonitor,
     cache_response,
     get_performance_metrics,
-    initialize_redis_pool,
-    PerformanceMonitor,
-    DatabaseOptimizer
 )
+
 
 # Health check endpoint with caching
 @app.get("/health")
@@ -265,11 +262,11 @@ async def health_check():
         "version": SERVICE_VERSION,
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "constitutional_hash": "cdd01ef066bc6cf2",
-        "request_count": getattr(health_check, '_request_count', 0)
+        "request_count": getattr(health_check, "_request_count", 0),
     }
 
     # Increment request counter
-    health_check._request_count = getattr(health_check, '_request_count', 0) + 1
+    health_check._request_count = getattr(health_check, "_request_count", 0) + 1
 
     # Add performance metrics
     response_time_ms = (time.time() - start_time) * 1000
@@ -291,7 +288,7 @@ async def metrics():
 async def validate_policy_compliance(
     request: Request,
     session: AsyncSession = Depends(get_tenant_db) if MULTI_TENANT_AVAILABLE else None,
-    tenant_context = Depends(get_tenant_context) if MULTI_TENANT_AVAILABLE else None
+    tenant_context=Depends(get_tenant_context) if MULTI_TENANT_AVAILABLE else None,
 ):
     """High-performance policy compliance validation endpoint (target: <5ms)"""
     start_time = time.time()
@@ -356,7 +353,7 @@ async def validate_policy_compliance(
 async def govern_policy(
     request: Request,
     session: AsyncSession = Depends(get_tenant_db) if MULTI_TENANT_AVAILABLE else None,
-    tenant_context = Depends(get_tenant_context) if MULTI_TENANT_AVAILABLE else None
+    tenant_context=Depends(get_tenant_context) if MULTI_TENANT_AVAILABLE else None,
 ):
     """Policy governance endpoint"""
     try:
@@ -512,7 +509,7 @@ async def get_performance_metrics():
             return {
                 "error": str(e),
                 "optimization_status": "error",
-                "constitutional_hash": "cdd01ef066bc6cf2"
+                "constitutional_hash": "cdd01ef066bc6cf2",
             }
 
 

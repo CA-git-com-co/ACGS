@@ -100,16 +100,16 @@ FILES_WITH_BROKEN_LINKS=0
 # Check internal markdown links
 find "$REPO_ROOT/docs" -name "*.md" -type f | while read -r file; do
     INTERNAL_LINKS=$(grep -o '\[.*\](.*\.md[^)]*)' "$file" 2>/dev/null || true)
-    
+
     if [ -n "$INTERNAL_LINKS" ]; then
         FILES_WITH_LINKS=$((FILES_WITH_LINKS + 1))
         FILE_BROKEN_LINKS=0
-        
+
         echo "$INTERNAL_LINKS" | while read -r link; do
             if [ -n "$link" ]; then
                 TOTAL_LINKS=$((TOTAL_LINKS + 1))
                 LINK_PATH=$(echo "$link" | sed 's/.*](\([^)]*\)).*/\1/')
-                
+
                 if [[ "$LINK_PATH" == *.md ]] && [[ "$LINK_PATH" != http* ]]; then
                     # Resolve relative path
                     if [[ "$LINK_PATH" == /* ]]; then
@@ -118,7 +118,7 @@ find "$REPO_ROOT/docs" -name "*.md" -type f | while read -r file; do
                         FILE_DIR=$(dirname "$file")
                         FULL_LINK_PATH="$FILE_DIR/$LINK_PATH"
                     fi
-                    
+
                     if [ ! -f "$FULL_LINK_PATH" ]; then
                         BROKEN_LINKS=$((BROKEN_LINKS + 1))
                         FILE_BROKEN_LINKS=$((FILE_BROKEN_LINKS + 1))
@@ -126,7 +126,7 @@ find "$REPO_ROOT/docs" -name "*.md" -type f | while read -r file; do
                 fi
             fi
         done
-        
+
         if [ "$FILE_BROKEN_LINKS" -gt 0 ]; then
             FILES_WITH_BROKEN_LINKS=$((FILES_WITH_BROKEN_LINKS + 1))
         fi
@@ -174,12 +174,12 @@ find "$REPO_ROOT/docs" -name "*.md" -type f | while read -r file; do
     TOTAL_CHECKED=$((TOTAL_CHECKED + 1))
     LAST_MODIFIED=$(stat -c %Y "$file" 2>/dev/null || stat -f %m "$file" 2>/dev/null || echo "$CURRENT_TIME")
     DAYS_OLD=$(((CURRENT_TIME - LAST_MODIFIED) / 86400))
-    
+
     # Consider docs stale if not updated in 90 days
     if [ "$DAYS_OLD" -gt 90 ]; then
         STALE_DOCS=$((STALE_DOCS + 1))
     fi
-    
+
     # Consider docs very stale if not updated in 180 days
     if [ "$DAYS_OLD" -gt 180 ]; then
         VERY_STALE_DOCS=$((VERY_STALE_DOCS + 1))

@@ -1,7 +1,7 @@
 # ACGS-PGP Operational Deployment Guide
 
-**Version**: 1.0.0  
-**Date**: 2025-06-27  
+**Version**: 1.0.0
+**Date**: 2025-06-27
 <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 
 ## Overview
@@ -533,6 +533,6 @@ docker exec acgs_postgres psql -U acgs_user -d acgs_db -c "ANALYZE;"
 
 ---
 
-<!-- Constitutional Hash: cdd01ef066bc6cf2 -->  
-**Last Updated**: 2025-06-27  
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+**Last Updated**: 2025-06-27
 **Version**: 1.0.0

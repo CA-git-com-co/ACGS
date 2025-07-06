@@ -44,8 +44,7 @@ def minimal_paper(temp_dir: Path) -> Path:
     paper_dir.mkdir()
 
     # Create main.tex
-    (paper_dir / "main.tex").write_text(
-        """
+    (paper_dir / "main.tex").write_text("""
 \\documentclass{article}
 \\usepackage[utf8]{inputenc}
 \\title{Minimal Test Paper for Academic Validation}
@@ -74,12 +73,10 @@ This section presents the results of the test.
 This section concludes the test paper.
 
 \\end{document}
-"""
-    )
+""")
 
     # Create README.txt
-    (paper_dir / "README.txt").write_text(
-        """
+    (paper_dir / "README.txt").write_text("""
 Minimal Test Paper
 
 This is a minimal test paper for the Academic Submission System.
@@ -90,8 +87,7 @@ Files:
 
 Compilation:
 1. pdflatex main.tex
-"""
-    )
+""")
 
     return paper_dir
 
@@ -103,8 +99,7 @@ def complete_paper(temp_dir: Path) -> Path:
     paper_dir.mkdir()
 
     # Create main.tex
-    (paper_dir / "main.tex").write_text(
-        """
+    (paper_dir / "main.tex").write_text("""
 \\documentclass{article}
 \\usepackage[utf8]{inputenc}
 \\usepackage{graphicx}
@@ -190,12 +185,10 @@ We thank the reviewers for their valuable feedback.
 \\bibliography{references}
 
 \\end{document}
-"""
-    )
+""")
 
     # Create bibliography
-    (paper_dir / "references.bib").write_text(
-        """
+    (paper_dir / "references.bib").write_text("""
 @article{smith2023,
     title={Academic Submission Validation: A Comprehensive Study},
     author={Smith, John A. and Doe, Jane B.},
@@ -217,8 +210,7 @@ We thank the reviewers for their valuable feedback.
     organization={IEEE},
     doi={10.1109/ICAT.2023.987654}
 }
-"""
-    )
+""")
 
     # Create figures directory and placeholder figure
     figs_dir = paper_dir / "figs"
@@ -226,8 +218,7 @@ We thank the reviewers for their valuable feedback.
     (figs_dir / "workflow.png").write_bytes(b"fake_png_data_for_testing")
 
     # Create README.txt
-    (paper_dir / "README.txt").write_text(
-        """
+    (paper_dir / "README.txt").write_text("""
 Complete Test Paper for Academic Validation
 
 This is a comprehensive test paper for the Academic Submission System.
@@ -245,8 +236,7 @@ Compilation:
 4. pdflatex main.tex
 
 This paper includes all components needed for comprehensive validation testing.
-"""
-    )
+""")
 
     return paper_dir
 
@@ -258,8 +248,7 @@ def invalid_paper(temp_dir: Path) -> Path:
     paper_dir.mkdir()
 
     # Create invalid LaTeX with syntax errors
-    (paper_dir / "main.tex").write_text(
-        """
+    (paper_dir / "main.tex").write_text("""
 \\documentclass{article}
 \\begin{document}
 \\title{Invalid Test Paper
@@ -270,8 +259,7 @@ This references a non-existent section \\ref{sec:nonexistent}.
 \\includegraphics{missing_figure.png}
 \\cite{missing_reference}
 \\end{document}
-"""
-    )
+""")
 
     # No README.txt file (missing required file)
     # No bibliography file (but citations present)
@@ -392,8 +380,7 @@ def performance_paper(temp_dir: Path) -> Path:
     # Create large content for performance testing
     large_content = "\\section{Performance Test Section}\n" + "Test content. " * 1000
 
-    (paper_dir / "main.tex").write_text(
-        f"""
+    (paper_dir / "main.tex").write_text(f"""
 \\documentclass{{article}}
 \\title{{Performance Test Paper}}
 \\author{{Test Author}}
@@ -404,8 +391,7 @@ def performance_paper(temp_dir: Path) -> Path:
 \\end{{abstract}}
 {large_content}
 \\end{{document}}
-"""
-    )
+""")
 
     (paper_dir / "README.txt").write_text("Performance test paper")
 

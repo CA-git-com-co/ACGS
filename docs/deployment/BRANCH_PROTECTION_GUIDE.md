@@ -15,7 +15,7 @@ Configure the following protection rules for the production branch:
 - ✅ **Require branches to be up to date before merging**
 - **Required checks:**
   - `quality-gates` (from unified-ci-modern.yml)
-  - `security-summary` (from security-focused.yml) 
+  - `security-summary` (from security-focused.yml)
   - `blockchain-validation` (from unified-ci-modern.yml)
   - `container-security` (from unified-ci-modern.yml)
 
@@ -72,7 +72,7 @@ security-summary             # From security-focused.yml
 
 #### Additional Checks (Production Only)
 ```
-blockchain-validation        # From unified-ci-modern.yml  
+blockchain-validation        # From unified-ci-modern.yml
 container-security          # From unified-ci-modern.yml
 integration-tests           # From unified-ci-modern.yml
 ```
@@ -87,7 +87,7 @@ Create a `.github/CODEOWNERS` file with the following content:
 # GitHub Actions workflows
 .github/workflows/ @acgs-devops @acgs-security
 
-# Security-related files  
+# Security-related files
 /security/ @acgs-security
 SECURITY*.md @acgs-security
 
@@ -110,7 +110,7 @@ docker-compose*.yml @acgs-devops
 
 **Remove these legacy workflow requirements** if they exist:
 - `ci-legacy.yml`
-- `security-comprehensive.yml` 
+- `security-comprehensive.yml`
 - `enhanced-parallel-ci.yml`
 - `cost-optimized-ci.yml`
 - `optimized-ci.yml`
@@ -122,7 +122,7 @@ docker-compose*.yml @acgs-devops
 ### From `unified-ci-modern.yml`:
 - `preflight` - Change detection and environment setup
 - `quality-gates` - Code quality and security validation
-- `blockchain-validation` - Rust/Solana program validation  
+- `blockchain-validation` - Rust/Solana program validation
 - `container-security` - Container and infrastructure security
 - `integration-tests` - End-to-end testing
 - `deployment` - Multi-environment deployment

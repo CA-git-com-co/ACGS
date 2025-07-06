@@ -108,7 +108,7 @@ Services:
       cpu: "500m"
       memory: "1Gi"
     health_check: "/health"
-    
+
   constitutional_ai:
     port: 8001
     replicas: 2
@@ -116,7 +116,7 @@ Services:
       cpu: "1000m"
       memory: "2Gi"
     health_check: "/health"
-    
+
   policy_governance:
     port: 8005
     replicas: 2
@@ -135,7 +135,7 @@ PostgreSQL:
   shared_buffers: "256MB"
   effective_cache_size: "1GB"
   work_mem: "4MB"
-  
+
 Redis:
   version: "7.2"
   port: 6389
@@ -228,17 +228,17 @@ SLIs:
     target: "<5ms"
     current: "0.97ms"
     status: "✅ Exceeding target"
-    
+
   - name: "Cache Hit Rate"
     target: "≥85%"
     current: "25%"
     status: "🔄 Optimization in progress"
-    
+
   - name: "Constitutional Compliance"
     target: "≥95%"
     current: "98%"
     status: "✅ Exceeding target"
-    
+
   - name: "System Availability"
     target: "≥99.9%"
     current: "99.95%"

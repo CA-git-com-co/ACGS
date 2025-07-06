@@ -290,24 +290,25 @@ class BuildOrchestrator:
             "## Build Summary",
             f"- **Total Duration**: {total_duration:.2f} seconds",
             f"- **Successful Steps**: {successful_steps}/{total_steps}",
-            f"- **Overall Status**: {'✅ SUCCESS' if successful_steps == total_steps else '❌ PARTIAL FAILURE'}",
+            (
+                "- **Overall Status**:"
+                f" {'✅ SUCCESS' if successful_steps == total_steps else '❌ PARTIAL FAILURE'}"
+            ),
             "",
         ]
 
         # Step details
         for step_name, result in results.items():
             status = "✅ SUCCESS" if result.success else "❌ FAILED"
-            report_lines.extend(
-                [
-                    f"### {step_name.title()}",
-                    f"- **Status**: {status}",
-                    f"- **Duration**: {result.duration:.2f} seconds",
-                    f"- **Output Files**: {len(result.output_files)}",
-                    f"- **Warnings**: {len(result.warnings)}",
-                    f"- **Errors**: {len(result.errors)}",
-                    "",
-                ]
-            )
+            report_lines.extend([
+                f"### {step_name.title()}",
+                f"- **Status**: {status}",
+                f"- **Duration**: {result.duration:.2f} seconds",
+                f"- **Output Files**: {len(result.output_files)}",
+                f"- **Warnings**: {len(result.warnings)}",
+                f"- **Errors**: {len(result.errors)}",
+                "",
+            ])
 
             if result.output_files:
                 report_lines.append("**Output Files:**")

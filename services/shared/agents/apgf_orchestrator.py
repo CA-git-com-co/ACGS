@@ -29,14 +29,16 @@ from datetime import datetime, timedelta, timezone
 from enum import Enum
 from typing import Any, Optional, Union
 
+# Import for document-based communication
+from pydantic import BaseModel, Field
 from services.shared.constitutional_safety_framework import (
     ConstitutionalSafetyFramework,
 )
+from services.shared.monitoring.enhanced_performance_monitor import (
+    EnhancedPerformanceMonitor,
+)
 from services.shared.monitoring.intelligent_alerting_system import (
     IntelligentAlertingSystem,
-)
-from services.shared.monitoring.enhanced_performance_monitor import (
-    EnhancedPerformanceMonitor, MetricType
 )
 from services.shared.security.enhanced_audit_logging import EnhancedAuditLogger
 from services.shared.security.unified_input_validation import EnhancedInputValidator
@@ -47,15 +49,12 @@ from services.shared.service_mesh.service_orchestrator import (
 from .apgf_event_publisher import APGFEventPublisher
 from .dynamic_agent import AgentCommunication, DynamicAgent
 from .policy_builder import AgentConfig, PolicyBuilder
-from .tool_router import ToolRouter
 from .specialized_agent_roles import (
-    SpecializedRoleFactory, SpecializedRoleRegistry, AgentRoleType
+    AgentRoleType,
+    SpecializedRoleFactory,
+    SpecializedRoleRegistry,
 )
-
-# Import for document-based communication
-from pydantic import BaseModel, Field
-from typing import Dict, List
-import json
+from .tool_router import ToolRouter
 
 logger = logging.getLogger(__name__)
 
@@ -89,16 +88,17 @@ class CoordinationStrategy(Enum):
 
 # Document-Based Communication Schemas (MetaGPT Assembly Line Paradigm)
 
+
 class RequirementsSchema(BaseModel):
     """Schema for requirements documents in the assembly line"""
 
     requirements_id: str = Field(..., description="Unique identifier for requirements")
     workflow_id: str = Field(..., description="Associated workflow ID")
-    functional_requirements: List[str] = Field(default_factory=list)
-    non_functional_requirements: List[str] = Field(default_factory=list)
-    constraints: List[str] = Field(default_factory=list)
-    success_criteria: Dict[str, Any] = Field(default_factory=dict)
-    constitutional_compliance: Dict[str, Any] = Field(default_factory=dict)
+    functional_requirements: list[str] = Field(default_factory=list)
+    non_functional_requirements: list[str] = Field(default_factory=list)
+    constraints: list[str] = Field(default_factory=list)
+    success_criteria: dict[str, Any] = Field(default_factory=dict)
+    constitutional_compliance: dict[str, Any] = Field(default_factory=dict)
     created_by: str = Field(..., description="Agent ID that created requirements")
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     approved: bool = Field(default=False)
@@ -111,11 +111,11 @@ class DesignSchema(BaseModel):
     requirements_id: str = Field(..., description="Reference to requirements")
     workflow_id: str = Field(..., description="Associated workflow ID")
     architecture_overview: str = Field(..., description="High-level architecture")
-    component_specifications: Dict[str, Any] = Field(default_factory=dict)
-    interface_definitions: Dict[str, Any] = Field(default_factory=dict)
-    data_flow_diagrams: List[str] = Field(default_factory=list)
-    security_considerations: List[str] = Field(default_factory=list)
-    constitutional_alignment: Dict[str, Any] = Field(default_factory=dict)
+    component_specifications: dict[str, Any] = Field(default_factory=dict)
+    interface_definitions: dict[str, Any] = Field(default_factory=dict)
+    data_flow_diagrams: list[str] = Field(default_factory=list)
+    security_considerations: list[str] = Field(default_factory=list)
+    constitutional_alignment: dict[str, Any] = Field(default_factory=dict)
     created_by: str = Field(..., description="Agent ID that created design")
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     approved: bool = Field(default=False)
@@ -127,12 +127,12 @@ class ImplementationSchema(BaseModel):
     implementation_id: str = Field(..., description="Unique identifier")
     design_id: str = Field(..., description="Reference to design")
     workflow_id: str = Field(..., description="Associated workflow ID")
-    code_specifications: Dict[str, Any] = Field(default_factory=dict)
-    deployment_instructions: List[str] = Field(default_factory=list)
-    configuration_parameters: Dict[str, Any] = Field(default_factory=dict)
-    testing_procedures: List[str] = Field(default_factory=list)
-    rollback_procedures: List[str] = Field(default_factory=list)
-    constitutional_checks: Dict[str, Any] = Field(default_factory=dict)
+    code_specifications: dict[str, Any] = Field(default_factory=dict)
+    deployment_instructions: list[str] = Field(default_factory=list)
+    configuration_parameters: dict[str, Any] = Field(default_factory=dict)
+    testing_procedures: list[str] = Field(default_factory=list)
+    rollback_procedures: list[str] = Field(default_factory=list)
+    constitutional_checks: dict[str, Any] = Field(default_factory=dict)
     created_by: str = Field(..., description="Agent ID that created implementation")
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     approved: bool = Field(default=False)
@@ -144,13 +144,13 @@ class ValidationSchema(BaseModel):
     validation_id: str = Field(..., description="Unique identifier for validation")
     implementation_id: str = Field(..., description="Reference to implementation")
     workflow_id: str = Field(..., description="Associated workflow ID")
-    test_results: Dict[str, Any] = Field(default_factory=dict)
-    compliance_checks: Dict[str, Any] = Field(default_factory=dict)
-    performance_metrics: Dict[str, Any] = Field(default_factory=dict)
-    security_audit_results: Dict[str, Any] = Field(default_factory=dict)
-    constitutional_validation: Dict[str, Any] = Field(default_factory=dict)
-    issues_identified: List[str] = Field(default_factory=list)
-    recommendations: List[str] = Field(default_factory=list)
+    test_results: dict[str, Any] = Field(default_factory=dict)
+    compliance_checks: dict[str, Any] = Field(default_factory=dict)
+    performance_metrics: dict[str, Any] = Field(default_factory=dict)
+    security_audit_results: dict[str, Any] = Field(default_factory=dict)
+    constitutional_validation: dict[str, Any] = Field(default_factory=dict)
+    issues_identified: list[str] = Field(default_factory=list)
+    recommendations: list[str] = Field(default_factory=list)
     approval_status: str = Field(default="pending")
     created_by: str = Field(..., description="Agent ID that created validation")
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
@@ -166,9 +166,9 @@ class DocumentChannel:
     def __init__(self, schema: type[BaseModel], channel_name: str = None):
         self.schema = schema
         self.channel_name = channel_name or schema.__name__.lower()
-        self.documents: Dict[str, BaseModel] = {}
-        self.subscribers: List[str] = []  # Agent IDs subscribed to this channel
-        self.document_history: List[Dict[str, Any]] = []
+        self.documents: dict[str, BaseModel] = {}
+        self.subscribers: list[str] = []  # Agent IDs subscribed to this channel
+        self.document_history: list[dict[str, Any]] = []
 
     async def publish_document(self, document: BaseModel, publisher_id: str) -> str:
         """Publish a document to the channel"""
@@ -183,7 +183,7 @@ class DocumentChannel:
             "document_id": document_id,
             "publisher_id": publisher_id,
             "timestamp": datetime.now(timezone.utc),
-            "action": "published"
+            "action": "published",
         })
 
         # Notify subscribers (in production, this would use event bus)
@@ -291,7 +291,7 @@ class APGFOrchestrator:
         self.message_broker = MessageBroker()
 
         # Document-based communication channels for structured workflows
-        self.document_channels: Dict[str, DocumentChannel] = {}
+        self.document_channels: dict[str, DocumentChannel] = {}
 
         # Enhanced Performance Monitor for revolutionary metrics tracking
         self.performance_monitor = EnhancedPerformanceMonitor(retention_hours=24)
@@ -426,7 +426,9 @@ class APGFOrchestrator:
             })
             raise
 
-    async def create_structured_workflow(self, task_description: str) -> AgentCoordinationPlan:
+    async def create_structured_workflow(
+        self, task_description: str
+    ) -> AgentCoordinationPlan:
         """
         Creates a structured workflow with specialized agent roles using
         document-based communication channels following MetaGPT's assembly line paradigm.
@@ -443,27 +445,21 @@ class APGFOrchestrator:
                 "policy_manager": await self._create_policy_manager_agent(),
                 "architect": await self._create_architect_agent(),
                 "validator": await self._create_validator_agent(),
-                "implementer": await self._create_implementer_agent()
+                "implementer": await self._create_implementer_agent(),
             }
 
             # Create document-based communication channels
             channels = {
                 "requirements": DocumentChannel(
-                    schema=RequirementsSchema,
-                    channel_name="requirements"
+                    schema=RequirementsSchema, channel_name="requirements"
                 ),
-                "design": DocumentChannel(
-                    schema=DesignSchema,
-                    channel_name="design"
-                ),
+                "design": DocumentChannel(schema=DesignSchema, channel_name="design"),
                 "implementation": DocumentChannel(
-                    schema=ImplementationSchema,
-                    channel_name="implementation"
+                    schema=ImplementationSchema, channel_name="implementation"
                 ),
                 "validation": DocumentChannel(
-                    schema=ValidationSchema,
-                    channel_name="validation"
-                )
+                    schema=ValidationSchema, channel_name="validation"
+                ),
             }
 
             # Create coordination plan with structured communication
@@ -476,7 +472,7 @@ class APGFOrchestrator:
                 communication_rules=await self._setup_document_channels(channels),
                 conflict_resolution_protocol="consensus_voting",
                 success_criteria={"constitutional_compliance": 0.95},
-                timeout_minutes=30
+                timeout_minutes=30,
             )
 
             # Store channels for workflow execution
@@ -1018,7 +1014,7 @@ class APGFOrchestrator:
             role_id,
             self.constitutional_framework,
             self.audit_logger,
-            self.performance_monitor
+            self.performance_monitor,
         )
 
         # Initialize and register role
@@ -1037,7 +1033,7 @@ class APGFOrchestrator:
             role_id,
             self.constitutional_framework,
             self.audit_logger,
-            self.performance_monitor
+            self.performance_monitor,
         )
 
         # Initialize and register role
@@ -1056,7 +1052,7 @@ class APGFOrchestrator:
             role_id,
             self.constitutional_framework,
             self.audit_logger,
-            self.performance_monitor
+            self.performance_monitor,
         )
 
         # Initialize and register role
@@ -1075,7 +1071,7 @@ class APGFOrchestrator:
             role_id,
             self.constitutional_framework,
             self.audit_logger,
-            self.performance_monitor
+            self.performance_monitor,
         )
 
         # Initialize and register role
@@ -1084,7 +1080,9 @@ class APGFOrchestrator:
 
         return role_id
 
-    async def _assign_agents_to_tasks(self, roles: Dict[str, str]) -> Dict[str, List[str]]:
+    async def _assign_agents_to_tasks(
+        self, roles: dict[str, str]
+    ) -> dict[str, list[str]]:
         """Assign agents to tasks based on their roles"""
         assignments = {}
 
@@ -1093,7 +1091,7 @@ class APGFOrchestrator:
             "policy_manager": ["requirements_gathering", "stakeholder_coordination"],
             "architect": ["system_design", "architecture_specification"],
             "implementer": ["policy_implementation", "system_deployment"],
-            "validator": ["validation_testing", "compliance_verification"]
+            "validator": ["validation_testing", "compliance_verification"],
         }
 
         for role, agent_id in roles.items():
@@ -1101,7 +1099,7 @@ class APGFOrchestrator:
 
         return assignments
 
-    async def _create_task_dependencies(self) -> Dict[str, List[str]]:
+    async def _create_task_dependencies(self) -> dict[str, list[str]]:
         """Create task dependency mapping for structured workflow"""
         return {
             "system_design": ["requirements_gathering"],
@@ -1109,10 +1107,12 @@ class APGFOrchestrator:
             "policy_implementation": ["architecture_specification"],
             "system_deployment": ["policy_implementation"],
             "validation_testing": ["system_deployment"],
-            "compliance_verification": ["validation_testing"]
+            "compliance_verification": ["validation_testing"],
         }
 
-    async def _setup_document_channels(self, channels: Dict[str, DocumentChannel]) -> Dict[str, Any]:
+    async def _setup_document_channels(
+        self, channels: dict[str, DocumentChannel]
+    ) -> dict[str, Any]:
         """Setup communication rules for document channels"""
         rules = {}
 
@@ -1122,7 +1122,7 @@ class APGFOrchestrator:
                 "schema": channel.schema.__name__,
                 "subscribers": channel.subscribers,
                 "approval_required": True,
-                "constitutional_validation": True
+                "constitutional_validation": True,
             }
 
         return rules

@@ -208,21 +208,21 @@ class CodeFileHandler(FileSystemEventHandler):
         self.event_queue = event_queue
         self.supported_extensions = {'.py', '.js', '.ts', '.yml', '.json', '.sql'}
         self.ignore_patterns = {'__pycache__', '.git', 'node_modules', '.pytest_cache'}
-        
+
     def should_process_file(self, file_path: str) -> bool:
         path = Path(file_path)
-        
+
         # Check extension
         if path.suffix not in self.supported_extensions:
             return False
-            
+
         # Check ignore patterns
         for ignore in self.ignore_patterns:
             if ignore in path.parts:
                 return False
-                
+
         return True
-    
+
     def on_modified(self, event):
         if not event.is_directory and self.should_process_file(event.src_path):
             asyncio.create_task(

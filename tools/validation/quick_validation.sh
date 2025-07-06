@@ -92,14 +92,14 @@ if [ -f "$COMPOSE_FILE" ]; then
     else
         log_error "PostgreSQL port mapping incorrect in docker-compose.acgs.yml"
     fi
-    
+
     # Check Redis port
     if grep -q "6389:6379" "$COMPOSE_FILE"; then
         log_success "Redis port mapping correct (6389:6379)"
     else
         log_error "Redis port mapping incorrect in docker-compose.acgs.yml"
     fi
-    
+
     # Check Auth service port
     if grep -q "8016:8016" "$COMPOSE_FILE"; then
         log_success "Auth service port mapping correct (8016:8016)"
@@ -129,14 +129,14 @@ for file in "${PERF_FILES[@]}"; do
         else
             log_warning "Throughput target (≥100 RPS) not found in $file"
         fi
-        
+
         # Check latency target
         if grep -q "≤5ms\|P99.*5ms" "$REPO_ROOT/$file"; then
             log_success "Latency target (≤5ms P99) found in $file"
         else
             log_warning "Latency target (≤5ms P99) not found in $file"
         fi
-        
+
         # Check cache hit rate
         if grep -q "≥85%.*cache\|cache.*≥85%" "$REPO_ROOT/$file"; then
             log_success "Cache hit rate target (≥85%) found in $file"
@@ -205,7 +205,7 @@ API_FILES=$(find "$REPO_ROOT/docs/api" -name "*.md" 2>/dev/null || true)
 if [ -n "$API_FILES" ]; then
     API_WITH_HASH=0
     API_TOTAL=0
-    
+
     echo "$API_FILES" | while read -r api_file; do
         if [ -f "$api_file" ]; then
             API_TOTAL=$((API_TOTAL + 1))
@@ -230,7 +230,7 @@ SERVICE_STATUS_FILE="$REPO_ROOT/docs/operations/SERVICE_STATUS.md"
 if [ -f "$SERVICE_STATUS_FILE" ]; then
     # Check for service ports
     EXPECTED_PORTS=(8016 8001 8002 8003 8004 8005 8006 5439 6389)
-    
+
     for port in "${EXPECTED_PORTS[@]}"; do
         if grep -q "$port" "$SERVICE_STATUS_FILE"; then
             log_success "Port $port documented in SERVICE_STATUS.md"
@@ -238,7 +238,7 @@ if [ -f "$SERVICE_STATUS_FILE" ]; then
             log_warning "Port $port not found in SERVICE_STATUS.md"
         fi
     done
-    
+
     # Check for constitutional hash
     if grep -q "$CONSTITUTIONAL_HASH" "$SERVICE_STATUS_FILE"; then
         log_success "Constitutional hash found in SERVICE_STATUS.md"

@@ -1,12 +1,21 @@
 # Governance Synthesis API Documentation
 
+## Service Overview
+
+This service provides core functionality for the ACGS platform with constitutional compliance validation.
+
+**Service**: Governance_Synthesis
+**Port**: 8XXX
+**Constitutional Hash**: `cdd01ef066bc6cf2`
+
+
 <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 
-**Service**: Governance Synthesis Service  
-**Port**: 8004  
-**Base URL**: `http://localhost:8004/api/v1`  
-**Constitutional Hash**: `cdd01ef066bc6cf2`  
-**Version**: 3.0.0  
+**Service**: Governance Synthesis Service
+**Port**: 8004
+**Base URL**: `http://localhost:8004/api/v1`
+**Constitutional Hash**: `cdd01ef066bc6cf2`
+**Version**: 3.0.0
 
 ## Overview
 
@@ -56,7 +65,7 @@ Authorization: Bearer <your-token>
 {
   "constitutional_principles": [
     "transparency",
-    "accountability", 
+    "accountability",
     "democratic_legitimacy"
   ],
   "policy_domain": "data_governance",
@@ -280,7 +289,7 @@ Authorization: Bearer <your-token>
   "constitutional_hash": "cdd01ef066bc6cf2"
 },
     "deepseek-r1": {
-      "status": "healthy", 
+      "status": "healthy",
       "response_time_ms": 312,
       "availability": 0.98
     },
@@ -317,7 +326,10 @@ All endpoints return standardized error responses:
 
 ## Performance Targets
 
-- **Latency**: P99 ≤ 5ms for cached queries
+- **Test Coverage**: ≥ 80%
+
+
+- **Latency**: P99 ≤ 5ms for cached queries (latency_p99: ≤5ms)
 - **Throughput**: ≥ 100 RPS sustained
 - **Cache Hit Rate**: ≥ 85%
 - **Availability**: 99.9% uptime
@@ -382,6 +394,6 @@ curl -X POST http://localhost:8004/api/v1/synthesis/generate \
 
 ---
 
-**Last Updated**: 2025-07-05  
-**API Version**: 3.0.0  
+**Last Updated**: 2025-07-05
+**API Version**: 3.0.0
 **Constitutional Hash**: `cdd01ef066bc6cf2` ✅

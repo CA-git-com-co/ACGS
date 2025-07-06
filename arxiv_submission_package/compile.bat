@@ -155,15 +155,15 @@ if exist "latex_compiler.py" (
     REM Fallback to direct LaTeX compilation
     call :print_status "Running pdflatex (1st pass)..."
     pdflatex -interaction=nonstopmode main.tex
-    
+
     if exist "*.bib" (
         call :print_status "Running bibtex..."
         bibtex main
-        
+
         call :print_status "Running pdflatex (2nd pass)..."
         pdflatex -interaction=nonstopmode main.tex
     )
-    
+
     call :print_status "Running pdflatex (final pass)..."
     pdflatex -interaction=nonstopmode main.tex
 )

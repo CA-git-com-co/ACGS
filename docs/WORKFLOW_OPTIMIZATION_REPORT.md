@@ -181,7 +181,7 @@ cargo audit \
 - **Conditional job execution** based on file changes
 - **Resource-optimized matrices** with parallel limits
 - **Comprehensive quality gates** for all languages
-- **Integrated security scanning** 
+- **Integrated security scanning**
 
 ### **2. Enhanced `dependency-monitoring.yml`**
 - **Multi-language support** (Python, Node.js, Rust)
@@ -218,7 +218,7 @@ cargo audit \
 
 ### **Maintainability Improvements**:
 1. **Standardized naming conventions** across all workflows
-2. **Consistent environment configurations** 
+2. **Consistent environment configurations**
 3. **Comprehensive documentation** and inline comments
 4. **Modular workflow design** for easier maintenance
 

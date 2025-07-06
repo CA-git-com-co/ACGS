@@ -2,10 +2,10 @@
 
 <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 
-**Version**: 1.0  
-**Date**: 2025-07-05  
-**Constitutional Hash**: `cdd01ef066bc6cf2`  
-**Training Duration**: 2-3 hours  
+**Version**: 1.0
+**Date**: 2025-07-05
+**Constitutional Hash**: `cdd01ef066bc6cf2`
+**Training Duration**: 2-3 hours
 **Certification Required**: Yes
 
 ## Overview
@@ -111,9 +111,9 @@ docs/
 
 <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 
-**Service**: Service Name  
-**Port**: 8XXX  
-**Base URL**: `http://localhost:8XXX/api/v1`  
+**Service**: Service Name
+**Port**: 8XXX
+**Base URL**: `http://localhost:8XXX/api/v1`
 **Constitutional Hash**: `cdd01ef066bc6cf2`
 
 ## Overview
@@ -377,7 +377,7 @@ Overall Score = (
 ### Quick Reference Cards
 - [Constitutional Hash Quick Reference](constitutional_hash_reference.md)
 - [Validation Tools Cheat Sheet](validation_tools_cheatsheet.md)
-- [Quality Metrics Dashboard](training/validation_tools_cheatsheet.md)
+- [Quality Metrics Dashboard](../training/validation_tools_cheatsheet.md)
 
 ### Tool Documentation
 - [Quick Validation Script](../validation/quick_validation.sh)
@@ -392,7 +392,7 @@ Overall Score = (
 
 ---
 
-**Training Completed**: _______________  
-**Certification Date**: _______________  
-**Next Renewal Due**: _______________  
+**Training Completed**: _______________
+**Certification Date**: _______________
+**Next Renewal Due**: _______________
 **Constitutional Hash**: `cdd01ef066bc6cf2` ✅

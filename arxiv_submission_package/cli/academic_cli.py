@@ -50,7 +50,10 @@ class AcademicCLI:
     def _create_parser(self) -> argparse.ArgumentParser:
         """Create the main argument parser."""
         parser = argparse.ArgumentParser(
-            description="Academic Submission CLI Tool - Validate and optimize academic papers for submission",
+            description=(
+                "Academic Submission CLI Tool - Validate and optimize academic papers"
+                " for submission"
+            ),
             formatter_class=argparse.RawDescriptionHelpFormatter,
             epilog="""
 Examples:
@@ -263,7 +266,9 @@ Examples:
                 output_path = args.output
             else:
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                output_path = f"validation_report_{timestamp}.{args.format.replace('markdown', 'md')}"
+                output_path = (
+                    f"validation_report_{timestamp}.{args.format.replace('markdown', 'md')}"
+                )
 
             if args.format == "markdown":
                 report_file = generate_validation_report(report, output_path)

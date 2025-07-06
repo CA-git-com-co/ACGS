@@ -1,6 +1,6 @@
 # ACGS-1 Production-Ready Container-Based Development Environment
 # Maintains compatibility with host-based architecture while enabling cloud-native deployment
-version: '3.8'
+version: "3.8"
 
 # Custom network for service communication
 networks:
@@ -36,16 +36,20 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-acgs_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-acgs_password}
       POSTGRES_DB: ${POSTGRES_DB:-acgs_db}
-      POSTGRES_INITDB_ARGS: '--encoding=UTF8 --locale=C'
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./scripts/docker/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
     ports:
-      - '5439:5432'
+      - "5439:5432"
     networks:
       - acgs_network
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-acgs_user} -d ${POSTGRES_DB:-acgs_db}']
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-acgs_user} -d ${POSTGRES_DB:-acgs_db}",
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -55,7 +59,7 @@ services:
       resources:
         limits:
           memory: 1G
-          cpus: '0.5'
+          cpus: "0.5"
 
   # Redis Cache with optimized configuration
   redis:
@@ -65,11 +69,11 @@ services:
     volumes:
       - redis_data:/data
     ports:
-      - '6389:6379'
+      - "6389:6379"
     networks:
       - acgs_network
     healthcheck:
-      test: ['CMD', 'redis-cli', 'ping']
+      test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -79,7 +83,7 @@ services:
       resources:
         limits:
           memory: 512M
-          cpus: '0.25'
+          cpus: "0.25"
 
   # HAProxy Load Balancer for service distribution
   haproxy:
@@ -89,9 +93,9 @@ services:
       - ./scripts/docker/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
       - ./ssl/certs/acgs.pem:/usr/local/etc/haproxy/ssl/acgs.pem:ro
     ports:
-      - '80:80'
-      - '443:443' # HTTPS
-      - '8080:8080' # Stats interface
+      - "80:80"
+      - "443:443" # HTTPS
+      - "8080:8080" # Stats interface
     networks:
       - acgs_network
     depends_on:
@@ -108,7 +112,7 @@ services:
       resources:
         limits:
           memory: 256M
-          cpus: '0.25'
+          cpus: "0.25"
 
   # Open Policy Agent (OPA) - Policy Enforcement Engine
   opa:
@@ -116,19 +120,19 @@ services:
     container_name: acgs_opa
     command:
       [
-        'run',
-        '--server',
-        '--addr',
-        '0.0.0.0:8181',
-        '--log-level',
-        'info',
-        '--config-file',
-        '/config/opa-config.yaml',
-        '/policies',
+        "run",
+        "--server",
+        "--addr",
+        "0.0.0.0:8181",
+        "--log-level",
+        "info",
+        "--config-file",
+        "/config/opa-config.yaml",
+        "/policies",
       ]
     ports:
-      - '8181:8181' # OPA API port
-      - '8282:8282' # OPA diagnostic port
+      - "8181:8181" # OPA API port
+      - "8282:8282" # OPA diagnostic port
     volumes:
       # Policy files
       - ./config/opa/policies:/policies:ro
@@ -159,7 +163,15 @@ services:
     networks:
       - acgs_network
     healthcheck:
-      test: ['CMD', 'wget', '--quiet', '--tries=1', '--spider', 'http://localhost:8181/health']
+      test:
+        [
+          "CMD",
+          "wget",
+          "--quiet",
+          "--tries=1",
+          "--spider",
+          "http://localhost:8181/health",
+        ]
       interval: 15s
       timeout: 5s
       retries: 3
@@ -169,10 +181,10 @@ services:
       resources:
         limits:
           memory: 1G
-          cpus: '0.5'
+          cpus: "0.5"
         reservations:
           memory: 512M
-          cpus: '0.2'
+          cpus: "0.2"
 
   # =============================================================================
   # ACGS Core Services (in dependency order)
@@ -202,9 +214,9 @@ services:
       - NVIDIA_QWEN_ENABLED=${NVIDIA_QWEN_ENABLED:-true}
       - NANO_VLLM_ENABLED=${NANO_VLLM_ENABLED:-true}
     working_dir: /app/services/platform/authentication/auth_service
-    command: ['uvicorn', 'app.main:app', '--host', '0.0.0.0', '--port', '8016']
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8016"]
     ports:
-      - '8016:8016'
+      - "8016:8016"
     volumes:
       - acgs_logs:/app/logs
       - acgs_data:/app/data
@@ -218,7 +230,7 @@ services:
       opa:
         condition: service_healthy
     healthcheck:
-      test: ['CMD', '/app/health_check.sh']
+      test: ["CMD", "/app/health_check.sh"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -228,10 +240,10 @@ services:
       resources:
         limits:
           memory: 1Gi
-          cpus: '500m'
+          cpus: "500m"
         reservations:
           memory: 512Mi
-          cpus: '200m'
+          cpus: "200m"
 
   # AC Service (Port 8001) - Constitutional AI
   ac_service:
@@ -257,9 +269,9 @@ services:
       - NVIDIA_QWEN_ENABLED=${NVIDIA_QWEN_ENABLED:-true}
       - NANO_VLLM_ENABLED=${NANO_VLLM_ENABLED:-true}
     working_dir: /app/services/core/constitutional-ai/ac_service
-    command: ['uvicorn', 'app.main:app', '--host', '0.0.0.0', '--port', '8001']
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001"]
     ports:
-      - '8001:8001'
+      - "8001:8001"
     volumes:
       - acgs_logs:/app/logs
       - acgs_data:/app/data
@@ -269,7 +281,7 @@ services:
       auth_service:
         condition: service_healthy
     healthcheck:
-      test: ['CMD', '/app/health_check.sh']
+      test: ["CMD", "/app/health_check.sh"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -279,10 +291,10 @@ services:
       resources:
         limits:
           memory: 1Gi
-          cpus: '500m'
+          cpus: "500m"
         reservations:
           memory: 512Mi
-          cpus: '200m'
+          cpus: "200m"
 
   # Integrity Service (Port 8002) - Data Integrity and Cryptographic Verification
   integrity_service:
@@ -308,9 +320,9 @@ services:
       - NVIDIA_QWEN_ENABLED=${NVIDIA_QWEN_ENABLED:-true}
       - NANO_VLLM_ENABLED=${NANO_VLLM_ENABLED:-true}
     working_dir: /app/services/platform/integrity/integrity_service
-    command: ['uvicorn', 'app.main:app', '--host', '0.0.0.0', '--port', '8002']
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8002"]
     ports:
-      - '8002:8002'
+      - "8002:8002"
     volumes:
       - acgs_logs:/app/logs
       - acgs_data:/app/data
@@ -320,7 +332,7 @@ services:
       ac_service:
         condition: service_healthy
     healthcheck:
-      test: ['CMD', '/app/health_check.sh']
+      test: ["CMD", "/app/health_check.sh"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -330,10 +342,10 @@ services:
       resources:
         limits:
           memory: 1Gi
-          cpus: '500m'
+          cpus: "500m"
         reservations:
           memory: 512Mi
-          cpus: '200m'
+          cpus: "200m"
 
   # FV Service (Port 8003) - Formal Verification
   fv_service:
@@ -360,9 +372,9 @@ services:
       - NVIDIA_QWEN_ENABLED=${NVIDIA_QWEN_ENABLED:-true}
       - NANO_VLLM_ENABLED=${NANO_VLLM_ENABLED:-true}
     working_dir: /app/services/core/formal-verification/fv_service
-    command: ['uvicorn', 'main:app', '--host', '0.0.0.0', '--port', '8003']
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8003"]
     ports:
-      - '8003:8003'
+      - "8003:8003"
     volumes:
       - acgs_logs:/app/logs
       - acgs_data:/app/data
@@ -372,7 +384,7 @@ services:
       integrity_service:
         condition: service_healthy
     healthcheck:
-      test: ['CMD', '/app/health_check.sh']
+      test: ["CMD", "/app/health_check.sh"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -382,10 +394,10 @@ services:
       resources:
         limits:
           memory: 1Gi
-          cpus: '500m'
+          cpus: "500m"
         reservations:
           memory: 512Mi
-          cpus: '200m'
+          cpus: "200m"
 
   # GS Service (Port 8004) - Governance Synthesis
   gs_service:
@@ -415,9 +427,9 @@ services:
       - NVIDIA_QWEN_ENABLED=${NVIDIA_QWEN_ENABLED:-true}
       - NANO_VLLM_ENABLED=${NANO_VLLM_ENABLED:-true}
     working_dir: /app/services/core/governance-synthesis/gs_service
-    command: ['uvicorn', 'app.main:app', '--host', '0.0.0.0', '--port', '8004']
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8004"]
     ports:
-      - '8004:8004'
+      - "8004:8004"
     volumes:
       - acgs_logs:/app/logs
       - acgs_data:/app/data
@@ -427,7 +439,7 @@ services:
       fv_service:
         condition: service_healthy
     healthcheck:
-      test: ['CMD', '/app/health_check.sh']
+      test: ["CMD", "/app/health_check.sh"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -437,10 +449,10 @@ services:
       resources:
         limits:
           memory: 1Gi
-          cpus: '500m'
+          cpus: "500m"
         reservations:
           memory: 512Mi
-          cpus: '200m'
+          cpus: "200m"
 
   # PGC Service (Port 8005) - Policy Governance Compliance
   pgc_service:
@@ -470,9 +482,9 @@ services:
       - NVIDIA_QWEN_ENABLED=${NVIDIA_QWEN_ENABLED:-true}
       - NANO_VLLM_ENABLED=${NANO_VLLM_ENABLED:-true}
     working_dir: /app/services/core/policy-governance/pgc_service
-    command: ['uvicorn', 'app.main:app', '--host', '0.0.0.0', '--port', '8005']
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8005"]
     ports:
-      - '8005:8005'
+      - "8005:8005"
     volumes:
       - acgs_logs:/app/logs
       - acgs_data:/app/data
@@ -482,7 +494,7 @@ services:
       gs_service:
         condition: service_healthy
     healthcheck:
-      test: ['CMD', '/app/health_check.sh']
+      test: ["CMD", "/app/health_check.sh"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -492,10 +504,10 @@ services:
       resources:
         limits:
           memory: 1Gi
-          cpus: '500m'
+          cpus: "500m"
         reservations:
           memory: 512Mi
-          cpus: '200m'
+          cpus: "200m"
 
   # EC Service (Port 8006) - Evolutionary Computation
   ec_service:
@@ -525,9 +537,9 @@ services:
       - NVIDIA_QWEN_ENABLED=${NVIDIA_QWEN_ENABLED:-true}
       - NANO_VLLM_ENABLED=${NANO_VLLM_ENABLED:-true}
     working_dir: /app/services/core/evolutionary-computation/ec_service
-    command: ['uvicorn', 'app.main:app', '--host', '0.0.0.0', '--port', '8006']
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8006"]
     ports:
-      - '8006:8006'
+      - "8006:8006"
     volumes:
       - acgs_logs:/app/logs
       - acgs_data:/app/data
@@ -537,7 +549,7 @@ services:
       pgc_service:
         condition: service_healthy
     healthcheck:
-      test: ['CMD', '/app/health_check.sh']
+      test: ["CMD", "/app/health_check.sh"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -547,10 +559,10 @@ services:
       resources:
         limits:
           memory: 1Gi
-          cpus: '500m'
+          cpus: "500m"
         reservations:
           memory: 512Mi
-          cpus: '200m'
+          cpus: "200m"
 
   # =============================================================================
   # Development Tools and Solana Environment
@@ -568,7 +580,7 @@ services:
       - ANCHOR_PROVIDER_URL=${ANCHOR_PROVIDER_URL:-https://api.devnet.solana.com}
       - CONSTITUTIONAL_HASH=${CONSTITUTIONAL_HASH:-cdd01ef066bc6cf2}
     working_dir: /app/blockchain
-    command: ['tail', '-f', '/dev/null'] # Keep container running
+    command: ["tail", "-f", "/dev/null"] # Keep container running
     volumes:
       - ./blockchain:/app/blockchain
       - solana_keypairs:/root/.config/solana
@@ -580,7 +592,7 @@ services:
       resources:
         limits:
           memory: 1G
-          cpus: '0.5'
+          cpus: "0.5"
 
   # Log Aggregation Service
   log_aggregator:
@@ -604,7 +616,7 @@ services:
       resources:
         limits:
           memory: 256M
-          cpus: '0.25'
+          cpus: "0.25"
 
   # Agent HITL Service - Human Oversight Integration
   agent_hitl_service:
@@ -626,7 +638,7 @@ services:
       - MAX_CONCURRENT_REVIEWS=100
       - CONFIDENCE_LEARNING_RATE=0.1
     ports:
-      - '8008:8008'
+      - "8008:8008"
     volumes:
       - ./logs/agent-hitl:/app/logs
     networks:
@@ -640,7 +652,7 @@ services:
       resources:
         limits:
           memory: 1G
-          cpus: '1.0'
+          cpus: "1.0"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8008/health"]
       interval: 30s
@@ -653,16 +665,16 @@ services:
     image: prom/prometheus:v2.48.0
     container_name: acgs_prometheus
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--storage.tsdb.retention.time=200h'
-      - '--web.enable-lifecycle'
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/etc/prometheus/console_libraries"
+      - "--web.console.templates=/etc/prometheus/consoles"
+      - "--storage.tsdb.retention.time=200h"
+      - "--web.enable-lifecycle"
     volumes:
       - ./scripts/docker/prometheus.yml:/etc/prometheus/prometheus.yml:ro
     ports:
-      - '9090:9090'
+      - "9090:9090"
     networks:
       - acgs_network
     depends_on:
@@ -678,7 +690,7 @@ services:
       resources:
         limits:
           memory: 512M
-          cpus: '0.5'
+          cpus: "0.5"
 
   # Grafana Dashboard
   grafana:
@@ -692,7 +704,7 @@ services:
       - ./scripts/docker/grafana/provisioning:/etc/grafana/provisioning:ro
       - ./scripts/docker/grafana/dashboards:/var/lib/grafana/dashboards:ro
     ports:
-      - '3001:3000'
+      - "3001:3000"
     networks:
       - acgs_network
     depends_on:
@@ -702,4 +714,4 @@ services:
       resources:
         limits:
           memory: 512M
-          cpus: '0.5'
+          cpus: "0.5"

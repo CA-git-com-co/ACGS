@@ -1,4 +1,6 @@
 # ACGS Code Analysis Engine - Architecture Design Document
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 
 ## Executive Summary
 
@@ -38,7 +40,7 @@ graph TD
         D -->|Dependencies, Call Graph| F[Indexer Service]
         E -->|Vector Embeddings| F
     end
-    
+
     subgraph "Data Stores (Existing ACGS Infrastructure)"
         G[PostgreSQL<br/>Port 5439<br/>pgvector extension]
         H[Redis Cache<br/>Port 6389]
@@ -60,7 +62,7 @@ graph TD
         J -->|Metrics & Logs| O[Monitoring Stack]
         J -->|API Response| I
     end
-    
+
     F --> G
     F -->|Cache Invalidation| H
     F -->|Context Updates| M
@@ -228,7 +230,7 @@ CREATE INDEX idx_code_dependencies_target ON code_dependencies(target_symbol_id)
 CREATE INDEX idx_code_context_links_symbol ON code_context_links(code_symbol_id);
 
 -- Vector similarity index
-CREATE INDEX idx_code_embeddings_vector ON code_embeddings 
+CREATE INDEX idx_code_embeddings_vector ON code_embeddings
 USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100);
 ```
 
@@ -279,20 +281,20 @@ def constitutional_guard(operation_type: str):
         async def wrapper(*args, **kwargs) -> Any:
             # Execute the function
             result = await func(*args, **kwargs)
-            
+
             # Generate compliance signature
             result_hash = hashlib.sha256(
                 json.dumps(result, sort_keys=True).encode()
             ).hexdigest()
-            
+
             compliance_signature = hashlib.sha256(
                 f"{result_hash}{CONSTITUTIONAL_HASH}".encode()
             ).hexdigest()
-            
+
             # Add to response headers or metadata
             if hasattr(result, '__dict__'):
                 result.constitutional_signature = compliance_signature
-            
+
             return result
         return wrapper
     return decorator
@@ -306,10 +308,10 @@ from services.shared.audit.audit_logger import AuditLogger
 async def analyze_code_dependencies(file_path: str, user_id: str):
     """Enhanced with existing audit logging"""
     audit_logger = AuditLogger()
-    
+
     try:
         result = await perform_dependency_analysis(file_path)
-        
+
         await audit_logger.log_code_analysis(
             user_id=user_id,
             operation="dependency_analysis",
@@ -318,7 +320,7 @@ async def analyze_code_dependencies(file_path: str, user_id: str):
             constitutional_hash=CONSTITUTIONAL_HASH,
             success=True
         )
-        
+
         return result
     except Exception as e:
         await audit_logger.log_code_analysis(

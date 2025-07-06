@@ -1,9 +1,9 @@
-
 from fastapi import APIRouter
+
+from .cross_domain_testing import router as cross_domain_router
 from .formal_verification import router as formal_verification_router
 from .proof_pipeline import router as proof_pipeline_router
 from .verify import router as verify_router
-from .cross_domain_testing import router as cross_domain_router
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"

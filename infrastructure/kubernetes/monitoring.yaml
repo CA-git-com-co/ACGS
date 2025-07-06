@@ -51,58 +51,58 @@ spec:
         runAsGroup: 65534
         fsGroup: 65534
       containers:
-      - name: prometheus
-        image: prom/prometheus:v2.45.0
-        imagePullPolicy: IfNotPresent
-        ports:
-        - name: http
-          containerPort: 9090
-          protocol: TCP
-        args:
-        - '--config.file=/etc/prometheus/prometheus.yml'
-        - '--storage.tsdb.path=/prometheus'
-        - '--web.console.libraries=/etc/prometheus/console_libraries'
-        - '--web.console.templates=/etc/prometheus/consoles'
-        - '--storage.tsdb.retention.time=30d'
-        - '--web.enable-lifecycle'
-        - '--web.enable-admin-api'
-        volumeMounts:
-        - name: prometheus-storage
-          mountPath: /prometheus
-        - name: prometheus-config
-          mountPath: /etc/prometheus
-        resources:
-          requests:
-            memory: "2Gi"
-            cpu: "500m"
-          limits:
-            memory: "4Gi"
-            cpu: "1000m"
-        livenessProbe:
-          httpGet:
-            path: /-/healthy
-            port: http
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /-/ready
-            port: http
-          initialDelaySeconds: 5
-          periodSeconds: 5
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-            - ALL
+        - name: prometheus
+          image: prom/prometheus:v2.45.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 9090
+              protocol: TCP
+          args:
+            - "--config.file=/etc/prometheus/prometheus.yml"
+            - "--storage.tsdb.path=/prometheus"
+            - "--web.console.libraries=/etc/prometheus/console_libraries"
+            - "--web.console.templates=/etc/prometheus/consoles"
+            - "--storage.tsdb.retention.time=30d"
+            - "--web.enable-lifecycle"
+            - "--web.enable-admin-api"
+          volumeMounts:
+            - name: prometheus-storage
+              mountPath: /prometheus
+            - name: prometheus-config
+              mountPath: /etc/prometheus
+          resources:
+            requests:
+              memory: "2Gi"
+              cpu: "500m"
+            limits:
+              memory: "4Gi"
+              cpu: "1000m"
+          livenessProbe:
+            httpGet:
+              path: /-/healthy
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /-/ready
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
       volumes:
-      - name: prometheus-storage
-        persistentVolumeClaim:
-          claimName: prometheus-pvc
-      - name: prometheus-config
-        configMap:
-          name: prometheus-config
+        - name: prometheus-storage
+          persistentVolumeClaim:
+            claimName: prometheus-pvc
+        - name: prometheus-config
+          configMap:
+            name: prometheus-config
 
 ---
 # Prometheus Service
@@ -119,10 +119,10 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - name: http
-    port: 9090
-    targetPort: http
-    protocol: TCP
+    - name: http
+      port: 9090
+      targetPort: http
+      protocol: TCP
   selector:
     app.kubernetes.io/name: prometheus
     app.kubernetes.io/component: monitoring
@@ -142,24 +142,24 @@ data:
   prometheus.yml: |
     # Constitutional Compliance Prometheus Configuration
     # Constitutional Hash: cdd01ef066bc6cf2
-    
+
     global:
       scrape_interval: 15s
       evaluation_interval: 15s
       external_labels:
         cluster: 'acgs-production'
         constitutional_hash: 'cdd01ef066bc6cf2'
-    
+
     rule_files:
       - "/etc/prometheus/rules/*.yml"
-    
+
     scrape_configs:
       # Prometheus self-monitoring
       - job_name: 'prometheus'
         static_configs:
           - targets: ['localhost:9090']
         scrape_interval: 15s
-    
+
       # ACGS API Gateway
       - job_name: 'acgs-api-gateway'
         kubernetes_sd_configs:
@@ -178,7 +178,7 @@ data:
           action: keep
           regex: required
         scrape_interval: 10s
-    
+
       # ACGS Core Services
       - job_name: 'acgs-core-services'
         kubernetes_sd_configs:
@@ -197,7 +197,7 @@ data:
           action: keep
           regex: required
         scrape_interval: 15s
-    
+
       # Kubernetes cluster metrics
       - job_name: 'kubernetes-apiservers'
         kubernetes_sd_configs:
@@ -210,7 +210,7 @@ data:
         - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
           action: keep
           regex: default;kubernetes;https
-    
+
       # Node metrics
       - job_name: 'kubernetes-nodes'
         kubernetes_sd_configs:
@@ -228,7 +228,7 @@ data:
           regex: (.+)
           target_label: __metrics_path__
           replacement: /api/v1/nodes/${1}/proxy/metrics
-    
+
       # Pod metrics
       - job_name: 'kubernetes-pods'
         kubernetes_sd_configs:
@@ -262,7 +262,7 @@ data:
   rules.yml: |
     # Constitutional Compliance Alerting Rules
     # Constitutional Hash: cdd01ef066bc6cf2
-    
+
     groups:
     - name: acgs.constitutional.compliance
       rules:
@@ -275,7 +275,7 @@ data:
         annotations:
           summary: "Constitutional hash mismatch detected"
           description: "Service {{ $labels.instance }} has incorrect constitutional hash"
-    
+
       - alert: ConstitutionalComplianceDown
         expr: up{job=~"acgs.*"} == 0
         for: 5m
@@ -285,7 +285,7 @@ data:
         annotations:
           summary: "ACGS service is down"
           description: "{{ $labels.job }} has been down for more than 5 minutes"
-    
+
     - name: acgs.performance
       rules:
       - alert: HighResponseTime
@@ -297,7 +297,7 @@ data:
         annotations:
           summary: "High response time detected"
           description: "95th percentile response time is {{ $value }}s for {{ $labels.job }}"
-    
+
       - alert: HighErrorRate
         expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.01
         for: 5m
@@ -307,7 +307,7 @@ data:
         annotations:
           summary: "High error rate detected"
           description: "Error rate is {{ $value | humanizePercentage }} for {{ $labels.job }}"
-    
+
     - name: acgs.security
       rules:
       - alert: SecurityPolicyViolation
@@ -319,7 +319,7 @@ data:
         annotations:
           summary: "Security policy violation detected"
           description: "{{ $value }} security policy violations in the last 5 minutes"
-    
+
       - alert: AuditTrailIntegrityFailure
         expr: increase(audit_trail_integrity_failures_total[5m]) > 0
         for: 0m
@@ -383,68 +383,68 @@ spec:
         runAsGroup: 472
         fsGroup: 472
       containers:
-      - name: grafana
-        image: grafana/grafana:10.1.0
-        imagePullPolicy: IfNotPresent
-        ports:
-        - name: http
-          containerPort: 3000
-          protocol: TCP
-        env:
-        - name: GF_SECURITY_ADMIN_USER
-          valueFrom:
-            secretKeyRef:
-              name: monitoring-secrets
-              key: GF_SECURITY_ADMIN_USER
-        - name: GF_SECURITY_ADMIN_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: monitoring-secrets
-              key: GF_SECURITY_ADMIN_PASSWORD
-        - name: GF_INSTALL_PLUGINS
-          value: "grafana-piechart-panel,grafana-worldmap-panel"
-        volumeMounts:
-        - name: grafana-storage
-          mountPath: /var/lib/grafana
-        - name: grafana-config
-          mountPath: /etc/grafana
-        - name: grafana-dashboards
-          mountPath: /var/lib/grafana/dashboards
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "250m"
-          limits:
-            memory: "1Gi"
-            cpu: "500m"
-        livenessProbe:
-          httpGet:
-            path: /api/health
-            port: http
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /api/health
-            port: http
-          initialDelaySeconds: 5
-          periodSeconds: 5
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-            - ALL
+        - name: grafana
+          image: grafana/grafana:10.1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          env:
+            - name: GF_SECURITY_ADMIN_USER
+              valueFrom:
+                secretKeyRef:
+                  name: monitoring-secrets
+                  key: GF_SECURITY_ADMIN_USER
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: monitoring-secrets
+                  key: GF_SECURITY_ADMIN_PASSWORD
+            - name: GF_INSTALL_PLUGINS
+              value: "grafana-piechart-panel,grafana-worldmap-panel"
+          volumeMounts:
+            - name: grafana-storage
+              mountPath: /var/lib/grafana
+            - name: grafana-config
+              mountPath: /etc/grafana
+            - name: grafana-dashboards
+              mountPath: /var/lib/grafana/dashboards
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
       volumes:
-      - name: grafana-storage
-        persistentVolumeClaim:
-          claimName: grafana-pvc
-      - name: grafana-config
-        configMap:
-          name: grafana-config
-      - name: grafana-dashboards
-        configMap:
-          name: grafana-dashboards
+        - name: grafana-storage
+          persistentVolumeClaim:
+            claimName: grafana-pvc
+        - name: grafana-config
+          configMap:
+            name: grafana-config
+        - name: grafana-dashboards
+          configMap:
+            name: grafana-dashboards
 
 ---
 # Grafana Service
@@ -461,10 +461,10 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - name: http
-    port: 3000
-    targetPort: http
-    protocol: TCP
+    - name: http
+      port: 3000
+      targetPort: http
+      protocol: TCP
   selector:
     app.kubernetes.io/name: grafana
     app.kubernetes.io/component: monitoring
@@ -484,36 +484,36 @@ data:
   grafana.ini: |
     # Constitutional Compliance Grafana Configuration
     # Constitutional Hash: cdd01ef066bc6cf2
-    
+
     [server]
     http_port = 3000
     root_url = %(protocol)s://%(domain)s:%(http_port)s/
-    
+
     [security]
     admin_user = ${GF_SECURITY_ADMIN_USER}
     admin_password = ${GF_SECURITY_ADMIN_PASSWORD}
     cookie_secure = true
     cookie_samesite = strict
-    
+
     [auth]
     disable_login_form = false
     disable_signout_menu = false
-    
+
     [auth.anonymous]
     enabled = false
-    
+
     [alerting]
     enabled = true
-    
+
     [unified_alerting]
     enabled = true
-    
+
     [panels]
     enable_alpha = true
-    
+
     [feature_toggles]
     enable = constitutionalCompliance
-    
+
     [log]
     mode = console
     level = info

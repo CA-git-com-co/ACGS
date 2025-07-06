@@ -42,31 +42,41 @@ open http://localhost:3000  # Grafana Dashboard (admin/admin)
 ## Test Types
 
 ### 1. Enterprise Test
+
 Standard enterprise load test simulating realistic workloads:
+
 - **Users**: 1,000 concurrent users
 - **Duration**: 30 minutes
 - **Scenarios**: Mixed constitutional, multi-tenant, and governance operations
 
 ### 2. Distributed Test
+
 Multi-node distributed testing across regions:
+
 - **Nodes**: 4 load generators (us-east-1, us-west-2, eu-west-1, ap-southeast-1)
 - **Workers**: 16 total worker processes
 - **Capacity**: Up to 4,000 concurrent users
 
 ### 3. Spike Test
+
 Sudden load increase testing:
+
 - **Pattern**: 100 → 2,000 users in 1 minute
 - **Duration**: 5 minutes
 - **Purpose**: Validate system resilience under sudden traffic spikes
 
 ### 4. Stress Test
+
 Extended high-load testing:
+
 - **Users**: 3,000 concurrent users
 - **Duration**: 15 minutes
 - **Purpose**: Identify system breaking points
 
 ### 5. Constitutional Compliance Test
+
 Focused constitutional compliance validation:
+
 - **Scenarios**: Constitutional verification, formal verification, governance
 - **Monitoring**: Real-time compliance score tracking
 - **Threshold**: ≥95% compliance required
@@ -74,26 +84,31 @@ Focused constitutional compliance validation:
 ## Load Test Scenarios
 
 ### Constitutional Verification (25%)
+
 - Constitutional hash verification
 - Compliance scoring
 - Formal verification requests
 
 ### Multi-Tenant Operations (30%)
+
 - Tenant data access
 - Cross-tenant isolation testing
 - Tenant configuration updates
 
 ### Policy Governance (20%)
+
 - Policy creation and updates
 - Policy retrieval and listing
 - Governance decision validation
 
 ### Formal Verification (15%)
+
 - Z3 SMT solver integration
 - Proof obligation verification
 - Constitutional constraint validation
 
 ### Integrity Operations (10%)
+
 - Audit trail verification
 - Hash chain integrity
 - Cryptographic validation
@@ -139,6 +154,7 @@ Create a JSON configuration file:
 ```
 
 Use with:
+
 ```bash
 python run_load_test.py --config-file custom-config.json --test-name "custom-test"
 ```
@@ -146,31 +162,38 @@ python run_load_test.py --config-file custom-config.json --test-name "custom-tes
 ## Performance Thresholds
 
 ### Response Time
+
 - **P95**: ≤2,000ms
 - **P99**: ≤5,000ms
 - **Average**: ≤1,000ms
 
 ### Throughput
+
 - **Target**: ≥1,000 RPS
 - **Peak**: ≥1,500 RPS
 
 ### Reliability
+
 - **Error Rate**: ≤1%
 - **Constitutional Compliance**: ≥95%
 
 ### Resource Utilization
+
 - **CPU**: ≤80%
 - **Memory**: ≤85%
 
 ## Monitoring and Analysis
 
 ### Real-time Monitoring
+
 - **Locust Web UI**: http://localhost:8089
 - **Grafana Dashboard**: http://localhost:3000
 - **Prometheus Metrics**: http://localhost:9090
 
 ### Automated Analysis
+
 Performance analysis includes:
+
 - Response time percentiles
 - Throughput analysis
 - Error rate analysis
@@ -179,6 +202,7 @@ Performance analysis includes:
 - Pass/fail criteria evaluation
 
 ### Reports Generated
+
 - HTML performance report
 - CSV raw data
 - JSON analysis results
@@ -209,11 +233,13 @@ tests/load_testing/
 ## Docker Services
 
 ### Load Testing
+
 - **locust-master**: Coordinates distributed testing
 - **locust-worker-1-4**: Worker nodes for load generation
 - **analyzer**: Automated results analysis
 
 ### Monitoring
+
 - **prometheus**: Metrics collection
 - **grafana**: Performance dashboards
 - **redis**: Session and cache storage
@@ -260,6 +286,7 @@ The load testing suite validates constitutional compliance through:
 5. **Audit Trail Integrity**: Cryptographic hash chain validation
 
 ### Compliance Thresholds
+
 - **Minimum Score**: 95%
 - **Hash Consistency**: 100%
 - **Isolation Integrity**: 100%
@@ -269,21 +296,25 @@ The load testing suite validates constitutional compliance through:
 ### Common Issues
 
 **Target unreachable**:
+
 ```bash
 # Check target health
 curl http://localhost:8080/gateway/health
 ```
 
 **Constitutional hash mismatch**:
+
 - Verify CONSTITUTIONAL_HASH environment variable
 - Check target system configuration
 
 **Low performance**:
+
 - Increase worker processes
 - Check system resources
 - Validate network connectivity
 
 **High error rates**:
+
 - Check backend service logs
 - Validate authentication tokens
 - Review rate limiting configuration

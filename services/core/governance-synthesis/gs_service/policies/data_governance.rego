@@ -63,7 +63,7 @@ privacy_regulations := {
         "privacy_by_design": true
     },
     "ccpa": {
-        "name": "California Consumer Privacy Act", 
+        "name": "California Consumer Privacy Act",
         "jurisdiction": "California",
         "personal_data_protection": true,
         "opt_out_rights": true,
@@ -113,22 +113,22 @@ allow_data_access if {
     requestor := input.requestor
     data_resource := input.data_resource
     access_purpose := input.access_purpose
-    
+
     # Validate requestor authorization
     requestor_authorized(requestor, data_resource)
-    
+
     # Check data classification and access requirements
     classification_requirements_met(data_resource, requestor)
-    
+
     # Verify purpose legitimacy
     purpose_legitimate(access_purpose, data_resource)
-    
+
     # Constitutional compliance check
     constitutional_principles_satisfied(requestor, data_resource, access_purpose)
-    
+
     # Privacy regulation compliance
     privacy_regulations_compliant(requestor, data_resource, access_purpose)
-    
+
     # Audit trail enabled
     audit_trail_enabled(requestor, data_resource)
 }
@@ -139,22 +139,22 @@ allow_data_processing if {
     data_resource := input.data_resource
     processing_purpose := input.processing_purpose
     processing_method := input.processing_method
-    
+
     # Processor must be authorized
     processor_authorized(processor, data_resource)
-    
+
     # Processing purpose must be legitimate
     processing_purpose_legitimate(processing_purpose, data_resource)
-    
+
     # Processing method must be appropriate
     processing_method_appropriate(processing_method, data_resource)
-    
+
     # Data subject consent obtained (if required)
     consent_requirements_met(data_resource, processing_purpose)
-    
+
     # Technical and organizational measures in place
     technical_measures_adequate(processing_method, data_resource)
-    
+
     # Constitutional compliance verified
     processing_constitutional_compliant(processor, data_resource, processing_purpose)
 }
@@ -165,23 +165,23 @@ allow_data_sharing if {
     recipient := input.recipient
     data_resource := input.data_resource
     sharing_purpose := input.sharing_purpose
-    
+
     # Both parties must be authorized
     sharer_authorized(sharer, data_resource)
     recipient_authorized(recipient, data_resource)
-    
+
     # Sharing purpose must be legitimate
     sharing_purpose_legitimate(sharing_purpose, data_resource)
-    
+
     # Data transfer protections in place
     transfer_protections_adequate(sharer, recipient, data_resource)
-    
+
     # Cross-border transfer compliance (if applicable)
     cross_border_compliance_verified(sharer, recipient, data_resource)
-    
+
     # Data subject rights protected
     data_subject_rights_protected(data_resource, sharing_purpose)
-    
+
     # Constitutional principles maintained
     sharing_constitutional_compliant(sharer, recipient, data_resource)
 }
@@ -192,19 +192,19 @@ allow_data_retention if {
     data_resource := input.data_resource
     retention_period := input.retention_period
     retention_purpose := input.retention_purpose
-    
+
     # Custodian authorized for retention
     custodian_retention_authorized(custodian, data_resource)
-    
+
     # Retention period within limits
     retention_period_compliant(data_resource, retention_period)
-    
+
     # Retention purpose legitimate
     retention_purpose_legitimate(retention_purpose, data_resource)
-    
+
     # Security measures adequate for retention
     retention_security_adequate(custodian, data_resource, retention_period)
-    
+
     # Disposal plan exists
     disposal_plan_exists(custodian, data_resource)
 }
@@ -213,10 +213,10 @@ allow_data_retention if {
 requestor_authorized(requestor, data_resource) if {
     # Check role-based access
     requestor.role in data_resource.authorized_roles
-    
+
     # Check individual permissions
     requestor.id in data_resource.authorized_users
-    
+
     # Verify requestor authentication
     requestor.authenticated == true
     requestor.multi_factor_verified == true
@@ -226,20 +226,20 @@ requestor_authorized(requestor, data_resource) if {
     # Check group-based access
     some group in requestor.groups
     group in data_resource.authorized_groups
-    
+
     # Verify group membership is current
     group_membership_current(requestor, group)
 }
 
 classification_requirements_met(data_resource, requestor) if {
     classification := data_classification_levels[data_resource.classification]
-    
+
     # Check protection level clearance
     requestor.clearance_level >= classification.protection_level
-    
+
     # Check access approval if required
     access_approval_satisfied(data_resource, requestor, classification)
-    
+
     # Multi-party access if required
     multi_party_access_satisfied(data_resource, requestor, classification)
 }
@@ -410,23 +410,23 @@ technical_measures_adequate(method, data_resource) if {
     # Encryption in transit and at rest
     method.encryption_in_transit == true
     method.encryption_at_rest == true
-    
+
     # Access controls
     method.access_controls_implemented == true
     method.authentication_required == true
     method.authorization_verified == true
-    
+
     # Audit logging
     method.audit_logging_enabled == true
     method.integrity_monitoring_enabled == true
-    
+
     # Data protection specific to classification
     classification_specific_measures_implemented(method, data_resource)
 }
 
 classification_specific_measures_implemented(method, data_resource) if {
     classification := data_classification_levels[data_resource.classification]
-    
+
     # Apply measures based on classification level
     protection_measures_for_level(method, classification.protection_level)
 }
@@ -459,12 +459,12 @@ protection_measures_for_level(method, "basic") if {
 transfer_protections_adequate(sharer, recipient, data_resource) if {
     # Adequate level of protection at recipient
     recipient.data_protection_level >= required_protection_level(data_resource)
-    
+
     # Transfer security measures
     transfer_encryption_enabled(sharer, recipient)
     transfer_integrity_verified(sharer, recipient)
     transfer_audit_trail_maintained(sharer, recipient)
-    
+
     # Contractual protections
     data_processing_agreement_exists(sharer, recipient, data_resource)
 }
@@ -483,7 +483,7 @@ cross_border_compliance_verified(sharer, recipient, data_resource) if {
     # Cross-border transfer must be allowed
     classification := data_classification_levels[data_resource.classification]
     classification.cross_border_transfer_allowed == true
-    
+
     # Adequacy decision or appropriate safeguards
     transfer_mechanism_adequate(sharer, recipient, data_resource)
 }
@@ -503,10 +503,10 @@ transfer_mechanism_adequate(sharer, recipient, data_resource) if {
 retention_period_compliant(data_resource, retention_period) if {
     classification := data_classification_levels[data_resource.classification]
     retention_period <= classification.retention_limit_days
-    
+
     # Legal retention requirements satisfied
     legal_retention_requirements_met(data_resource, retention_period)
-    
+
     # Business justification exists
     business_justification_adequate(data_resource, retention_period)
 }
@@ -532,27 +532,27 @@ data_governance_score := score if {
     processing_score := calculate_processing_governance_score(input)
     sharing_score := calculate_sharing_governance_score(input)
     retention_score := calculate_retention_governance_score(input)
-    
+
     score := (access_score + processing_score + sharing_score + retention_score) / 4
 }
 
 calculate_access_governance_score(input) := score if {
     base_score := 0.5
-    
+
     # Constitutional compliance bonus
     constitutional_bonus := constitutional_compliance_bonus(input)
-    
+
     # Privacy regulation compliance bonus
     privacy_bonus := privacy_regulation_compliance_bonus(input)
-    
+
     # Security measures bonus
     security_bonus := security_measures_bonus(input)
-    
+
     score := base_score + constitutional_bonus + privacy_bonus + security_bonus
 }
 
 constitutional_compliance_bonus(input) := bonus if {
-    violations := count([v | 
+    violations := count([v |
         some principle_name, principle in constitutional_data_principles
         not data_principle_satisfied(principle_name, principle, input.requestor, input.data_resource, input.purpose)
     ])
@@ -561,11 +561,11 @@ constitutional_compliance_bonus(input) := bonus if {
 
 privacy_regulation_compliance_bonus(input) := bonus if {
     applicable_regs := determine_applicable_regulations(input.data_resource)
-    compliant_regs := count([reg | 
+    compliant_regs := count([reg |
         some reg in applicable_regs
         regulation_compliant(reg, input.requestor, input.data_resource, input.purpose)
     ])
-    
+
     bonus := (compliant_regs / count(applicable_regs)) * 0.2
 }
 
@@ -581,7 +581,7 @@ calculate_security_measures_score(input) := score if {
         audit_trail_enabled(input.requestor, input.data_resource),
         access_controls_enforced(input.data_resource)
     ]
-    
+
     implemented_measures := count([m | m := measures[_]; m == true])
     score := implemented_measures / count(measures)
 }

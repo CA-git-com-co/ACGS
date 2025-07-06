@@ -1,4 +1,6 @@
 # ACGE Phase 1: Architecture Design & Prototype (Months 1-6)
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 
 ## Executive Summary
 

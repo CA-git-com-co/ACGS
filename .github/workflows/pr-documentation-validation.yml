@@ -4,10 +4,10 @@ on:
   pull_request:
     branches: [main, master, develop]
     paths:
-      - 'docs/**'
-      - 'services/**'
-      - '.github/workflows/**'
-      - 'tools/**'
+      - "docs/**"
+      - "services/**"
+      - ".github/workflows/**"
+      - "tools/**"
 
 permissions:
   contents: read
@@ -15,7 +15,7 @@ permissions:
   checks: write
 
 env:
-  CONSTITUTIONAL_HASH: 'cdd01ef066bc6cf2'
+  CONSTITUTIONAL_HASH: "cdd01ef066bc6cf2"
 
 jobs:
   validate_documentation:
@@ -31,14 +31,14 @@ jobs:
       - name: Setup validation environment
         run: |
           echo "🔧 Setting up documentation validation environment..."
-          
+
           # Install dependencies
           sudo apt-get update && sudo apt-get install -y jq yamllint
-          
+
           # Make validation scripts executable
           chmod +x tools/validation/quick_validation.sh
           chmod +x tools/metrics/collect_daily_metrics.sh
-          
+
           # Set environment variables
           echo "PR_NUMBER=${{ github.event.number }}" >> $GITHUB_ENV
           echo "VALIDATION_DATE=$(date +%Y-%m-%d)" >> $GITHUB_ENV
@@ -47,7 +47,7 @@ jobs:
         id: constitutional_check
         run: |
           echo "🔍 Checking constitutional compliance..."
-          
+
           # Run quick validation
           if ./tools/validation/quick_validation.sh; then
             echo "constitutional_status=pass" >> $GITHUB_OUTPUT
@@ -56,11 +56,11 @@ jobs:
             echo "constitutional_status=fail" >> $GITHUB_OUTPUT
             echo "❌ Constitutional compliance validation failed"
           fi
-          
+
           # Check for new documentation files without constitutional hash
           NEW_DOCS=$(git diff --name-only origin/main...HEAD | grep -E '\.md$' | grep '^docs/' || true)
           MISSING_HASH=""
-          
+
           if [ -n "$NEW_DOCS" ]; then
             echo "📄 Checking new documentation files..."
             for file in $NEW_DOCS; do
@@ -71,7 +71,7 @@ jobs:
               fi
             done
           fi
-          
+
           if [ -n "$MISSING_HASH" ]; then
             echo "missing_hash_files<<EOF" >> $GITHUB_OUTPUT
             echo -e "$MISSING_HASH" >> $GITHUB_OUTPUT
@@ -85,10 +85,10 @@ jobs:
         id: yaml_check
         run: |
           echo "📝 Validating YAML workflow files..."
-          
+
           YAML_FILES=$(git diff --name-only origin/main...HEAD | grep -E '\.ya?ml$' || true)
           YAML_ERRORS=""
-          
+
           if [ -n "$YAML_FILES" ]; then
             for file in $YAML_FILES; do
               if [ -f "$file" ]; then
@@ -99,7 +99,7 @@ jobs:
               fi
             done
           fi
-          
+
           if [ -n "$YAML_ERRORS" ]; then
             echo "yaml_errors<<EOF" >> $GITHUB_OUTPUT
             echo -e "$YAML_ERRORS" >> $GITHUB_OUTPUT
@@ -113,35 +113,35 @@ jobs:
         id: api_docs_check
         run: |
           echo "📚 Checking API documentation standards..."
-          
+
           API_DOCS=$(git diff --name-only origin/main...HEAD | grep '^docs/api/.*\.md$' || true)
           API_ISSUES=""
-          
+
           if [ -n "$API_DOCS" ]; then
             for file in $API_DOCS; do
               if [ -f "$file" ]; then
                 echo "Checking $file..."
-                
+
                 # Check for required sections
                 if ! grep -q "Constitutional Hash:" "$file"; then
                   API_ISSUES="$API_ISSUES\n- $file: Missing constitutional hash reference"
                 fi
-                
+
                 if ! grep -q "Performance Targets" "$file"; then
                   API_ISSUES="$API_ISSUES\n- $file: Missing performance targets section"
                 fi
-                
+
                 if ! grep -q "constitutional_hash.*$CONSTITUTIONAL_HASH" "$file"; then
                   API_ISSUES="$API_ISSUES\n- $file: Missing constitutional hash in response examples"
                 fi
-                
+
                 if ! grep -q "Port.*8[0-9][0-9][0-9]" "$file"; then
                   API_ISSUES="$API_ISSUES\n- $file: Missing or invalid port specification"
                 fi
               fi
             done
           fi
-          
+
           if [ -n "$API_ISSUES" ]; then
             echo "api_issues<<EOF" >> $GITHUB_OUTPUT
             echo -e "$API_ISSUES" >> $GITHUB_OUTPUT
@@ -155,16 +155,16 @@ jobs:
         id: pr_metrics
         run: |
           echo "📊 Collecting metrics for PR validation..."
-          
+
           # Run metrics collection
           if ./tools/metrics/collect_daily_metrics.sh; then
             METRICS_FILE="metrics/daily_metrics_$(date +%Y-%m-%d).json"
-            
+
             if [ -f "$METRICS_FILE" ]; then
               COMPLIANCE_RATE=$(jq -r '.metrics.constitutional_compliance.rate // 0' "$METRICS_FILE")
               OVERALL_SCORE=$(jq -r '.metrics.overall_quality.score // 0' "$METRICS_FILE")
               OVERALL_STATUS=$(jq -r '.metrics.overall_quality.status // "UNKNOWN"' "$METRICS_FILE")
-              
+
               echo "compliance_rate=$COMPLIANCE_RATE" >> $GITHUB_OUTPUT
               echo "overall_score=$OVERALL_SCORE" >> $GITHUB_OUTPUT
               echo "overall_status=$OVERALL_STATUS" >> $GITHUB_OUTPUT
@@ -190,23 +190,23 @@ jobs:
             const complianceRate = '${{ steps.pr_metrics.outputs.compliance_rate }}';
             const overallScore = '${{ steps.pr_metrics.outputs.overall_score }}';
             const overallStatus = '${{ steps.pr_metrics.outputs.overall_status }}';
-            
+
             let statusEmoji = '✅';
             let overallResult = 'PASSED';
-            
+
             if (constitutionalStatus === 'fail' || yamlStatus === 'fail' || apiStatus === 'fail' || hasMissingHash) {
               statusEmoji = '❌';
               overallResult = 'FAILED';
             }
-            
+
             let comment = `# ${statusEmoji} Documentation Validation Results
-            
-            **PR**: #${{ github.event.number }}  
-            **Constitutional Hash**: \`${{ env.CONSTITUTIONAL_HASH }}\`  
+
+            **PR**: #${{ github.event.number }}
+            **Constitutional Hash**: \`${{ env.CONSTITUTIONAL_HASH }}\`
             **Overall Result**: ${overallResult}
-            
+
             ## Validation Summary
-            
+
             | Check | Status | Details |
             |-------|--------|---------|
             | Constitutional Compliance | ${constitutionalStatus === 'pass' ? '✅ PASS' : '❌ FAIL'} | ${complianceRate}% compliance rate |
@@ -214,89 +214,89 @@ jobs:
             | API Documentation | ${apiStatus === 'pass' ? '✅ PASS' : '❌ FAIL'} | Standards compliance |
             | Overall Quality | ${overallScore >= 85 ? '✅ PASS' : '⚠️ REVIEW'} | ${overallScore}% (${overallStatus}) |
             `;
-            
+
             if (hasMissingHash) {
               comment += `
             ## ❌ Constitutional Compliance Issues
-            
+
             The following new documentation files are missing the constitutional hash:
             ${missingHashFiles}
-            
+
             **Action Required**: Add the following comment to each file:
             \`\`\`html
             <!-- Constitutional Hash: ${{ env.CONSTITUTIONAL_HASH }} -->
             \`\`\`
             `;
             }
-            
+
             if (yamlErrors) {
               comment += `
             ## ❌ YAML Syntax Issues
-            
+
             ${yamlErrors}
-            
+
             **Action Required**: Fix YAML syntax errors in the listed files.
             `;
             }
-            
+
             if (apiIssues) {
               comment += `
             ## ❌ API Documentation Issues
-            
+
             ${apiIssues}
-            
+
             **Action Required**: Update API documentation to meet ACGS standards.
             `;
             }
-            
+
             if (overallResult === 'PASSED') {
               comment += `
             ## ✅ All Checks Passed
-            
+
             Great work! Your documentation changes meet all ACGS standards:
             - Constitutional compliance: ${complianceRate}%
             - Overall quality score: ${overallScore}%
             - All validation checks passed
-            
+
             Your PR is ready for review! 🎉
             `;
             } else {
               comment += `
             ## 🔧 Next Steps
-            
+
             1. **Fix Critical Issues**: Address constitutional compliance and syntax errors
             2. **Update Documentation**: Ensure all files meet ACGS standards
             3. **Re-run Validation**: Push changes to trigger validation again
             4. **Request Review**: Once all checks pass, request PR review
-            
+
             ## 📚 Resources
-            
+
             - [Constitutional Hash Reference](docs/training/constitutional_hash_reference.md)
             - [Validation Tools Cheat Sheet](docs/training/validation_tools_cheatsheet.md)
             - [Team Training Guide](docs/training/ACGS_DOCUMENTATION_TEAM_TRAINING_GUIDE.md)
             `;
             }
-            
+
             comment += `
-            
+
             ---
-            
-            **Automated Validation**: This comment was generated by the PR documentation validation workflow.  
+
+            **Automated Validation**: This comment was generated by the PR documentation validation workflow.
             **Constitutional Hash**: \`${{ env.CONSTITUTIONAL_HASH }}\` ✅
             `;
-            
+
             // Find existing validation comment
             const comments = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
             });
-            
-            const existingComment = comments.data.find(comment => 
-              comment.body.includes('Documentation Validation Results') && 
+
+            const existingComment = comments.data.find(comment =>
+              comment.body.includes('Documentation Validation Results') &&
               comment.user.type === 'Bot'
             );
-            
+
             if (existingComment) {
               // Update existing comment
               await github.rest.issues.updateComment({
@@ -323,17 +323,17 @@ jobs:
             const yamlStatus = '${{ steps.yaml_check.outputs.yaml_status }}';
             const apiStatus = '${{ steps.api_docs_check.outputs.api_status }}';
             const hasMissingHash = '${{ steps.constitutional_check.outputs.has_missing_hash }}' === 'true';
-            
-            const allPassed = constitutionalStatus === 'pass' && 
-                             yamlStatus === 'pass' && 
-                             apiStatus === 'pass' && 
+
+            const allPassed = constitutionalStatus === 'pass' &&
+                             yamlStatus === 'pass' &&
+                             apiStatus === 'pass' &&
                              !hasMissingHash;
-            
+
             const state = allPassed ? 'success' : 'failure';
-            const description = allPassed ? 
-              'All documentation validation checks passed' : 
+            const description = allPassed ?
+              'All documentation validation checks passed' :
               'Documentation validation issues found - see PR comment for details';
-            
+
             await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,

@@ -22,7 +22,6 @@ import aioredis
 import asyncpg
 import httpx
 import structlog
-import uvicorn
 from fastapi import BackgroundTasks, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from prometheus_client import Counter, Gauge, Histogram, start_http_server
@@ -101,13 +100,11 @@ class EvaluationResult:
         factors = []
         for criterion, score in self.scores.items():
             if score < 0.8:
-                factors.append(
-                    {
-                        "criterion": criterion,
-                        "score": score,
-                        "severity": "high" if score < 0.5 else "medium",
-                    }
-                )
+                factors.append({
+                    "criterion": criterion,
+                    "score": score,
+                    "severity": "high" if score < 0.5 else "medium",
+                })
         return factors
 
 
@@ -658,7 +655,7 @@ class ApprovalWorkflow:
             async with self.db_pool.acquire() as conn:
                 await conn.execute(
                     """
-                    UPDATE agent_evolutions 
+                    UPDATE agent_evolutions
                     SET status = $1, evaluation_scores = $2, total_score = $3,
                         decision = $4, reviewer_id = $5, decision_timestamp = NOW()
                     WHERE evolution_id = $6
@@ -859,9 +856,9 @@ class RollbackManager:
                 row = await conn.fetchrow(
                     """
                     SELECT version, evaluation_scores, created_at
-                    FROM agent_evolutions 
+                    FROM agent_evolutions
                     WHERE agent_id = $1 AND status = 'deployed'
-                    ORDER BY created_at DESC 
+                    ORDER BY created_at DESC
                     LIMIT 1
                 """,
                     agent_id,
@@ -888,9 +885,9 @@ class RollbackManager:
                 row = await conn.fetchrow(
                     """
                     SELECT version, evaluation_scores, created_at
-                    FROM agent_evolutions 
+                    FROM agent_evolutions
                     WHERE agent_id = $1 AND status = 'deployed'
-                    ORDER BY created_at DESC 
+                    ORDER BY created_at DESC
                     LIMIT 1 OFFSET 1
                 """,
                     agent_id,
@@ -1085,8 +1082,7 @@ async def create_tables():
     """Create database tables."""
     try:
         async with db_pool.acquire() as conn:
-            await conn.execute(
-                """
+            await conn.execute("""
                 CREATE TABLE IF NOT EXISTS agent_evolutions (
                     evolution_id UUID PRIMARY KEY,
                     agent_id VARCHAR(255) NOT NULL,
@@ -1100,7 +1096,7 @@ async def create_tables():
                     justification TEXT,
                     created_at TIMESTAMPTZ DEFAULT NOW()
                 );
-                
+
                 CREATE TABLE IF NOT EXISTS review_tasks (
                     task_id UUID PRIMARY KEY,
                     evolution_id UUID REFERENCES agent_evolutions(evolution_id),
@@ -1109,12 +1105,11 @@ async def create_tables():
                     assigned_to VARCHAR(255),
                     created_at TIMESTAMPTZ DEFAULT NOW()
                 );
-                
+
                 CREATE INDEX IF NOT EXISTS idx_evolutions_agent_id ON agent_evolutions(agent_id);
                 CREATE INDEX IF NOT EXISTS idx_evolutions_status ON agent_evolutions(status);
                 CREATE INDEX IF NOT EXISTS idx_reviews_status ON review_tasks(status);
-            """
-            )
+            """)
 
         logger.info("Database tables created successfully")
 
@@ -1291,32 +1286,27 @@ async def get_pending_reviews():
     """Get all pending human review tasks."""
     try:
         async with db_pool.acquire() as conn:
-            rows = await conn.fetch(
-                """
+            rows = await conn.fetch("""
                 SELECT r.*, e.agent_id, e.evaluation_scores, e.total_score
                 FROM review_tasks r
                 JOIN agent_evolutions e ON r.evolution_id = e.evolution_id
                 WHERE r.status = 'pending'
                 ORDER BY r.priority DESC, r.created_at ASC
-            """
-            )
+            """)
 
             tasks = []
             for row in rows:
-                tasks.append(
-                    {
-                        "task_id": row["task_id"],
-                        "evolution_id": row["evolution_id"],
-                        "agent_id": row["agent_id"],
-                        "priority": row["priority"],
-                        "total_score": row["total_score"],
-                        "created_at": row["created_at"].isoformat(),
-                        "age_minutes": (
-                            datetime.now(timezone.utc) - row["created_at"]
-                        ).total_seconds()
-                        / 60,
-                    }
-                )
+                tasks.append({
+                    "task_id": row["task_id"],
+                    "evolution_id": row["evolution_id"],
+                    "agent_id": row["agent_id"],
+                    "priority": row["priority"],
+                    "total_score": row["total_score"],
+                    "created_at": row["created_at"].isoformat(),
+                    "age_minutes": (
+                        datetime.now(timezone.utc) - row["created_at"]
+                    ).total_seconds() / 60,
+                })
 
             return {"pending_tasks": tasks, "total_count": len(tasks)}
 
@@ -1362,8 +1352,8 @@ async def approve_review(
             # Update evolution
             await conn.execute(
                 """
-                UPDATE agent_evolutions 
-                SET status = 'approved', decision = 'HUMAN_APPROVED', 
+                UPDATE agent_evolutions
+                SET status = 'approved', decision = 'HUMAN_APPROVED',
                     reviewer_id = 'human_reviewer', justification = $2,
                     decision_timestamp = NOW()
                 WHERE evolution_id = $1
@@ -1428,8 +1418,8 @@ async def reject_review(
             # Update evolution
             await conn.execute(
                 """
-                UPDATE agent_evolutions 
-                SET status = 'rejected', decision = 'REJECTED', 
+                UPDATE agent_evolutions
+                SET status = 'rejected', decision = 'REJECTED',
                     reviewer_id = 'human_reviewer', justification = $2,
                     decision_timestamp = NOW()
                 WHERE evolution_id = $1
@@ -1464,7 +1454,7 @@ async def get_agent_evolution_history(agent_id: str, limit: int = 20):
         async with db_pool.acquire() as conn:
             rows = await conn.fetch(
                 """
-                SELECT evolution_id, version, status, total_score, decision, 
+                SELECT evolution_id, version, status, total_score, decision,
                        decision_timestamp, created_at
                 FROM agent_evolutions
                 WHERE agent_id = $1
@@ -1477,21 +1467,19 @@ async def get_agent_evolution_history(agent_id: str, limit: int = 20):
 
             history = []
             for row in rows:
-                history.append(
-                    {
-                        "evolution_id": row["evolution_id"],
-                        "version": row["version"],
-                        "status": row["status"],
-                        "total_score": row["total_score"],
-                        "decision": row["decision"],
-                        "decision_timestamp": (
-                            row["decision_timestamp"].isoformat()
-                            if row["decision_timestamp"]
-                            else None
-                        ),
-                        "created_at": row["created_at"].isoformat(),
-                    }
-                )
+                history.append({
+                    "evolution_id": row["evolution_id"],
+                    "version": row["version"],
+                    "status": row["status"],
+                    "total_score": row["total_score"],
+                    "decision": row["decision"],
+                    "decision_timestamp": (
+                        row["decision_timestamp"].isoformat()
+                        if row["decision_timestamp"]
+                        else None
+                    ),
+                    "created_at": row["created_at"].isoformat(),
+                })
 
             return {
                 "agent_id": agent_id,
@@ -1510,27 +1498,21 @@ async def get_metrics():
     try:
         # Calculate auto-approval rate
         async with db_pool.acquire() as conn:
-            total_row = await conn.fetchrow(
-                """
-                SELECT COUNT(*) as total FROM agent_evolutions 
+            total_row = await conn.fetchrow("""
+                SELECT COUNT(*) as total FROM agent_evolutions
                 WHERE created_at > NOW() - INTERVAL '24 hours'
-            """
-            )
+            """)
 
-            auto_row = await conn.fetchrow(
-                """
-                SELECT COUNT(*) as auto_approved FROM agent_evolutions 
+            auto_row = await conn.fetchrow("""
+                SELECT COUNT(*) as auto_approved FROM agent_evolutions
                 WHERE created_at > NOW() - INTERVAL '24 hours'
                 AND decision = 'AUTO_APPROVED'
-            """
-            )
+            """)
 
-            pending_row = await conn.fetchrow(
-                """
-                SELECT COUNT(*) as pending FROM review_tasks 
+            pending_row = await conn.fetchrow("""
+                SELECT COUNT(*) as pending FROM review_tasks
                 WHERE status = 'pending'
-            """
-            )
+            """)
 
             total_evolutions = total_row["total"] if total_row else 0
             auto_approved = auto_row["auto_approved"] if auto_row else 0
@@ -1560,21 +1542,21 @@ async def get_metrics():
 
 if __name__ == "__main__":
     # Legacy service - redirects to unified service
-    import sys
     import os
-    
+    import sys
+
     print(f"⚠️  Legacy Evolution Service on port {SERVICE_PORT}")
-    print(f"🔄 Please use the new Unified Evolution/Compiler Service on port 8006")
-    print(f"📍 Run: python unified_main.py")
-    print(f"🔗 API Docs: http://localhost:8006/docs")
-    
+    print("🔄 Please use the new Unified Evolution/Compiler Service on port 8006")
+    print("📍 Run: python unified_main.py")
+    print("🔗 API Docs: http://localhost:8006/docs")
+
     # Option to auto-redirect to unified service
     if "--redirect" in sys.argv:
         print("🚀 Starting unified service...")
         os.system("python unified_main.py")
     else:
         print("💡 Add --redirect flag to automatically start unified service")
-        
+
     # uvicorn.run(
     #     "main:app", host="0.0.0.0", port=SERVICE_PORT, log_level="info", reload=False
     # )

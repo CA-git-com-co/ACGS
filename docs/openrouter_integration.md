@@ -66,10 +66,10 @@ from services.shared.ai_model_service import AIModelService
 
 async def validate_agent_decision():
     ai_service = AIModelService()
-    
+
     # Validate an agent's decision
     decision = "Agent wants to process user data without explicit consent"
-    
+
     response = await ai_service.validate_constitutional_compliance(
         content=decision,
         context={
@@ -78,7 +78,7 @@ async def validate_agent_decision():
             "urgency": "high"
         }
     )
-    
+
     print(f"Compliance Status: {response.content}")
     print(f"Confidence: {response.confidence_score}")
     return response
@@ -92,21 +92,21 @@ asyncio.run(validate_agent_decision())
 ```python
 async def analyze_policy_change():
     ai_service = AIModelService()
-    
+
     decision = {
         "type": "policy_update",
-        "title": "Enhanced Data Retention Policy", 
+        "title": "Enhanced Data Retention Policy",
         "description": "Extend retention from 30 to 90 days",
         "justification": "Improved model training accuracy"
     }
-    
+
     stakeholders = ["users", "agents", "administrators"]
-    
+
     response = await ai_service.analyze_governance_decision(
         decision=decision,
         stakeholders=stakeholders
     )
-    
+
     print(f"Analysis: {response.content}")
     return response
 ```
@@ -116,7 +116,7 @@ async def analyze_policy_change():
 ```python
 async def evaluate_agent_behavior():
     ai_service = AIModelService()
-    
+
     behavior_log = [
         {
             "timestamp": "2024-01-15T10:00:00Z",
@@ -131,12 +131,12 @@ async def evaluate_agent_behavior():
             "human_oversight": False  # Potential violation
         }
     ]
-    
+
     response = await ai_service.evaluate_agent_behavior(
         agent_id="EthicsAgent_001",
         behavior_log=behavior_log
     )
-    
+
     print(f"Behavior Assessment: {response.content}")
     return response
 ```
@@ -170,7 +170,7 @@ from services.shared.ai_model_service import AIModelService
 class EthicsAgent:
     def __init__(self):
         self.ai_service = AIModelService()
-    
+
     async def validate_decision(self, decision_context):
         # Use OpenRouter for constitutional validation
         response = await self.ai_service.validate_constitutional_compliance(
@@ -185,12 +185,12 @@ class EthicsAgent:
 # In governance service
 async def evaluate_policy_proposal(self, proposal):
     ai_service = AIModelService()
-    
+
     analysis = await ai_service.analyze_governance_decision(
         decision=proposal,
         stakeholders=proposal.get("affected_parties", [])
     )
-    
+
     # Use analysis for policy approval workflow
     return analysis
 ```
@@ -293,4 +293,4 @@ await asyncio.sleep(0.1)
 3. **Advanced Features** - Add custom constitutional rules
 4. **Monitoring Dashboard** - Create real-time monitoring interface
 
-For more information, see the [ACGS Documentation](../README.md) and [API Reference](api/index.md).
+For more information, see the [ACGS Documentation](../README.md) and [API Reference](#api-overview).

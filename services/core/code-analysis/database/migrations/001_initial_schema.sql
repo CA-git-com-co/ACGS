@@ -35,7 +35,7 @@ CREATE TABLE code_symbols (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     constitutional_hash VARCHAR(64) DEFAULT 'cdd01ef066bc6cf2' NOT NULL,
-    
+
     -- Constraints
     CONSTRAINT unique_symbol_location UNIQUE (file_path, symbol_name, start_line),
     CONSTRAINT valid_line_numbers CHECK (end_line >= start_line)
@@ -54,10 +54,10 @@ CREATE TABLE code_dependencies (
     confidence_score FLOAT DEFAULT 1.0 CHECK (confidence_score >= 0.0 AND confidence_score <= 1.0),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     constitutional_hash VARCHAR(64) DEFAULT 'cdd01ef066bc6cf2' NOT NULL,
-    
+
     -- Constraints
     CONSTRAINT valid_dependency CHECK (
-        (target_symbol_id IS NOT NULL AND NOT is_external) OR 
+        (target_symbol_id IS NOT NULL AND NOT is_external) OR
         (target_name IS NOT NULL AND is_external)
     )
 );
@@ -74,7 +74,7 @@ CREATE TABLE code_embeddings (
     chunk_type VARCHAR(50) NOT NULL CHECK (chunk_type IN ('function_body', 'class_definition', 'docstring', 'signature')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     constitutional_hash VARCHAR(64) DEFAULT 'cdd01ef066bc6cf2' NOT NULL,
-    
+
     -- Constraints
     CONSTRAINT unique_symbol_embedding UNIQUE (symbol_id, chunk_type, embedding_model)
 );
@@ -92,7 +92,7 @@ CREATE TABLE code_context_links (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     constitutional_hash VARCHAR(64) DEFAULT 'cdd01ef066bc6cf2' NOT NULL,
-    
+
     -- Constraints
     CONSTRAINT unique_code_context_link UNIQUE (code_symbol_id, context_id, relationship_type)
 );
@@ -137,7 +137,7 @@ CREATE TABLE analysis_jobs (
     processing_time_ms BIGINT, -- Processing time in milliseconds
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     constitutional_hash VARCHAR(64) DEFAULT 'cdd01ef066bc6cf2' NOT NULL,
-    
+
     -- Constraints
     CONSTRAINT valid_job_timing CHECK (
         (started_at IS NULL AND completed_at IS NULL) OR
@@ -170,16 +170,16 @@ END;
 $$ language 'plpgsql';
 
 -- Apply updated_at triggers to relevant tables
-CREATE TRIGGER update_code_symbols_updated_at 
-    BEFORE UPDATE ON code_symbols 
+CREATE TRIGGER update_code_symbols_updated_at
+    BEFORE UPDATE ON code_symbols
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_code_context_links_updated_at 
-    BEFORE UPDATE ON code_context_links 
+CREATE TRIGGER update_code_context_links_updated_at
+    BEFORE UPDATE ON code_context_links
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_file_metadata_updated_at 
-    BEFORE UPDATE ON file_metadata 
+CREATE TRIGGER update_file_metadata_updated_at
+    BEFORE UPDATE ON file_metadata
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Create constitutional compliance validation function

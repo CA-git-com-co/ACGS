@@ -1,9 +1,18 @@
 # ACGS API Documentation Index
 
+## Service Overview
+
+This service provides core functionality for the ACGS platform with constitutional compliance validation.
+
+**Service**: Automated API Index
+**Port**: 8001
+**Constitutional Hash**: `cdd01ef066bc6cf2`
+
+
 <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 
-**Generated**: 2025-07-05 19:55:49  
-**Constitutional Hash**: `cdd01ef066bc6cf2`  
+**Generated**: 2025-07-05 19:55:49
+**Constitutional Hash**: `cdd01ef066bc6cf2`
 **Total APIs**: 10
 
 ## Quick Navigation
@@ -46,7 +55,9 @@ Standardized error responses:
   "error": {
     "code": "ERROR_CODE",
     "message": "Human readable message",
-    "details": {}
+    "details": {,
+  "constitutional_hash": "cdd01ef066bc6cf2"
+}
   },
   "constitutional_hash": "cdd01ef066bc6cf2",
   "timestamp": "ISO 8601 timestamp"
@@ -54,7 +65,10 @@ Standardized error responses:
 ```
 
 ### Performance Targets
-- **Latency**: P99 ≤ 5ms for cached queries
+
+- **Test Coverage**: ≥ 80%
+
+- **Latency**: P99 ≤ 5ms for cached queries (latency_p99: ≤5ms)
 - **Throughput**: ≥ 100 RPS sustained
 - **Cache Hit Rate**: ≥ 85%
 - **Availability**: 99.9% uptime
@@ -86,5 +100,14 @@ All APIs implement constitutional compliance:
 
 ---
 
-**Auto-Generated**: This index is automatically updated during deployment  
+**Auto-Generated**: This index is automatically updated during deployment
 **Constitutional Hash**: `cdd01ef066bc6cf2` ✅
+
+## Monitoring
+
+Service health and performance metrics:
+
+- Health check endpoint: `/health`
+- Metrics endpoint: `/metrics`
+- Constitutional compliance status: `/compliance`
+- Performance dashboard integration available

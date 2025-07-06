@@ -1,5 +1,14 @@
 # API Documentation Index
 
+## Service Overview
+
+This service provides core functionality for the ACGS platform with constitutional compliance validation.
+
+**Service**: API Documentation Index
+**Port**: 8000
+**Constitutional Hash**: `cdd01ef066bc6cf2`
+
+
 <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 
 
@@ -12,37 +21,37 @@ This index provides an overview and navigation links for the ACGS-2 API document
 
 ## Auxiliary Services
 
-- **[Integration API](api/index.md)** - Cross-service workflows, data sharing, and event subscriptions
-- **[Audit Logging API](api/index.md)** - Compliance records, user activity tracking, and event audit trails
-- **[Alert Management API](api/index.md)** - Policy violation alerts, constitutional breach monitoring, and governance notifications
+- **[Integration API](#api-overview)** - Cross-service workflows, data sharing, and event subscriptions
+- **[Audit Logging API](#api-overview)** - Compliance records, user activity tracking, and event audit trails
+- **[Alert Management API](#api-overview)** - Policy violation alerts, constitutional breach monitoring, and governance notifications
 
 ## System Services
 
-- **[Health Checks & Metrics](api/index.md)** - Service status verification, performance metrics, and system health checks
-- **[Service Discovery](api/index.md)** - API endpoints discovery, endpoint lifecycle management, and service registry access
+- **[Health Checks & Metrics](#api-overview)** - Service status verification, performance metrics, and system health checks
+- **[Service Discovery](#api-overview)** - API endpoints discovery, endpoint lifecycle management, and service registry access
 
 ## Reference Materials
 
-- **[Core API Specification](core-api-spec.md)** - ACGS-2 API base path conventions, response formats, and API versioning
-- **[JWT Token Specification](jwt-spec.md)** - JWT structure, token claims, and encryption standards
-- **[Error Handling Guidelines](error-handling.md)** - ACGS-2 API error codes, response structures, and client error guidelines
-- **[Request Rate Limiting](rate-limiting.md)** - User throttling, request quotas, and API rate limiting policies
+- **[Core API Specification](#core-api-specification)** - ACGS-2 API base path conventions, response formats, and API versioning
+- **[JWT Token Specification](#jwt-token-specification)** - JWT structure, token claims, and encryption standards
+- **[Error Handling Guidelines](#error-handling)** - ACGS-2 API error codes, response structures, and client error guidelines
+- **[Request Rate Limiting](#rate-limiting)** - User throttling, request quotas, and API rate limiting policies
 
 ## Example Clients
 
-- **[Python SDK Example](clients/python-sdk.md)** - Python SDK installation, authentication, and sample workflow
-- **[JavaScript Client Example](clients/javascript-client.md)** - JavaScript library integration, API request patterns, and error handling
-- **[Go Client Library](clients/go-client.md)** - Go client setup, concurrent requests, and response parsing
+- **[Python SDK Example](#python-sdk)** - Python SDK installation, authentication, and sample workflow
+- **[JavaScript Client Example](#javascript-client)** - JavaScript library integration, API request patterns, and error handling
+- **[Go Client Library](#go-client)** - Go client setup, concurrent requests, and response parsing
 
 ## Additional Resources
 
-- **[API Development Roadmap](api-roadmap.md)** - Future endpoint expansions, planned features, and roadmap milestones
-- **[Governance Policies Reference](policies/governance.md)** - Data governance, policy lifecycle management, and constitutional compliance guidelines
+- **[API Development Roadmap](#api-roadmap)** - Future endpoint expansions, planned features, and roadmap milestones
+- **[Governance Policies Reference](#governance-policies)** - Data governance, policy lifecycle management, and constitutional compliance guidelines
 
 For detailed system architecture, deployment guides, and full technical specifications, see the ACGS-2 project documentation repository.
 ## Performance Targets
 
-- **Latency**: P99 ≤ 5ms for cached queries
+- **Latency**: P99 ≤ 5ms for cached queries (latency_p99: ≤5ms)
 - **Throughput**: ≥ 100 RPS sustained
 - **Cache Hit Rate**: ≥ 85%
 - **Test Coverage**: ≥ 80%

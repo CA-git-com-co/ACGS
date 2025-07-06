@@ -66,12 +66,12 @@ The `openrouter/cypher-alpha:free` model provides:
 ```python
 async def validate_agent_decision():
     ai_service = AIModelService()
-    
+
     decision = """
-    EthicsAgent_001 wants to access user personal data 
+    EthicsAgent_001 wants to access user personal data
     for bias analysis without explicit consent.
     """
-    
+
     response = await ai_service.validate_constitutional_compliance(
         content=decision,
         context={
@@ -80,13 +80,13 @@ async def validate_agent_decision():
             "risk_level": "high"
         }
     )
-    
+
     # Response will include:
     # - Compliance status
     # - Specific violations found
     # - Recommendations
     # - Risk assessment
-    
+
     return response
 ```
 
@@ -95,21 +95,21 @@ async def validate_agent_decision():
 ```python
 async def analyze_policy_change():
     ai_service = AIModelService()
-    
+
     policy_change = {
         "type": "data_retention_update",
         "current": "30 days retention",
-        "proposed": "90 days retention", 
+        "proposed": "90 days retention",
         "justification": "Better model training"
     }
-    
+
     stakeholders = ["users", "agents", "administrators"]
-    
+
     response = await ai_service.analyze_governance_decision(
         decision=policy_change,
         stakeholders=stakeholders
     )
-    
+
     return response
 ```
 
@@ -118,7 +118,7 @@ async def analyze_policy_change():
 ```python
 async def monitor_agent_behavior():
     ai_service = AIModelService()
-    
+
     behavior_log = [
         {
             "timestamp": "2024-01-15T10:00:00Z",
@@ -127,12 +127,12 @@ async def monitor_agent_behavior():
             "risk_level": "high"
         }
     ]
-    
+
     response = await ai_service.evaluate_agent_behavior(
         agent_id="EthicsAgent_001",
         behavior_log=behavior_log
     )
-    
+
     return response
 ```
 
@@ -144,14 +144,14 @@ async def monitor_agent_behavior():
 class EthicsAgent:
     def __init__(self):
         self.ai_service = AIModelService()
-    
+
     async def validate_decision(self, decision_context):
         # Use free model for validation
         response = await self.ai_service.validate_constitutional_compliance(
             content=str(decision_context),
             context={"agent_type": "ethics"}
         )
-        
+
         # Parse response for compliance status
         is_compliant = "compliant" in response.content.lower()
         return is_compliant, response.content
@@ -163,14 +163,14 @@ class EthicsAgent:
 class GovernanceService:
     def __init__(self):
         self.ai_service = AIModelService()
-    
+
     async def evaluate_policy(self, policy_proposal):
         # Analyze with free model
         analysis = await self.ai_service.analyze_governance_decision(
             decision=policy_proposal,
             stakeholders=policy_proposal.get("affected_parties", [])
         )
-        
+
         return analysis
 ```
 
@@ -242,11 +242,11 @@ print(f"Success Rate: {calculate_success_rate(metrics)}")
 def calculate_success_rate(metrics):
     if metrics['total_requests'] == 0:
         return 0.0
-    
+
     # Calculate based on error responses
-    error_responses = sum(1 for response in ai_service.response_history 
+    error_responses = sum(1 for response in ai_service.response_history
                          if response.metadata.get('error', False))
-    
+
     success_rate = (metrics['total_requests'] - error_responses) / metrics['total_requests']
     return success_rate * 100
 ```

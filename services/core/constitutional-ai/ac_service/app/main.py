@@ -34,15 +34,15 @@ try:
     )
     sys.path.insert(0, os.path.abspath(shared_path))
 
+    from clients.tenant_service_client import TenantServiceClient, service_registry
     from middleware.tenant_middleware import (
         TenantContextMiddleware,
         TenantSecurityMiddleware,
-        get_tenant_context,
         get_optional_tenant_context,
-        get_tenant_db
+        get_tenant_context,
+        get_tenant_db,
     )
-    from clients.tenant_service_client import TenantServiceClient, service_registry
-    
+
     MULTI_TENANT_AVAILABLE = True
     print("✅ Multi-tenant components loaded successfully")
 except ImportError as e:
@@ -133,7 +133,7 @@ except ImportError as e:
     print(f"⚠️ Comprehensive audit logging not available: {e}")
     AUDIT_LOGGING_AVAILABLE = False
 
-from fastapi import FastAPI, Depends
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
@@ -239,7 +239,10 @@ JWT_ALGORITHM = "HS256"
 # Create FastAPI application with enhanced configuration
 app = FastAPI(
     title="ACGS-1 Production Constitutional AI Service",
-    description="Advanced constitutional compliance validation with formal verification and real-time monitoring",
+    description=(
+        "Advanced constitutional compliance validation with formal verification and"
+        " real-time monitoring"
+    ),
     version="4.0.0",  # Upgraded for multi-tenant support
     docs_url="/docs",
     redoc_url="/redoc",
@@ -255,16 +258,21 @@ if MULTI_TENANT_AVAILABLE:
         jwt_secret_key=JWT_SECRET_KEY,
         jwt_algorithm=JWT_ALGORITHM,
         exclude_paths=[
-            "/docs", "/redoc", "/openapi.json", "/health", "/metrics",
-            "/", "/api/v1/status"
+            "/docs",
+            "/redoc",
+            "/openapi.json",
+            "/health",
+            "/metrics",
+            "/",
+            "/api/v1/status",
         ],
         require_tenant=True,  # Constitutional AI requires tenant context
-        bypass_paths=["/health", "/metrics", "/", "/api/v1/status"]
+        bypass_paths=["/health", "/metrics", "/", "/api/v1/status"],
     )
-    
+
     # Add tenant security middleware
     app.add_middleware(TenantSecurityMiddleware)
-    
+
     print("✅ Multi-tenant middleware applied to constitutional ai service")
 else:
     print("⚠️ Multi-tenant middleware not available for constitutional ai service")
@@ -376,10 +384,7 @@ else:
 
 # Add enhanced security middleware
 try:
-    from security.security_middleware import (
-        SecurityConfig,
-        SecurityMiddleware,
-    )
+    from security.security_middleware import SecurityConfig, SecurityMiddleware
 
     # Configure security for AC service
     security_config = SecurityConfig()
@@ -610,7 +615,9 @@ async def api_status():
         },
         "algorithms": {
             "compliance_scoring": "Multi-dimensional constitutional fidelity analysis",
-            "formal_verification": "Integration with FV service for mathematical proofs",
+            "formal_verification": (
+                "Integration with FV service for mathematical proofs"
+            ),
             "violation_detection": "Real-time constitutional violation monitoring",
             "impact_analysis": "Constitutional impact assessment algorithms",
         },
@@ -633,7 +640,9 @@ async def get_constitutional_rules():
             {
                 "id": "CONST-001",
                 "title": "Democratic Participation",
-                "description": "All governance decisions must allow democratic participation",
+                "description": (
+                    "All governance decisions must allow democratic participation"
+                ),
                 "category": "democratic_process",
                 "priority": "high",
                 "enforcement": "mandatory",
@@ -659,7 +668,9 @@ async def get_constitutional_rules():
             {
                 "id": "CONST-003",
                 "title": "Constitutional Compliance",
-                "description": "All policies must comply with constitutional principles",
+                "description": (
+                    "All policies must comply with constitutional principles"
+                ),
                 "category": "constitutional_alignment",
                 "priority": "critical",
                 "enforcement": "blocking",
@@ -736,16 +747,16 @@ async def validate_with_prompt_framework(request: dict[str, Any]):
         # Simulate constitutional validation with structured prompting
         validation_query = f"""
         Please analyze the following content for constitutional compliance:
-        
+
         Content: {content}
-        
+
         Evaluate against these constitutional principles:
         1. Democratic participation requirements
-        2. Transparency and accountability standards  
+        2. Transparency and accountability standards
         3. Rights protection and due process
         4. Separation of powers respect
         5. Legal framework compliance
-        
+
         Provide a structured analysis with compliance score and recommendations.
         """
 
@@ -799,13 +810,11 @@ async def validate_constitutional_safety_endpoint(request: dict[str, Any]):
         is_safe, violations = validate_constitutional_safety(content, context)
 
         # Perform ethics evaluation
-        ethics_evaluation = evaluate_constitutional_ethics(
-            {
-                "content": content,
-                "action": request.get("action", "analyze"),
-                "context": context,
-            }
-        )
+        ethics_evaluation = evaluate_constitutional_ethics({
+            "content": content,
+            "action": request.get("action", "analyze"),
+            "context": context,
+        })
 
         return {
             "validation_id": f"SAFETY-{int(time.time())}",
@@ -1133,7 +1142,7 @@ def _calculate_average_severity(validation_results) -> str:
 async def validate_content_simple(
     request: ContentValidationRequest,
     session: AsyncSession = Depends(get_tenant_db) if MULTI_TENANT_AVAILABLE else None,
-    tenant_context = Depends(get_tenant_context) if MULTI_TENANT_AVAILABLE else None
+    tenant_context=Depends(get_tenant_context) if MULTI_TENANT_AVAILABLE else None,
 ):
     """Simple content validation endpoint for red-teaming and security testing."""
     try:
@@ -1169,34 +1178,28 @@ async def validate_content_simple(
             "ignore constitutional" in content.lower()
             or "bypass constitutional" in content.lower()
         ):
-            constitutional_violations.append(
-                {
-                    "type": "constitutional_violation",
-                    "violation": "bypass_attempt",
-                    "message": "Constitutional bypass attempt detected",
-                    "severity": "critical",
-                }
-            )
+            constitutional_violations.append({
+                "type": "constitutional_violation",
+                "violation": "bypass_attempt",
+                "message": "Constitutional bypass attempt detected",
+                "severity": "critical",
+            })
 
         if "unrestricted access" in content.lower():
-            constitutional_violations.append(
-                {
-                    "type": "constitutional_violation",
-                    "violation": "unrestricted_access",
-                    "message": "Unrestricted access violation",
-                    "severity": "high",
-                }
-            )
+            constitutional_violations.append({
+                "type": "constitutional_violation",
+                "violation": "unrestricted_access",
+                "message": "Unrestricted access violation",
+                "severity": "high",
+            })
 
         if "void constitutional" in content.lower():
-            constitutional_violations.append(
-                {
-                    "type": "constitutional_violation",
-                    "violation": "nullification_attempt",
-                    "message": "Constitutional nullification attempt",
-                    "severity": "critical",
-                }
-            )
+            constitutional_violations.append({
+                "type": "constitutional_violation",
+                "violation": "nullification_attempt",
+                "message": "Constitutional nullification attempt",
+                "severity": "critical",
+            })
 
         # Determine validation result
         is_compliant = not (threats_detected or constitutional_violations)
@@ -1246,7 +1249,7 @@ async def validate_content_simple(
 async def validate_constitutional_compliance(
     request: ConstitutionalComplianceRequest,
     session: AsyncSession = Depends(get_tenant_db) if MULTI_TENANT_AVAILABLE else None,
-    tenant_context = Depends(get_tenant_context) if MULTI_TENANT_AVAILABLE else None
+    tenant_context=Depends(get_tenant_context) if MULTI_TENANT_AVAILABLE else None,
 ):
     """Enhanced constitutional compliance validation with sophisticated algorithms."""
     try:
@@ -1438,7 +1441,10 @@ async def get_voting_mechanisms():
                     "id": "unanimous",
                     "name": "Unanimous Consent",
                     "threshold": 1.0,
-                    "description": "Requires unanimous consent for critical constitutional amendments",
+                    "description": (
+                        "Requires unanimous consent for critical constitutional"
+                        " amendments"
+                    ),
                 },
             ],
             "default_mechanism": "supermajority",
@@ -1499,14 +1505,12 @@ async def calculate_compliance_score(request: dict[str, Any]):
         elif rule_id == "CONST-005":
             detailed_score["dimensional_scores"]["rights_protection"] = score
 
-        detailed_score["score_breakdown"].append(
-            {
-                "dimension": result["rule_name"],
-                "score": score,
-                "weight": result["weight"],
-                "confidence": result["confidence"],
-            }
-        )
+        detailed_score["score_breakdown"].append({
+            "dimension": result["rule_name"],
+            "score": score,
+            "weight": result["weight"],
+            "confidence": result["confidence"],
+        })
 
     # Calculate improvement potential
     max_possible_score = sum(r["weight"] for r in validation_result["results"])

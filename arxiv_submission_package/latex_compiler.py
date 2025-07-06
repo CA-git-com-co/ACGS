@@ -341,8 +341,12 @@ class LaTeXCompiler:
     ) -> str | None:
         """Generate helpful suggestions for common LaTeX errors."""
         suggestions = {
-            "Undefined control sequence": "Check for typos in command names or missing packages",
-            "Missing $ inserted": "Check for unescaped special characters or missing math mode",
+            "Undefined control sequence": (
+                "Check for typos in command names or missing packages"
+            ),
+            "Missing $ inserted": (
+                "Check for unescaped special characters or missing math mode"
+            ),
             "Extra alignment tab": "Check table column alignment and & symbols",
             "Missing \\begin{document}": "Ensure \\begin{document} is present",
             "File ended while scanning": "Check for unmatched braces { }",
@@ -466,7 +470,8 @@ class LaTeXCompiler:
         if success and pdf_file.exists():
             pdf_size = pdf_file.stat().st_size / 1024  # KB
             self.log(
-                f"Compilation successful in {duration:.2f}s, PDF size: {pdf_size:.1f} KB"
+                f"Compilation successful in {duration:.2f}s, PDF size:"
+                f" {pdf_size:.1f} KB"
             )
         else:
             self.log(f"Compilation failed after {duration:.2f}s", "ERROR")

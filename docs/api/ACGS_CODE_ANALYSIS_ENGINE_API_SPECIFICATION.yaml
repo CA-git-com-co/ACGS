@@ -3,28 +3,28 @@ info:
   title: ACGS Code Analysis Engine API
   version: 1.0.0
   description: |
-    Comprehensive API for intelligent code analysis, semantic search, and dependency mapping 
+    Comprehensive API for intelligent code analysis, semantic search, and dependency mapping
     within the ACGS (AI Constitutional Governance System) ecosystem.
-    
+
     ## Features
     - **Semantic Code Search**: Vector-based similarity search using CodeBERT embeddings
     - **Symbol Analysis**: Detailed code symbol extraction and metadata
     - **Dependency Mapping**: Comprehensive dependency graph construction and traversal
     - **Context Integration**: Bidirectional integration with ACGS Context Service
     - **Constitutional Compliance**: Full integration with ACGS governance framework
-    
+
     ## Authentication
     All endpoints require JWT authentication via the ACGS Auth Service (port 8016).
     Include the JWT token in the Authorization header: `Bearer <token>`
-    
+
     ## Performance Targets
     - **Latency**: P99 < 10ms for cached queries
     - **Throughput**: >100 RPS sustained load
     - **Cache Hit Rate**: >85% for repeated queries
-    
+
     ## Constitutional Compliance
     All responses include constitutional validation signature with hash: `cdd01ef066bc6cf2`
-    
+
   contact:
     name: ACGS Development Team
     url: https://github.com/CA-git-com-co/ACGS
@@ -97,7 +97,7 @@ paths:
                 # HELP acgs_code_analysis_requests_total Total requests
                 # TYPE acgs_code_analysis_requests_total counter
                 acgs_code_analysis_requests_total{method="GET",endpoint="/api/v1/search/semantic"} 1234
-                
+
                 # HELP acgs_code_analysis_request_duration_seconds Request latency
                 # TYPE acgs_code_analysis_request_duration_seconds histogram
                 acgs_code_analysis_request_duration_seconds_bucket{le="0.005"} 800

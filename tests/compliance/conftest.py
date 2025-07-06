@@ -7,13 +7,14 @@ constitutional compliance, multi-tenant isolation, and regulatory standards.
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import pytest
 import asyncio
 import os
-import tempfile
 import shutil
-from unittest.mock import Mock, AsyncMock
-from typing import Dict, Any, Optional
+import tempfile
+from typing import Any, Dict, Optional
+from unittest.mock import AsyncMock, Mock
+
+import pytest
 
 # Constitutional compliance hash
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -75,7 +76,7 @@ def mock_prometheus_metrics():
         "constitutional_hash_valid": 1,
         "authentication_events_total": 1000,
         "cross_tenant_attempts_total": 2,
-        "security_incidents_total": 1
+        "security_incidents_total": 1,
     }
 
 
@@ -87,7 +88,7 @@ def mock_tenant_context():
         "organization_id": "test-org-001",
         "user_id": "test-user-001",
         "constitutional_hash": CONSTITUTIONAL_HASH,
-        "isolation_level": "strict"
+        "isolation_level": "strict",
     }
 
 
@@ -100,7 +101,7 @@ def mock_jwt_claims():
         "constitutional_hash": CONSTITUTIONAL_HASH,
         "exp": 1234567890,
         "iat": 1234567890,
-        "permissions": ["read", "write"]
+        "permissions": ["read", "write"],
     }
 
 
@@ -118,7 +119,7 @@ def mock_compliance_metrics():
         "gdpr_consent_compliance": 1.0,
         "iso27001_access_control_compliance": 96.7,
         "iso27001_incident_response_time_minutes": 12,
-        "iso27001_business_continuity_score": 99.1
+        "iso27001_business_continuity_score": 99.1,
     }
 
 
@@ -138,9 +139,9 @@ def sample_audit_event():
         "details": {
             "policy_id": "test-policy-001",
             "compliance_score": 0.95,
-            "constitutional_hash": CONSTITUTIONAL_HASH
+            "constitutional_hash": CONSTITUTIONAL_HASH,
         },
-        "constitutional_hash": CONSTITUTIONAL_HASH
+        "constitutional_hash": CONSTITUTIONAL_HASH,
     }
 
 
@@ -153,14 +154,14 @@ def sample_z3_policy():
             "human_dignity_preserved",
             "fairness_enforced",
             "transparency_maintained",
-            "accountability_ensured"
+            "accountability_ensured",
         ],
         "conditions": {
             "user_consent_required": True,
             "data_minimization": True,
-            "purpose_limitation": True
+            "purpose_limitation": True,
         },
-        "constitutional_hash": CONSTITUTIONAL_HASH
+        "constitutional_hash": CONSTITUTIONAL_HASH,
     }
 
 
@@ -177,7 +178,7 @@ def sample_compliance_violation():
         "attempted_tenant": "test-tenant-002",
         "resource": "sensitive_data",
         "remediation_required": True,
-        "constitutional_hash": CONSTITUTIONAL_HASH
+        "constitutional_hash": CONSTITUTIONAL_HASH,
     }
 
 
@@ -194,18 +195,12 @@ def pytest_configure(config):
     config.addinivalue_line(
         "markers", "regulatory: mark test as regulatory compliance test"
     )
-    config.addinivalue_line(
-        "markers", "soc2: mark test as SOC2 compliance test"
-    )
-    config.addinivalue_line(
-        "markers", "gdpr: mark test as GDPR compliance test"
-    )
+    config.addinivalue_line("markers", "soc2: mark test as SOC2 compliance test")
+    config.addinivalue_line("markers", "gdpr: mark test as GDPR compliance test")
     config.addinivalue_line(
         "markers", "iso27001: mark test as ISO27001 compliance test"
     )
-    config.addinivalue_line(
-        "markers", "stress: mark test as stress/load test"
-    )
+    config.addinivalue_line("markers", "stress: mark test as stress/load test")
 
 
 def pytest_collection_modifyitems(config, items):
@@ -213,31 +208,38 @@ def pytest_collection_modifyitems(config, items):
     # Add markers based on test names and locations
     for item in items:
         # Constitutional compliance tests
-        if "constitutional" in item.name.lower() or "constitutional" in str(item.fspath).lower():
+        if (
+            "constitutional" in item.name.lower()
+            or "constitutional" in str(item.fspath).lower()
+        ):
             item.add_marker(pytest.mark.constitutional)
-        
+
         # Multi-tenant tests
         if "multi_tenant" in item.name.lower() or "tenant" in item.name.lower():
             item.add_marker(pytest.mark.multi_tenant)
-        
+
         # Regulatory compliance tests
         if "regulatory" in item.name.lower():
             item.add_marker(pytest.mark.regulatory)
-        
+
         # SOC2 tests
         if "soc2" in item.name.lower():
             item.add_marker(pytest.mark.soc2)
-        
+
         # GDPR tests
         if "gdpr" in item.name.lower():
             item.add_marker(pytest.mark.gdpr)
-        
+
         # ISO27001 tests
         if "iso27001" in item.name.lower():
             item.add_marker(pytest.mark.iso27001)
-        
+
         # Stress tests
-        if "stress" in item.name.lower() or "concurrent" in item.name.lower() or "high_volume" in item.name.lower():
+        if (
+            "stress" in item.name.lower()
+            or "concurrent" in item.name.lower()
+            or "high_volume" in item.name.lower()
+        ):
             item.add_marker(pytest.mark.stress)
 
 
@@ -247,7 +249,7 @@ def verify_constitutional_hash():
     # This fixture runs before each test to ensure constitutional hash consistency
     assert CONSTITUTIONAL_HASH == "cdd01ef066bc6cf2"
     assert len(CONSTITUTIONAL_HASH) == 16
-    assert all(c in '0123456789abcdef' for c in CONSTITUTIONAL_HASH)
+    assert all(c in "0123456789abcdef" for c in CONSTITUTIONAL_HASH)
 
 
 # Async test helpers
@@ -265,10 +267,10 @@ def setup_test_environment():
     os.environ["CONSTITUTIONAL_HASH"] = CONSTITUTIONAL_HASH
     os.environ["LOG_LEVEL"] = "DEBUG"
     os.environ["PYTEST_CURRENT_TEST"] = "true"
-    
+
     # Cleanup after tests
     yield
-    
+
     # Remove test environment variables
     for var in ["TESTING", "CONSTITUTIONAL_HASH", "LOG_LEVEL", "PYTEST_CURRENT_TEST"]:
         os.environ.pop(var, None)

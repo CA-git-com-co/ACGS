@@ -2,8 +2,8 @@
 
 <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 
-**Constitutional Hash**: `cdd01ef066bc6cf2`  
-**Purpose**: Security and compliance identifier for all ACGS documentation  
+**Constitutional Hash**: `cdd01ef066bc6cf2`
+**Purpose**: Security and compliance identifier for all ACGS documentation
 **Requirement**: MANDATORY in all documentation files
 
 ## Quick Implementation Guide

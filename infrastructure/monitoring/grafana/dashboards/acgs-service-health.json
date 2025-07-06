@@ -81,9 +81,7 @@
         "justifyMode": "center",
         "orientation": "horizontal",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -150,9 +148,7 @@
         "justifyMode": "center",
         "orientation": "horizontal",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -218,9 +214,7 @@
       "options": {
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -857,12 +851,7 @@
   "refresh": "10s",
   "schemaVersion": 36,
   "style": "dark",
-  "tags": [
-    "acgs",
-    "health",
-    "monitoring",
-    "services"
-  ],
+  "tags": ["acgs", "health", "monitoring", "services"],
   "templating": {
     "list": []
   },

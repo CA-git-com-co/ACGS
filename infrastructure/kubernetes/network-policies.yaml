@@ -15,8 +15,8 @@ metadata:
 spec:
   podSelector: {}
   policyTypes:
-  - Ingress
-  - Egress
+    - Ingress
+    - Egress
 
 ---
 # API Gateway Network Policy
@@ -34,87 +34,87 @@ spec:
     matchLabels:
       app.kubernetes.io/name: api-gateway
   policyTypes:
-  - Ingress
-  - Egress
+    - Ingress
+    - Egress
   ingress:
-  # Allow traffic from ingress controllers
-  - from:
-    - namespaceSelector:
-        matchLabels:
-          name: acgs-ingress
-    ports:
-    - protocol: TCP
-      port: 8080
-  # Allow traffic from monitoring
-  - from:
-    - namespaceSelector:
-        matchLabels:
-          name: acgs-monitoring
-    ports:
-    - protocol: TCP
-      port: 9090  # Metrics port
+    # Allow traffic from ingress controllers
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: acgs-ingress
+      ports:
+        - protocol: TCP
+          port: 8080
+    # Allow traffic from monitoring
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: acgs-monitoring
+      ports:
+        - protocol: TCP
+          port: 9090 # Metrics port
   egress:
-  # Allow access to core services
-  - to:
-    - podSelector:
-        matchLabels:
-          app.kubernetes.io/component: auth
-    ports:
-    - protocol: TCP
-      port: 8000
-  - to:
-    - podSelector:
-        matchLabels:
-          app.kubernetes.io/component: constitutional-ai
-    ports:
-    - protocol: TCP
-      port: 8001
-  - to:
-    - podSelector:
-        matchLabels:
-          app.kubernetes.io/component: integrity
-    ports:
-    - protocol: TCP
-      port: 8002
-  - to:
-    - podSelector:
-        matchLabels:
-          app.kubernetes.io/component: governance
-    ports:
-    - protocol: TCP
-      port: 8004
-  - to:
-    - podSelector:
-        matchLabels:
-          app.kubernetes.io/component: policy
-    ports:
-    - protocol: TCP
-      port: 8005
-  - to:
-    - podSelector:
-        matchLabels:
-          app.kubernetes.io/component: verification
-    ports:
-    - protocol: TCP
-      port: 8006
-  # Allow access to Redis
-  - to:
-    - podSelector:
-        matchLabels:
-          app.kubernetes.io/name: redis
-    ports:
-    - protocol: TCP
-      port: 6379
-  # Allow DNS
-  - to: []
-    ports:
-    - protocol: UDP
-      port: 53
-  # Allow HTTPS for external services
-  - to: []
-    ports:
-    - protocol: TCP
-      port: 443
+    # Allow access to core services
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/component: auth
+      ports:
+        - protocol: TCP
+          port: 8000
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/component: constitutional-ai
+      ports:
+        - protocol: TCP
+          port: 8001
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/component: integrity
+      ports:
+        - protocol: TCP
+          port: 8002
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/component: governance
+      ports:
+        - protocol: TCP
+          port: 8004
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/component: policy
+      ports:
+        - protocol: TCP
+          port: 8005
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/component: verification
+      ports:
+        - protocol: TCP
+          port: 8006
+    # Allow access to Redis
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    # Allow DNS
+    - to: []
+      ports:
+        - protocol: UDP
+          port: 53
+    # Allow HTTPS for external services
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 443
 
 ---
 # Core Services Network Policy
@@ -132,98 +132,98 @@ spec:
     matchLabels:
       app.kubernetes.io/part-of: acgs
   policyTypes:
-  - Ingress
-  - Egress
+    - Ingress
+    - Egress
   ingress:
-  # Allow traffic from API Gateway
-  - from:
-    - podSelector:
-        matchLabels:
-          app.kubernetes.io/name: api-gateway
-    ports:
-    - protocol: TCP
-      port: 8000  # Auth
-    - protocol: TCP
-      port: 8001  # Constitutional AI
-    - protocol: TCP
-      port: 8002  # Integrity
-    - protocol: TCP
-      port: 8004  # Governance
-    - protocol: TCP
-      port: 8005  # Policy
-    - protocol: TCP
-      port: 8006  # Verification
-  # Allow inter-service communication
-  - from:
-    - podSelector:
-        matchLabels:
-          app.kubernetes.io/part-of: acgs
-    ports:
-    - protocol: TCP
-      port: 8000
-    - protocol: TCP
-      port: 8001
-    - protocol: TCP
-      port: 8002
-    - protocol: TCP
-      port: 8004
-    - protocol: TCP
-      port: 8005
-    - protocol: TCP
-      port: 8006
-  # Allow monitoring access
-  - from:
-    - namespaceSelector:
-        matchLabels:
-          name: acgs-monitoring
-    ports:
-    - protocol: TCP
-      port: 9090  # Metrics
+    # Allow traffic from API Gateway
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: api-gateway
+      ports:
+        - protocol: TCP
+          port: 8000 # Auth
+        - protocol: TCP
+          port: 8001 # Constitutional AI
+        - protocol: TCP
+          port: 8002 # Integrity
+        - protocol: TCP
+          port: 8004 # Governance
+        - protocol: TCP
+          port: 8005 # Policy
+        - protocol: TCP
+          port: 8006 # Verification
+    # Allow inter-service communication
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/part-of: acgs
+      ports:
+        - protocol: TCP
+          port: 8000
+        - protocol: TCP
+          port: 8001
+        - protocol: TCP
+          port: 8002
+        - protocol: TCP
+          port: 8004
+        - protocol: TCP
+          port: 8005
+        - protocol: TCP
+          port: 8006
+    # Allow monitoring access
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: acgs-monitoring
+      ports:
+        - protocol: TCP
+          port: 9090 # Metrics
   egress:
-  # Allow access to database
-  - to:
-    - podSelector:
-        matchLabels:
-          app.kubernetes.io/name: postgresql
-    ports:
-    - protocol: TCP
-      port: 5432
-  # Allow access to Redis
-  - to:
-    - podSelector:
-        matchLabels:
-          app.kubernetes.io/name: redis
-    ports:
-    - protocol: TCP
-      port: 6379
-  # Allow inter-service communication
-  - to:
-    - podSelector:
-        matchLabels:
-          app.kubernetes.io/part-of: acgs
-    ports:
-    - protocol: TCP
-      port: 8000
-    - protocol: TCP
-      port: 8001
-    - protocol: TCP
-      port: 8002
-    - protocol: TCP
-      port: 8004
-    - protocol: TCP
-      port: 8005
-    - protocol: TCP
-      port: 8006
-  # Allow DNS
-  - to: []
-    ports:
-    - protocol: UDP
-      port: 53
-  # Allow HTTPS for external services (constitutional compliance verification)
-  - to: []
-    ports:
-    - protocol: TCP
-      port: 443
+    # Allow access to database
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: postgresql
+      ports:
+        - protocol: TCP
+          port: 5432
+    # Allow access to Redis
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    # Allow inter-service communication
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/part-of: acgs
+      ports:
+        - protocol: TCP
+          port: 8000
+        - protocol: TCP
+          port: 8001
+        - protocol: TCP
+          port: 8002
+        - protocol: TCP
+          port: 8004
+        - protocol: TCP
+          port: 8005
+        - protocol: TCP
+          port: 8006
+    # Allow DNS
+    - to: []
+      ports:
+        - protocol: UDP
+          port: 53
+    # Allow HTTPS for external services (constitutional compliance verification)
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 443
 
 ---
 # Database Network Policy
@@ -241,23 +241,23 @@ spec:
     matchLabels:
       app.kubernetes.io/name: postgresql
   policyTypes:
-  - Ingress
-  - Egress
+    - Ingress
+    - Egress
   ingress:
-  # Allow access from ACGS services only
-  - from:
-    - podSelector:
-        matchLabels:
-          app.kubernetes.io/part-of: acgs
-    ports:
-    - protocol: TCP
-      port: 5432
+    # Allow access from ACGS services only
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/part-of: acgs
+      ports:
+        - protocol: TCP
+          port: 5432
   egress:
-  # Allow DNS for initialization
-  - to: []
-    ports:
-    - protocol: UDP
-      port: 53
+    # Allow DNS for initialization
+    - to: []
+      ports:
+        - protocol: UDP
+          port: 53
 
 ---
 # Redis Network Policy
@@ -275,23 +275,23 @@ spec:
     matchLabels:
       app.kubernetes.io/name: redis
   policyTypes:
-  - Ingress
-  - Egress
+    - Ingress
+    - Egress
   ingress:
-  # Allow access from ACGS services only
-  - from:
-    - podSelector:
-        matchLabels:
-          app.kubernetes.io/part-of: acgs
-    ports:
-    - protocol: TCP
-      port: 6379
+    # Allow access from ACGS services only
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/part-of: acgs
+      ports:
+        - protocol: TCP
+          port: 6379
   egress:
-  # Allow DNS for initialization
-  - to: []
-    ports:
-    - protocol: UDP
-      port: 53
+    # Allow DNS for initialization
+    - to: []
+      ports:
+        - protocol: UDP
+          port: 53
 
 ---
 # Monitoring Namespace Network Policy
@@ -307,51 +307,51 @@ metadata:
 spec:
   podSelector: {}
   policyTypes:
-  - Ingress
-  - Egress
+    - Ingress
+    - Egress
   ingress:
-  # Allow access from ingress for web UI
-  - from:
-    - namespaceSelector:
-        matchLabels:
-          name: acgs-ingress
-    ports:
-    - protocol: TCP
-      port: 3000  # Grafana
-    - protocol: TCP
-      port: 9090  # Prometheus
-  # Allow internal monitoring communication
-  - from:
-    - podSelector: {}
-    ports:
-    - protocol: TCP
-      port: 3000
-    - protocol: TCP
-      port: 9090
+    # Allow access from ingress for web UI
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: acgs-ingress
+      ports:
+        - protocol: TCP
+          port: 3000 # Grafana
+        - protocol: TCP
+          port: 9090 # Prometheus
+    # Allow internal monitoring communication
+    - from:
+        - podSelector: {}
+      ports:
+        - protocol: TCP
+          port: 3000
+        - protocol: TCP
+          port: 9090
   egress:
-  # Allow scraping ACGS services
-  - to:
-    - namespaceSelector:
-        matchLabels:
-          name: acgs-system
-    ports:
-    - protocol: TCP
-      port: 9090  # Metrics ports
-  # Allow DNS
-  - to: []
-    ports:
-    - protocol: UDP
-      port: 53
-  # Allow HTTPS for external alerting
-  - to: []
-    ports:
-    - protocol: TCP
-      port: 443
-  # Allow Kubernetes API access for service discovery
-  - to: []
-    ports:
-    - protocol: TCP
-      port: 6443
+    # Allow scraping ACGS services
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: acgs-system
+      ports:
+        - protocol: TCP
+          port: 9090 # Metrics ports
+    # Allow DNS
+    - to: []
+      ports:
+        - protocol: UDP
+          port: 53
+    # Allow HTTPS for external alerting
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 443
+    # Allow Kubernetes API access for service discovery
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 6443
 
 ---
 # Cross-Namespace Communication Policy
@@ -369,16 +369,16 @@ spec:
     matchLabels:
       app.kubernetes.io/part-of: acgs
   policyTypes:
-  - Egress
+    - Egress
   egress:
-  # Allow access to monitoring namespace for metrics push
-  - to:
-    - namespaceSelector:
-        matchLabels:
-          name: acgs-monitoring
-    ports:
-    - protocol: TCP
-      port: 9090
+    # Allow access to monitoring namespace for metrics push
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: acgs-monitoring
+      ports:
+        - protocol: TCP
+          port: 9090
 
 ---
 # Constitutional Compliance Audit Network Policy
@@ -399,41 +399,41 @@ spec:
     matchLabels:
       app.kubernetes.io/component: integrity
   policyTypes:
-  - Ingress
-  - Egress
+    - Ingress
+    - Egress
   ingress:
-  # Allow audit data from all ACGS services
-  - from:
-    - podSelector:
-        matchLabels:
-          app.kubernetes.io/part-of: acgs
-    ports:
-    - protocol: TCP
-      port: 8002
-  # Allow monitoring access to audit metrics
-  - from:
-    - namespaceSelector:
-        matchLabels:
-          name: acgs-monitoring
-    ports:
-    - protocol: TCP
-      port: 9090
+    # Allow audit data from all ACGS services
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/part-of: acgs
+      ports:
+        - protocol: TCP
+          port: 8002
+    # Allow monitoring access to audit metrics
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: acgs-monitoring
+      ports:
+        - protocol: TCP
+          port: 9090
   egress:
-  # Allow access to database for audit storage
-  - to:
-    - podSelector:
-        matchLabels:
-          app.kubernetes.io/name: postgresql
-    ports:
-    - protocol: TCP
-      port: 5432
-  # Allow DNS
-  - to: []
-    ports:
-    - protocol: UDP
-      port: 53
-  # Allow external audit submission (if required for compliance)
-  - to: []
-    ports:
-    - protocol: TCP
-      port: 443
+    # Allow access to database for audit storage
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: postgresql
+      ports:
+        - protocol: TCP
+          port: 5432
+    # Allow DNS
+    - to: []
+      ports:
+        - protocol: UDP
+          port: 53
+    # Allow external audit submission (if required for compliance)
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 443

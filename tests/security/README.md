@@ -63,6 +63,7 @@ python security_ci_integration.py
 ### 1. Security Validation Framework
 
 **Categories Tested:**
+
 - **Authentication** - Login mechanisms, session management, multi-factor auth
 - **Authorization** - Role-based access, permissions, privilege escalation
 - **Injection** - SQL injection, XSS, command injection, LDAP injection
@@ -77,6 +78,7 @@ python security_ci_integration.py
 ### 2. Penetration Testing Suite
 
 **8-Phase Testing:**
+
 1. **Reconnaissance** - Information gathering, endpoint discovery, technology identification
 2. **Scanning & Enumeration** - Vulnerability scanning, service enumeration, configuration analysis
 3. **Gaining Access** - Authentication bypass, credential attacks, exploitation
@@ -89,6 +91,7 @@ python security_ci_integration.py
 ### 3. Compliance Validation
 
 **Frameworks Supported:**
+
 - **SOC2 Type II** - Security, availability, processing integrity, confidentiality, privacy
 - **ISO27001** - Information security management systems
 - **GDPR** - Data protection and privacy requirements
@@ -158,6 +161,7 @@ python security_ci_integration.py
 ### HTML Report
 
 Visual report with:
+
 - Executive summary with color-coded status
 - Vulnerability breakdown table
 - Threshold violations (if any)
@@ -221,41 +225,41 @@ name: ACGS Security Tests
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   security-tests:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Setup Python
-      uses: actions/setup-python@v3
-      with:
-        python-version: '3.11'
-    
-    - name: Install dependencies
-      run: |
-        pip install -r tests/security/requirements.txt
-    
-    - name: Run Security Tests
-      env:
-        ACGS_TARGET_URL: http://localhost:8080
-        ACGS_API_KEY: ${{ secrets.ACGS_API_KEY }}
-      run: |
-        python tests/security/security_ci_integration.py
-    
-    - name: Upload Security Reports
-      uses: actions/upload-artifact@v3
-      if: always()
-      with:
-        name: security-reports
-        path: |
-          security_report.json
-          security_report.html
-          security_report.xml
+      - uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install -r tests/security/requirements.txt
+
+      - name: Run Security Tests
+        env:
+          ACGS_TARGET_URL: http://localhost:8080
+          ACGS_API_KEY: ${{ secrets.ACGS_API_KEY }}
+        run: |
+          python tests/security/security_ci_integration.py
+
+      - name: Upload Security Reports
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: security-reports
+          path: |
+            security_report.json
+            security_report.html
+            security_report.xml
 ```
 
 ### GitLab CI
@@ -342,18 +346,21 @@ validator.compliance_controls.append(custom_control)
 ### Common Issues
 
 1. **Connection Refused**
+
    ```
    Error: Cannot connect to target URL
    Solution: Ensure ACGS services are running and accessible
    ```
 
 2. **Authentication Failures**
+
    ```
    Error: 401 Unauthorized
    Solution: Provide valid API key with --api-key parameter
    ```
 
 3. **Constitutional Hash Mismatch**
+
    ```
    Error: Constitutional compliance verification failed
    Solution: Ensure all services use hash cdd01ef066bc6cf2

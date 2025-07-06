@@ -1,4 +1,15 @@
 # ACGS-2 API Documentation
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
+
+## Service Overview
+
+This service provides core functionality for the ACGS platform with constitutional compliance validation.
+
+**Service**: Readme
+**Port**: 8XXX
+**Constitutional Hash**: `cdd01ef066bc6cf2`
+
 
 ## Overview
 

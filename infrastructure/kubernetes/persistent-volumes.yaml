@@ -21,11 +21,11 @@ spec:
   nodeAffinity:
     required:
       nodeSelectorTerms:
-      - matchExpressions:
-        - key: kubernetes.io/hostname
-          operator: In
-          values:
-          - acgs-node-1
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - acgs-node-1
 
 ---
 apiVersion: v1
@@ -50,11 +50,11 @@ spec:
   nodeAffinity:
     required:
       nodeSelectorTerms:
-      - matchExpressions:
-        - key: kubernetes.io/hostname
-          operator: In
-          values:
-          - acgs-node-2
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - acgs-node-2
 
 ---
 apiVersion: v1
@@ -79,13 +79,13 @@ spec:
   nodeAffinity:
     required:
       nodeSelectorTerms:
-      - matchExpressions:
-        - key: kubernetes.io/hostname
-          operator: In
-          values:
-          - acgs-node-1
-          - acgs-node-2
-          - acgs-node-3
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - acgs-node-1
+                - acgs-node-2
+                - acgs-node-3
 
 ---
 apiVersion: v1
@@ -110,11 +110,11 @@ spec:
   nodeAffinity:
     required:
       nodeSelectorTerms:
-      - matchExpressions:
-        - key: kubernetes.io/hostname
-          operator: In
-          values:
-          - acgs-node-3
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - acgs-node-3
 
 ---
 apiVersion: v1
@@ -139,11 +139,11 @@ spec:
   nodeAffinity:
     required:
       nodeSelectorTerms:
-      - matchExpressions:
-        - key: kubernetes.io/hostname
-          operator: In
-          values:
-          - acgs-node-3
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - acgs-node-3
 
 ---
 apiVersion: storage.k8s.io/v1
@@ -159,7 +159,7 @@ reclaimPolicy: Retain
 allowVolumeExpansion: true
 parameters:
   type: ssd
-  
+
 ---
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
@@ -176,7 +176,7 @@ allowVolumeExpansion: true
 parameters:
   type: audit-ssd
   encryption: "required"
-  
+
 ---
 apiVersion: storage.k8s.io/v1
 kind: StorageClass

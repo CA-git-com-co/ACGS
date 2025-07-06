@@ -41,95 +41,95 @@ spec:
         runAsGroup: 101
         fsGroup: 101
       containers:
-      - name: nginx-ingress-controller
-        image: nginx/nginx-ingress:3.2.0
-        imagePullPolicy: IfNotPresent
-        ports:
-        - name: http
-          containerPort: 80
-          protocol: TCP
-        - name: https
-          containerPort: 443
-          protocol: TCP
-        - name: metrics
-          containerPort: 10254
-          protocol: TCP
-        env:
-        - name: POD_NAMESPACE
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.namespace
-        - name: POD_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.name
-        - name: CONSTITUTIONAL_HASH
-          value: "cdd01ef066bc6cf2"
-        args:
-        - -nginx-configmaps=$(POD_NAMESPACE)/nginx-config
-        - -default-server-tls-secret=$(POD_NAMESPACE)/acgs-tls
-        - -ingress-class=acgs-nginx
-        - -health-status
-        - -ready-status
-        - -nginx-status
-        - -nginx-status-allow-cidrs=127.0.0.1,10.0.0.0/8
-        - -enable-prometheus-metrics
-        - -prometheus-metrics-listen-port=10254
-        volumeMounts:
-        - name: nginx-config
-          mountPath: /etc/nginx/nginx.conf
-          subPath: nginx.conf
-        - name: tls-certs
-          mountPath: /etc/ssl/certs
-          readOnly: true
-        - name: tls-private
-          mountPath: /etc/ssl/private
-          readOnly: true
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "100m"
-          limits:
-            memory: "512Mi"
-            cpu: "250m"
-        livenessProbe:
-          httpGet:
-            path: /nginx-health
-            port: 8080
-            scheme: HTTP
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /nginx-ready
-            port: 8080
-            scheme: HTTP
-          initialDelaySeconds: 5
-          periodSeconds: 5
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-            - ALL
-            add:
-            - NET_BIND_SERVICE
+        - name: nginx-ingress-controller
+          image: nginx/nginx-ingress:3.2.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+            - name: https
+              containerPort: 443
+              protocol: TCP
+            - name: metrics
+              containerPort: 10254
+              protocol: TCP
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: CONSTITUTIONAL_HASH
+              value: "cdd01ef066bc6cf2"
+          args:
+            - -nginx-configmaps=$(POD_NAMESPACE)/nginx-config
+            - -default-server-tls-secret=$(POD_NAMESPACE)/acgs-tls
+            - -ingress-class=acgs-nginx
+            - -health-status
+            - -ready-status
+            - -nginx-status
+            - -nginx-status-allow-cidrs=127.0.0.1,10.0.0.0/8
+            - -enable-prometheus-metrics
+            - -prometheus-metrics-listen-port=10254
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+            - name: tls-certs
+              mountPath: /etc/ssl/certs
+              readOnly: true
+            - name: tls-private
+              mountPath: /etc/ssl/private
+              readOnly: true
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "250m"
+          livenessProbe:
+            httpGet:
+              path: /nginx-health
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /nginx-ready
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - NET_BIND_SERVICE
       volumes:
-      - name: nginx-config
-        configMap:
-          name: nginx-config
-      - name: tls-certs
-        secret:
-          secretName: acgs-tls
-          items:
-          - key: tls.crt
-            path: server.crt
-      - name: tls-private
-        secret:
-          secretName: acgs-tls
-          items:
-          - key: tls.key
-            path: server.key
+        - name: nginx-config
+          configMap:
+            name: nginx-config
+        - name: tls-certs
+          secret:
+            secretName: acgs-tls
+            items:
+              - key: tls.crt
+                path: server.crt
+        - name: tls-private
+          secret:
+            secretName: acgs-tls
+            items:
+              - key: tls.key
+                path: server.key
 
 ---
 # Nginx Ingress Service
@@ -150,26 +150,26 @@ metadata:
 spec:
   type: LoadBalancer
   ports:
-  - name: http
-    port: 80
-    targetPort: http
-    protocol: TCP
-  - name: https
-    port: 443
-    targetPort: https
-    protocol: TCP
-  - name: metrics
-    port: 10254
-    targetPort: metrics
-    protocol: TCP
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP
+    - name: https
+      port: 443
+      targetPort: https
+      protocol: TCP
+    - name: metrics
+      port: 10254
+      targetPort: metrics
+      protocol: TCP
   selector:
     app.kubernetes.io/name: nginx-ingress-controller
     app.kubernetes.io/component: ingress
   loadBalancerSourceRanges:
-  # Restrict access to specific IP ranges for production
-  - 10.0.0.0/8
-  - 172.16.0.0/12
-  - 192.168.0.0/16
+    # Restrict access to specific IP ranges for production
+    - 10.0.0.0/8
+    - 172.16.0.0/12
+    - 192.168.0.0/16
 
 ---
 # Service Account for Nginx Ingress
@@ -194,21 +194,21 @@ metadata:
     app.kubernetes.io/part-of: acgs
     app.kubernetes.io/component: ingress
 rules:
-- apiGroups: [""]
-  resources: ["configmaps", "endpoints", "nodes", "pods", "secrets"]
-  verbs: ["list", "watch"]
-- apiGroups: [""]
-  resources: ["services"]
-  verbs: ["get", "list", "watch"]
-- apiGroups: ["networking.k8s.io"]
-  resources: ["ingresses"]
-  verbs: ["get", "list", "watch"]
-- apiGroups: [""]
-  resources: ["events"]
-  verbs: ["create", "patch"]
-- apiGroups: ["networking.k8s.io"]
-  resources: ["ingresses/status"]
-  verbs: ["update"]
+  - apiGroups: [""]
+    resources: ["configmaps", "endpoints", "nodes", "pods", "secrets"]
+    verbs: ["list", "watch"]
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["ingresses"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create", "patch"]
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["ingresses/status"]
+    verbs: ["update"]
 
 ---
 # ClusterRoleBinding for Nginx Ingress
@@ -225,9 +225,9 @@ roleRef:
   kind: ClusterRole
   name: nginx-ingress-clusterrole
 subjects:
-- kind: ServiceAccount
-  name: nginx-ingress-serviceaccount
-  namespace: acgs-ingress
+  - kind: ServiceAccount
+    name: nginx-ingress-serviceaccount
+    namespace: acgs-ingress
 
 ---
 # Role for Nginx Ingress (namespace-specific)
@@ -241,19 +241,19 @@ metadata:
     app.kubernetes.io/part-of: acgs
     app.kubernetes.io/component: ingress
 rules:
-- apiGroups: [""]
-  resources: ["configmaps", "pods", "secrets", "namespaces"]
-  verbs: ["get"]
-- apiGroups: [""]
-  resources: ["configmaps"]
-  resourceNames: ["ingress-controller-leader-acgs-nginx"]
-  verbs: ["get", "update"]
-- apiGroups: [""]
-  resources: ["configmaps"]
-  verbs: ["create"]
-- apiGroups: [""]
-  resources: ["endpoints"]
-  verbs: ["get"]
+  - apiGroups: [""]
+    resources: ["configmaps", "pods", "secrets", "namespaces"]
+    verbs: ["get"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    resourceNames: ["ingress-controller-leader-acgs-nginx"]
+    verbs: ["get", "update"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["create"]
+  - apiGroups: [""]
+    resources: ["endpoints"]
+    verbs: ["get"]
 
 ---
 # RoleBinding for Nginx Ingress
@@ -271,9 +271,9 @@ roleRef:
   kind: Role
   name: nginx-ingress-role
 subjects:
-- kind: ServiceAccount
-  name: nginx-ingress-serviceaccount
-  namespace: acgs-ingress
+  - kind: ServiceAccount
+    name: nginx-ingress-serviceaccount
+    namespace: acgs-ingress
 
 ---
 # Main ACGS Ingress
@@ -308,31 +308,31 @@ metadata:
       add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'" always;
 spec:
   tls:
-  - hosts:
-    - acgs.example.com
-    - api.acgs.example.com
-    secretName: acgs-tls
+    - hosts:
+        - acgs.example.com
+        - api.acgs.example.com
+      secretName: acgs-tls
   rules:
-  - host: acgs.example.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: api-gateway
-            port:
-              number: 8080
-  - host: api.acgs.example.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: api-gateway
-            port:
-              number: 8080
+    - host: acgs.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: api-gateway
+                port:
+                  number: 8080
+    - host: api.acgs.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: api-gateway
+                port:
+                  number: 8080
 
 ---
 # Monitoring Ingress
@@ -357,31 +357,31 @@ metadata:
       add_header X-Constitutional-Hash "cdd01ef066bc6cf2" always;
 spec:
   tls:
-  - hosts:
-    - grafana.acgs.example.com
-    - prometheus.acgs.example.com
-    secretName: acgs-tls
+    - hosts:
+        - grafana.acgs.example.com
+        - prometheus.acgs.example.com
+      secretName: acgs-tls
   rules:
-  - host: grafana.acgs.example.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: grafana
-            port:
-              number: 3000
-  - host: prometheus.acgs.example.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: prometheus
-            port:
-              number: 9090
+    - host: grafana.acgs.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: grafana
+                port:
+                  number: 3000
+    - host: prometheus.acgs.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: prometheus
+                port:
+                  number: 9090
 
 ---
 # Basic Auth Secret for Monitoring
@@ -416,35 +416,35 @@ spec:
     matchLabels:
       app.kubernetes.io/component: ingress
   policyTypes:
-  - Ingress
-  - Egress
+    - Ingress
+    - Egress
   ingress:
-  - from: []  # Allow all inbound traffic (internet-facing)
-    ports:
-    - protocol: TCP
-      port: 80
-    - protocol: TCP
-      port: 443
-    - protocol: TCP
-      port: 10254
+    - from: [] # Allow all inbound traffic (internet-facing)
+      ports:
+        - protocol: TCP
+          port: 80
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 10254
   egress:
-  - to:
-    - namespaceSelector:
-        matchLabels:
-          name: acgs-system
-    ports:
-    - protocol: TCP
-      port: 8080  # API Gateway
-  - to:
-    - namespaceSelector:
-        matchLabels:
-          name: acgs-monitoring
-    ports:
-    - protocol: TCP
-      port: 3000  # Grafana
-    - protocol: TCP
-      port: 9090  # Prometheus
-  - to: []  # Allow DNS
-    ports:
-    - protocol: UDP
-      port: 53
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: acgs-system
+      ports:
+        - protocol: TCP
+          port: 8080 # API Gateway
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: acgs-monitoring
+      ports:
+        - protocol: TCP
+          port: 3000 # Grafana
+        - protocol: TCP
+          port: 9090 # Prometheus
+    - to: [] # Allow DNS
+      ports:
+        - protocol: UDP
+          port: 53

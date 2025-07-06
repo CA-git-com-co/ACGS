@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   # Locust Master
@@ -6,16 +6,23 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.loadtest
-    command: [
-      "locust",
-      "-f", "/app/locustfile.py",
-      "--master",
-      "--host", "${ACGS_TARGET_HOST:-http://localhost:8080}",
-      "--web-port", "8089",
-      "--master-bind-port", "5557",
-      "--html", "/app/reports/acgs_distributed_load_test.html",
-      "--csv", "/app/reports/acgs_distributed_load_test"
-    ]
+    command:
+      [
+        "locust",
+        "-f",
+        "/app/locustfile.py",
+        "--master",
+        "--host",
+        "${ACGS_TARGET_HOST:-http://localhost:8080}",
+        "--web-port",
+        "8089",
+        "--master-bind-port",
+        "5557",
+        "--html",
+        "/app/reports/acgs_distributed_load_test.html",
+        "--csv",
+        "/app/reports/acgs_distributed_load_test",
+      ]
     ports:
       - "8089:8089"
       - "5557:5557"
@@ -39,14 +46,19 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.loadtest
-    command: [
-      "locust",
-      "-f", "/app/locustfile.py",
-      "--worker",
-      "--master-host", "locust-master",
-      "--master-port", "5557",
-      "--processes", "4"
-    ]
+    command:
+      [
+        "locust",
+        "-f",
+        "/app/locustfile.py",
+        "--worker",
+        "--master-host",
+        "locust-master",
+        "--master-port",
+        "5557",
+        "--processes",
+        "4",
+      ]
     environment:
       - LOCUST_MODE=worker
       - LOCUST_MASTER_HOST=locust-master
@@ -67,14 +79,19 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.loadtest
-    command: [
-      "locust",
-      "-f", "/app/locustfile.py",
-      "--worker",
-      "--master-host", "locust-master",
-      "--master-port", "5557",
-      "--processes", "4"
-    ]
+    command:
+      [
+        "locust",
+        "-f",
+        "/app/locustfile.py",
+        "--worker",
+        "--master-host",
+        "locust-master",
+        "--master-port",
+        "5557",
+        "--processes",
+        "4",
+      ]
     environment:
       - LOCUST_MODE=worker
       - LOCUST_MASTER_HOST=locust-master
@@ -95,14 +112,19 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.loadtest
-    command: [
-      "locust",
-      "-f", "/app/locustfile.py",
-      "--worker",
-      "--master-host", "locust-master",
-      "--master-port", "5557",
-      "--processes", "4"
-    ]
+    command:
+      [
+        "locust",
+        "-f",
+        "/app/locustfile.py",
+        "--worker",
+        "--master-host",
+        "locust-master",
+        "--master-port",
+        "5557",
+        "--processes",
+        "4",
+      ]
     environment:
       - LOCUST_MODE=worker
       - LOCUST_MASTER_HOST=locust-master
@@ -123,14 +145,19 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.loadtest
-    command: [
-      "locust",
-      "-f", "/app/locustfile.py",
-      "--worker",
-      "--master-host", "locust-master",
-      "--master-port", "5557",
-      "--processes", "4"
-    ]
+    command:
+      [
+        "locust",
+        "-f",
+        "/app/locustfile.py",
+        "--worker",
+        "--master-host",
+        "locust-master",
+        "--master-port",
+        "5557",
+        "--processes",
+        "4",
+      ]
     environment:
       - LOCUST_MODE=worker
       - LOCUST_MASTER_HOST=locust-master
@@ -156,12 +183,12 @@ services:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--storage.tsdb.retention.time=200h'
-      - '--web.enable-lifecycle'
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/etc/prometheus/console_libraries"
+      - "--web.console.templates=/etc/prometheus/consoles"
+      - "--storage.tsdb.retention.time=200h"
+      - "--web.enable-lifecycle"
     networks:
       - acgs-load-test
 

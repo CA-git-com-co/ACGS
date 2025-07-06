@@ -157,9 +157,9 @@ class SubmissionValidator:
                         details={"issues": issues},
                     )
                 )
-                self.recommendations.extend(
-                    [f"Fix LaTeX issue: {issue}" for issue in issues]
-                )
+                self.recommendations.extend([
+                    f"Fix LaTeX issue: {issue}" for issue in issues
+                ])
             else:
                 self.results.append(
                     ValidationResult(
@@ -231,15 +231,17 @@ class SubmissionValidator:
                         details={**details, "issues": issues},
                     )
                 )
-                self.recommendations.extend(
-                    [f"Fix bibliography: {issue}" for issue in issues]
-                )
+                self.recommendations.extend([
+                    f"Fix bibliography: {issue}" for issue in issues
+                ])
             else:
                 self.results.append(
                     ValidationResult(
                         check_name="Bibliography",
                         status="PASS",
-                        message=f"Bibliography validation passed ({total_entries} entries)",
+                        message=(
+                            f"Bibliography validation passed ({total_entries} entries)"
+                        ),
                         details=details,
                     )
                 )
@@ -318,7 +320,9 @@ class SubmissionValidator:
                         ValidationResult(
                             check_name="Figures",
                             status="PASS",
-                            message=f"Figure validation passed ({len(figure_files)} files)",
+                            message=(
+                                f"Figure validation passed ({len(figure_files)} files)"
+                            ),
                             details=details,
                         )
                     )
@@ -342,7 +346,8 @@ class SubmissionValidator:
         )
         if total_size > 50 * 1024 * 1024:  # 50MB
             compliance_issues.append(
-                f"Submission size ({total_size / 1024 / 1024:.1f}MB) exceeds arXiv limit"
+                f"Submission size ({total_size / 1024 / 1024:.1f}MB) exceeds arXiv"
+                " limit"
             )
 
         # Check for prohibited file types
@@ -386,9 +391,9 @@ class SubmissionValidator:
                     details={**details, "issues": compliance_issues},
                 )
             )
-            self.recommendations.extend(
-                [f"Fix arXiv compliance: {issue}" for issue in compliance_issues]
-            )
+            self.recommendations.extend([
+                f"Fix arXiv compliance: {issue}" for issue in compliance_issues
+            ])
         else:
             self.results.append(
                 ValidationResult(
@@ -456,9 +461,9 @@ class SubmissionValidator:
                         details={**details, "issues": quality_issues},
                     )
                 )
-                self.recommendations.extend(
-                    [f"Improve content: {issue}" for issue in quality_issues]
-                )
+                self.recommendations.extend([
+                    f"Improve content: {issue}" for issue in quality_issues
+                ])
             else:
                 self.results.append(
                     ValidationResult(
@@ -528,12 +533,9 @@ class SubmissionValidator:
                         details={**details, "issues": accessibility_issues},
                     )
                 )
-                self.recommendations.extend(
-                    [
-                        f"Improve accessibility: {issue}"
-                        for issue in accessibility_issues
-                    ]
-                )
+                self.recommendations.extend([
+                    f"Improve accessibility: {issue}" for issue in accessibility_issues
+                ])
             else:
                 self.results.append(
                     ValidationResult(
@@ -671,9 +673,9 @@ def generate_validation_report(
 
     report_content = f"""# Academic Submission Validation Report
 
-**Submission**: {report.submission_path}  
-**Validation Date**: {report.timestamp}  
-**Overall Status**: {report.overall_status}  
+**Submission**: {report.submission_path}
+**Validation Date**: {report.timestamp}
+**Overall Status**: {report.overall_status}
 **Compliance Score**: {report.compliance_score:.1f}%
 
 ## Validation Results

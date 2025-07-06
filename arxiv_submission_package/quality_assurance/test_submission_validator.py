@@ -218,7 +218,7 @@ Some content without title, author, or abstract.
 \\documentclass{article}
 \\begin{document}
 \\begin{abstract}
-This is a test abstract with sufficient length to pass the quality check. 
+This is a test abstract with sufficient length to pass the quality check.
 It contains multiple sentences and provides adequate description of the work.
 The abstract explains the problem, methodology, and key findings in a clear manner.
 This should be long enough to meet the minimum word count requirements.

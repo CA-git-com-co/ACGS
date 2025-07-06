@@ -5,7 +5,7 @@
 # to ensure proper documentation review and constitutional compliance.
 #
 # Format: path/pattern @reviewer1 @reviewer2
-# 
+#
 # Global fallback - requires at least one review for any change
 * @acgs-maintainers
 

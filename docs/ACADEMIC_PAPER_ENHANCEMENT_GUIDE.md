@@ -55,7 +55,7 @@ Input: Hidden state h ∈ ℝᵈ, Weight matrix W ∈ ℝᵈˣᵏ
 Output: Activation mask M ∈ {0,1}ᵈ
 
 1. Compute column norms: c_i = ||W_{:,i}||₂ for i = 1,...,d
-2. Calculate WINA scores: s_i = |h_i × c_i| for i = 1,...,d  
+2. Calculate WINA scores: s_i = |h_i × c_i| for i = 1,...,d
 3. Apply threshold: M_i = 1 if s_i > τ else 0
 4. Return activation mask M
 
@@ -102,7 +102,7 @@ Required Baselines:
     - Kubernetes for container orchestration
     - Redis for caching systems
     - PostgreSQL for data persistence
-    
+
   - Academic Baselines:
     - Multi-agent coordination algorithms
     - Constitutional AI approaches
@@ -145,7 +145,7 @@ Process Documentation:
 
 Weight Categories:
   - Constitutional Principles: 0.4 (40% weight)
-  - Performance Metrics: 0.3 (30% weight)  
+  - Performance Metrics: 0.3 (30% weight)
   - Security Considerations: 0.2 (20% weight)
   - Operational Factors: 0.1 (10% weight)
 ```
@@ -200,12 +200,12 @@ Novel Contributions:
      - First application to constitutional AI systems
      - 65% efficiency improvement over baseline
      - O(1) lookup pattern implementation
-     
+
   2. Multi-Tier Constitutional Caching:
      - Novel cache invalidation strategy
      - Constitutional hash-based integrity
      - 25% hit rate improvement demonstrated
-     
+
   3. Real-time Governance Validation:
      - Sub-5ms constitutional compliance checking
      - Pre-compiled pattern matching approach

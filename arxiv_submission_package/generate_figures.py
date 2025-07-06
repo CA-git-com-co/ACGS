@@ -221,7 +221,8 @@ def create_appeal_workflow():
     ax.text(
         8.25,
         5,
-        "Hash Chaining Log\n(Memory-based)\n\n• Audit Trail\n• Transparency\n• Immutable Record",
+        "Hash Chaining Log\n(Memory-based)\n\n• Audit Trail\n• Transparency\n•"
+        " Immutable Record",
         ha="center",
         va="center",
         fontsize=10,
@@ -372,7 +373,8 @@ def create_rule_synthesis_chart():
     ax.set_ylabel("Success Rate (%)", fontsize=14, fontweight="bold")
     ax.set_xlabel("Constitutional Principles", fontsize=14, fontweight="bold")
     ax.set_title(
-        "Principle-Specific LLM Policy Synthesis Performance\n(N=30 trials per principle)",
+        "Principle-Specific LLM Policy Synthesis Performance\n(N=30 trials per"
+        " principle)",
         fontsize=16,
         fontweight="bold",
         pad=20,
@@ -540,7 +542,8 @@ def create_compliance_trends():
     ax.set_xlabel("Evolutionary Generations", fontsize=14, fontweight="bold")
     ax.set_ylabel("Metric Value", fontsize=14, fontweight="bold")
     ax.set_title(
-        "Aggregate Compliance Metrics from Theoretical Simulations\nOver Evolutionary Runs",
+        "Aggregate Compliance Metrics from Theoretical Simulations\nOver Evolutionary"
+        " Runs",
         fontsize=16,
         fontweight="bold",
         pad=20,

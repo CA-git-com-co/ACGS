@@ -3,7 +3,7 @@ Enhanced Performance Monitor for ACGS Multi-Agent Systems
 
 Tracks advanced metrics for revolutionary multi-agent architectures including:
 - 40% reduction in communication overhead
-- 20% improvement in response latency  
+- 20% improvement in response latency
 - Coordination efficiency metrics
 - Document-based communication effectiveness
 - Hierarchical coordination performance
@@ -21,13 +21,13 @@ Key Features:
 
 import asyncio
 import logging
-import time
-from collections import defaultdict, deque
-from dataclasses import dataclass, field
-from datetime import datetime, timezone, timedelta
-from typing import Any, Dict, List, Optional, Tuple
-from enum import Enum
 import statistics
+import time
+from collections import deque
+from dataclasses import dataclass, field
+from datetime import datetime, timedelta, timezone
+from enum import Enum
+from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
@@ -39,7 +39,7 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 class MetricType(Enum):
     """Types of performance metrics"""
-    
+
     COMMUNICATION_OVERHEAD = "communication_overhead"
     RESPONSE_LATENCY = "response_latency"
     COORDINATION_EFFICIENCY = "coordination_efficiency"
@@ -52,35 +52,41 @@ class MetricType(Enum):
 
 class PerformanceTarget(BaseModel):
     """Performance target definition"""
-    
+
     metric_name: str = Field(..., description="Name of the metric")
     target_value: float = Field(..., description="Target value to achieve")
     current_value: float = Field(default=0.0, description="Current measured value")
-    improvement_percentage: float = Field(default=0.0, description="Improvement from baseline")
-    baseline_value: Optional[float] = Field(None, description="Baseline value for comparison")
+    improvement_percentage: float = Field(
+        default=0.0, description="Improvement from baseline"
+    )
+    baseline_value: Optional[float] = Field(
+        None, description="Baseline value for comparison"
+    )
     threshold_warning: float = Field(..., description="Warning threshold")
     threshold_critical: float = Field(..., description="Critical threshold")
     unit: str = Field(default="", description="Unit of measurement")
-    is_higher_better: bool = Field(default=True, description="Whether higher values are better")
+    is_higher_better: bool = Field(
+        default=True, description="Whether higher values are better"
+    )
 
 
 @dataclass
 class MetricDataPoint:
     """Individual metric measurement"""
-    
+
     timestamp: datetime
     metric_type: MetricType
     value: float
     agent_id: Optional[str] = None
     workflow_id: Optional[str] = None
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: dict[str, Any] = field(default_factory=dict)
     constitutional_hash: str = CONSTITUTIONAL_HASH
 
 
 @dataclass
 class PerformanceAlert:
     """Performance alert definition"""
-    
+
     alert_id: str
     metric_name: str
     severity: str  # "warning", "critical"
@@ -96,22 +102,22 @@ class PerformanceAlert:
 class EnhancedPerformanceMonitor:
     """
     Enhanced performance monitoring system for multi-agent architectures.
-    
+
     Tracks revolutionary improvements in:
     - Communication overhead reduction (target: 40%)
     - Response latency improvement (target: 20%)
     - Coordination efficiency optimization
     - Document-based communication effectiveness
     """
-    
+
     def __init__(self, retention_hours: int = 24):
         self.retention_hours = retention_hours
-        
+
         # Metric storage
-        self.metrics: Dict[MetricType, deque] = {
+        self.metrics: dict[MetricType, deque] = {
             metric_type: deque(maxlen=10000) for metric_type in MetricType
         }
-        
+
         # Performance targets based on article benchmarks
         self.performance_targets = {
             "communication_overhead_reduction": PerformanceTarget(
@@ -120,15 +126,15 @@ class EnhancedPerformanceMonitor:
                 threshold_warning=30.0,
                 threshold_critical=20.0,
                 unit="percentage",
-                is_higher_better=True
+                is_higher_better=True,
             ),
             "response_latency_improvement": PerformanceTarget(
-                metric_name="response_latency_improvement", 
+                metric_name="response_latency_improvement",
                 target_value=20.0,  # 20% improvement target
                 threshold_warning=15.0,
                 threshold_critical=10.0,
                 unit="percentage",
-                is_higher_better=True
+                is_higher_better=True,
             ),
             "coordination_efficiency": PerformanceTarget(
                 metric_name="coordination_efficiency",
@@ -136,7 +142,7 @@ class EnhancedPerformanceMonitor:
                 threshold_warning=0.75,
                 threshold_critical=0.65,
                 unit="ratio",
-                is_higher_better=True
+                is_higher_better=True,
             ),
             "document_communication_effectiveness": PerformanceTarget(
                 metric_name="document_communication_effectiveness",
@@ -144,7 +150,7 @@ class EnhancedPerformanceMonitor:
                 threshold_warning=0.80,
                 threshold_critical=0.70,
                 unit="ratio",
-                is_higher_better=True
+                is_higher_better=True,
             ),
             "p99_latency": PerformanceTarget(
                 metric_name="p99_latency",
@@ -152,7 +158,7 @@ class EnhancedPerformanceMonitor:
                 threshold_warning=7.0,
                 threshold_critical=10.0,
                 unit="milliseconds",
-                is_higher_better=False
+                is_higher_better=False,
             ),
             "cache_hit_rate": PerformanceTarget(
                 metric_name="cache_hit_rate",
@@ -160,7 +166,7 @@ class EnhancedPerformanceMonitor:
                 threshold_warning=75.0,
                 threshold_critical=65.0,
                 unit="percentage",
-                is_higher_better=True
+                is_higher_better=True,
             ),
             "constitutional_compliance_rate": PerformanceTarget(
                 metric_name="constitutional_compliance_rate",
@@ -168,67 +174,74 @@ class EnhancedPerformanceMonitor:
                 threshold_warning=90.0,
                 threshold_critical=85.0,
                 unit="percentage",
-                is_higher_better=True
-            )
+                is_higher_better=True,
+            ),
         }
-        
+
         # Baseline measurements for comparison
-        self.baselines: Dict[str, float] = {}
-        
+        self.baselines: dict[str, float] = {}
+
         # Active alerts
-        self.active_alerts: Dict[str, PerformanceAlert] = {}
-        
+        self.active_alerts: dict[str, PerformanceAlert] = {}
+
         # Performance statistics
         self.stats = {
             "total_measurements": 0,
             "alerts_generated": 0,
             "targets_achieved": 0,
             "monitoring_start_time": datetime.now(timezone.utc),
-            "last_cleanup": datetime.now(timezone.utc)
+            "last_cleanup": datetime.now(timezone.utc),
         }
-        
+
         # Background tasks
         self.is_running = False
         self.cleanup_task: Optional[asyncio.Task] = None
         self.analysis_task: Optional[asyncio.Task] = None
-        
-        logger.info("Enhanced Performance Monitor initialized with revolutionary metrics tracking")
-    
+
+        logger.info(
+            "Enhanced Performance Monitor initialized with revolutionary metrics"
+            " tracking"
+        )
+
     async def start(self) -> None:
         """Start the performance monitoring system"""
         try:
             self.is_running = True
-            
+
             # Start background tasks
             self.cleanup_task = asyncio.create_task(self._cleanup_loop())
             self.analysis_task = asyncio.create_task(self._analysis_loop())
-            
+
             logger.info("Enhanced Performance Monitor started")
-            
+
         except Exception as e:
             logger.error(f"Failed to start performance monitor: {e!s}")
             raise
-    
+
     async def stop(self) -> None:
         """Stop the performance monitoring system"""
         try:
             self.is_running = False
-            
+
             # Cancel background tasks
             if self.cleanup_task:
                 self.cleanup_task.cancel()
             if self.analysis_task:
                 self.analysis_task.cancel()
-            
+
             logger.info("Enhanced Performance Monitor stopped")
-            
+
         except Exception as e:
             logger.error(f"Error stopping performance monitor: {e!s}")
-    
-    async def record_metric(self, metric_type: MetricType, value: float,
-                          agent_id: Optional[str] = None,
-                          workflow_id: Optional[str] = None,
-                          context: Optional[Dict[str, Any]] = None) -> None:
+
+    async def record_metric(
+        self,
+        metric_type: MetricType,
+        value: float,
+        agent_id: Optional[str] = None,
+        workflow_id: Optional[str] = None,
+        context: Optional[dict[str, Any]] = None,
+    ) -> None:
         """Record a performance metric measurement"""
         try:
             data_point = MetricDataPoint(
@@ -237,77 +250,92 @@ class EnhancedPerformanceMonitor:
                 value=value,
                 agent_id=agent_id,
                 workflow_id=workflow_id,
-                context=context or {}
+                context=context or {},
             )
-            
+
             self.metrics[metric_type].append(data_point)
             self.stats["total_measurements"] += 1
-            
+
             # Check for alerts
-            await self._check_performance_alerts(metric_type, value, agent_id, workflow_id)
-            
+            await self._check_performance_alerts(
+                metric_type, value, agent_id, workflow_id
+            )
+
             logger.debug(f"Recorded {metric_type.value}: {value} for agent {agent_id}")
-            
+
         except Exception as e:
             logger.error(f"Failed to record metric: {e!s}")
-    
-    async def record_communication_overhead(self, baseline_messages: int, 
-                                          optimized_messages: int,
-                                          agent_id: Optional[str] = None) -> None:
+
+    async def record_communication_overhead(
+        self,
+        baseline_messages: int,
+        optimized_messages: int,
+        agent_id: Optional[str] = None,
+    ) -> None:
         """Record communication overhead reduction"""
         try:
             if baseline_messages > 0:
-                reduction_percentage = ((baseline_messages - optimized_messages) / baseline_messages) * 100
+                reduction_percentage = (
+                    (baseline_messages - optimized_messages) / baseline_messages
+                ) * 100
                 await self.record_metric(
                     MetricType.COMMUNICATION_OVERHEAD,
                     reduction_percentage,
                     agent_id=agent_id,
                     context={
                         "baseline_messages": baseline_messages,
-                        "optimized_messages": optimized_messages
-                    }
+                        "optimized_messages": optimized_messages,
+                    },
                 )
-                
+
                 # Update performance target
                 target = self.performance_targets["communication_overhead_reduction"]
                 target.current_value = reduction_percentage
                 if target.baseline_value is None:
                     target.baseline_value = 0.0
                 target.improvement_percentage = reduction_percentage
-                
+
         except Exception as e:
             logger.error(f"Failed to record communication overhead: {e!s}")
-    
-    async def record_response_latency(self, baseline_latency: float, 
-                                    current_latency: float,
-                                    agent_id: Optional[str] = None) -> None:
+
+    async def record_response_latency(
+        self,
+        baseline_latency: float,
+        current_latency: float,
+        agent_id: Optional[str] = None,
+    ) -> None:
         """Record response latency improvement"""
         try:
             if baseline_latency > 0:
-                improvement_percentage = ((baseline_latency - current_latency) / baseline_latency) * 100
+                improvement_percentage = (
+                    (baseline_latency - current_latency) / baseline_latency
+                ) * 100
                 await self.record_metric(
                     MetricType.RESPONSE_LATENCY,
                     improvement_percentage,
                     agent_id=agent_id,
                     context={
                         "baseline_latency_ms": baseline_latency,
-                        "current_latency_ms": current_latency
-                    }
+                        "current_latency_ms": current_latency,
+                    },
                 )
-                
+
                 # Update performance target
                 target = self.performance_targets["response_latency_improvement"]
                 target.current_value = improvement_percentage
                 if target.baseline_value is None:
                     target.baseline_value = baseline_latency
                 target.improvement_percentage = improvement_percentage
-                
+
         except Exception as e:
             logger.error(f"Failed to record response latency: {e!s}")
 
-    async def record_coordination_efficiency(self, successful_coordinations: int,
-                                           total_coordinations: int,
-                                           workflow_id: Optional[str] = None) -> None:
+    async def record_coordination_efficiency(
+        self,
+        successful_coordinations: int,
+        total_coordinations: int,
+        workflow_id: Optional[str] = None,
+    ) -> None:
         """Record coordination efficiency metrics"""
         try:
             if total_coordinations > 0:
@@ -318,8 +346,8 @@ class EnhancedPerformanceMonitor:
                     workflow_id=workflow_id,
                     context={
                         "successful_coordinations": successful_coordinations,
-                        "total_coordinations": total_coordinations
-                    }
+                        "total_coordinations": total_coordinations,
+                    },
                 )
 
                 # Update performance target
@@ -329,9 +357,12 @@ class EnhancedPerformanceMonitor:
         except Exception as e:
             logger.error(f"Failed to record coordination efficiency: {e!s}")
 
-    async def record_document_communication_effectiveness(self, successful_exchanges: int,
-                                                        total_exchanges: int,
-                                                        workflow_id: Optional[str] = None) -> None:
+    async def record_document_communication_effectiveness(
+        self,
+        successful_exchanges: int,
+        total_exchanges: int,
+        workflow_id: Optional[str] = None,
+    ) -> None:
         """Record document-based communication effectiveness"""
         try:
             if total_exchanges > 0:
@@ -342,26 +373,31 @@ class EnhancedPerformanceMonitor:
                     workflow_id=workflow_id,
                     context={
                         "successful_exchanges": successful_exchanges,
-                        "total_exchanges": total_exchanges
-                    }
+                        "total_exchanges": total_exchanges,
+                    },
                 )
 
                 # Update performance target
-                target = self.performance_targets["document_communication_effectiveness"]
+                target = self.performance_targets[
+                    "document_communication_effectiveness"
+                ]
                 target.current_value = effectiveness
 
         except Exception as e:
-            logger.error(f"Failed to record document communication effectiveness: {e!s}")
+            logger.error(
+                f"Failed to record document communication effectiveness: {e!s}"
+            )
 
-    async def record_p99_latency(self, latency_ms: float,
-                               agent_id: Optional[str] = None) -> None:
+    async def record_p99_latency(
+        self, latency_ms: float, agent_id: Optional[str] = None
+    ) -> None:
         """Record P99 latency measurement"""
         try:
             await self.record_metric(
                 MetricType.RESPONSE_LATENCY,
                 latency_ms,
                 agent_id=agent_id,
-                context={"metric_type": "p99_latency"}
+                context={"metric_type": "p99_latency"},
             )
 
             # Update performance target
@@ -371,9 +407,12 @@ class EnhancedPerformanceMonitor:
         except Exception as e:
             logger.error(f"Failed to record P99 latency: {e!s}")
 
-    async def record_constitutional_compliance(self, compliant_operations: int,
-                                             total_operations: int,
-                                             agent_id: Optional[str] = None) -> None:
+    async def record_constitutional_compliance(
+        self,
+        compliant_operations: int,
+        total_operations: int,
+        agent_id: Optional[str] = None,
+    ) -> None:
         """Record constitutional compliance rate"""
         try:
             if total_operations > 0:
@@ -385,8 +424,8 @@ class EnhancedPerformanceMonitor:
                     context={
                         "compliant_operations": compliant_operations,
                         "total_operations": total_operations,
-                        "constitutional_hash": CONSTITUTIONAL_HASH
-                    }
+                        "constitutional_hash": CONSTITUTIONAL_HASH,
+                    },
                 )
 
                 # Update performance target
@@ -396,7 +435,7 @@ class EnhancedPerformanceMonitor:
         except Exception as e:
             logger.error(f"Failed to record constitutional compliance: {e!s}")
 
-    async def get_performance_summary(self) -> Dict[str, Any]:
+    async def get_performance_summary(self) -> dict[str, Any]:
         """Get comprehensive performance summary"""
         try:
             summary = {
@@ -405,15 +444,16 @@ class EnhancedPerformanceMonitor:
                 "alerts": {
                     "active_count": len(self.active_alerts),
                     "critical_alerts": [
-                        alert for alert in self.active_alerts.values()
+                        alert
+                        for alert in self.active_alerts.values()
                         if alert.severity == "critical" and not alert.resolved
-                    ]
+                    ],
                 },
                 "statistics": self.stats,
                 "constitutional_compliance": {
                     "hash": CONSTITUTIONAL_HASH,
-                    "monitoring_active": self.is_running
-                }
+                    "monitoring_active": self.is_running,
+                },
             }
 
             # Check target achievement
@@ -424,7 +464,7 @@ class EnhancedPerformanceMonitor:
                     "current_value": target.current_value,
                     "target_value": target.target_value,
                     "improvement_percentage": target.improvement_percentage,
-                    "unit": target.unit
+                    "unit": target.unit,
                 }
 
             # Get recent metrics for each type
@@ -436,7 +476,7 @@ class EnhancedPerformanceMonitor:
                         "average": statistics.mean(recent_values),
                         "min": min(recent_values),
                         "max": max(recent_values),
-                        "latest": recent_values[-1] if recent_values else 0
+                        "latest": recent_values[-1] if recent_values else 0,
                     }
 
             return summary
@@ -445,9 +485,13 @@ class EnhancedPerformanceMonitor:
             logger.error(f"Failed to get performance summary: {e!s}")
             return {"error": str(e)}
 
-    async def _check_performance_alerts(self, metric_type: MetricType, value: float,
-                                      agent_id: Optional[str] = None,
-                                      workflow_id: Optional[str] = None) -> None:
+    async def _check_performance_alerts(
+        self,
+        metric_type: MetricType,
+        value: float,
+        agent_id: Optional[str] = None,
+        workflow_id: Optional[str] = None,
+    ) -> None:
         """Check if metric value triggers performance alerts"""
         try:
             # Find relevant performance target
@@ -480,17 +524,22 @@ class EnhancedPerformanceMonitor:
                     threshold_value = target.threshold_warning
 
             if alert_severity:
-                alert_id = f"{metric_type.value}_{agent_id or 'system'}_{int(time.time())}"
+                alert_id = (
+                    f"{metric_type.value}_{agent_id or 'system'}_{int(time.time())}"
+                )
                 alert = PerformanceAlert(
                     alert_id=alert_id,
                     metric_name=target.metric_name,
                     severity=alert_severity,
-                    message=f"{target.metric_name} {alert_severity}: {value} {target.unit} (threshold: {threshold_value})",
+                    message=(
+                        f"{target.metric_name} {alert_severity}:"
+                        f" {value} {target.unit} (threshold: {threshold_value})"
+                    ),
                     current_value=value,
                     threshold_value=threshold_value,
                     timestamp=datetime.now(timezone.utc),
                     agent_id=agent_id,
-                    workflow_id=workflow_id
+                    workflow_id=workflow_id,
                 )
 
                 self.active_alerts[alert_id] = alert
@@ -508,12 +557,15 @@ class EnhancedPerformanceMonitor:
         else:
             return target.current_value <= target.target_value
 
-    def _get_recent_values(self, metric_type: MetricType, minutes: int = 10) -> List[float]:
+    def _get_recent_values(
+        self, metric_type: MetricType, minutes: int = 10
+    ) -> list[float]:
         """Get recent metric values within specified time window"""
         try:
             cutoff_time = datetime.now(timezone.utc) - timedelta(minutes=minutes)
             recent_values = [
-                point.value for point in self.metrics[metric_type]
+                point.value
+                for point in self.metrics[metric_type]
                 if point.timestamp >= cutoff_time
             ]
             return recent_values
@@ -547,7 +599,9 @@ class EnhancedPerformanceMonitor:
     async def _cleanup_old_metrics(self) -> None:
         """Clean up metrics older than retention period"""
         try:
-            cutoff_time = datetime.now(timezone.utc) - timedelta(hours=self.retention_hours)
+            cutoff_time = datetime.now(timezone.utc) - timedelta(
+                hours=self.retention_hours
+            )
 
             for metric_type in MetricType:
                 metrics_deque = self.metrics[metric_type]
@@ -565,7 +619,8 @@ class EnhancedPerformanceMonitor:
         try:
             # Count achieved targets
             achieved_count = sum(
-                1 for target in self.performance_targets.values()
+                1
+                for target in self.performance_targets.values()
                 if self._is_target_achieved(target)
             )
 
@@ -573,9 +628,14 @@ class EnhancedPerformanceMonitor:
 
             # Log performance status
             total_targets = len(self.performance_targets)
-            achievement_rate = (achieved_count / total_targets) * 100 if total_targets > 0 else 0
+            achievement_rate = (
+                (achieved_count / total_targets) * 100 if total_targets > 0 else 0
+            )
 
-            logger.info(f"Performance targets achieved: {achieved_count}/{total_targets} ({achievement_rate:.1f}%)")
+            logger.info(
+                "Performance targets achieved:"
+                f" {achieved_count}/{total_targets} ({achievement_rate:.1f}%)"
+            )
 
         except Exception as e:
             logger.error(f"Failed to analyze performance trends: {e!s}")

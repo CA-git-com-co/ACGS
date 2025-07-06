@@ -13,50 +13,50 @@ data:
   CONSTITUTIONAL_HASH: "cdd01ef066bc6cf2"
   CONSTITUTIONAL_COMPLIANCE_ENABLED: "true"
   FORMAL_VERIFICATION_ENABLED: "true"
-  
+
   # Environment Configuration
   ENVIRONMENT: "production"
   DEBUG: "false"
-  
+
   # Database Configuration
   DATABASE_HOST: "postgresql.acgs-system.svc.cluster.local"
   DATABASE_PORT: "5432"
   DATABASE_NAME: "acgs"
   DATABASE_SSL_MODE: "require"
-  
+
   # Redis Configuration
   REDIS_HOST: "redis.acgs-system.svc.cluster.local"
   REDIS_PORT: "6379"
   REDIS_SSL: "true"
-  
+
   # Multi-tenant Configuration
   MULTI_TENANT_ENABLED: "true"
   TENANT_ISOLATION_STRICT: "true"
-  
+
   # Rate Limiting
   RATE_LIMIT_ENABLED: "true"
   RATE_LIMIT_REQUESTS_PER_MINUTE: "1000"
   RATE_LIMIT_BURST: "100"
-  
+
   # Security Configuration
   SECURITY_HEADERS_ENABLED: "true"
   HSTS_MAX_AGE: "31536000"
   CSP_POLICY: "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'"
-  
+
   # Monitoring Configuration
   PROMETHEUS_ENABLED: "true"
   METRICS_PORT: "9090"
   REQUEST_LOGGING_ENABLED: "true"
   LOG_LEVEL: "INFO"
-  
+
   # Circuit Breaker Configuration
   CIRCUIT_BREAKER_ENABLED: "true"
   CIRCUIT_BREAKER_FAILURE_THRESHOLD: "5"
   CIRCUIT_BREAKER_RESET_TIMEOUT: "60"
-  
+
   # Load Balancing
   LOAD_BALANCING_STRATEGY: "round_robin"
-  
+
   # Health Check Configuration
   HEALTH_CHECK_INTERVAL_SECONDS: "30"
   HEALTH_CHECK_TIMEOUT_SECONDS: "10"
@@ -79,11 +79,11 @@ data:
   GOVERNANCE_SYNTHESIS_SERVICE_URL: "http://governance-synthesis-service.acgs-system.svc.cluster.local:8004"
   POLICY_GOVERNANCE_SERVICE_URL: "http://policy-governance-service.acgs-system.svc.cluster.local:8005"
   FORMAL_VERIFICATION_SERVICE_URL: "http://formal-verification-service.acgs-system.svc.cluster.local:8006"
-  
+
   # Gateway Configuration
   GATEWAY_HOST: "0.0.0.0"
   GATEWAY_PORT: "8080"
-  
+
   # External Dependencies
   POSTGRESQL_URL: "postgresql://postgres:5432/acgs"
   REDIS_URL: "redis://redis:6379"
@@ -103,7 +103,7 @@ data:
     events {
         worker_connections 1024;
     }
-    
+
     http {
         # Constitutional Compliance Headers
         add_header X-Constitutional-Hash "cdd01ef066bc6cf2" always;
@@ -112,46 +112,46 @@ data:
         add_header X-XSS-Protection "1; mode=block" always;
         add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
         add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'" always;
-        
+
         # Rate Limiting
         limit_req_zone $binary_remote_addr zone=api:10m rate=100r/m;
         limit_req_zone $binary_remote_addr zone=auth:10m rate=20r/m;
-        
+
         # Upstream API Gateway
         upstream acgs_gateway {
             server api-gateway.acgs-system.svc.cluster.local:8080;
             keepalive 32;
         }
-        
+
         # Main server block
         server {
             listen 80;
             listen 443 ssl http2;
             server_name acgs.example.com;
-            
+
             # SSL Configuration
             ssl_certificate /etc/ssl/certs/acgs.crt;
             ssl_certificate_key /etc/ssl/private/acgs.key;
             ssl_protocols TLSv1.2 TLSv1.3;
             ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384;
             ssl_prefer_server_ciphers off;
-            
+
             # Redirect HTTP to HTTPS
             if ($scheme != "https") {
                 return 301 https://$host$request_uri;
             }
-            
+
             # Health check endpoint
             location /health {
                 access_log off;
                 return 200 '{"status":"healthy","constitutional_hash":"cdd01ef066bc6cf2"}';
                 add_header Content-Type application/json;
             }
-            
+
             # API Gateway proxy
             location / {
                 limit_req zone=api burst=20 nodelay;
-                
+
                 proxy_pass http://acgs_gateway;
                 proxy_http_version 1.1;
                 proxy_set_header Upgrade $http_upgrade;
@@ -162,17 +162,17 @@ data:
                 proxy_set_header X-Forwarded-Proto $scheme;
                 proxy_set_header X-Constitutional-Hash "cdd01ef066bc6cf2";
                 proxy_cache_bypass $http_upgrade;
-                
+
                 # Timeouts
                 proxy_connect_timeout 60s;
                 proxy_send_timeout 60s;
                 proxy_read_timeout 60s;
             }
-            
+
             # Authentication endpoints with stricter rate limiting
             location /api/auth/ {
                 limit_req zone=auth burst=5 nodelay;
-                
+
                 proxy_pass http://acgs_gateway;
                 proxy_http_version 1.1;
                 proxy_set_header Host $host;

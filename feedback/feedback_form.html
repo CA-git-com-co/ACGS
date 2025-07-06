@@ -81,7 +81,7 @@
     <form id="feedbackForm" action="/submit-feedback" method="POST">
         <input type="hidden" name="constitutional_hash" value="cdd01ef066bc6cf2">
         <input type="hidden" name="submission_date" value="2025-07-05T19:58:02.230149">
-        
+
         <div class="form-group">
             <label for="overall_satisfaction">Overall Satisfaction (1-5)</label>
             <div class="rating-group">
@@ -185,7 +185,7 @@
         </div>
 
         <button type="submit" class="submit-btn">Submit Feedback</button>
-        
+
         <div class="constitutional-hash">
             <strong>Constitutional Hash:</strong> cdd01ef066bc6cf2 ✅
         </div>
@@ -194,21 +194,21 @@
     <script>
         document.getElementById('feedbackForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            
+
             // Collect form data
             const formData = new FormData(this);
             const data = Object.fromEntries(formData.entries());
-            
+
             // Add timestamp
             data.submission_timestamp = new Date().toISOString();
-            
+
             // Save to localStorage as backup
             const feedbackId = 'acgs-feedback-' + Date.now();
             localStorage.setItem(feedbackId, JSON.stringify(data));
-            
+
             // Show success message
             alert('Thank you for your feedback! Your response has been recorded.');
-            
+
             // Reset form
             this.reset();
         });

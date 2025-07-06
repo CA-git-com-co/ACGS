@@ -21,15 +21,15 @@ try:
     shared_path = os.path.join(project_root, "services", "shared")
     sys.path.insert(0, os.path.abspath(shared_path))
 
+    from clients.tenant_service_client import TenantServiceClient, service_registry
     from middleware.tenant_middleware import (
         TenantContextMiddleware,
         TenantSecurityMiddleware,
-        get_tenant_context,
         get_optional_tenant_context,
-        get_tenant_db
+        get_tenant_context,
+        get_tenant_db,
     )
-    from clients.tenant_service_client import TenantServiceClient, service_registry
-    
+
     MULTI_TENANT_AVAILABLE = True
     print("✅ Multi-tenant components loaded successfully")
 except ImportError as e:
@@ -61,12 +61,12 @@ except ImportError as e:
     print(f"⚠️ Leader election service not available: {e}")
     LEADER_ELECTION_AVAILABLE = False
 
-from fastapi import FastAPI, Request, Depends
+from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
-from starlette.responses import PlainTextResponse
 from sqlalchemy.ext.asyncio import AsyncSession
+from starlette.responses import PlainTextResponse
 
 # Service configuration
 SERVICE_NAME = "gs_service"
@@ -85,6 +85,9 @@ ENABLE_LEADER_ELECTION = os.getenv("ENABLE_LEADER_ELECTION", "true").lower() == 
 
 # Global leader election service
 leader_election_service = None
+
+# Global advanced governance synthesis engine
+advanced_governance_engine = None
 
 # Configure logging
 logging.basicConfig(
@@ -119,10 +122,19 @@ async def on_new_leader(leader_identity: str):
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Application lifespan management with leader election"""
-    global leader_election_service
+    """Application lifespan management with leader election and advanced governance engine"""
+    global leader_election_service, advanced_governance_engine
 
     logger.info(f"🚀 Starting {SERVICE_NAME} v{SERVICE_VERSION}")
+
+    # Initialize advanced governance synthesis engine
+    try:
+        policies_path = os.path.join(os.path.dirname(__file__), "..", "policies")
+        advanced_governance_engine = AdvancedGovernanceSynthesisEngine(policies_path)
+        logger.info("✅ Advanced Governance Synthesis Engine initialized")
+    except Exception as e:
+        logger.error(f"❌ Failed to initialize Advanced Governance Engine: {e}")
+        advanced_governance_engine = None
 
     # Initialize leader election if enabled
     if ENABLE_LEADER_ELECTION and LEADER_ELECTION_AVAILABLE:
@@ -171,16 +183,26 @@ if MULTI_TENANT_AVAILABLE:
         jwt_secret_key=JWT_SECRET_KEY,
         jwt_algorithm=JWT_ALGORITHM,
         exclude_paths=[
-            "/docs", "/redoc", "/openapi.json", "/health", "/metrics",
-            "/leader-election/status", "/leader-election/health"
+            "/docs",
+            "/redoc",
+            "/openapi.json",
+            "/health",
+            "/metrics",
+            "/leader-election/status",
+            "/leader-election/health",
         ],
         require_tenant=True,  # Governance synthesis requires tenant context
-        bypass_paths=["/health", "/metrics", "/leader-election/status", "/leader-election/health"]
+        bypass_paths=[
+            "/health",
+            "/metrics",
+            "/leader-election/status",
+            "/leader-election/health",
+        ],
     )
-    
+
     # Add tenant security middleware
     app.add_middleware(TenantSecurityMiddleware)
-    
+
     print("✅ Multi-tenant middleware applied to governance synthesis service")
 else:
     print("⚠️ Multi-tenant middleware not available for governance synthesis service")
@@ -299,11 +321,22 @@ async def metrics_middleware(request: Request, call_next):
 
 
 # Import performance optimization module
+import os
+
+# Import advanced governance synthesis engine
+import sys
+
 from .performance_optimizer import (
     SynthesisPerformanceMonitor,
     apply_wina_optimization,
     cache_synthesis_response,
     get_synthesis_performance_metrics,
+)
+
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+from advanced_opa_engine import (
+    AdvancedGovernanceSynthesisEngine,
+    PolicyEvaluationContext,
 )
 
 
@@ -419,9 +452,9 @@ async def synthesize_governance_as_leader(request: Request):
 async def synthesize_governance(
     request: Request,
     session: AsyncSession = Depends(get_tenant_db) if MULTI_TENANT_AVAILABLE else None,
-    tenant_context = Depends(get_tenant_context) if MULTI_TENANT_AVAILABLE else None
+    tenant_context=Depends(get_tenant_context) if MULTI_TENANT_AVAILABLE else None,
 ):
-    """Optimized governance synthesis endpoint with WINA optimization and caching"""
+    """Optimized governance synthesis endpoint with advanced OPA engine and WINA optimization"""
     async with SynthesisPerformanceMonitor("governance_synthesis"):
         try:
             body = await request.json()
@@ -429,47 +462,115 @@ async def synthesize_governance(
             # Apply WINA optimization to input policy
             optimized_input = await apply_wina_optimization(body)
 
-            # Enhanced governance synthesis response with optimization
-            synthesis_result = {
-                "synthesis_id": f"gs_{int(time.time())}",
-                "status": "completed",
-                "wina_optimized": True,
-                "governance_rules": [
-                    {
-                        "rule_id": "rule_001",
-                        "type": "constitutional_compliance",
-                        "description": (
-                            "Ensure all actions comply with constitutional hash"
-                        ),
-                        "priority": "high",
-                        "wina_weight": optimized_input.get("weight_analysis", {}).get(
-                            "constitutional_weight", 0.95
-                        ),
-                    },
-                    {
-                        "rule_id": "rule_002",
-                        "type": "policy_governance",
-                        "description": "WINA-optimized policy governance rule",
-                        "priority": "high",
-                        "optimization_score": optimized_input.get(
-                            "neuron_activation", {}
-                        ).get("activation_score", 0.89),
-                    },
-                ],
-                "optimization_metrics": {
-                    "wina_applied": optimized_input.get("wina_optimized", False),
-                    "optimization_level": optimized_input.get(
-                        "neuron_activation", {}
-                    ).get("optimization_level", "medium"),
-                    "confidence_score": optimized_input.get(
-                        "neuron_activation", {}
-                    ).get("confidence", 0.85),
-                },
-                "constitutional_hash": "cdd01ef066bc6cf2",
-                "timestamp": datetime.now(timezone.utc).isoformat(),
-            }
+            # If advanced governance engine is available, use it
+            if advanced_governance_engine:
+                # Create policy evaluation context
+                context = PolicyEvaluationContext(
+                    request_id=f"gs_{int(time.time())}",
+                    timestamp=datetime.now(timezone.utc),
+                    principal=body.get(
+                        "principal",
+                        {
+                            "id": "system",
+                            "type": "governance_service",
+                            "tenant_id": (
+                                tenant_context.tenant_id
+                                if tenant_context
+                                else "default"
+                            ),
+                        },
+                    ),
+                    resource=body.get(
+                        "resource",
+                        {"id": "governance_policy", "type": "policy_synthesis"},
+                    ),
+                    action=body.get("action", "synthesize_governance"),
+                    environment=body.get("environment", {}),
+                    constitutional_requirements=body.get(
+                        "constitutional_requirements",
+                        {
+                            "human_dignity": True,
+                            "fairness": True,
+                            "transparency": True,
+                            "accountability": True,
+                            "privacy": True,
+                        },
+                    ),
+                )
 
-            return synthesis_result
+                # Perform advanced governance synthesis
+                advanced_result = (
+                    await advanced_governance_engine.synthesize_governance_decision(
+                        context
+                    )
+                )
+
+                # Enhance with WINA optimization data
+                enhanced_result = {
+                    **advanced_result,
+                    "wina_optimized": True,
+                    "optimization_metrics": {
+                        "wina_applied": optimized_input.get("wina_optimized", False),
+                        "optimization_level": optimized_input.get(
+                            "neuron_activation", {}
+                        ).get("optimization_level", "medium"),
+                        "confidence_boost": optimized_input.get(
+                            "neuron_activation", {}
+                        ).get("confidence", 0.85),
+                    },
+                    "legacy_compatibility": True,
+                }
+
+                return enhanced_result
+
+            # Fallback to legacy synthesis if advanced engine not available
+            else:
+                logger.warning(
+                    "Advanced governance engine not available, using legacy synthesis"
+                )
+
+                # Enhanced governance synthesis response with optimization
+                synthesis_result = {
+                    "synthesis_id": f"gs_{int(time.time())}",
+                    "status": "completed",
+                    "wina_optimized": True,
+                    "governance_rules": [
+                        {
+                            "rule_id": "rule_001",
+                            "type": "constitutional_compliance",
+                            "description": (
+                                "Ensure all actions comply with constitutional hash"
+                            ),
+                            "priority": "high",
+                            "wina_weight": optimized_input.get(
+                                "weight_analysis", {}
+                            ).get("constitutional_weight", 0.95),
+                        },
+                        {
+                            "rule_id": "rule_002",
+                            "type": "policy_governance",
+                            "description": "WINA-optimized policy governance rule",
+                            "priority": "high",
+                            "optimization_score": optimized_input.get(
+                                "neuron_activation", {}
+                            ).get("activation_score", 0.89),
+                        },
+                    ],
+                    "optimization_metrics": {
+                        "wina_applied": optimized_input.get("wina_optimized", False),
+                        "optimization_level": optimized_input.get(
+                            "neuron_activation", {}
+                        ).get("optimization_level", "medium"),
+                        "confidence_score": optimized_input.get(
+                            "neuron_activation", {}
+                        ).get("confidence", 0.85),
+                    },
+                    "constitutional_hash": "cdd01ef066bc6cf2",
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "legacy_mode": True,
+                }
+
+                return synthesis_result
 
         except Exception as e:
             logger.error(f"Synthesis error: {e}")
@@ -510,8 +611,13 @@ async def service_info():
         "wina_optimization": True,
         "capabilities": [
             "governance_synthesis",
-            "policy_generation",
+            "advanced_opa_engine",
+            "policy_evaluation",
+            "policy_conflict_resolution",
             "constitutional_compliance",
+            "temporal_policy_verification",
+            "multi_policy_orchestration",
+            "policy_generation",
             "wina_optimization",
             "performance_caching",
             "apgf_workflows",
@@ -522,6 +628,9 @@ async def service_info():
             "/health",
             "/metrics",
             "/api/v1/synthesize",
+            "/api/v1/synthesize/advanced",
+            "/api/v1/policy/evaluate",
+            "/api/v1/policy/catalog",
             "/api/v1/info",
             "/api/v1/performance/metrics",
             "/api/v1/apgf/workflows",
@@ -533,6 +642,117 @@ async def service_info():
     }
 
 
+# Advanced governance synthesis endpoint
+@app.post("/api/v1/synthesize/advanced")
+async def synthesize_governance_advanced(request: Request):
+    """Advanced governance synthesis with comprehensive policy evaluation"""
+    try:
+        if not advanced_governance_engine:
+            return {
+                "error": "Advanced governance engine not available",
+                "status": "service_unavailable",
+                "constitutional_hash": "cdd01ef066bc6cf2",
+            }
+
+        body = await request.json()
+
+        # Create comprehensive policy evaluation context
+        context = PolicyEvaluationContext(
+            request_id=body.get("request_id", f"advanced_gs_{int(time.time())}"),
+            timestamp=datetime.now(timezone.utc),
+            principal=body.get("principal", {}),
+            resource=body.get("resource", {}),
+            action=body.get("action", "governance_decision"),
+            environment=body.get("environment", {}),
+            historical_context=body.get("historical_context", []),
+            constitutional_requirements=body.get("constitutional_requirements", {}),
+        )
+
+        # Specify policy scope if provided
+        policy_scope = body.get("policy_scope")
+
+        # Perform advanced governance synthesis
+        result = await advanced_governance_engine.synthesize_governance_decision(
+            context, policy_scope
+        )
+
+        logger.info(
+            f"Advanced governance synthesis completed: {result['synthesis_id']}"
+        )
+        return result
+
+    except Exception as e:
+        logger.error(f"Advanced synthesis error: {e}")
+        return {
+            "error": str(e),
+            "status": "synthesis_failed",
+            "constitutional_hash": "cdd01ef066bc6cf2",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        }
+
+
+# Policy evaluation endpoint
+@app.post("/api/v1/policy/evaluate")
+async def evaluate_policy(request: Request):
+    """Evaluate specific policies against a context"""
+    try:
+        if not advanced_governance_engine:
+            return {
+                "error": "Advanced governance engine not available",
+                "status": "service_unavailable",
+                "constitutional_hash": "cdd01ef066bc6cf2",
+            }
+
+        body = await request.json()
+
+        # Create policy evaluation context
+        context = PolicyEvaluationContext(
+            request_id=body.get("request_id", f"policy_eval_{int(time.time())}"),
+            timestamp=datetime.now(timezone.utc),
+            principal=body.get("principal", {}),
+            resource=body.get("resource", {}),
+            action=body.get("action", "policy_evaluation"),
+            environment=body.get("environment", {}),
+            constitutional_requirements=body.get("constitutional_requirements", {}),
+        )
+
+        # Get policies to evaluate
+        policies = body.get("policies", [])
+        if not policies:
+            return {
+                "error": "No policies specified for evaluation",
+                "status": "invalid_request",
+                "constitutional_hash": "cdd01ef066bc6cf2",
+            }
+
+        # Evaluate policies
+        policy_decisions = await advanced_governance_engine.evaluation_engine.evaluate_multiple_policies(
+            policies, context
+        )
+
+        # Format results
+        results = {
+            "evaluation_id": context.request_id,
+            "policies_evaluated": policies,
+            "decisions": [
+                advanced_governance_engine._serialize_decision(d)
+                for d in policy_decisions
+            ],
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "constitutional_hash": "cdd01ef066bc6cf2",
+        }
+
+        return results
+
+    except Exception as e:
+        logger.error(f"Policy evaluation error: {e}")
+        return {
+            "error": str(e),
+            "status": "evaluation_failed",
+            "constitutional_hash": "cdd01ef066bc6cf2",
+        }
+
+
 # Performance metrics endpoint
 @app.get("/api/v1/performance/metrics")
 async def get_synthesis_performance_metrics():
@@ -541,12 +761,20 @@ async def get_synthesis_performance_metrics():
         try:
             metrics = await get_synthesis_performance_metrics()
 
+            # Add advanced engine metrics if available
+            advanced_metrics = {}
+            if advanced_governance_engine:
+                advanced_metrics = (
+                    await advanced_governance_engine.get_performance_metrics()
+                )
+
             return {
                 "service": SERVICE_NAME,
                 "version": SERVICE_VERSION,
                 "optimization_status": "enabled",
                 "target_response_time_ms": 5.0,
                 "performance_metrics": metrics,
+                "advanced_engine_metrics": advanced_metrics,
                 "constitutional_hash": "cdd01ef066bc6cf2",
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
@@ -558,6 +786,37 @@ async def get_synthesis_performance_metrics():
                 "optimization_status": "error",
                 "constitutional_hash": "cdd01ef066bc6cf2",
             }
+
+
+# Policy catalog endpoint
+@app.get("/api/v1/policy/catalog")
+async def get_policy_catalog():
+    """Get available policy catalog"""
+    try:
+        if not advanced_governance_engine:
+            return {
+                "error": "Advanced governance engine not available",
+                "status": "service_unavailable",
+                "constitutional_hash": "cdd01ef066bc6cf2",
+            }
+
+        catalog = {
+            "policy_catalog": advanced_governance_engine.policy_catalog,
+            "total_policies": len(advanced_governance_engine.policy_catalog),
+            "policy_dependencies": len(advanced_governance_engine.policy_graph.edges()),
+            "constitutional_hash": "cdd01ef066bc6cf2",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        }
+
+        return catalog
+
+    except Exception as e:
+        logger.error(f"Policy catalog error: {e}")
+        return {
+            "error": str(e),
+            "status": "catalog_error",
+            "constitutional_hash": "cdd01ef066bc6cf2",
+        }
 
 
 if __name__ == "__main__":

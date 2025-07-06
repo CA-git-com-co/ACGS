@@ -1,8 +1,17 @@
 # Evolutionary Computation Service API
 
-**Service**: Evolutionary Computation Service  
-**Port**: 8006  
-**Base URL**: `http://localhost:8006/api/v1`  
+## Service Overview
+
+This service provides core functionality for the ACGS platform with constitutional compliance validation.
+
+**Service**: Evolutionary Computation
+**Port**: 8XXX
+**Constitutional Hash**: `cdd01ef066bc6cf2`
+
+
+**Service**: Evolutionary Computation Service
+**Port**: 8006
+**Base URL**: `http://localhost:8006/api/v1`
 <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 
 ## Overview
@@ -29,8 +38,8 @@ X-Constitutional-Hash: cdd01ef066bc6cf2
 
 ## Service Status
 
-⚠️ **Current Status**: Service experiencing connection issues  
-**Last Known State**: Cannot connect to port 8006  
+⚠️ **Current Status**: Service experiencing connection issues
+**Last Known State**: Cannot connect to port 8006
 **Impact**: WINA optimization and evolutionary algorithms unavailable
 
 ## Endpoints
@@ -339,6 +348,28 @@ fi
 
 ---
 
-**Status**: ❌ Service Down - Recovery in progress  
-**Priority**: HIGH - WINA optimization unavailable  
+**Status**: ❌ Service Down - Recovery in progress
+**Priority**: HIGH - WINA optimization unavailable
 <!-- Constitutional Hash: cdd01ef066bc6cf2 --> ✅
+
+## Error Handling
+
+Standard HTTP status codes are used with detailed error messages:
+
+- `400 Bad Request`: Invalid request parameters
+- `401 Unauthorized`: Authentication required
+- `403 Forbidden`: Insufficient permissions
+- `404 Not Found`: Resource not found
+- `500 Internal Server Error`: Server error
+
+All errors include constitutional compliance validation status.
+
+
+## Monitoring
+
+Service health and performance metrics:
+
+- Health check endpoint: `/health`
+- Metrics endpoint: `/metrics`
+- Constitutional compliance status: `/compliance`
+- Performance dashboard integration available

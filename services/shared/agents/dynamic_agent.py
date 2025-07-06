@@ -21,15 +21,14 @@ Key Features:
 """
 
 import asyncio
+import json
 import logging
 import uuid
-import json
-import numpy as np
 from collections import defaultdict, deque
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Optional, List, Dict
+from typing import Any, Optional
 
 from services.shared.constitutional_safety_framework import (
     ConstitutionalSafetyFramework,
@@ -39,9 +38,9 @@ from services.shared.monitoring.intelligent_alerting_system import (
 )
 from services.shared.security.enhanced_audit_logging import EnhancedAuditLogger
 
+from .a2a_protocol_adapter import A2AProtocolAdapter
 from .policy_builder import AgentConfig, PolicyBuilder
 from .tool_router import ToolExecutionRequest, ToolRouter
-from .a2a_protocol_adapter import A2AProtocolAdapter
 
 logger = logging.getLogger(__name__)
 
@@ -146,6 +145,7 @@ class AgentCommunication:
 
 # Enhanced Memory Architecture (EMU Framework)
 
+
 @dataclass
 class ExperienceItem:
     """Individual experience item for episodic memory"""
@@ -154,11 +154,11 @@ class ExperienceItem:
     agent_id: str
     task_id: str
     experience_type: str  # "task_execution", "communication", "decision"
-    context: Dict[str, Any]
-    action_taken: Dict[str, Any]
-    outcome: Dict[str, Any]
-    constitutional_context: Dict[str, Any]
-    embedding: Optional[List[float]] = None
+    context: dict[str, Any]
+    action_taken: dict[str, Any]
+    outcome: dict[str, Any]
+    constitutional_context: dict[str, Any]
+    embedding: Optional[list[float]] = None
     timestamp: datetime = None
     success_score: float = 0.0
     relevance_score: float = 0.0
@@ -174,8 +174,8 @@ class MemoryCluster:
 
     cluster_id: str
     cluster_type: str
-    experiences: List[str]  # Experience IDs
-    centroid_embedding: List[float]
+    experiences: list[str]  # Experience IDs
+    centroid_embedding: list[float]
     cluster_summary: str
     constitutional_compliance_score: float
     created_at: datetime
@@ -203,11 +203,11 @@ class EnhancedMemoryManager:
         self.cache = cache_service
 
         # Working memory (short-term, in-memory)
-        self.working_memory: Dict[str, Any] = {}
+        self.working_memory: dict[str, Any] = {}
 
         # Episodic memory (long-term, persistent)
-        self.episodic_memory: List[ExperienceItem] = []
-        self.memory_clusters: Dict[str, MemoryCluster] = {}
+        self.episodic_memory: list[ExperienceItem] = []
+        self.memory_clusters: dict[str, MemoryCluster] = {}
 
         # Memory statistics
         self.memory_stats = {
@@ -217,7 +217,7 @@ class EnhancedMemoryManager:
             "cache_hits": 0,
             "cache_misses": 0,
             "average_retrieval_time": 0.0,
-            "constitutional_compliance_rate": 1.0
+            "constitutional_compliance_rate": 1.0,
         }
 
         # Constitutional compliance hash for ACGS
@@ -225,8 +225,9 @@ class EnhancedMemoryManager:
 
         logger.info(f"Enhanced Memory Manager initialized for agent {agent_id}")
 
-    async def store_experience(self, experience_data: Dict[str, Any],
-                             constitutional_context: Dict[str, Any]) -> str:
+    async def store_experience(
+        self, experience_data: dict[str, Any], constitutional_context: dict[str, Any]
+    ) -> str:
         """Store agent experience with semantic embedding"""
         try:
             experience_id = str(uuid.uuid4())
@@ -241,11 +242,13 @@ class EnhancedMemoryManager:
                 action_taken=experience_data.get("action", {}),
                 outcome=experience_data.get("outcome", {}),
                 constitutional_context=constitutional_context,
-                success_score=experience_data.get("success_score", 0.0)
+                success_score=experience_data.get("success_score", 0.0),
             )
 
             # Generate semantic embedding
-            experience.embedding = await self._generate_semantic_embedding(experience_data)
+            experience.embedding = await self._generate_semantic_embedding(
+                experience_data
+            )
 
             # Store in episodic memory
             self.episodic_memory.append(experience)
@@ -267,8 +270,9 @@ class EnhancedMemoryManager:
             logger.error(f"Failed to store experience: {e!s}")
             raise
 
-    async def retrieve_relevant_experiences(self, current_context: Dict[str, Any],
-                                          limit: int = 5) -> List[ExperienceItem]:
+    async def retrieve_relevant_experiences(
+        self, current_context: dict[str, Any], limit: int = 5
+    ) -> list[ExperienceItem]:
         """Retrieve semantically similar past experiences"""
         try:
             # Generate embedding for current context
@@ -310,13 +314,12 @@ class EnhancedMemoryManager:
             self.memory_stats["failed_retrievals"] += 1
             return []
 
-    async def get_memory_insights(self, task_type: str) -> Dict[str, Any]:
+    async def get_memory_insights(self, task_type: str) -> dict[str, Any]:
         """Get insights from memory for specific task type"""
         try:
             # Filter experiences by task type
             relevant_experiences = [
-                exp for exp in self.episodic_memory
-                if exp.experience_type == task_type
+                exp for exp in self.episodic_memory if exp.experience_type == task_type
             ]
 
             if not relevant_experiences:
@@ -324,8 +327,7 @@ class EnhancedMemoryManager:
 
             # Calculate success patterns
             successful_experiences = [
-                exp for exp in relevant_experiences
-                if exp.success_score > 0.7
+                exp for exp in relevant_experiences if exp.success_score > 0.7
             ]
 
             success_rate = len(successful_experiences) / len(relevant_experiences)
@@ -338,14 +340,16 @@ class EnhancedMemoryManager:
                 "confidence": success_rate,
                 "total_experiences": len(relevant_experiences),
                 "successful_experiences": len(successful_experiences),
-                "constitutional_compliance": self._calculate_compliance_score(relevant_experiences)
+                "constitutional_compliance": self._calculate_compliance_score(
+                    relevant_experiences
+                ),
             }
 
         except Exception as e:
             logger.error(f"Failed to get memory insights: {e!s}")
             return {"insights": [], "confidence": 0.0}
 
-    async def _generate_semantic_embedding(self, data: Dict[str, Any]) -> List[float]:
+    async def _generate_semantic_embedding(self, data: dict[str, Any]) -> list[float]:
         """Generate semantic embedding for data (simplified implementation)"""
         try:
             # In production, this would use a proper embedding model
@@ -395,15 +399,16 @@ class EnhancedMemoryManager:
                     cluster_summary=f"Cluster for {experience.experience_type}",
                     constitutional_compliance_score=1.0,
                     created_at=datetime.now(timezone.utc),
-                    last_updated=datetime.now(timezone.utc)
+                    last_updated=datetime.now(timezone.utc),
                 )
                 self.memory_clusters[cluster_id] = new_cluster
 
         except Exception as e:
             logger.error(f"Failed to update memory clusters: {e!s}")
 
-    async def _similarity_search_memory(self, query_embedding: List[float],
-                                      limit: int) -> List[ExperienceItem]:
+    async def _similarity_search_memory(
+        self, query_embedding: list[float], limit: int
+    ) -> list[ExperienceItem]:
         """Perform similarity search in episodic memory"""
         try:
             similarities = []
@@ -423,8 +428,9 @@ class EnhancedMemoryManager:
             logger.error(f"Failed to perform similarity search: {e!s}")
             return []
 
-    async def _calculate_similarity(self, embedding1: List[float],
-                                  embedding2: List[float]) -> float:
+    async def _calculate_similarity(
+        self, embedding1: list[float], embedding2: list[float]
+    ) -> float:
         """Calculate cosine similarity between embeddings"""
         try:
             if len(embedding1) != len(embedding2):
@@ -444,7 +450,7 @@ class EnhancedMemoryManager:
             logger.error(f"Failed to calculate similarity: {e!s}")
             return 0.0
 
-    async def _extract_patterns(self, experiences: List[ExperienceItem]) -> List[str]:
+    async def _extract_patterns(self, experiences: list[ExperienceItem]) -> list[str]:
         """Extract common patterns from successful experiences"""
         try:
             patterns = []
@@ -456,7 +462,8 @@ class EnhancedMemoryManager:
 
             # Analyze constitutional compliance
             compliant_experiences = [
-                exp for exp in experiences
+                exp
+                for exp in experiences
                 if exp.constitutional_context.get("compliant", True)
             ]
             compliance_rate = len(compliant_experiences) / len(experiences)
@@ -468,13 +475,14 @@ class EnhancedMemoryManager:
             logger.error(f"Failed to extract patterns: {e!s}")
             return []
 
-    def _calculate_compliance_score(self, experiences: List[ExperienceItem]) -> float:
+    def _calculate_compliance_score(self, experiences: list[ExperienceItem]) -> float:
         """Calculate constitutional compliance score for experiences"""
         if not experiences:
             return 1.0
 
         compliant_count = sum(
-            1 for exp in experiences
+            1
+            for exp in experiences
             if exp.constitutional_context.get("compliant", True)
         )
 
@@ -524,14 +532,14 @@ class DynamicAgent:
         self.memory_manager = EnhancedMemoryManager(
             agent_id=config.agent_id,
             vector_db_connection=None,  # Will be injected in production
-            cache_service=None  # Will be injected in production
+            cache_service=None,  # Will be injected in production
         )
 
         # A2A Protocol Adapter for external framework interoperability
         self.a2a_adapter = A2AProtocolAdapter(
             agent_id=config.agent_id,
             safety_validator=constitutional_framework,
-            audit_logger=audit_logger
+            audit_logger=audit_logger,
         )
 
         # Performance monitoring
@@ -1255,7 +1263,9 @@ class DynamicAgent:
 
     # Enhanced Memory Architecture Integration Methods
 
-    async def _store_task_experience(self, task: AgentTask, tool_results: Dict[str, Any]) -> None:
+    async def _store_task_experience(
+        self, task: AgentTask, tool_results: dict[str, Any]
+    ) -> None:
         """Store task execution experience in memory for future learning"""
         try:
             # Calculate success score
@@ -1277,29 +1287,38 @@ class DynamicAgent:
                     "description": task.description,
                     "parameters": task.parameters,
                     "required_tools": task.required_tools,
-                    "priority": task.priority.value
+                    "priority": task.priority.value,
                 },
                 "action": {
                     "tools_used": list(tool_results.keys()),
                     "execution_approach": "standard",
-                    "resource_usage": len(tool_results)
+                    "resource_usage": len(tool_results),
                 },
                 "outcome": {
                     "status": task.status.value,
                     "result": task.result,
                     "error_message": task.error_message,
-                    "execution_time_seconds": (task.completed_at - task.started_at).total_seconds() if task.started_at else 0,
-                    "tool_results": {k: str(v)[:200] for k, v in tool_results.items()}  # Truncate for storage
+                    "execution_time_seconds": (
+                        (task.completed_at - task.started_at).total_seconds()
+                        if task.started_at
+                        else 0
+                    ),
+                    "tool_results": {
+                        k: str(v)[:200] for k, v in tool_results.items()
+                    },  # Truncate for storage
                 },
-                "success_score": success_score
+                "success_score": success_score,
             }
 
             # Constitutional context
             constitutional_context = {
-                "compliant": task.status != TaskStatus.FAILED or "constitutional" not in (task.error_message or ""),
+                "compliant": (
+                    task.status != TaskStatus.FAILED
+                    or "constitutional" not in (task.error_message or "")
+                ),
                 "constraints_checked": task.constitutional_constraints,
                 "compliance_score": self.metrics.constitutional_compliance_score,
-                "constitutional_hash": "cdd01ef066bc6cf2"
+                "constitutional_hash": "cdd01ef066bc6cf2",
             }
 
             # Store experience
@@ -1307,12 +1326,16 @@ class DynamicAgent:
                 experience_data, constitutional_context
             )
 
-            logger.debug(f"Stored task experience {experience_id} for task {task.task_id}")
+            logger.debug(
+                f"Stored task experience {experience_id} for task {task.task_id}"
+            )
 
         except Exception as e:
             logger.error(f"Failed to store task experience: {e!s}")
 
-    async def _retrieve_relevant_experiences_for_task(self, task: AgentTask) -> List[ExperienceItem]:
+    async def _retrieve_relevant_experiences_for_task(
+        self, task: AgentTask
+    ) -> list[ExperienceItem]:
         """Retrieve relevant past experiences for current task"""
         try:
             # Create context for similarity search
@@ -1320,15 +1343,20 @@ class DynamicAgent:
                 "task_type": task.task_type,
                 "description": task.description,
                 "parameters": task.parameters,
-                "required_tools": task.required_tools
+                "required_tools": task.required_tools,
             }
 
             # Retrieve similar experiences
-            relevant_experiences = await self.memory_manager.retrieve_relevant_experiences(
-                task_context, limit=5
+            relevant_experiences = (
+                await self.memory_manager.retrieve_relevant_experiences(
+                    task_context, limit=5
+                )
             )
 
-            logger.debug(f"Retrieved {len(relevant_experiences)} relevant experiences for task {task.task_id}")
+            logger.debug(
+                f"Retrieved {len(relevant_experiences)} relevant experiences for task"
+                f" {task.task_id}"
+            )
             return relevant_experiences
 
         except Exception as e:
@@ -1341,15 +1369,20 @@ class DynamicAgent:
             # Get memory insights for this task type
             insights = await self.memory_manager.get_memory_insights(task.task_type)
 
-            if insights["confidence"] > 0.5:  # Only apply if we have reasonable confidence
-                logger.info(f"Applying memory insights to task {task.task_id}: confidence={insights['confidence']:.2f}")
+            if (
+                insights["confidence"] > 0.5
+            ):  # Only apply if we have reasonable confidence
+                logger.info(
+                    f"Applying memory insights to task {task.task_id}:"
+                    f" confidence={insights['confidence']:.2f}"
+                )
 
                 # Log insights for debugging
                 for insight in insights["insights"]:
                     task.execution_logs.append({
                         "action": "memory_insight_applied",
                         "insight": insight,
-                        "timestamp": datetime.utcnow().isoformat()
+                        "timestamp": datetime.utcnow().isoformat(),
                     })
 
                 # Adjust task priority based on historical success
@@ -1358,7 +1391,7 @@ class DynamicAgent:
                     task.execution_logs.append({
                         "action": "execution_strategy_optimized",
                         "reason": "high_confidence_memory_insights",
-                        "timestamp": datetime.utcnow().isoformat()
+                        "timestamp": datetime.utcnow().isoformat(),
                     })
 
         except Exception as e:

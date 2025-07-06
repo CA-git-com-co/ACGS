@@ -11,12 +11,11 @@ import hashlib
 import logging
 import time
 
+# Import new API routers
+from app.api.v1 import v1_router
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from z3 import Int, Solver, sat
-
-# Import new API routers
-from app.api.v1 import v1_router
 
 # Configure logging
 logging.basicConfig(
