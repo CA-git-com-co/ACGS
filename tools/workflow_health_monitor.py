@@ -16,7 +16,6 @@ import yaml
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 def check_workflow_runs():
     """Check recent workflow runs using git log and file analysis."""
     try:

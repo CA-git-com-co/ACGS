@@ -2,7 +2,13 @@
   "dashboard": {
     "id": null,
     "title": "ACGS Enterprise Monitoring Dashboard",
-    "tags": ["acgs", "enterprise", "performance", "constitutional", "governance"],
+    "tags": [
+      "acgs",
+      "enterprise",
+      "performance",
+      "constitutional",
+      "governance"
+    ],
     "style": "dark",
     "timezone": "browser",
     "editable": true,
@@ -13,8 +19,29 @@
       "to": "now"
     },
     "timepicker": {
-      "refresh_intervals": ["5s", "10s", "30s", "1m", "5m", "15m", "30m", "1h", "2h", "1d"],
-      "time_options": ["5m", "15m", "1h", "6h", "12h", "24h", "2d", "7d", "30d"]
+      "refresh_intervals": [
+        "5s",
+        "10s",
+        "30s",
+        "1m",
+        "5m",
+        "15m",
+        "30m",
+        "1h",
+        "2h",
+        "1d"
+      ],
+      "time_options": [
+        "5m",
+        "15m",
+        "1h",
+        "6h",
+        "12h",
+        "24h",
+        "2d",
+        "7d",
+        "30d"
+      ]
     },
     "refresh": "10s",
     "version": 1,
@@ -23,7 +50,12 @@
         "id": 1,
         "title": "🎯 Enterprise Performance Targets",
         "type": "stat",
-        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 0},
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
         "targets": [
           {
             "expr": "histogram_quantile(0.99, rate(acgs_request_duration_seconds_bucket[5m]))",
@@ -53,37 +85,82 @@
             "thresholds": {
               "mode": "absolute",
               "steps": [
-                {"color": "red", "value": 0},
-                {"color": "yellow", "value": 80},
-                {"color": "green", "value": 95}
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 80
+                },
+                {
+                  "color": "green",
+                  "value": 95
+                }
               ]
             }
           },
           "overrides": [
             {
-              "matcher": {"id": "byName", "options": "P99 Latency (ms)"},
+              "matcher": {
+                "id": "byName",
+                "options": "P99 Latency (ms)"
+              },
               "properties": [
-                {"id": "unit", "value": "ms"},
-                {"id": "thresholds", "value": {
-                  "steps": [
-                    {"color": "green", "value": 0},
-                    {"color": "yellow", "value": 3},
-                    {"color": "red", "value": 5}
-                  ]
-                }}
+                {
+                  "id": "unit",
+                  "value": "ms"
+                },
+                {
+                  "id": "thresholds",
+                  "value": {
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "yellow",
+                        "value": 3
+                      },
+                      {
+                        "color": "red",
+                        "value": 5
+                      }
+                    ]
+                  }
+                }
               ]
             },
             {
-              "matcher": {"id": "byName", "options": "Cache Hit Rate (%)"},
+              "matcher": {
+                "id": "byName",
+                "options": "Cache Hit Rate (%)"
+              },
               "properties": [
-                {"id": "unit", "value": "percent"},
-                {"id": "thresholds", "value": {
-                  "steps": [
-                    {"color": "red", "value": 0},
-                    {"color": "yellow", "value": 80},
-                    {"color": "green", "value": 85}
-                  ]
-                }}
+                {
+                  "id": "unit",
+                  "value": "percent"
+                },
+                {
+                  "id": "thresholds",
+                  "value": {
+                    "steps": [
+                      {
+                        "color": "red",
+                        "value": 0
+                      },
+                      {
+                        "color": "yellow",
+                        "value": 80
+                      },
+                      {
+                        "color": "green",
+                        "value": 85
+                      }
+                    ]
+                  }
+                }
               ]
             }
           ]
@@ -91,7 +168,9 @@
         "options": {
           "reduceOptions": {
             "values": false,
-            "calcs": ["lastNotNull"],
+            "calcs": [
+              "lastNotNull"
+            ],
             "fields": ""
           },
           "orientation": "horizontal",
@@ -103,7 +182,12 @@
         "id": 2,
         "title": "📊 P99 Latency Trend (Target: <5ms)",
         "type": "timeseries",
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        },
         "targets": [
           {
             "expr": "histogram_quantile(0.99, rate(acgs_request_duration_seconds_bucket{service=~\".*\"}[5m])) * 1000",
@@ -118,23 +202,43 @@
             "max": 10,
             "thresholds": {
               "steps": [
-                {"color": "green", "value": 0},
-                {"color": "yellow", "value": 3},
-                {"color": "red", "value": 5}
+                {
+                  "color": "green",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 3
+                },
+                {
+                  "color": "red",
+                  "value": 5
+                }
               ]
             }
           }
         },
         "options": {
-          "legend": {"displayMode": "table", "placement": "bottom"},
-          "tooltip": {"mode": "multi", "sort": "none"}
+          "legend": {
+            "displayMode": "table",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "multi",
+            "sort": "none"
+          }
         }
       },
       {
         "id": 3,
         "title": "💾 Cache Hit Rate (Target: >85%)",
         "type": "timeseries",
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        },
         "targets": [
           {
             "expr": "acgs_cache_hit_rate_percent{service=~\".*\"}",
@@ -149,23 +253,43 @@
             "max": 100,
             "thresholds": {
               "steps": [
-                {"color": "red", "value": 0},
-                {"color": "yellow", "value": 80},
-                {"color": "green", "value": 85}
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 80
+                },
+                {
+                  "color": "green",
+                  "value": 85
+                }
               ]
             }
           }
         },
         "options": {
-          "legend": {"displayMode": "table", "placement": "bottom"},
-          "tooltip": {"mode": "multi", "sort": "none"}
+          "legend": {
+            "displayMode": "table",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "multi",
+            "sort": "none"
+          }
         }
       },
       {
         "id": 4,
         "title": "🏛️ Constitutional Compliance Status",
         "type": "stat",
-        "gridPos": {"h": 6, "w": 8, "x": 0, "y": 16},
+        "gridPos": {
+          "h": 6,
+          "w": 8,
+          "x": 0,
+          "y": 16
+        },
         "targets": [
           {
             "expr": "acgs_constitutional_compliance_score",
@@ -184,9 +308,18 @@
             "decimals": 3,
             "thresholds": {
               "steps": [
-                {"color": "red", "value": 0},
-                {"color": "yellow", "value": 0.95},
-                {"color": "green", "value": 0.99}
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 0.95
+                },
+                {
+                  "color": "green",
+                  "value": 0.99
+                }
               ]
             }
           }
@@ -202,7 +335,12 @@
         "id": 5,
         "title": "🚀 Service Throughput (Target: >100 RPS)",
         "type": "timeseries",
-        "gridPos": {"h": 6, "w": 8, "x": 8, "y": 16},
+        "gridPos": {
+          "h": 6,
+          "w": 8,
+          "x": 8,
+          "y": 16
+        },
         "targets": [
           {
             "expr": "sum(rate(acgs_requests_total[5m])) by (service)",
@@ -216,9 +354,18 @@
             "min": 0,
             "thresholds": {
               "steps": [
-                {"color": "red", "value": 0},
-                {"color": "yellow", "value": 50},
-                {"color": "green", "value": 100}
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 50
+                },
+                {
+                  "color": "green",
+                  "value": 100
+                }
               ]
             }
           }
@@ -228,7 +375,12 @@
         "id": 6,
         "title": "⚡ System Health Overview",
         "type": "stat",
-        "gridPos": {"h": 6, "w": 8, "x": 16, "y": 16},
+        "gridPos": {
+          "h": 6,
+          "w": 8,
+          "x": 16,
+          "y": 16
+        },
         "targets": [
           {
             "expr": "up{job=~\"acgs.*\"}",
@@ -239,13 +391,35 @@
         "fieldConfig": {
           "defaults": {
             "mappings": [
-              {"options": {"0": {"text": "DOWN", "color": "red"}}, "type": "value"},
-              {"options": {"1": {"text": "UP", "color": "green"}}, "type": "value"}
+              {
+                "options": {
+                  "0": {
+                    "text": "DOWN",
+                    "color": "red"
+                  }
+                },
+                "type": "value"
+              },
+              {
+                "options": {
+                  "1": {
+                    "text": "UP",
+                    "color": "green"
+                  }
+                },
+                "type": "value"
+              }
             ],
             "thresholds": {
               "steps": [
-                {"color": "red", "value": 0},
-                {"color": "green", "value": 1}
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "green",
+                  "value": 1
+                }
               ]
             }
           }
@@ -259,7 +433,12 @@
         "id": 7,
         "title": "📈 Error Rate Monitoring",
         "type": "timeseries",
-        "gridPos": {"h": 6, "w": 12, "x": 0, "y": 22},
+        "gridPos": {
+          "h": 6,
+          "w": 12,
+          "x": 0,
+          "y": 22
+        },
         "targets": [
           {
             "expr": "rate(acgs_requests_total{status=~\"5..\"}[5m]) / rate(acgs_requests_total[5m]) * 100",
@@ -273,9 +452,18 @@
             "min": 0,
             "thresholds": {
               "steps": [
-                {"color": "green", "value": 0},
-                {"color": "yellow", "value": 1},
-                {"color": "red", "value": 5}
+                {
+                  "color": "green",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 1
+                },
+                {
+                  "color": "red",
+                  "value": 5
+                }
               ]
             }
           }
@@ -285,7 +473,12 @@
         "id": 8,
         "title": "🔄 WINA Optimization Metrics",
         "type": "timeseries",
-        "gridPos": {"h": 6, "w": 12, "x": 12, "y": 22},
+        "gridPos": {
+          "h": 6,
+          "w": 12,
+          "x": 12,
+          "y": 22
+        },
         "targets": [
           {
             "expr": "acgs_wina_optimization_score",
@@ -303,9 +496,18 @@
             "unit": "short",
             "thresholds": {
               "steps": [
-                {"color": "red", "value": 0},
-                {"color": "yellow", "value": 0.8},
-                {"color": "green", "value": 0.9}
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 0.8
+                },
+                {
+                  "color": "green",
+                  "value": 0.9
+                }
               ]
             }
           }
@@ -325,7 +527,7 @@
         },
         {
           "name": "Alerts",
-          "datasource": "prometheus", 
+          "datasource": "prometheus",
           "enable": true,
           "expr": "ALERTS{alertstate=\"firing\"}",
           "iconColor": "red",
@@ -347,7 +549,7 @@
         },
         {
           "name": "environment",
-          "type": "query", 
+          "type": "query",
           "query": "label_values(acgs_requests_total, environment)",
           "refresh": 1,
           "includeAll": false,
@@ -355,5 +557,6 @@
         }
       ]
     }
-  }
+  },
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }

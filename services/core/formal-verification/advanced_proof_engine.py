@@ -146,30 +146,42 @@ class AdvancedProofEngine:
 
         logger.info("Advanced Proof Engine initialized with constitutional framework")
 
-    async def generate_proof(self, obligation: ProofObligation, **kwargs) -> ProofCertificate:
+    async def generate_proof(
+        self, obligation: ProofObligation, **kwargs
+    ) -> ProofCertificate:
         """Generate a proof for the given obligation using appropriate strategy."""
         try:
             if obligation.property_type == PropertyType.CONSTITUTIONAL:
                 policy_constraints = kwargs.get("policy_constraints", [])
                 policy_content = kwargs.get("policy_content", "")
-                return await self._generate_constitutional_proof(obligation, policy_constraints, policy_content)
+                return await self._generate_constitutional_proof(
+                    obligation, policy_constraints, policy_content
+                )
             elif obligation.property_type == PropertyType.SAFETY:
                 system_model = kwargs.get("system_model", {})
                 bounds = kwargs.get("bounds", 10)
-                return await self._generate_safety_proof(obligation, system_model, bounds)
+                return await self._generate_safety_proof(
+                    obligation, system_model, bounds
+                )
             elif obligation.property_type == PropertyType.LIVENESS:
                 system_model = kwargs.get("system_model", {})
                 fairness_constraints = kwargs.get("fairness_constraints", [])
-                return await self._generate_liveness_proof(obligation, system_model, fairness_constraints)
+                return await self._generate_liveness_proof(
+                    obligation, system_model, fairness_constraints
+                )
             elif obligation.property_type == PropertyType.INVARIANT:
                 base_case = kwargs.get("base_case", "")
                 inductive_step = kwargs.get("inductive_step", "")
-                return await self._generate_inductive_proof(obligation, base_case, inductive_step)
+                return await self._generate_inductive_proof(
+                    obligation, base_case, inductive_step
+                )
             else:
                 # Default to constitutional proof
                 return await self._generate_constitutional_proof(obligation, [], "")
         except Exception as e:
-            logger.error(f"Failed to generate proof for obligation {obligation.id}: {e}")
+            logger.error(
+                f"Failed to generate proof for obligation {obligation.id}: {e}"
+            )
             # Return a failed proof certificate
             return ProofCertificate(
                 proof_id=str(uuid.uuid4()),
@@ -177,7 +189,7 @@ class AdvancedProofEngine:
                 steps=[f"Proof generation failed: {str(e)}"],
                 is_valid=False,
                 verification_time_ms=0.0,
-                constitutional_compliance_score=0.0
+                constitutional_compliance_score=0.0,
             )
 
     def _initialize_constitutional_principles(self) -> list[ConstitutionalPrinciple]:
@@ -646,9 +658,9 @@ class AdvancedProofEngine:
 
         # Step 3: Check safety violation
         # Add negation of safety property to find counterexample
-        safety_violation = z3.Or([
-            z3.Not(states[i]["safe_state"]) for i in range(bounds + 1)
-        ])
+        safety_violation = z3.Or(
+            [z3.Not(states[i]["safe_state"]) for i in range(bounds + 1)]
+        )
 
         local_solver.add(safety_violation)
 

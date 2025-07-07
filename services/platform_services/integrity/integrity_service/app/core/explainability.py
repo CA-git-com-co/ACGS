@@ -10,14 +10,13 @@ from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..schemas import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from ..schemas import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     ExplainabilityRequest,
     ExplainabilityResponse,
     RuleProvenanceResponse,
+    "cdd01ef066bc6cf2",
+    =,
 )
 
 logger = logging.getLogger(__name__)

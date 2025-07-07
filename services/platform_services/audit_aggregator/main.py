@@ -10,15 +10,15 @@ import json
 import logging
 import os
 import time
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 from uuid import UUID
 
+import redis.asyncio as redis
 import uvicorn
-from fastapi import FastAPI, HTTPException, Query, Depends, BackgroundTasks
+from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-import redis.asyncio as redis
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -30,15 +30,15 @@ try:
     sys.path.insert(0, str(shared_middleware_path))
     
     from error_handling import (
-        setup_error_handlers,
-        ErrorHandlingMiddleware,
         ACGSException,
-        ConstitutionalComplianceError,
-        SecurityValidationError,
         AuthenticationError,
+        ConstitutionalComplianceError,
+        ErrorContext,
+        ErrorHandlingMiddleware,
+        SecurityValidationError,
         ValidationError,
         log_error_with_context,
-        ErrorContext
+        setup_error_handlers,
     )
     ACGS_ERROR_HANDLING_AVAILABLE = True
     print(f"✅ ACGS Error handling loaded for {service_name}")
@@ -55,12 +55,12 @@ try:
     sys.path.insert(0, str(shared_security_path))
     
     from middleware_integration import (
-        apply_acgs_security_middleware,
-        setup_security_monitoring,
-        get_security_headers,
         SecurityLevel,
+        apply_acgs_security_middleware,
+        create_secure_endpoint_decorator,
+        get_security_headers,
+        setup_security_monitoring,
         validate_request_body,
-        create_secure_endpoint_decorator
     )
     ACGS_SECURITY_AVAILABLE = True
     print(f"✅ ACGS Security middleware loaded for {service_name}")
@@ -72,12 +72,16 @@ except ImportError as e:
 # Import shared components
 try:
     from services.shared.audit.compliance_audit_logger import (
-        AuditEventType, AuditSeverity, ComplianceStandard, AuditEvent,
-        get_audit_logger, log_constitutional_compliance_event
+        AuditEvent,
+        AuditEventType,
+        AuditSeverity,
+        ComplianceStandard,
+        get_audit_logger,
+        log_constitutional_compliance_event,
     )
     from services.shared.cache.tenant_isolated_redis import get_tenant_redis
-    from services.shared.middleware.tenant_middleware import get_tenant_context
     from services.shared.database import get_async_db
+    from services.shared.middleware.tenant_middleware import get_tenant_context
 except ImportError:
     # Fallback for standalone deployment
     pass

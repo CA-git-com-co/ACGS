@@ -17,7 +17,6 @@ from .exceptions import WINAConfigurationError
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class WINAMode(Enum):
     """WINA operation modes."""
 

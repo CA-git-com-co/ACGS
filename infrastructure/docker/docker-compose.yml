@@ -1,42 +1,40 @@
-# ACGS Docker Compose Configuration
-# Constitutional Hash: cdd01ef066bc6cf2
-
 services:
   ac-service:
     build: ../../services/core/constitutional-ai
     depends_on:
-      - postgres
-      - redis
+    - postgres
+    - redis
     environment:
-      - ENVIRONMENT=development
+    - ENVIRONMENT=development
     ports:
-      - 8001:8001
+    - 8001:8001
   auth-service:
     build: ../../services/platform/authentication
     depends_on:
-      - postgres
-      - redis
+    - postgres
+    - redis
     environment:
-      - ENVIRONMENT=development
+    - ENVIRONMENT=development
     ports:
-      - 8000:8000
+    - 8000:8000
   postgres:
     environment:
-      - POSTGRES_DB=acgs_dev
-      - POSTGRES_USER=acgs
-      - POSTGRES_PASSWORD=acgs
+    - POSTGRES_DB=acgs_dev
+    - POSTGRES_USER=acgs
+    - POSTGRES_PASSWORD=acgs
     image: postgres:15
     ports:
-      - 5432:5432
+    - 5432:5432
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+    - postgres_data:/var/lib/postgresql/data
   redis:
     image: redis:7-alpine
     ports:
-      - 6379:6379
+    - 6379:6379
     volumes:
-      - redis_data:/data
+    - redis_data:/data
 version: '3.8'
 volumes:
   postgres_data: {}
   redis_data: {}
+constitutional_hash: cdd01ef066bc6cf2

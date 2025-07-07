@@ -11,19 +11,21 @@ import time
 import requests
 
 # Set environment variables for testing
-os.environ.update({
-    "POSTGRESQL_PASSWORD": "test_password",
-    "POSTGRESQL_HOST": "localhost",
-    "POSTGRESQL_PORT": "5439",
-    "POSTGRESQL_DATABASE": "acgs_test",
-    "POSTGRESQL_USER": "acgs_user",
-    "REDIS_URL": "redis://localhost:6389",
-    "AUTH_SERVICE_URL": "http://localhost:8016",
-    "CONTEXT_SERVICE_URL": "http://localhost:8012",
-    "SERVICE_REGISTRY_URL": "http://localhost:8001",
-    "ENVIRONMENT": "development",
-    "LOG_LEVEL": "INFO",
-})
+os.environ.update(
+    {
+        "POSTGRESQL_PASSWORD": "test_password",
+        "POSTGRESQL_HOST": "localhost",
+        "POSTGRESQL_PORT": "5439",
+        "POSTGRESQL_DATABASE": "acgs_test",
+        "POSTGRESQL_USER": "acgs_user",
+        "REDIS_URL": "redis://localhost:6389",
+        "AUTH_SERVICE_URL": "http://localhost:8016",
+        "CONTEXT_SERVICE_URL": "http://localhost:8012",
+        "SERVICE_REGISTRY_URL": "http://localhost:8001",
+        "ENVIRONMENT": "development",
+        "LOG_LEVEL": "INFO",
+    }
+)
 
 
 def test_uvicorn_startup():

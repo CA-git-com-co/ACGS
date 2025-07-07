@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Constitutional Hash: cdd01ef066bc6cf2
 """
 Academic Submission Web Interface
 
@@ -25,8 +26,6 @@ try:
         send_file,
         url_for,
     )
-    from werkzeug.utils import secure_filename
-
     from quality_assurance.compliance_checker import (
         ComplianceChecker,
         generate_compliance_report,
@@ -35,6 +34,7 @@ try:
         SubmissionValidator,
         generate_validation_report,
     )
+    from werkzeug.utils import secure_filename
 except ImportError as e:
     print(f"Error importing modules: {e}")
     print("Please install Flask: pip install flask")
@@ -247,20 +247,22 @@ def api_validate():
             validator = SubmissionValidator(submission_dir)
             report = validator.validate_submission()
 
-            return jsonify({
-                "submission_id": submission_id,
-                "overall_status": report.overall_status,
-                "compliance_score": report.compliance_score,
-                "validation_results": [
-                    {
-                        "check_name": r.check_name,
-                        "status": r.status,
-                        "message": r.message,
-                    }
-                    for r in report.validation_results
-                ],
-                "recommendations": report.recommendations,
-            })
+            return jsonify(
+                {
+                    "submission_id": submission_id,
+                    "overall_status": report.overall_status,
+                    "compliance_score": report.compliance_score,
+                    "validation_results": [
+                        {
+                            "check_name": r.check_name,
+                            "status": r.status,
+                            "message": r.message,
+                        }
+                        for r in report.validation_results
+                    ],
+                    "recommendations": report.recommendations,
+                }
+            )
 
         except Exception as e:
             return jsonify({"error": str(e)}), 500
@@ -288,13 +290,15 @@ def api_compliance():
         checker = ComplianceChecker()
         results = checker.check_compliance(str(submission_dir), venue)
 
-        return jsonify({
-            "venue": venue,
-            "results": [
-                {"rule_id": r.rule_id, "status": r.status, "message": r.message}
-                for r in results
-            ],
-        })
+        return jsonify(
+            {
+                "venue": venue,
+                "results": [
+                    {"rule_id": r.rule_id, "status": r.status, "message": r.message}
+                    for r in results
+                ],
+            }
+        )
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500

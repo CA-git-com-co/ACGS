@@ -11,7 +11,6 @@ from datetime import datetime
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class BackupDisasterRecovery:
     def __init__(self):
         self.backup_config = {

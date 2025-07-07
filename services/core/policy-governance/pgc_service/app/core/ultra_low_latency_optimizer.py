@@ -302,7 +302,7 @@ class UltraLowLatencyOptimizer:
             "latency_ms": 0.0,
             "cache_hit": False,
             "optimization_level": optimization_level.value,
-            "constitutional_hash": "cdd01ef066bc6cf2"
+            "constitutional_hash": "cdd01ef066bc6cf2",
         }
 
         try:

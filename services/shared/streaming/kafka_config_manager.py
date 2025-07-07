@@ -13,6 +13,7 @@ Key Features:
 - Dynamic configuration updates and rollback
 - Integration with service discovery and monitoring
 """
+
 # Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
@@ -348,13 +349,15 @@ class KafkaConfigManager:
             self.cluster_configs[config_key] = cluster_config
 
             # Log configuration loading
-            await self.audit_logger.log_config_event({
-                "event_type": "cluster_config_loaded",
-                "cluster_id": cluster_id,
-                "environment": environment.value,
-                "config_file": str(config_file),
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_config_event(
+                {
+                    "event_type": "cluster_config_loaded",
+                    "cluster_id": cluster_id,
+                    "environment": environment.value,
+                    "config_file": str(config_file),
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
             return cluster_config
 
@@ -392,10 +395,12 @@ class KafkaConfigManager:
 
             # Merge with cluster security settings
             if cluster_config.security_protocol != SecurityProtocol.PLAINTEXT:
-                base_config.update({
-                    "security_protocol": cluster_config.security_protocol.value,
-                    "ssl_check_hostname": True,
-                })
+                base_config.update(
+                    {
+                        "security_protocol": cluster_config.security_protocol.value,
+                        "ssl_check_hostname": True,
+                    }
+                )
 
                 if cluster_config.ssl_config:
                     base_config.update(cluster_config.ssl_config)
@@ -456,10 +461,12 @@ class KafkaConfigManager:
 
             # Merge with cluster security settings
             if cluster_config.security_protocol != SecurityProtocol.PLAINTEXT:
-                base_config.update({
-                    "security_protocol": cluster_config.security_protocol.value,
-                    "ssl_check_hostname": True,
-                })
+                base_config.update(
+                    {
+                        "security_protocol": cluster_config.security_protocol.value,
+                        "ssl_check_hostname": True,
+                    }
+                )
 
                 if cluster_config.ssl_config:
                     base_config.update(cluster_config.ssl_config)
@@ -559,15 +566,17 @@ class KafkaConfigManager:
             self.topic_configs[config_key] = topic_config
 
             # Log topic configuration creation
-            await self.audit_logger.log_config_event({
-                "event_type": "topic_config_created",
-                "cluster_id": cluster_id,
-                "topic_name": topic_name,
-                "environment": environment.value,
-                "partitions": topic_config.partitions,
-                "replication_factor": topic_config.replication_factor,
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_config_event(
+                {
+                    "event_type": "topic_config_created",
+                    "cluster_id": cluster_id,
+                    "topic_name": topic_name,
+                    "environment": environment.value,
+                    "partitions": topic_config.partitions,
+                    "replication_factor": topic_config.replication_factor,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
             return topic_config
 

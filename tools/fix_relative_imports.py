@@ -11,7 +11,6 @@ import re
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 def fix_relative_imports_in_file(file_path):
     """Fix relative imports in a single file."""
     print(f"Fixing relative imports in: {file_path}")

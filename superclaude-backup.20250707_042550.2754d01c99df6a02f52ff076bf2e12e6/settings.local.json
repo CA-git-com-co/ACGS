@@ -75,5 +75,7 @@
       "Bash(./install.sh:*)"
     ],
     "deny": []
-  }
+  },
+  "_constitutional_hash": "cdd01ef066bc6cf2",
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }

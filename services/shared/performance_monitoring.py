@@ -9,12 +9,12 @@ and spurious correlation detection for all ACGS services.
 
 import asyncio
 import logging
-import time
 import statistics
+import time
+from collections import defaultdict, deque
+from datetime import datetime, timedelta, timezone
 from functools import wraps
 from typing import Any, Dict, List, Optional
-from datetime import datetime, timezone, timedelta
-from collections import defaultdict, deque
 
 from prometheus_client import REGISTRY, CollectorRegistry, Counter, Gauge, Histogram
 
@@ -144,16 +144,18 @@ class ServiceMetrics:
         self.robustness_history = deque(maxlen=1000)
         self.causal_sensitivity_history = deque(maxlen=1000)
         self.spurious_correlations_history = defaultdict(lambda: deque(maxlen=1000))
-        
+
         # Performance targets for robustness
         self.robustness_targets = {
             "causal_sensitivity": 0.8,
             "spurious_invariance": 0.9,
             "overall_robustness": 0.85,
-            "constitutional_compliance": 0.95
+            "constitutional_compliance": 0.95,
         }
 
-        logger.info(f"Enhanced service metrics with CARMA robustness initialized for {service_name}")
+        logger.info(
+            f"Enhanced service metrics with CARMA robustness initialized for {service_name}"
+        )
 
     def record_request(
         self, endpoint: str, method: str, status_code: int, duration: float
@@ -216,10 +218,10 @@ class ServiceMetrics:
             self.cache_misses_counter.labels(cache_type=cache_type).inc()
 
     def record_causal_robustness_metrics(
-        self, 
+        self,
         causal_sensitivity: float,
         spurious_invariance: float,
-        overall_robustness: float
+        overall_robustness: float,
     ):
         """
         Record CARMA robustness metrics.
@@ -230,37 +232,39 @@ class ServiceMetrics:
             overall_robustness: Overall robustness score (0.0-1.0)
         """
         # Validate constitutional hash implicitly
-        if not hasattr(self, 'constitutional_hash_validated'):
+        if not hasattr(self, "constitutional_hash_validated"):
             self.constitutional_hash_validated = CONSTITUTIONAL_HASH
-        
+
         # Update Prometheus gauges
         self.causal_sensitivity_gauge.set(causal_sensitivity)
         self.spurious_invariance_gauge.set(spurious_invariance)
         self.robustness_score_gauge.set(overall_robustness)
-        
+
         # Store in history for trend analysis
         timestamp = datetime.now(timezone.utc)
         robustness_record = {
-            'timestamp': timestamp,
-            'causal_sensitivity': causal_sensitivity,
-            'spurious_invariance': spurious_invariance,
-            'overall_robustness': overall_robustness,
-            'constitutional_hash': CONSTITUTIONAL_HASH
+            "timestamp": timestamp,
+            "causal_sensitivity": causal_sensitivity,
+            "spurious_invariance": spurious_invariance,
+            "overall_robustness": overall_robustness,
+            "constitutional_hash": CONSTITUTIONAL_HASH,
         }
-        
+
         self.robustness_history.append(robustness_record)
         self.causal_sensitivity_history.append((timestamp, causal_sensitivity))
-        
-        logger.debug(f"Recorded robustness metrics for {self.service_name}: "
-                    f"causal={causal_sensitivity:.3f}, spurious={spurious_invariance:.3f}, "
-                    f"overall={overall_robustness:.3f}")
+
+        logger.debug(
+            f"Recorded robustness metrics for {self.service_name}: "
+            f"causal={causal_sensitivity:.3f}, spurious={spurious_invariance:.3f}, "
+            f"overall={overall_robustness:.3f}"
+        )
 
     def record_causal_test(
-        self, 
-        test_type: str, 
-        attribute: str, 
+        self,
+        test_type: str,
+        attribute: str,
         result: str,
-        sensitivity_score: Optional[float] = None
+        sensitivity_score: Optional[float] = None,
     ):
         """
         Record causal attribute test results.
@@ -272,20 +276,15 @@ class ServiceMetrics:
             sensitivity_score: Optional sensitivity score
         """
         self.causal_tests_counter.labels(
-            test_type=test_type, 
-            attribute=attribute, 
-            result=result
+            test_type=test_type, attribute=attribute, result=result
         ).inc()
-        
-        if sensitivity_score is not None and test_type == 'causal_sensitivity':
+
+        if sensitivity_score is not None and test_type == "causal_sensitivity":
             timestamp = datetime.now(timezone.utc)
             self.causal_sensitivity_history.append((timestamp, sensitivity_score))
 
     def record_spurious_correlation(
-        self, 
-        correlation_type: str, 
-        attribute: str,
-        correlation_strength: float
+        self, correlation_type: str, attribute: str, correlation_strength: float
     ):
         """
         Record detected spurious correlation.
@@ -296,18 +295,19 @@ class ServiceMetrics:
             correlation_strength: Strength of correlation (0.0-1.0)
         """
         self.spurious_correlations_counter.labels(
-            correlation_type=correlation_type,
-            attribute=attribute
+            correlation_type=correlation_type, attribute=attribute
         ).inc()
-        
+
         # Store correlation history
         timestamp = datetime.now(timezone.utc)
         self.spurious_correlations_history[attribute].append(
             (timestamp, correlation_strength)
         )
-        
-        logger.warning(f"Spurious correlation detected in {self.service_name}: "
-                      f"{correlation_type} for {attribute} (strength: {correlation_strength:.3f})")
+
+        logger.warning(
+            f"Spurious correlation detected in {self.service_name}: "
+            f"{correlation_type} for {attribute} (strength: {correlation_strength:.3f})"
+        )
 
     def get_robustness_trends(self, window_minutes: int = 60) -> Dict[str, Any]:
         """
@@ -320,68 +320,71 @@ class ServiceMetrics:
             Dictionary with trend analysis
         """
         cutoff_time = datetime.now(timezone.utc) - timedelta(minutes=window_minutes)
-        
+
         # Filter recent robustness records
         recent_records = [
-            r for r in self.robustness_history 
-            if r['timestamp'] >= cutoff_time
+            r for r in self.robustness_history if r["timestamp"] >= cutoff_time
         ]
-        
+
         if not recent_records:
             return {
-                'causal_sensitivity_trend': 'no_data',
-                'spurious_invariance_trend': 'no_data',
-                'robustness_trend': 'no_data',
-                'trend_confidence': 0.0,
-                'constitutional_hash': CONSTITUTIONAL_HASH
+                "causal_sensitivity_trend": "no_data",
+                "spurious_invariance_trend": "no_data",
+                "robustness_trend": "no_data",
+                "trend_confidence": 0.0,
+                "constitutional_hash": CONSTITUTIONAL_HASH,
             }
-        
+
         # Calculate trends
-        causal_values = [r['causal_sensitivity'] for r in recent_records]
-        spurious_values = [r['spurious_invariance'] for r in recent_records]
-        robustness_values = [r['overall_robustness'] for r in recent_records]
-        
+        causal_values = [r["causal_sensitivity"] for r in recent_records]
+        spurious_values = [r["spurious_invariance"] for r in recent_records]
+        robustness_values = [r["overall_robustness"] for r in recent_records]
+
         def calculate_trend(values):
             if len(values) < 3:
-                return 'stable', 0.0
-            
+                return "stable", 0.0
+
             # Simple linear trend
             x = list(range(len(values)))
             try:
-                correlation = statistics.correlation(x, values) if len(values) > 1 else 0.0
-                
+                correlation = (
+                    statistics.correlation(x, values) if len(values) > 1 else 0.0
+                )
+
                 if abs(correlation) < 0.1:
-                    return 'stable', abs(correlation)
+                    return "stable", abs(correlation)
                 elif correlation > 0.1:
-                    return 'improving', correlation
+                    return "improving", correlation
                 else:
-                    return 'degrading', abs(correlation)
+                    return "degrading", abs(correlation)
             except:
-                return 'stable', 0.0
-        
+                return "stable", 0.0
+
         causal_trend, causal_strength = calculate_trend(causal_values)
         spurious_trend, spurious_strength = calculate_trend(spurious_values)
         robustness_trend, robustness_strength = calculate_trend(robustness_values)
-        
+
         # Calculate overall trend confidence
         trend_confidence = min(1.0, (len(recent_records) / 10.0))
-        
+
         return {
-            'window_minutes': window_minutes,
-            'records_analyzed': len(recent_records),
-            'causal_sensitivity_trend': causal_trend,
-            'causal_trend_strength': causal_strength,
-            'spurious_invariance_trend': spurious_trend,
-            'spurious_trend_strength': spurious_strength,
-            'robustness_trend': robustness_trend,
-            'robustness_trend_strength': robustness_strength,
-            'trend_confidence': trend_confidence,
-            'current_values': {
-                'causal_sensitivity': causal_values[-1] if causal_values else 0.0,
-                'spurious_invariance': spurious_values[-1] if spurious_values else 0.0,
-                'overall_robustness': robustness_values[-1] if robustness_values else 0.0
+            "window_minutes": window_minutes,
+            "records_analyzed": len(recent_records),
+            "causal_sensitivity_trend": causal_trend,
+            "causal_trend_strength": causal_strength,
+            "spurious_invariance_trend": spurious_trend,
+            "spurious_trend_strength": spurious_strength,
+            "robustness_trend": robustness_trend,
+            "robustness_trend_strength": robustness_strength,
+            "trend_confidence": trend_confidence,
+            "current_values": {
+                "causal_sensitivity": causal_values[-1] if causal_values else 0.0,
+                "spurious_invariance": spurious_values[-1] if spurious_values else 0.0,
+                "overall_robustness": (
+                    robustness_values[-1] if robustness_values else 0.0
+                ),
             },
-            'constitutional_hash': CONSTITUTIONAL_HASH
+            "constitutional_hash": CONSTITUTIONAL_HASH,
         }
 
     def check_robustness_alerts(self) -> List[Dict[str, Any]]:
@@ -392,46 +395,73 @@ class ServiceMetrics:
             List of alert dictionaries
         """
         alerts = []
-        
+
         if not self.robustness_history:
             return alerts
-        
+
         latest_record = self.robustness_history[-1]
-        
+
         # Check against targets
-        if latest_record['causal_sensitivity'] < self.robustness_targets['causal_sensitivity']:
-            alerts.append({
-                'type': 'low_causal_sensitivity',
-                'service': self.service_name,
-                'current_value': latest_record['causal_sensitivity'],
-                'target_value': self.robustness_targets['causal_sensitivity'],
-                'severity': 'high' if latest_record['causal_sensitivity'] < 0.6 else 'medium',
-                'timestamp': latest_record['timestamp'].isoformat(),
-                'constitutional_hash': CONSTITUTIONAL_HASH
-            })
-        
-        if latest_record['spurious_invariance'] < self.robustness_targets['spurious_invariance']:
-            alerts.append({
-                'type': 'low_spurious_invariance',
-                'service': self.service_name,
-                'current_value': latest_record['spurious_invariance'],
-                'target_value': self.robustness_targets['spurious_invariance'],
-                'severity': 'high' if latest_record['spurious_invariance'] < 0.7 else 'medium',
-                'timestamp': latest_record['timestamp'].isoformat(),
-                'constitutional_hash': CONSTITUTIONAL_HASH
-            })
-        
-        if latest_record['overall_robustness'] < self.robustness_targets['overall_robustness']:
-            alerts.append({
-                'type': 'low_overall_robustness',
-                'service': self.service_name,
-                'current_value': latest_record['overall_robustness'],
-                'target_value': self.robustness_targets['overall_robustness'],
-                'severity': 'critical' if latest_record['overall_robustness'] < 0.6 else 'high',
-                'timestamp': latest_record['timestamp'].isoformat(),
-                'constitutional_hash': CONSTITUTIONAL_HASH
-            })
-        
+        if (
+            latest_record["causal_sensitivity"]
+            < self.robustness_targets["causal_sensitivity"]
+        ):
+            alerts.append(
+                {
+                    "type": "low_causal_sensitivity",
+                    "service": self.service_name,
+                    "current_value": latest_record["causal_sensitivity"],
+                    "target_value": self.robustness_targets["causal_sensitivity"],
+                    "severity": (
+                        "high"
+                        if latest_record["causal_sensitivity"] < 0.6
+                        else "medium"
+                    ),
+                    "timestamp": latest_record["timestamp"].isoformat(),
+                    "constitutional_hash": CONSTITUTIONAL_HASH,
+                }
+            )
+
+        if (
+            latest_record["spurious_invariance"]
+            < self.robustness_targets["spurious_invariance"]
+        ):
+            alerts.append(
+                {
+                    "type": "low_spurious_invariance",
+                    "service": self.service_name,
+                    "current_value": latest_record["spurious_invariance"],
+                    "target_value": self.robustness_targets["spurious_invariance"],
+                    "severity": (
+                        "high"
+                        if latest_record["spurious_invariance"] < 0.7
+                        else "medium"
+                    ),
+                    "timestamp": latest_record["timestamp"].isoformat(),
+                    "constitutional_hash": CONSTITUTIONAL_HASH,
+                }
+            )
+
+        if (
+            latest_record["overall_robustness"]
+            < self.robustness_targets["overall_robustness"]
+        ):
+            alerts.append(
+                {
+                    "type": "low_overall_robustness",
+                    "service": self.service_name,
+                    "current_value": latest_record["overall_robustness"],
+                    "target_value": self.robustness_targets["overall_robustness"],
+                    "severity": (
+                        "critical"
+                        if latest_record["overall_robustness"] < 0.6
+                        else "high"
+                    ),
+                    "timestamp": latest_record["timestamp"].isoformat(),
+                    "constitutional_hash": CONSTITUTIONAL_HASH,
+                }
+            )
+
         return alerts
 
     def set_health_status(self, healthy: bool):
@@ -475,20 +505,22 @@ class ServiceMetrics:
             causal_sensitivity = self.causal_sensitivity_gauge._value._value
             spurious_invariance = self.spurious_invariance_gauge._value._value
             robustness_score = self.robustness_score_gauge._value._value
-            
+
             # Get spurious correlations count
             spurious_correlations_count = sum(
-                sample.value for sample in self.spurious_correlations_counter.collect()[0].samples
+                sample.value
+                for sample in self.spurious_correlations_counter.collect()[0].samples
             )
-            
+
             # Get causal tests count
             causal_tests_count = sum(
-                sample.value for sample in self.causal_tests_counter.collect()[0].samples
+                sample.value
+                for sample in self.causal_tests_counter.collect()[0].samples
             )
-            
+
             # Check robustness alerts
             robustness_alerts = self.check_robustness_alerts()
-            
+
             # Get trend analysis
             robustness_trends = self.get_robustness_trends(window_minutes=60)
 
@@ -511,21 +543,24 @@ class ServiceMetrics:
                     "causal_tests_performed": causal_tests_count,
                     "robustness_targets": self.robustness_targets,
                     "meets_robustness_targets": {
-                        "causal_sensitivity": causal_sensitivity >= self.robustness_targets["causal_sensitivity"],
-                        "spurious_invariance": spurious_invariance >= self.robustness_targets["spurious_invariance"],
-                        "overall_robustness": robustness_score >= self.robustness_targets["overall_robustness"]
-                    }
+                        "causal_sensitivity": causal_sensitivity
+                        >= self.robustness_targets["causal_sensitivity"],
+                        "spurious_invariance": spurious_invariance
+                        >= self.robustness_targets["spurious_invariance"],
+                        "overall_robustness": robustness_score
+                        >= self.robustness_targets["overall_robustness"],
+                    },
                 },
                 "robustness_alerts": robustness_alerts,
                 "robustness_trends": robustness_trends,
-                "robustness_history_size": len(self.robustness_history)
+                "robustness_history_size": len(self.robustness_history),
             }
         except Exception as e:
             logger.error(f"Failed to get metrics summary: {e}")
             return {
                 "service_name": self.service_name,
                 "constitutional_hash": CONSTITUTIONAL_HASH,
-                "error": str(e)
+                "error": str(e),
             }
 
 
@@ -601,11 +636,11 @@ class PerformanceMonitor:
             "spurious_invariance": 0.9,  # 90%
             "overall_robustness": 0.85,  # 85%
         }
-        
+
         # System-wide robustness tracking
         self.system_robustness_history = deque(maxlen=1000)
         self.global_alerts = []
-        
+
         logger.info("Enhanced performance monitor with CARMA robustness initialized")
 
     def register_service(self, service_name: str) -> ServiceMetrics:
@@ -648,7 +683,7 @@ class PerformanceMonitor:
         total_requests = 0
         total_errors = 0
         compliance_scores = []
-        
+
         # CARMA robustness aggregation
         causal_sensitivity_scores = []
         spurious_invariance_scores = []
@@ -672,19 +707,27 @@ class PerformanceMonitor:
             compliance_score = summary.get("constitutional_compliance_score", 0)
             if compliance_score > 0:
                 compliance_scores.append(compliance_score)
-            
+
             # Aggregate robustness metrics
             robustness_metrics = summary.get("robustness_metrics", {})
             if robustness_metrics.get("causal_sensitivity", 0) > 0:
-                causal_sensitivity_scores.append(robustness_metrics["causal_sensitivity"])
+                causal_sensitivity_scores.append(
+                    robustness_metrics["causal_sensitivity"]
+                )
             if robustness_metrics.get("spurious_invariance", 0) > 0:
-                spurious_invariance_scores.append(robustness_metrics["spurious_invariance"])
+                spurious_invariance_scores.append(
+                    robustness_metrics["spurious_invariance"]
+                )
             if robustness_metrics.get("overall_robustness", 0) > 0:
-                overall_robustness_scores.append(robustness_metrics["overall_robustness"])
-            
-            total_spurious_correlations += robustness_metrics.get("spurious_correlations_detected", 0)
+                overall_robustness_scores.append(
+                    robustness_metrics["overall_robustness"]
+                )
+
+            total_spurious_correlations += robustness_metrics.get(
+                "spurious_correlations_detected", 0
+            )
             total_causal_tests += robustness_metrics.get("causal_tests_performed", 0)
-            
+
             # Collect alerts
             robustness_alerts = summary.get("robustness_alerts", [])
             all_robustness_alerts.extend(robustness_alerts)
@@ -697,34 +740,42 @@ class PerformanceMonitor:
             else 0.0
         )
         system_uptime = healthy_services / total_services if total_services > 0 else 0.0
-        
+
         # Calculate system-wide robustness metrics
         avg_causal_sensitivity = (
             sum(causal_sensitivity_scores) / len(causal_sensitivity_scores)
-            if causal_sensitivity_scores else 0.0
+            if causal_sensitivity_scores
+            else 0.0
         )
         avg_spurious_invariance = (
             sum(spurious_invariance_scores) / len(spurious_invariance_scores)
-            if spurious_invariance_scores else 0.0
+            if spurious_invariance_scores
+            else 0.0
         )
         avg_overall_robustness = (
             sum(overall_robustness_scores) / len(overall_robustness_scores)
-            if overall_robustness_scores else 0.0
+            if overall_robustness_scores
+            else 0.0
         )
-        
+
         # Calculate robustness compliance
         robustness_compliance = {
-            "causal_sensitivity": avg_causal_sensitivity >= self.performance_targets["causal_sensitivity"],
-            "spurious_invariance": avg_spurious_invariance >= self.performance_targets["spurious_invariance"],
-            "overall_robustness": avg_overall_robustness >= self.performance_targets["overall_robustness"]
+            "causal_sensitivity": avg_causal_sensitivity
+            >= self.performance_targets["causal_sensitivity"],
+            "spurious_invariance": avg_spurious_invariance
+            >= self.performance_targets["spurious_invariance"],
+            "overall_robustness": avg_overall_robustness
+            >= self.performance_targets["overall_robustness"],
         }
-        
-        robustness_compliance_rate = sum(robustness_compliance.values()) / len(robustness_compliance)
+
+        robustness_compliance_rate = sum(robustness_compliance.values()) / len(
+            robustness_compliance
+        )
 
         # Determine overall health (enhanced with robustness)
         health_status = "healthy"
         health_factors = []
-        
+
         if system_uptime < self.performance_targets["uptime"]:
             health_status = "critical"
             health_factors.append("low_uptime")
@@ -740,7 +791,7 @@ class PerformanceMonitor:
         elif robustness_compliance_rate < 0.75:  # Less than 3/4 robustness targets met
             health_status = "degraded"
             health_factors.append("robustness_target_failures")
-        
+
         # Store system robustness snapshot
         system_robustness_snapshot = {
             "timestamp": datetime.now(timezone.utc),
@@ -748,7 +799,7 @@ class PerformanceMonitor:
             "avg_spurious_invariance": avg_spurious_invariance,
             "avg_overall_robustness": avg_overall_robustness,
             "robustness_compliance_rate": robustness_compliance_rate,
-            "constitutional_hash": CONSTITUTIONAL_HASH
+            "constitutional_hash": CONSTITUTIONAL_HASH,
         }
         self.system_robustness_history.append(system_robustness_snapshot)
 
@@ -773,54 +824,61 @@ class PerformanceMonitor:
                 "total_causal_tests": total_causal_tests,
                 "robustness_compliance": robustness_compliance,
                 "robustness_compliance_rate": robustness_compliance_rate,
-                "services_with_robustness_data": len(causal_sensitivity_scores)
+                "services_with_robustness_data": len(causal_sensitivity_scores),
             },
             "robustness_alerts": {
                 "total_alerts": len(all_robustness_alerts),
-                "critical_alerts": len([a for a in all_robustness_alerts if a.get("severity") == "critical"]),
-                "high_alerts": len([a for a in all_robustness_alerts if a.get("severity") == "high"]),
-                "all_alerts": all_robustness_alerts
+                "critical_alerts": len(
+                    [
+                        a
+                        for a in all_robustness_alerts
+                        if a.get("severity") == "critical"
+                    ]
+                ),
+                "high_alerts": len(
+                    [a for a in all_robustness_alerts if a.get("severity") == "high"]
+                ),
+                "all_alerts": all_robustness_alerts,
             },
             "performance_targets": self.performance_targets,
             "service_summaries": service_summaries,
             "timestamp": time.time(),
         }
-    
+
     def get_system_robustness_trends(self, window_minutes: int = 120) -> Dict[str, Any]:
         """
         Get system-wide robustness trends.
-        
+
         Args:
             window_minutes: Time window for trend analysis
-            
+
         Returns:
             System robustness trend analysis
         """
         cutoff_time = datetime.now(timezone.utc) - timedelta(minutes=window_minutes)
-        
+
         recent_snapshots = [
-            s for s in self.system_robustness_history
-            if s['timestamp'] >= cutoff_time
+            s for s in self.system_robustness_history if s["timestamp"] >= cutoff_time
         ]
-        
+
         if len(recent_snapshots) < 2:
             return {
                 "trend_status": "insufficient_data",
                 "window_minutes": window_minutes,
                 "snapshots_analyzed": len(recent_snapshots),
-                "constitutional_hash": CONSTITUTIONAL_HASH
+                "constitutional_hash": CONSTITUTIONAL_HASH,
             }
-        
+
         # Calculate trends
-        causal_values = [s['avg_causal_sensitivity'] for s in recent_snapshots]
-        spurious_values = [s['avg_spurious_invariance'] for s in recent_snapshots]
-        robustness_values = [s['avg_overall_robustness'] for s in recent_snapshots]
-        compliance_values = [s['robustness_compliance_rate'] for s in recent_snapshots]
-        
+        causal_values = [s["avg_causal_sensitivity"] for s in recent_snapshots]
+        spurious_values = [s["avg_spurious_invariance"] for s in recent_snapshots]
+        robustness_values = [s["avg_overall_robustness"] for s in recent_snapshots]
+        compliance_values = [s["robustness_compliance_rate"] for s in recent_snapshots]
+
         def trend_analysis(values):
             if len(values) < 3:
                 return "stable", 0.0
-            
+
             x = list(range(len(values)))
             try:
                 correlation = statistics.correlation(x, values)
@@ -832,28 +890,42 @@ class PerformanceMonitor:
                     return "degrading", abs(correlation)
             except:
                 return "stable", 0.0
-        
+
         causal_trend, causal_strength = trend_analysis(causal_values)
         spurious_trend, spurious_strength = trend_analysis(spurious_values)
         robustness_trend, robustness_strength = trend_analysis(robustness_values)
         compliance_trend, compliance_strength = trend_analysis(compliance_values)
-        
+
         return {
             "window_minutes": window_minutes,
             "snapshots_analyzed": len(recent_snapshots),
             "trends": {
-                "causal_sensitivity": {"trend": causal_trend, "strength": causal_strength},
-                "spurious_invariance": {"trend": spurious_trend, "strength": spurious_strength},
-                "overall_robustness": {"trend": robustness_trend, "strength": robustness_strength},
-                "compliance_rate": {"trend": compliance_trend, "strength": compliance_strength}
+                "causal_sensitivity": {
+                    "trend": causal_trend,
+                    "strength": causal_strength,
+                },
+                "spurious_invariance": {
+                    "trend": spurious_trend,
+                    "strength": spurious_strength,
+                },
+                "overall_robustness": {
+                    "trend": robustness_trend,
+                    "strength": robustness_strength,
+                },
+                "compliance_rate": {
+                    "trend": compliance_trend,
+                    "strength": compliance_strength,
+                },
             },
             "current_values": {
                 "causal_sensitivity": causal_values[-1] if causal_values else 0.0,
                 "spurious_invariance": spurious_values[-1] if spurious_values else 0.0,
-                "overall_robustness": robustness_values[-1] if robustness_values else 0.0,
-                "compliance_rate": compliance_values[-1] if compliance_values else 0.0
+                "overall_robustness": (
+                    robustness_values[-1] if robustness_values else 0.0
+                ),
+                "compliance_rate": compliance_values[-1] if compliance_values else 0.0,
             },
-            "constitutional_hash": CONSTITUTIONAL_HASH
+            "constitutional_hash": CONSTITUTIONAL_HASH,
         }
 
 

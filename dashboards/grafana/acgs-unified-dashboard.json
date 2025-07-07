@@ -2,7 +2,11 @@
   "dashboard": {
     "id": null,
     "title": "ACGS Unified Operations Dashboard",
-    "tags": ["acgs", "constitutional", "monitoring"],
+    "tags": [
+      "acgs",
+      "constitutional",
+      "monitoring"
+    ],
     "style": "dark",
     "timezone": "UTC",
     "refresh": "30s",
@@ -28,7 +32,12 @@
         "id": 1,
         "title": "🏛️ Constitutional Compliance Status",
         "type": "stat",
-        "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0},
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 0,
+          "y": 0
+        },
         "targets": [
           {
             "expr": "acgs_constitutional_compliance_score",
@@ -42,9 +51,18 @@
             "max": 100,
             "thresholds": {
               "steps": [
-                {"color": "red", "value": 0},
-                {"color": "yellow", "value": 95},
-                {"color": "green", "value": 100}
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 95
+                },
+                {
+                  "color": "green",
+                  "value": 100
+                }
               ]
             }
           }
@@ -60,7 +78,12 @@
         "id": 2,
         "title": "⚡ Performance Metrics",
         "type": "stat",
-        "gridPos": {"h": 8, "w": 6, "x": 6, "y": 0},
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 6,
+          "y": 0
+        },
         "targets": [
           {
             "expr": "histogram_quantile(0.99, rate(acgs_request_duration_seconds_bucket[5m])) * 1000",
@@ -75,9 +98,18 @@
           "defaults": {
             "thresholds": {
               "steps": [
-                {"color": "green", "value": 0},
-                {"color": "yellow", "value": 4},
-                {"color": "red", "value": 5}
+                {
+                  "color": "green",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 4
+                },
+                {
+                  "color": "red",
+                  "value": 5
+                }
               ]
             }
           }
@@ -87,7 +119,12 @@
         "id": 3,
         "title": "💾 Cache Performance",
         "type": "stat",
-        "gridPos": {"h": 8, "w": 6, "x": 12, "y": 0},
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 12,
+          "y": 0
+        },
         "targets": [
           {
             "expr": "acgs_cache_hit_rate",
@@ -101,9 +138,18 @@
             "max": 1,
             "thresholds": {
               "steps": [
-                {"color": "red", "value": 0},
-                {"color": "yellow", "value": 0.85},
-                {"color": "green", "value": 0.90}
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 0.85
+                },
+                {
+                  "color": "green",
+                  "value": 0.9
+                }
               ]
             }
           }
@@ -113,7 +159,12 @@
         "id": 4,
         "title": "🔒 Security Status",
         "type": "stat",
-        "gridPos": {"h": 8, "w": 6, "x": 18, "y": 0},
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 18,
+          "y": 0
+        },
         "targets": [
           {
             "expr": "acgs_security_score",
@@ -128,9 +179,18 @@
           "defaults": {
             "thresholds": {
               "steps": [
-                {"color": "red", "value": 0},
-                {"color": "yellow", "value": 90},
-                {"color": "green", "value": 95}
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 90
+                },
+                {
+                  "color": "green",
+                  "value": 95
+                }
               ]
             }
           }
@@ -140,7 +200,12 @@
         "id": 5,
         "title": "📊 Constitutional Compliance Trend",
         "type": "timeseries",
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        },
         "targets": [
           {
             "expr": "acgs_constitutional_compliance_score",
@@ -159,14 +224,22 @@
           }
         },
         "options": {
-          "legend": {"displayMode": "table", "placement": "bottom"}
+          "legend": {
+            "displayMode": "table",
+            "placement": "bottom"
+          }
         }
       },
       {
         "id": 6,
         "title": "🎯 Performance Targets",
         "type": "timeseries",
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        },
         "targets": [
           {
             "expr": "histogram_quantile(0.99, rate(acgs_request_duration_seconds_bucket[5m])) * 1000",
@@ -184,17 +257,35 @@
         "fieldConfig": {
           "overrides": [
             {
-              "matcher": {"id": "byName", "options": "P99 Latency (ms)"},
+              "matcher": {
+                "id": "byName",
+                "options": "P99 Latency (ms)"
+              },
               "properties": [
-                {"id": "custom.axisPlacement", "value": "left"},
-                {"id": "max", "value": 10}
+                {
+                  "id": "custom.axisPlacement",
+                  "value": "left"
+                },
+                {
+                  "id": "max",
+                  "value": 10
+                }
               ]
             },
             {
-              "matcher": {"id": "byName", "options": "Throughput (RPS)"},
+              "matcher": {
+                "id": "byName",
+                "options": "Throughput (RPS)"
+              },
               "properties": [
-                {"id": "custom.axisPlacement", "value": "right"},
-                {"id": "min", "value": 0}
+                {
+                  "id": "custom.axisPlacement",
+                  "value": "right"
+                },
+                {
+                  "id": "min",
+                  "value": 0
+                }
               ]
             }
           ]
@@ -204,7 +295,12 @@
         "id": 7,
         "title": "🛠️ ACGS Orchestrators Status",
         "type": "table",
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 16
+        },
         "targets": [
           {
             "expr": "up{job=~\"acgs-.*\"}",
@@ -216,7 +312,10 @@
           {
             "id": "organize",
             "options": {
-              "excludeByName": {"Time": true, "__name__": true},
+              "excludeByName": {
+                "Time": true,
+                "__name__": true
+              },
               "renameByName": {
                 "job": "Orchestrator",
                 "instance": "Instance",
@@ -228,7 +327,10 @@
         "fieldConfig": {
           "overrides": [
             {
-              "matcher": {"id": "byName", "options": "Status"},
+              "matcher": {
+                "id": "byName",
+                "options": "Status"
+              },
               "properties": [
                 {
                   "id": "custom.displayMode",
@@ -237,8 +339,24 @@
                 {
                   "id": "mappings",
                   "value": [
-                    {"options": {"0": {"color": "red", "text": "DOWN"}}, "type": "value"},
-                    {"options": {"1": {"color": "green", "text": "UP"}}, "type": "value"}
+                    {
+                      "options": {
+                        "0": {
+                          "color": "red",
+                          "text": "DOWN"
+                        }
+                      },
+                      "type": "value"
+                    },
+                    {
+                      "options": {
+                        "1": {
+                          "color": "green",
+                          "text": "UP"
+                        }
+                      },
+                      "type": "value"
+                    }
                   ]
                 }
               ]
@@ -250,7 +368,12 @@
         "id": 8,
         "title": "🚨 Active Alerts",
         "type": "table",
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16},
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 16
+        },
         "targets": [
           {
             "expr": "ALERTS{constitutional_hash=\"cdd01ef066bc6cf2\"}",
@@ -262,7 +385,10 @@
           {
             "id": "organize",
             "options": {
-              "excludeByName": {"Time": true, "__name__": true},
+              "excludeByName": {
+                "Time": true,
+                "__name__": true
+              },
               "renameByName": {
                 "alertname": "Alert",
                 "severity": "Severity",
@@ -274,7 +400,10 @@
         "fieldConfig": {
           "overrides": [
             {
-              "matcher": {"id": "byName", "options": "Severity"},
+              "matcher": {
+                "id": "byName",
+                "options": "Severity"
+              },
               "properties": [
                 {
                   "id": "custom.displayMode",
@@ -283,9 +412,30 @@
                 {
                   "id": "mappings",
                   "value": [
-                    {"options": {"critical": {"color": "red"}}, "type": "value"},
-                    {"options": {"warning": {"color": "yellow"}}, "type": "value"},
-                    {"options": {"info": {"color": "blue"}}, "type": "value"}
+                    {
+                      "options": {
+                        "critical": {
+                          "color": "red"
+                        }
+                      },
+                      "type": "value"
+                    },
+                    {
+                      "options": {
+                        "warning": {
+                          "color": "yellow"
+                        }
+                      },
+                      "type": "value"
+                    },
+                    {
+                      "options": {
+                        "info": {
+                          "color": "blue"
+                        }
+                      },
+                      "type": "value"
+                    }
                   ]
                 }
               ]
@@ -297,7 +447,12 @@
         "id": 9,
         "title": "💻 System Resources",
         "type": "timeseries",
-        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 24},
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 0,
+          "y": 24
+        },
         "targets": [
           {
             "expr": "acgs_cpu_usage_percent",
@@ -324,7 +479,12 @@
         "id": 10,
         "title": "🔄 Request Rate by Service",
         "type": "timeseries",
-        "gridPos": {"h": 8, "w": 8, "x": 8, "y": 24},
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 8,
+          "y": 24
+        },
         "targets": [
           {
             "expr": "rate(acgs_requests_total[5m])",
@@ -341,7 +501,12 @@
         "id": 11,
         "title": "❌ Error Rate by Service",
         "type": "timeseries",
-        "gridPos": {"h": 8, "w": 8, "x": 16, "y": 24},
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 16,
+          "y": 24
+        },
         "targets": [
           {
             "expr": "rate(acgs_errors_total[5m]) / rate(acgs_requests_total[5m]) * 100",
@@ -359,7 +524,12 @@
         "id": 12,
         "title": "🏛️ Constitutional Hash Validation",
         "type": "timeseries",
-        "gridPos": {"h": 6, "w": 24, "x": 0, "y": 32},
+        "gridPos": {
+          "h": 6,
+          "w": 24,
+          "x": 0,
+          "y": 32
+        },
         "targets": [
           {
             "expr": "rate(acgs_constitutional_hash_validations_total[5m])",
@@ -376,7 +546,10 @@
           }
         },
         "options": {
-          "legend": {"displayMode": "table", "placement": "bottom"}
+          "legend": {
+            "displayMode": "table",
+            "placement": "bottom"
+          }
         }
       }
     ],
@@ -449,5 +622,6 @@
     "folderUrl": "/dashboards/f/acgs/acgs-dashboards",
     "provisioned": true,
     "provisionedExternalId": "acgs-unified-dashboard.json"
-  }
+  },
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }

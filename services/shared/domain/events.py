@@ -5,31 +5,32 @@ Constitutional Hash: cdd01ef066bc6cf2
 Provides domain event base classes and handlers for event-driven architecture.
 """
 
+import asyncio
+import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, Type, TypeVar
 from uuid import UUID
-import asyncio
-import logging
 
-from .base import EntityId, TenantId, CONSTITUTIONAL_HASH
+from .base import CONSTITUTIONAL_HASH, EntityId, TenantId
 
 logger = logging.getLogger(__name__)
 
-T = TypeVar('T', bound='DomainEvent')
+T = TypeVar("T", bound="DomainEvent")
 
 
 @dataclass(frozen=True)
 class EventMetadata:
     """Metadata for domain events."""
+
     correlation_id: UUID
     causation_id: UUID
     user_id: Optional[str] = None
     tenant_id: Optional[TenantId] = None
     ip_address: Optional[str] = None
     user_agent: Optional[str] = None
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert metadata to dictionary."""
         return {
@@ -38,18 +39,18 @@ class EventMetadata:
             "user_id": self.user_id,
             "tenant_id": str(self.tenant_id) if self.tenant_id else None,
             "ip_address": self.ip_address,
-            "user_agent": self.user_agent
+            "user_agent": self.user_agent,
         }
 
 
 class DomainEvent(ABC):
     """Enhanced base class for domain events with metadata support."""
-    
+
     def __init__(
         self,
         aggregate_id: EntityId,
         occurred_at: Optional[datetime] = None,
-        metadata: Optional[EventMetadata] = None
+        metadata: Optional[EventMetadata] = None,
     ):
         """Initialize domain event with metadata."""
         self.event_id = EntityId.generate()
@@ -59,17 +60,17 @@ class DomainEvent(ABC):
         self.event_version = self._get_event_version()
         self.constitutional_hash = CONSTITUTIONAL_HASH
         self.metadata = metadata
-    
+
     @abstractmethod
     def _get_event_version(self) -> str:
         """Get the event version. Must be implemented by subclasses."""
         pass
-    
+
     @abstractmethod
     def get_event_data(self) -> Dict[str, Any]:
         """Get event-specific data. Must be implemented by subclasses."""
         pass
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert event to dictionary for serialization."""
         return {
@@ -80,9 +81,9 @@ class DomainEvent(ABC):
             "event_version": self.event_version,
             "constitutional_hash": self.constitutional_hash,
             "metadata": self.metadata.to_dict() if self.metadata else None,
-            "data": self.get_event_data()
+            "data": self.get_event_data(),
         }
-    
+
     @classmethod
     def from_dict(cls: Type[T], data: Dict[str, Any]) -> T:
         """
@@ -94,12 +95,12 @@ class DomainEvent(ABC):
 
 class DomainEventHandler(ABC):
     """Base class for domain event handlers."""
-    
+
     @abstractmethod
     async def handle(self, event: DomainEvent) -> None:
         """Handle a domain event. Must be implemented by subclasses."""
         pass
-    
+
     @abstractmethod
     def can_handle(self, event: DomainEvent) -> bool:
         """Check if this handler can handle the given event."""
@@ -108,61 +109,57 @@ class DomainEventHandler(ABC):
 
 class EventHandlerRegistry:
     """Registry for domain event handlers."""
-    
+
     def __init__(self):
         """Initialize handler registry."""
         self._handlers: Dict[str, List[DomainEventHandler]] = {}
         self._type_handlers: Dict[Type[DomainEvent], List[DomainEventHandler]] = {}
-    
+
     def register_handler(
-        self,
-        event_type: Type[DomainEvent],
-        handler: DomainEventHandler
+        self, event_type: Type[DomainEvent], handler: DomainEventHandler
     ) -> None:
         """Register a handler for an event type."""
         event_name = event_type.__name__
-        
+
         if event_name not in self._handlers:
             self._handlers[event_name] = []
         self._handlers[event_name].append(handler)
-        
+
         if event_type not in self._type_handlers:
             self._type_handlers[event_type] = []
         self._type_handlers[event_type].append(handler)
-        
-        logger.info(f"Registered handler {handler.__class__.__name__} for event {event_name}")
-    
+
+        logger.info(
+            f"Registered handler {handler.__class__.__name__} for event {event_name}"
+        )
+
     def register_handler_function(
-        self,
-        event_type: Type[DomainEvent],
-        handler_func: Callable[[DomainEvent], None]
+        self, event_type: Type[DomainEvent], handler_func: Callable[[DomainEvent], None]
     ) -> None:
         """Register a handler function for an event type."""
         handler = FunctionEventHandler(event_type, handler_func)
         self.register_handler(event_type, handler)
-    
+
     async def handle_event(self, event: DomainEvent) -> None:
         """Handle a domain event by routing to registered handlers."""
         event_name = event.__class__.__name__
         handlers = self._handlers.get(event_name, [])
-        
+
         if not handlers:
             logger.warning(f"No handlers registered for event {event_name}")
             return
-        
+
         # Execute handlers concurrently
         tasks = []
         for handler in handlers:
             if handler.can_handle(event):
                 tasks.append(self._execute_handler(handler, event))
-        
+
         if tasks:
             await asyncio.gather(*tasks, return_exceptions=True)
-    
+
     async def _execute_handler(
-        self,
-        handler: DomainEventHandler,
-        event: DomainEvent
+        self, handler: DomainEventHandler, event: DomainEvent
     ) -> None:
         """Execute a single handler with error handling."""
         try:
@@ -175,34 +172,34 @@ class EventHandlerRegistry:
             logger.error(
                 f"Handler {handler.__class__.__name__} failed to process "
                 f"event {event.__class__.__name__}: {e}",
-                exc_info=True
+                exc_info=True,
             )
             # Continue processing other handlers even if one fails
-    
-    def get_handlers_for_event(self, event_type: Type[DomainEvent]) -> List[DomainEventHandler]:
+
+    def get_handlers_for_event(
+        self, event_type: Type[DomainEvent]
+    ) -> List[DomainEventHandler]:
         """Get all handlers for a specific event type."""
         return self._type_handlers.get(event_type, [])
 
 
 class FunctionEventHandler(DomainEventHandler):
     """Adapter to use functions as event handlers."""
-    
+
     def __init__(
-        self,
-        event_type: Type[DomainEvent],
-        handler_func: Callable[[DomainEvent], None]
+        self, event_type: Type[DomainEvent], handler_func: Callable[[DomainEvent], None]
     ):
         """Initialize function handler."""
         self._event_type = event_type
         self._handler_func = handler_func
-    
+
     async def handle(self, event: DomainEvent) -> None:
         """Handle event using the function."""
         if asyncio.iscoroutinefunction(self._handler_func):
             await self._handler_func(event)
         else:
             self._handler_func(event)
-    
+
     def can_handle(self, event: DomainEvent) -> bool:
         """Check if this handler can handle the event."""
         return isinstance(event, self._event_type)
@@ -210,35 +207,33 @@ class FunctionEventHandler(DomainEventHandler):
 
 class EventPublisher:
     """Publisher for domain events."""
-    
+
     def __init__(self, handler_registry: EventHandlerRegistry):
         """Initialize event publisher."""
         self._handler_registry = handler_registry
         self._middleware: List[Callable] = []
-    
+
     def add_middleware(self, middleware: Callable) -> None:
         """Add middleware to process events before publishing."""
         self._middleware.append(middleware)
-    
+
     async def publish(self, event: DomainEvent) -> None:
         """Publish a domain event."""
         # Apply middleware
         processed_event = event
         for middleware in self._middleware:
             processed_event = await self._apply_middleware(middleware, processed_event)
-        
+
         # Handle the event
         await self._handler_registry.handle_event(processed_event)
-    
+
     async def publish_batch(self, events: List[DomainEvent]) -> None:
         """Publish multiple domain events."""
         tasks = [self.publish(event) for event in events]
         await asyncio.gather(*tasks, return_exceptions=True)
-    
+
     async def _apply_middleware(
-        self,
-        middleware: Callable,
-        event: DomainEvent
+        self, middleware: Callable, event: DomainEvent
     ) -> DomainEvent:
         """Apply middleware to an event."""
         if asyncio.iscoroutinefunction(middleware):
@@ -265,10 +260,12 @@ def get_event_publisher() -> EventPublisher:
 # Decorator for registering event handlers
 def handles(event_type: Type[DomainEvent]):
     """Decorator to register a class as a handler for an event type."""
+
     def decorator(handler_class: Type[DomainEventHandler]):
         instance = handler_class()
         _handler_registry.register_handler(event_type, instance)
         return handler_class
+
     return decorator
 
 
@@ -280,7 +277,9 @@ async def constitutional_compliance_middleware(event: DomainEvent) -> DomainEven
             f"Event {event.__class__.__name__} has invalid constitutional hash: "
             f"{event.constitutional_hash}"
         )
-        raise ValueError(f"Invalid constitutional hash in event {event.__class__.__name__}")
+        raise ValueError(
+            f"Invalid constitutional hash in event {event.__class__.__name__}"
+        )
     return event
 
 

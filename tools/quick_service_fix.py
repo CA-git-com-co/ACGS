@@ -17,7 +17,6 @@ import httpx
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class QuickServiceFix:
     """Quick fix to get services running by bypassing shared module issues."""
 

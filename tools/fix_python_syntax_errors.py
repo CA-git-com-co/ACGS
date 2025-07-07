@@ -11,7 +11,6 @@ from pathlib import Path
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 def fix_python_comments(file_path):
     """Fix invalid // comments in Python files."""
     try:

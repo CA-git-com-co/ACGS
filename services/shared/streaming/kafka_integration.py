@@ -13,6 +13,7 @@ Key Features:
 - Integration with existing ACGS monitoring systems
 - Constitutional compliance for message processing
 """
+
 # Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
@@ -203,13 +204,15 @@ class KafkaProducer:
             logger.info("Kafka producer initialized successfully")
 
             # Log initialization
-            await self.audit_logger.log_streaming_event({
-                "event_type": "kafka_producer_initialized",
-                "bootstrap_servers": self.bootstrap_servers,
-                "delivery_guarantee": self.delivery_guarantee.value,
-                "compression_type": self.compression_type.value,
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_streaming_event(
+                {
+                    "event_type": "kafka_producer_initialized",
+                    "bootstrap_servers": self.bootstrap_servers,
+                    "delivery_guarantee": self.delivery_guarantee.value,
+                    "compression_type": self.compression_type.value,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
             return True
 
@@ -370,15 +373,17 @@ class KafkaProducer:
             )
 
             # Log successful send
-            await self.audit_logger.log_streaming_event({
-                "event_type": "message_sent",
-                "topic": topic,
-                "message_id": message_id,
-                "partition": message.partition,
-                "offset": message.offset,
-                "latency_ms": latency,
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_streaming_event(
+                {
+                    "event_type": "message_sent",
+                    "topic": topic,
+                    "message_id": message_id,
+                    "partition": message.partition,
+                    "offset": message.offset,
+                    "latency_ms": latency,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
             return True
 
@@ -438,14 +443,16 @@ class KafkaProducer:
             total_time = (datetime.utcnow() - start_time).total_seconds()
 
             # Log batch result
-            await self.audit_logger.log_streaming_event({
-                "event_type": "batch_sent",
-                "total_messages": len(messages),
-                "successful_sends": successful_sends,
-                "failed_sends": failed_sends,
-                "batch_time_seconds": total_time,
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_streaming_event(
+                {
+                    "event_type": "batch_sent",
+                    "total_messages": len(messages),
+                    "successful_sends": successful_sends,
+                    "failed_sends": failed_sends,
+                    "batch_time_seconds": total_time,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
             return {
                 "total_messages": len(messages),
@@ -622,13 +629,15 @@ class KafkaConsumer:
             logger.info(f"Kafka consumer initialized for topics: {self.topics}")
 
             # Log initialization
-            await self.audit_logger.log_streaming_event({
-                "event_type": "kafka_consumer_initialized",
-                "group_id": self.group_id,
-                "topics": self.topics,
-                "bootstrap_servers": self.bootstrap_servers,
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_streaming_event(
+                {
+                    "event_type": "kafka_consumer_initialized",
+                    "group_id": self.group_id,
+                    "topics": self.topics,
+                    "bootstrap_servers": self.bootstrap_servers,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
             return True
 
@@ -749,15 +758,17 @@ class KafkaConsumer:
                     logger.warning(f"Offset commit failed: {e}")
 
             # Log processing
-            await self.audit_logger.log_streaming_event({
-                "event_type": "message_processed",
-                "topic": kafka_message.topic,
-                "message_id": kafka_message.message_id,
-                "processing_time_ms": processing_time,
-                "success": success,
-                "constitutional_compliant": kafka_message.constitutional_compliant,
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_streaming_event(
+                {
+                    "event_type": "message_processed",
+                    "topic": kafka_message.topic,
+                    "message_id": kafka_message.message_id,
+                    "processing_time_ms": processing_time,
+                    "success": success,
+                    "constitutional_compliant": kafka_message.constitutional_compliant,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
         except Exception as e:
             logger.error(f"Message processing failed: {e}")
@@ -915,9 +926,8 @@ class KafkaStreamProcessor:
                 self.windows[window_id] = {
                     "messages": [],
                     "start_time": message.timestamp,
-                    "end_time": message.timestamp + timedelta(
-                        milliseconds=self.window_size_ms
-                    ),
+                    "end_time": message.timestamp
+                    + timedelta(milliseconds=self.window_size_ms),
                 }
 
             self.windows[window_id]["messages"].append(message)
@@ -962,12 +972,14 @@ class KafkaStreamProcessor:
                     logger.error(f"Processor {processor_name} failed: {e}")
 
             # Log window processing
-            await self.audit_logger.log_streaming_event({
-                "event_type": "window_processed",
-                "window_id": window_id,
-                "message_count": len(messages),
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_streaming_event(
+                {
+                    "event_type": "window_processed",
+                    "window_id": window_id,
+                    "message_count": len(messages),
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
         except Exception as e:
             logger.error(f"Window processing failed: {e}")

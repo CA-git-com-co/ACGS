@@ -14,7 +14,6 @@ from pathlib import Path
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 def check_workflow_files():
     """Check workflow files for common issues."""
     print("🔍 Checking GitHub Actions workflow files...")

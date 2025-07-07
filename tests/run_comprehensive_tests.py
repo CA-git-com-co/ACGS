@@ -331,10 +331,12 @@ class ACGSTestRunner:
                         service_name = file_path.split("/")[2]
                         if service_name not in service_coverage:
                             service_coverage[service_name] = []
-                        service_coverage[service_name].append({
-                            "file": os.path.basename(file_path),
-                            "coverage": file_data["summary"]["percent_covered"],
-                        })
+                        service_coverage[service_name].append(
+                            {
+                                "file": os.path.basename(file_path),
+                                "coverage": file_data["summary"]["percent_covered"],
+                            }
+                        )
 
                 coverage_summary["service_coverage"] = service_coverage
         except Exception as e:

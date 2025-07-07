@@ -14,7 +14,7 @@ import os
 import sys
 import time
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any, Dict, List
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
@@ -49,7 +49,11 @@ CACHE_OPTIMIZATIONS = {
         "ttl_seconds": 86400,  # 24 hours
         "max_size": 1000,
         "warming_enabled": True,
-        "warming_keys": [f"constitutional_hash:{CONSTITUTIONAL_HASH}", "compliance_framework", "validation_rules"],
+        "warming_keys": [
+            f"constitutional_hash:{CONSTITUTIONAL_HASH}",
+            "compliance_framework",
+            "validation_rules",
+        ],
     },
     "validation_results": {
         "ttl_seconds": 1800,  # 30 minutes
@@ -83,20 +87,21 @@ CACHE_OPTIMIZATIONS = {
     },
 }
 
+
 class CacheOptimizationDeployer:
     """Deploy cache optimizations across ACGS services."""
-    
+
     def __init__(self):
         self.logger = logging.getLogger("cache_deployment")
         self.constitutional_hash = CONSTITUTIONAL_HASH
         self.deployment_results = {}
-        
+
     async def deploy_optimizations(self) -> Dict[str, Any]:
         """Deploy cache optimizations to all ACGS services."""
         self.logger.info("🚀 Starting ACGS cache optimization deployment")
         self.logger.info(f"📋 Constitutional Hash: {self.constitutional_hash}")
         self.logger.info(f"🎯 Target: >85% cache hit rate")
-        
+
         deployment_summary = {
             "total_services": len(ACGS_SERVICES),
             "optimized_services": 0,
@@ -105,45 +110,61 @@ class CacheOptimizationDeployer:
             "constitutional_hash": self.constitutional_hash,
             "timestamp": time.time(),
         }
-        
+
         # Deploy to each service
         for service_name, config in ACGS_SERVICES.items():
             try:
                 result = await self._deploy_service_optimization(service_name, config)
                 self.deployment_results[service_name] = result
-                
+
                 if result.get("success", False):
                     deployment_summary["optimized_services"] += 1
                 else:
                     deployment_summary["failed_services"] += 1
-                    
+
             except Exception as e:
-                self.logger.error(f"❌ Failed to deploy optimization for {service_name}: {e}")
-                self.deployment_results[service_name] = {"success": False, "error": str(e)}
+                self.logger.error(
+                    f"❌ Failed to deploy optimization for {service_name}: {e}"
+                )
+                self.deployment_results[service_name] = {
+                    "success": False,
+                    "error": str(e),
+                }
                 deployment_summary["failed_services"] += 1
-        
+
         # Calculate overall success
-        success_rate = deployment_summary["optimized_services"] / deployment_summary["total_services"]
-        deployment_summary["overall_success"] = success_rate >= 0.8  # 80% success threshold
+        success_rate = (
+            deployment_summary["optimized_services"]
+            / deployment_summary["total_services"]
+        )
+        deployment_summary["overall_success"] = (
+            success_rate >= 0.8
+        )  # 80% success threshold
         deployment_summary["success_rate"] = round(success_rate * 100, 1)
-        
+
         self.logger.info(f"📊 Deployment Summary:")
-        self.logger.info(f"   ✅ Optimized: {deployment_summary['optimized_services']}/{deployment_summary['total_services']} services")
+        self.logger.info(
+            f"   ✅ Optimized: {deployment_summary['optimized_services']}/{deployment_summary['total_services']} services"
+        )
         self.logger.info(f"   📈 Success Rate: {deployment_summary['success_rate']}%")
-        
+
         return {
             "deployment_summary": deployment_summary,
             "service_results": self.deployment_results,
             "constitutional_hash": self.constitutional_hash,
         }
-    
-    async def _deploy_service_optimization(self, service_name: str, service_config: Dict[str, Any]) -> Dict[str, Any]:
+
+    async def _deploy_service_optimization(
+        self, service_name: str, service_config: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Deploy cache optimization for a specific service."""
         self.logger.info(f"🔧 Optimizing cache for {service_name}")
-        
+
         cache_type = service_config["cache_type"]
-        optimization_config = CACHE_OPTIMIZATIONS.get(cache_type, CACHE_OPTIMIZATIONS["policy_decisions"])
-        
+        optimization_config = CACHE_OPTIMIZATIONS.get(
+            cache_type, CACHE_OPTIMIZATIONS["policy_decisions"]
+        )
+
         # Create service-specific cache configuration
         cache_config = {
             "service_name": service_name,
@@ -152,18 +173,22 @@ class CacheOptimizationDeployer:
             "optimization": optimization_config,
             "deployment_timestamp": time.time(),
         }
-        
+
         # Write cache configuration file
         config_path = await self._write_cache_config(service_name, cache_config)
-        
+
         # Apply cache warming if enabled
         warming_result = {}
         if optimization_config.get("warming_enabled", False):
-            warming_result = await self._apply_cache_warming(service_name, optimization_config)
-        
+            warming_result = await self._apply_cache_warming(
+                service_name, optimization_config
+            )
+
         # Validate deployment
-        validation_result = await self._validate_cache_deployment(service_name, service_config["port"])
-        
+        validation_result = await self._validate_cache_deployment(
+            service_name, service_config["port"]
+        )
+
         return {
             "success": True,
             "service_name": service_name,
@@ -173,8 +198,10 @@ class CacheOptimizationDeployer:
             "validation": validation_result,
             "constitutional_hash": self.constitutional_hash,
         }
-    
-    async def _write_cache_config(self, service_name: str, cache_config: Dict[str, Any]) -> Path:
+
+    async def _write_cache_config(
+        self, service_name: str, cache_config: Dict[str, Any]
+    ) -> Path:
         """Write optimized cache configuration for service."""
         # Determine service directory
         service_dirs = [
@@ -182,20 +209,20 @@ class CacheOptimizationDeployer:
             f"services/platform_services/{service_name.replace('_service', '')}",
             f"services/shared",
         ]
-        
+
         config_dir = None
         for service_dir in service_dirs:
             if (project_root / service_dir).exists():
                 config_dir = project_root / service_dir / "config"
                 break
-        
+
         if not config_dir:
             # Create in shared config
             config_dir = project_root / "config" / "cache_optimizations"
-        
+
         config_dir.mkdir(parents=True, exist_ok=True)
         config_path = config_dir / f"{service_name}_cache_optimization.json"
-        
+
         # Enhanced cache configuration
         enhanced_config = {
             **cache_config,
@@ -204,7 +231,9 @@ class CacheOptimizationDeployer:
                 "l1_memory_cache": {
                     "enabled": True,
                     "max_size": min(cache_config["optimization"]["max_size"], 1000),
-                    "ttl_seconds": min(cache_config["optimization"]["ttl_seconds"], 300),
+                    "ttl_seconds": min(
+                        cache_config["optimization"]["ttl_seconds"], 300
+                    ),
                 },
                 "l2_redis_cache": {
                     "enabled": True,
@@ -228,25 +257,27 @@ class CacheOptimizationDeployer:
                 "latency_alerts": True,
             },
         }
-        
-        with open(config_path, 'w') as f:
+
+        with open(config_path, "w") as f:
             json.dump(enhanced_config, f, indent=2)
-        
+
         self.logger.info(f"   📝 Cache config written: {config_path}")
         return config_path
-    
-    async def _apply_cache_warming(self, service_name: str, optimization_config: Dict[str, Any]) -> Dict[str, Any]:
+
+    async def _apply_cache_warming(
+        self, service_name: str, optimization_config: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Apply cache warming for service."""
         warming_keys = optimization_config.get("warming_keys", [])
         warmed_count = 0
-        
+
         try:
             # Import and use the cache optimizer
             from tools.acgs_cache_performance_optimizer import OptimizedCacheManager
-            
+
             cache_manager = OptimizedCacheManager(service_name)
             await cache_manager.initialize()
-            
+
             # Warm specific keys for this service
             for key in warming_keys:
                 warming_value = {
@@ -255,22 +286,28 @@ class CacheOptimizationDeployer:
                     "timestamp": time.time(),
                     "constitutional_hash": self.constitutional_hash,
                 }
-                
-                success = await cache_manager.set(key, warming_value, optimization_config.get("cache_type", "default"))
+
+                success = await cache_manager.set(
+                    key, warming_value, optimization_config.get("cache_type", "default")
+                )
                 if success:
                     warmed_count += 1
-            
+
             await cache_manager.close()
-            
-            self.logger.info(f"   🔥 Cache warming: {warmed_count}/{len(warming_keys)} keys warmed")
-            
+
+            self.logger.info(
+                f"   🔥 Cache warming: {warmed_count}/{len(warming_keys)} keys warmed"
+            )
+
             return {
                 "success": True,
                 "keys_warmed": warmed_count,
                 "total_keys": len(warming_keys),
-                "warming_rate": round(warmed_count / max(len(warming_keys), 1) * 100, 1),
+                "warming_rate": round(
+                    warmed_count / max(len(warming_keys), 1) * 100, 1
+                ),
             }
-            
+
         except Exception as e:
             self.logger.warning(f"   ⚠️ Cache warming failed for {service_name}: {e}")
             return {
@@ -278,8 +315,10 @@ class CacheOptimizationDeployer:
                 "error": str(e),
                 "keys_warmed": 0,
             }
-    
-    async def _validate_cache_deployment(self, service_name: str, port: int) -> Dict[str, Any]:
+
+    async def _validate_cache_deployment(
+        self, service_name: str, port: int
+    ) -> Dict[str, Any]:
         """Validate cache deployment for service."""
         try:
             # For now, return success since services aren't running
@@ -291,13 +330,13 @@ class CacheOptimizationDeployer:
                 "constitutional_compliance": True,
                 "note": "Validation skipped - service not running",
             }
-            
+
         except Exception as e:
             return {
                 "success": False,
                 "error": str(e),
             }
-    
+
     async def generate_deployment_report(self) -> str:
         """Generate comprehensive deployment report."""
         report_lines = [
@@ -307,82 +346,96 @@ class CacheOptimizationDeployer:
             "",
             "## Deployment Summary",
         ]
-        
+
         if self.deployment_results:
-            successful = sum(1 for r in self.deployment_results.values() if r.get("success", False))
+            successful = sum(
+                1 for r in self.deployment_results.values() if r.get("success", False)
+            )
             total = len(self.deployment_results)
-            
-            report_lines.extend([
-                f"- **Total Services**: {total}",
-                f"- **Successfully Optimized**: {successful}",
-                f"- **Failed**: {total - successful}",
-                f"- **Success Rate**: {round(successful/total*100, 1)}%",
-                "",
-                "## Service Details",
-            ])
-            
+
+            report_lines.extend(
+                [
+                    f"- **Total Services**: {total}",
+                    f"- **Successfully Optimized**: {successful}",
+                    f"- **Failed**: {total - successful}",
+                    f"- **Success Rate**: {round(successful/total*100, 1)}%",
+                    "",
+                    "## Service Details",
+                ]
+            )
+
             for service_name, result in self.deployment_results.items():
                 status = "✅ SUCCESS" if result.get("success", False) else "❌ FAILED"
                 cache_type = result.get("cache_type", "unknown")
-                
-                report_lines.extend([
-                    f"### {service_name}",
-                    f"- **Status**: {status}",
-                    f"- **Cache Type**: {cache_type}",
-                ])
-                
+
+                report_lines.extend(
+                    [
+                        f"### {service_name}",
+                        f"- **Status**: {status}",
+                        f"- **Cache Type**: {cache_type}",
+                    ]
+                )
+
                 if "warming_result" in result:
                     warming = result["warming_result"]
                     if warming.get("success", False):
-                        report_lines.append(f"- **Cache Warming**: {warming['keys_warmed']}/{warming['total_keys']} keys ({warming['warming_rate']}%)")
+                        report_lines.append(
+                            f"- **Cache Warming**: {warming['keys_warmed']}/{warming['total_keys']} keys ({warming['warming_rate']}%)"
+                        )
                     else:
-                        report_lines.append(f"- **Cache Warming**: Failed - {warming.get('error', 'Unknown error')}")
-                
+                        report_lines.append(
+                            f"- **Cache Warming**: Failed - {warming.get('error', 'Unknown error')}"
+                        )
+
                 report_lines.append("")
-        
-        report_lines.extend([
-            "## Next Steps",
-            "1. Start ACGS services to validate cache performance",
-            "2. Monitor cache hit rates using ACGS monitoring dashboard",
-            "3. Adjust TTL settings based on actual usage patterns",
-            "4. Enable Redis for production deployment",
-            "",
-            f"**Constitutional Compliance**: All optimizations maintain hash {self.constitutional_hash}",
-        ])
-        
+
+        report_lines.extend(
+            [
+                "## Next Steps",
+                "1. Start ACGS services to validate cache performance",
+                "2. Monitor cache hit rates using ACGS monitoring dashboard",
+                "3. Adjust TTL settings based on actual usage patterns",
+                "4. Enable Redis for production deployment",
+                "",
+                f"**Constitutional Compliance**: All optimizations maintain hash {self.constitutional_hash}",
+            ]
+        )
+
         return "\n".join(report_lines)
+
 
 async def main():
     """Main deployment function."""
     logging.basicConfig(
         level=logging.INFO,
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
-    
+
     deployer = CacheOptimizationDeployer()
-    
+
     print("🚀 ACGS Cache Optimization Deployment")
     print(f"📋 Constitutional Hash: {CONSTITUTIONAL_HASH}")
     print(f"🎯 Target: >85% cache hit rate")
     print()
-    
+
     # Deploy optimizations
     results = await deployer.deploy_optimizations()
-    
+
     # Generate and save report
     report = await deployer.generate_deployment_report()
     report_path = project_root / "reports" / "cache_optimization_deployment.md"
     report_path.parent.mkdir(exist_ok=True)
-    
-    with open(report_path, 'w') as f:
+
+    with open(report_path, "w") as f:
         f.write(report)
-    
+
     print(f"📊 Deployment Results:")
     print(json.dumps(results["deployment_summary"], indent=2))
     print()
     print(f"📄 Full report saved: {report_path}")
-    
+
     return results
+
 
 if __name__ == "__main__":
     asyncio.run(main())

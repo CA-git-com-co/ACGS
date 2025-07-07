@@ -1,6 +1,7 @@
 """
 ACGS Client wrapper for Gemini CLI integration
 """
+
 # Constitutional Hash: cdd01ef066bc6cf2
 
 import logging

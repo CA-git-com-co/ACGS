@@ -51,5 +51,7 @@
     "zod": "3.24.2",
     "zod-openapi": "4.2.4",
     "zod-validation-error": "3.5.2"
-  }
+  },
+  "_constitutional_hash": "cdd01ef066bc6cf2",
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }

@@ -59,14 +59,16 @@ class ValidationResult:
         line_number: int = None,
     ):
         """Add a validation issue."""
-        self.issues.append({
-            "severity": severity,
-            "category": category,
-            "file": str(file_path),
-            "message": message,
-            "line": line_number,
-            "timestamp": datetime.now().isoformat(),
-        })
+        self.issues.append(
+            {
+                "severity": severity,
+                "category": category,
+                "file": str(file_path),
+                "message": message,
+                "line": line_number,
+                "timestamp": datetime.now().isoformat(),
+            }
+        )
 
     def get_duration(self) -> float:
         """Get validation duration in seconds."""
@@ -90,12 +92,14 @@ class EnhancedValidator:
 
             # Check for constitutional hash
             if CONSTITUTIONAL_HASH not in content:
-                issues.append({
-                    "severity": "CRITICAL",
-                    "category": "constitutional_compliance",
-                    "message": f"Missing constitutional hash '{CONSTITUTIONAL_HASH}'",
-                    "line": None,
-                })
+                issues.append(
+                    {
+                        "severity": "CRITICAL",
+                        "category": "constitutional_compliance",
+                        "message": f"Missing constitutional hash '{CONSTITUTIONAL_HASH}'",
+                        "line": None,
+                    }
+                )
             else:
                 # Check if it's in the correct format
                 hash_pattern = (
@@ -108,22 +112,26 @@ class EnhancedValidator:
                         rf'"constitutional_hash":\s*"{re.escape(CONSTITUTIONAL_HASH)}"'
                     )
                     if not re.search(json_pattern, content):
-                        issues.append({
-                            "severity": "HIGH",
-                            "category": "constitutional_compliance",
-                            "message": (
-                                "Constitutional hash found but not in correct format"
-                            ),
-                            "line": None,
-                        })
+                        issues.append(
+                            {
+                                "severity": "HIGH",
+                                "category": "constitutional_compliance",
+                                "message": (
+                                    "Constitutional hash found but not in correct format"
+                                ),
+                                "line": None,
+                            }
+                        )
 
         except Exception as e:
-            issues.append({
-                "severity": "ERROR",
-                "category": "file_access",
-                "message": f"Error reading file: {e!s}",
-                "line": None,
-            })
+            issues.append(
+                {
+                    "severity": "ERROR",
+                    "category": "file_access",
+                    "message": f"Error reading file: {e!s}",
+                    "line": None,
+                }
+            )
 
         return issues
 
@@ -145,14 +153,16 @@ class EnhancedValidator:
                     missing_sections.append(section)
 
             if missing_sections:
-                issues.append({
-                    "severity": "MEDIUM",
-                    "category": "api_documentation",
-                    "message": (
-                        f"Missing required sections: {', '.join(missing_sections)}"
-                    ),
-                    "line": None,
-                })
+                issues.append(
+                    {
+                        "severity": "MEDIUM",
+                        "category": "api_documentation",
+                        "message": (
+                            f"Missing required sections: {', '.join(missing_sections)}"
+                        ),
+                        "line": None,
+                    }
+                )
 
             # Check for performance targets
             performance_missing = []
@@ -164,34 +174,40 @@ class EnhancedValidator:
                     performance_missing.append(f"{target}: {value}")
 
             if performance_missing:
-                issues.append({
-                    "severity": "MEDIUM",
-                    "category": "performance_targets",
-                    "message": (
-                        f"Missing performance targets: {', '.join(performance_missing)}"
-                    ),
-                    "line": None,
-                })
+                issues.append(
+                    {
+                        "severity": "MEDIUM",
+                        "category": "performance_targets",
+                        "message": (
+                            f"Missing performance targets: {', '.join(performance_missing)}"
+                        ),
+                        "line": None,
+                    }
+                )
 
             # Check for port specification
             port_pattern = r"port.*8[0-9]{3}"
             if not re.search(port_pattern, content):
-                issues.append({
-                    "severity": "LOW",
-                    "category": "api_documentation",
-                    "message": (
-                        "Missing or invalid port specification (expected 8XXX format)"
-                    ),
-                    "line": None,
-                })
+                issues.append(
+                    {
+                        "severity": "LOW",
+                        "category": "api_documentation",
+                        "message": (
+                            "Missing or invalid port specification (expected 8XXX format)"
+                        ),
+                        "line": None,
+                    }
+                )
 
         except Exception as e:
-            issues.append({
-                "severity": "ERROR",
-                "category": "file_access",
-                "message": f"Error reading API documentation: {e!s}",
-                "line": None,
-            })
+            issues.append(
+                {
+                    "severity": "ERROR",
+                    "category": "file_access",
+                    "message": f"Error reading API documentation: {e!s}",
+                    "line": None,
+                }
+            )
 
         return issues
 
@@ -225,22 +241,26 @@ class EnhancedValidator:
 
                     # Check if target exists
                     if not target_path.exists():
-                        issues.append({
-                            "severity": "HIGH",
-                            "category": "broken_links",
-                            "message": (
-                                f"Broken link to '{link_path}' (text: '{link_text}')"
-                            ),
-                            "line": line_num,
-                        })
+                        issues.append(
+                            {
+                                "severity": "HIGH",
+                                "category": "broken_links",
+                                "message": (
+                                    f"Broken link to '{link_path}' (text: '{link_text}')"
+                                ),
+                                "line": line_num,
+                            }
+                        )
 
         except Exception as e:
-            issues.append({
-                "severity": "ERROR",
-                "category": "file_access",
-                "message": f"Error checking links: {e!s}",
-                "line": None,
-            })
+            issues.append(
+                {
+                    "severity": "ERROR",
+                    "category": "file_access",
+                    "message": f"Error checking links: {e!s}",
+                    "line": None,
+                }
+            )
 
         return issues
 

@@ -2,7 +2,13 @@
   "dashboard": {
     "id": null,
     "title": "ACGS Executive Dashboard",
-    "tags": ["acgs", "executive", "business", "kpi", "governance"],
+    "tags": [
+      "acgs",
+      "executive",
+      "business",
+      "kpi",
+      "governance"
+    ],
     "timezone": "browser",
     "refresh": "1m",
     "time": {
@@ -27,9 +33,18 @@
             },
             "thresholds": {
               "steps": [
-                { "color": "red", "value": 0 },
-                { "color": "yellow", "value": 95 },
-                { "color": "green", "value": 99.9 }
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 95
+                },
+                {
+                  "color": "green",
+                  "value": 99.9
+                }
               ]
             },
             "unit": "percent",
@@ -37,7 +52,12 @@
             "max": 100
           }
         },
-        "gridPos": { "h": 8, "w": 6, "x": 0, "y": 0 }
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 0,
+          "y": 0
+        }
       },
       {
         "id": 2,
@@ -56,9 +76,18 @@
             },
             "thresholds": {
               "steps": [
-                { "color": "red", "value": 0 },
-                { "color": "yellow", "value": 95 },
-                { "color": "green", "value": 99 }
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 95
+                },
+                {
+                  "color": "green",
+                  "value": 99
+                }
               ]
             },
             "unit": "percent",
@@ -66,7 +95,12 @@
             "max": 100
           }
         },
-        "gridPos": { "h": 8, "w": 6, "x": 6, "y": 0 }
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 6,
+          "y": 0
+        }
       },
       {
         "id": 3,
@@ -85,16 +119,30 @@
             },
             "thresholds": {
               "steps": [
-                { "color": "green", "value": 0 },
-                { "color": "yellow", "value": 500 },
-                { "color": "red", "value": 1000 }
+                {
+                  "color": "green",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 500
+                },
+                {
+                  "color": "red",
+                  "value": 1000
+                }
               ]
             },
             "unit": "ms",
             "min": 0
           }
         },
-        "gridPos": { "h": 8, "w": 6, "x": 12, "y": 0 }
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 12,
+          "y": 0
+        }
       },
       {
         "id": 4,
@@ -113,15 +161,29 @@
             },
             "thresholds": {
               "steps": [
-                { "color": "green", "value": 0 },
-                { "color": "yellow", "value": 800 },
-                { "color": "red", "value": 1000 }
+                {
+                  "color": "green",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 800
+                },
+                {
+                  "color": "red",
+                  "value": 1000
+                }
               ]
             },
             "unit": "short"
           }
         },
-        "gridPos": { "h": 8, "w": 6, "x": 18, "y": 0 }
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 18,
+          "y": 0
+        }
       },
       {
         "id": 5,
@@ -140,7 +202,12 @@
             "max": 1
           }
         ],
-        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        }
       },
       {
         "id": 6,
@@ -159,7 +226,12 @@
             "max": 1
           }
         ],
-        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        }
       },
       {
         "id": 7,
@@ -177,7 +249,12 @@
             "min": 0
           }
         ],
-        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 16
+        }
       },
       {
         "id": 8,
@@ -196,7 +273,12 @@
             "max": 1
           }
         ],
-        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 16
+        }
       },
       {
         "id": 9,
@@ -215,17 +297,42 @@
             },
             "thresholds": {
               "steps": [
-                { "color": "red", "value": 0 },
-                { "color": "green", "value": 1 }
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "green",
+                  "value": 1
+                }
               ]
             },
             "mappings": [
-              { "options": { "0": { "text": "Down" } }, "type": "value" },
-              { "options": { "1": { "text": "Up" } }, "type": "value" }
+              {
+                "options": {
+                  "0": {
+                    "text": "Down"
+                  }
+                },
+                "type": "value"
+              },
+              {
+                "options": {
+                  "1": {
+                    "text": "Up"
+                  }
+                },
+                "type": "value"
+              }
             ]
           }
         },
-        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 24 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 24
+        }
       },
       {
         "id": 10,
@@ -244,9 +351,18 @@
             },
             "thresholds": {
               "steps": [
-                { "color": "red", "value": 0 },
-                { "color": "yellow", "value": 0.8 },
-                { "color": "green", "value": 0.95 }
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 0.8
+                },
+                {
+                  "color": "green",
+                  "value": 0.95
+                }
               ]
             },
             "unit": "percentunit",
@@ -254,8 +370,15 @@
             "max": 1
           }
         },
-        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 24 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 24
+        }
       }
     ]
-  }
+  },
+  "_constitutional_hash": "cdd01ef066bc6cf2",
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }

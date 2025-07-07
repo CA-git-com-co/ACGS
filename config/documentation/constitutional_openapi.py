@@ -27,7 +27,7 @@ class ConstitutionalOpenAPIGenerator:
     def __init__(self, output_dir: str = "docs/api/constitutional"):
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
-        
+
         # Service configurations with constitutional context
         self.service_configs = {
             "constitutional-core": {
@@ -37,11 +37,11 @@ class ConstitutionalOpenAPIGenerator:
                 "port": 8001,
                 "constitutional_level": "critical",
                 "tags": [
-                    "constitutional-ai", 
-                    "formal-verification", 
+                    "constitutional-ai",
+                    "formal-verification",
                     "constitutional-compliance",
-                    "constitutional-validation"
-                ]
+                    "constitutional-validation",
+                ],
             },
             "integrity": {
                 "name": "Integrity Service",
@@ -49,12 +49,7 @@ class ConstitutionalOpenAPIGenerator:
                 "version": "2.0.0",
                 "port": 8002,
                 "constitutional_level": "high",
-                "tags": [
-                    "integrity", 
-                    "cryptography", 
-                    "audit", 
-                    "constitutional-audit"
-                ]
+                "tags": ["integrity", "cryptography", "audit", "constitutional-audit"],
             },
             "governance-engine": {
                 "name": "Governance Engine",
@@ -63,34 +58,32 @@ class ConstitutionalOpenAPIGenerator:
                 "port": 8004,
                 "constitutional_level": "critical",
                 "tags": [
-                    "governance", 
-                    "policy", 
-                    "synthesis", 
-                    "constitutional-governance"
-                ]
+                    "governance",
+                    "policy",
+                    "synthesis",
+                    "constitutional-governance",
+                ],
             },
             "api-gateway": {
                 "name": "API Gateway",
                 "description": "Enhanced API Gateway with Integrated Authentication",
-                "version": "2.0.0", 
+                "version": "2.0.0",
                 "port": 8080,
                 "constitutional_level": "high",
                 "tags": [
-                    "gateway", 
-                    "authentication", 
-                    "routing", 
-                    "constitutional-routing"
-                ]
-            }
+                    "gateway",
+                    "authentication",
+                    "routing",
+                    "constitutional-routing",
+                ],
+            },
         }
 
     def generate_constitutional_openapi_spec(
-        self, 
-        service_key: str,
-        include_examples: bool = True
+        self, service_key: str, include_examples: bool = True
     ) -> Dict[str, Any]:
         """Generate OpenAPI spec with constitutional compliance metadata."""
-        
+
         config = self.service_configs.get(service_key)
         if not config:
             raise ValueError(f"Unknown service: {service_key}")
@@ -105,32 +98,32 @@ class ConstitutionalOpenAPIGenerator:
                 "contact": {
                     "name": "ACGS Development Team",
                     "url": "https://acgs.dev/support",
-                    "email": "api-support@acgs.dev"
+                    "email": "api-support@acgs.dev",
                 },
                 "license": {
                     "name": "ACGS Constitutional License",
-                    "url": "https://acgs.dev/license"
+                    "url": "https://acgs.dev/license",
                 },
                 "x-constitutional-hash": CONSTITUTIONAL_HASH,
                 "x-constitutional-level": config["constitutional_level"],
-                "x-service-port": config["port"]
+                "x-service-port": config["port"],
             },
             "servers": [
                 {
                     "url": f"http://localhost:{config['port']}",
                     "description": "Development server",
-                    "x-constitutional-compliance": True
+                    "x-constitutional-compliance": True,
                 },
                 {
                     "url": f"https://api.acgs.dev/{service_key}",
                     "description": "Development environment",
-                    "x-constitutional-compliance": True
+                    "x-constitutional-compliance": True,
                 },
                 {
-                    "url": f"https://api.acgs.com/{service_key}", 
+                    "url": f"https://api.acgs.com/{service_key}",
                     "description": "Production environment",
-                    "x-constitutional-compliance": True
-                }
+                    "x-constitutional-compliance": True,
+                },
             ],
             "paths": {},
             "components": {
@@ -141,28 +134,25 @@ class ConstitutionalOpenAPIGenerator:
                         "scheme": "bearer",
                         "bearerFormat": "JWT",
                         "description": "JWT token with constitutional compliance validation",
-                        "x-constitutional-required": True
+                        "x-constitutional-required": True,
                     },
                     "ConstitutionalApiKey": {
                         "type": "apiKey",
                         "in": "header",
                         "name": "X-Constitutional-API-Key",
                         "description": "API key with constitutional hash validation",
-                        "x-constitutional-hash": CONSTITUTIONAL_HASH
-                    }
-                }
+                        "x-constitutional-hash": CONSTITUTIONAL_HASH,
+                    },
+                },
             },
-            "security": [
-                {"ConstitutionalAuth": []},
-                {"ConstitutionalApiKey": []}
-            ],
+            "security": [{"ConstitutionalAuth": []}, {"ConstitutionalApiKey": []}],
             "tags": self._get_constitutional_tags(config),
             "x-constitutional-metadata": {
                 "hash": CONSTITUTIONAL_HASH,
                 "compliance_level": config["constitutional_level"],
                 "generated_at": datetime.utcnow().isoformat(),
-                "service_port": config["port"]
-            }
+                "service_port": config["port"],
+            },
         }
 
         # Add service-specific paths
@@ -178,20 +168,18 @@ class ConstitutionalOpenAPIGenerator:
                 "properties": {
                     "success": {
                         "type": "boolean",
-                        "description": "Operation success status"
+                        "description": "Operation success status",
                     },
-                    "data": {
-                        "description": "Response data"
-                    },
+                    "data": {"description": "Response data"},
                     "message": {
                         "type": "string",
-                        "description": "Human-readable message"
+                        "description": "Human-readable message",
                     },
                     "constitutional_metadata": {
                         "$ref": "#/components/schemas/ConstitutionalMetadata"
-                    }
+                    },
                 },
-                "required": ["success", "constitutional_metadata"]
+                "required": ["success", "constitutional_metadata"],
             },
             "ConstitutionalMetadata": {
                 "type": "object",
@@ -200,110 +188,104 @@ class ConstitutionalOpenAPIGenerator:
                         "type": "string",
                         "pattern": "^[a-f0-9]{16}$",
                         "example": CONSTITUTIONAL_HASH,
-                        "description": "Constitutional compliance hash"
+                        "description": "Constitutional compliance hash",
                     },
                     "compliance_validated": {
                         "type": "boolean",
-                        "description": "Whether constitutional compliance was validated"
+                        "description": "Whether constitutional compliance was validated",
                     },
                     "validation_timestamp": {
                         "type": "string",
                         "format": "date-time",
-                        "description": "Timestamp of constitutional validation"
+                        "description": "Timestamp of constitutional validation",
                     },
                     "service_port": {
                         "type": "integer",
-                        "description": "Service port for infrastructure validation"
+                        "description": "Service port for infrastructure validation",
                     },
                     "request_id": {
                         "type": "string",
                         "format": "uuid",
-                        "description": "Request correlation ID"
-                    }
+                        "description": "Request correlation ID",
+                    },
                 },
-                "required": ["constitutional_hash", "compliance_validated", "service_port"]
+                "required": [
+                    "constitutional_hash",
+                    "compliance_validated",
+                    "service_port",
+                ],
             },
             "ConstitutionalError": {
                 "type": "object",
                 "properties": {
-                    "success": {
-                        "type": "boolean",
-                        "enum": [False]
-                    },
+                    "success": {"type": "boolean", "enum": [False]},
                     "error": {
                         "type": "object",
                         "properties": {
-                            "code": {
-                                "type": "string",
-                                "description": "Error code"
-                            },
+                            "code": {"type": "string", "description": "Error code"},
                             "message": {
                                 "type": "string",
-                                "description": "Error message"
+                                "description": "Error message",
                             },
                             "constitutional_violation": {
                                 "type": "boolean",
-                                "description": "Whether this error represents a constitutional violation"
-                            }
-                        }
+                                "description": "Whether this error represents a constitutional violation",
+                            },
+                        },
                     },
                     "constitutional_metadata": {
                         "$ref": "#/components/schemas/ConstitutionalMetadata"
-                    }
+                    },
                 },
-                "required": ["success", "error", "constitutional_metadata"]
+                "required": ["success", "error", "constitutional_metadata"],
             },
             "HealthCheck": {
                 "type": "object",
                 "properties": {
                     "status": {
                         "type": "string",
-                        "enum": ["healthy", "unhealthy", "degraded"]
+                        "enum": ["healthy", "unhealthy", "degraded"],
                     },
-                    "service": {
-                        "type": "string",
-                        "description": "Service name"
-                    },
-                    "version": {
-                        "type": "string",
-                        "description": "Service version"
-                    },
+                    "service": {"type": "string", "description": "Service name"},
+                    "version": {"type": "string", "description": "Service version"},
                     "constitutional_hash": {
                         "type": "string",
                         "example": CONSTITUTIONAL_HASH,
-                        "description": "Constitutional compliance hash"
+                        "description": "Constitutional compliance hash",
                     },
                     "constitutional_compliance": {
                         "type": "string",
                         "enum": ["active", "inactive", "degraded"],
-                        "description": "Constitutional compliance status"
+                        "description": "Constitutional compliance status",
                     },
                     "infrastructure_port": {
                         "type": "integer",
-                        "description": "Service infrastructure port"
+                        "description": "Service infrastructure port",
                     },
-                    "timestamp": {
-                        "type": "string", 
-                        "format": "date-time"
-                    }
+                    "timestamp": {"type": "string", "format": "date-time"},
                 },
-                "required": ["status", "constitutional_hash", "constitutional_compliance", "infrastructure_port"]
-            }
+                "required": [
+                    "status",
+                    "constitutional_hash",
+                    "constitutional_compliance",
+                    "infrastructure_port",
+                ],
+            },
         }
 
     def _get_constitutional_tags(self, config: Dict[str, Any]) -> List[Dict[str, str]]:
         """Get constitutional tags for service."""
         tags = []
-        
+
         # Constitutional compliance tags
         constitutional_tags = {
             "constitutional-compliance": "Constitutional compliance validation and enforcement",
             "constitutional-validation": "Constitutional hash and policy validation",
             "constitutional-governance": "Constitutional governance operations",
             "constitutional-audit": "Constitutional audit and logging",
-            "constitutional-routing": "Constitutional-aware request routing"
+            "constitutional-routing": "Constitutional-aware request routing",
         }
-        
+
         # Service-specific tags
         service_tags = {
             "health": "Service health checks with constitutional validation",
@@ -311,31 +293,31 @@ class ConstitutionalOpenAPIGenerator:
             "authorization": "Authorization with constitutional governance",
             "governance": "Governance policy management",
             "integrity": "Data integrity and cryptographic operations",
-            "audit": "Audit logging and compliance tracking"
+            "audit": "Audit logging and compliance tracking",
         }
-        
+
         # Combine all tags
         all_tags = {**constitutional_tags, **service_tags}
-        
+
         for tag in config["tags"]:
             if tag in all_tags:
-                tags.append({
-                    "name": tag,
-                    "description": all_tags[tag],
-                    "x-constitutional-level": config["constitutional_level"]
-                })
-        
+                tags.append(
+                    {
+                        "name": tag,
+                        "description": all_tags[tag],
+                        "x-constitutional-level": config["constitutional_level"],
+                    }
+                )
+
         return tags
 
     def _generate_constitutional_paths(
-        self, 
-        service_key: str, 
-        config: Dict[str, Any]
+        self, service_key: str, config: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Generate constitutional API paths for service."""
-        
+
         paths = {}
-        
+
         # Health endpoint (all services)
         paths["/health"] = {
             "get": {
@@ -356,25 +338,27 @@ class ConstitutionalOpenAPIGenerator:
                                     "constitutional_hash": CONSTITUTIONAL_HASH,
                                     "constitutional_compliance": "active",
                                     "infrastructure_port": config["port"],
-                                    "timestamp": "2025-01-08T10:30:00Z"
-                                }
+                                    "timestamp": "2025-01-08T10:30:00Z",
+                                },
                             }
-                        }
+                        },
                     },
                     "503": {
                         "description": "Service unavailable or constitutional compliance issues",
                         "content": {
                             "application/json": {
-                                "schema": {"$ref": "#/components/schemas/ConstitutionalError"}
+                                "schema": {
+                                    "$ref": "#/components/schemas/ConstitutionalError"
+                                }
                             }
-                        }
-                    }
+                        },
+                    },
                 },
                 "x-constitutional-required": True,
-                "x-infrastructure-port": config["port"]
+                "x-infrastructure-port": config["port"],
             }
         }
-        
+
         # Constitutional validation endpoint
         paths["/health/constitutional"] = {
             "get": {
@@ -387,14 +371,16 @@ class ConstitutionalOpenAPIGenerator:
                         "description": "Constitutional compliance status",
                         "content": {
                             "application/json": {
-                                "schema": {"$ref": "#/components/schemas/ConstitutionalResponse"},
+                                "schema": {
+                                    "$ref": "#/components/schemas/ConstitutionalResponse"
+                                },
                                 "example": {
                                     "success": True,
                                     "data": {
                                         "constitutional_hash": CONSTITUTIONAL_HASH,
                                         "compliance_status": "active",
                                         "last_validation": "2025-01-08T10:30:00Z",
-                                        "compliance_score": 1.0
+                                        "compliance_score": 1.0,
                                     },
                                     "message": "Constitutional compliance active",
                                     "constitutional_metadata": {
@@ -402,15 +388,15 @@ class ConstitutionalOpenAPIGenerator:
                                         "compliance_validated": True,
                                         "validation_timestamp": "2025-01-08T10:30:00Z",
                                         "service_port": config["port"],
-                                        "request_id": "550e8400-e29b-41d4-a716-446655440000"
-                                    }
-                                }
+                                        "request_id": "550e8400-e29b-41d4-a716-446655440000",
+                                    },
+                                },
                             }
-                        }
+                        },
                     }
                 },
                 "x-constitutional-hash": CONSTITUTIONAL_HASH,
-                "x-infrastructure-port": config["port"]
+                "x-infrastructure-port": config["port"],
             }
         }
 
@@ -445,29 +431,35 @@ class ConstitutionalOpenAPIGenerator:
                                         "policy": {"type": "object"},
                                         "validation_mode": {
                                             "type": "string",
-                                            "enum": ["basic", "comprehensive", "critical"]
+                                            "enum": [
+                                                "basic",
+                                                "comprehensive",
+                                                "critical",
+                                            ],
                                         },
                                         "constitutional_hash": {
                                             "type": "string",
-                                            "example": CONSTITUTIONAL_HASH
-                                        }
+                                            "example": CONSTITUTIONAL_HASH,
+                                        },
                                     },
-                                    "required": ["policy", "constitutional_hash"]
+                                    "required": ["policy", "constitutional_hash"],
                                 }
                             }
-                        }
+                        },
                     },
                     "responses": {
                         "200": {
                             "description": "Validation results",
                             "content": {
                                 "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/ConstitutionalResponse"}
+                                    "schema": {
+                                        "$ref": "#/components/schemas/ConstitutionalResponse"
+                                    }
                                 }
-                            }
+                            },
                         }
                     },
-                    "x-constitutional-hash": CONSTITUTIONAL_HASH
+                    "x-constitutional-hash": CONSTITUTIONAL_HASH,
                 }
             }
         }
@@ -478,7 +470,7 @@ class ConstitutionalOpenAPIGenerator:
             "/api/v1/integrity/audit": {
                 "get": {
                     "tags": ["constitutional-audit"],
-                    "summary": "Get Constitutional Audit Log", 
+                    "summary": "Get Constitutional Audit Log",
                     "description": f"Retrieve constitutional compliance audit entries\n\n**Infrastructure Port:** {config['port']}",
                     "operationId": "getConstitutionalAuditLog",
                     "responses": {
@@ -486,12 +478,14 @@ class ConstitutionalOpenAPIGenerator:
                             "description": "Audit log entries with constitutional metadata",
                             "content": {
                                 "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/ConstitutionalResponse"}
+                                    "schema": {
+                                        "$ref": "#/components/schemas/ConstitutionalResponse"
+                                    }
                                 }
-                            }
+                            },
                         }
                     },
-                    "x-infrastructure-port": config["port"]
+                    "x-infrastructure-port": config["port"],
                 }
             }
         }
@@ -504,18 +498,20 @@ class ConstitutionalOpenAPIGenerator:
                     "tags": ["constitutional-governance"],
                     "summary": "Get Constitutional Policies",
                     "description": f"Retrieve constitutional governance policies\n\n**Infrastructure Port:** {config['port']}",
-                    "operationId": "getConstitutionalPolicies", 
+                    "operationId": "getConstitutionalPolicies",
                     "responses": {
                         "200": {
                             "description": "Constitutional policies",
                             "content": {
                                 "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/ConstitutionalResponse"}
+                                    "schema": {
+                                        "$ref": "#/components/schemas/ConstitutionalResponse"
+                                    }
                                 }
-                            }
+                            },
                         }
                     },
-                    "x-infrastructure-port": config["port"]
+                    "x-infrastructure-port": config["port"],
                 }
             }
         }
@@ -534,25 +530,23 @@ class ConstitutionalOpenAPIGenerator:
                             "description": "Available routes with constitutional metadata",
                             "content": {
                                 "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/ConstitutionalResponse"}
+                                    "schema": {
+                                        "$ref": "#/components/schemas/ConstitutionalResponse"
+                                    }
                                 }
-                            }
+                            },
                         }
                     },
-                    "x-infrastructure-port": config["port"]
+                    "x-infrastructure-port": config["port"],
                 }
             }
         }
 
-    def generate_swagger_docs(
-        self, 
-        service_key: str,
-        spec: Dict[str, Any]
-    ) -> str:
+    def generate_swagger_docs(self, service_key: str, spec: Dict[str, Any]) -> str:
         """Generate Swagger UI HTML with constitutional styling."""
-        
+
         config = self.service_configs[service_key]
-        
+
         html_content = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -627,21 +621,19 @@ class ConstitutionalOpenAPIGenerator:
     </script>
 </body>
 </html>"""
-        
+
         return html_content
 
     def save_constitutional_docs(
-        self, 
-        service_key: str,
-        formats: List[str] = ["json", "yaml", "html"]
+        self, service_key: str, formats: List[str] = ["json", "yaml", "html"]
     ) -> Dict[str, str]:
         """Save constitutional documentation in multiple formats."""
-        
+
         spec = self.generate_constitutional_openapi_spec(service_key)
         saved_files = {}
-        
+
         base_filename = f"{service_key}_constitutional_openapi"
-        
+
         # Save JSON format
         if "json" in formats:
             json_path = self.output_dir / f"{base_filename}.json"
@@ -649,7 +641,7 @@ class ConstitutionalOpenAPIGenerator:
                 json.dump(spec, f, indent=2)
             saved_files["json"] = str(json_path)
             logger.info(f"Saved constitutional JSON spec: {json_path}")
-        
+
         # Save YAML format
         if "yaml" in formats:
             yaml_path = self.output_dir / f"{base_filename}.yaml"
@@ -657,7 +649,7 @@ class ConstitutionalOpenAPIGenerator:
                 yaml.dump(spec, f, default_flow_style=False, sort_keys=False)
             saved_files["yaml"] = str(yaml_path)
             logger.info(f"Saved constitutional YAML spec: {yaml_path}")
-        
+
         # Save HTML documentation
         if "html" in formats:
             html_content = self.generate_swagger_docs(service_key, spec)
@@ -666,25 +658,28 @@ class ConstitutionalOpenAPIGenerator:
                 f.write(html_content)
             saved_files["html"] = str(html_path)
             logger.info(f"Saved constitutional HTML docs: {html_path}")
-        
+
         return saved_files
 
     def generate_all_constitutional_docs(
-        self, 
-        formats: List[str] = ["json", "yaml", "html"]
+        self, formats: List[str] = ["json", "yaml", "html"]
     ) -> Dict[str, Dict[str, str]]:
         """Generate constitutional documentation for all services."""
-        
+
         all_docs = {}
-        
+
         for service_key in self.service_configs.keys():
             try:
                 logger.info(f"Generating constitutional docs for {service_key}")
                 docs = self.save_constitutional_docs(service_key, formats)
                 all_docs[service_key] = docs
-                logger.info(f"Successfully generated constitutional docs for {service_key}")
+                logger.info(
+                    f"Successfully generated constitutional docs for {service_key}"
+                )
             except Exception as e:
-                logger.error(f"Failed to generate constitutional docs for {service_key}: {e}")
+                logger.error(
+                    f"Failed to generate constitutional docs for {service_key}: {e}"
+                )
                 all_docs[service_key] = {}
-        
+
         return all_docs

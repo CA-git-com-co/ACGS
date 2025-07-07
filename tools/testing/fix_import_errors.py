@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Constitutional Hash: cdd01ef066bc6cf2
 """
 ACGS-PGP Import Error Resolution Script
 Fixes common import issues across all 7 core services

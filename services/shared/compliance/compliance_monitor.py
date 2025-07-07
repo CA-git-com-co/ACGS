@@ -12,6 +12,7 @@ Key Features:
 - Incident response and remediation tracking
 - Integration with existing ACGS monitoring infrastructure
 """
+
 # Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
@@ -293,13 +294,15 @@ class ComplianceMonitor:
                 await self._handle_violation(rule, check_result)
 
             # Log check execution
-            await self.audit_logger.log_compliance_event({
-                "event_type": "compliance_check_executed",
-                "rule_id": rule_id,
-                "rule_name": rule["name"],
-                "compliant": check_result["compliant"],
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_compliance_event(
+                {
+                    "event_type": "compliance_check_executed",
+                    "rule_id": rule_id,
+                    "rule_name": rule["name"],
+                    "compliant": check_result["compliant"],
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
         except Exception as e:
             logger.error(f"Monitoring rule execution failed for {rule_id}: {e}")
@@ -349,14 +352,16 @@ class ComplianceMonitor:
             )
 
             # Log violation
-            await self.audit_logger.log_compliance_event({
-                "event_type": "compliance_violation_detected",
-                "violation_id": violation_id,
-                "violation_type": rule["violation_type"].value,
-                "severity": rule["severity"].value,
-                "requirement_id": rule["requirement_id"],
-                "timestamp": violation.detected_at.isoformat(),
-            })
+            await self.audit_logger.log_compliance_event(
+                {
+                    "event_type": "compliance_violation_detected",
+                    "violation_id": violation_id,
+                    "violation_type": rule["violation_type"].value,
+                    "severity": rule["severity"].value,
+                    "requirement_id": rule["requirement_id"],
+                    "timestamp": violation.detected_at.isoformat(),
+                }
+            )
 
             # Attempt auto-remediation if enabled
             if (
@@ -391,12 +396,14 @@ class ComplianceMonitor:
                 violation.remediation_status = "auto_resolved"
                 violation.resolved_at = datetime.utcnow()
 
-                await self.audit_logger.log_compliance_event({
-                    "event_type": "violation_auto_remediated",
-                    "violation_id": violation.violation_id,
-                    "violation_type": violation.violation_type.value,
-                    "timestamp": violation.resolved_at.isoformat(),
-                })
+                await self.audit_logger.log_compliance_event(
+                    {
+                        "event_type": "violation_auto_remediated",
+                        "violation_id": violation.violation_id,
+                        "violation_type": violation.violation_type.value,
+                        "timestamp": violation.resolved_at.isoformat(),
+                    }
+                )
 
         except Exception as e:
             logger.error(f"Auto-remediation failed for {violation.violation_id}: {e}")
@@ -667,12 +674,14 @@ class ComplianceMonitor:
                 compliance_status = await self.compliance_engine.get_compliance_status()
 
                 # Log assessment results
-                await self.audit_logger.log_compliance_event({
-                    "event_type": "periodic_compliance_assessment",
-                    "compliance_score": compliance_status["compliance_score"],
-                    "overall_status": compliance_status["overall_status"],
-                    "timestamp": datetime.utcnow().isoformat(),
-                })
+                await self.audit_logger.log_compliance_event(
+                    {
+                        "event_type": "periodic_compliance_assessment",
+                        "compliance_score": compliance_status["compliance_score"],
+                        "overall_status": compliance_status["overall_status"],
+                        "timestamp": datetime.utcnow().isoformat(),
+                    }
+                )
 
                 # Alert on low compliance
                 if compliance_status["compliance_score"] < self.violation_threshold:
@@ -699,9 +708,9 @@ class ComplianceMonitor:
                 metrics = await self._calculate_compliance_metrics()
 
                 # Store metrics in history
-                self.metrics_history.append({
-                    "timestamp": datetime.utcnow(), "metrics": metrics
-                })
+                self.metrics_history.append(
+                    {"timestamp": datetime.utcnow(), "metrics": metrics}
+                )
 
                 # Keep only last 24 hours of metrics
                 cutoff_time = datetime.utcnow() - timedelta(hours=24)
@@ -825,15 +834,17 @@ class ComplianceMonitor:
             )
 
             # Log escalation
-            await self.audit_logger.log_compliance_event({
-                "event_type": "violation_escalated",
-                "violation_id": violation.violation_id,
-                "violation_type": violation.violation_type.value,
-                "days_overdue": (
-                    datetime.utcnow() - violation.resolution_deadline
-                ).days,
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_compliance_event(
+                {
+                    "event_type": "violation_escalated",
+                    "violation_id": violation.violation_id,
+                    "violation_type": violation.violation_type.value,
+                    "days_overdue": (
+                        datetime.utcnow() - violation.resolution_deadline
+                    ).days,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
         except Exception as e:
             logger.error(f"Violation escalation failed: {e}")
@@ -1030,9 +1041,9 @@ async def example_usage():
     from .eu_ai_act_compliance import EUAIActCompliance
 
     # Initialize compliance engine
-    compliance_engine = EUAIActCompliance({
-        "system_name": "ACGS", "system_version": "1.0.0"
-    })
+    compliance_engine = EUAIActCompliance(
+        {"system_name": "ACGS", "system_version": "1.0.0"}
+    )
 
     # Initialize compliance monitor
     monitor = ComplianceMonitor(

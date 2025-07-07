@@ -11,7 +11,6 @@ from utils.git_utils import diff_versus_commit
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 def modify_cmake_file(cmake_file_path, new_exercise_value):
     # Step 1: Read the CMake file
     with open(cmake_file_path) as f:

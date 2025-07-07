@@ -12,7 +12,6 @@ from pathlib import Path
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 def fix_utc_imports_in_file(file_path: Path) -> bool:
     """Fix timezone.utc imports in a single file."""
     try:

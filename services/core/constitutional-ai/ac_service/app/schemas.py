@@ -7,7 +7,6 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 # Base schema for Principle attributes
 class PrincipleBase(BaseModel):
     name: str = Field(

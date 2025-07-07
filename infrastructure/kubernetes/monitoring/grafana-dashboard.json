@@ -60,7 +60,9 @@
         "justifyMode": "auto",
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": ["lastNotNull"]
+          "calcs": [
+            "lastNotNull"
+          ]
         },
         "showPercent": false,
         "textMode": "auto"
@@ -288,7 +290,11 @@
   ],
   "schemaVersion": 36,
   "style": "dark",
-  "tags": ["acgs", "constitutional-ai", "governance"],
+  "tags": [
+    "acgs",
+    "constitutional-ai",
+    "governance"
+  ],
   "templating": {
     "list": []
   },
@@ -300,5 +306,7 @@
   "timezone": "browser",
   "title": "ACGS-PGP Overview",
   "uid": "acgs-pgp-overview",
-  "version": 1
+  "version": 1,
+  "_constitutional_hash": "cdd01ef066bc6cf2",
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }

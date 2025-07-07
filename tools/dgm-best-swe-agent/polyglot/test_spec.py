@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 # modified from https://github.com/SWE-bench/SWE-bench/blob/dc4c087c2b9e4cefebf2e3d201d27e362d899e0f/swebench/harness/test_spec.py
 
 from __future__ import annotations

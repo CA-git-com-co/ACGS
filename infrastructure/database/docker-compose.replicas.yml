@@ -1,11 +1,5 @@
-# Constitutional Hash: cdd01ef066bc6cf2
-# PostgreSQL Read Replicas Configuration
-# ACGS-1 Phase 2 - Enterprise Scalability & Performance
-
 version: '3.8'
-
 services:
-  # PostgreSQL Read Replica 1
   postgres_replica1:
     image: postgres:15-alpine
     container_name: acgs_postgres_replica1
@@ -15,24 +9,28 @@ services:
       POSTGRES_DB: acgs_db
       PGUSER: acgs_user
     ports:
-      - '5433:5432'
+    - 5433:5432
     volumes:
-      - postgres_replica1_data:/var/lib/postgresql/data
-      - ./replica_setup.sh:/docker-entrypoint-initdb.d/replica_setup.sh
-    command: |
-      postgres
-      -c wal_level=replica
-      -c max_wal_senders=3
-      -c max_replication_slots=3
-      -c hot_standby=on
-      -c hot_standby_feedback=on
-    networks:
-      - acgs_network
-    depends_on:
-      - postgres_primary
-    restart: unless-stopped
+    - postgres_replica1_data:/var/lib/postgresql/data
+    - ./replica_setup.sh:/docker-entrypoint-initdb.d/replica_setup.sh
+    command: 'postgres
 
-  # PostgreSQL Read Replica 2
+      -c wal_level=replica
+
+      -c max_wal_senders=3
+
+      -c max_replication_slots=3
+
+      -c hot_standby=on
+
+      -c hot_standby_feedback=on
+
+      '
+    networks:
+    - acgs_network
+    depends_on:
+    - postgres_primary
+    restart: unless-stopped
   postgres_replica2:
     image: postgres:15-alpine
     container_name: acgs_postgres_replica2
@@ -42,24 +40,28 @@ services:
       POSTGRES_DB: acgs_db
       PGUSER: acgs_user
     ports:
-      - '5434:5432'
+    - 5434:5432
     volumes:
-      - postgres_replica2_data:/var/lib/postgresql/data
-      - ./replica_setup.sh:/docker-entrypoint-initdb.d/replica_setup.sh
-    command: |
-      postgres
-      -c wal_level=replica
-      -c max_wal_senders=3
-      -c max_replication_slots=3
-      -c hot_standby=on
-      -c hot_standby_feedback=on
-    networks:
-      - acgs_network
-    depends_on:
-      - postgres_primary
-    restart: unless-stopped
+    - postgres_replica2_data:/var/lib/postgresql/data
+    - ./replica_setup.sh:/docker-entrypoint-initdb.d/replica_setup.sh
+    command: 'postgres
 
-  # PgBouncer for Read Replicas
+      -c wal_level=replica
+
+      -c max_wal_senders=3
+
+      -c max_replication_slots=3
+
+      -c hot_standby=on
+
+      -c hot_standby_feedback=on
+
+      '
+    networks:
+    - acgs_network
+    depends_on:
+    - postgres_primary
+    restart: unless-stopped
   pgbouncer_replicas:
     image: pgbouncer/pgbouncer:latest
     container_name: acgs_pgbouncer_replicas
@@ -73,23 +75,22 @@ services:
       MAX_CLIENT_CONN: 500
       DEFAULT_POOL_SIZE: 20
     ports:
-      - '6433:5432'
+    - 6433:5432
     volumes:
-      - ./pgbouncer_replicas.ini:/etc/pgbouncer/pgbouncer.ini
-      - ./userlist.txt:/etc/pgbouncer/userlist.txt
+    - ./pgbouncer_replicas.ini:/etc/pgbouncer/pgbouncer.ini
+    - ./userlist.txt:/etc/pgbouncer/userlist.txt
     networks:
-      - acgs_network
+    - acgs_network
     depends_on:
-      - postgres_replica1
-      - postgres_replica2
+    - postgres_replica1
+    - postgres_replica2
     restart: unless-stopped
-
 volumes:
   postgres_replica1_data:
     driver: local
   postgres_replica2_data:
     driver: local
-
 networks:
   acgs_network:
     external: true
+constitutional_hash: cdd01ef066bc6cf2

@@ -7,7 +7,6 @@ from pydantic import BaseModel
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 # Mock User class as Pydantic model
 class User(BaseModel):
     id: int = 1

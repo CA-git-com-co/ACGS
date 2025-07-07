@@ -10,7 +10,7 @@ has been properly updated across all relevant files.
 import os
 import re
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Union
 
 # Constitutional hash validation
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -19,9 +19,9 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 class DocumentationValidator:
     """Validates monitoring documentation updates"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.project_root = Path("/home/dislove/ACGS-2")
-        self.results = []
+        self.results: List[Dict[str, str]] = []
 
     def validate_file_exists(self, file_path: str) -> bool:
         """Check if a file exists"""
@@ -90,7 +90,7 @@ class DocumentationValidator:
         """Validate constitutional hash presence"""
         return self.validate_content_contains(file_path, [CONSTITUTIONAL_HASH])
 
-    def run_validation(self) -> Dict:
+    def run_validation(self) -> Dict[str, Union[int, float, str, List[Dict[str, str]]]]:
         """Run complete documentation validation"""
         print(f"🏛️ Validating monitoring documentation updates...")
         print(f"Constitutional Hash: {CONSTITUTIONAL_HASH}")
@@ -162,7 +162,7 @@ class DocumentationValidator:
         failed_checks = sum(1 for r in self.results if r["status"] == "FAIL")
         error_checks = sum(1 for r in self.results if r["status"] == "ERROR")
 
-        summary = {
+        summary: Dict[str, Union[int, float, str, List[Dict[str, str]]]] = {
             "constitutional_hash": CONSTITUTIONAL_HASH,
             "total_checks": total_checks,
             "passed": passed_checks,
@@ -177,7 +177,9 @@ class DocumentationValidator:
 
         return summary
 
-    def print_results(self, summary: Dict) -> None:
+    def print_results(
+        self, summary: Dict[str, Union[int, float, str, List[Dict[str, str]]]]
+    ) -> None:
         """Print validation results"""
         print(f"\n📊 VALIDATION RESULTS")
         print("=" * 60)
@@ -191,19 +193,21 @@ class DocumentationValidator:
         print(f"\n📋 DETAILED RESULTS")
         print("=" * 60)
 
-        for result in summary["results"]:
-            status_icon = {"PASS": "✅", "FAIL": "❌", "ERROR": "⚠️"}.get(
-                result["status"], "?"
-            )
+        results = summary.get("results", [])
+        if isinstance(results, list):
+            for result in results:
+                status_icon = {"PASS": "✅", "FAIL": "❌", "ERROR": "⚠️"}.get(
+                    result["status"], "?"
+                )
 
-            print(f"{status_icon} {result['check']}")
-            if result["status"] != "PASS":
-                print(f"   {result['details']}")
+                print(f"{status_icon} {result['check']}")
+                if result["status"] != "PASS":
+                    print(f"   {result['details']}")
 
         print("=" * 60)
 
 
-def main():
+def main() -> None:
     """Main validation function"""
     validator = DocumentationValidator()
 

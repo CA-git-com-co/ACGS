@@ -1,17 +1,16 @@
 # backend/gs_service/app/core/rule_generator.py
 import logging  # Import the logging module
 
-from ..schemas import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from ..schemas import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     ACPrinciple,
     GeneratedRuleInfo,
     LLMInterpretationInput,
     LLMStructuredOutput,
     LLMSuggestedAtom,
     LLMSuggestedRule,
+    "cdd01ef066bc6cf2",
+    =,
 )
 from .llm_integration import query_llm_for_structured_output
 

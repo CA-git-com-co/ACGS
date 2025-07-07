@@ -20,15 +20,14 @@ from services.shared.database import get_async_db
 from services.shared.metrics import get_metrics
 from services.shared.models import User
 
-from .services.constitutional_reporting_service import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from .services.constitutional_reporting_service import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     ComplianceReport,
     ConstitutionalReportingService,
     ReportFormat,
     ReportType,
+    "cdd01ef066bc6cf2",
+    =,
 )
 
 logger = logging.getLogger(__name__)

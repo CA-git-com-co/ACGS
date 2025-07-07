@@ -20,15 +20,15 @@ try:
     sys.path.insert(0, str(shared_middleware_path))
     
     from error_handling import (
-        setup_error_handlers,
-        ErrorHandlingMiddleware,
         ACGSException,
-        ConstitutionalComplianceError,
-        SecurityValidationError,
         AuthenticationError,
+        ConstitutionalComplianceError,
+        ErrorContext,
+        ErrorHandlingMiddleware,
+        SecurityValidationError,
         ValidationError,
         log_error_with_context,
-        ErrorContext
+        setup_error_handlers,
     )
     ACGS_ERROR_HANDLING_AVAILABLE = True
     print(f"✅ ACGS Error handling loaded for {service_name}")
@@ -45,12 +45,12 @@ try:
     sys.path.insert(0, str(shared_security_path))
     
     from middleware_integration import (
-        apply_acgs_security_middleware,
-        setup_security_monitoring,
-        get_security_headers,
         SecurityLevel,
+        apply_acgs_security_middleware,
+        create_secure_endpoint_decorator,
+        get_security_headers,
+        setup_security_monitoring,
         validate_request_body,
-        create_secure_endpoint_decorator
     )
     ACGS_SECURITY_AVAILABLE = True
     print(f"✅ ACGS Security middleware loaded for {service_name}")
@@ -103,19 +103,20 @@ except ImportError as e:
     print(f"⚠️ Standardized security middleware not available: {e}")
     SECURITY_MIDDLEWARE_AVAILABLE = False
 
+from typing import Any, Dict, List, Optional
+
 # FastAPI and core imports
 import uvicorn
-from fastapi import FastAPI, HTTPException, Depends, status
+from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from typing import Optional, Dict, Any, List
 
 # Service imports
 try:
-    from services.shared.service_clients.registry import get_service_client
     from services.shared.middleware.error_handling import setup_error_handlers
+    from services.shared.service_clients.registry import get_service_client
     CLIENT_REGISTRY_AVAILABLE = True
 except ImportError:
     CLIENT_REGISTRY_AVAILABLE = False

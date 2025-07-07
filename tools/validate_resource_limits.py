@@ -20,7 +20,6 @@ import yaml
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 @dataclass
 class ResourceLimits:
     """Standard resource limits for ACGS-PGP services."""

@@ -1,173 +1,174 @@
 version: '3.8'
-
-# ACGS Testing Environment
-# Lightweight configuration for testing and CI/CD
-
 services:
-  # =============================================================================
-  # ACGS Services - Testing Configuration
-  # =============================================================================
   auth-service-test:
     build:
       context: ../../services/auth
       dockerfile: Dockerfile.test
     container_name: acgs_auth_service_test
     environment:
-      - ENVIRONMENT=testing
-      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-      - DATABASE_URL=postgresql://test:test@postgresql-test:5432/acgs_test
-      - REDIS_URL=redis://redis-test:6379/0
-      - LOG_LEVEL=DEBUG
+    - ENVIRONMENT=testing
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - DATABASE_URL=postgresql://test:test@postgresql-test:5432/acgs_test
+    - REDIS_URL=redis://redis-test:6379/0
+    - LOG_LEVEL=DEBUG
     ports:
-      - "18000:8000"
+    - 18000:8000
     networks:
-      - acgs_test_network
+    - acgs_test_network
     depends_on:
-      - postgresql-test
-      - redis-test
+    - postgresql-test
+    - redis-test
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:8000/health
       interval: 10s
       timeout: 5s
       retries: 3
-
   ac-service-test:
     build:
       context: ../../services/ac
       dockerfile: Dockerfile.test
     container_name: acgs_ac_service_test
     environment:
-      - ENVIRONMENT=testing
-      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-      - DATABASE_URL=postgresql://test:test@postgresql-test:5432/acgs_test
-      - OPA_URL=http://opa-test:8181
+    - ENVIRONMENT=testing
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - DATABASE_URL=postgresql://test:test@postgresql-test:5432/acgs_test
+    - OPA_URL=http://opa-test:8181
     ports:
-      - "18001:8001"
+    - 18001:8001
     networks:
-      - acgs_test_network
+    - acgs_test_network
     depends_on:
-      - postgresql-test
-      - opa-test
+    - postgresql-test
+    - opa-test
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:8001/health
       interval: 10s
       timeout: 5s
       retries: 3
-
-  # =============================================================================
-  # Test Infrastructure
-  # =============================================================================
   postgresql-test:
     image: postgres:15-alpine
     container_name: acgs_postgresql_test
     environment:
-      - POSTGRES_DB=acgs_test
-      - POSTGRES_USER=test
-      - POSTGRES_PASSWORD=test
+    - POSTGRES_DB=acgs_test
+    - POSTGRES_USER=test
+    - POSTGRES_PASSWORD=test
     ports:
-      - "15432:5432"
+    - 15432:5432
     volumes:
-      - postgresql_test_data:/var/lib/postgresql/data
-      - ../database/test-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    - postgresql_test_data:/var/lib/postgresql/data
+    - ../database/test-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
     networks:
-      - acgs_test_network
+    - acgs_test_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U test"]
+      test:
+      - CMD-SHELL
+      - pg_isready -U test
       interval: 10s
       timeout: 5s
       retries: 3
-
   redis-test:
     image: redis:7-alpine
     container_name: acgs_redis_test
     command: redis-server --appendonly yes
     ports:
-      - "16379:6379"
+    - 16379:6379
     volumes:
-      - redis_test_data:/data
+    - redis_test_data:/data
     networks:
-      - acgs_test_network
+    - acgs_test_network
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test:
+      - CMD
+      - redis-cli
+      - ping
       interval: 10s
       timeout: 5s
       retries: 3
-
   opa-test:
     image: openpolicyagent/opa:latest-envoy
     container_name: acgs_opa_test
     command: run --server --addr localhost:8181
     ports:
-      - "18181:8181"
+    - 18181:8181
     volumes:
-      - ../opa/test-policies:/policies:ro
+    - ../opa/test-policies:/policies:ro
     networks:
-      - acgs_test_network
+    - acgs_test_network
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8181/health"]
+      test:
+      - CMD
+      - wget
+      - --quiet
+      - --tries=1
+      - --spider
+      - http://localhost:8181/health
       interval: 10s
       timeout: 5s
       retries: 3
-
-  # =============================================================================
-  # Test Monitoring
-  # =============================================================================
   prometheus-test:
     image: prom/prometheus:latest
     container_name: acgs_prometheus_test
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--storage.tsdb.retention.time=1d'
-      - '--web.enable-lifecycle'
+    - --config.file=/etc/prometheus/prometheus.yml
+    - --storage.tsdb.path=/prometheus
+    - --web.console.libraries=/etc/prometheus/console_libraries
+    - --web.console.templates=/etc/prometheus/consoles
+    - --storage.tsdb.retention.time=1d
+    - --web.enable-lifecycle
     ports:
-      - "19090:9090"
+    - 19090:9090
     volumes:
-      - ../monitoring/prometheus-test.yml:/etc/prometheus/prometheus.yml:ro
-      - prometheus_test_data:/prometheus
+    - ../monitoring/prometheus-test.yml:/etc/prometheus/prometheus.yml:ro
+    - prometheus_test_data:/prometheus
     networks:
-      - acgs_test_network
+    - acgs_test_network
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      test:
+      - CMD
+      - wget
+      - --quiet
+      - --tries=1
+      - --spider
+      - http://localhost:9090/-/healthy
       interval: 30s
       timeout: 10s
       retries: 3
-
-  # =============================================================================
-  # Test Utilities
-  # =============================================================================
   test-runner:
     build:
       context: ../../tests
       dockerfile: Dockerfile
     container_name: acgs_test_runner
     environment:
-      - ENVIRONMENT=testing
-      - AUTH_SERVICE_URL=http://auth-service-test:8000
-      - AC_SERVICE_URL=http://ac-service-test:8001
-      - DATABASE_URL=postgresql://test:test@postgresql-test:5432/acgs_test
+    - ENVIRONMENT=testing
+    - AUTH_SERVICE_URL=http://auth-service-test:8000
+    - AC_SERVICE_URL=http://ac-service-test:8001
+    - DATABASE_URL=postgresql://test:test@postgresql-test:5432/acgs_test
     volumes:
-      - ../../tests:/tests
-      - test_results:/test-results
+    - ../../tests:/tests
+    - test_results:/test-results
     networks:
-      - acgs_test_network
+    - acgs_test_network
     depends_on:
-      - auth-service-test
-      - ac-service-test
-    command: ["python", "-m", "pytest", "/tests", "-v", "--junitxml=/test-results/junit.xml"]
-
-# =============================================================================
-# Networks
-# =============================================================================
+    - auth-service-test
+    - ac-service-test
+    command:
+    - python
+    - -m
+    - pytest
+    - /tests
+    - -v
+    - --junitxml=/test-results/junit.xml
 networks:
   acgs_test_network:
     driver: bridge
-
-# =============================================================================
-# Volumes
-# =============================================================================
 volumes:
   postgresql_test_data:
     driver: local
@@ -177,3 +178,4 @@ volumes:
     driver: local
   test_results:
     driver: local
+constitutional_hash: cdd01ef066bc6cf2

@@ -8,7 +8,6 @@ from pydantic_settings import BaseSettings
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
 
@@ -24,15 +23,21 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_DAYS: int = int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", "7"))
     CSRF_SECRET_KEY: str = os.getenv("CSRF_SECRET_KEY", "")
 
-    @model_validator(mode='after')
+    @model_validator(mode="after")
     def validate_secrets(self):
         """Validate that required secrets are configured."""
         if not self.SECRET_KEY:
-            raise ValueError("SECRET_KEY environment variable must be set. Never use hardcoded secrets.")
+            raise ValueError(
+                "SECRET_KEY environment variable must be set. Never use hardcoded secrets."
+            )
         if not self.CSRF_SECRET_KEY:
-            raise ValueError("CSRF_SECRET_KEY environment variable must be set. Never use hardcoded secrets.")
+            raise ValueError(
+                "CSRF_SECRET_KEY environment variable must be set. Never use hardcoded secrets."
+            )
         if len(self.SECRET_KEY) < 32:
-            raise ValueError("SECRET_KEY must be at least 32 characters long for security.")
+            raise ValueError(
+                "SECRET_KEY must be at least 32 characters long for security."
+            )
         return self
 
     # Backend CORS origins

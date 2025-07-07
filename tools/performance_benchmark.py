@@ -262,9 +262,15 @@ class PerformanceBenchmark:
                     if iteration % 3 == 0:
                         username, password = os.getenv("PASSWORD", ""), "admin_password"
                     elif iteration % 3 == 1:
-                        username, password = os.getenv("PASSWORD", ""), "council_password"
+                        username, password = (
+                            os.getenv("PASSWORD", ""),
+                            "council_password",
+                        )
                     else:
-                        username, password = os.getenv("PASSWORD", ""), "invalid_password"
+                        username, password = (
+                            os.getenv("PASSWORD", ""),
+                            "invalid_password",
+                        )
 
                     await enhanced_auth_service.authenticate_user(
                         username=username,

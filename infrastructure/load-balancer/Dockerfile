@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 # HAProxy Load Balancer for ACGS-1 High Availability
 # Enterprise-grade load balancing with health monitoring and failover
 

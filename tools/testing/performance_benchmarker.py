@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Constitutional Hash: cdd01ef066bc6cf2
 """
 Performance Benchmarking and Validation Framework for ACGS-2
 Tests performance against established targets including O(1) lookups,

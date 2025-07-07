@@ -5,11 +5,11 @@ Constitutional compliance hash: cdd01ef066bc6cf2
 
 from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Optional
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, Field
-from sqlalchemy import Column, String, DateTime, JSON, Text, Boolean, Integer
+from sqlalchemy import JSON, Boolean, Column, DateTime, Integer, String, Text
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -21,6 +21,7 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 class TestStatus(str, Enum):
     """Test execution status."""
+
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
@@ -30,6 +31,7 @@ class TestStatus(str, Enum):
 
 class DomainType(str, Enum):
     """Domain types for cross-domain testing."""
+
     SECURITY = "security"
     PERFORMANCE = "performance"
     COMPLIANCE = "compliance"
@@ -39,6 +41,7 @@ class DomainType(str, Enum):
 
 class DomainContext(Base):
     """Domain context for cross-domain testing."""
+
     __tablename__ = "domain_contexts"
 
     id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
@@ -54,6 +57,7 @@ class DomainContext(Base):
 
 class CrossDomainTestScenario(Base):
     """Cross-domain test scenario definition."""
+
     __tablename__ = "cross_domain_test_scenarios"
 
     id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
@@ -71,6 +75,7 @@ class CrossDomainTestScenario(Base):
 
 class CrossDomainTestResult(Base):
     """Cross-domain test execution result."""
+
     __tablename__ = "cross_domain_test_results"
 
     id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
@@ -91,19 +96,24 @@ class CrossDomainTestResult(Base):
 # Pydantic models for API
 class DomainContextBase(BaseModel):
     """Base domain context model."""
+
     name: str = Field(..., description="Domain context name")
     domain_type: DomainType = Field(..., description="Type of domain")
     description: Optional[str] = Field(None, description="Domain description")
-    configuration: Optional[Dict[str, Any]] = Field(None, description="Domain configuration")
+    configuration: Optional[Dict[str, Any]] = Field(
+        None, description="Domain configuration"
+    )
 
 
 class DomainContextCreate(DomainContextBase):
     """Domain context creation model."""
+
     pass
 
 
 class DomainContextUpdate(BaseModel):
     """Domain context update model."""
+
     name: Optional[str] = None
     domain_type: Optional[DomainType] = None
     description: Optional[str] = None
@@ -113,6 +123,7 @@ class DomainContextUpdate(BaseModel):
 
 class DomainContextResponse(DomainContextBase):
     """Domain context response model."""
+
     id: UUID
     constitutional_hash: str
     created_at: datetime
@@ -125,21 +136,28 @@ class DomainContextResponse(DomainContextBase):
 
 class CrossDomainTestScenarioBase(BaseModel):
     """Base cross-domain test scenario model."""
+
     name: str = Field(..., description="Scenario name")
     description: Optional[str] = Field(None, description="Scenario description")
     source_domain: DomainType = Field(..., description="Source domain")
     target_domain: DomainType = Field(..., description="Target domain")
-    test_parameters: Optional[Dict[str, Any]] = Field(None, description="Test parameters")
-    expected_outcomes: Optional[Dict[str, Any]] = Field(None, description="Expected outcomes")
+    test_parameters: Optional[Dict[str, Any]] = Field(
+        None, description="Test parameters"
+    )
+    expected_outcomes: Optional[Dict[str, Any]] = Field(
+        None, description="Expected outcomes"
+    )
 
 
 class CrossDomainTestScenarioCreate(CrossDomainTestScenarioBase):
     """Cross-domain test scenario creation model."""
+
     pass
 
 
 class CrossDomainTestScenarioResponse(CrossDomainTestScenarioBase):
     """Cross-domain test scenario response model."""
+
     id: UUID
     constitutional_hash: str
     created_at: datetime
@@ -152,12 +170,15 @@ class CrossDomainTestScenarioResponse(CrossDomainTestScenarioBase):
 
 class CrossDomainTestResultBase(BaseModel):
     """Base cross-domain test result model."""
+
     scenario_id: UUID = Field(..., description="Test scenario ID")
     test_name: str = Field(..., description="Test name")
     status: TestStatus = Field(..., description="Test status")
     start_time: datetime = Field(..., description="Test start time")
     end_time: Optional[datetime] = Field(None, description="Test end time")
-    duration_ms: Optional[int] = Field(None, description="Test duration in milliseconds")
+    duration_ms: Optional[int] = Field(
+        None, description="Test duration in milliseconds"
+    )
     results: Optional[Dict[str, Any]] = Field(None, description="Test results")
     metrics: Optional[Dict[str, Any]] = Field(None, description="Test metrics")
     errors: Optional[List[Dict[str, Any]]] = Field(None, description="Test errors")
@@ -165,6 +186,7 @@ class CrossDomainTestResultBase(BaseModel):
 
 class CrossDomainTestResultResponse(CrossDomainTestResultBase):
     """Cross-domain test result response model."""
+
     id: UUID
     constitutional_hash: str
     created_at: datetime
@@ -176,15 +198,21 @@ class CrossDomainTestResultResponse(CrossDomainTestResultBase):
 
 class CrossDomainTestRequest(BaseModel):
     """Cross-domain test execution request."""
+
     scenario_id: UUID = Field(..., description="Test scenario ID")
-    test_parameters: Optional[Dict[str, Any]] = Field(None, description="Override test parameters")
+    test_parameters: Optional[Dict[str, Any]] = Field(
+        None, description="Override test parameters"
+    )
     timeout_seconds: Optional[int] = Field(300, description="Test timeout in seconds")
 
 
 class CrossDomainTestResponse(BaseModel):
     """Cross-domain test execution response."""
+
     test_id: UUID = Field(..., description="Test execution ID")
     scenario_id: UUID = Field(..., description="Test scenario ID")
     status: TestStatus = Field(..., description="Test status")
     message: str = Field(..., description="Response message")
-    constitutional_hash: str = Field(CONSTITUTIONAL_HASH, description="Constitutional compliance hash")
+    constitutional_hash: str = Field(
+        CONSTITUTIONAL_HASH, description="Constitutional compliance hash"
+    )

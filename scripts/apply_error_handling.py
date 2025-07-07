@@ -7,11 +7,11 @@ This script applies standardized error handling across all ACGS services.
 """
 
 import os
-import sys
-import shutil
 import re
+import shutil
+import sys
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
 # Constitutional compliance
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -19,16 +19,16 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 class ErrorHandlingApplicator:
     """Apply standardized error handling across ACGS services."""
-    
+
     def __init__(self, project_root: Path):
         self.project_root = project_root
         self.services_root = project_root / "services"
         self.results = {"updated": [], "failed": [], "skipped": []}
-    
+
     def find_service_directories(self) -> List[Path]:
         """Find all service directories with main.py files."""
         services = []
-        
+
         for service_type in ["core", "platform_services"]:
             service_type_dir = self.services_root / service_type
             if service_type_dir.exists():
@@ -37,41 +37,49 @@ class ErrorHandlingApplicator:
                         # Look for main.py in various common locations
                         main_py_paths = [
                             service_dir / "app" / "main.py",
-                            service_dir / f"{service_dir.name}_service" / "app" / "main.py",
+                            service_dir
+                            / f"{service_dir.name}_service"
+                            / "app"
+                            / "main.py",
                             service_dir / "main.py",
                         ]
-                        
+
                         for main_py in main_py_paths:
                             if main_py.exists():
                                 services.append((service_dir, main_py))
                                 break
-        
+
         return services
-    
+
     def backup_file(self, file_path: Path) -> Path:
         """Create a backup of the file."""
         backup_path = file_path.with_suffix(f"{file_path.suffix}.error_backup")
         shutil.copy2(file_path, backup_path)
         return backup_path
-    
-    def update_service_error_handling(self, service_dir: Path, main_py_path: Path) -> bool:
+
+    def update_service_error_handling(
+        self, service_dir: Path, main_py_path: Path
+    ) -> bool:
         """Update service to use standardized error handling."""
         service_name = service_dir.name
-        
+
         try:
-            with open(main_py_path, 'r') as f:
+            with open(main_py_path, "r") as f:
                 content = f.read()
-            
+
             # Check if error handling is already applied
-            if "setup_error_handlers" in content and "ErrorHandlingMiddleware" in content:
+            if (
+                "setup_error_handlers" in content
+                and "ErrorHandlingMiddleware" in content
+            ):
                 print(f"  ✓ Error handling already applied to {service_name}")
                 return True
-            
+
             # Create backup
             self.backup_file(main_py_path)
-            
+
             # Add error handling imports
-            error_handling_import = '''
+            error_handling_import = """
 # ACGS Standardized Error Handling
 try:
     import sys
@@ -95,38 +103,44 @@ try:
 except ImportError as e:
     print(f"⚠️ ACGS Error handling not available for {service_name}: {e}")
     ACGS_ERROR_HANDLING_AVAILABLE = False
-'''
-            
+"""
+
             # Find where to insert the error handling import
-            lines = content.split('\n')
+            lines = content.split("\n")
             insert_index = 0
-            
+
             # Find the end of existing imports
             for i, line in enumerate(lines):
-                if line.strip().startswith('import ') or line.strip().startswith('from '):
+                if line.strip().startswith("import ") or line.strip().startswith(
+                    "from "
+                ):
                     insert_index = i + 1
-                elif line.strip() and not line.strip().startswith('#') and insert_index > 0:
+                elif (
+                    line.strip()
+                    and not line.strip().startswith("#")
+                    and insert_index > 0
+                ):
                     break
-            
+
             # Insert error handling import
             lines.insert(insert_index, error_handling_import)
-            
+
             # Add error handling setup after app creation
             app_creation_patterns = [
-                'app = FastAPI(',
-                'app = create_app(',
-                'app = FastAPI()',
-                'app = create_constitutional_ai_app()',
+                "app = FastAPI(",
+                "app = create_app(",
+                "app = FastAPI()",
+                "app = create_constitutional_ai_app()",
             ]
-            
-            error_handling_setup = f'''
+
+            error_handling_setup = f"""
 # Apply ACGS Error Handling
 if ACGS_ERROR_HANDLING_AVAILABLE:
     import os
     development_mode = os.getenv("ENVIRONMENT", "development") != "production"
     setup_error_handlers(app, "{service_name}", include_traceback=development_mode)
-'''
-            
+"""
+
             # Find where to insert error handling setup
             inserted = False
             for i, line in enumerate(lines):
@@ -134,81 +148,92 @@ if ACGS_ERROR_HANDLING_AVAILABLE:
                     if pattern in line:
                         # Insert after the app creation and any immediate setup
                         insert_pos = i + 1
-                        while (insert_pos < len(lines) and 
-                               (lines[insert_pos].strip().startswith('app.') or 
-                                not lines[insert_pos].strip())):
+                        while insert_pos < len(lines) and (
+                            lines[insert_pos].strip().startswith("app.")
+                            or not lines[insert_pos].strip()
+                        ):
                             insert_pos += 1
-                        
+
                         lines.insert(insert_pos, error_handling_setup)
                         inserted = True
                         break
                 if inserted:
                     break
-            
+
             if not inserted:
                 # If we couldn't find app creation, add at the end
                 lines.append(error_handling_setup)
-            
+
             # Update exception handling patterns
             lines = self._update_exception_patterns(lines, service_name)
-            
+
             # Write updated content
-            updated_content = '\n'.join(lines)
-            with open(main_py_path, 'w') as f:
+            updated_content = "\n".join(lines)
+            with open(main_py_path, "w") as f:
                 f.write(updated_content)
-            
+
             print(f"  ✅ Error handling applied to {service_name}")
             return True
-            
+
         except Exception as e:
             print(f"  ❌ Failed to update {service_name}: {e}")
             # Restore from backup if it exists
-            backup_path = main_py_path.with_suffix(f"{main_py_path.suffix}.error_backup")
+            backup_path = main_py_path.with_suffix(
+                f"{main_py_path.suffix}.error_backup"
+            )
             if backup_path.exists():
                 shutil.copy2(backup_path, main_py_path)
             return False
-    
-    def _update_exception_patterns(self, lines: List[str], service_name: str) -> List[str]:
+
+    def _update_exception_patterns(
+        self, lines: List[str], service_name: str
+    ) -> List[str]:
         """Update existing exception handling patterns to use ACGS standards."""
         updated_lines = []
-        
+
         for line in lines:
             # Replace generic exception handling with ACGS patterns
-            if re.search(r'except Exception as \w+:', line):
+            if re.search(r"except Exception as \w+:", line):
                 # Add comment about using ACGS error handling
                 updated_lines.append(line)
-                updated_lines.append(f'        # TODO: Consider using ACGS error handling: log_error_with_context()')
-            elif 'HTTPException(' in line and 'status_code=500' in line:
+                updated_lines.append(
+                    f"        # TODO: Consider using ACGS error handling: log_error_with_context()"
+                )
+            elif "HTTPException(" in line and "status_code=500" in line:
                 # Replace with ACGSException
-                updated_lines.append(line.replace(
-                    'HTTPException(status_code=500',
-                    'ACGSException(status_code=500, error_code="INTERNAL_ERROR"'
-                ))
-            elif 'raise Exception(' in line:
+                updated_lines.append(
+                    line.replace(
+                        "HTTPException(status_code=500",
+                        'ACGSException(status_code=500, error_code="INTERNAL_ERROR"',
+                    )
+                )
+            elif "raise Exception(" in line:
                 # Replace with ACGSException
-                updated_lines.append(line.replace('Exception(', 'ACGSException('))
+                updated_lines.append(line.replace("Exception(", "ACGSException("))
             else:
                 updated_lines.append(line)
-        
+
         return updated_lines
-    
-    def apply_error_handling_to_service(self, service_dir: Path, main_py_path: Path) -> bool:
+
+    def apply_error_handling_to_service(
+        self, service_dir: Path, main_py_path: Path
+    ) -> bool:
         """Apply error handling to a single service."""
         service_name = service_dir.name
         print(f"Applying error handling to {service_name}...")
-        
+
         try:
             return self.update_service_error_handling(service_dir, main_py_path)
         except Exception as e:
             print(f"  ❌ Error processing {service_name}: {e}")
             return False
-    
+
     def create_error_handling_documentation(self) -> None:
         """Create error handling documentation for developers."""
         doc_path = self.project_root / "docs" / "ERROR_HANDLING_GUIDE.md"
         doc_path.parent.mkdir(exist_ok=True)
-        
-        error_doc = f'''# ACGS Error Handling Guide
+
+        error_doc = f"""# ACGS Error Handling Guide
 Constitutional Hash: {CONSTITUTIONAL_HASH}
 
 ## Overview
@@ -422,24 +447,24 @@ For error handling issues:
 4. Contact development team with error ID
 
 Constitutional Hash: {CONSTITUTIONAL_HASH}
-'''
-        
-        with open(doc_path, 'w') as f:
+"""
+
+        with open(doc_path, "w") as f:
             f.write(error_doc)
-        
+
         print(f"✅ Error handling documentation created at {doc_path}")
-    
+
     def run(self) -> Dict[str, Any]:
         """Run the complete error handling standardization process."""
         print(f"🔧 Starting ACGS Error Handling Standardization")
         print(f"Constitutional Hash: {CONSTITUTIONAL_HASH}")
         print(f"Project Root: {self.project_root}")
-        
+
         # Find all services
         print("\n🔍 Finding ACGS services...")
         services = self.find_service_directories()
         print(f"Found {len(services)} services to update")
-        
+
         # Apply error handling to each service
         print("\n🛠️ Applying standardized error handling...")
         for service_dir, main_py_path in services:
@@ -447,26 +472,26 @@ Constitutional Hash: {CONSTITUTIONAL_HASH}
                 self.results["updated"].append(service_dir.name)
             else:
                 self.results["failed"].append(service_dir.name)
-        
+
         # Create documentation
         print("\n📚 Creating error handling documentation...")
         self.create_error_handling_documentation()
-        
+
         # Summary
         print(f"\n📊 Error Handling Standardization Summary:")
         print(f"  ✅ Successfully Updated: {len(self.results['updated'])} services")
         print(f"  ❌ Failed: {len(self.results['failed'])} services")
         print(f"  ⏭️ Skipped: {len(self.results['skipped'])} services")
-        
+
         if self.results["updated"]:
             print(f"\n✅ Updated services: {', '.join(self.results['updated'])}")
-        
+
         if self.results["failed"]:
             print(f"\n❌ Failed services: {', '.join(self.results['failed'])}")
-        
+
         print(f"\n🎉 Error handling standardization completed!")
         print(f"Constitutional Hash Validated: {CONSTITUTIONAL_HASH}")
-        
+
         return self.results
 
 
@@ -476,14 +501,14 @@ def main():
         project_root = Path(sys.argv[1])
     else:
         project_root = Path.cwd()
-    
+
     if not project_root.exists():
         print(f"❌ Project root does not exist: {project_root}")
         sys.exit(1)
-    
+
     applicator = ErrorHandlingApplicator(project_root)
     results = applicator.run()
-    
+
     # Exit with error code if any services failed
     if results["failed"]:
         sys.exit(1)

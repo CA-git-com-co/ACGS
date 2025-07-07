@@ -11,13 +11,12 @@ from datetime import datetime
 from pathlib import Path
 
 import yaml
-from prometheus_client import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from prometheus_client import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     CollectorRegistry,
     Gauge,
+    "cdd01ef066bc6cf2",
+    =,
     start_http_server,
 )
 

@@ -18,9 +18,9 @@ import asyncio
 import json
 import logging
 import time
-from datetime import datetime, timezone, timedelta
-from typing import Any, Dict, List, Optional, Union
 from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
+from typing import Any, Dict, List, Optional, Union
 
 import aioredis
 from pydantic import BaseModel
@@ -49,8 +49,7 @@ CACHE_TARGETS = {
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -58,6 +57,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class CacheMetrics:
     """Cache performance metrics."""
+
     timestamp: datetime
     hit_rate: float
     miss_rate: float
@@ -69,7 +69,7 @@ class CacheMetrics:
 
 class ACGSCacheOptimizer:
     """ACGS cache performance optimizer."""
-    
+
     def __init__(self):
         self.redis_client: Optional[aioredis.Redis] = None
         self.metrics_history: List[CacheMetrics] = []
@@ -79,53 +79,51 @@ class ACGSCacheOptimizer:
             "operations": 0,
             "total_latency": 0.0,
         }
-        
+
     async def __aenter__(self):
         """Async context manager entry."""
         await self.initialize()
         return self
-        
+
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         """Async context manager exit."""
         await self.cleanup()
-        
+
     async def initialize(self):
         """Initialize Redis connection."""
         logger.info("🚀 Initializing ACGS Cache Optimizer...")
-        
+
         try:
             self.redis_client = await aioredis.from_url(**CACHE_CONFIG)
             await self.redis_client.ping()
             logger.info("✅ Redis connection established")
-            
+
             # Initialize cache with constitutional compliance
             await self._initialize_constitutional_cache()
-            
+
         except Exception as e:
             logger.error(f"❌ Redis initialization failed: {e}")
             raise
-            
+
     async def cleanup(self):
         """Cleanup resources."""
         logger.info("🧹 Cleaning up cache optimizer...")
-        
+
         if self.redis_client:
             await self.redis_client.close()
-            
+
         logger.info("✅ Cleanup completed")
 
     async def _initialize_constitutional_cache(self):
         """Initialize constitutional compliance cache."""
         logger.info("🏛️ Initializing constitutional compliance cache...")
-        
+
         try:
             # Set constitutional hash
             await self.redis_client.set(
-                "constitutional:hash",
-                CONSTITUTIONAL_HASH,
-                ex=86400  # 24 hours
+                "constitutional:hash", CONSTITUTIONAL_HASH, ex=86400  # 24 hours
             )
-            
+
             # Initialize cache metadata
             cache_metadata = {
                 "initialized_at": datetime.now(timezone.utc).isoformat(),
@@ -133,22 +131,20 @@ class ACGSCacheOptimizer:
                 "version": "1.0.0",
                 "targets": CACHE_TARGETS,
             }
-            
+
             await self.redis_client.set(
-                "cache:metadata",
-                json.dumps(cache_metadata),
-                ex=86400
+                "cache:metadata", json.dumps(cache_metadata), ex=86400
             )
-            
+
             logger.info("✅ Constitutional cache initialized")
-            
+
         except Exception as e:
             logger.error(f"❌ Constitutional cache initialization failed: {e}")
 
     async def optimize_cache_performance(self) -> Dict[str, Any]:
         """Run comprehensive cache optimization."""
         logger.info("⚡ Starting cache performance optimization...")
-        
+
         results = {
             "optimization_start": datetime.now(timezone.utc).isoformat(),
             "constitutional_hash": CONSTITUTIONAL_HASH,
@@ -157,27 +153,27 @@ class ACGSCacheOptimizer:
             "final_metrics": {},
             "recommendations": [],
         }
-        
+
         try:
             # Collect baseline metrics
             results["baseline_metrics"] = await self._collect_cache_metrics()
-            
+
             # Run optimization strategies
             optimization_results = await self._run_optimization_strategies()
             results["optimization_results"] = optimization_results
-            
+
             # Collect final metrics
             results["final_metrics"] = await self._collect_cache_metrics()
-            
+
             # Generate recommendations
             results["recommendations"] = self._generate_recommendations(results)
-            
+
             # Save optimization results
             await self._save_optimization_results(results)
-            
+
             logger.info("✅ Cache optimization completed")
             return results
-            
+
         except Exception as e:
             logger.error(f"❌ Cache optimization failed: {e}")
             raise
@@ -185,27 +181,27 @@ class ACGSCacheOptimizer:
     async def _collect_cache_metrics(self) -> Dict[str, Any]:
         """Collect comprehensive cache metrics."""
         logger.info("📊 Collecting cache metrics...")
-        
+
         try:
             # Get Redis info
             info = await self.redis_client.info()
             memory_info = await self.redis_client.info("memory")
             stats_info = await self.redis_client.info("stats")
-            
+
             # Calculate hit rate
             keyspace_hits = stats_info.get("keyspace_hits", 0)
             keyspace_misses = stats_info.get("keyspace_misses", 0)
             total_commands = keyspace_hits + keyspace_misses
             hit_rate = (keyspace_hits / total_commands) if total_commands > 0 else 0
-            
+
             # Memory metrics
             used_memory = memory_info.get("used_memory", 0)
             max_memory = memory_info.get("maxmemory", 0)
             memory_usage_ratio = (used_memory / max_memory) if max_memory > 0 else 0
-            
+
             # Performance test
             latency_results = await self._test_cache_latency()
-            
+
             return {
                 "timestamp": datetime.now(timezone.utc).isoformat(),
                 "hit_rate": round(hit_rate, 4),
@@ -220,11 +216,13 @@ class ACGSCacheOptimizer:
                 "p99_latency_ms": latency_results["p99_latency_ms"],
                 "connected_clients": info.get("connected_clients", 0),
                 "meets_hit_rate_target": hit_rate >= CACHE_TARGETS["min_hit_rate"],
-                "meets_latency_target": latency_results["avg_latency_ms"] <= CACHE_TARGETS["max_latency_ms"],
-                "meets_memory_target": memory_usage_ratio <= CACHE_TARGETS["max_memory_usage"],
+                "meets_latency_target": latency_results["avg_latency_ms"]
+                <= CACHE_TARGETS["max_latency_ms"],
+                "meets_memory_target": memory_usage_ratio
+                <= CACHE_TARGETS["max_memory_usage"],
                 "constitutional_hash": CONSTITUTIONAL_HASH,
             }
-            
+
         except Exception as e:
             logger.error(f"Cache metrics collection failed: {e}")
             return {"error": str(e)}
@@ -232,9 +230,9 @@ class ACGSCacheOptimizer:
     async def _test_cache_latency(self, operations: int = 1000) -> Dict[str, Any]:
         """Test cache operation latency."""
         logger.info(f"⏱️ Testing cache latency with {operations} operations...")
-        
+
         latencies = []
-        
+
         try:
             # Test SET operations
             for i in range(operations // 2):
@@ -242,29 +240,31 @@ class ACGSCacheOptimizer:
                 await self.redis_client.set(
                     f"latency_test:{i}",
                     f"test_value_{i}_{CONSTITUTIONAL_HASH}",
-                    ex=300  # 5 minutes
+                    ex=300,  # 5 minutes
                 )
                 latency_ms = (time.perf_counter() - start_time) * 1000
                 latencies.append(latency_ms)
-            
+
             # Test GET operations
             for i in range(operations // 2):
                 start_time = time.perf_counter()
                 await self.redis_client.get(f"latency_test:{i}")
                 latency_ms = (time.perf_counter() - start_time) * 1000
                 latencies.append(latency_ms)
-            
+
             # Calculate statistics
             avg_latency = sum(latencies) / len(latencies)
             latencies.sort()
             p99_index = int(len(latencies) * 0.99)
-            p99_latency = latencies[p99_index] if p99_index < len(latencies) else latencies[-1]
-            
+            p99_latency = (
+                latencies[p99_index] if p99_index < len(latencies) else latencies[-1]
+            )
+
             # Cleanup test keys
             test_keys = [f"latency_test:{i}" for i in range(operations // 2)]
             if test_keys:
                 await self.redis_client.delete(*test_keys)
-            
+
             return {
                 "total_operations": operations,
                 "avg_latency_ms": round(avg_latency, 3),
@@ -272,7 +272,7 @@ class ACGSCacheOptimizer:
                 "min_latency_ms": round(min(latencies), 3),
                 "max_latency_ms": round(max(latencies), 3),
             }
-            
+
         except Exception as e:
             logger.error(f"Cache latency test failed: {e}")
             return {"error": str(e)}
@@ -280,28 +280,28 @@ class ACGSCacheOptimizer:
     async def _run_optimization_strategies(self) -> Dict[str, Any]:
         """Run cache optimization strategies."""
         logger.info("🔧 Running cache optimization strategies...")
-        
+
         optimization_results = {}
-        
+
         try:
             # Strategy 1: Optimize TTL policies
             ttl_results = await self._optimize_ttl_policies()
             optimization_results["ttl_optimization"] = ttl_results
-            
+
             # Strategy 2: Implement cache warming
             warming_results = await self._implement_cache_warming()
             optimization_results["cache_warming"] = warming_results
-            
+
             # Strategy 3: Optimize memory usage
             memory_results = await self._optimize_memory_usage()
             optimization_results["memory_optimization"] = memory_results
-            
+
             # Strategy 4: Configure eviction policies
             eviction_results = await self._configure_eviction_policies()
             optimization_results["eviction_optimization"] = eviction_results
-            
+
             return optimization_results
-            
+
         except Exception as e:
             logger.error(f"Cache optimization strategies failed: {e}")
             return {"error": str(e)}
@@ -309,11 +309,11 @@ class ACGSCacheOptimizer:
     async def _optimize_ttl_policies(self) -> Dict[str, Any]:
         """Optimize TTL policies for better cache efficiency."""
         logger.info("⏰ Optimizing TTL policies...")
-        
+
         try:
             # Analyze current TTL distribution
             ttl_analysis = await self._analyze_ttl_distribution()
-            
+
             # Set optimized TTLs for different data types
             ttl_policies = {
                 "constitutional:*": 86400,  # 24 hours for constitutional data
@@ -322,7 +322,7 @@ class ACGSCacheOptimizer:
                 "cache:*": 1800,  # 30 minutes for general cache
                 "temp:*": 300,  # 5 minutes for temporary data
             }
-            
+
             # Apply TTL policies
             policies_applied = 0
             for pattern, ttl in ttl_policies.items():
@@ -330,14 +330,14 @@ class ACGSCacheOptimizer:
                 for key in keys:
                     await self.redis_client.expire(key, ttl)
                     policies_applied += 1
-            
+
             return {
                 "ttl_analysis": ttl_analysis,
                 "policies_applied": policies_applied,
                 "ttl_policies": ttl_policies,
                 "status": "completed",
             }
-            
+
         except Exception as e:
             logger.error(f"TTL optimization failed: {e}")
             return {"error": str(e)}
@@ -349,14 +349,14 @@ class ACGSCacheOptimizer:
             all_keys = await self.redis_client.keys("*")
             sample_size = min(1000, len(all_keys))
             sample_keys = all_keys[:sample_size] if all_keys else []
-            
+
             ttl_distribution = {
                 "no_expiry": 0,
                 "short_term": 0,  # < 1 hour
                 "medium_term": 0,  # 1-24 hours
                 "long_term": 0,  # > 24 hours
             }
-            
+
             for key in sample_keys:
                 ttl = await self.redis_client.ttl(key)
                 if ttl == -1:  # No expiry
@@ -367,13 +367,13 @@ class ACGSCacheOptimizer:
                     ttl_distribution["medium_term"] += 1
                 else:  # > 24 hours
                     ttl_distribution["long_term"] += 1
-            
+
             return {
                 "sample_size": sample_size,
                 "total_keys": len(all_keys),
                 "distribution": ttl_distribution,
             }
-            
+
         except Exception as e:
             logger.error(f"TTL analysis failed: {e}")
             return {"error": str(e)}
@@ -381,7 +381,7 @@ class ACGSCacheOptimizer:
     async def _implement_cache_warming(self) -> Dict[str, Any]:
         """Implement cache warming strategies."""
         logger.info("🔥 Implementing cache warming...")
-        
+
         try:
             # Warm constitutional compliance cache
             constitutional_data = {
@@ -390,19 +390,19 @@ class ACGSCacheOptimizer:
                 "constitutional:status": "active",
                 "constitutional:last_updated": datetime.now(timezone.utc).isoformat(),
             }
-            
+
             warmed_keys = 0
             for key, value in constitutional_data.items():
                 await self.redis_client.set(key, value, ex=86400)
                 warmed_keys += 1
-            
+
             # Warm frequently accessed patterns
             common_patterns = [
                 "health:service:*",
                 "metrics:performance:*",
                 "config:system:*",
             ]
-            
+
             for pattern in common_patterns:
                 # Simulate warming with placeholder data
                 for i in range(10):  # Warm 10 keys per pattern
@@ -410,14 +410,14 @@ class ACGSCacheOptimizer:
                     value = f"warmed_data_{i}_{CONSTITUTIONAL_HASH}"
                     await self.redis_client.set(key, value, ex=3600)
                     warmed_keys += 1
-            
+
             return {
                 "warmed_keys": warmed_keys,
                 "constitutional_data": len(constitutional_data),
                 "patterns_warmed": len(common_patterns),
                 "status": "completed",
             }
-            
+
         except Exception as e:
             logger.error(f"Cache warming failed: {e}")
             return {"error": str(e)}
@@ -569,8 +569,12 @@ class ACGSCacheOptimizer:
             if not recommendations:
                 recommendations.append("Cache performance meets all targets")
             else:
-                recommendations.append("Consider implementing cache monitoring dashboard")
-                recommendations.append("Schedule regular cache optimization maintenance")
+                recommendations.append(
+                    "Consider implementing cache monitoring dashboard"
+                )
+                recommendations.append(
+                    "Schedule regular cache optimization maintenance"
+                )
 
             return recommendations
 
@@ -604,7 +608,7 @@ class ACGSCacheOptimizer:
             await self.redis_client.set(
                 "cache:optimization:latest",
                 json.dumps(results, default=str),
-                ex=86400  # 24 hours
+                ex=86400,  # 24 hours
             )
 
         except Exception as e:
@@ -683,18 +687,30 @@ async def main():
             final = results.get("final_metrics", {})
             recommendations = results.get("recommendations", [])
 
-            print("\n" + "="*60)
+            print("\n" + "=" * 60)
             print("🗄️ ACGS CACHE OPTIMIZATION SUMMARY")
-            print("="*60)
-            print(f"Hit Rate: {baseline.get('hit_rate', 0):.1%} → {final.get('hit_rate', 0):.1%}")
-            print(f"Latency: {baseline.get('avg_latency_ms', 0):.2f}ms → {final.get('avg_latency_ms', 0):.2f}ms")
-            print(f"Memory Usage: {baseline.get('memory_usage_ratio', 0):.1%} → {final.get('memory_usage_ratio', 0):.1%}")
+            print("=" * 60)
+            print(
+                f"Hit Rate: {baseline.get('hit_rate', 0):.1%} → {final.get('hit_rate', 0):.1%}"
+            )
+            print(
+                f"Latency: {baseline.get('avg_latency_ms', 0):.2f}ms → {final.get('avg_latency_ms', 0):.2f}ms"
+            )
+            print(
+                f"Memory Usage: {baseline.get('memory_usage_ratio', 0):.1%} → {final.get('memory_usage_ratio', 0):.1%}"
+            )
 
             # Print target status
             print(f"\n🎯 TARGET STATUS:")
-            print(f"Hit Rate Target (>85%): {'✅' if final.get('meets_hit_rate_target', False) else '❌'}")
-            print(f"Latency Target (<2ms): {'✅' if final.get('meets_latency_target', False) else '❌'}")
-            print(f"Memory Target (<80%): {'✅' if final.get('meets_memory_target', False) else '❌'}")
+            print(
+                f"Hit Rate Target (>85%): {'✅' if final.get('meets_hit_rate_target', False) else '❌'}"
+            )
+            print(
+                f"Latency Target (<2ms): {'✅' if final.get('meets_latency_target', False) else '❌'}"
+            )
+            print(
+                f"Memory Target (<80%): {'✅' if final.get('meets_memory_target', False) else '❌'}"
+            )
 
             # Print recommendations
             if recommendations:
@@ -703,7 +719,7 @@ async def main():
                     print(f"  {i}. {rec}")
 
             print(f"\n🏛️ Constitutional Hash: {CONSTITUTIONAL_HASH}")
-            print("="*60)
+            print("=" * 60)
 
         except Exception as e:
             logger.error(f"❌ Cache optimization failed: {e}")

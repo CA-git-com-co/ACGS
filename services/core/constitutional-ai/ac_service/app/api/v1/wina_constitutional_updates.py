@@ -12,13 +12,12 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from services.shared.database import get_async_db
-from services.shared.wina.constitutional_integration import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from services.shared.wina.constitutional_integration import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     WINAConstitutionalPrincipleAnalyzer,
     WINAConstitutionalUpdateService,
+    "cdd01ef066bc6cf2",
+    =,
 )
 
 from ...core.auth import require_admin_role, require_constitutional_council_role

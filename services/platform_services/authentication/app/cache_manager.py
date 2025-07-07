@@ -12,14 +12,13 @@ from typing import Any
 import structlog
 from fastapi import Request
 
-from services.shared.advanced_redis_client import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from services.shared.advanced_redis_client import (  # Constitutional compliance hash for ACGS
     CACHE_TTL_POLICIES,
+    CONSTITUTIONAL_HASH,
     AdvancedRedisClient,
     CacheConfig,
+    "cdd01ef066bc6cf2",
+    =,
     cache_result,
     get_redis_client,
 )

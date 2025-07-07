@@ -1,13 +1,5 @@
 version: '3.8'
-
-# ACGS Base Infrastructure
-# Constitutional Hash: cdd01ef066bc6cf2
-# 
-# This file contains core infrastructure components used across all environments.
-# Use with environment-specific override files for complete deployments.
-
 services:
-  # PostgreSQL Database with constitutional compliance
   postgres:
     image: postgres:15-alpine
     container_name: acgs_postgres_base
@@ -17,127 +9,135 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-acgs_dev_password}
       CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./infrastructure/database/init:/docker-entrypoint-initdb.d
+    - postgres_data:/var/lib/postgresql/data
+    - ./infrastructure/database/init:/docker-entrypoint-initdb.d
     ports:
-      - "${POSTGRES_PORT:-5439}:5432"
+    - ${POSTGRES_PORT:-5439}:5432
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U acgs_user -d acgs"]
+      test:
+      - CMD-SHELL
+      - pg_isready -U acgs_user -d acgs
       interval: 10s
       timeout: 5s
       retries: 5
     restart: unless-stopped
     networks:
-      - acgs_network
+    - acgs_network
     labels:
-      - "acgs.service=infrastructure"
-      - "acgs.component=database"
-      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
-
-  # Redis Cache with constitutional compliance
+    - acgs.service=infrastructure
+    - acgs.component=database
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
   redis:
     image: redis:7-alpine
     container_name: acgs_redis_base
     command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-acgs_dev_redis}
     volumes:
-      - redis_data:/data
+    - redis_data:/data
     ports:
-      - "${REDIS_PORT:-6389}:6379"
+    - ${REDIS_PORT:-6389}:6379
     healthcheck:
-      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      test:
+      - CMD
+      - redis-cli
+      - --raw
+      - incr
+      - ping
       interval: 10s
       timeout: 3s
       retries: 5
     restart: unless-stopped
     networks:
-      - acgs_network
+    - acgs_network
     labels:
-      - "acgs.service=infrastructure"
-      - "acgs.component=cache"
-      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
-
-  # Open Policy Agent for constitutional governance
+    - acgs.service=infrastructure
+    - acgs.component=cache
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
   opa:
     image: openpolicyagent/opa:latest-envoy
     container_name: acgs_opa_base
     ports:
-      - "${OPA_PORT:-8181}:8181"
+    - ${OPA_PORT:-8181}:8181
     volumes:
-      - ./infrastructure/opa/policies:/policies
-      - ./infrastructure/opa/data:/data
+    - ./infrastructure/opa/policies:/policies
+    - ./infrastructure/opa/data:/data
     command:
-      - "run"
-      - "--server"
-      - "--addr=0.0.0.0:8181"
-      - "--config-file=/config/config.yaml"
-      - "/policies"
+    - run
+    - --server
+    - --addr=0.0.0.0:8181
+    - --config-file=/config/config.yaml
+    - /policies
     environment:
       CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8181/health"]
+      test:
+      - CMD
+      - wget
+      - --quiet
+      - --tries=1
+      - --spider
+      - http://localhost:8181/health
       interval: 10s
       timeout: 5s
       retries: 3
     restart: unless-stopped
     networks:
-      - acgs_network
+    - acgs_network
     labels:
-      - "acgs.service=infrastructure"
-      - "acgs.component=policy"
-      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
-
-  # Message Queue (NATS) for service communication
+    - acgs.service=infrastructure
+    - acgs.component=policy
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
   nats:
     image: nats:2.10-alpine
     container_name: acgs_nats_base
     ports:
-      - "${NATS_PORT:-4222}:4222"
-      - "${NATS_HTTP_PORT:-8222}:8222"
+    - ${NATS_PORT:-4222}:4222
+    - ${NATS_HTTP_PORT:-8222}:8222
     command:
-      - "--jetstream"
-      - "--store_dir=/data"
-      - "--http_port=8222"
+    - --jetstream
+    - --store_dir=/data
+    - --http_port=8222
     volumes:
-      - nats_data:/data
+    - nats_data:/data
     environment:
       CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8222/healthz"]
+      test:
+      - CMD
+      - wget
+      - --quiet
+      - --tries=1
+      - --spider
+      - http://localhost:8222/healthz
       interval: 10s
       timeout: 5s
       retries: 3
     restart: unless-stopped
     networks:
-      - acgs_network
+    - acgs_network
     labels:
-      - "acgs.service=infrastructure"
-      - "acgs.component=messaging"
-      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
-
-# Shared volumes
+    - acgs.service=infrastructure
+    - acgs.component=messaging
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
 volumes:
   postgres_data:
     driver: local
     labels:
-      - "acgs.volume=database"
-      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
-  
+    - acgs.volume=database
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
   redis_data:
     driver: local
     labels:
-      - "acgs.volume=cache"
-      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
-  
+    - acgs.volume=cache
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
   nats_data:
     driver: local
     labels:
-      - "acgs.volume=messaging"
-      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
-
-# Shared network
+    - acgs.volume=messaging
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
 networks:
   acgs_network:
     driver: bridge
     labels:
-      - "acgs.network=primary"
-      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+    - acgs.network=primary
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
+constitutional_hash: cdd01ef066bc6cf2

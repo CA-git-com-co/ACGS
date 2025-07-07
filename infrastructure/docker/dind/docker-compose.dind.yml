@@ -1,330 +1,330 @@
 version: '3.8'
-
 services:
-  # Docker-in-Docker daemon
   docker-dind:
     image: docker:24.0-dind
     container_name: acgs-docker-dind
     privileged: true
     restart: unless-stopped
     environment:
-      - DOCKER_TLS_CERTDIR=/certs
-      - DOCKER_DRIVER=overlay2
+    - DOCKER_TLS_CERTDIR=/certs
+    - DOCKER_DRIVER=overlay2
     volumes:
-      - docker-certs-ca:/certs/ca
-      - docker-certs-client:/certs/client
-      - dind-storage:/var/lib/docker
-      - ./dind-config:/etc/docker
+    - docker-certs-ca:/certs/ca
+    - docker-certs-client:/certs/client
+    - dind-storage:/var/lib/docker
+    - ./dind-config:/etc/docker
     ports:
-      - "2376:2376"
+    - 2376:2376
     networks:
-      - acgs-dind-network
-    command: ["dockerd", "--host=0.0.0.0:2376", "--host=unix:///var/run/docker.sock", "--tls=true", "--tlscert=/certs/server/cert.pem", "--tlskey=/certs/server/key.pem", "--tlsverify", "--tlscacert=/certs/ca/cert.pem"]
-
-  # ACGS Services with DinD support
+    - acgs-dind-network
+    command:
+    - dockerd
+    - --host=0.0.0.0:2376
+    - --host=unix:///var/run/docker.sock
+    - --tls=true
+    - --tlscert=/certs/server/cert.pem
+    - --tlskey=/certs/server/key.pem
+    - --tlsverify
+    - --tlscacert=/certs/ca/cert.pem
   acgs-auth-service:
     build:
       context: ../../../services/core/auth
       dockerfile: Dockerfile
     container_name: acgs-auth-service-dind
     environment:
-      - DOCKER_HOST=tcp://docker-dind:2376
-      - DOCKER_TLS_VERIFY=1
-      - DOCKER_CERT_PATH=/certs/client
-      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-      - SERVICE_PORT=8000
+    - DOCKER_HOST=tcp://docker-dind:2376
+    - DOCKER_TLS_VERIFY=1
+    - DOCKER_CERT_PATH=/certs/client
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - SERVICE_PORT=8000
     volumes:
-      - docker-certs-client:/certs/client:ro
-      - ../../../config:/app/config:ro
+    - docker-certs-client:/certs/client:ro
+    - ../../../config:/app/config:ro
     ports:
-      - "8000:8000"
+    - 8000:8000
     depends_on:
-      - docker-dind
-      - acgs-postgres
-      - acgs-redis
+    - docker-dind
+    - acgs-postgres
+    - acgs-redis
     networks:
-      - acgs-dind-network
+    - acgs-dind-network
     restart: unless-stopped
-
   acgs-ac-service:
     build:
       context: ../../../services/core/algorithmic-constitution
       dockerfile: Dockerfile
     container_name: acgs-ac-service-dind
     environment:
-      - DOCKER_HOST=tcp://docker-dind:2376
-      - DOCKER_TLS_VERIFY=1
-      - DOCKER_CERT_PATH=/certs/client
-      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-      - SERVICE_PORT=8001
+    - DOCKER_HOST=tcp://docker-dind:2376
+    - DOCKER_TLS_VERIFY=1
+    - DOCKER_CERT_PATH=/certs/client
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - SERVICE_PORT=8001
     volumes:
-      - docker-certs-client:/certs/client:ro
-      - ../../../config:/app/config:ro
+    - docker-certs-client:/certs/client:ro
+    - ../../../config:/app/config:ro
     ports:
-      - "8001:8001"
+    - 8001:8001
     depends_on:
-      - docker-dind
-      - acgs-postgres
-      - acgs-redis
+    - docker-dind
+    - acgs-postgres
+    - acgs-redis
     networks:
-      - acgs-dind-network
+    - acgs-dind-network
     restart: unless-stopped
-
   acgs-integrity-service:
     build:
       context: ../../../services/core/integrity-verification
       dockerfile: Dockerfile
     container_name: acgs-integrity-service-dind
     environment:
-      - DOCKER_HOST=tcp://docker-dind:2376
-      - DOCKER_TLS_VERIFY=1
-      - DOCKER_CERT_PATH=/certs/client
-      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-      - SERVICE_PORT=8002
+    - DOCKER_HOST=tcp://docker-dind:2376
+    - DOCKER_TLS_VERIFY=1
+    - DOCKER_CERT_PATH=/certs/client
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - SERVICE_PORT=8002
     volumes:
-      - docker-certs-client:/certs/client:ro
-      - ../../../config:/app/config:ro
+    - docker-certs-client:/certs/client:ro
+    - ../../../config:/app/config:ro
     ports:
-      - "8002:8002"
+    - 8002:8002
     depends_on:
-      - docker-dind
-      - acgs-postgres
-      - acgs-redis
+    - docker-dind
+    - acgs-postgres
+    - acgs-redis
     networks:
-      - acgs-dind-network
+    - acgs-dind-network
     restart: unless-stopped
-
   acgs-fv-service:
     build:
       context: ../../../services/core/formal-verification
       dockerfile: Dockerfile
     container_name: acgs-fv-service-dind
     environment:
-      - DOCKER_HOST=tcp://docker-dind:2376
-      - DOCKER_TLS_VERIFY=1
-      - DOCKER_CERT_PATH=/certs/client
-      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-      - SERVICE_PORT=8003
+    - DOCKER_HOST=tcp://docker-dind:2376
+    - DOCKER_TLS_VERIFY=1
+    - DOCKER_CERT_PATH=/certs/client
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - SERVICE_PORT=8003
     volumes:
-      - docker-certs-client:/certs/client:ro
-      - ../../../config:/app/config:ro
+    - docker-certs-client:/certs/client:ro
+    - ../../../config:/app/config:ro
     ports:
-      - "8003:8003"
+    - 8003:8003
     depends_on:
-      - docker-dind
-      - acgs-postgres
-      - acgs-redis
+    - docker-dind
+    - acgs-postgres
+    - acgs-redis
     networks:
-      - acgs-dind-network
+    - acgs-dind-network
     restart: unless-stopped
-
   acgs-gs-service:
     build:
       context: ../../../services/core/governance-simulation
       dockerfile: Dockerfile
     container_name: acgs-gs-service-dind
     environment:
-      - DOCKER_HOST=tcp://docker-dind:2376
-      - DOCKER_TLS_VERIFY=1
-      - DOCKER_CERT_PATH=/certs/client
-      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-      - SERVICE_PORT=8004
+    - DOCKER_HOST=tcp://docker-dind:2376
+    - DOCKER_TLS_VERIFY=1
+    - DOCKER_CERT_PATH=/certs/client
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - SERVICE_PORT=8004
     volumes:
-      - docker-certs-client:/certs/client:ro
-      - ../../../config:/app/config:ro
+    - docker-certs-client:/certs/client:ro
+    - ../../../config:/app/config:ro
     ports:
-      - "8004:8004"
+    - 8004:8004
     depends_on:
-      - docker-dind
-      - acgs-postgres
-      - acgs-redis
+    - docker-dind
+    - acgs-postgres
+    - acgs-redis
     networks:
-      - acgs-dind-network
+    - acgs-dind-network
     restart: unless-stopped
-
   acgs-pgc-service:
     build:
       context: ../../../services/core/policy-generation-consensus
       dockerfile: Dockerfile
     container_name: acgs-pgc-service-dind
     environment:
-      - DOCKER_HOST=tcp://docker-dind:2376
-      - DOCKER_TLS_VERIFY=1
-      - DOCKER_CERT_PATH=/certs/client
-      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-      - SERVICE_PORT=8005
+    - DOCKER_HOST=tcp://docker-dind:2376
+    - DOCKER_TLS_VERIFY=1
+    - DOCKER_CERT_PATH=/certs/client
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - SERVICE_PORT=8005
     volumes:
-      - docker-certs-client:/certs/client:ro
-      - ../../../config:/app/config:ro
+    - docker-certs-client:/certs/client:ro
+    - ../../../config:/app/config:ro
     ports:
-      - "8005:8005"
+    - 8005:8005
     depends_on:
-      - docker-dind
-      - acgs-postgres
-      - acgs-redis
+    - docker-dind
+    - acgs-postgres
+    - acgs-redis
     networks:
-      - acgs-dind-network
+    - acgs-dind-network
     restart: unless-stopped
-
   acgs-ec-service:
     build:
       context: ../../../services/core/evolutionary-computation
       dockerfile: Dockerfile
     container_name: acgs-ec-service-dind
     environment:
-      - DOCKER_HOST=tcp://docker-dind:2376
-      - DOCKER_TLS_VERIFY=1
-      - DOCKER_CERT_PATH=/certs/client
-      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-      - SERVICE_PORT=8006
+    - DOCKER_HOST=tcp://docker-dind:2376
+    - DOCKER_TLS_VERIFY=1
+    - DOCKER_CERT_PATH=/certs/client
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - SERVICE_PORT=8006
     volumes:
-      - docker-certs-client:/certs/client:ro
-      - ../../../config:/app/config:ro
+    - docker-certs-client:/certs/client:ro
+    - ../../../config:/app/config:ro
     ports:
-      - "8006:8006"
+    - 8006:8006
     depends_on:
-      - docker-dind
-      - acgs-postgres
-      - acgs-redis
+    - docker-dind
+    - acgs-postgres
+    - acgs-redis
     networks:
-      - acgs-dind-network
+    - acgs-dind-network
     restart: unless-stopped
-
-  # Infrastructure Services
   acgs-postgres:
     image: postgres:15-alpine
     container_name: acgs-postgres-dind
     environment:
-      - POSTGRES_DB=acgs
-      - POSTGRES_USER=acgs_user
-      - POSTGRES_PASSWORD=acgs_secure_password
-      - POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256
+    - POSTGRES_DB=acgs
+    - POSTGRES_USER=acgs_user
+    - POSTGRES_PASSWORD=acgs_secure_password
+    - POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256
     volumes:
-      - postgres-data:/var/lib/postgresql/data
-      - ../../../database/init:/docker-entrypoint-initdb.d:ro
+    - postgres-data:/var/lib/postgresql/data
+    - ../../../database/init:/docker-entrypoint-initdb.d:ro
     ports:
-      - "5432:5432"
+    - 5432:5432
     networks:
-      - acgs-dind-network
+    - acgs-dind-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U acgs_user -d acgs"]
+      test:
+      - CMD-SHELL
+      - pg_isready -U acgs_user -d acgs
       interval: 10s
       timeout: 5s
       retries: 5
-
   acgs-redis:
     image: redis:7-alpine
     container_name: acgs-redis-dind
     command: redis-server --requirepass acgs_redis_password --appendonly yes
     volumes:
-      - redis-data:/data
+    - redis-data:/data
     ports:
-      - "6379:6379"
+    - 6379:6379
     networks:
-      - acgs-dind-network
+    - acgs-dind-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      test:
+      - CMD
+      - redis-cli
+      - --raw
+      - incr
+      - ping
       interval: 10s
       timeout: 3s
       retries: 5
-
   acgs-nats:
     image: nats:2.10-alpine
     container_name: acgs-nats-dind
-    command: [
-      "--jetstream",
-      "--store_dir=/data",
-      "--max_memory_store=1GB",
-      "--max_file_store=10GB"
-    ]
+    command:
+    - --jetstream
+    - --store_dir=/data
+    - --max_memory_store=1GB
+    - --max_file_store=10GB
     volumes:
-      - nats-data:/data
+    - nats-data:/data
     ports:
-      - "4222:4222"
-      - "8222:8222"
+    - 4222:4222
+    - 8222:8222
     networks:
-      - acgs-dind-network
+    - acgs-dind-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8222/healthz"]
+      test:
+      - CMD
+      - wget
+      - --no-verbose
+      - --tries=1
+      - --spider
+      - http://localhost:8222/healthz
       interval: 10s
       timeout: 3s
       retries: 5
-
-  # Monitoring Stack
   acgs-prometheus:
     image: prom/prometheus:latest
     container_name: acgs-prometheus-dind
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--storage.tsdb.retention.time=200h'
-      - '--web.enable-lifecycle'
+    - --config.file=/etc/prometheus/prometheus.yml
+    - --storage.tsdb.path=/prometheus
+    - --web.console.libraries=/etc/prometheus/console_libraries
+    - --web.console.templates=/etc/prometheus/consoles
+    - --storage.tsdb.retention.time=200h
+    - --web.enable-lifecycle
     volumes:
-      - ../../../infrastructure/monitoring/prometheus:/etc/prometheus:ro
-      - prometheus-data:/prometheus
+    - ../../../infrastructure/monitoring/prometheus:/etc/prometheus:ro
+    - prometheus-data:/prometheus
     ports:
-      - "9090:9090"
+    - 9090:9090
     networks:
-      - acgs-dind-network
+    - acgs-dind-network
     restart: unless-stopped
-
   acgs-grafana:
     image: grafana/grafana:latest
     container_name: acgs-grafana-dind
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=acgs_grafana_admin
-      - GF_USERS_ALLOW_SIGN_UP=false
+    - GF_SECURITY_ADMIN_PASSWORD=acgs_grafana_admin
+    - GF_USERS_ALLOW_SIGN_UP=false
     volumes:
-      - grafana-data:/var/lib/grafana
-      - ../../../infrastructure/monitoring/grafana:/etc/grafana/provisioning:ro
+    - grafana-data:/var/lib/grafana
+    - ../../../infrastructure/monitoring/grafana:/etc/grafana/provisioning:ro
     ports:
-      - "3001:3000"
+    - 3001:3000
     networks:
-      - acgs-dind-network
+    - acgs-dind-network
     restart: unless-stopped
-
-  # DinD Testing Environment
   acgs-test-runner:
     build:
       context: ../../../tests
       dockerfile: Dockerfile.dind
     container_name: acgs-test-runner-dind
     environment:
-      - DOCKER_HOST=tcp://docker-dind:2376
-      - DOCKER_TLS_VERIFY=1
-      - DOCKER_CERT_PATH=/certs/client
-      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-      - PYTEST_ARGS=--verbose --tb=short
+    - DOCKER_HOST=tcp://docker-dind:2376
+    - DOCKER_TLS_VERIFY=1
+    - DOCKER_CERT_PATH=/certs/client
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - PYTEST_ARGS=--verbose --tb=short
     volumes:
-      - docker-certs-client:/certs/client:ro
-      - ../../../tests:/app/tests:ro
-      - ../../../reports:/app/reports
-      - /var/run/docker.sock:/var/run/docker.sock
+    - docker-certs-client:/certs/client:ro
+    - ../../../tests:/app/tests:ro
+    - ../../../reports:/app/reports
+    - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
-      - docker-dind
+    - docker-dind
     networks:
-      - acgs-dind-network
+    - acgs-dind-network
     profiles:
-      - testing
-
+    - testing
 volumes:
-  docker-certs-ca:
-  docker-certs-client:
-  dind-storage:
-  postgres-data:
-  redis-data:
-  nats-data:
-  prometheus-data:
-  grafana-data:
-
+  docker-certs-ca: null
+  docker-certs-client: null
+  dind-storage: null
+  postgres-data: null
+  redis-data: null
+  nats-data: null
+  prometheus-data: null
+  grafana-data: null
 networks:
   acgs-dind-network:
     driver: bridge
     ipam:
       config:
-        - subnet: 172.20.0.0/16
+      - subnet: 172.20.0.0/16
+constitutional_hash: cdd01ef066bc6cf2

@@ -23,15 +23,14 @@ from pydantic import BaseModel, Field
 
 from .workflows.multi_model_manager import get_multi_model_manager
 from .workflows.policy_synthesis_workflow import get_policy_synthesis_workflow
-from .workflows.structured_output_models import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from .workflows.structured_output_models import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     ModelSpecializationConfig,
     PolicySynthesisRequest,
     PolicySynthesisResponse,
     PolicyType,
+    "cdd01ef066bc6cf2",
+    =,
 )
 
 logger = logging.getLogger(__name__)

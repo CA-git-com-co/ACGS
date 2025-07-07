@@ -1,14 +1,5 @@
-# Constitutional Hash: cdd01ef066bc6cf2
-
 version: '3.8'
-
-# ACGS Kimi-Dev-72B vLLM Service
-# Enterprise-grade deployment with GPU support, monitoring, and ACGS integration
-
 services:
-  # =============================================================================
-  # Kimi-Dev-72B vLLM Service (Port 8007)
-  # =============================================================================
   kimi_service:
     image: acgs-nano-vllm:latest
     container_name: acgs_kimi_service
@@ -20,148 +11,116 @@ services:
           cpus: '8.0'
         reservations:
           devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
+          - driver: nvidia
+            count: all
+            capabilities:
+            - gpu
     environment:
-      - NANO_VLLM_MODE=enabled
-      - FALLBACK_TO_VLLM=true
-      # Model Configuration
-      - MODEL_NAME=moonshotai/Kimi-Dev-72B
-      - HUGGING_FACE_HUB_TOKEN=${HUGGINGFACE_API_KEY}
-      - VLLM_WORKER_MULTIPROC_METHOD=spawn
-      - VLLM_LOGGING_LEVEL=INFO
-
-      # Performance Optimization
-      - CUDA_VISIBLE_DEVICES=all
-      - VLLM_USE_MODELSCOPE=false
-      - VLLM_ATTENTION_BACKEND=FLASHINFER
-      - VLLM_CPU_KVCACHE_SPACE=40
-      - VLLM_GPU_MEMORY_UTILIZATION=0.9
-
-      # Service Configuration
-      - SERVICE_NAME=kimi_service
-      - SERVICE_PORT=8007
-      - ENVIRONMENT=${ENVIRONMENT:-development}
-      - LOG_LEVEL=${LOG_LEVEL:-INFO}
-
-      # ACGS Integration
-      - AUTH_SERVICE_URL=${AUTH_SERVICE_URL:-http://auth_service:8000}
-      - CONSTITUTIONAL_COMPLIANCE_THRESHOLD=${CONSTITUTIONAL_COMPLIANCE_THRESHOLD:-0.95}
-      - GOVERNANCE_WORKFLOW_VALIDATION=${GOVERNANCE_WORKFLOW_VALIDATION:-true}
-
-      # API Configuration
-      - OPENAI_API_BASE=http://localhost:8007/v1
-      - MAX_SEQ_LEN_TO_CAPTURE=131072
-      - TENSOR_PARALLEL_SIZE=1
-      - SERVED_MODEL_NAME=kimi-dev
-
-      # Monitoring
-      - PROMETHEUS_MULTIPROC_DIR=/tmp/prometheus_multiproc_dir
-      - METRICS_ENABLED=${METRICS_ENABLED:-true}
-      - TRACING_ENABLED=${TRACING_ENABLED:-false}
-
+    - NANO_VLLM_MODE=enabled
+    - FALLBACK_TO_VLLM=true
+    - MODEL_NAME=moonshotai/Kimi-Dev-72B
+    - HUGGING_FACE_HUB_TOKEN=${HUGGINGFACE_API_KEY}
+    - VLLM_WORKER_MULTIPROC_METHOD=spawn
+    - VLLM_LOGGING_LEVEL=INFO
+    - CUDA_VISIBLE_DEVICES=all
+    - VLLM_USE_MODELSCOPE=false
+    - VLLM_ATTENTION_BACKEND=FLASHINFER
+    - VLLM_CPU_KVCACHE_SPACE=40
+    - VLLM_GPU_MEMORY_UTILIZATION=0.9
+    - SERVICE_NAME=kimi_service
+    - SERVICE_PORT=8007
+    - ENVIRONMENT=${ENVIRONMENT:-development}
+    - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    - AUTH_SERVICE_URL=${AUTH_SERVICE_URL:-http://auth_service:8000}
+    - CONSTITUTIONAL_COMPLIANCE_THRESHOLD=${CONSTITUTIONAL_COMPLIANCE_THRESHOLD:-0.95}
+    - GOVERNANCE_WORKFLOW_VALIDATION=${GOVERNANCE_WORKFLOW_VALIDATION:-true}
+    - OPENAI_API_BASE=http://localhost:8007/v1
+    - MAX_SEQ_LEN_TO_CAPTURE=131072
+    - TENSOR_PARALLEL_SIZE=1
+    - SERVED_MODEL_NAME=kimi-dev
+    - PROMETHEUS_MULTIPROC_DIR=/tmp/prometheus_multiproc_dir
+    - METRICS_ENABLED=${METRICS_ENABLED:-true}
+    - TRACING_ENABLED=${TRACING_ENABLED:-false}
     ports:
-      - '8000:8000' # vLLM default port mapped to 8007
-      - '9007:9090' # Prometheus metrics port
-
+    - 8000:8000
+    - 9007:9090
     volumes:
-      # HuggingFace model cache (persistent)
-      - ${HOME:-~}/.cache/huggingface:/root/.cache/huggingface
-      # Prometheus metrics directory
-      - /tmp/prometheus_multiproc_dir:/tmp/prometheus_multiproc_dir
-      # Logs directory
-      - ./logs:/app/logs
-      # Configuration
-      - ./config/kimi:/app/config:ro
-
+    - ${HOME:-~}/.cache/huggingface:/root/.cache/huggingface
+    - /tmp/prometheus_multiproc_dir:/tmp/prometheus_multiproc_dir
+    - ./logs:/app/logs
+    - ./config/kimi:/app/config:ro
     command:
-      [
-        'vllm',
-        'serve',
-        'moonshotai/Kimi-Dev-72B',
-        '--served-model-name',
-        'kimi-dev',
-        '--host',
-        '0.0.0.0',
-        '--port',
-        '8000',
-        '--gpu-memory-utilization',
-        '0.95',
-        '--max-seq-len-to-capture',
-        '131072',
-        '--tensor-parallel-size',
-        '1',
-        '--trust-remote-code',
-        '--disable-log-stats',
-      ]
-
+    - vllm
+    - serve
+    - moonshotai/Kimi-Dev-72B
+    - --served-model-name
+    - kimi-dev
+    - --host
+    - 0.0.0.0
+    - --port
+    - '8000'
+    - --gpu-memory-utilization
+    - '0.95'
+    - --max-seq-len-to-capture
+    - '131072'
+    - --tensor-parallel-size
+    - '1'
+    - --trust-remote-code
+    - --disable-log-stats
     networks:
-      - acgs_network
-
+    - acgs_network
     restart: unless-stopped
-
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:8000/health']
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:8000/health
       interval: 30s
       timeout: 10s
       retries: 5
-      start_period: 300s # Large models need time to load
-
+      start_period: 300s
     logging:
-      driver: 'json-file'
+      driver: json-file
       options:
-        max-size: '100m'
+        max-size: 100m
         max-file: '5'
-        labels: 'service=kimi,environment=${ENVIRONMENT:-development}'
-
+        labels: service=kimi,environment=${ENVIRONMENT:-development}
     labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.kimi.rule=Host(`kimi.acgs.local`)'
-      - 'traefik.http.services.kimi.loadbalancer.server.port=8000'
-      - 'prometheus.io/scrape=true'
-      - 'prometheus.io/port=9090'
-      - 'prometheus.io/path=/metrics'
-
-  # =============================================================================
-  # Kimi Service Monitor (Health & Metrics)
-  # =============================================================================
+    - traefik.enable=true
+    - traefik.http.routers.kimi.rule=Host(`kimi.acgs.local`)
+    - traefik.http.services.kimi.loadbalancer.server.port=8000
+    - prometheus.io/scrape=true
+    - prometheus.io/port=9090
+    - prometheus.io/path=/metrics
   kimi_monitor:
     image: prom/node-exporter:latest
     container_name: acgs_kimi_monitor
     environment:
-      - NANO_VLLM_MODE=enabled
-      - FALLBACK_TO_VLLM=true
-      - SERVICE_NAME=kimi_monitor
-      - KIMI_SERVICE_URL=http://kimi_service:8000
+    - NANO_VLLM_MODE=enabled
+    - FALLBACK_TO_VLLM=true
+    - SERVICE_NAME=kimi_monitor
+    - KIMI_SERVICE_URL=http://kimi_service:8000
     ports:
-      - '9008:9100'
+    - 9008:9100
     volumes:
-      - /proc:/host/proc:ro
-      - /sys:/host/sys:ro
-      - /:/rootfs:ro
+    - /proc:/host/proc:ro
+    - /sys:/host/sys:ro
+    - /:/rootfs:ro
     command:
-      - '--path.procfs=/host/proc'
-      - '--path.rootfs=/rootfs'
-      - '--path.sysfs=/host/sys'
-      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    - --path.procfs=/host/proc
+    - --path.rootfs=/rootfs
+    - --path.sysfs=/host/sys
+    - --collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)
     networks:
-      - acgs_network
+    - acgs_network
     restart: unless-stopped
     depends_on:
-      - kimi_service
-
-# =============================================================================
-# Networks
-# =============================================================================
+    - kimi_service
 networks:
   acgs_network:
     external: true
     name: acgs_network
-
-# =============================================================================
-# Volumes
-# =============================================================================
 volumes:
   kimi_cache:
     driver: local
@@ -169,6 +128,6 @@ volumes:
       type: none
       o: bind
       device: ${HOME:-~}/.cache/huggingface
-
   kimi_logs:
     driver: local
+constitutional_hash: cdd01ef066bc6cf2

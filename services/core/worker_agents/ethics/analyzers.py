@@ -9,14 +9,13 @@ import logging
 from datetime import datetime
 from typing import Any
 
-from .models import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from .models import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     EthicalAnalysisResult,
     HarmAssessment,
     StakeholderImpact,
+    "cdd01ef066bc6cf2",
+    =,
 )
 
 

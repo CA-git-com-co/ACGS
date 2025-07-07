@@ -1,8 +1,15 @@
 {
   "compilerOptions": {
-    "types": ["mocha", "chai"],
-    "typeRoots": ["./node_modules/@types"],
-    "lib": ["es6"],
+    "types": [
+      "mocha",
+      "chai"
+    ],
+    "typeRoots": [
+      "./node_modules/@types"
+    ],
+    "lib": [
+      "es6"
+    ],
     "module": "commonjs",
     "target": "es6",
     "esModuleInterop": true,
@@ -13,5 +20,7 @@
     "skipLibCheck": true,
     "strict": true,
     "resolveJsonModule": true
-  }
+  },
+  "_constitutional_hash": "cdd01ef066bc6cf2",
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }

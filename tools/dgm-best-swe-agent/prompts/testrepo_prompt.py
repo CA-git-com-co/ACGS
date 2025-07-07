@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 def get_test_command(eval_script):
     test_hint = ""
     # test_command is the 2nd last line in eval_script

@@ -38,7 +38,12 @@ def upgrade():
         sa.Column("client_ip", sa.String(45), nullable=True),
         sa.Column("user_agent", sa.String(500), nullable=True),
         sa.Column("session_id", sa.String(255), nullable=True),
-        sa.Column("constitutional_hash", sa.String(64), nullable=False, server_default=CONSTITUTIONAL_HASH),
+        sa.Column(
+            "constitutional_hash",
+            sa.String(64),
+            nullable=False,
+            server_default=CONSTITUTIONAL_HASH,
+        ),
         sa.Column(
             "created_at",
             sa.DateTime(timezone=True),
@@ -65,10 +70,17 @@ def upgrade():
         sa.Column("table_name", sa.String(255), nullable=False),
         sa.Column("policy_definition", sa.Text(), nullable=False),
         sa.Column("is_active", sa.Boolean(), nullable=False, server_default="true"),
-        sa.Column("enforcement_level", sa.String(20), nullable=False, server_default="strict"),
+        sa.Column(
+            "enforcement_level", sa.String(20), nullable=False, server_default="strict"
+        ),
         sa.Column("bypass_conditions", sa.JSON(), nullable=True),
         sa.Column("violation_actions", sa.JSON(), nullable=True),
-        sa.Column("constitutional_hash", sa.String(64), nullable=False, server_default=CONSTITUTIONAL_HASH),
+        sa.Column(
+            "constitutional_hash",
+            sa.String(64),
+            nullable=False,
+            server_default=CONSTITUTIONAL_HASH,
+        ),
         sa.Column(
             "created_at",
             sa.DateTime(timezone=True),
@@ -89,9 +101,19 @@ def upgrade():
     )
 
     # Create indexes for tenant security policies
-    op.create_index("idx_tenant_policy_active", "tenant_security_policies", ["tenant_id", "is_active"])
-    op.create_index("idx_tenant_policy_table", "tenant_security_policies", ["table_name", "is_active"])
-    op.create_index("idx_tenant_policy_type", "tenant_security_policies", ["policy_type"])
+    op.create_index(
+        "idx_tenant_policy_active",
+        "tenant_security_policies",
+        ["tenant_id", "is_active"],
+    )
+    op.create_index(
+        "idx_tenant_policy_table",
+        "tenant_security_policies",
+        ["table_name", "is_active"],
+    )
+    op.create_index(
+        "idx_tenant_policy_type", "tenant_security_policies", ["policy_type"]
+    )
 
     # Enable RLS on the new tables
     op.execute("ALTER TABLE rls_audit_events ENABLE ROW LEVEL SECURITY")
@@ -100,7 +122,8 @@ def upgrade():
     # Create enhanced RLS policies with constitutional compliance validation
 
     # RLS audit events policy (users can only see their tenant's audit events)
-    op.execute("""
+    op.execute(
+        """
         CREATE POLICY rls_audit_events_isolation_policy ON rls_audit_events
         USING (
             tenant_id IN (
@@ -111,10 +134,12 @@ def upgrade():
             OR current_setting('app.bypass_rls', true) = 'true'
             OR current_setting('app.admin_access', true) = 'true'
         )
-    """)
+    """
+    )
 
     # Tenant security policies access (only tenant admins can manage their policies)
-    op.execute("""
+    op.execute(
+        """
         CREATE POLICY tenant_security_policies_isolation_policy ON tenant_security_policies
         USING (
             tenant_id IN (
@@ -126,10 +151,12 @@ def upgrade():
             OR current_setting('app.bypass_rls', true) = 'true'
             OR current_setting('app.admin_access', true) = 'true'
         )
-    """)
+    """
+    )
 
     # Create enhanced tenant context management with security validation
-    op.execute("""
+    op.execute(
+        """
         CREATE OR REPLACE FUNCTION set_secure_tenant_context(
             user_id integer,
             tenant_id uuid DEFAULT NULL,
@@ -190,7 +217,9 @@ def upgrade():
             
             PERFORM set_config('app.bypass_rls', bypass_rls::text, true);
             PERFORM set_config('app.admin_access', admin_access::text, true);
-            PERFORM set_config('app.constitutional_hash', '""" + CONSTITUTIONAL_HASH + """', true);
+            PERFORM set_config('app.constitutional_hash', '"""
+        + CONSTITUTIONAL_HASH
+        + """', true);
             
             -- Log successful context setting
             INSERT INTO rls_audit_events (
@@ -202,10 +231,12 @@ def upgrade():
             );
         END;
         $$ LANGUAGE plpgsql SECURITY DEFINER;
-    """)
+    """
+    )
 
     # Create function to validate cross-tenant operations
-    op.execute("""
+    op.execute(
+        """
         CREATE OR REPLACE FUNCTION validate_cross_tenant_operation(
             source_tenant_id uuid,
             target_tenant_id uuid,
@@ -251,10 +282,12 @@ def upgrade():
             RETURN is_authorized AND same_organization;
         END;
         $$ LANGUAGE plpgsql SECURITY DEFINER;
-    """)
+    """
+    )
 
     # Create function for RLS policy monitoring
-    op.execute("""
+    op.execute(
+        """
         CREATE OR REPLACE FUNCTION monitor_rls_violations()
         RETURNS void AS $$
         DECLARE
@@ -283,10 +316,12 @@ def upgrade():
             END IF;
         END;
         $$ LANGUAGE plpgsql SECURITY DEFINER;
-    """)
+    """
+    )
 
     # Create enhanced constitutional compliance validation trigger
-    op.execute(f"""
+    op.execute(
+        f"""
         CREATE OR REPLACE FUNCTION enhanced_constitutional_compliance_check()
         RETURNS TRIGGER AS $$
         DECLARE
@@ -332,20 +367,30 @@ def upgrade():
             RETURN NEW;
         END;
         $$ LANGUAGE plpgsql;
-    """)
+    """
+    )
 
     # Create triggers for constitutional compliance on all relevant tables
-    for table_name in ['tenants', 'tenant_users', 'tenant_settings', 'tenant_invitations', 'tenant_security_policies']:
-        op.execute(f"""
+    for table_name in [
+        "tenants",
+        "tenant_users",
+        "tenant_settings",
+        "tenant_invitations",
+        "tenant_security_policies",
+    ]:
+        op.execute(
+            f"""
             DROP TRIGGER IF EXISTS constitutional_compliance_trigger ON {table_name};
             CREATE TRIGGER constitutional_compliance_trigger
                 BEFORE INSERT OR UPDATE ON {table_name}
                 FOR EACH ROW
                 EXECUTE FUNCTION enhanced_constitutional_compliance_check();
-        """)
+        """
+        )
 
     # Create view for tenant security dashboard
-    op.execute("""
+    op.execute(
+        """
         CREATE OR REPLACE VIEW tenant_security_dashboard AS
         SELECT 
             t.id as tenant_id,
@@ -362,13 +407,15 @@ def upgrade():
         LEFT JOIN tenant_security_policies tsp ON t.id = tsp.tenant_id AND tsp.is_active = true
         LEFT JOIN rls_audit_events rae ON t.id = rae.tenant_id
         GROUP BY t.id, t.name, t.security_level, t.constitutional_compliance_score, t.constitutional_hash;
-    """)
+    """
+    )
 
     # Enable RLS on the view
     op.execute("ALTER VIEW tenant_security_dashboard SET (security_barrier = true)")
 
     # Create monitoring job function (to be called by external scheduler)
-    op.execute("""
+    op.execute(
+        """
         CREATE OR REPLACE FUNCTION rls_maintenance_job()
         RETURNS void AS $$
         BEGIN
@@ -392,10 +439,12 @@ def upgrade():
             );
         END;
         $$ LANGUAGE plpgsql SECURITY DEFINER;
-    """)
+    """
+    )
 
     # Insert default security policies for new tenants
-    op.execute(f"""
+    op.execute(
+        f"""
         INSERT INTO tenant_security_policies (
             id, tenant_id, policy_name, policy_type, table_name, policy_definition,
             enforcement_level, constitutional_hash
@@ -415,30 +464,47 @@ def upgrade():
             WHERE tsp.tenant_id = t.id 
             AND tsp.policy_name = 'strict_tenant_isolation'
         );
-    """)
+    """
+    )
 
 
 def downgrade():
     """Remove enhanced RLS security features."""
-    
+
     # Drop triggers
-    for table_name in ['tenants', 'tenant_users', 'tenant_settings', 'tenant_invitations', 'tenant_security_policies']:
-        op.execute(f"DROP TRIGGER IF EXISTS constitutional_compliance_trigger ON {table_name}")
-    
+    for table_name in [
+        "tenants",
+        "tenant_users",
+        "tenant_settings",
+        "tenant_invitations",
+        "tenant_security_policies",
+    ]:
+        op.execute(
+            f"DROP TRIGGER IF EXISTS constitutional_compliance_trigger ON {table_name}"
+        )
+
     # Drop functions
     op.execute("DROP FUNCTION IF EXISTS enhanced_constitutional_compliance_check()")
     op.execute("DROP FUNCTION IF EXISTS rls_maintenance_job()")
     op.execute("DROP FUNCTION IF EXISTS monitor_rls_violations()")
-    op.execute("DROP FUNCTION IF EXISTS validate_cross_tenant_operation(uuid, uuid, text, integer)")
-    op.execute("DROP FUNCTION IF EXISTS set_secure_tenant_context(integer, uuid, boolean, boolean, text, text)")
-    
+    op.execute(
+        "DROP FUNCTION IF EXISTS validate_cross_tenant_operation(uuid, uuid, text, integer)"
+    )
+    op.execute(
+        "DROP FUNCTION IF EXISTS set_secure_tenant_context(integer, uuid, boolean, boolean, text, text)"
+    )
+
     # Drop view
     op.execute("DROP VIEW IF EXISTS tenant_security_dashboard")
-    
+
     # Drop policies
-    op.execute("DROP POLICY IF EXISTS rls_audit_events_isolation_policy ON rls_audit_events")
-    op.execute("DROP POLICY IF EXISTS tenant_security_policies_isolation_policy ON tenant_security_policies")
-    
+    op.execute(
+        "DROP POLICY IF EXISTS rls_audit_events_isolation_policy ON rls_audit_events"
+    )
+    op.execute(
+        "DROP POLICY IF EXISTS tenant_security_policies_isolation_policy ON tenant_security_policies"
+    )
+
     # Drop tables
     op.drop_table("tenant_security_policies")
     op.drop_table("rls_audit_events")

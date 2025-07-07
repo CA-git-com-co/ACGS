@@ -1,4 +1,6 @@
 # Academic Submission CLI Tool
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 
 A comprehensive command-line interface for academic paper submission preparation, validation, and optimization.
 

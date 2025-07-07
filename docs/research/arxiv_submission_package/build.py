@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Constitutional Hash: cdd01ef066bc6cf2
 """
 Academic Submission System Build Script
 
@@ -300,15 +301,17 @@ class BuildOrchestrator:
         # Step details
         for step_name, result in results.items():
             status = "✅ SUCCESS" if result.success else "❌ FAILED"
-            report_lines.extend([
-                f"### {step_name.title()}",
-                f"- **Status**: {status}",
-                f"- **Duration**: {result.duration:.2f} seconds",
-                f"- **Output Files**: {len(result.output_files)}",
-                f"- **Warnings**: {len(result.warnings)}",
-                f"- **Errors**: {len(result.errors)}",
-                "",
-            ])
+            report_lines.extend(
+                [
+                    f"### {step_name.title()}",
+                    f"- **Status**: {status}",
+                    f"- **Duration**: {result.duration:.2f} seconds",
+                    f"- **Output Files**: {len(result.output_files)}",
+                    f"- **Warnings**: {len(result.warnings)}",
+                    f"- **Errors**: {len(result.errors)}",
+                    "",
+                ]
+            )
 
             if result.output_files:
                 report_lines.append("**Output Files:**")

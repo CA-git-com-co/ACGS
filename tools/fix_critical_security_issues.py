@@ -14,7 +14,6 @@ from pathlib import Path
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class SecurityRemediator:
     def __init__(self):
         self.fixes_applied = []

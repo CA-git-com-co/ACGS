@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 """
 Constitutional AI Service - Main Entry Point
@@ -24,29 +23,30 @@ Performance Targets:
 
 import logging
 import sys
-import uvicorn
 from pathlib import Path
+
+import uvicorn
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
 # Constitutional compliance
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
+
 def main():
     """Main entry point for the Constitutional AI service."""
     try:
         # Import the FastAPI app from the refactored structure
         from app.main import app
-        
+
         logger.info("🚀 Starting Constitutional AI Service")
         logger.info(f"📋 Constitutional Hash: {CONSTITUTIONAL_HASH}")
         logger.info("🏗️ Using refactored modular architecture")
-        
+
         # Run the service
         uvicorn.run(
             "app.main:app",
@@ -55,16 +55,19 @@ def main():
             reload=True,
             log_level="info",
             access_log=True,
-            reload_excludes=["*.log", "*.backup", "__pycache__/*"]
+            reload_excludes=["*.log", "*.backup", "__pycache__/*"],
         )
-        
+
     except ImportError as e:
         logger.error(f"Failed to import refactored app: {e}")
-        logger.error("Please ensure all dependencies are installed and the app/ structure is complete")
+        logger.error(
+            "Please ensure all dependencies are installed and the app/ structure is complete"
+        )
         sys.exit(1)
     except Exception as e:
         logger.error(f"Failed to start Constitutional AI service: {e}")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

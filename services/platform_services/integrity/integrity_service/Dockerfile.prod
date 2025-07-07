@@ -1,5 +1,6 @@
 # Production Dockerfile for ACGS Integrity Service
 # Multi-stage build with security hardening
+# Constitutional Hash: cdd01ef066bc6cf2
 
 # Stage 1: Build stage
 FROM python:3.11-slim as builder

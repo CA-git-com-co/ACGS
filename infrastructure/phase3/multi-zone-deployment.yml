@@ -1,70 +1,65 @@
-# ACGS Phase 3A Multi-Zone Infrastructure Deployment
-# Constitutional Hash: cdd01ef066bc6cf2
-# Target: 99.9% uptime with multi-zone high availability
-
 networks:
   acgs-zone-a:
     driver: bridge
     name: acgs-phase3-zone-a-network
     ipam:
       config:
-        - subnet: 172.32.1.0/24
+      - subnet: 172.32.1.0/24
   acgs-zone-b:
     driver: bridge
     name: acgs-phase3-zone-b-network
     ipam:
       config:
-        - subnet: 172.32.2.0/24
+      - subnet: 172.32.2.0/24
   acgs-zone-c:
     driver: bridge
     name: acgs-phase3-zone-c-network
     ipam:
       config:
-        - subnet: 172.32.3.0/24
+      - subnet: 172.32.3.0/24
   acgs-load-balancer:
     driver: bridge
     name: acgs-phase3-lb-network
-
 volumes:
-  postgres_primary_data:
-  postgres_replica_a_data:
-  postgres_replica_b_data:
-  redis_cluster_data:
-  prometheus_data:
-  grafana_data:
-
+  postgres_primary_data: null
+  postgres_replica_a_data: null
+  postgres_replica_b_data: null
+  redis_cluster_data: null
+  prometheus_data: null
+  grafana_data: null
 services:
-  # Load Balancer (HAProxy) - Entry point for all traffic
   acgs-load-balancer:
     image: haproxy:2.8-alpine
     container_name: acgs-load-balancer
     ports:
-      - "80:80"
-      - "443:443"
-      - "8080:8080"  # HAProxy stats
+    - 80:80
+    - 443:443
+    - 8080:8080
     volumes:
-      - ./config/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
-      - ./config/ssl:/etc/ssl/certs:ro
+    - ./config/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    - ./config/ssl:/etc/ssl/certs:ro
     networks:
-      - acgs-load-balancer
-      - acgs-zone-a
-      - acgs-zone-b
-      - acgs-zone-c
+    - acgs-load-balancer
+    - acgs-zone-a
+    - acgs-zone-b
+    - acgs-zone-c
     environment:
-      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/stats"]
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:8080/stats
       interval: 30s
       timeout: 10s
       retries: 3
     restart: unless-stopped
-
-  # PostgreSQL Primary (Zone A)
   postgres-primary:
     image: postgres:15-alpine
     container_name: acgs-postgres-primary
     ports:
-      - "5432:5432"
+    - 5432:5432
     environment:
       POSTGRES_DB: acgs_production
       POSTGRES_USER: acgs_admin
@@ -73,29 +68,28 @@ services:
       POSTGRES_REPLICATION_PASSWORD: ${REPLICATION_PASSWORD}
       CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
     volumes:
-      - postgres_primary_data:/var/lib/postgresql/data
-      - ./config/postgresql/primary.conf:/etc/postgresql/postgresql.conf:ro
-      - ./config/postgresql/pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
-      - ./scripts/postgresql/setup-replication.sh:/docker-entrypoint-initdb.d/setup-replication.sh:ro
+    - postgres_primary_data:/var/lib/postgresql/data
+    - ./config/postgresql/primary.conf:/etc/postgresql/postgresql.conf:ro
+    - ./config/postgresql/pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
+    - ./scripts/postgresql/setup-replication.sh:/docker-entrypoint-initdb.d/setup-replication.sh:ro
     networks:
-      - acgs-zone-a
-    command: >
-      postgres
-      -c config_file=/etc/postgresql/postgresql.conf
-      -c hba_file=/etc/postgresql/pg_hba.conf
+    - acgs-zone-a
+    command: 'postgres -c config_file=/etc/postgresql/postgresql.conf -c hba_file=/etc/postgresql/pg_hba.conf
+
+      '
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U acgs_admin -d acgs_production"]
+      test:
+      - CMD-SHELL
+      - pg_isready -U acgs_admin -d acgs_production
       interval: 30s
       timeout: 10s
       retries: 5
     restart: unless-stopped
-
-  # PostgreSQL Replica A (Zone B)
   postgres-replica-a:
     image: postgres:15-alpine
     container_name: acgs-postgres-replica-a
     ports:
-      - "5433:5432"
+    - 5433:5432
     environment:
       POSTGRES_DB: acgs_production
       POSTGRES_USER: acgs_admin
@@ -105,30 +99,30 @@ services:
       POSTGRES_PRIMARY_HOST: postgres-primary
       CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
     volumes:
-      - postgres_replica_a_data:/var/lib/postgresql/data
-      - ./config/postgresql/replica.conf:/etc/postgresql/postgresql.conf:ro
-      - ./scripts/postgresql/setup-replica.sh:/docker-entrypoint-initdb.d/setup-replica.sh:ro
+    - postgres_replica_a_data:/var/lib/postgresql/data
+    - ./config/postgresql/replica.conf:/etc/postgresql/postgresql.conf:ro
+    - ./scripts/postgresql/setup-replica.sh:/docker-entrypoint-initdb.d/setup-replica.sh:ro
     networks:
-      - acgs-zone-b
-      - acgs-zone-a  # Cross-zone connectivity for replication
+    - acgs-zone-b
+    - acgs-zone-a
     depends_on:
-      - postgres-primary
-    command: >
-      postgres
-      -c config_file=/etc/postgresql/postgresql.conf
+    - postgres-primary
+    command: 'postgres -c config_file=/etc/postgresql/postgresql.conf
+
+      '
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U acgs_admin -d acgs_production"]
+      test:
+      - CMD-SHELL
+      - pg_isready -U acgs_admin -d acgs_production
       interval: 30s
       timeout: 10s
       retries: 5
     restart: unless-stopped
-
-  # PostgreSQL Replica B (Zone C)
   postgres-replica-b:
     image: postgres:15-alpine
     container_name: acgs-postgres-replica-b
     ports:
-      - "5434:5432"
+    - 5434:5432
     environment:
       POSTGRES_DB: acgs_production
       POSTGRES_USER: acgs_admin
@@ -138,246 +132,250 @@ services:
       POSTGRES_PRIMARY_HOST: postgres-primary
       CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
     volumes:
-      - postgres_replica_b_data:/var/lib/postgresql/data
-      - ./config/postgresql/replica.conf:/etc/postgresql/postgresql.conf:ro
-      - ./scripts/postgresql/setup-replica.sh:/docker-entrypoint-initdb.d/setup-replica.sh:ro
+    - postgres_replica_b_data:/var/lib/postgresql/data
+    - ./config/postgresql/replica.conf:/etc/postgresql/postgresql.conf:ro
+    - ./scripts/postgresql/setup-replica.sh:/docker-entrypoint-initdb.d/setup-replica.sh:ro
     networks:
-      - acgs-zone-c
-      - acgs-zone-a  # Cross-zone connectivity for replication
+    - acgs-zone-c
+    - acgs-zone-a
     depends_on:
-      - postgres-primary
-    command: >
-      postgres
-      -c config_file=/etc/postgresql/postgresql.conf
+    - postgres-primary
+    command: 'postgres -c config_file=/etc/postgresql/postgresql.conf
+
+      '
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U acgs_admin -d acgs_production"]
+      test:
+      - CMD-SHELL
+      - pg_isready -U acgs_admin -d acgs_production
       interval: 30s
       timeout: 10s
       retries: 5
     restart: unless-stopped
-
-  # Redis Cluster Node 1 (Zone A)
   redis-cluster-1:
     image: redis:7-alpine
     container_name: acgs-redis-cluster-1
     ports:
-      - "7001:7001"
-      - "17001:17001"
-    command: >
-      redis-server
-      --port 7001
-      --cluster-enabled yes
-      --cluster-config-file nodes-7001.conf
-      --cluster-node-timeout 5000
-      --appendonly yes
-      --appendfsync everysec
-      --save 900 1
-      --save 300 10
-      --save 60 10000
+    - 7001:7001
+    - 17001:17001
+    command: 'redis-server --port 7001 --cluster-enabled yes --cluster-config-file
+      nodes-7001.conf --cluster-node-timeout 5000 --appendonly yes --appendfsync everysec
+      --save 900 1 --save 300 10 --save 60 10000
+
+      '
     volumes:
-      - redis_cluster_data:/data
+    - redis_cluster_data:/data
     networks:
-      - acgs-zone-a
+    - acgs-zone-a
     environment:
-      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     healthcheck:
-      test: ["CMD", "redis-cli", "-p", "7001", "ping"]
+      test:
+      - CMD
+      - redis-cli
+      - -p
+      - '7001'
+      - ping
       interval: 30s
       timeout: 10s
       retries: 3
     restart: unless-stopped
-
-  # Redis Cluster Node 2 (Zone B)
   redis-cluster-2:
     image: redis:7-alpine
     container_name: acgs-redis-cluster-2
     ports:
-      - "7002:7002"
-      - "17002:17002"
-    command: >
-      redis-server
-      --port 7002
-      --cluster-enabled yes
-      --cluster-config-file nodes-7002.conf
-      --cluster-node-timeout 5000
-      --appendonly yes
-      --appendfsync everysec
-      --save 900 1
-      --save 300 10
-      --save 60 10000
+    - 7002:7002
+    - 17002:17002
+    command: 'redis-server --port 7002 --cluster-enabled yes --cluster-config-file
+      nodes-7002.conf --cluster-node-timeout 5000 --appendonly yes --appendfsync everysec
+      --save 900 1 --save 300 10 --save 60 10000
+
+      '
     volumes:
-      - redis_cluster_data:/data
+    - redis_cluster_data:/data
     networks:
-      - acgs-zone-b
+    - acgs-zone-b
     environment:
-      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     healthcheck:
-      test: ["CMD", "redis-cli", "-p", "7002", "ping"]
+      test:
+      - CMD
+      - redis-cli
+      - -p
+      - '7002'
+      - ping
       interval: 30s
       timeout: 10s
       retries: 3
     restart: unless-stopped
-
-  # Redis Cluster Node 3 (Zone C)
   redis-cluster-3:
     image: redis:7-alpine
     container_name: acgs-redis-cluster-3
     ports:
-      - "7003:7003"
-      - "17003:17003"
-    command: >
-      redis-server
-      --port 7003
-      --cluster-enabled yes
-      --cluster-config-file nodes-7003.conf
-      --cluster-node-timeout 5000
-      --appendonly yes
-      --appendfsync everysec
-      --save 900 1
-      --save 300 10
-      --save 60 10000
+    - 7003:7003
+    - 17003:17003
+    command: 'redis-server --port 7003 --cluster-enabled yes --cluster-config-file
+      nodes-7003.conf --cluster-node-timeout 5000 --appendonly yes --appendfsync everysec
+      --save 900 1 --save 300 10 --save 60 10000
+
+      '
     volumes:
-      - redis_cluster_data:/data
+    - redis_cluster_data:/data
     networks:
-      - acgs-zone-c
+    - acgs-zone-c
     environment:
-      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     healthcheck:
-      test: ["CMD", "redis-cli", "-p", "7003", "ping"]
+      test:
+      - CMD
+      - redis-cli
+      - -p
+      - '7003'
+      - ping
       interval: 30s
       timeout: 10s
       retries: 3
     restart: unless-stopped
-
-  # ACGS Auth Service (Zone A)
   acgs-auth-zone-a:
     image: acgs-auth-service:latest
     container_name: acgs-auth-zone-a
     ports:
-      - "8016:8016"
+    - 8016:8016
     environment:
-      - DATABASE_URL=postgresql://acgs_admin:${POSTGRES_PASSWORD}@postgres-primary:5432/acgs_production
-      - REDIS_URL=redis://redis-cluster-1:7001
-      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-      - ZONE=zone-a
+    - DATABASE_URL=postgresql://acgs_admin:${POSTGRES_PASSWORD}@postgres-primary:5432/acgs_production
+    - REDIS_URL=redis://redis-cluster-1:7001
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - ZONE=zone-a
     networks:
-      - acgs-zone-a
+    - acgs-zone-a
     depends_on:
-      - postgres-primary
-      - redis-cluster-1
+    - postgres-primary
+    - redis-cluster-1
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8016/health"]
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:8016/health
       interval: 30s
       timeout: 10s
       retries: 3
     restart: unless-stopped
-
-  # ACGS Auth Service (Zone B)
   acgs-auth-zone-b:
     image: acgs-auth-service:latest
     container_name: acgs-auth-zone-b
     ports:
-      - "8017:8016"
+    - 8017:8016
     environment:
-      - DATABASE_URL=postgresql://acgs_admin:${POSTGRES_PASSWORD}@postgres-replica-a:5432/acgs_production
-      - REDIS_URL=redis://redis-cluster-2:7002
-      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-      - ZONE=zone-b
+    - DATABASE_URL=postgresql://acgs_admin:${POSTGRES_PASSWORD}@postgres-replica-a:5432/acgs_production
+    - REDIS_URL=redis://redis-cluster-2:7002
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - ZONE=zone-b
     networks:
-      - acgs-zone-b
+    - acgs-zone-b
     depends_on:
-      - postgres-replica-a
-      - redis-cluster-2
+    - postgres-replica-a
+    - redis-cluster-2
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8016/health"]
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:8016/health
       interval: 30s
       timeout: 10s
       retries: 3
     restart: unless-stopped
-
-  # ACGS Auth Service (Zone C)
   acgs-auth-zone-c:
     image: acgs-auth-service:latest
     container_name: acgs-auth-zone-c
     ports:
-      - "8018:8016"
+    - 8018:8016
     environment:
-      - DATABASE_URL=postgresql://acgs_admin:${POSTGRES_PASSWORD}@postgres-replica-b:5432/acgs_production
-      - REDIS_URL=redis://redis-cluster-3:7003
-      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-      - ZONE=zone-c
+    - DATABASE_URL=postgresql://acgs_admin:${POSTGRES_PASSWORD}@postgres-replica-b:5432/acgs_production
+    - REDIS_URL=redis://redis-cluster-3:7003
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - ZONE=zone-c
     networks:
-      - acgs-zone-c
+    - acgs-zone-c
     depends_on:
-      - postgres-replica-b
-      - redis-cluster-3
+    - postgres-replica-b
+    - redis-cluster-3
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8016/health"]
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:8016/health
       interval: 30s
       timeout: 10s
       retries: 3
     restart: unless-stopped
-
-  # Prometheus (Multi-Zone Monitoring)
   prometheus-ha:
     image: prom/prometheus:latest
     container_name: acgs-prometheus-ha
     ports:
-      - "9090:9090"
+    - 9090:9090
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--storage.tsdb.retention.time=200h'
-      - '--web.enable-lifecycle'
-      - '--web.enable-admin-api'
+    - --config.file=/etc/prometheus/prometheus.yml
+    - --storage.tsdb.path=/prometheus
+    - --web.console.libraries=/etc/prometheus/console_libraries
+    - --web.console.templates=/etc/prometheus/consoles
+    - --storage.tsdb.retention.time=200h
+    - --web.enable-lifecycle
+    - --web.enable-admin-api
     volumes:
-      - ./config/prometheus/prometheus-ha.yml:/etc/prometheus/prometheus.yml:ro
-      - ./config/prometheus/rules:/etc/prometheus/rules:ro
-      - prometheus_data:/prometheus
+    - ./config/prometheus/prometheus-ha.yml:/etc/prometheus/prometheus.yml:ro
+    - ./config/prometheus/rules:/etc/prometheus/rules:ro
+    - prometheus_data:/prometheus
     networks:
-      - acgs-zone-a
-      - acgs-zone-b
-      - acgs-zone-c
+    - acgs-zone-a
+    - acgs-zone-b
+    - acgs-zone-c
     environment:
-      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      test:
+      - CMD
+      - wget
+      - --quiet
+      - --tries=1
+      - --spider
+      - http://localhost:9090/-/healthy
       interval: 30s
       timeout: 10s
       retries: 3
     restart: unless-stopped
-
-  # Grafana (High Availability)
   grafana-ha:
     image: grafana/grafana:latest
     container_name: acgs-grafana-ha
     ports:
-      - "3000:3000"
+    - 3000:3000
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
-      - GF_USERS_ALLOW_SIGN_UP=false
-      - GF_DATABASE_TYPE=postgres
-      - GF_DATABASE_HOST=postgres-primary:5432
-      - GF_DATABASE_NAME=grafana
-      - GF_DATABASE_USER=grafana
-      - GF_DATABASE_PASSWORD=${GRAFANA_DB_PASSWORD}
-      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+    - GF_USERS_ALLOW_SIGN_UP=false
+    - GF_DATABASE_TYPE=postgres
+    - GF_DATABASE_HOST=postgres-primary:5432
+    - GF_DATABASE_NAME=grafana
+    - GF_DATABASE_USER=grafana
+    - GF_DATABASE_PASSWORD=${GRAFANA_DB_PASSWORD}
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     volumes:
-      - grafana_data:/var/lib/grafana
-      - ./config/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
-      - ./config/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    - grafana_data:/var/lib/grafana
+    - ./config/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+    - ./config/grafana/datasources:/etc/grafana/provisioning/datasources:ro
     networks:
-      - acgs-zone-a
-      - acgs-zone-b
-      - acgs-zone-c
+    - acgs-zone-a
+    - acgs-zone-b
+    - acgs-zone-c
     depends_on:
-      - postgres-primary
-      - prometheus-ha
+    - postgres-primary
+    - prometheus-ha
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health"]
+      test:
+      - CMD-SHELL
+      - curl -f http://localhost:3000/api/health
       interval: 30s
       timeout: 10s
       retries: 3
     restart: unless-stopped
+constitutional_hash: cdd01ef066bc6cf2

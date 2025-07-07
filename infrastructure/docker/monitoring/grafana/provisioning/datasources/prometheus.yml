@@ -1,12 +1,9 @@
-# Grafana datasource configuration for Prometheus
-# Constitutional Hash: cdd01ef066bc6cf2
-
 apiVersion: 1
-
 datasources:
-  - name: Prometheus
-    type: prometheus
-    access: proxy
-    url: http://prometheus:9090
-    isDefault: true
-    editable: true
+- name: Prometheus
+  type: prometheus
+  access: proxy
+  url: http://prometheus:9090
+  isDefault: true
+  editable: true
+constitutional_hash: cdd01ef066bc6cf2

@@ -8,15 +8,15 @@ Tests the complete API functionality including:
 - Performance metrics
 - Configuration management
 """
+
 # Constitutional Hash: cdd01ef066bc6cf2
 
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from services.core.constitutional_ai.ac_service.main import app
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class TestHITLSamplingAPI:
@@ -79,7 +79,9 @@ class TestHITLSamplingAPI:
                     # Mock assessment result
                     from datetime import datetime
 
-                    from services.core.constitutional_ai.ac_service.services.human_escalation_system import EscalationLevel
+                    from services.core.constitutional_ai.ac_service.services.human_escalation_system import (
+                        EscalationLevel,
+                    )
                     from services.core.constitutional_ai.ac_service.services.human_in_the_loop_sampler import (
                         SamplingTrigger,
                         UncertaintyAssessment,
@@ -424,7 +426,9 @@ class TestHITLIntegrationWorkflow:
                     # Mock high uncertainty assessment
                     from datetime import datetime
 
-                    from services.core.constitutional_ai.ac_service.services.human_escalation_system import EscalationLevel
+                    from services.core.constitutional_ai.ac_service.services.human_escalation_system import (
+                        EscalationLevel,
+                    )
                     from services.core.constitutional_ai.ac_service.services.human_in_the_loop_sampler import (
                         SamplingTrigger,
                         UncertaintyAssessment,

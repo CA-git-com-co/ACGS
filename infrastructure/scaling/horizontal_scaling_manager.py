@@ -13,14 +13,13 @@ from enum import Enum
 from typing import Any
 
 import aiohttp
+import docker
 from prometheus_client import (
     CollectorRegistry,
     Counter,
     Gauge,
     start_http_server,
 )
-
-import docker
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

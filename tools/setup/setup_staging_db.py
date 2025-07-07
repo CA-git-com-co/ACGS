@@ -15,7 +15,6 @@ import psycopg2
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 def create_staging_database():
     """Create the staging database tables"""
 

@@ -11,7 +11,6 @@ import requests
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 def check_service_health():
     services = {
         "constitutional-ai": {"port": 8001, "path": "/health"},

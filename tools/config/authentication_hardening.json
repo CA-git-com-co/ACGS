@@ -24,8 +24,14 @@
   },
   "multi_factor_auth": {
     "enabled": true,
-    "methods": ["totp", "sms", "email"],
+    "methods": [
+      "totp",
+      "sms",
+      "email"
+    ],
     "backup_codes": true,
     "grace_period_hours": 24
-  }
+  },
+  "_constitutional_hash": "cdd01ef066bc6cf2",
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }

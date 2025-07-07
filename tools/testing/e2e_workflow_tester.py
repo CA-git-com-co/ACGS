@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Constitutional Hash: cdd01ef066bc6cf2
 """
 End-to-End Workflow Testing Framework for ACGS-2
 Tests complete user workflows from input to output, including authentication,

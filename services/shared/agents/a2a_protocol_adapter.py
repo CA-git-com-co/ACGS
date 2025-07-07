@@ -27,6 +27,7 @@ from typing import Any, Optional
 
 import aiohttp
 from pydantic import BaseModel, Field
+
 from services.shared.constitutional_safety_framework import (
     ConstitutionalSafetyValidator,
 )
@@ -214,14 +215,16 @@ class A2AProtocolAdapter:
             if await self._test_connection(connection):
                 self.connections[connection_id] = connection
 
-                await self.audit_logger.log_security_event({
-                    "event_type": "a2a_framework_registered",
-                    "framework_name": framework_name,
-                    "connection_id": connection_id,
-                    "endpoint_url": endpoint_url,
-                    "capabilities": capabilities,
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
-                })
+                await self.audit_logger.log_security_event(
+                    {
+                        "event_type": "a2a_framework_registered",
+                        "framework_name": framework_name,
+                        "connection_id": connection_id,
+                        "endpoint_url": endpoint_url,
+                        "capabilities": capabilities,
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                    }
+                )
 
                 logger.info(
                     f"Registered A2A connection to {framework_name}: {connection_id}"
@@ -286,14 +289,16 @@ class A2AProtocolAdapter:
                         self.pending_messages[message.correlation_id] = message
 
                     # Log successful communication
-                    await self.audit_logger.log_security_event({
-                        "event_type": "a2a_message_sent",
-                        "connection_id": connection_id,
-                        "message_id": message.message_id,
-                        "message_type": message.message_type.value,
-                        "response_time_seconds": response_time,
-                        "timestamp": datetime.now(timezone.utc).isoformat(),
-                    })
+                    await self.audit_logger.log_security_event(
+                        {
+                            "event_type": "a2a_message_sent",
+                            "connection_id": connection_id,
+                            "message_id": message.message_id,
+                            "message_type": message.message_type.value,
+                            "response_time_seconds": response_time,
+                            "timestamp": datetime.now(timezone.utc).isoformat(),
+                        }
+                    )
 
                     return response_data
                 else:
@@ -409,11 +414,13 @@ class A2AProtocolAdapter:
                 return False, 0.0
 
             # Validate message content
-            compliance_result = await self.safety_validator.validate_content({
-                "message_type": message.message_type.value,
-                "content": message.content,
-                "sender_id": message.sender_id,
-            })
+            compliance_result = await self.safety_validator.validate_content(
+                {
+                    "message_type": message.message_type.value,
+                    "content": message.content,
+                    "sender_id": message.sender_id,
+                }
+            )
 
             return compliance_result.get("is_compliant", False), compliance_result.get(
                 "score", 0.0
@@ -466,13 +473,15 @@ class A2AProtocolAdapter:
                 self.metrics["tasks_completed"] += 1
 
             # Log task completion
-            await self.audit_logger.log_security_event({
-                "event_type": "a2a_task_response_received",
-                "task_id": task_response.task_id,
-                "status": task_response.status,
-                "execution_time": task_response.execution_time_seconds,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
-            })
+            await self.audit_logger.log_security_event(
+                {
+                    "event_type": "a2a_task_response_received",
+                    "task_id": task_response.task_id,
+                    "status": task_response.status,
+                    "execution_time": task_response.execution_time_seconds,
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                }
+            )
 
             return {"status": "processed", "task_id": task_response.task_id}
 
@@ -536,9 +545,9 @@ class A2AProtocolAdapter:
         """Get A2A adapter performance metrics"""
         return {
             **self.metrics,
-            "active_connections": len([
-                c for c in self.connections.values() if c.is_active
-            ]),
+            "active_connections": len(
+                [c for c in self.connections.values() if c.is_active]
+            ),
             "total_connections": len(self.connections),
             "pending_messages": len(self.pending_messages),
             "message_history_size": len(self.message_history),

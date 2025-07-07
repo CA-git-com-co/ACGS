@@ -1,6 +1,7 @@
 """
 Output formatters for Gemini CLI
 """
+
 # Constitutional Hash: cdd01ef066bc6cf2
 
 import json

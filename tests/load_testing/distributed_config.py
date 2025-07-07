@@ -216,28 +216,30 @@ class DistributedLoadTestConfig:
             }
 
         # Add monitoring services
-        services.update({
-            "prometheus": {
-                "image": "prom/prometheus:latest",
-                "ports": ["9090:9090"],
-                "volumes": [
-                    "./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml",
-                    "prometheus_data:/prometheus",
-                ],
-                "networks": [cls.DOCKER_CONFIG["network"]],
-            },
-            "grafana": {
-                "image": "grafana/grafana:latest",
-                "ports": ["3000:3000"],
-                "environment": {"GF_SECURITY_ADMIN_PASSWORD": "admin"},
-                "volumes": [
-                    "./monitoring/grafana/dashboards:/var/lib/grafana/dashboards",
-                    "./monitoring/grafana/provisioning:/etc/grafana/provisioning",
-                    "grafana_data:/var/lib/grafana",
-                ],
-                "networks": [cls.DOCKER_CONFIG["network"]],
-            },
-        })
+        services.update(
+            {
+                "prometheus": {
+                    "image": "prom/prometheus:latest",
+                    "ports": ["9090:9090"],
+                    "volumes": [
+                        "./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml",
+                        "prometheus_data:/prometheus",
+                    ],
+                    "networks": [cls.DOCKER_CONFIG["network"]],
+                },
+                "grafana": {
+                    "image": "grafana/grafana:latest",
+                    "ports": ["3000:3000"],
+                    "environment": {"GF_SECURITY_ADMIN_PASSWORD": "admin"},
+                    "volumes": [
+                        "./monitoring/grafana/dashboards:/var/lib/grafana/dashboards",
+                        "./monitoring/grafana/provisioning:/etc/grafana/provisioning",
+                        "grafana_data:/var/lib/grafana",
+                    ],
+                    "networks": [cls.DOCKER_CONFIG["network"]],
+                },
+            }
+        )
 
         return {
             "version": "3.8",

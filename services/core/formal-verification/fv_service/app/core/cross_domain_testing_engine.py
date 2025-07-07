@@ -14,16 +14,15 @@ from datetime import datetime, timezone
 from enum import Enum
 from typing import Any
 
-from ..schemas import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from ..schemas import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     CrossDomainTestRequest,
     CrossDomainTestResponse,
     CrossDomainTestResult,
     CrossDomainTestScenario,
     DomainContext,
+    "cdd01ef066bc6cf2",
+    =,
 )
 
 logger = logging.getLogger(__name__)

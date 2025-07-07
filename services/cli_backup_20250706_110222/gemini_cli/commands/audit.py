@@ -1,6 +1,7 @@
 """
 Audit trail commands for Gemini CLI
 """
+
 # Constitutional Hash: cdd01ef066bc6cf2
 
 import argparse

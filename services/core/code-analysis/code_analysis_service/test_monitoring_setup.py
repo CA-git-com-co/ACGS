@@ -81,11 +81,13 @@ class MonitoringValidator:
                     "required_metrics": found_metrics,
                     "constitutional_metric_found": constitutional_metric_found,
                     "all_metrics_found": all_metrics_found,
-                    "metrics_count": len([
-                        line
-                        for line in metrics_text.split("\n")
-                        if line and not line.startswith("#")
-                    ]),
+                    "metrics_count": len(
+                        [
+                            line
+                            for line in metrics_text.split("\n")
+                            if line and not line.startswith("#")
+                        ]
+                    ),
                     "timestamp": datetime.now().isoformat(),
                 }
             else:
@@ -134,12 +136,14 @@ class MonitoringValidator:
 
                     health_checks.append(health_check)
                 else:
-                    health_checks.append({
-                        "response_time_ms": response_time_ms,
-                        "status": "failed",
-                        "error": f"HTTP {response.status_code}",
-                        "timestamp": datetime.now().isoformat(),
-                    })
+                    health_checks.append(
+                        {
+                            "response_time_ms": response_time_ms,
+                            "status": "failed",
+                            "error": f"HTTP {response.status_code}",
+                            "timestamp": datetime.now().isoformat(),
+                        }
+                    )
 
                 time.sleep(1)  # Wait between checks
 

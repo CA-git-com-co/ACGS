@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 /** @type {import('tailwindcss').Config} */
 import animate from "tailwindcss-animate";
 export default {

@@ -1,223 +1,213 @@
-# Constitutional Hash: cdd01ef066bc6cf2
 groups:
-  # Constitutional AI Governance Alerts
-  - name: constitutional_ai_governance
-    rules:
-      - alert: LowConstitutionalCompliance
-        expr: constitutional_compliance_score < 0.7
-        for: 2m
-        labels:
-          severity: critical
-          component: constitutional-ai
-          governance_type: constitutional
-        annotations:
-          summary: 'Constitutional compliance score is critically low'
-          description: 'Constitutional compliance score is {{ $value }}, below the critical threshold of 0.7 for {{ $labels.instance }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/constitutional-compliance'
-
-      - alert: HighConstitutionalViolationRate
-        expr: rate(constitutional_violations_total[5m]) > 0.1
-        for: 1m
-        labels:
-          severity: warning
-          component: constitutional-ai
-        annotations:
-          summary: 'High rate of constitutional violations detected'
-          description: 'Constitutional violation rate is {{ $value }} violations/second for {{ $labels.instance }}'
-
-      - alert: ConstitutionalRewardFrameworkDown
-        expr: up{job="acgs-constitutional-ai"} == 0
-        for: 30s
-        labels:
-          severity: critical
-          component: constitutional-ai
-        annotations:
-          summary: 'Constitutional AI service is down'
-          description: 'Constitutional AI service on {{ $labels.instance }} has been down for more than 30 seconds'
-
-      - alert: SlowConstitutionalEvaluation
-        expr: histogram_quantile(0.95, rate(constitutional_evaluation_duration_seconds_bucket[5m])) > 10
-        for: 3m
-        labels:
-          severity: warning
-          component: constitutional-ai
-        annotations:
-          summary: 'Constitutional evaluation is taking too long'
-          description: '95th percentile constitutional evaluation time is {{ $value }}s, exceeding 10s threshold'
-
-  # Multi-Armed Bandit Algorithm Alerts
-  - name: multi_armed_bandit_governance
-    rules:
-      - alert: ConservativeLinUCBSafetyViolation
-        expr: conservative_linucb_safety_violations_total > 0
-        for: 0s
-        labels:
-          severity: critical
-          component: conservative-linucb
-          algorithm_type: multi_armed_bandit
-        annotations:
-          summary: 'Conservative LinUCB safety constraint violated'
-          description: 'Conservative LinUCB algorithm has {{ $value }} safety violations on {{ $labels.instance }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/conservative-linucb-safety'
-
-      - alert: MABExplorationRateTooHigh
-        expr: mab_exploration_rate > 0.8
-        for: 5m
-        labels:
-          severity: warning
-          component: mab-optimizer
-        annotations:
-          summary: 'Multi-Armed Bandit exploration rate is too high'
-          description: 'MAB exploration rate is {{ $value }}, indicating potential instability'
-
-      - alert: MABRewardVarianceTooHigh
-        expr: mab_reward_variance > 0.5
-        for: 5m
-        labels:
-          severity: warning
-          component: mab-optimizer
-        annotations:
-          summary: 'High reward variance in Multi-Armed Bandit'
-          description: 'MAB reward variance is {{ $value }}, indicating inconsistent performance'
-
-      - alert: MABBaselinePerformanceDrop
-        expr: (mab_current_performance - mab_baseline_performance) / mab_baseline_performance < -0.1
-        for: 2m
-        labels:
-          severity: critical
-          component: conservative-linucb
-        annotations:
-          summary: 'MAB performance dropped below baseline'
-          description: 'Current MAB performance is {{ $value }}% below baseline'
-
-  # Policy Governance Alerts
-  - name: policy_governance
-    rules:
-      - alert: PolicyViolationRateHigh
-        expr: rate(policy_violations_total[5m]) > 0.05
-        for: 2m
-        labels:
-          severity: warning
-          component: policy-governance
-        annotations:
-          summary: 'High policy violation rate detected'
-          description: 'Policy violation rate is {{ $value }} violations/second'
-
-      - alert: PolicyDecisionLatencyHigh
-        expr: histogram_quantile(0.99, rate(policy_decision_duration_seconds_bucket[5m])) > 0.1
-        for: 3m
-        labels:
-          severity: warning
-          component: policy-governance
-        annotations:
-          summary: 'Policy decision latency is too high'
-          description: '99th percentile policy decision time is {{ $value }}s, exceeding 100ms threshold'
-
-      - alert: OPAPolicyEngineDown
-        expr: up{job="opa-policy-engine"} == 0
-        for: 30s
-        labels:
-          severity: critical
-          component: opa
-        annotations:
-          summary: 'OPA Policy Engine is down'
-          description: 'OPA Policy Engine on {{ $labels.instance }} is not responding'
-
-  # AI Model Performance Alerts
-  - name: ai_model_performance
-    rules:
-      - alert: LLMReliabilityScoreLow
-        expr: llm_reliability_score < 0.95
-        for: 2m
-        labels:
-          severity: warning
-          component: llm-reliability
-        annotations:
-          summary: 'LLM reliability score is below threshold'
-          description: 'LLM reliability score is {{ $value }}, below 95% threshold'
-
-      - alert: ModelDriftDetected
-        expr: evidently_model_drift_score > 0.3
-        for: 1m
-        labels:
-          severity: warning
-          component: evidently-ai
-        annotations:
-          summary: 'Model drift detected'
-          description: 'Model drift score is {{ $value }}, indicating potential model degradation'
-
-      - alert: DataDriftDetected
-        expr: evidently_data_drift_score > 0.3
-        for: 1m
-        labels:
-          severity: warning
-          component: evidently-ai
-        annotations:
-          summary: 'Data drift detected'
-          description: 'Data drift score is {{ $value }}, indicating input data distribution change'
-
-  # System Performance Alerts
-  - name: ai_governance_system_performance
-    rules:
-      - alert: HighMemoryUsage
-        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes > 0.9
-        for: 2m
-        labels:
-          severity: warning
-          component: system
-        annotations:
-          summary: 'High memory usage detected'
-          description: 'Memory usage is {{ $value | humanizePercentage }} on {{ $labels.instance }}'
-
-      - alert: HighCPUUsage
-        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 90
-        for: 5m
-        labels:
-          severity: warning
-          component: system
-        annotations:
-          summary: 'High CPU usage detected'
-          description: 'CPU usage is {{ $value }}% on {{ $labels.instance }}'
-
-      - alert: DiskSpaceLow
-        expr: (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) * 100 < 10
-        for: 1m
-        labels:
-          severity: critical
-          component: system
-        annotations:
-          summary: 'Low disk space'
-          description: 'Disk space is {{ $value }}% available on {{ $labels.instance }}'
-
-  # Governance Workflow Alerts
-  - name: governance_workflow
-    rules:
-      - alert: GovernanceDecisionBacklog
-        expr: governance_decision_queue_size > 100
-        for: 5m
-        labels:
-          severity: warning
-          component: governance-workflow
-        annotations:
-          summary: 'Large governance decision backlog'
-          description: 'Governance decision queue has {{ $value }} pending decisions'
-
-      - alert: ConstitutionalCouncilInactive
-        expr: time() - constitutional_council_last_activity_timestamp > 3600
-        for: 0s
-        labels:
-          severity: warning
-          component: constitutional-council
-        annotations:
-          summary: 'Constitutional Council has been inactive'
-          description: 'Constitutional Council has been inactive for more than 1 hour'
-
-      - alert: AutomationRateBelowTarget
-        expr: governance_automation_rate < 0.9
-        for: 10m
-        labels:
-          severity: warning
-          component: governance-automation
-        annotations:
-          summary: 'Governance automation rate below target'
-          description: 'Governance automation rate is {{ $value | humanizePercentage }}, below 90% target'
+- name: constitutional_ai_governance
+  rules:
+  - alert: LowConstitutionalCompliance
+    expr: constitutional_compliance_score < 0.7
+    for: 2m
+    labels:
+      severity: critical
+      component: constitutional-ai
+      governance_type: constitutional
+    annotations:
+      summary: Constitutional compliance score is critically low
+      description: Constitutional compliance score is {{ $value }}, below the critical
+        threshold of 0.7 for {{ $labels.instance }}
+      runbook_url: https://docs.acgs.ai/runbooks/constitutional-compliance
+  - alert: HighConstitutionalViolationRate
+    expr: rate(constitutional_violations_total[5m]) > 0.1
+    for: 1m
+    labels:
+      severity: warning
+      component: constitutional-ai
+    annotations:
+      summary: High rate of constitutional violations detected
+      description: Constitutional violation rate is {{ $value }} violations/second
+        for {{ $labels.instance }}
+  - alert: ConstitutionalRewardFrameworkDown
+    expr: up{job="acgs-constitutional-ai"} == 0
+    for: 30s
+    labels:
+      severity: critical
+      component: constitutional-ai
+    annotations:
+      summary: Constitutional AI service is down
+      description: Constitutional AI service on {{ $labels.instance }} has been down
+        for more than 30 seconds
+  - alert: SlowConstitutionalEvaluation
+    expr: histogram_quantile(0.95, rate(constitutional_evaluation_duration_seconds_bucket[5m]))
+      > 10
+    for: 3m
+    labels:
+      severity: warning
+      component: constitutional-ai
+    annotations:
+      summary: Constitutional evaluation is taking too long
+      description: 95th percentile constitutional evaluation time is {{ $value }}s,
+        exceeding 10s threshold
+- name: multi_armed_bandit_governance
+  rules:
+  - alert: ConservativeLinUCBSafetyViolation
+    expr: conservative_linucb_safety_violations_total > 0
+    for: 0s
+    labels:
+      severity: critical
+      component: conservative-linucb
+      algorithm_type: multi_armed_bandit
+    annotations:
+      summary: Conservative LinUCB safety constraint violated
+      description: Conservative LinUCB algorithm has {{ $value }} safety violations
+        on {{ $labels.instance }}
+      runbook_url: https://docs.acgs.ai/runbooks/conservative-linucb-safety
+  - alert: MABExplorationRateTooHigh
+    expr: mab_exploration_rate > 0.8
+    for: 5m
+    labels:
+      severity: warning
+      component: mab-optimizer
+    annotations:
+      summary: Multi-Armed Bandit exploration rate is too high
+      description: MAB exploration rate is {{ $value }}, indicating potential instability
+  - alert: MABRewardVarianceTooHigh
+    expr: mab_reward_variance > 0.5
+    for: 5m
+    labels:
+      severity: warning
+      component: mab-optimizer
+    annotations:
+      summary: High reward variance in Multi-Armed Bandit
+      description: MAB reward variance is {{ $value }}, indicating inconsistent performance
+  - alert: MABBaselinePerformanceDrop
+    expr: (mab_current_performance - mab_baseline_performance) / mab_baseline_performance
+      < -0.1
+    for: 2m
+    labels:
+      severity: critical
+      component: conservative-linucb
+    annotations:
+      summary: MAB performance dropped below baseline
+      description: Current MAB performance is {{ $value }}% below baseline
+- name: policy_governance
+  rules:
+  - alert: PolicyViolationRateHigh
+    expr: rate(policy_violations_total[5m]) > 0.05
+    for: 2m
+    labels:
+      severity: warning
+      component: policy-governance
+    annotations:
+      summary: High policy violation rate detected
+      description: Policy violation rate is {{ $value }} violations/second
+  - alert: PolicyDecisionLatencyHigh
+    expr: histogram_quantile(0.99, rate(policy_decision_duration_seconds_bucket[5m]))
+      > 0.1
+    for: 3m
+    labels:
+      severity: warning
+      component: policy-governance
+    annotations:
+      summary: Policy decision latency is too high
+      description: 99th percentile policy decision time is {{ $value }}s, exceeding
+        100ms threshold
+  - alert: OPAPolicyEngineDown
+    expr: up{job="opa-policy-engine"} == 0
+    for: 30s
+    labels:
+      severity: critical
+      component: opa
+    annotations:
+      summary: OPA Policy Engine is down
+      description: OPA Policy Engine on {{ $labels.instance }} is not responding
+- name: ai_model_performance
+  rules:
+  - alert: LLMReliabilityScoreLow
+    expr: llm_reliability_score < 0.95
+    for: 2m
+    labels:
+      severity: warning
+      component: llm-reliability
+    annotations:
+      summary: LLM reliability score is below threshold
+      description: LLM reliability score is {{ $value }}, below 95% threshold
+  - alert: ModelDriftDetected
+    expr: evidently_model_drift_score > 0.3
+    for: 1m
+    labels:
+      severity: warning
+      component: evidently-ai
+    annotations:
+      summary: Model drift detected
+      description: Model drift score is {{ $value }}, indicating potential model degradation
+  - alert: DataDriftDetected
+    expr: evidently_data_drift_score > 0.3
+    for: 1m
+    labels:
+      severity: warning
+      component: evidently-ai
+    annotations:
+      summary: Data drift detected
+      description: Data drift score is {{ $value }}, indicating input data distribution
+        change
+- name: ai_governance_system_performance
+  rules:
+  - alert: HighMemoryUsage
+    expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes
+      > 0.9
+    for: 2m
+    labels:
+      severity: warning
+      component: system
+    annotations:
+      summary: High memory usage detected
+      description: Memory usage is {{ $value | humanizePercentage }} on {{ $labels.instance
+        }}
+  - alert: HighCPUUsage
+    expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m]))
+      * 100) > 90
+    for: 5m
+    labels:
+      severity: warning
+      component: system
+    annotations:
+      summary: High CPU usage detected
+      description: CPU usage is {{ $value }}% on {{ $labels.instance }}
+  - alert: DiskSpaceLow
+    expr: (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"})
+      * 100 < 10
+    for: 1m
+    labels:
+      severity: critical
+      component: system
+    annotations:
+      summary: Low disk space
+      description: Disk space is {{ $value }}% available on {{ $labels.instance }}
+- name: governance_workflow
+  rules:
+  - alert: GovernanceDecisionBacklog
+    expr: governance_decision_queue_size > 100
+    for: 5m
+    labels:
+      severity: warning
+      component: governance-workflow
+    annotations:
+      summary: Large governance decision backlog
+      description: Governance decision queue has {{ $value }} pending decisions
+  - alert: ConstitutionalCouncilInactive
+    expr: time() - constitutional_council_last_activity_timestamp > 3600
+    for: 0s
+    labels:
+      severity: warning
+      component: constitutional-council
+    annotations:
+      summary: Constitutional Council has been inactive
+      description: Constitutional Council has been inactive for more than 1 hour
+  - alert: AutomationRateBelowTarget
+    expr: governance_automation_rate < 0.9
+    for: 10m
+    labels:
+      severity: warning
+      component: governance-automation
+    annotations:
+      summary: Governance automation rate below target
+      description: Governance automation rate is {{ $value | humanizePercentage }},
+        below 90% target
+constitutional_hash: cdd01ef066bc6cf2

@@ -106,232 +106,246 @@ class SecurityValidationFramework:
         """Register all security tests."""
 
         # Authentication Tests
-        self.security_tests.extend([
-            SecurityTest(
-                test_id="AUTH-001",
-                name="Weak Password Policy Test",
-                category=SecurityTestCategory.AUTHENTICATION,
-                risk_level=SecurityRisk.HIGH,
-                description="Test for weak password acceptance",
-                test_function=self._test_weak_password_policy,
-            ),
-            SecurityTest(
-                test_id="AUTH-002",
-                name="Brute Force Protection",
-                category=SecurityTestCategory.AUTHENTICATION,
-                risk_level=SecurityRisk.CRITICAL,
-                description="Test rate limiting on authentication endpoints",
-                test_function=self._test_brute_force_protection,
-            ),
-            SecurityTest(
-                test_id="AUTH-003",
-                name="JWT Token Security",
-                category=SecurityTestCategory.AUTHENTICATION,
-                risk_level=SecurityRisk.CRITICAL,
-                description="Test JWT token implementation security",
-                test_function=self._test_jwt_security,
-            ),
-            SecurityTest(
-                test_id="AUTH-004",
-                name="Session Management",
-                category=SecurityTestCategory.AUTHENTICATION,
-                risk_level=SecurityRisk.HIGH,
-                description="Test session timeout and invalidation",
-                test_function=self._test_session_management,
-            ),
-        ])
+        self.security_tests.extend(
+            [
+                SecurityTest(
+                    test_id="AUTH-001",
+                    name="Weak Password Policy Test",
+                    category=SecurityTestCategory.AUTHENTICATION,
+                    risk_level=SecurityRisk.HIGH,
+                    description="Test for weak password acceptance",
+                    test_function=self._test_weak_password_policy,
+                ),
+                SecurityTest(
+                    test_id="AUTH-002",
+                    name="Brute Force Protection",
+                    category=SecurityTestCategory.AUTHENTICATION,
+                    risk_level=SecurityRisk.CRITICAL,
+                    description="Test rate limiting on authentication endpoints",
+                    test_function=self._test_brute_force_protection,
+                ),
+                SecurityTest(
+                    test_id="AUTH-003",
+                    name="JWT Token Security",
+                    category=SecurityTestCategory.AUTHENTICATION,
+                    risk_level=SecurityRisk.CRITICAL,
+                    description="Test JWT token implementation security",
+                    test_function=self._test_jwt_security,
+                ),
+                SecurityTest(
+                    test_id="AUTH-004",
+                    name="Session Management",
+                    category=SecurityTestCategory.AUTHENTICATION,
+                    risk_level=SecurityRisk.HIGH,
+                    description="Test session timeout and invalidation",
+                    test_function=self._test_session_management,
+                ),
+            ]
+        )
 
         # Authorization Tests
-        self.security_tests.extend([
-            SecurityTest(
-                test_id="AUTHZ-001",
-                name="Privilege Escalation",
-                category=SecurityTestCategory.AUTHORIZATION,
-                risk_level=SecurityRisk.CRITICAL,
-                description="Test for privilege escalation vulnerabilities",
-                test_function=self._test_privilege_escalation,
-            ),
-            SecurityTest(
-                test_id="AUTHZ-002",
-                name="Multi-Tenant Isolation",
-                category=SecurityTestCategory.AUTHORIZATION,
-                risk_level=SecurityRisk.CRITICAL,
-                description="Test cross-tenant data access prevention",
-                test_function=self._test_multi_tenant_isolation,
-            ),
-            SecurityTest(
-                test_id="AUTHZ-003",
-                name="RBAC Enforcement",
-                category=SecurityTestCategory.AUTHORIZATION,
-                risk_level=SecurityRisk.HIGH,
-                description="Test role-based access control enforcement",
-                test_function=self._test_rbac_enforcement,
-            ),
-        ])
+        self.security_tests.extend(
+            [
+                SecurityTest(
+                    test_id="AUTHZ-001",
+                    name="Privilege Escalation",
+                    category=SecurityTestCategory.AUTHORIZATION,
+                    risk_level=SecurityRisk.CRITICAL,
+                    description="Test for privilege escalation vulnerabilities",
+                    test_function=self._test_privilege_escalation,
+                ),
+                SecurityTest(
+                    test_id="AUTHZ-002",
+                    name="Multi-Tenant Isolation",
+                    category=SecurityTestCategory.AUTHORIZATION,
+                    risk_level=SecurityRisk.CRITICAL,
+                    description="Test cross-tenant data access prevention",
+                    test_function=self._test_multi_tenant_isolation,
+                ),
+                SecurityTest(
+                    test_id="AUTHZ-003",
+                    name="RBAC Enforcement",
+                    category=SecurityTestCategory.AUTHORIZATION,
+                    risk_level=SecurityRisk.HIGH,
+                    description="Test role-based access control enforcement",
+                    test_function=self._test_rbac_enforcement,
+                ),
+            ]
+        )
 
         # Injection Tests
-        self.security_tests.extend([
-            SecurityTest(
-                test_id="INJ-001",
-                name="SQL Injection",
-                category=SecurityTestCategory.INJECTION,
-                risk_level=SecurityRisk.CRITICAL,
-                description="Test for SQL injection vulnerabilities",
-                test_function=self._test_sql_injection,
-            ),
-            SecurityTest(
-                test_id="INJ-002",
-                name="Command Injection",
-                category=SecurityTestCategory.INJECTION,
-                risk_level=SecurityRisk.CRITICAL,
-                description="Test for command injection vulnerabilities",
-                test_function=self._test_command_injection,
-            ),
-            SecurityTest(
-                test_id="INJ-003",
-                name="XSS Protection",
-                category=SecurityTestCategory.INJECTION,
-                risk_level=SecurityRisk.HIGH,
-                description="Test for cross-site scripting vulnerabilities",
-                test_function=self._test_xss_protection,
-            ),
-            SecurityTest(
-                test_id="INJ-004",
-                name="LDAP Injection",
-                category=SecurityTestCategory.INJECTION,
-                risk_level=SecurityRisk.HIGH,
-                description="Test for LDAP injection vulnerabilities",
-                test_function=self._test_ldap_injection,
-            ),
-        ])
+        self.security_tests.extend(
+            [
+                SecurityTest(
+                    test_id="INJ-001",
+                    name="SQL Injection",
+                    category=SecurityTestCategory.INJECTION,
+                    risk_level=SecurityRisk.CRITICAL,
+                    description="Test for SQL injection vulnerabilities",
+                    test_function=self._test_sql_injection,
+                ),
+                SecurityTest(
+                    test_id="INJ-002",
+                    name="Command Injection",
+                    category=SecurityTestCategory.INJECTION,
+                    risk_level=SecurityRisk.CRITICAL,
+                    description="Test for command injection vulnerabilities",
+                    test_function=self._test_command_injection,
+                ),
+                SecurityTest(
+                    test_id="INJ-003",
+                    name="XSS Protection",
+                    category=SecurityTestCategory.INJECTION,
+                    risk_level=SecurityRisk.HIGH,
+                    description="Test for cross-site scripting vulnerabilities",
+                    test_function=self._test_xss_protection,
+                ),
+                SecurityTest(
+                    test_id="INJ-004",
+                    name="LDAP Injection",
+                    category=SecurityTestCategory.INJECTION,
+                    risk_level=SecurityRisk.HIGH,
+                    description="Test for LDAP injection vulnerabilities",
+                    test_function=self._test_ldap_injection,
+                ),
+            ]
+        )
 
         # Cryptography Tests
-        self.security_tests.extend([
-            SecurityTest(
-                test_id="CRYPTO-001",
-                name="TLS Configuration",
-                category=SecurityTestCategory.CRYPTOGRAPHY,
-                risk_level=SecurityRisk.HIGH,
-                description="Test TLS version and cipher suite security",
-                test_function=self._test_tls_configuration,
-            ),
-            SecurityTest(
-                test_id="CRYPTO-002",
-                name="Encryption at Rest",
-                category=SecurityTestCategory.CRYPTOGRAPHY,
-                risk_level=SecurityRisk.HIGH,
-                description="Test data encryption at rest",
-                test_function=self._test_encryption_at_rest,
-            ),
-            SecurityTest(
-                test_id="CRYPTO-003",
-                name="Key Management",
-                category=SecurityTestCategory.CRYPTOGRAPHY,
-                risk_level=SecurityRisk.CRITICAL,
-                description="Test cryptographic key management",
-                test_function=self._test_key_management,
-            ),
-        ])
+        self.security_tests.extend(
+            [
+                SecurityTest(
+                    test_id="CRYPTO-001",
+                    name="TLS Configuration",
+                    category=SecurityTestCategory.CRYPTOGRAPHY,
+                    risk_level=SecurityRisk.HIGH,
+                    description="Test TLS version and cipher suite security",
+                    test_function=self._test_tls_configuration,
+                ),
+                SecurityTest(
+                    test_id="CRYPTO-002",
+                    name="Encryption at Rest",
+                    category=SecurityTestCategory.CRYPTOGRAPHY,
+                    risk_level=SecurityRisk.HIGH,
+                    description="Test data encryption at rest",
+                    test_function=self._test_encryption_at_rest,
+                ),
+                SecurityTest(
+                    test_id="CRYPTO-003",
+                    name="Key Management",
+                    category=SecurityTestCategory.CRYPTOGRAPHY,
+                    risk_level=SecurityRisk.CRITICAL,
+                    description="Test cryptographic key management",
+                    test_function=self._test_key_management,
+                ),
+            ]
+        )
 
         # Constitutional Compliance Tests
-        self.security_tests.extend([
-            SecurityTest(
-                test_id="CONST-001",
-                name="Constitutional Hash Verification",
-                category=SecurityTestCategory.CONSTITUTIONAL_COMPLIANCE,
-                risk_level=SecurityRisk.CRITICAL,
-                description="Verify constitutional hash consistency",
-                test_function=self._test_constitutional_hash_verification,
-            ),
-            SecurityTest(
-                test_id="CONST-002",
-                name="Formal Verification Integration",
-                category=SecurityTestCategory.CONSTITUTIONAL_COMPLIANCE,
-                risk_level=SecurityRisk.HIGH,
-                description="Test Z3 SMT solver integration",
-                test_function=self._test_formal_verification,
-            ),
-            SecurityTest(
-                test_id="CONST-003",
-                name="Audit Trail Integrity",
-                category=SecurityTestCategory.CONSTITUTIONAL_COMPLIANCE,
-                risk_level=SecurityRisk.CRITICAL,
-                description="Test cryptographic audit trail integrity",
-                test_function=self._test_audit_trail_integrity,
-            ),
-            SecurityTest(
-                test_id="CONST-004",
-                name="Policy Compliance",
-                category=SecurityTestCategory.CONSTITUTIONAL_COMPLIANCE,
-                risk_level=SecurityRisk.HIGH,
-                description="Test constitutional policy enforcement",
-                test_function=self._test_policy_compliance,
-            ),
-        ])
+        self.security_tests.extend(
+            [
+                SecurityTest(
+                    test_id="CONST-001",
+                    name="Constitutional Hash Verification",
+                    category=SecurityTestCategory.CONSTITUTIONAL_COMPLIANCE,
+                    risk_level=SecurityRisk.CRITICAL,
+                    description="Verify constitutional hash consistency",
+                    test_function=self._test_constitutional_hash_verification,
+                ),
+                SecurityTest(
+                    test_id="CONST-002",
+                    name="Formal Verification Integration",
+                    category=SecurityTestCategory.CONSTITUTIONAL_COMPLIANCE,
+                    risk_level=SecurityRisk.HIGH,
+                    description="Test Z3 SMT solver integration",
+                    test_function=self._test_formal_verification,
+                ),
+                SecurityTest(
+                    test_id="CONST-003",
+                    name="Audit Trail Integrity",
+                    category=SecurityTestCategory.CONSTITUTIONAL_COMPLIANCE,
+                    risk_level=SecurityRisk.CRITICAL,
+                    description="Test cryptographic audit trail integrity",
+                    test_function=self._test_audit_trail_integrity,
+                ),
+                SecurityTest(
+                    test_id="CONST-004",
+                    name="Policy Compliance",
+                    category=SecurityTestCategory.CONSTITUTIONAL_COMPLIANCE,
+                    risk_level=SecurityRisk.HIGH,
+                    description="Test constitutional policy enforcement",
+                    test_function=self._test_policy_compliance,
+                ),
+            ]
+        )
 
         # API Security Tests
-        self.security_tests.extend([
-            SecurityTest(
-                test_id="API-001",
-                name="Rate Limiting",
-                category=SecurityTestCategory.API_SECURITY,
-                risk_level=SecurityRisk.HIGH,
-                description="Test API rate limiting effectiveness",
-                test_function=self._test_rate_limiting,
-            ),
-            SecurityTest(
-                test_id="API-002",
-                name="Input Validation",
-                category=SecurityTestCategory.API_SECURITY,
-                risk_level=SecurityRisk.HIGH,
-                description="Test API input validation",
-                test_function=self._test_input_validation,
-            ),
-            SecurityTest(
-                test_id="API-003",
-                name="CORS Configuration",
-                category=SecurityTestCategory.API_SECURITY,
-                risk_level=SecurityRisk.MEDIUM,
-                description="Test CORS policy configuration",
-                test_function=self._test_cors_configuration,
-            ),
-            SecurityTest(
-                test_id="API-004",
-                name="Security Headers",
-                category=SecurityTestCategory.API_SECURITY,
-                risk_level=SecurityRisk.MEDIUM,
-                description="Test security header implementation",
-                test_function=self._test_security_headers,
-            ),
-        ])
+        self.security_tests.extend(
+            [
+                SecurityTest(
+                    test_id="API-001",
+                    name="Rate Limiting",
+                    category=SecurityTestCategory.API_SECURITY,
+                    risk_level=SecurityRisk.HIGH,
+                    description="Test API rate limiting effectiveness",
+                    test_function=self._test_rate_limiting,
+                ),
+                SecurityTest(
+                    test_id="API-002",
+                    name="Input Validation",
+                    category=SecurityTestCategory.API_SECURITY,
+                    risk_level=SecurityRisk.HIGH,
+                    description="Test API input validation",
+                    test_function=self._test_input_validation,
+                ),
+                SecurityTest(
+                    test_id="API-003",
+                    name="CORS Configuration",
+                    category=SecurityTestCategory.API_SECURITY,
+                    risk_level=SecurityRisk.MEDIUM,
+                    description="Test CORS policy configuration",
+                    test_function=self._test_cors_configuration,
+                ),
+                SecurityTest(
+                    test_id="API-004",
+                    name="Security Headers",
+                    category=SecurityTestCategory.API_SECURITY,
+                    risk_level=SecurityRisk.MEDIUM,
+                    description="Test security header implementation",
+                    test_function=self._test_security_headers,
+                ),
+            ]
+        )
 
         # Data Protection Tests
-        self.security_tests.extend([
-            SecurityTest(
-                test_id="DATA-001",
-                name="Data Minimization",
-                category=SecurityTestCategory.DATA_PROTECTION,
-                risk_level=SecurityRisk.MEDIUM,
-                description="Test data minimization compliance",
-                test_function=self._test_data_minimization,
-            ),
-            SecurityTest(
-                test_id="DATA-002",
-                name="Privacy Controls",
-                category=SecurityTestCategory.DATA_PROTECTION,
-                risk_level=SecurityRisk.HIGH,
-                description="Test privacy control implementation",
-                test_function=self._test_privacy_controls,
-            ),
-            SecurityTest(
-                test_id="DATA-003",
-                name="Data Retention",
-                category=SecurityTestCategory.DATA_PROTECTION,
-                risk_level=SecurityRisk.MEDIUM,
-                description="Test data retention policy enforcement",
-                test_function=self._test_data_retention,
-            ),
-        ])
+        self.security_tests.extend(
+            [
+                SecurityTest(
+                    test_id="DATA-001",
+                    name="Data Minimization",
+                    category=SecurityTestCategory.DATA_PROTECTION,
+                    risk_level=SecurityRisk.MEDIUM,
+                    description="Test data minimization compliance",
+                    test_function=self._test_data_minimization,
+                ),
+                SecurityTest(
+                    test_id="DATA-002",
+                    name="Privacy Controls",
+                    category=SecurityTestCategory.DATA_PROTECTION,
+                    risk_level=SecurityRisk.HIGH,
+                    description="Test privacy control implementation",
+                    test_function=self._test_privacy_controls,
+                ),
+                SecurityTest(
+                    test_id="DATA-003",
+                    name="Data Retention",
+                    category=SecurityTestCategory.DATA_PROTECTION,
+                    risk_level=SecurityRisk.MEDIUM,
+                    description="Test data retention policy enforcement",
+                    test_function=self._test_data_retention,
+                ),
+            ]
+        )
 
     async def run_all_tests(self) -> dict[str, Any]:
         """Run all security tests."""
@@ -601,11 +615,13 @@ class SecurityValidationFramework:
             except Exception as e:
                 details["error"] = str(e)
 
-        passed = all([
-            details["algorithm_secure"],
-            details["expiration_present"],
-            details["none_algorithm_rejected"],
-        ])
+        passed = all(
+            [
+                details["algorithm_secure"],
+                details["expiration_present"],
+                details["none_algorithm_rejected"],
+            ]
+        )
 
         message = (
             "JWT implementation is secure"
@@ -629,11 +645,13 @@ class SecurityValidationFramework:
         details["logout_invalidates_token"] = True
         details["concurrent_session_limit"] = True
 
-        passed = all([
-            details["session_timeout_enforced"],
-            details["logout_invalidates_token"],
-            details["concurrent_session_limit"],
-        ])
+        passed = all(
+            [
+                details["session_timeout_enforced"],
+                details["logout_invalidates_token"],
+                details["concurrent_session_limit"],
+            ]
+        )
 
         message = (
             "Session management properly implemented"
@@ -776,9 +794,9 @@ class SecurityValidationFramework:
                         ]
 
                         if any(error in response_text for error in sql_errors):
-                            details["vulnerable_endpoints"].append({
-                                "endpoint": endpoint, "payload": payload
-                            })
+                            details["vulnerable_endpoints"].append(
+                                {"endpoint": endpoint, "payload": payload}
+                            )
 
                     except Exception:
                         pass
@@ -978,16 +996,18 @@ class SecurityValidationFramework:
                     ):
                         details["endpoints_compliant"] += 1
                     else:
-                        details["non_compliant_endpoints"].append({
-                            "endpoint": endpoint,
-                            "header_hash": header_hash,
-                            "body_hash": body_hash,
-                        })
+                        details["non_compliant_endpoints"].append(
+                            {
+                                "endpoint": endpoint,
+                                "header_hash": header_hash,
+                                "body_hash": body_hash,
+                            }
+                        )
 
                 except Exception as e:
-                    details["non_compliant_endpoints"].append({
-                        "endpoint": endpoint, "error": str(e)
-                    })
+                    details["non_compliant_endpoints"].append(
+                        {"endpoint": endpoint, "error": str(e)}
+                    )
 
         passed = details["endpoints_tested"] == details["endpoints_compliant"]
         message = (
@@ -1400,9 +1420,9 @@ class SecurityValidationFramework:
         passed_tests = len([r for r in self.test_results if r.passed])
         failed_tests = total_tests - passed_tests
 
-        constitutional_compliant = len([
-            r for r in self.test_results if r.constitutional_compliant
-        ])
+        constitutional_compliant = len(
+            [r for r in self.test_results if r.constitutional_compliant]
+        )
 
         # Group by risk level
         risk_summary = {
@@ -1602,13 +1622,15 @@ class SecurityValidationFramework:
             )
 
         # General recommendations
-        recommendations.extend([
-            "Regularly update all dependencies and security patches",
-            "Implement continuous security monitoring and alerting",
-            "Conduct regular security audits and penetration testing",
-            "Maintain comprehensive security documentation and runbooks",
-            "Ensure all team members receive security training",
-        ])
+        recommendations.extend(
+            [
+                "Regularly update all dependencies and security patches",
+                "Implement continuous security monitoring and alerting",
+                "Conduct regular security audits and penetration testing",
+                "Maintain comprehensive security documentation and runbooks",
+                "Ensure all team members receive security training",
+            ]
+        )
 
         return recommendations
 

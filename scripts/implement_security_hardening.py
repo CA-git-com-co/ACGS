@@ -13,27 +13,28 @@ import logging
 import os
 import re
 import shutil
-from pathlib import Path
-from typing import Dict, List, Any
 import time
+from pathlib import Path
+from typing import Any, Dict, List
 
 # Constitutional compliance
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
+
 class SecurityHardeningImplementer:
     """Implements security hardening measures for ACGS."""
-    
+
     def __init__(self, project_root: Path):
         self.project_root = project_root
         self.logger = logging.getLogger("security_hardening")
         self.constitutional_hash = CONSTITUTIONAL_HASH
         self.hardening_results = {}
-        
+
     async def implement_comprehensive_hardening(self) -> Dict[str, Any]:
         """Implement comprehensive security hardening."""
         self.logger.info("🔒 Starting ACGS Security Hardening Implementation")
         self.logger.info(f"📋 Constitutional Hash: {self.constitutional_hash}")
-        
+
         hardening_results = {
             "implementation_timestamp": time.time(),
             "constitutional_hash": self.constitutional_hash,
@@ -41,7 +42,7 @@ class SecurityHardeningImplementer:
             "vulnerabilities_fixed": 0,
             "security_improvements": [],
         }
-        
+
         # Implement hardening measures
         hardening_actions = [
             ("Remove Hardcoded Credentials", self._remove_hardcoded_credentials),
@@ -51,46 +52,70 @@ class SecurityHardeningImplementer:
             ("Add Security Headers", self._add_security_headers),
             ("Implement Security Monitoring", self._implement_security_monitoring),
         ]
-        
+
         for action_name, action_func in hardening_actions:
             try:
                 self.logger.info(f"🔧 Implementing {action_name}...")
                 result = await action_func()
                 hardening_results["hardening_actions"][action_name] = result
-                
+
                 if result.get("success", False):
-                    hardening_results["vulnerabilities_fixed"] += result.get("vulnerabilities_fixed", 0)
-                    hardening_results["security_improvements"].extend(result.get("improvements", []))
-                    self.logger.info(f"   ✅ {action_name}: {result.get('vulnerabilities_fixed', 0)} issues fixed")
+                    hardening_results["vulnerabilities_fixed"] += result.get(
+                        "vulnerabilities_fixed", 0
+                    )
+                    hardening_results["security_improvements"].extend(
+                        result.get("improvements", [])
+                    )
+                    self.logger.info(
+                        f"   ✅ {action_name}: {result.get('vulnerabilities_fixed', 0)} issues fixed"
+                    )
                 else:
-                    self.logger.warning(f"   ⚠️ {action_name}: {result.get('error', 'Unknown error')}")
-                    
+                    self.logger.warning(
+                        f"   ⚠️ {action_name}: {result.get('error', 'Unknown error')}"
+                    )
+
             except Exception as e:
                 self.logger.error(f"   ❌ {action_name} failed: {e}")
-                hardening_results["hardening_actions"][action_name] = {"success": False, "error": str(e)}
-        
+                hardening_results["hardening_actions"][action_name] = {
+                    "success": False,
+                    "error": str(e),
+                }
+
         # Calculate overall improvement
         total_improvements = len(hardening_results["security_improvements"])
-        hardening_results["overall_success"] = total_improvements >= 5  # At least 5 improvements
-        
+        hardening_results["overall_success"] = (
+            total_improvements >= 5
+        )  # At least 5 improvements
+
         self.logger.info(f"🎯 Security Hardening Complete:")
-        self.logger.info(f"   🔧 Vulnerabilities Fixed: {hardening_results['vulnerabilities_fixed']}")
+        self.logger.info(
+            f"   🔧 Vulnerabilities Fixed: {hardening_results['vulnerabilities_fixed']}"
+        )
         self.logger.info(f"   📈 Security Improvements: {total_improvements}")
-        
+
         return hardening_results
-    
+
     async def _remove_hardcoded_credentials(self) -> Dict[str, Any]:
         """Remove hardcoded credentials from code."""
         vulnerabilities_fixed = 0
         improvements = []
-        
+
         # Patterns for hardcoded credentials
         credential_patterns = [
-            (r'password\s*=\s*["\']([^"\']+)["\']', 'password = os.getenv("PASSWORD", "")'),
-            (r'secret\s*=\s*["\']([^"\']+)["\']', 'secret = os.getenv("SECRET_KEY", "")'),
-            (r'api_key\s*=\s*["\']([^"\']+)["\']', 'api_key = os.getenv("API_KEY", "")'),
+            (
+                r'password\s*=\s*["\']([^"\']+)["\']',
+                'password = os.getenv("PASSWORD", "")',
+            ),
+            (
+                r'secret\s*=\s*["\']([^"\']+)["\']',
+                'secret = os.getenv("SECRET_KEY", "")',
+            ),
+            (
+                r'api_key\s*=\s*["\']([^"\']+)["\']',
+                'api_key = os.getenv("API_KEY", "")',
+            ),
         ]
-        
+
         # Files to fix (focus on test files and tools)
         files_to_fix = [
             "setup_grafana_dashboard.py",
@@ -99,49 +124,58 @@ class SecurityHardeningImplementer:
             "tools/performance_benchmark.py",
             "tools/test_authentication_workflow.py",
         ]
-        
+
         for file_path in files_to_fix:
             full_path = self.project_root / file_path
             if full_path.exists():
                 try:
                     content = full_path.read_text()
                     original_content = content
-                    
+
                     # Apply credential pattern replacements
                     for pattern, replacement in credential_patterns:
                         matches = re.findall(pattern, content, re.IGNORECASE)
                         if matches:
-                            content = re.sub(pattern, replacement, content, flags=re.IGNORECASE)
+                            content = re.sub(
+                                pattern, replacement, content, flags=re.IGNORECASE
+                            )
                             vulnerabilities_fixed += len(matches)
-                    
+
                     # Add environment variable imports if needed
                     if content != original_content:
-                        if "import os" not in content and "from os import" not in content:
+                        if (
+                            "import os" not in content
+                            and "from os import" not in content
+                        ):
                             # Add import at the top
-                            lines = content.split('\n')
+                            lines = content.split("\n")
                             import_line = "import os"
-                            
+
                             # Find the right place to insert import
                             insert_index = 0
                             for i, line in enumerate(lines):
                                 if line.startswith('"""') or line.startswith("'''"):
                                     # Skip docstrings
                                     continue
-                                if line.startswith('import ') or line.startswith('from '):
+                                if line.startswith("import ") or line.startswith(
+                                    "from "
+                                ):
                                     insert_index = i + 1
-                                elif line.strip() and not line.startswith('#'):
+                                elif line.strip() and not line.startswith("#"):
                                     break
-                            
+
                             lines.insert(insert_index, import_line)
-                            content = '\n'.join(lines)
-                        
+                            content = "\n".join(lines)
+
                         # Write the fixed content
                         full_path.write_text(content)
-                        improvements.append(f"Fixed hardcoded credentials in {file_path}")
-                        
+                        improvements.append(
+                            f"Fixed hardcoded credentials in {file_path}"
+                        )
+
                 except Exception as e:
                     self.logger.warning(f"Could not fix {file_path}: {e}")
-        
+
         # Create .env.example file
         env_example_path = self.project_root / ".env.example"
         env_example_content = f"""# ACGS Environment Variables
@@ -165,21 +199,21 @@ ENABLE_HTTPS=true
 CORS_ORIGINS=["http://localhost:3000"]
 RATE_LIMIT_ENABLED=true
 """
-        
+
         env_example_path.write_text(env_example_content)
         improvements.append("Created .env.example file")
-        
+
         return {
             "success": True,
             "vulnerabilities_fixed": vulnerabilities_fixed,
             "improvements": improvements,
             "constitutional_hash": self.constitutional_hash,
         }
-    
+
     async def _enhance_secrets_management(self) -> Dict[str, Any]:
         """Enhance secrets management implementation."""
         improvements = []
-        
+
         # Create secrets management utility
         secrets_manager_path = self.project_root / "services/shared/secrets_manager.py"
         secrets_manager_content = f'''"""
@@ -262,11 +296,11 @@ class ACGSSecretsManager:
 # Global secrets manager instance
 secrets_manager = ACGSSecretsManager()
 '''
-        
+
         secrets_manager_path.parent.mkdir(parents=True, exist_ok=True)
         secrets_manager_path.write_text(secrets_manager_content)
         improvements.append("Created ACGS secrets manager")
-        
+
         # Update .gitignore to exclude sensitive files
         gitignore_path = self.project_root / ".gitignore"
         gitignore_additions = [
@@ -279,7 +313,7 @@ secrets_manager = ACGSSecretsManager()
             "secrets/",
             "vault_tokens/",
         ]
-        
+
         if gitignore_path.exists():
             gitignore_content = gitignore_path.read_text()
             for addition in gitignore_additions:
@@ -288,21 +322,21 @@ secrets_manager = ACGSSecretsManager()
             gitignore_path.write_text(gitignore_content)
         else:
             gitignore_path.write_text("\\n".join(gitignore_additions))
-        
+
         improvements.append("Updated .gitignore for security")
-        
+
         return {
             "success": True,
             "vulnerabilities_fixed": 1,
             "improvements": improvements,
             "constitutional_hash": self.constitutional_hash,
         }
-    
+
     async def _improve_dependency_security(self) -> Dict[str, Any]:
         """Improve dependency security."""
         improvements = []
         vulnerabilities_fixed = 0
-        
+
         # Create security-focused requirements file
         security_requirements_path = self.project_root / "requirements-security.txt"
         security_requirements_content = f"""# ACGS Security Dependencies
@@ -326,15 +360,15 @@ python-multipart>=0.0.6
 bleach>=6.0.0
 validators>=0.20.0
 """
-        
+
         security_requirements_path.write_text(security_requirements_content)
         improvements.append("Created security-focused requirements file")
-        
+
         # Update main requirements.txt with pinned versions
         main_requirements_path = self.project_root / "requirements.txt"
         if main_requirements_path.exists():
             content = main_requirements_path.read_text()
-            
+
             # Pin common vulnerable packages to secure versions
             security_updates = {
                 "pillow": ">=10.0.0",
@@ -343,32 +377,39 @@ validators>=0.20.0
                 "cryptography": ">=41.0.0",
                 "pyjwt": ">=2.8.0",
             }
-            
+
             for package, version in security_updates.items():
                 # Update if package exists without proper version
                 pattern = rf"^{package}(?:[<>=!]+[^\\n]*)?$"
                 replacement = f"{package}{version}"
-                
+
                 if re.search(pattern, content, re.MULTILINE | re.IGNORECASE):
-                    content = re.sub(pattern, replacement, content, flags=re.MULTILINE | re.IGNORECASE)
+                    content = re.sub(
+                        pattern,
+                        replacement,
+                        content,
+                        flags=re.MULTILINE | re.IGNORECASE,
+                    )
                     vulnerabilities_fixed += 1
-            
+
             main_requirements_path.write_text(content)
             improvements.append("Updated requirements.txt with secure versions")
-        
+
         return {
             "success": True,
             "vulnerabilities_fixed": vulnerabilities_fixed,
             "improvements": improvements,
             "constitutional_hash": self.constitutional_hash,
         }
-    
+
     async def _strengthen_authorization(self) -> Dict[str, Any]:
         """Strengthen authorization controls."""
         improvements = []
-        
+
         # Create enhanced authorization middleware
-        auth_middleware_path = self.project_root / "services/shared/enhanced_auth_middleware.py"
+        auth_middleware_path = (
+            self.project_root / "services/shared/enhanced_auth_middleware.py"
+        )
         auth_middleware_content = f'''"""
 Enhanced Authorization Middleware for ACGS
 Constitutional Hash: {self.constitutional_hash}
@@ -493,24 +534,26 @@ class EnhancedAuthorizationMiddleware:
             "constitutional_hash": self.constitutional_hash,
         }}
 '''
-        
+
         auth_middleware_path.parent.mkdir(parents=True, exist_ok=True)
         auth_middleware_path.write_text(auth_middleware_content)
         improvements.append("Created enhanced authorization middleware")
-        
+
         return {
             "success": True,
             "vulnerabilities_fixed": 1,
             "improvements": improvements,
             "constitutional_hash": self.constitutional_hash,
         }
-    
+
     async def _add_security_headers(self) -> Dict[str, Any]:
         """Add security headers middleware."""
         improvements = []
-        
+
         # Create security headers middleware
-        headers_middleware_path = self.project_root / "services/shared/security_headers_middleware.py"
+        headers_middleware_path = (
+            self.project_root / "services/shared/security_headers_middleware.py"
+        )
         headers_middleware_content = f'''"""
 Security Headers Middleware for ACGS
 Constitutional Hash: {self.constitutional_hash}
@@ -553,22 +596,22 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         
         return response
 '''
-        
+
         headers_middleware_path.parent.mkdir(parents=True, exist_ok=True)
         headers_middleware_path.write_text(headers_middleware_content)
         improvements.append("Created security headers middleware")
-        
+
         return {
             "success": True,
             "vulnerabilities_fixed": 1,
             "improvements": improvements,
             "constitutional_hash": self.constitutional_hash,
         }
-    
+
     async def _implement_security_monitoring(self) -> Dict[str, Any]:
         """Implement security monitoring and alerting."""
         improvements = []
-        
+
         # Create security monitoring utility
         monitoring_path = self.project_root / "services/shared/security_monitoring.py"
         monitoring_content = f'''"""
@@ -709,11 +752,11 @@ class SecurityMonitor:
 # Global security monitor instance
 security_monitor = SecurityMonitor()
 '''
-        
+
         monitoring_path.parent.mkdir(parents=True, exist_ok=True)
         monitoring_path.write_text(monitoring_content)
         improvements.append("Created security monitoring system")
-        
+
         return {
             "success": True,
             "vulnerabilities_fixed": 1,
@@ -721,38 +764,40 @@ security_monitor = SecurityMonitor()
             "constitutional_hash": self.constitutional_hash,
         }
 
+
 async def main():
     """Main hardening implementation function."""
     logging.basicConfig(
         level=logging.INFO,
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
-    
+
     project_root = Path(__file__).parent.parent
     implementer = SecurityHardeningImplementer(project_root)
-    
+
     print("🔒 ACGS Security Hardening Implementation")
     print(f"📋 Constitutional Hash: {CONSTITUTIONAL_HASH}")
     print()
-    
+
     # Implement hardening measures
     results = await implementer.implement_comprehensive_hardening()
-    
+
     # Save results
     results_path = project_root / "reports" / "security_hardening_implementation.json"
     results_path.parent.mkdir(exist_ok=True)
-    
-    with open(results_path, 'w') as f:
+
+    with open(results_path, "w") as f:
         json.dump(results, f, indent=2)
-    
+
     print(f"🎯 Security Hardening Results:")
     print(f"   🔧 Vulnerabilities Fixed: {results['vulnerabilities_fixed']}")
     print(f"   📈 Security Improvements: {len(results['security_improvements'])}")
     print(f"   ✅ Overall Success: {results['overall_success']}")
     print()
     print(f"📄 Results saved: {results_path}")
-    
+
     return results
+
 
 if __name__ == "__main__":
     asyncio.run(main())

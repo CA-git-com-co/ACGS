@@ -1,125 +1,131 @@
-# Constitutional Hash: cdd01ef066bc6cf2
-# ACGS-1 HAProxy Load Balancer Docker Compose
-# Phase 2 - Enterprise Scalability & Performance
-# High availability load balancing for >1000 concurrent users
-
 version: '3.8'
-
 services:
-  # HAProxy Load Balancer
   haproxy:
     image: haproxy:2.8-alpine
     container_name: acgs_haproxy
     ports:
-      - '80:80' # HTTP
-      - '443:443' # HTTPS
-      - '8080:8080' # HAProxy Stats
-      - '5433:5433' # PostgreSQL Load Balancer
-      - '6380:6380' # Redis Load Balancer
-      - '9090:9090' # Monitoring Load Balancer
+    - 80:80
+    - 443:443
+    - 8080:8080
+    - 5433:5433
+    - 6380:6380
+    - 9090:9090
     volumes:
-      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
-      - ./ssl:/etc/ssl/certs:ro
-      - ./errors:/etc/haproxy/errors:ro
-      - haproxy_socket:/var/run/haproxy
+    - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    - ./ssl:/etc/ssl/certs:ro
+    - ./errors:/etc/haproxy/errors:ro
+    - haproxy_socket:/var/run/haproxy
     networks:
-      - acgs_network
+    - acgs_network
     restart: unless-stopped
     depends_on:
-      - haproxy-exporter
+    - haproxy-exporter
     environment:
-      - HAPROXY_USER=haproxy
-      - HAPROXY_GROUP=haproxy
+    - HAPROXY_USER=haproxy
+    - HAPROXY_GROUP=haproxy
     sysctls:
-      - net.ipv4.ip_unprivileged_port_start=0
+    - net.ipv4.ip_unprivileged_port_start=0
     ulimits:
       nofile: 65536
     healthcheck:
-      test: ['CMD', 'wget', '--quiet', '--tries=1', '--spider', 'http://localhost:8080/stats']
+      test:
+      - CMD
+      - wget
+      - --quiet
+      - --tries=1
+      - --spider
+      - http://localhost:8080/stats
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
-
-  # HAProxy Exporter for Prometheus monitoring
   haproxy-exporter:
     image: prom/haproxy-exporter:latest
     container_name: acgs_haproxy_exporter
     ports:
-      - '9101:9101'
+    - 9101:9101
     command:
-      - '--haproxy.scrape-uri=http://admin:acgs_haproxy_admin_2024@haproxy:8080/stats?stats;csv'
-      - '--web.listen-address=:9101'
-      - '--web.telemetry-path=/metrics'
+    - --haproxy.scrape-uri=http://admin:acgs_haproxy_admin_2024@haproxy:8080/stats?stats;csv
+    - --web.listen-address=:9101
+    - --web.telemetry-path=/metrics
     networks:
-      - acgs_network
+    - acgs_network
     restart: unless-stopped
     depends_on:
-      - haproxy
+    - haproxy
     healthcheck:
-      test: ['CMD', 'wget', '--quiet', '--tries=1', '--spider', 'http://localhost:9101/metrics']
+      test:
+      - CMD
+      - wget
+      - --quiet
+      - --tries=1
+      - --spider
+      - http://localhost:9101/metrics
       interval: 30s
       timeout: 10s
       retries: 3
-
-  # HAProxy Log Aggregator (rsyslog)
   haproxy-logs:
     image: rsyslog/syslog_appliance_alpine:latest
     container_name: acgs_haproxy_logs
     ports:
-      - '514:514/udp'
+    - 514:514/udp
     volumes:
-      - haproxy_logs:/var/log
-      - ./rsyslog.conf:/etc/rsyslog.conf:ro
+    - haproxy_logs:/var/log
+    - ./rsyslog.conf:/etc/rsyslog.conf:ro
     networks:
-      - acgs_network
+    - acgs_network
     restart: unless-stopped
     environment:
-      - RSYSLOG_CONF=/etc/rsyslog.conf
-
-  # HAProxy Configuration Validator
+    - RSYSLOG_CONF=/etc/rsyslog.conf
   haproxy-validator:
     image: haproxy:2.8-alpine
     container_name: acgs_haproxy_validator
     volumes:
-      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
-    command: ['haproxy', '-f', '/usr/local/etc/haproxy/haproxy.cfg', '-c']
+    - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    command:
+    - haproxy
+    - -f
+    - /usr/local/etc/haproxy/haproxy.cfg
+    - -c
     networks:
-      - acgs_network
+    - acgs_network
     profiles:
-      - tools
-
-  # HAProxy Backup Instance (for high availability)
+    - tools
   haproxy-backup:
     image: haproxy:2.8-alpine
     container_name: acgs_haproxy_backup
     ports:
-      - '8081:80' # Backup HTTP
-      - '8443:443' # Backup HTTPS
-      - '8082:8080' # Backup Stats
+    - 8081:80
+    - 8443:443
+    - 8082:8080
     volumes:
-      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
-      - ./ssl:/etc/ssl/certs:ro
-      - ./errors:/etc/haproxy/errors:ro
-      - haproxy_backup_socket:/var/run/haproxy
+    - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    - ./ssl:/etc/ssl/certs:ro
+    - ./errors:/etc/haproxy/errors:ro
+    - haproxy_backup_socket:/var/run/haproxy
     networks:
-      - acgs_network
+    - acgs_network
     restart: unless-stopped
     environment:
-      - HAPROXY_USER=haproxy
-      - HAPROXY_GROUP=haproxy
+    - HAPROXY_USER=haproxy
+    - HAPROXY_GROUP=haproxy
     sysctls:
-      - net.ipv4.ip_unprivileged_port_start=0
+    - net.ipv4.ip_unprivileged_port_start=0
     ulimits:
       nofile: 65536
     profiles:
-      - backup
+    - backup
     healthcheck:
-      test: ['CMD', 'wget', '--quiet', '--tries=1', '--spider', 'http://localhost:8080/stats']
+      test:
+      - CMD
+      - wget
+      - --quiet
+      - --tries=1
+      - --spider
+      - http://localhost:8080/stats
       interval: 30s
       timeout: 10s
       retries: 3
-
 volumes:
   haproxy_socket:
     driver: local
@@ -127,7 +133,7 @@ volumes:
     driver: local
   haproxy_logs:
     driver: local
-
 networks:
   acgs_network:
     external: true
+constitutional_hash: cdd01ef066bc6cf2

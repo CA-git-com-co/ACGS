@@ -1,4 +1,6 @@
 # Academic Submission System Compiler
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 
 ## Overview
 

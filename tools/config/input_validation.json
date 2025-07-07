@@ -32,5 +32,7 @@
     "token_validation": true,
     "same_origin_check": true,
     "referer_validation": true
-  }
+  },
+  "_constitutional_hash": "cdd01ef066bc6cf2",
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }

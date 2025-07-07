@@ -336,7 +336,10 @@ class ConstitutionalSafetyValidator:
             violations.append("Missing trace ID for operation observability")
 
         # Check for user context in audit
-        if not context or (not context.get("user_id") and action_data.get("requires_user_context", True)):
+        if not context or (
+            not context.get("user_id")
+            and action_data.get("requires_user_context", True)
+        ):
             violations.append("Missing user context for operation transparency")
 
         # Recommendations for better transparency

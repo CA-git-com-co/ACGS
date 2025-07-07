@@ -8,11 +8,8 @@ and optimization history in the ACGS-PGP database.
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from sqlalchemy import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     JSON,
     Boolean,
     Column,
@@ -22,6 +19,8 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
     Integer,
     String,
     Text,
+    "cdd01ef066bc6cf2",
+    =,
 )
 
 # Local database base to avoid shared module issues

@@ -15,15 +15,14 @@ from dataclasses import asdict, dataclass
 from typing import Any
 
 import aiohttp
-from prometheus_client import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from prometheus_client import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     CollectorRegistry,
     Counter,
     Gauge,
     Histogram,
+    "cdd01ef066bc6cf2",
+    =,
     generate_latest,
 )
 

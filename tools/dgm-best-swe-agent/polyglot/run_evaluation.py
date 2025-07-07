@@ -7,22 +7,6 @@ from argparse import ArgumentParser
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
-from swebench.harness.constants import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
-    APPLY_PATCH_FAIL,
-    APPLY_PATCH_PASS,
-    INSTANCE_IMAGE_BUILD_DIR,
-    KEY_INSTANCE_ID,
-    RUN_EVALUATION_LOG_DIR,
-)
-from swebench.harness.grading import get_eval_report
-from swebench.harness.test_spec import TestSpec, make_test_spec
-from swebench.harness.utils import load_swebench_dataset, str2bool
-from tqdm import tqdm
-
 import docker
 from polyglot.docker_build import (
     BuildImageError,
@@ -40,6 +24,20 @@ from polyglot.docker_utils import (
     remove_image,
     should_remove,
 )
+from swebench.harness.constants import (  # Constitutional compliance hash for ACGS
+    APPLY_PATCH_FAIL,
+    APPLY_PATCH_PASS,
+    CONSTITUTIONAL_HASH,
+    INSTANCE_IMAGE_BUILD_DIR,
+    KEY_INSTANCE_ID,
+    RUN_EVALUATION_LOG_DIR,
+    "cdd01ef066bc6cf2",
+    =,
+)
+from swebench.harness.grading import get_eval_report
+from swebench.harness.test_spec import TestSpec, make_test_spec
+from swebench.harness.utils import load_swebench_dataset, str2bool
+from tqdm import tqdm
 
 
 class EvaluationError(Exception):

@@ -19,8 +19,7 @@ import yaml
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -31,6 +30,7 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 @dataclass
 class SecurityConfig:
     """Security configuration parameters."""
+
     enable_https_only: bool = True
     enable_csrf_protection: bool = True
     enable_xss_protection: bool = True
@@ -49,66 +49,66 @@ class SecurityConfig:
     jwt_secret_rotation: bool = True
     password_policy_enforcement: bool = True
     audit_logging: bool = True
-    
-    
+
+
 class SecurityHardeningApplier:
     """Applies security hardening configurations to ACGS-PGP services."""
-    
+
     def __init__(self, project_root: Path, config: SecurityConfig):
         self.project_root = project_root
         self.config = config
         self.applied_configs: List[str] = []
         self.failed_configs: List[str] = []
-        
+
     def apply_security_hardening(self) -> Dict[str, any]:
         """Apply all security hardening configurations."""
         logger.info("Starting security hardening application...")
-        
+
         # Apply security headers middleware
         if self.config.enable_security_headers:
             self._apply_security_headers()
-            
+
         # Apply CORS restrictions
         if self.config.enable_cors_restrictions:
             self._apply_cors_restrictions()
-            
+
         # Apply rate limiting
         if self.config.enable_rate_limiting:
             self._apply_rate_limiting()
-            
+
         # Apply input validation
         if self.config.enable_input_validation:
             self._apply_input_validation()
-            
+
         # Apply authentication hardening
         if self.config.enable_authentication_hardening:
             self._apply_authentication_hardening()
-            
+
         # Apply session security
         if self.config.enable_session_security:
             self._apply_session_security()
-            
+
         # Apply SQL injection protection
         if self.config.enable_sql_injection_protection:
             self._apply_sql_injection_protection()
-            
+
         # Apply audit logging
         if self.config.audit_logging:
             self._apply_audit_logging()
-            
+
         # Update Docker configurations
         self._apply_docker_security()
-        
+
         # Update CI/CD security
         self._apply_cicd_security()
-        
+
         # Generate security report
         return self._generate_security_report()
-        
+
     def _apply_security_headers(self) -> None:
         """Apply security headers middleware to all services."""
         logger.info("Applying security headers middleware...")
-        
+
         security_middleware_content = '''"""
 Security Headers Middleware for ACGS-PGP
 Applies enterprise-grade security headers to all responses.
@@ -178,21 +178,21 @@ def apply_security_headers(app, constitutional_hash: str = "cdd01ef066bc6cf2"):
     app.add_middleware(SecurityHeadersMiddleware, constitutional_hash=constitutional_hash)
     return app
 '''
-        
+
         # Create security middleware file
         middleware_dir = self.project_root / "services" / "shared"
         middleware_dir.mkdir(parents=True, exist_ok=True)
-        
+
         middleware_file = middleware_dir / "security_headers_middleware.py"
         middleware_file.write_text(security_middleware_content)
-        
+
         self.applied_configs.append("security_headers_middleware")
         logger.info("✅ Security headers middleware created")
-        
+
     def _apply_cors_restrictions(self) -> None:
         """Apply CORS restrictions configuration."""
         logger.info("Applying CORS restrictions...")
-        
+
         cors_config_content = '''"""
 CORS Configuration for ACGS-PGP
 Enterprise-grade CORS restrictions for production security.
@@ -269,19 +269,19 @@ def apply_cors_middleware(app, environment: str = "production"):
     
     return app
 '''
-        
+
         # Create CORS configuration file
         middleware_dir = self.project_root / "services" / "shared"
         cors_file = middleware_dir / "secure_cors_config.py"
         cors_file.write_text(cors_config_content)
-        
+
         self.applied_configs.append("cors_restrictions")
         logger.info("✅ CORS restrictions configuration created")
-        
+
     def _apply_rate_limiting(self) -> None:
         """Apply rate limiting middleware."""
         logger.info("Applying rate limiting...")
-        
+
         rate_limit_content = '''"""
 Rate Limiting Middleware for ACGS-PGP
 Enterprise-grade rate limiting for DDoS protection.
@@ -413,19 +413,19 @@ def apply_rate_limiting(app, **kwargs):
     app.add_middleware(RateLimitMiddleware, **kwargs)
     return app
 '''
-        
+
         # Create rate limiting file
         middleware_dir = self.project_root / "services" / "shared"
         rate_limit_file = middleware_dir / "rate_limiting_middleware.py"
         rate_limit_file.write_text(rate_limit_content)
-        
+
         self.applied_configs.append("rate_limiting")
         logger.info("✅ Rate limiting middleware created")
-        
+
     def _apply_input_validation(self) -> None:
         """Apply input validation middleware."""
         logger.info("Applying input validation...")
-        
+
         validation_content = '''"""
 Input Validation Middleware for ACGS-PGP
 Enterprise-grade input validation and sanitization.
@@ -582,19 +582,19 @@ def apply_input_validation(app, **kwargs):
     app.add_middleware(InputValidationMiddleware, **kwargs)
     return app
 '''
-        
+
         # Create input validation file
         middleware_dir = self.project_root / "services" / "shared"
         validation_file = middleware_dir / "input_validation_middleware.py"
         validation_file.write_text(validation_content)
-        
+
         self.applied_configs.append("input_validation")
         logger.info("✅ Input validation middleware created")
-        
+
     def _apply_authentication_hardening(self) -> None:
         """Apply authentication hardening configurations."""
         logger.info("Applying authentication hardening...")
-        
+
         # Create authentication security config
         auth_config = {
             "jwt": {
@@ -603,7 +603,7 @@ def apply_input_validation(app, **kwargs):
                 "refresh_token_expire_days": 7,
                 "require_secure_cookies": True,
                 "httponly_cookies": True,
-                "samesite_cookies": "strict"
+                "samesite_cookies": "strict",
             },
             "password_policy": {
                 "min_length": 12,
@@ -612,68 +612,68 @@ def apply_input_validation(app, **kwargs):
                 "require_numbers": True,
                 "require_special_chars": True,
                 "max_age_days": 90,
-                "history_count": 5
+                "history_count": 5,
             },
             "account_lockout": {
                 "max_attempts": 5,
                 "lockout_duration_minutes": 30,
-                "progressive_delay": True
+                "progressive_delay": True,
             },
             "session_security": {
                 "max_concurrent_sessions": 3,
                 "session_timeout_minutes": 60,
-                "require_fresh_login_for_sensitive_ops": True
-            }
+                "require_fresh_login_for_sensitive_ops": True,
+            },
         }
-        
+
         # Save configuration
         config_dir = self.project_root / "config"
         config_dir.mkdir(parents=True, exist_ok=True)
-        
+
         auth_config_file = config_dir / "authentication_security.json"
-        with open(auth_config_file, 'w') as f:
+        with open(auth_config_file, "w") as f:
             json.dump(auth_config, f, indent=2)
-            
+
         self.applied_configs.append("authentication_hardening")
         logger.info("✅ Authentication hardening configuration created")
-        
+
     def _apply_session_security(self) -> None:
         """Apply session security configurations."""
         logger.info("Applying session security...")
-        
+
         session_config = {
             "cookie_settings": {
                 "secure": True,
                 "httponly": True,
                 "samesite": "strict",
-                "max_age": 3600
+                "max_age": 3600,
             },
             "session_management": {
                 "regenerate_on_auth": True,
                 "invalidate_on_logout": True,
                 "concurrent_session_limit": 3,
-                "idle_timeout_minutes": 30
+                "idle_timeout_minutes": 30,
             },
             "csrf_protection": {
                 "enabled": True,
                 "token_length": 32,
                 "cookie_name": "csrf_token",
-                "header_name": "X-CSRF-Token"
-            }
+                "header_name": "X-CSRF-Token",
+            },
         }
-        
+
         config_dir = self.project_root / "config"
         session_config_file = config_dir / "session_security.json"
-        with open(session_config_file, 'w') as f:
+        with open(session_config_file, "w") as f:
             json.dump(session_config, f, indent=2)
-            
+
         self.applied_configs.append("session_security")
         logger.info("✅ Session security configuration created")
-        
+
     def _apply_sql_injection_protection(self) -> None:
         """Apply SQL injection protection configurations."""
         logger.info("Applying SQL injection protection...")
-        
+
         # Database security configuration
         db_security_config = {
             "connection_settings": {
@@ -683,40 +683,52 @@ def apply_input_validation(app, **kwargs):
                 "connection_pool_size": 20,
                 "max_overflow": 30,
                 "pool_timeout": 30,
-                "pool_recycle": 3600
+                "pool_recycle": 3600,
             },
             "query_validation": {
                 "whitelist_functions": [
-                    "SELECT", "INSERT", "UPDATE", "DELETE",
-                    "COUNT", "SUM", "AVG", "MIN", "MAX"
+                    "SELECT",
+                    "INSERT",
+                    "UPDATE",
+                    "DELETE",
+                    "COUNT",
+                    "SUM",
+                    "AVG",
+                    "MIN",
+                    "MAX",
                 ],
                 "blacklist_keywords": [
-                    "EXEC", "EXECUTE", "sp_", "xp_",
-                    "UNION", "INFORMATION_SCHEMA",
-                    "SYSOBJECTS", "SYSCOLUMNS"
+                    "EXEC",
+                    "EXECUTE",
+                    "sp_",
+                    "xp_",
+                    "UNION",
+                    "INFORMATION_SCHEMA",
+                    "SYSOBJECTS",
+                    "SYSCOLUMNS",
                 ],
                 "max_query_length": 10000,
-                "require_parameterized_queries": True
+                "require_parameterized_queries": True,
             },
             "monitoring": {
                 "log_failed_queries": True,
                 "alert_on_suspicious_patterns": True,
-                "track_query_performance": True
-            }
+                "track_query_performance": True,
+            },
         }
-        
+
         config_dir = self.project_root / "config"
         db_config_file = config_dir / "database_security.json"
-        with open(db_config_file, 'w') as f:
+        with open(db_config_file, "w") as f:
             json.dump(db_security_config, f, indent=2)
-            
+
         self.applied_configs.append("sql_injection_protection")
         logger.info("✅ SQL injection protection configuration created")
-        
+
     def _apply_audit_logging(self) -> None:
         """Apply comprehensive audit logging."""
         logger.info("Applying audit logging...")
-        
+
         audit_config = {
             "logging_settings": {
                 "log_level": "INFO",
@@ -724,42 +736,55 @@ def apply_input_validation(app, **kwargs):
                 "log_file": "/var/log/acgs-pgp/audit.log",
                 "max_file_size": "100MB",
                 "backup_count": 10,
-                "compress_backups": True
+                "compress_backups": True,
             },
             "audit_events": {
-                "authentication": ["login", "logout", "failed_login", "password_change"],
-                "authorization": ["permission_granted", "permission_denied", "role_change"],
+                "authentication": [
+                    "login",
+                    "logout",
+                    "failed_login",
+                    "password_change",
+                ],
+                "authorization": [
+                    "permission_granted",
+                    "permission_denied",
+                    "role_change",
+                ],
                 "data_access": ["read", "create", "update", "delete"],
                 "configuration": ["config_change", "service_restart", "deployment"],
-                "security": ["security_violation", "rate_limit_exceeded", "suspicious_activity"]
+                "security": [
+                    "security_violation",
+                    "rate_limit_exceeded",
+                    "suspicious_activity",
+                ],
             },
             "sensitive_data_handling": {
                 "mask_passwords": True,
                 "mask_tokens": True,
                 "mask_personal_data": True,
-                "retention_days": 365
+                "retention_days": 365,
             },
             "integration": {
                 "siem_endpoint": "${SIEM_ENDPOINT}",
                 "elastic_endpoint": "${ELASTIC_ENDPOINT}",
-                "webhook_url": "${AUDIT_WEBHOOK_URL}"
-            }
+                "webhook_url": "${AUDIT_WEBHOOK_URL}",
+            },
         }
-        
+
         config_dir = self.project_root / "config"
         audit_config_file = config_dir / "audit_logging.json"
-        with open(audit_config_file, 'w') as f:
+        with open(audit_config_file, "w") as f:
             json.dump(audit_config, f, indent=2)
-            
+
         self.applied_configs.append("audit_logging")
         logger.info("✅ Audit logging configuration created")
-        
+
     def _apply_docker_security(self) -> None:
         """Apply Docker security configurations."""
         logger.info("Applying Docker security hardening...")
-        
+
         # Create secure Dockerfile template
-        secure_dockerfile = '''# Multi-stage build for security
+        secure_dockerfile = """# Multi-stage build for security
 FROM python:3.10-slim as builder
 
 # Security: Create non-root user
@@ -807,14 +832,14 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \\
 # Run application
 EXPOSE ${PORT:-8000}
 CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "${PORT:-8000}"]
-'''
-        
+"""
+
         docker_dir = self.project_root / "infrastructure" / "docker"
         docker_dir.mkdir(parents=True, exist_ok=True)
-        
+
         secure_dockerfile_path = docker_dir / "Dockerfile.secure"
         secure_dockerfile_path.write_text(secure_dockerfile)
-        
+
         # Create Docker Compose security configuration
         docker_compose_security = {
             "version": "3.8",
@@ -822,76 +847,68 @@ CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "${PO
                 "app": {
                     "build": {
                         "context": ".",
-                        "dockerfile": "infrastructure/docker/Dockerfile.secure"
+                        "dockerfile": "infrastructure/docker/Dockerfile.secure",
                     },
-                    "security_opt": [
-                        "no-new-privileges:true"
-                    ],
+                    "security_opt": ["no-new-privileges:true"],
                     "cap_drop": ["ALL"],
                     "cap_add": ["CHOWN", "SETGID", "SETUID"],
                     "read_only": True,
                     "tmpfs": [
                         "/tmp:noexec,nosuid,size=100m",
-                        "/var/tmp:noexec,nosuid,size=100m"
+                        "/var/tmp:noexec,nosuid,size=100m",
                     ],
                     "environment": [
                         "CONSTITUTIONAL_HASH=cdd01ef066bc6cf2",
-                        "SECURITY_HARDENED=true"
+                        "SECURITY_HARDENED=true",
                     ],
                     "healthcheck": {
                         "test": ["CMD", "curl", "-f", "http://localhost:8000/health"],
                         "interval": "30s",
                         "timeout": "10s",
                         "retries": 3,
-                        "start_period": "60s"
-                    }
+                        "start_period": "60s",
+                    },
                 }
-            }
+            },
         }
-        
+
         docker_compose_file = docker_dir / "docker-compose.secure.yml"
-        with open(docker_compose_file, 'w') as f:
+        with open(docker_compose_file, "w") as f:
             yaml.dump(docker_compose_security, f, default_flow_style=False)
-            
+
         self.applied_configs.append("docker_security")
         logger.info("✅ Docker security configurations created")
-        
+
     def _apply_cicd_security(self) -> None:
         """Apply CI/CD security configurations."""
         logger.info("Applying CI/CD security hardening...")
-        
+
         # Create security scanning workflow
         security_workflow = {
             "name": "Security Scanning",
             "on": {
                 "push": {"branches": ["main", "develop"]},
                 "pull_request": {"branches": ["main", "develop"]},
-                "schedule": [{"cron": "0 2 * * 1"}]  # Weekly
+                "schedule": [{"cron": "0 2 * * 1"}],  # Weekly
             },
-            "permissions": {
-                "contents": "read",
-                "security-events": "write"
-            },
+            "permissions": {"contents": "read", "security-events": "write"},
             "jobs": {
                 "security_scan": {
                     "runs-on": "ubuntu-latest",
                     "name": "Security Vulnerability Scan",
                     "steps": [
-                        {
-                            "name": "Checkout code",
-                            "uses": "actions/checkout@v4"
-                        },
+                        {"name": "Checkout code", "uses": "actions/checkout@v4"},
                         {
                             "name": "Constitutional compliance check",
-                            "run": "python scripts/validate_constitutional_compliance.py"
+                            "run": "python scripts/validate_constitutional_compliance.py",
                         },
                         {
                             "name": "Run Bandit security scan",
-                            "run": "bandit -r . -f json -o bandit-report.json"
+                            "run": "bandit -r . -f json -o bandit-report.json",
                         },
                         {
-                            "name": "Run Safety dependency scan", 
-                            "run": "safety check --json --output safety-report.json"
+                            "name": "Run Safety dependency scan",
+                            "run": "safety check --json --output safety-report.json",
                         },
                         {
                             "name": "Run Trivy filesystem scan",
@@ -900,91 +917,88 @@ CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "${PO
                                 "scan-type": "fs",
                                 "scan-ref": ".",
                                 "format": "sarif",
-                                "output": "trivy-results.sarif"
-                            }
+                                "output": "trivy-results.sarif",
+                            },
                         },
                         {
                             "name": "Upload security results",
                             "uses": "github/codeql-action/upload-sarif@v2",
-                            "with": {
-                                "sarif_file": "trivy-results.sarif"
-                            }
-                        }
-                    ]
+                            "with": {"sarif_file": "trivy-results.sarif"},
+                        },
+                    ],
                 }
-            }
+            },
         }
-        
+
         workflows_dir = self.project_root / ".github" / "workflows"
         workflows_dir.mkdir(parents=True, exist_ok=True)
-        
+
         security_workflow_file = workflows_dir / "security-hardening.yml"
-        with open(security_workflow_file, 'w') as f:
+        with open(security_workflow_file, "w") as f:
             yaml.dump(security_workflow, f, default_flow_style=False)
-            
+
         self.applied_configs.append("cicd_security")
         logger.info("✅ CI/CD security configurations created")
-        
+
     def _generate_security_report(self) -> Dict[str, any]:
         """Generate comprehensive security hardening report."""
         logger.info("Generating security hardening report...")
-        
+
         report = {
             "timestamp": datetime.utcnow().isoformat(),
             "constitutional_hash": CONSTITUTIONAL_HASH,
             "security_hardening_applied": True,
             "configurations_applied": self.applied_configs,
             "configurations_failed": self.failed_configs,
-            "success_rate": len(self.applied_configs) / (len(self.applied_configs) + len(self.failed_configs)) * 100 if (self.applied_configs or self.failed_configs) else 0,
+            "success_rate": (
+                len(self.applied_configs)
+                / (len(self.applied_configs) + len(self.failed_configs))
+                * 100
+                if (self.applied_configs or self.failed_configs)
+                else 0
+            ),
             "next_steps": [
                 "Run security validation tests",
                 "Update service configurations to use new middleware",
                 "Deploy to staging environment for testing",
                 "Monitor security metrics and logs",
-                "Schedule regular security audits"
+                "Schedule regular security audits",
             ],
             "compliance_notes": [
                 "All configurations include constitutional hash validation",
                 "Security headers enforce enterprise-grade protection",
                 "Rate limiting prevents DDoS attacks",
                 "Input validation prevents injection attacks",
-                "Audit logging provides comprehensive security monitoring"
-            ]
+                "Audit logging provides comprehensive security monitoring",
+            ],
         }
-        
+
         return report
 
 
 def main():
     """Main entry point for security hardening application."""
-    parser = argparse.ArgumentParser(
-        description="ACGS-PGP Security Hardening Applier"
+    parser = argparse.ArgumentParser(description="ACGS-PGP Security Hardening Applier")
+    parser.add_argument(
+        "--project-root", type=Path, default=Path.cwd(), help="Project root directory"
     )
     parser.add_argument(
-        "--project-root",
-        type=Path,
-        default=Path.cwd(),
-        help="Project root directory"
-    )
-    parser.add_argument(
-        "--config-file",
-        type=Path,
-        help="Security configuration file (JSON)"
+        "--config-file", type=Path, help="Security configuration file (JSON)"
     )
     parser.add_argument(
         "--output",
         type=Path,
         default=Path("security-hardening-report.json"),
-        help="Output file for security report"
+        help="Output file for security report",
     )
     parser.add_argument(
         "--apply-all",
         action="store_true",
-        help="Apply all security hardening configurations"
+        help="Apply all security hardening configurations",
     )
-    
+
     args = parser.parse_args()
-    
+
     # Load configuration
     if args.config_file and args.config_file.exists():
         with open(args.config_file) as f:
@@ -993,19 +1007,21 @@ def main():
     else:
         # Use default configuration
         config = SecurityConfig()
-        
+
     # Override with apply-all flag
     if args.apply_all:
-        config = SecurityConfig(**{k: True for k in SecurityConfig.__dataclass_fields__.keys()})
-        
+        config = SecurityConfig(
+            **{k: True for k in SecurityConfig.__dataclass_fields__.keys()}
+        )
+
     # Apply security hardening
     applier = SecurityHardeningApplier(args.project_root, config)
     report = applier.apply_security_hardening()
-    
+
     # Save report
-    with open(args.output, 'w') as f:
+    with open(args.output, "w") as f:
         json.dump(report, f, indent=2)
-        
+
     # Print summary
     print(f"\n{'='*60}")
     print("ACGS-PGP Security Hardening Report")
@@ -1015,23 +1031,23 @@ def main():
     print(f"Configurations Failed: {len(report['configurations_failed'])}")
     print(f"Success Rate: {report['success_rate']:.1f}%")
     print(f"Report saved to: {args.output}")
-    
-    if report['configurations_applied']:
+
+    if report["configurations_applied"]:
         print(f"\n✅ Successfully applied:")
-        for config_name in report['configurations_applied']:
+        for config_name in report["configurations_applied"]:
             print(f"  • {config_name}")
-            
-    if report['configurations_failed']:
+
+    if report["configurations_failed"]:
         print(f"\n❌ Failed to apply:")
-        for config_name in report['configurations_failed']:
+        for config_name in report["configurations_failed"]:
             print(f"  • {config_name}")
-            
+
     print(f"\n📋 Next steps:")
-    for step in report['next_steps']:
+    for step in report["next_steps"]:
         print(f"  • {step}")
-        
+
     # Exit with appropriate code
-    sys.exit(0 if not report['configurations_failed'] else 1)
+    sys.exit(0 if not report["configurations_failed"] else 1)
 
 
 if __name__ == "__main__":

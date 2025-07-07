@@ -1,4 +1,3 @@
-# Constitutional Hash: cdd01ef066bc6cf2
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
@@ -11,7 +10,6 @@ spec:
   compositeTypeRef:
     apiVersion: acgs.io/v1alpha1
     kind: XACGSInfrastructure
-  
   resources:
   - name: acgs-vpc
     base:
@@ -30,7 +28,6 @@ spec:
     patches:
     - type: PatchSet
       patchSetName: common-fields
-
   - name: acgs-subnet-public-1
     base:
       apiVersion: ec2.aws.crossplane.io/v1beta1
@@ -49,7 +46,6 @@ spec:
     - type: FromCompositeFieldPath
       fromFieldPath: spec.vpcId
       toFieldPath: spec.forProvider.vpcIdRef.name
-
   - name: acgs-subnet-private-1
     base:
       apiVersion: ec2.aws.crossplane.io/v1beta1
@@ -67,7 +63,6 @@ spec:
     - type: FromCompositeFieldPath
       fromFieldPath: spec.vpcId
       toFieldPath: spec.forProvider.vpcIdRef.name
-
   - name: acgs-internet-gateway
     base:
       apiVersion: ec2.aws.crossplane.io/v1beta1
@@ -82,7 +77,6 @@ spec:
     - type: FromCompositeFieldPath
       fromFieldPath: spec.vpcId
       toFieldPath: spec.forProvider.vpcIdRef.name
-
   - name: acgs-route-table-public
     base:
       apiVersion: ec2.aws.crossplane.io/v1beta1
@@ -102,7 +96,6 @@ spec:
     - type: FromCompositeFieldPath
       fromFieldPath: spec.vpcId
       toFieldPath: spec.forProvider.vpcIdRef.name
-
   - name: acgs-eks-cluster
     base:
       apiVersion: eks.aws.crossplane.io/v1beta1
@@ -110,7 +103,7 @@ spec:
       spec:
         forProvider:
           region: us-east-1
-          version: "1.24"
+          version: '1.24'
           roleArnRef:
             name: acgs-eks-cluster-role
           resourcesVpcConfig:
@@ -126,7 +119,6 @@ spec:
     patches:
     - type: PatchSet
       patchSetName: common-fields
-
   - name: acgs-eks-nodegroup
     base:
       apiVersion: eks.aws.crossplane.io/v1alpha1
@@ -151,7 +143,6 @@ spec:
           tags:
             Name: acgs-eks-nodegroup
             Environment: production
-
   - name: acgs-rds-subnet-group
     base:
       apiVersion: rds.aws.crossplane.io/v1alpha1
@@ -165,7 +156,6 @@ spec:
           tags:
             Name: acgs-rds-subnet-group
             Environment: production
-
   - name: acgs-rds-instance
     base:
       apiVersion: rds.aws.crossplane.io/v1alpha1
@@ -175,7 +165,7 @@ spec:
           region: us-east-1
           dbInstanceClass: db.t3.micro
           engine: postgres
-          engineVersion: "15.3"
+          engineVersion: '15.3'
           allocatedStorage: 100
           storageType: gp2
           storageEncrypted: true
@@ -192,7 +182,6 @@ spec:
         writeConnectionSecretToRef:
           namespace: acgs-production
           name: acgs-rds-connection
-
   patchSets:
   - name: common-fields
     patches:
@@ -202,3 +191,4 @@ spec:
     - type: FromCompositeFieldPath
       fromFieldPath: spec.parameters.environment
       toFieldPath: spec.forProvider.tags.Environment
+constitutional_hash: cdd01ef066bc6cf2

@@ -2,7 +2,10 @@
   "dashboard": {
     "id": null,
     "title": "ACGS-1 Executive Overview",
-    "tags": ["acgs", "executive"],
+    "tags": [
+      "acgs",
+      "executive"
+    ],
     "timezone": "browser",
     "panels": [
       {
@@ -62,5 +65,7 @@
       "to": "now"
     },
     "refresh": "30s"
-  }
+  },
+  "_constitutional_hash": "cdd01ef066bc6cf2",
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }

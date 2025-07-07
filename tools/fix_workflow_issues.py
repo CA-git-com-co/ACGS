@@ -14,7 +14,6 @@ import yaml
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 def fix_python_version_issues():
     """Fix Python version issues in workflows."""
     workflow_dir = Path(".github/workflows")

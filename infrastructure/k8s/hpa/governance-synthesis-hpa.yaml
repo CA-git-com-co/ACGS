@@ -1,4 +1,3 @@
-# Constitutional Hash: cdd01ef066bc6cf2
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
@@ -36,3 +35,4 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: acgs-governance-synthesis
+constitutional_hash: cdd01ef066bc6cf2

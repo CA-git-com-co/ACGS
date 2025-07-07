@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 # Quantum Policy Evaluator (QPE) Service Dockerfile
 # ACGS-1 Constitutional Governance Enhancement
 

@@ -14,6 +14,7 @@ Key Features:
 - Constitutional fairness compliance tracking
 - Protected group monitoring and analysis
 """
+
 # Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
@@ -407,12 +408,12 @@ class BiasDriftMonitor:
                 protected_attributes = {
                     "age": np.random.choice(["18-30", "31-50", "51-70", "70+"]),
                     "gender": np.random.choice(["male", "female", "non-binary"]),
-                    "race_ethnicity": np.random.choice([
-                        "white", "black", "hispanic", "asian", "other"
-                    ]),
-                    "geographic_region": np.random.choice([
-                        "urban", "suburban", "rural"
-                    ]),
+                    "race_ethnicity": np.random.choice(
+                        ["white", "black", "hispanic", "asian", "other"]
+                    ),
+                    "geographic_region": np.random.choice(
+                        ["urban", "suburban", "rural"]
+                    ),
                     "socioeconomic_status": np.random.choice(["low", "middle", "high"]),
                 }
 
@@ -429,9 +430,8 @@ class BiasDriftMonitor:
 
                 data_point = {
                     "decision_id": str(uuid.uuid4()),
-                    "timestamp": current_time - timedelta(
-                        minutes=np.random.randint(0, 60)
-                    ),
+                    "timestamp": current_time
+                    - timedelta(minutes=np.random.randint(0, 60)),
                     "context": context.value,
                     "protected_attributes": protected_attributes,
                     "decision_score": decision_score,
@@ -848,12 +848,14 @@ class BiasDriftMonitor:
 
             # Update temporal patterns
             pattern_key = f"{result.context.value}_{result.bias_type.value}_{result.protected_attribute.value}"
-            self.temporal_patterns[pattern_key].append({
-                "timestamp": result.timestamp,
-                "metric_value": result.metric_value,
-                "drift_score": result.drift_score,
-                "severity": result.severity.value,
-            })
+            self.temporal_patterns[pattern_key].append(
+                {
+                    "timestamp": result.timestamp,
+                    "metric_value": result.metric_value,
+                    "drift_score": result.drift_score,
+                    "severity": result.severity.value,
+                }
+            )
 
             # Keep only recent patterns (last 30 days)
             cutoff_time = datetime.utcnow() - timedelta(days=30)
@@ -864,18 +866,20 @@ class BiasDriftMonitor:
             ]
 
             # Log bias metric
-            await self.audit_logger.log_compliance_event({
-                "event_type": "bias_metric_calculated",
-                "metric_id": result.metric_id,
-                "bias_type": result.bias_type.value,
-                "protected_attribute": result.protected_attribute.value,
-                "context": result.context.value,
-                "metric_value": result.metric_value,
-                "drift_score": result.drift_score,
-                "severity": result.severity.value,
-                "affected_groups": result.affected_groups,
-                "timestamp": result.timestamp.isoformat(),
-            })
+            await self.audit_logger.log_compliance_event(
+                {
+                    "event_type": "bias_metric_calculated",
+                    "metric_id": result.metric_id,
+                    "bias_type": result.bias_type.value,
+                    "protected_attribute": result.protected_attribute.value,
+                    "context": result.context.value,
+                    "metric_value": result.metric_value,
+                    "drift_score": result.drift_score,
+                    "severity": result.severity.value,
+                    "affected_groups": result.affected_groups,
+                    "timestamp": result.timestamp.isoformat(),
+                }
+            )
 
         except Exception as e:
             logger.error(f"Bias drift check failed: {e}")
@@ -1078,63 +1082,77 @@ class BiasDriftMonitor:
                 m for m in metrics if m.severity == BiasSeverity.CRITICAL
             ]
             if critical_metrics:
-                recommendations.extend([
-                    "URGENT: Halt automated decisions for affected groups",
-                    "Implement immediate human oversight for all decisions",
-                    "Conduct emergency bias audit",
-                    "Consider model rollback to previous version",
-                ])
+                recommendations.extend(
+                    [
+                        "URGENT: Halt automated decisions for affected groups",
+                        "Implement immediate human oversight for all decisions",
+                        "Conduct emergency bias audit",
+                        "Consider model rollback to previous version",
+                    ]
+                )
 
             high_severity_metrics = [
                 m for m in metrics if m.severity == BiasSeverity.HIGH
             ]
             if high_severity_metrics:
-                recommendations.extend([
-                    "Increase human review rate for affected demographic groups",
-                    "Implement bias-aware post-processing",
-                    "Review and retrain model with fairness constraints",
-                    "Enhanced monitoring for affected groups",
-                ])
+                recommendations.extend(
+                    [
+                        "Increase human review rate for affected demographic groups",
+                        "Implement bias-aware post-processing",
+                        "Review and retrain model with fairness constraints",
+                        "Enhanced monitoring for affected groups",
+                    ]
+                )
 
             # Bias type specific recommendations
             bias_types = set(metric.bias_type for metric in metrics)
 
             if BiasType.DEMOGRAPHIC_PARITY in bias_types:
-                recommendations.extend([
-                    "Implement demographic parity constraints in model training",
-                    "Review data sampling strategies for balanced representation",
-                    "Consider fair representation learning techniques",
-                ])
+                recommendations.extend(
+                    [
+                        "Implement demographic parity constraints in model training",
+                        "Review data sampling strategies for balanced representation",
+                        "Consider fair representation learning techniques",
+                    ]
+                )
 
             if BiasType.EQUALIZED_ODDS in bias_types:
-                recommendations.extend([
-                    "Implement equalized odds post-processing",
-                    "Review threshold optimization across groups",
-                    "Consider adversarial debiasing techniques",
-                ])
+                recommendations.extend(
+                    [
+                        "Implement equalized odds post-processing",
+                        "Review threshold optimization across groups",
+                        "Consider adversarial debiasing techniques",
+                    ]
+                )
 
             if BiasType.CALIBRATION in bias_types:
-                recommendations.extend([
-                    "Implement group-specific calibration",
-                    "Review confidence score reliability across groups",
-                    "Consider Platt scaling for each demographic group",
-                ])
+                recommendations.extend(
+                    [
+                        "Implement group-specific calibration",
+                        "Review confidence score reliability across groups",
+                        "Consider Platt scaling for each demographic group",
+                    ]
+                )
 
             # Constitutional AI specific recommendations
-            recommendations.extend([
-                "Review constitutional principle alignment",
-                "Engage ethics committee for bias assessment",
-                "Update constitutional AI training with fairness examples",
-                "Implement principle-based bias detection",
-            ])
+            recommendations.extend(
+                [
+                    "Review constitutional principle alignment",
+                    "Engage ethics committee for bias assessment",
+                    "Update constitutional AI training with fairness examples",
+                    "Implement principle-based bias detection",
+                ]
+            )
 
             # General recommendations
-            recommendations.extend([
-                "Document bias incident for compliance reporting",
-                "Schedule bias audit with external evaluators",
-                "Update bias monitoring thresholds based on findings",
-                "Provide bias awareness training to human reviewers",
-            ])
+            recommendations.extend(
+                [
+                    "Document bias incident for compliance reporting",
+                    "Schedule bias audit with external evaluators",
+                    "Update bias monitoring thresholds based on findings",
+                    "Provide bias awareness training to human reviewers",
+                ]
+            )
 
             return list(set(recommendations))  # Remove duplicates
 
@@ -1171,19 +1189,23 @@ class BiasDriftMonitor:
         # Check severity
         critical_metrics = [m for m in metrics if m.severity == BiasSeverity.CRITICAL]
         if critical_metrics:
-            implications.extend([
-                "EU AI Act Article 10 compliance violation (data governance)",
-                "Potential discrimination law violations",
-                "Regulatory reporting required within 72 hours",
-            ])
+            implications.extend(
+                [
+                    "EU AI Act Article 10 compliance violation (data governance)",
+                    "Potential discrimination law violations",
+                    "Regulatory reporting required within 72 hours",
+                ]
+            )
 
         high_severity_metrics = [m for m in metrics if m.severity == BiasSeverity.HIGH]
         if high_severity_metrics:
-            implications.extend([
-                "EU AI Act compliance review required",
-                "Fair Credit Reporting Act implications (if applicable)",
-                "Equal Protection Clause considerations",
-            ])
+            implications.extend(
+                [
+                    "EU AI Act compliance review required",
+                    "Fair Credit Reporting Act implications (if applicable)",
+                    "Equal Protection Clause considerations",
+                ]
+            )
 
         # Context-specific implications
         contexts = set(metric.context for metric in metrics)
@@ -1216,46 +1238,50 @@ class BiasDriftMonitor:
             )
 
             # Log comprehensive alert information
-            await self.audit_logger.log_compliance_event({
-                "event_type": "bias_drift_alert",
-                "alert_id": alert.alert_id,
-                "drift_type": alert.drift_type,
-                "severity": alert.severity.value,
-                "affected_metrics_count": len(alert.affected_metrics),
-                "affected_bias_types": list(
-                    set(m.bias_type.value for m in alert.affected_metrics)
-                ),
-                "affected_attributes": list(
-                    set(m.protected_attribute.value for m in alert.affected_metrics)
-                ),
-                "affected_contexts": list(
-                    set(m.context.value for m in alert.affected_metrics)
-                ),
-                "root_causes": alert.root_cause_analysis,
-                "recommended_actions": alert.recommended_actions,
-                "regulatory_implications": alert.regulatory_implications,
-                "stakeholders": alert.stakeholders,
-                "timestamp": alert.timestamp.isoformat(),
-            })
+            await self.audit_logger.log_compliance_event(
+                {
+                    "event_type": "bias_drift_alert",
+                    "alert_id": alert.alert_id,
+                    "drift_type": alert.drift_type,
+                    "severity": alert.severity.value,
+                    "affected_metrics_count": len(alert.affected_metrics),
+                    "affected_bias_types": list(
+                        set(m.bias_type.value for m in alert.affected_metrics)
+                    ),
+                    "affected_attributes": list(
+                        set(m.protected_attribute.value for m in alert.affected_metrics)
+                    ),
+                    "affected_contexts": list(
+                        set(m.context.value for m in alert.affected_metrics)
+                    ),
+                    "root_causes": alert.root_cause_analysis,
+                    "recommended_actions": alert.recommended_actions,
+                    "regulatory_implications": alert.regulatory_implications,
+                    "stakeholders": alert.stakeholders,
+                    "timestamp": alert.timestamp.isoformat(),
+                }
+            )
 
             # Log individual metric details
             for metric in alert.affected_metrics:
-                await self.audit_logger.log_compliance_event({
-                    "event_type": "bias_metric_alert_detail",
-                    "alert_id": alert.alert_id,
-                    "metric_id": metric.metric_id,
-                    "bias_type": metric.bias_type.value,
-                    "protected_attribute": metric.protected_attribute.value,
-                    "context": metric.context.value,
-                    "metric_value": metric.metric_value,
-                    "baseline_value": metric.baseline_value,
-                    "drift_score": metric.drift_score,
-                    "severity": metric.severity.value,
-                    "affected_groups": metric.affected_groups,
-                    "group_disparities": metric.group_disparities,
-                    "statistical_significance": metric.statistical_significance,
-                    "timestamp": metric.timestamp.isoformat(),
-                })
+                await self.audit_logger.log_compliance_event(
+                    {
+                        "event_type": "bias_metric_alert_detail",
+                        "alert_id": alert.alert_id,
+                        "metric_id": metric.metric_id,
+                        "bias_type": metric.bias_type.value,
+                        "protected_attribute": metric.protected_attribute.value,
+                        "context": metric.context.value,
+                        "metric_value": metric.metric_value,
+                        "baseline_value": metric.baseline_value,
+                        "drift_score": metric.drift_score,
+                        "severity": metric.severity.value,
+                        "affected_groups": metric.affected_groups,
+                        "group_disparities": metric.group_disparities,
+                        "statistical_significance": metric.statistical_significance,
+                        "timestamp": metric.timestamp.isoformat(),
+                    }
+                )
 
         except Exception as e:
             logger.error(f"Bias drift alert handling failed: {e}")
@@ -1481,22 +1507,24 @@ class BiasDriftMonitor:
         """Handle intersectional analysis results"""
         try:
             # Log intersectional analysis
-            await self.audit_logger.log_compliance_event({
-                "event_type": "intersectional_bias_analysis",
-                "analysis_id": analysis.analysis_id,
-                "attribute_combinations": [
-                    [attr.value for attr in combo]
-                    for combo in analysis.attribute_combinations
-                ],
-                "bias_interactions": analysis.bias_interactions,
-                "amplification_factors": analysis.amplification_factors,
-                "mitigation_complexity": analysis.mitigation_complexity,
-                "priority_combinations": [
-                    [attr.value for attr in combo]
-                    for combo in analysis.priority_combinations
-                ],
-                "timestamp": analysis.timestamp.isoformat(),
-            })
+            await self.audit_logger.log_compliance_event(
+                {
+                    "event_type": "intersectional_bias_analysis",
+                    "analysis_id": analysis.analysis_id,
+                    "attribute_combinations": [
+                        [attr.value for attr in combo]
+                        for combo in analysis.attribute_combinations
+                    ],
+                    "bias_interactions": analysis.bias_interactions,
+                    "amplification_factors": analysis.amplification_factors,
+                    "mitigation_complexity": analysis.mitigation_complexity,
+                    "priority_combinations": [
+                        [attr.value for attr in combo]
+                        for combo in analysis.priority_combinations
+                    ],
+                    "timestamp": analysis.timestamp.isoformat(),
+                }
+            )
 
             # Alert on high-severity intersectional bias
             high_interactions = [
@@ -1689,32 +1717,40 @@ class BiasDriftMonitor:
 
         if "trending" in pattern_type:
             if trend_slope > 0:
-                strategies.extend([
-                    "Implement immediate bias correction measures",
-                    "Review recent model changes for bias introduction",
-                    "Increase human oversight until trend reverses",
-                ])
+                strategies.extend(
+                    [
+                        "Implement immediate bias correction measures",
+                        "Review recent model changes for bias introduction",
+                        "Increase human oversight until trend reverses",
+                    ]
+                )
             else:
-                strategies.extend([
-                    "Monitor for bias rebound",
-                    "Document successful bias reduction methods",
-                    "Maintain current mitigation measures",
-                ])
+                strategies.extend(
+                    [
+                        "Monitor for bias rebound",
+                        "Document successful bias reduction methods",
+                        "Maintain current mitigation measures",
+                    ]
+                )
 
         if "volatile" in pattern_type:
-            strategies.extend([
-                "Implement bias smoothing techniques",
-                "Increase monitoring frequency",
-                "Review environmental factors causing volatility",
-                "Consider ensemble methods for stability",
-            ])
+            strategies.extend(
+                [
+                    "Implement bias smoothing techniques",
+                    "Increase monitoring frequency",
+                    "Review environmental factors causing volatility",
+                    "Consider ensemble methods for stability",
+                ]
+            )
 
         if "periodic" in pattern_type:
-            strategies.extend([
-                "Adjust human oversight schedules to match pattern",
-                "Implement time-aware bias correction",
-                "Investigate underlying causes of periodicity",
-            ])
+            strategies.extend(
+                [
+                    "Adjust human oversight schedules to match pattern",
+                    "Implement time-aware bias correction",
+                    "Investigate underlying causes of periodicity",
+                ]
+            )
 
         return strategies
 
@@ -1746,21 +1782,23 @@ class BiasDriftMonitor:
         """Analyze significance of detected bias pattern"""
         try:
             # Log pattern detection
-            await self.audit_logger.log_compliance_event({
-                "event_type": "bias_pattern_detected",
-                "pattern_id": pattern.pattern_id,
-                "pattern_type": pattern.pattern_type,
-                "description": pattern.description,
-                "affected_attributes": [
-                    attr.value for attr in pattern.affected_attributes
-                ],
-                "risk_level": pattern.risk_level.value,
-                "confidence": pattern.confidence,
-                "temporal_characteristics": pattern.temporal_characteristics,
-                "predictive_indicators": pattern.predictive_indicators,
-                "mitigation_strategies": pattern.mitigation_strategies,
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_compliance_event(
+                {
+                    "event_type": "bias_pattern_detected",
+                    "pattern_id": pattern.pattern_id,
+                    "pattern_type": pattern.pattern_type,
+                    "description": pattern.description,
+                    "affected_attributes": [
+                        attr.value for attr in pattern.affected_attributes
+                    ],
+                    "risk_level": pattern.risk_level.value,
+                    "confidence": pattern.confidence,
+                    "temporal_characteristics": pattern.temporal_characteristics,
+                    "predictive_indicators": pattern.predictive_indicators,
+                    "mitigation_strategies": pattern.mitigation_strategies,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
             # Alert on high-risk patterns
             if (
@@ -1918,9 +1956,9 @@ class BiasDriftMonitor:
                 m for m in metrics if m.bias_type == BiasType.CALIBRATION
             ]
             if calibration_metrics:
-                due_process_score = statistics.mean([
-                    1 - m.drift_score for m in calibration_metrics
-                ])
+                due_process_score = statistics.mean(
+                    [1 - m.drift_score for m in calibration_metrics]
+                )
                 principle_scores["due_process"] = max(0, min(1, due_process_score))
             else:
                 principle_scores["due_process"] = 0.8  # Default if no calibration data
@@ -1930,9 +1968,9 @@ class BiasDriftMonitor:
                 m for m in metrics if m.bias_type == BiasType.DEMOGRAPHIC_PARITY
             ]
             if demographic_parity_metrics:
-                non_discrimination_score = statistics.mean([
-                    1 - m.drift_score for m in demographic_parity_metrics
-                ])
+                non_discrimination_score = statistics.mean(
+                    [1 - m.drift_score for m in demographic_parity_metrics]
+                )
                 principle_scores["non_discrimination"] = max(
                     0, min(1, non_discrimination_score)
                 )
@@ -1999,22 +2037,25 @@ class BiasDriftMonitor:
         """Handle fairness compliance assessment"""
         try:
             # Log compliance assessment
-            await self.audit_logger.log_compliance_event({
-                "event_type": "fairness_compliance_assessment",
-                "compliance_id": compliance.compliance_id,
-                "context": compliance.context.value,
-                "overall_fairness_score": compliance.overall_fairness_score,
-                "metric_compliance": {
-                    k.value: v for k, v in compliance.metric_compliance.items()
-                },
-                "protected_group_compliance": {
-                    k.value: v for k, v in compliance.protected_group_compliance.items()
-                },
-                "constitutional_alignment": compliance.constitutional_alignment,
-                "regulatory_compliance": compliance.regulatory_compliance,
-                "improvement_recommendations": compliance.improvement_recommendations,
-                "timestamp": compliance.timestamp.isoformat(),
-            })
+            await self.audit_logger.log_compliance_event(
+                {
+                    "event_type": "fairness_compliance_assessment",
+                    "compliance_id": compliance.compliance_id,
+                    "context": compliance.context.value,
+                    "overall_fairness_score": compliance.overall_fairness_score,
+                    "metric_compliance": {
+                        k.value: v for k, v in compliance.metric_compliance.items()
+                    },
+                    "protected_group_compliance": {
+                        k.value: v
+                        for k, v in compliance.protected_group_compliance.items()
+                    },
+                    "constitutional_alignment": compliance.constitutional_alignment,
+                    "regulatory_compliance": compliance.regulatory_compliance,
+                    "improvement_recommendations": compliance.improvement_recommendations,
+                    "timestamp": compliance.timestamp.isoformat(),
+                }
+            )
 
             # Alert on poor compliance
             if compliance.overall_fairness_score < 0.7:
@@ -2067,12 +2108,14 @@ class BiasDriftMonitor:
                 principle_assessments[principle] = assessment
 
             # Log constitutional alignment
-            await self.audit_logger.log_compliance_event({
-                "event_type": "constitutional_alignment_check",
-                "principle_assessments": principle_assessments,
-                "metrics_analyzed": len(recent_metrics),
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_compliance_event(
+                {
+                    "event_type": "constitutional_alignment_check",
+                    "principle_assessments": principle_assessments,
+                    "metrics_analyzed": len(recent_metrics),
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
             # Alert on poor alignment
             poor_alignments = [
@@ -2116,9 +2159,9 @@ class BiasDriftMonitor:
                     m for m in metrics if m.bias_type == BiasType.CALIBRATION
                 ]
                 if calibration_metrics:
-                    avg_calibration = statistics.mean([
-                        1 - m.drift_score for m in calibration_metrics
-                    ])
+                    avg_calibration = statistics.mean(
+                        [1 - m.drift_score for m in calibration_metrics]
+                    )
                     score = max(0, min(1, avg_calibration))
                 else:
                     score = 0.5
@@ -2135,9 +2178,9 @@ class BiasDriftMonitor:
                     m for m in metrics if m.bias_type == BiasType.DEMOGRAPHIC_PARITY
                 ]
                 if demo_parity_metrics:
-                    avg_parity = statistics.mean([
-                        1 - m.drift_score for m in demo_parity_metrics
-                    ])
+                    avg_parity = statistics.mean(
+                        [1 - m.drift_score for m in demo_parity_metrics]
+                    )
                     score = max(0, min(1, avg_parity))
                 else:
                     score = 0.5
@@ -2221,14 +2264,16 @@ class BiasDriftMonitor:
             baseline_key = (context, bias_type, protected_attr)
             self.baseline_metrics[baseline_key] = baseline_value
 
-            await self.audit_logger.log_compliance_event({
-                "event_type": "bias_baseline_established",
-                "context": context.value,
-                "bias_type": bias_type.value,
-                "protected_attribute": protected_attr.value,
-                "baseline_value": baseline_value,
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_compliance_event(
+                {
+                    "event_type": "bias_baseline_established",
+                    "context": context.value,
+                    "bias_type": bias_type.value,
+                    "protected_attribute": protected_attr.value,
+                    "baseline_value": baseline_value,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
             logger.info(
                 f"Bias baseline established: {context.value} - {bias_type.value} -"
@@ -2280,22 +2325,26 @@ class BiasDriftMonitor:
                 },
                 "alert_status": {
                     "total_alerts": len(self.drift_alerts),
-                    "recent_alerts": len([
-                        alert
-                        for alert in self.drift_alerts.values()
-                        if alert.timestamp >= recent_cutoff
-                    ]),
+                    "recent_alerts": len(
+                        [
+                            alert
+                            for alert in self.drift_alerts.values()
+                            if alert.timestamp >= recent_cutoff
+                        ]
+                    ),
                 },
                 "pattern_analysis": {
                     "patterns_detected": len(self.bias_patterns),
                     "temporal_patterns_tracked": len(self.temporal_patterns),
                 },
                 "compliance_status": {
-                    "recent_assessments": len([
-                        c
-                        for c in self.compliance_history
-                        if c.timestamp >= recent_cutoff
-                    ]),
+                    "recent_assessments": len(
+                        [
+                            c
+                            for c in self.compliance_history
+                            if c.timestamp >= recent_cutoff
+                        ]
+                    ),
                     "total_assessments": len(self.compliance_history),
                 },
                 "baseline_metrics": len(self.baseline_metrics),
@@ -2306,10 +2355,12 @@ class BiasDriftMonitor:
                     "real_time_alerts_enabled": self.real_time_alerts_enabled,
                     "contexts_monitored": len(self.bias_thresholds),
                     "bias_types_configured": len(
-                        set().union(*[
-                            list(context_thresholds.keys())
-                            for context_thresholds in self.bias_thresholds.values()
-                        ])
+                        set().union(
+                            *[
+                                list(context_thresholds.keys())
+                                for context_thresholds in self.bias_thresholds.values()
+                            ]
+                        )
                     ),
                 },
             }
@@ -2339,24 +2390,24 @@ class BiasDriftMonitor:
 
             # Summary statistics
             if window_metrics:
-                avg_metric_value = statistics.mean([
-                    m.metric_value for m in window_metrics
-                ])
-                avg_drift_score = statistics.mean([
-                    m.drift_score for m in window_metrics
-                ])
+                avg_metric_value = statistics.mean(
+                    [m.metric_value for m in window_metrics]
+                )
+                avg_drift_score = statistics.mean(
+                    [m.drift_score for m in window_metrics]
+                )
                 max_drift_score = max([m.drift_score for m in window_metrics])
             else:
                 avg_metric_value = avg_drift_score = max_drift_score = 0
 
             # Compliance summary
             if window_compliance:
-                avg_fairness_score = statistics.mean([
-                    c.overall_fairness_score for c in window_compliance
-                ])
-                avg_constitutional_alignment = statistics.mean([
-                    c.constitutional_alignment for c in window_compliance
-                ])
+                avg_fairness_score = statistics.mean(
+                    [c.overall_fairness_score for c in window_compliance]
+                )
+                avg_constitutional_alignment = statistics.mean(
+                    [c.constitutional_alignment for c in window_compliance]
+                )
             else:
                 avg_fairness_score = avg_constitutional_alignment = 0
 
@@ -2371,21 +2422,29 @@ class BiasDriftMonitor:
                     "average_metric_value": avg_metric_value,
                     "average_drift_score": avg_drift_score,
                     "maximum_drift_score": max_drift_score,
-                    "critical_violations": len([
-                        m for m in window_metrics if m.severity == BiasSeverity.CRITICAL
-                    ]),
-                    "high_severity_violations": len([
-                        m for m in window_metrics if m.severity == BiasSeverity.HIGH
-                    ]),
+                    "critical_violations": len(
+                        [
+                            m
+                            for m in window_metrics
+                            if m.severity == BiasSeverity.CRITICAL
+                        ]
+                    ),
+                    "high_severity_violations": len(
+                        [m for m in window_metrics if m.severity == BiasSeverity.HIGH]
+                    ),
                 },
                 "alert_summary": {
                     "total_alerts": len(window_alerts),
-                    "critical_alerts": len([
-                        a for a in window_alerts if a.severity == BiasSeverity.CRITICAL
-                    ]),
-                    "high_severity_alerts": len([
-                        a for a in window_alerts if a.severity == BiasSeverity.HIGH
-                    ]),
+                    "critical_alerts": len(
+                        [
+                            a
+                            for a in window_alerts
+                            if a.severity == BiasSeverity.CRITICAL
+                        ]
+                    ),
+                    "high_severity_alerts": len(
+                        [a for a in window_alerts if a.severity == BiasSeverity.HIGH]
+                    ),
                     "unique_affected_contexts": len(
                         set(
                             m.context
@@ -2405,20 +2464,23 @@ class BiasDriftMonitor:
                     "assessments_completed": len(window_compliance),
                     "average_fairness_score": avg_fairness_score,
                     "average_constitutional_alignment": avg_constitutional_alignment,
-                    "fully_compliant_contexts": len([
-                        c for c in window_compliance if c.overall_fairness_score > 0.9
-                    ]),
-                    "non_compliant_contexts": len([
-                        c for c in window_compliance if c.overall_fairness_score < 0.7
-                    ]),
+                    "fully_compliant_contexts": len(
+                        [c for c in window_compliance if c.overall_fairness_score > 0.9]
+                    ),
+                    "non_compliant_contexts": len(
+                        [c for c in window_compliance if c.overall_fairness_score < 0.7]
+                    ),
                 },
                 "pattern_summary": {
                     "patterns_detected": len([p for p in self.bias_patterns]),
-                    "high_risk_patterns": len([
-                        p
-                        for p in self.bias_patterns
-                        if p.risk_level in [BiasSeverity.HIGH, BiasSeverity.CRITICAL]
-                    ]),
+                    "high_risk_patterns": len(
+                        [
+                            p
+                            for p in self.bias_patterns
+                            if p.risk_level
+                            in [BiasSeverity.HIGH, BiasSeverity.CRITICAL]
+                        ]
+                    ),
                 },
                 "recommendations": self._generate_summary_recommendations(
                     window_metrics, window_alerts, window_compliance
@@ -2441,11 +2503,13 @@ class BiasDriftMonitor:
         # Metrics-based recommendations
         critical_metrics = [m for m in metrics if m.severity == BiasSeverity.CRITICAL]
         if critical_metrics:
-            recommendations.extend([
-                f"URGENT: Address {len(critical_metrics)} critical bias violations",
-                "Consider emergency bias audit and model review",
-                "Implement immediate human oversight for affected decisions",
-            ])
+            recommendations.extend(
+                [
+                    f"URGENT: Address {len(critical_metrics)} critical bias violations",
+                    "Consider emergency bias audit and model review",
+                    "Implement immediate human oversight for affected decisions",
+                ]
+            )
 
         high_metrics = [m for m in metrics if m.severity == BiasSeverity.HIGH]
         if len(high_metrics) > 5:
@@ -2469,11 +2533,13 @@ class BiasDriftMonitor:
 
         # General recommendations
         if not recommendations:
-            recommendations.extend([
-                "Continue current bias monitoring practices",
-                "Consider expanding baseline metrics coverage",
-                "Schedule regular bias audit reviews",
-            ])
+            recommendations.extend(
+                [
+                    "Continue current bias monitoring practices",
+                    "Consider expanding baseline metrics coverage",
+                    "Schedule regular bias audit reviews",
+                ]
+            )
 
         return recommendations
 
@@ -2482,12 +2548,14 @@ class BiasDriftMonitor:
 async def example_usage():
     """Example of using the bias drift monitor"""
     # Initialize monitor
-    monitor = BiasDriftMonitor({
-        "monitoring_enabled": True,
-        "monitoring_interval_seconds": 60,
-        "intersectional_analysis_enabled": True,
-        "real_time_alerts_enabled": True,
-    })
+    monitor = BiasDriftMonitor(
+        {
+            "monitoring_enabled": True,
+            "monitoring_interval_seconds": 60,
+            "intersectional_analysis_enabled": True,
+            "real_time_alerts_enabled": True,
+        }
+    )
 
     # Establish some baselines
     await monitor.establish_baseline(

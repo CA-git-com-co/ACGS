@@ -18,11 +18,11 @@ class ACServiceClient:
     Constitutional AI Service Client using shared service registry pattern.
     This eliminates circular dependencies between services.
     """
-    
+
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self._client = None
-    
+
     async def _get_client(self):
         """Get the Constitutional AI client from the service registry"""
         if not self._client:
@@ -40,17 +40,16 @@ class ACServiceClient:
             if not client:
                 self.logger.error("Constitutional AI client not available")
                 return None
-            
-            response = await client.request(
-                "GET", 
-                f"/api/v1/principles/{principle_id}"
-            )
+
+            response = await client.request("GET", f"/api/v1/principles/{principle_id}")
             return response
         except Exception as e:
             self.logger.error(f"Error fetching principle {principle_id}: {e}")
             return None
 
-    async def list_principles(self, auth_token: str | None = None) -> List[Dict[str, Any]]:
+    async def list_principles(
+        self, auth_token: str | None = None
+    ) -> List[Dict[str, Any]]:
         """
         Fetches all principles from the AC Service.
         """
@@ -59,7 +58,7 @@ class ACServiceClient:
             if not client:
                 self.logger.error("Constitutional AI client not available")
                 return []
-            
+
             response = await client.request("GET", "/api/v1/principles")
             return response.get("principles", [])
         except Exception as e:
@@ -93,15 +92,13 @@ class ACServiceClient:
             if not client:
                 self.logger.error("Constitutional AI client not available")
                 return []
-            
+
             params = {"context": context}
             if category:
                 params["category"] = category
-                
+
             response = await client.request(
-                "GET", 
-                "/api/v1/principles/context",
-                params=params
+                "GET", "/api/v1/principles/context", params=params
             )
             return response.get("principles", [])
         except Exception as e:
@@ -117,10 +114,9 @@ class ACServiceClient:
             if not client:
                 self.logger.error("Constitutional AI client not available")
                 return []
-            
+
             response = await client.request(
-                "GET",
-                f"/api/v1/principles/category/{category}"
+                "GET", f"/api/v1/principles/category/{category}"
             )
             return response.get("principles", [])
         except Exception as e:
@@ -136,11 +132,9 @@ class ACServiceClient:
             if not client:
                 self.logger.error("Constitutional AI client not available")
                 return []
-            
+
             response = await client.request(
-                "POST",
-                "/api/v1/principles/search",
-                data={"keywords": keywords}
+                "POST", "/api/v1/principles/search", data={"keywords": keywords}
             )
             return response.get("principles", [])
         except Exception as e:
@@ -159,23 +153,26 @@ ac_service_client = ACServiceClient()
 
 # Example Usage (for testing this file)
 if __name__ == "__main__":
+
     async def test_ac_client():
         """Test the AC Service client with new shared client pattern."""
         print("Testing AC Client with shared service registry")
-        
+
         try:
             # Test listing principles
             principles = await ac_service_client.list_principles()
             print(f"Fetched {len(principles)} principles")
-            
+
             # Test searching by keywords
-            results = await ac_service_client.search_principles_by_keywords(["fairness", "transparency"])
+            results = await ac_service_client.search_principles_by_keywords(
+                ["fairness", "transparency"]
+            )
             print(f"Found {len(results)} principles matching keywords")
-            
+
             await ac_service_client.close()
             print("AC Service client test completed successfully")
-            
+
         except Exception as e:
             print(f"AC Service client test failed: {e}")
-    
+
     print("AC Service client defined. Use asyncio.run(test_ac_client()) to test.")

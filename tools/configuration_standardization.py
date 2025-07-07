@@ -25,7 +25,6 @@ import yaml
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 @dataclass
 class ConfigFile:
     """Configuration file metadata."""

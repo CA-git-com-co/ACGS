@@ -45,11 +45,13 @@ def validate_test_file(filepath: str) -> dict[str, Any]:
         )
 
         # Count lines of code
-        lines_of_code = len([
-            line
-            for line in content.split("\n")
-            if line.strip() and not line.strip().startswith("#")
-        ])
+        lines_of_code = len(
+            [
+                line
+                for line in content.split("\n")
+                if line.strip() and not line.strip().startswith("#")
+            ]
+        )
 
         return {
             "status": "ok",

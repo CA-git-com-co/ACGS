@@ -541,17 +541,21 @@ class ServiceRegistryClient:
 
     def get_status(self) -> dict[str, Any]:
         """Get service registry client status."""
-        return ensure_constitutional_compliance({
-            "is_registered": self.is_registered,
-            "registration_id": self.registration_id,
-            "registry_url": self.registry_url,
-            "service_name": self.service_name,
-            "service_port": self.service_port,
-            "last_health_check": (
-                self.last_health_check.isoformat() if self.last_health_check else None
-            ),
-            "health_check_interval": self.health_check_interval,
-        })
+        return ensure_constitutional_compliance(
+            {
+                "is_registered": self.is_registered,
+                "registration_id": self.registration_id,
+                "registry_url": self.registry_url,
+                "service_name": self.service_name,
+                "service_port": self.service_port,
+                "last_health_check": (
+                    self.last_health_check.isoformat()
+                    if self.last_health_check
+                    else None
+                ),
+                "health_check_interval": self.health_check_interval,
+            }
+        )
 
     async def __aenter__(self):
         """Async context manager entry."""

@@ -5,7 +5,9 @@ from uuid import uuid4  # For generating unique emails
 import pytest
 from fastapi.testclient import TestClient  # Use TestClient from FastAPI
 
-from services.platform_services.authentication.auth_service.app.core.config import settings
+from services.platform_services.authentication.auth_service.app.core.config import (
+    settings,
+)
 
 # The client fixture and DB setup are now handled by conftest.py
 # No need for override_get_async_db_users or local client fixture here.

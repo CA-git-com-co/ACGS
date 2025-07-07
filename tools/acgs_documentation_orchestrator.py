@@ -22,13 +22,13 @@ import json
 import logging
 import re
 import subprocess
+from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
-from dataclasses import dataclass, asdict
 
-import aiohttp
 import aiofiles
+import aiohttp
 import markdown
 import yaml
 from pydantic import BaseModel
@@ -57,18 +57,37 @@ DOCUMENTATION_CONFIG = {
 # ACGS services for documentation
 ACGS_SERVICES = {
     "auth": {"port": 8016, "name": "Auth Service", "api_path": "/api/v1"},
-    "constitutional_ai": {"port": 8001, "name": "Constitutional AI", "api_path": "/api/v1"},
+    "constitutional_ai": {
+        "port": 8001,
+        "name": "Constitutional AI",
+        "api_path": "/api/v1",
+    },
     "integrity": {"port": 8002, "name": "Integrity Service", "api_path": "/api/v1"},
-    "formal_verification": {"port": 8003, "name": "Formal Verification", "api_path": "/api/v1"},
-    "governance_synthesis": {"port": 8004, "name": "Governance Synthesis", "api_path": "/api/v1"},
-    "policy_governance": {"port": 8005, "name": "Policy Governance", "api_path": "/api/v1"},
-    "evolutionary_computation": {"port": 8006, "name": "Evolutionary Computation", "api_path": "/api/v1"},
+    "formal_verification": {
+        "port": 8003,
+        "name": "Formal Verification",
+        "api_path": "/api/v1",
+    },
+    "governance_synthesis": {
+        "port": 8004,
+        "name": "Governance Synthesis",
+        "api_path": "/api/v1",
+    },
+    "policy_governance": {
+        "port": 8005,
+        "name": "Policy Governance",
+        "api_path": "/api/v1",
+    },
+    "evolutionary_computation": {
+        "port": 8006,
+        "name": "Evolutionary Computation",
+        "api_path": "/api/v1",
+    },
 }
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -76,6 +95,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class DocumentationMetrics:
     """Documentation quality metrics."""
+
     total_files: int
     constitutional_compliance_rate: float
     link_validity_rate: float
@@ -89,6 +109,7 @@ class DocumentationMetrics:
 @dataclass
 class ValidationResult:
     """Documentation validation result."""
+
     file_path: str
     is_valid: bool
     constitutional_compliance: bool
@@ -100,6 +121,7 @@ class ValidationResult:
 
 class DocumentationReport(BaseModel):
     """Documentation report model."""
+
     report_type: str
     generated_at: datetime
     metrics: Dict[str, Any]
@@ -110,47 +132,47 @@ class DocumentationReport(BaseModel):
 
 class ACGSDocumentationOrchestrator:
     """Unified documentation orchestrator for ACGS."""
-    
+
     def __init__(self):
         self.session: Optional[aiohttp.ClientSession] = None
         self.project_root = Path.cwd()
         self.docs_dir = self.project_root / "docs"
         self.reports_dir = self.project_root / "reports" / "documentation"
         self.validation_results: List[ValidationResult] = []
-        
+
     async def __aenter__(self):
         """Async context manager entry."""
         await self.initialize()
         return self
-        
+
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         """Async context manager exit."""
         await self.cleanup()
-        
+
     async def initialize(self):
         """Initialize documentation orchestrator."""
         logger.info("📚 Initializing ACGS Documentation Orchestrator...")
-        
+
         # Validate constitutional hash
         if not self._validate_constitutional_hash():
             raise ValueError(f"Invalid constitutional hash: {CONSTITUTIONAL_HASH}")
-        
+
         # Initialize HTTP session
         timeout = aiohttp.ClientTimeout(total=30)
         self.session = aiohttp.ClientSession(timeout=timeout)
-        
+
         # Create documentation directories
         self._create_documentation_directories()
-        
+
         logger.info("✅ Documentation orchestrator initialized")
-        
+
     async def cleanup(self):
         """Cleanup resources."""
         logger.info("🧹 Cleaning up documentation orchestrator...")
-        
+
         if self.session:
             await self.session.close()
-            
+
         logger.info("✅ Cleanup completed")
 
     def _validate_constitutional_hash(self) -> bool:
@@ -161,7 +183,7 @@ class ACGSDocumentationOrchestrator:
         """Create necessary documentation directories."""
         doc_dirs = [
             "docs/api",
-            "docs/architecture", 
+            "docs/architecture",
             "docs/deployment",
             "docs/development",
             "docs/governance",
@@ -173,14 +195,14 @@ class ACGSDocumentationOrchestrator:
             "reports/compliance",
             "reports/audits",
         ]
-        
+
         for doc_dir in doc_dirs:
             Path(doc_dir).mkdir(parents=True, exist_ok=True)
 
     async def generate_comprehensive_documentation(self) -> Dict[str, Any]:
         """Generate comprehensive ACGS documentation."""
         logger.info("📖 Generating comprehensive ACGS documentation...")
-        
+
         documentation_summary = {
             "generation_start": datetime.now(timezone.utc).isoformat(),
             "constitutional_hash": CONSTITUTIONAL_HASH,
@@ -191,32 +213,42 @@ class ACGSDocumentationOrchestrator:
             "quality_metrics": {},
             "export_results": {},
         }
-        
+
         try:
             # Generate API documentation
-            documentation_summary["api_documentation"] = await self._generate_api_documentation()
-            
+            documentation_summary["api_documentation"] = (
+                await self._generate_api_documentation()
+            )
+
             # Generate system documentation
-            documentation_summary["system_documentation"] = await self._generate_system_documentation()
-            
+            documentation_summary["system_documentation"] = (
+                await self._generate_system_documentation()
+            )
+
             # Generate compliance documentation
-            documentation_summary["compliance_documentation"] = await self._generate_compliance_documentation()
-            
+            documentation_summary["compliance_documentation"] = (
+                await self._generate_compliance_documentation()
+            )
+
             # Validate all documentation
-            documentation_summary["validation_results"] = await self._validate_all_documentation()
-            
+            documentation_summary["validation_results"] = (
+                await self._validate_all_documentation()
+            )
+
             # Calculate quality metrics
-            documentation_summary["quality_metrics"] = await self._calculate_quality_metrics()
-            
+            documentation_summary["quality_metrics"] = (
+                await self._calculate_quality_metrics()
+            )
+
             # Export documentation in multiple formats
             documentation_summary["export_results"] = await self._export_documentation()
-            
+
             # Save documentation summary
             await self._save_documentation_summary(documentation_summary)
-            
+
             logger.info("✅ Comprehensive documentation generation completed")
             return documentation_summary
-            
+
         except Exception as e:
             logger.error(f"❌ Documentation generation failed: {e}")
             documentation_summary["error"] = str(e)
@@ -225,59 +257,67 @@ class ACGSDocumentationOrchestrator:
     async def _generate_api_documentation(self) -> Dict[str, Any]:
         """Generate API documentation for all ACGS services."""
         logger.info("🔌 Generating API documentation...")
-        
+
         api_docs = {}
-        
+
         for service_name, config in ACGS_SERVICES.items():
             try:
                 # Generate OpenAPI specification
                 openapi_spec = await self._generate_openapi_spec(service_name, config)
-                
+
                 # Generate service-specific documentation
-                service_docs = await self._generate_service_documentation(service_name, config)
-                
+                service_docs = await self._generate_service_documentation(
+                    service_name, config
+                )
+
                 api_docs[service_name] = {
                     "openapi_spec": openapi_spec,
                     "service_docs": service_docs,
                     "status": "generated",
                 }
-                
+
             except Exception as e:
                 logger.error(f"Failed to generate API docs for {service_name}: {e}")
                 api_docs[service_name] = {
                     "status": "failed",
                     "error": str(e),
                 }
-        
+
         # Generate unified API index
         await self._generate_api_index(api_docs)
-        
+
         return {
-            "services_documented": len([s for s in api_docs.values() if s.get("status") == "generated"]),
+            "services_documented": len(
+                [s for s in api_docs.values() if s.get("status") == "generated"]
+            ),
             "total_services": len(ACGS_SERVICES),
             "api_docs": api_docs,
             "constitutional_hash": CONSTITUTIONAL_HASH,
         }
 
-    async def _generate_openapi_spec(self, service_name: str, config: Dict[str, Any]) -> Dict[str, Any]:
+    async def _generate_openapi_spec(
+        self, service_name: str, config: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Generate OpenAPI specification for a service."""
         try:
             # Try to fetch OpenAPI spec from service
-            spec_url = f"http://localhost:{config['port']}{config['api_path']}/openapi.json"
-            
+            spec_url = (
+                f"http://localhost:{config['port']}{config['api_path']}/openapi.json"
+            )
+
             async with self.session.get(spec_url) as response:
                 if response.status == 200:
                     spec = await response.json()
-                    
+
                     # Enhance spec with ACGS-specific information
                     spec["info"]["x-constitutional-hash"] = CONSTITUTIONAL_HASH
                     spec["info"]["x-acgs-service"] = service_name
-                    
+
                     return spec
-                    
+
         except Exception as e:
             logger.warning(f"Could not fetch OpenAPI spec for {service_name}: {e}")
-        
+
         # Generate basic OpenAPI spec
         return {
             "openapi": "3.0.3",
@@ -307,19 +347,23 @@ class ACGSDocumentationOrchestrator:
                                             "type": "object",
                                             "properties": {
                                                 "status": {"type": "string"},
-                                                "constitutional_hash": {"type": "string"},
-                                            }
+                                                "constitutional_hash": {
+                                                    "type": "string"
+                                                },
+                                            },
                                         }
                                     }
-                                }
+                                },
                             }
-                        }
+                        },
                     }
                 }
             },
         }
 
-    async def _generate_service_documentation(self, service_name: str, config: Dict[str, Any]) -> Dict[str, Any]:
+    async def _generate_service_documentation(
+        self, service_name: str, config: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Generate comprehensive service documentation."""
         service_doc_content = f"""# {config['name']} API Documentation
 
@@ -409,16 +453,22 @@ For API support and questions:
 *Generated on {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')} UTC*
 *Constitutional Hash: {CONSTITUTIONAL_HASH}*
 """
-        
+
         # Save service documentation
         service_doc_path = self.docs_dir / "api" / f"{service_name}_api.md"
         async with aiofiles.open(service_doc_path, "w") as f:
             await f.write(service_doc_content)
-        
+
         return {
             "file_path": str(service_doc_path),
             "content_length": len(service_doc_content),
-            "sections": ["Overview", "Authentication", "Health Check", "Constitutional Compliance", "Error Handling"],
+            "sections": [
+                "Overview",
+                "Authentication",
+                "Health Check",
+                "Constitutional Compliance",
+                "Error Handling",
+            ],
         }
 
     async def _generate_api_index(self, api_docs: Dict[str, Any]):
@@ -437,7 +487,11 @@ This document provides a comprehensive index of all ACGS (Autonomous Constitutio
 """
 
         for service_name, config in ACGS_SERVICES.items():
-            status = "✅" if api_docs.get(service_name, {}).get("status") == "generated" else "❌"
+            status = (
+                "✅"
+                if api_docs.get(service_name, {}).get("status") == "generated"
+                else "❌"
+            )
             index_content += f"""### {config['name']} {status}
 
 - **Service**: {service_name}
@@ -600,7 +654,14 @@ All services implement the constitutional compliance framework with hash `{CONST
         return {
             "file_path": str(arch_path),
             "content_length": len(arch_content),
-            "sections": ["Overview", "Core Services", "Infrastructure", "Constitutional Compliance", "Performance", "Security"],
+            "sections": [
+                "Overview",
+                "Core Services",
+                "Infrastructure",
+                "Constitutional Compliance",
+                "Performance",
+                "Security",
+            ],
         }
 
     async def _generate_deployment_docs(self) -> Dict[str, Any]:
@@ -711,7 +772,13 @@ All deployments must validate constitutional compliance:
         return {
             "file_path": str(deployment_path),
             "content_length": len(deployment_content),
-            "sections": ["Prerequisites", "Quick Start", "Service Ports", "Constitutional Compliance", "Troubleshooting"],
+            "sections": [
+                "Prerequisites",
+                "Quick Start",
+                "Service Ports",
+                "Constitutional Compliance",
+                "Troubleshooting",
+            ],
         }
 
     async def _generate_operations_docs(self) -> Dict[str, Any]:
@@ -861,7 +928,11 @@ The system continuously monitors constitutional compliance:
                 "constitutional_compliance": {
                     "file_path": str(compliance_path),
                     "content_length": len(compliance_content),
-                    "sections": ["Constitutional Framework", "Compliance Validation", "Compliance Monitoring"],
+                    "sections": [
+                        "Constitutional Framework",
+                        "Compliance Validation",
+                        "Compliance Monitoring",
+                    ],
                 }
             },
             "constitutional_hash": CONSTITUTIONAL_HASH,
@@ -882,28 +953,40 @@ The system continuously monitors constitutional compliance:
                 validation_results.append(validation_result)
             except Exception as e:
                 logger.error(f"Failed to validate {file_path}: {e}")
-                validation_results.append(ValidationResult(
-                    file_path=str(file_path),
-                    is_valid=False,
-                    constitutional_compliance=False,
-                    broken_links=[],
-                    missing_sections=[],
-                    quality_score=0.0,
-                    recommendations=[f"Validation failed: {e}"],
-                ))
+                validation_results.append(
+                    ValidationResult(
+                        file_path=str(file_path),
+                        is_valid=False,
+                        constitutional_compliance=False,
+                        broken_links=[],
+                        missing_sections=[],
+                        quality_score=0.0,
+                        recommendations=[f"Validation failed: {e}"],
+                    )
+                )
 
         # Calculate overall validation metrics
         total_files = len(validation_results)
         valid_files = sum(1 for r in validation_results if r.is_valid)
-        compliant_files = sum(1 for r in validation_results if r.constitutional_compliance)
-        avg_quality_score = sum(r.quality_score for r in validation_results) / total_files if total_files > 0 else 0
+        compliant_files = sum(
+            1 for r in validation_results if r.constitutional_compliance
+        )
+        avg_quality_score = (
+            sum(r.quality_score for r in validation_results) / total_files
+            if total_files > 0
+            else 0
+        )
 
         return {
             "total_files_validated": total_files,
             "valid_files": valid_files,
             "compliant_files": compliant_files,
-            "validation_rate": (valid_files / total_files) * 100 if total_files > 0 else 0,
-            "compliance_rate": (compliant_files / total_files) * 100 if total_files > 0 else 0,
+            "validation_rate": (
+                (valid_files / total_files) * 100 if total_files > 0 else 0
+            ),
+            "compliance_rate": (
+                (compliant_files / total_files) * 100 if total_files > 0 else 0
+            ),
             "average_quality_score": round(avg_quality_score, 2),
             "validation_results": [asdict(r) for r in validation_results],
             "constitutional_hash": CONSTITUTIONAL_HASH,
@@ -921,14 +1004,14 @@ The system continuously monitors constitutional compliance:
 
             # Check for broken links (simplified)
             broken_links = []
-            link_pattern = r'\[([^\]]+)\]\(([^)]+)\)'
+            link_pattern = r"\[([^\]]+)\]\(([^)]+)\)"
             links = re.findall(link_pattern, content)
 
             for link_text, link_url in links:
-                if link_url.startswith('http'):
+                if link_url.startswith("http"):
                     # Would check external links in production
                     pass
-                elif link_url.startswith('./') or link_url.startswith('../'):
+                elif link_url.startswith("./") or link_url.startswith("../"):
                     # Check relative file links
                     target_path = (file_path.parent / link_url).resolve()
                     if not target_path.exists():
@@ -953,11 +1036,15 @@ The system continuously monitors constitutional compliance:
             # Generate recommendations
             recommendations = []
             if not constitutional_compliance:
-                recommendations.append(f"Add constitutional hash: {CONSTITUTIONAL_HASH}")
+                recommendations.append(
+                    f"Add constitutional hash: {CONSTITUTIONAL_HASH}"
+                )
             if broken_links:
                 recommendations.append(f"Fix {len(broken_links)} broken links")
             if missing_sections:
-                recommendations.append(f"Add missing sections: {', '.join(missing_sections)}")
+                recommendations.append(
+                    f"Add missing sections: {', '.join(missing_sections)}"
+                )
 
             return ValidationResult(
                 file_path=str(file_path),
@@ -999,7 +1086,9 @@ The system continuously monitors constitutional compliance:
             except Exception:
                 pass
 
-        constitutional_compliance_rate = (compliant_files / total_files) * 100 if total_files > 0 else 0
+        constitutional_compliance_rate = (
+            (compliant_files / total_files) * 100 if total_files > 0 else 0
+        )
 
         # Calculate other metrics (simplified)
         link_validity_rate = 95.0  # Would implement actual link checking
@@ -1008,10 +1097,10 @@ The system continuously monitors constitutional compliance:
 
         # Calculate overall quality score
         overall_quality_score = (
-            constitutional_compliance_rate * 0.4 +
-            link_validity_rate * 0.2 +
-            documentation_coverage_rate * 0.2 +
-            freshness_score * 0.2
+            constitutional_compliance_rate * 0.4
+            + link_validity_rate * 0.2
+            + documentation_coverage_rate * 0.2
+            + freshness_score * 0.2
         )
 
         metrics = DocumentationMetrics(
@@ -1041,7 +1130,9 @@ The system continuously monitors constitutional compliance:
         export_results["pdf"] = pdf_results
 
         return {
-            "formats_exported": len([r for r in export_results.values() if r.get("status") == "success"]),
+            "formats_exported": len(
+                [r for r in export_results.values() if r.get("status") == "success"]
+            ),
             "export_results": export_results,
             "constitutional_hash": CONSTITUTIONAL_HASH,
         }
@@ -1063,7 +1154,9 @@ The system continuously monitors constitutional compliance:
                         md_content = await f.read()
 
                     # Convert to HTML
-                    html_content = markdown.markdown(md_content, extensions=['toc', 'tables'])
+                    html_content = markdown.markdown(
+                        md_content, extensions=["toc", "tables"]
+                    )
 
                     # Add HTML wrapper
                     full_html = f"""<!DOCTYPE html>
@@ -1149,22 +1242,32 @@ async def main():
             validation_results = results.get("validation_results", {})
             quality_metrics = results.get("quality_metrics", {})
 
-            print("\n" + "="*60)
+            print("\n" + "=" * 60)
             print("📚 ACGS DOCUMENTATION GENERATION SUMMARY")
-            print("="*60)
-            print(f"API Services Documented: {api_docs.get('services_documented', 0)}/{api_docs.get('total_services', 0)}")
+            print("=" * 60)
+            print(
+                f"API Services Documented: {api_docs.get('services_documented', 0)}/{api_docs.get('total_services', 0)}"
+            )
             print(f"System Documents: {system_docs.get('documents_generated', 0)}")
-            print(f"Files Validated: {validation_results.get('total_files_validated', 0)}")
-            print(f"Validation Rate: {validation_results.get('validation_rate', 0):.1f}%")
-            print(f"Constitutional Compliance: {validation_results.get('compliance_rate', 0):.1f}%")
-            print(f"Overall Quality Score: {quality_metrics.get('overall_quality_score', 0):.1f}/100")
+            print(
+                f"Files Validated: {validation_results.get('total_files_validated', 0)}"
+            )
+            print(
+                f"Validation Rate: {validation_results.get('validation_rate', 0):.1f}%"
+            )
+            print(
+                f"Constitutional Compliance: {validation_results.get('compliance_rate', 0):.1f}%"
+            )
+            print(
+                f"Overall Quality Score: {quality_metrics.get('overall_quality_score', 0):.1f}/100"
+            )
 
             # Print export results
             export_results = results.get("export_results", {})
             print(f"Export Formats: {export_results.get('formats_exported', 0)}")
 
             print(f"\n🏛️ Constitutional Hash: {CONSTITUTIONAL_HASH}")
-            print("="*60)
+            print("=" * 60)
 
         except Exception as e:
             logger.error(f"❌ Documentation generation failed: {e}")

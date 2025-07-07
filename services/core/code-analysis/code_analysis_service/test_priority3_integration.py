@@ -532,7 +532,8 @@ class ACGSIntegrationTester:
 
                     results[endpoint] = {
                         "status_code": response.status_code,
-                        "accessible": response.status_code in [
+                        "accessible": response.status_code
+                        in [
                             200,
                             400,
                             401,
@@ -606,9 +607,8 @@ class ACGSIntegrationTester:
 
             error_handling_checks = {
                 "returns_404": response.status_code == 404,
-                "returns_json": "application/json" in response.headers.get(
-                    "content-type", ""
-                ),
+                "returns_json": "application/json"
+                in response.headers.get("content-type", ""),
                 "includes_constitutional_hash": (
                     self.constitutional_hash in response.text
                 ),

@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 import { Log } from "../util/log"
 import path from "path"
 import { z } from "zod"

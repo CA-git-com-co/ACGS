@@ -2,7 +2,11 @@
   "dashboard": {
     "id": null,
     "title": "ACGS Performance Dashboard",
-    "tags": ["acgs", "performance", "constitutional_hash:cdd01ef066bc6cf2"],
+    "tags": [
+      "acgs",
+      "performance",
+      "constitutional_hash:cdd01ef066bc6cf2"
+    ],
     "timezone": "browser",
     "panels": [
       {
@@ -21,14 +25,28 @@
             "unit": "s",
             "thresholds": {
               "steps": [
-                {"color": "green", "value": null},
-                {"color": "yellow", "value": 0.003},
-                {"color": "red", "value": 0.005}
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "yellow",
+                  "value": 0.003
+                },
+                {
+                  "color": "red",
+                  "value": 0.005
+                }
               ]
             }
           }
         },
-        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 0}
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 0,
+          "y": 0
+        }
       },
       {
         "id": 2,
@@ -46,14 +64,28 @@
             "unit": "reqps",
             "thresholds": {
               "steps": [
-                {"color": "red", "value": null},
-                {"color": "yellow", "value": 80},
-                {"color": "green", "value": 100}
+                {
+                  "color": "red",
+                  "value": null
+                },
+                {
+                  "color": "yellow",
+                  "value": 80
+                },
+                {
+                  "color": "green",
+                  "value": 100
+                }
               ]
             }
           }
         },
-        "gridPos": {"h": 8, "w": 8, "x": 8, "y": 0}
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 8,
+          "y": 0
+        }
       },
       {
         "id": 3,
@@ -71,14 +103,28 @@
             "unit": "percent",
             "thresholds": {
               "steps": [
-                {"color": "red", "value": null},
-                {"color": "yellow", "value": 75},
-                {"color": "green", "value": 85}
+                {
+                  "color": "red",
+                  "value": null
+                },
+                {
+                  "color": "yellow",
+                  "value": 75
+                },
+                {
+                  "color": "green",
+                  "value": 85
+                }
               ]
             }
           }
         },
-        "gridPos": {"h": 8, "w": 8, "x": 16, "y": 0}
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 16,
+          "y": 0
+        }
       },
       {
         "id": 4,
@@ -96,7 +142,12 @@
             "unit": "s"
           }
         },
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        }
       },
       {
         "id": 5,
@@ -114,11 +165,20 @@
             "unit": "reqps"
           }
         },
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        }
       }
     ],
-    "time": {"from": "now-1h", "to": "now"},
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
     "refresh": "5s"
   },
-  "overwrite": true
+  "overwrite": true,
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }

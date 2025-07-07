@@ -78,11 +78,7 @@ class ConstitutionalLogger:
         self.service_name = service_name
 
     def log_constitutional_validation(
-        self,
-        level: str,
-        message: str,
-        validation_result: Dict[str, Any],
-        **kwargs
+        self, level: str, message: str, validation_result: Dict[str, Any], **kwargs
     ) -> None:
         """Log constitutional validation events."""
         extra = {
@@ -90,49 +86,33 @@ class ConstitutionalLogger:
             "service": self.service_name,
             "constitutional_validation": validation_result,
             "operation_type": kwargs.get("operation_type", "validation"),
-            **kwargs
+            **kwargs,
         }
 
         self.logger.log(
             getattr(logging, level.upper()),
             f"Constitutional validation: {message}",
-            extra=extra
+            extra=extra,
         )
 
     def info(self, message: str, **kwargs) -> None:
         """Log info message with constitutional context."""
-        extra = {
-            "chash": CONSTITUTIONAL_HASH,
-            "service": self.service_name,
-            **kwargs
-        }
+        extra = {"chash": CONSTITUTIONAL_HASH, "service": self.service_name, **kwargs}
         self.logger.info(message, extra=extra)
 
     def warning(self, message: str, **kwargs) -> None:
         """Log warning message with constitutional context."""
-        extra = {
-            "chash": CONSTITUTIONAL_HASH,
-            "service": self.service_name,
-            **kwargs
-        }
+        extra = {"chash": CONSTITUTIONAL_HASH, "service": self.service_name, **kwargs}
         self.logger.warning(message, extra=extra)
 
     def error(self, message: str, **kwargs) -> None:
         """Log error message with constitutional context."""
-        extra = {
-            "chash": CONSTITUTIONAL_HASH,
-            "service": self.service_name,
-            **kwargs
-        }
+        extra = {"chash": CONSTITUTIONAL_HASH, "service": self.service_name, **kwargs}
         self.logger.error(message, extra=extra)
 
     def critical(self, message: str, **kwargs) -> None:
         """Log critical message with constitutional context."""
-        extra = {
-            "chash": CONSTITUTIONAL_HASH,
-            "service": self.service_name,
-            **kwargs
-        }
+        extra = {"chash": CONSTITUTIONAL_HASH, "service": self.service_name, **kwargs}
         self.logger.critical(message, extra=extra)
 
 
@@ -143,8 +123,7 @@ class PerformanceLogger:
 
     def __init__(self, service_name: str = "acgs-service"):
         self.logger = ConstitutionalLogger(
-            f"acgs.{service_name}.performance", 
-            service_name
+            f"acgs.{service_name}.performance", service_name
         )
         self.start_times: Dict[str, float] = {}
 
@@ -156,15 +135,15 @@ class PerformanceLogger:
             "Operation started",
             operation_id=operation_id,
             operation_type=operation_type,
-            **kwargs
+            **kwargs,
         )
 
     def end_operation(
-        self, 
-        operation_id: str, 
-        success: bool = True, 
+        self,
+        operation_id: str,
+        success: bool = True,
         compliance_score: Optional[float] = None,
-        **kwargs
+        **kwargs,
     ) -> float:
         """End timing an operation and log results."""
         end_time = time.time()
@@ -177,7 +156,7 @@ class PerformanceLogger:
             "operation_id": operation_id,
             "duration_ms": round(duration_ms, 2),
             "success": success,
-            **kwargs
+            **kwargs,
         }
 
         if compliance_score is not None:
@@ -187,7 +166,7 @@ class PerformanceLogger:
             log_level,
             "Operation completed",
             {"operation_success": success, "duration_ms": duration_ms},
-            **log_kwargs
+            **log_kwargs,
         )
 
         return duration_ms
@@ -200,8 +179,7 @@ class SecurityLogger:
 
     def __init__(self, service_name: str = "acgs-service"):
         self.logger = ConstitutionalLogger(
-            f"acgs.{service_name}.security", 
-            service_name
+            f"acgs.{service_name}.security", service_name
         )
 
     def log_authentication_event(
@@ -209,7 +187,7 @@ class SecurityLogger:
         event_type: str,
         user_id: Optional[str] = None,
         success: bool = True,
-        **kwargs
+        **kwargs,
     ) -> None:
         """Log authentication events."""
         self.logger.log_constitutional_validation(
@@ -218,17 +196,14 @@ class SecurityLogger:
             {
                 "event_type": "authentication",
                 "auth_type": event_type,
-                "success": success
+                "success": success,
             },
             user_id=user_id,
-            **kwargs
+            **kwargs,
         )
 
     def log_constitutional_violation(
-        self, 
-        violation_type: str, 
-        details: Dict[str, Any], 
-        **kwargs
+        self, violation_type: str, details: Dict[str, Any], **kwargs
     ) -> None:
         """Log constitutional compliance violations."""
         self.logger.log_constitutional_validation(
@@ -237,9 +212,9 @@ class SecurityLogger:
             {
                 "violation_type": violation_type,
                 "violation_details": details,
-                "severity": "critical"
+                "severity": "critical",
             },
-            **kwargs
+            **kwargs,
         )
 
 
@@ -338,7 +313,9 @@ def setup_constitutional_logging(
     )
 
 
-def get_constitutional_logger(name: str, service_name: str = "acgs-service") -> ConstitutionalLogger:
+def get_constitutional_logger(
+    name: str, service_name: str = "acgs-service"
+) -> ConstitutionalLogger:
     """
     Get a constitutional logger with compliance metadata.
 
@@ -356,27 +333,24 @@ def get_constitutional_logger(name: str, service_name: str = "acgs-service") -> 
 def log_constitutional_validation_example():
     """Example usage of constitutional validation logging."""
     logger = get_constitutional_logger("validation", "constitutional-ai")
-    
+
     # Log constitutional validation
-    logger.info(
-        "Constitutional validation", 
-        extra={"chash": CONSTITUTIONAL_HASH}
-    )
-    
+    logger.info("Constitutional validation", extra={"chash": CONSTITUTIONAL_HASH})
+
     # Log validation with results
     validation_result = {
         "is_valid": True,
         "compliance_score": 0.95,
         "violations": [],
-        "constitutional_hash": CONSTITUTIONAL_HASH
+        "constitutional_hash": CONSTITUTIONAL_HASH,
     }
-    
+
     logger.log_constitutional_validation(
         "info",
         "Policy validation completed",
         validation_result,
         policy_id="policy_123",
-        user_id="user_456"
+        user_id="user_456",
     )
 
 

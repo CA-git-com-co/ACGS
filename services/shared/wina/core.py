@@ -376,7 +376,9 @@ class WINACore:
         """
         # Performance optimization: Use cached column norms with O(1) lookup
         if layer_name not in self._column_norms:
-            logger.warning(f"Column norms not found for layer {layer_name}, using default")
+            logger.warning(
+                f"Column norms not found for layer {layer_name}, using default"
+            )
             column_norms = torch.ones_like(hidden_state)
         else:
             column_norms = self._column_norms[layer_name]

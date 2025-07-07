@@ -13,7 +13,6 @@ from pathlib import Path
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 def apply_direct_fix():
     """Apply direct fix to GS Service main.py file."""
 

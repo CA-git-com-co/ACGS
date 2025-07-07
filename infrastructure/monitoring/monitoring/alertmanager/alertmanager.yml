@@ -1,15 +1,15 @@
-# Constitutional Hash: cdd01ef066bc6cf2
 global:
   smtp_from: alerts@acgs.local
   smtp_smarthost: localhost:587
 receivers:
-  - name: web.hook
-    webhook_configs:
-      - url: http://localhost:5001/alerts
+- name: web.hook
+  webhook_configs:
+  - url: http://localhost:5001/alerts
 route:
   group_by:
-    - alertname
+  - alertname
   group_interval: 10s
   group_wait: 10s
   receiver: web.hook
   repeat_interval: 1h
+constitutional_hash: cdd01ef066bc6cf2

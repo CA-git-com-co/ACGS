@@ -1,211 +1,163 @@
-# Constitutional Hash: cdd01ef066bc6cf2
 version: '3.8'
-
-# ACGS Nano-vLLM Staging Environment
-# Production-like configuration for constitutional AI workload validation
-
 services:
-  # =============================================================================
-  # Nano-vLLM Reasoning Service - Staging Configuration
-  # =============================================================================
   nano-vllm-reasoning-staging:
     build:
       context: ../../services/reasoning-models
       dockerfile: Dockerfile.nano-vllm
     container_name: acgs_nano_vllm_reasoning_staging
     environment:
-      - NANO_VLLM_MODE=enabled
-      - FALLBACK_TO_VLLM=true
-      - ENVIRONMENT=staging
-
-      # Model Configuration
-      - NVIDIA_MODEL_PATH=nvidia/Llama-3.1-Nemotron-70B-Instruct-HF
-      - MICROSOFT_MODEL_PATH=microsoft/Phi-4
-      - ENABLE_FALLBACK=true
-      - LOG_LEVEL=DEBUG # More verbose logging for staging
-      - PYTHONPATH=/app
-
-      # Performance Settings (Production-like)
-      - TENSOR_PARALLEL_SIZE=1
-      - GPU_MEMORY_UTILIZATION=0.9
-      - MAX_MODEL_LEN=32768
-      - ENABLE_GPU_DETECTION=true
-      - CUDA_VISIBLE_DEVICES=0
-
-      # Constitutional AI Settings
-      - CONSTITUTIONAL_MODE=enabled
-      - REASONING_DEPTH=standard
-      - CONSTITUTIONAL_COMPLIANCE_THRESHOLD=0.75
-      - ENABLE_CONSTITUTIONAL_MONITORING=true
-
-      # Monitoring and Metrics
-      - PROMETHEUS_ENABLED=true
-      - METRICS_PORT=9090
-      - HEALTH_CHECK_INTERVAL=10
-
-    # GPU Runtime Support
+    - NANO_VLLM_MODE=enabled
+    - FALLBACK_TO_VLLM=true
+    - ENVIRONMENT=staging
+    - NVIDIA_MODEL_PATH=nvidia/Llama-3.1-Nemotron-70B-Instruct-HF
+    - MICROSOFT_MODEL_PATH=microsoft/Phi-4
+    - ENABLE_FALLBACK=true
+    - LOG_LEVEL=DEBUG
+    - PYTHONPATH=/app
+    - TENSOR_PARALLEL_SIZE=1
+    - GPU_MEMORY_UTILIZATION=0.9
+    - MAX_MODEL_LEN=32768
+    - ENABLE_GPU_DETECTION=true
+    - CUDA_VISIBLE_DEVICES=0
+    - CONSTITUTIONAL_MODE=enabled
+    - REASONING_DEPTH=standard
+    - CONSTITUTIONAL_COMPLIANCE_THRESHOLD=0.75
+    - ENABLE_CONSTITUTIONAL_MONITORING=true
+    - PROMETHEUS_ENABLED=true
+    - METRICS_PORT=9090
+    - HEALTH_CHECK_INTERVAL=10
     runtime: nvidia
     deploy:
       resources:
         limits:
-          memory: 12G # Increased for staging validation
+          memory: 12G
           cpus: '6.0'
         reservations:
           memory: 6G
           cpus: '3.0'
         generic_resources:
-          - discrete_resource_spec:
-              kind: 'NVIDIA-GPU'
-              value: 1
-
+        - discrete_resource_spec:
+            kind: NVIDIA-GPU
+            value: 1
     ports:
-      - '8100:8000' # NVIDIA AceReason equivalent (staging port)
-      - '8101:8001' # Microsoft Phi-4 equivalent (staging port)
-      - '8102:8002' # Multimodal equivalent (staging port)
-      - '9190:9090' # Prometheus metrics (staging port)
-
+    - 8100:8000
+    - 8101:8001
+    - 8102:8002
+    - 9190:9090
     volumes:
-      # Model cache
-      - ${HOME:-~}/.cache/huggingface:/root/.cache/huggingface
-      - nano_vllm_models_staging:/app/models
-
-      # Configuration
-      - ../../config/nano-vllm:/app/config:ro
-      - ../../config/constitutional:/app/constitutional:ro
-
-      # Logs (staging-specific)
-      - ../../logs/staging:/app/logs
-
-      # Test data for validation
-      - ../../tests/fixtures/constitutional:/app/test_data:ro
-
+    - ${HOME:-~}/.cache/huggingface:/root/.cache/huggingface
+    - nano_vllm_models_staging:/app/models
+    - ../../config/nano-vllm:/app/config:ro
+    - ../../config/constitutional:/app/constitutional:ro
+    - ../../logs/staging:/app/logs
+    - ../../tests/fixtures/constitutional:/app/test_data:ro
     networks:
-      - acgs_staging_network
-
+    - acgs_staging_network
     restart: unless-stopped
-
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:8000/health']
-      interval: 15s # More frequent health checks
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:8000/health
+      interval: 15s
       timeout: 10s
       retries: 5
-      start_period: 120s # Allow more time for model loading
-
+      start_period: 120s
     logging:
-      driver: 'json-file'
+      driver: json-file
       options:
-        max-size: '100m' # Larger logs for staging analysis
+        max-size: 100m
         max-file: '5'
-        labels: 'service=nano-vllm,environment=staging,component=reasoning'
-
-  # =============================================================================
-  # Prometheus Monitoring for Staging
-  # =============================================================================
+        labels: service=nano-vllm,environment=staging,component=reasoning
   prometheus-staging:
     image: prom/prometheus:latest
     container_name: acgs_prometheus_staging
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--storage.tsdb.retention.time=7d' # 7 days retention for staging
-      - '--web.enable-lifecycle'
-      - '--web.enable-admin-api'
+    - --config.file=/etc/prometheus/prometheus.yml
+    - --storage.tsdb.path=/prometheus
+    - --web.console.libraries=/etc/prometheus/console_libraries
+    - --web.console.templates=/etc/prometheus/consoles
+    - --storage.tsdb.retention.time=7d
+    - --web.enable-lifecycle
+    - --web.enable-admin-api
     ports:
-      - '9191:9090' # Staging Prometheus port
+    - 9191:9090
     volumes:
-      - ../../config/monitoring/prometheus-nano-vllm-staging.yml:/etc/prometheus/prometheus.yml:ro
-      - ../../config/monitoring/alert-rules-staging.yml:/etc/prometheus/alert-rules.yml:ro
-      - prometheus_staging_data:/prometheus
+    - ../../config/monitoring/prometheus-nano-vllm-staging.yml:/etc/prometheus/prometheus.yml:ro
+    - ../../config/monitoring/alert-rules-staging.yml:/etc/prometheus/alert-rules.yml:ro
+    - prometheus_staging_data:/prometheus
     networks:
-      - acgs_staging_network
+    - acgs_staging_network
     restart: unless-stopped
     depends_on:
-      - nano-vllm-reasoning-staging
-
-  # =============================================================================
-  # Grafana Dashboard for Staging
-  # =============================================================================
+    - nano-vllm-reasoning-staging
   grafana-staging:
     image: grafana/grafana:latest
     container_name: acgs_grafana_staging
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=staging_admin_2024
-      - GF_USERS_ALLOW_SIGN_UP=false
-      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+    - GF_SECURITY_ADMIN_PASSWORD=staging_admin_2024
+    - GF_USERS_ALLOW_SIGN_UP=false
+    - GF_INSTALL_PLUGINS=grafana-piechart-panel
     ports:
-      - '3100:3000' # Staging Grafana port
+    - 3100:3000
     volumes:
-      - ../../config/grafana/staging:/etc/grafana/provisioning:ro
-      - ../../config/grafana/dashboards/nano-vllm-constitutional-ai.json:/var/lib/grafana/dashboards/nano-vllm.json:ro
-      - grafana_staging_data:/var/lib/grafana
+    - ../../config/grafana/staging:/etc/grafana/provisioning:ro
+    - ../../config/grafana/dashboards/nano-vllm-constitutional-ai.json:/var/lib/grafana/dashboards/nano-vllm.json:ro
+    - grafana_staging_data:/var/lib/grafana
     networks:
-      - acgs_staging_network
+    - acgs_staging_network
     restart: unless-stopped
     depends_on:
-      - prometheus-staging
-
-  # =============================================================================
-  # Load Testing Service
-  # =============================================================================
+    - prometheus-staging
   load-tester:
     build:
       context: ../../tests/load
       dockerfile: Dockerfile.k6
     container_name: acgs_load_tester_staging
     environment:
-      - TARGET_URL=http://nano-vllm-reasoning-staging:8000
-      - CONSTITUTIONAL_ENDPOINT=http://nano-vllm-reasoning-staging:8000/v1/constitutional-reasoning
-      - CHAT_ENDPOINT=http://nano-vllm-reasoning-staging:8000/v1/chat/completions
-      - CONCURRENT_USERS=20
-      - TEST_DURATION=30m
-      - RAMP_UP_DURATION=5m
+    - TARGET_URL=http://nano-vllm-reasoning-staging:8000
+    - CONSTITUTIONAL_ENDPOINT=http://nano-vllm-reasoning-staging:8000/v1/constitutional-reasoning
+    - CHAT_ENDPOINT=http://nano-vllm-reasoning-staging:8000/v1/chat/completions
+    - CONCURRENT_USERS=20
+    - TEST_DURATION=30m
+    - RAMP_UP_DURATION=5m
     volumes:
-      - ../../tests/load/constitutional-ai-scenarios.js:/scripts/test.js:ro
-      - ../../tests/results/staging:/results
+    - ../../tests/load/constitutional-ai-scenarios.js:/scripts/test.js:ro
+    - ../../tests/results/staging:/results
     networks:
-      - acgs_staging_network
+    - acgs_staging_network
     depends_on:
-      - nano-vllm-reasoning-staging
+    - nano-vllm-reasoning-staging
     profiles:
-      - load-testing # Only start when explicitly requested
-
-  # =============================================================================
-  # Constitutional AI Validator
-  # =============================================================================
+    - load-testing
   constitutional-validator:
     build:
       context: ../../tests/validation
       dockerfile: Dockerfile.validator
     container_name: acgs_constitutional_validator_staging
     environment:
-      - NANO_VLLM_URL=http://nano-vllm-reasoning-staging:8000
-      - VALIDATION_MODE=comprehensive
-      - COMPLIANCE_THRESHOLD=0.75
-      - PROMETHEUS_URL=http://prometheus-staging:9090
+    - NANO_VLLM_URL=http://nano-vllm-reasoning-staging:8000
+    - VALIDATION_MODE=comprehensive
+    - COMPLIANCE_THRESHOLD=0.75
+    - PROMETHEUS_URL=http://prometheus-staging:9090
     volumes:
-      - ../../tests/fixtures/constitutional:/app/test_cases:ro
-      - ../../tests/results/staging:/app/results
-      - ../../config/constitutional:/app/constitutional:ro
+    - ../../tests/fixtures/constitutional:/app/test_cases:ro
+    - ../../tests/results/staging:/app/results
+    - ../../config/constitutional:/app/constitutional:ro
     networks:
-      - acgs_staging_network
+    - acgs_staging_network
     depends_on:
-      - nano-vllm-reasoning-staging
-      - prometheus-staging
+    - nano-vllm-reasoning-staging
+    - prometheus-staging
     profiles:
-      - validation # Only start when explicitly requested
-
-# =============================================================================
-# Networks and Volumes
-# =============================================================================
+    - validation
 networks:
   acgs_staging_network:
     driver: bridge
     ipam:
       config:
-        - subnet: 172.20.0.0/16
-
+      - subnet: 172.20.0.0/16
 volumes:
   nano_vllm_models_staging:
     driver: local
@@ -213,10 +165,4 @@ volumes:
     driver: local
   grafana_staging_data:
     driver: local
-# =============================================================================
-# Profiles for Different Testing Scenarios
-# =============================================================================
-# Usage:
-# docker-compose -f docker-compose.nano-vllm-staging.yml up -d  # Basic staging
-# docker-compose -f docker-compose.nano-vllm-staging.yml --profile load-testing up -d  # With load testing
-# docker-compose -f docker-compose.nano-vllm-staging.yml --profile validation up -d  # With validation
+constitutional_hash: cdd01ef066bc6cf2

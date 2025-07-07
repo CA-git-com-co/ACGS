@@ -1,4 +1,6 @@
 # LaTeX Compilation Report - AlphaEvolve-ACGS arXiv Submission
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 
 **Date**: June 4, 2025
 **Document**: AlphaEvolve-ACGS: A Co-Evolutionary Framework for LLM-Driven Constitutional Governance in Evolutionary Computation

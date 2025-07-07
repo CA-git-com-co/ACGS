@@ -10,12 +10,12 @@ import logging
 import time
 import traceback
 import uuid
-from typing import Any, Dict, Optional, Union
 from datetime import datetime
+from typing import Any, Dict, Optional, Union
 
-from fastapi import FastAPI, Request, HTTPException, status
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.base import BaseHTTPMiddleware
 
@@ -27,13 +27,13 @@ logger = logging.getLogger(__name__)
 
 class ACGSException(Exception):
     """Base exception for ACGS services."""
-    
+
     def __init__(
         self,
         message: str,
         error_code: str = "ACGS_ERROR",
         status_code: int = 500,
-        details: Optional[Dict[str, Any]] = None
+        details: Optional[Dict[str, Any]] = None,
     ):
         self.message = message
         self.error_code = error_code
@@ -45,103 +45,103 @@ class ACGSException(Exception):
 
 class ConstitutionalComplianceError(ACGSException):
     """Constitutional compliance violation errors."""
-    
+
     def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
         super().__init__(
             message=message,
             error_code="CONSTITUTIONAL_VIOLATION",
             status_code=403,
-            details=details
+            details=details,
         )
 
 
 class SecurityValidationError(ACGSException):
     """Security validation errors."""
-    
+
     def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
         super().__init__(
             message=message,
             error_code="SECURITY_VALIDATION_FAILED",
             status_code=400,
-            details=details
+            details=details,
         )
 
 
 class AuthenticationError(ACGSException):
     """Authentication-related errors."""
-    
+
     def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
         super().__init__(
             message=message,
             error_code="AUTHENTICATION_FAILED",
             status_code=401,
-            details=details
+            details=details,
         )
 
 
 class AuthorizationError(ACGSException):
     """Authorization-related errors."""
-    
+
     def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
         super().__init__(
             message=message,
             error_code="AUTHORIZATION_FAILED",
             status_code=403,
-            details=details
+            details=details,
         )
 
 
 class ServiceUnavailableError(ACGSException):
     """Service unavailability errors."""
-    
+
     def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
         super().__init__(
             message=message,
             error_code="SERVICE_UNAVAILABLE",
             status_code=503,
-            details=details
+            details=details,
         )
 
 
 class ValidationError(ACGSException):
     """Validation errors."""
-    
+
     def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
         super().__init__(
             message=message,
             error_code="VALIDATION_FAILED",
             status_code=422,
-            details=details
+            details=details,
         )
 
 
 class RateLimitError(ACGSException):
     """Rate limiting errors."""
-    
+
     def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
         super().__init__(
             message=message,
             error_code="RATE_LIMIT_EXCEEDED",
             status_code=429,
-            details=details
+            details=details,
         )
 
 
 class ErrorResponse:
     """Standardized error response format."""
-    
+
     @staticmethod
     def create_error_response(
         error: Exception,
         request: Request,
         error_id: Optional[str] = None,
-        include_traceback: bool = False
+        include_traceback: bool = False,
     ) -> Dict[str, Any]:
         """Create standardized error response."""
-        
+
         error_id = error_id or str(uuid.uuid4())
         timestamp = datetime.now().isoformat()
-        
+
         # Base error response
         response = {
             "error": {
@@ -152,76 +152,84 @@ class ErrorResponse:
                     "method": request.method,
                     "path": request.url.path,
                     "query_params": dict(request.query_params),
-                }
+                },
             }
         }
-        
+
         # Handle ACGS custom exceptions
         if isinstance(error, ACGSException):
-            response["error"].update({
-                "code": error.error_code,
-                "message": error.message,
-                "status_code": error.status_code,
-                "details": error.details
-            })
-        
+            response["error"].update(
+                {
+                    "code": error.error_code,
+                    "message": error.message,
+                    "status_code": error.status_code,
+                    "details": error.details,
+                }
+            )
+
         # Handle FastAPI HTTP exceptions
         elif isinstance(error, HTTPException):
-            response["error"].update({
-                "code": f"HTTP_{error.status_code}",
-                "message": error.detail,
-                "status_code": error.status_code,
-                "details": {}
-            })
-        
+            response["error"].update(
+                {
+                    "code": f"HTTP_{error.status_code}",
+                    "message": error.detail,
+                    "status_code": error.status_code,
+                    "details": {},
+                }
+            )
+
         # Handle validation errors
         elif isinstance(error, RequestValidationError):
-            response["error"].update({
-                "code": "VALIDATION_ERROR",
-                "message": "Request validation failed",
-                "status_code": 422,
-                "details": {
-                    "validation_errors": error.errors()
+            response["error"].update(
+                {
+                    "code": "VALIDATION_ERROR",
+                    "message": "Request validation failed",
+                    "status_code": 422,
+                    "details": {"validation_errors": error.errors()},
                 }
-            })
-        
+            )
+
         # Handle generic exceptions
         else:
-            response["error"].update({
-                "code": "INTERNAL_SERVER_ERROR",
-                "message": "An unexpected error occurred",
-                "status_code": 500,
-                "details": {
-                    "error_type": type(error).__name__,
-                    "error_message": str(error)
+            response["error"].update(
+                {
+                    "code": "INTERNAL_SERVER_ERROR",
+                    "message": "An unexpected error occurred",
+                    "status_code": 500,
+                    "details": {
+                        "error_type": type(error).__name__,
+                        "error_message": str(error),
+                    },
                 }
-            })
-        
+            )
+
         # Add traceback for debugging (only in development)
         if include_traceback:
             response["error"]["traceback"] = traceback.format_exc()
-        
+
         return response
 
 
 class ErrorHandlingMiddleware(BaseHTTPMiddleware):
     """Error handling middleware for ACGS services."""
-    
-    def __init__(self, app, service_name: str = "unknown", include_traceback: bool = False):
+
+    def __init__(
+        self, app, service_name: str = "unknown", include_traceback: bool = False
+    ):
         super().__init__(app)
         self.service_name = service_name
         self.include_traceback = include_traceback
         self.constitutional_hash = CONSTITUTIONAL_HASH
-    
+
     async def dispatch(self, request: Request, call_next):
         """Handle request and catch any errors."""
         error_id = str(uuid.uuid4())
         start_time = time.time()
-        
+
         try:
             # Process request
             response = await call_next(request)
-            
+
             # Log successful requests
             duration = time.time() - start_time
             logger.info(
@@ -233,16 +241,16 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
                     "status_code": response.status_code,
                     "duration_ms": round(duration * 1000, 2),
                     "constitutional_hash": self.constitutional_hash,
-                    "request_id": error_id
-                }
+                    "request_id": error_id,
+                },
             )
-            
+
             return response
-            
+
         except Exception as error:
             # Log error with full context
             duration = time.time() - start_time
-            
+
             logger.error(
                 f"Request failed: {str(error)}",
                 extra={
@@ -257,17 +265,17 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
                     "client_ip": request.client.host if request.client else None,
                     "user_agent": request.headers.get("user-agent"),
                 },
-                exc_info=True
+                exc_info=True,
             )
-            
+
             # Create standardized error response
             error_response = ErrorResponse.create_error_response(
                 error=error,
                 request=request,
                 error_id=error_id,
-                include_traceback=self.include_traceback
+                include_traceback=self.include_traceback,
             )
-            
+
             # Determine status code
             if isinstance(error, ACGSException):
                 status_code = error.status_code
@@ -277,34 +285,36 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
                 status_code = 422
             else:
                 status_code = 500
-            
+
             return JSONResponse(
                 status_code=status_code,
                 content=error_response,
                 headers={
                     "X-Error-ID": error_id,
                     "X-Constitutional-Hash": self.constitutional_hash,
-                    "X-Service": self.service_name
-                }
+                    "X-Service": self.service_name,
+                },
             )
 
 
-def setup_error_handlers(app: FastAPI, service_name: str = "unknown", include_traceback: bool = False):
+def setup_error_handlers(
+    app: FastAPI, service_name: str = "unknown", include_traceback: bool = False
+):
     """Setup comprehensive error handlers for a FastAPI application."""
-    
+
     # Add error handling middleware
     app.add_middleware(
         ErrorHandlingMiddleware,
         service_name=service_name,
-        include_traceback=include_traceback
+        include_traceback=include_traceback,
     )
-    
+
     # Custom exception handlers
     @app.exception_handler(ACGSException)
     async def acgs_exception_handler(request: Request, exc: ACGSException):
         """Handle ACGS custom exceptions."""
         error_id = str(uuid.uuid4())
-        
+
         logger.warning(
             f"ACGS Exception: {exc.message}",
             extra={
@@ -314,32 +324,32 @@ def setup_error_handlers(app: FastAPI, service_name: str = "unknown", include_tr
                 "constitutional_hash": exc.constitutional_hash,
                 "request_id": error_id,
                 "path": request.url.path,
-                "method": request.method
-            }
+                "method": request.method,
+            },
         )
-        
+
         error_response = ErrorResponse.create_error_response(
             error=exc,
             request=request,
             error_id=error_id,
-            include_traceback=include_traceback
+            include_traceback=include_traceback,
         )
-        
+
         return JSONResponse(
             status_code=exc.status_code,
             content=error_response,
             headers={
                 "X-Error-ID": error_id,
                 "X-Constitutional-Hash": CONSTITUTIONAL_HASH,
-                "X-Service": service_name
-            }
+                "X-Service": service_name,
+            },
         )
-    
+
     @app.exception_handler(HTTPException)
     async def http_exception_handler(request: Request, exc: HTTPException):
         """Handle FastAPI HTTP exceptions."""
         error_id = str(uuid.uuid4())
-        
+
         logger.warning(
             f"HTTP Exception: {exc.detail}",
             extra={
@@ -348,32 +358,34 @@ def setup_error_handlers(app: FastAPI, service_name: str = "unknown", include_tr
                 "constitutional_hash": CONSTITUTIONAL_HASH,
                 "request_id": error_id,
                 "path": request.url.path,
-                "method": request.method
-            }
+                "method": request.method,
+            },
         )
-        
+
         error_response = ErrorResponse.create_error_response(
             error=exc,
             request=request,
             error_id=error_id,
-            include_traceback=include_traceback
+            include_traceback=include_traceback,
         )
-        
+
         return JSONResponse(
             status_code=exc.status_code,
             content=error_response,
             headers={
                 "X-Error-ID": error_id,
                 "X-Constitutional-Hash": CONSTITUTIONAL_HASH,
-                "X-Service": service_name
-            }
+                "X-Service": service_name,
+            },
         )
-    
+
     @app.exception_handler(RequestValidationError)
-    async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    async def validation_exception_handler(
+        request: Request, exc: RequestValidationError
+    ):
         """Handle request validation errors."""
         error_id = str(uuid.uuid4())
-        
+
         logger.warning(
             f"Validation Error: {exc.errors()}",
             extra={
@@ -382,32 +394,32 @@ def setup_error_handlers(app: FastAPI, service_name: str = "unknown", include_tr
                 "constitutional_hash": CONSTITUTIONAL_HASH,
                 "request_id": error_id,
                 "path": request.url.path,
-                "method": request.method
-            }
+                "method": request.method,
+            },
         )
-        
+
         error_response = ErrorResponse.create_error_response(
             error=exc,
             request=request,
             error_id=error_id,
-            include_traceback=include_traceback
+            include_traceback=include_traceback,
         )
-        
+
         return JSONResponse(
             status_code=422,
             content=error_response,
             headers={
                 "X-Error-ID": error_id,
                 "X-Constitutional-Hash": CONSTITUTIONAL_HASH,
-                "X-Service": service_name
-            }
+                "X-Service": service_name,
+            },
         )
-    
+
     @app.exception_handler(500)
     async def internal_server_error_handler(request: Request, exc: Exception):
         """Handle internal server errors."""
         error_id = str(uuid.uuid4())
-        
+
         logger.error(
             f"Internal Server Error: {str(exc)}",
             extra={
@@ -416,28 +428,28 @@ def setup_error_handlers(app: FastAPI, service_name: str = "unknown", include_tr
                 "constitutional_hash": CONSTITUTIONAL_HASH,
                 "request_id": error_id,
                 "path": request.url.path,
-                "method": request.method
+                "method": request.method,
             },
-            exc_info=True
+            exc_info=True,
         )
-        
+
         error_response = ErrorResponse.create_error_response(
             error=exc,
             request=request,
             error_id=error_id,
-            include_traceback=include_traceback
+            include_traceback=include_traceback,
         )
-        
+
         return JSONResponse(
             status_code=500,
             content=error_response,
             headers={
                 "X-Error-ID": error_id,
                 "X-Constitutional-Hash": CONSTITUTIONAL_HASH,
-                "X-Service": service_name
-            }
+                "X-Service": service_name,
+            },
         )
-    
+
     logger.info(f"Error handlers configured for service: {service_name}")
 
 
@@ -446,7 +458,7 @@ def create_error_middleware(service_name: str, development_mode: bool = False):
     return ErrorHandlingMiddleware(
         app=None,  # Will be set by FastAPI
         service_name=service_name,
-        include_traceback=development_mode
+        include_traceback=development_mode,
     )
 
 
@@ -454,20 +466,22 @@ def log_error_with_context(
     error: Exception,
     context: Dict[str, Any],
     service_name: str = "unknown",
-    level: str = "error"
+    level: str = "error",
 ):
     """Log error with additional context information."""
-    
+
     log_data = {
         "service": service_name,
         "error_type": type(error).__name__,
         "error_message": str(error),
         "constitutional_hash": CONSTITUTIONAL_HASH,
-        **context
+        **context,
     }
-    
+
     if level == "error":
-        logger.error(f"Error in {service_name}: {str(error)}", extra=log_data, exc_info=True)
+        logger.error(
+            f"Error in {service_name}: {str(error)}", extra=log_data, exc_info=True
+        )
     elif level == "warning":
         logger.warning(f"Warning in {service_name}: {str(error)}", extra=log_data)
     else:
@@ -497,40 +511,40 @@ def raise_validation_error(message: str, details: Optional[Dict[str, Any]] = Non
 # Error context manager for graceful error handling
 class ErrorContext:
     """Context manager for graceful error handling."""
-    
+
     def __init__(
         self,
         operation: str,
         service_name: str = "unknown",
         raise_on_error: bool = True,
-        log_level: str = "error"
+        log_level: str = "error",
     ):
         self.operation = operation
         self.service_name = service_name
         self.raise_on_error = raise_on_error
         self.log_level = log_level
         self.constitutional_hash = CONSTITUTIONAL_HASH
-    
+
     def __enter__(self):
         return self
-    
+
     def __exit__(self, exc_type, exc_val, exc_tb):
         if exc_type is not None:
             context = {
                 "operation": self.operation,
-                "constitutional_hash": self.constitutional_hash
+                "constitutional_hash": self.constitutional_hash,
             }
-            
+
             log_error_with_context(
                 error=exc_val,
                 context=context,
                 service_name=self.service_name,
-                level=self.log_level
+                level=self.log_level,
             )
-            
+
             if not self.raise_on_error:
                 return True  # Suppress the exception
-        
+
         return False  # Let the exception propagate
 
 
@@ -540,14 +554,14 @@ def handle_database_error(error: Exception, operation: str = "database_operation
     if "connection" in str(error).lower():
         raise ServiceUnavailableError(
             message="Database connection unavailable",
-            details={"operation": operation, "original_error": str(error)}
+            details={"operation": operation, "original_error": str(error)},
         )
     else:
         raise ACGSException(
             message=f"Database operation failed: {operation}",
             error_code="DATABASE_ERROR",
             status_code=500,
-            details={"operation": operation, "original_error": str(error)}
+            details={"operation": operation, "original_error": str(error)},
         )
 
 
@@ -555,7 +569,7 @@ def handle_external_service_error(error: Exception, service: str = "external_ser
     """Handle external service errors."""
     raise ServiceUnavailableError(
         message=f"External service unavailable: {service}",
-        details={"service": service, "original_error": str(error)}
+        details={"service": service, "original_error": str(error)},
     )
 
 
@@ -565,5 +579,5 @@ def handle_timeout_error(error: Exception, operation: str = "operation"):
         message=f"Operation timed out: {operation}",
         error_code="TIMEOUT_ERROR",
         status_code=408,
-        details={"operation": operation, "original_error": str(error)}
+        details={"operation": operation, "original_error": str(error)},
     )

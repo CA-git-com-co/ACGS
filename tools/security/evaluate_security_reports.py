@@ -12,7 +12,6 @@ from pathlib import Path
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 def evaluate_security_reports():
     """Evaluate all security reports and determine if security gates pass."""
     reports_dir = Path()

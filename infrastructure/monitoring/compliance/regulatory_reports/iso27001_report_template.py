@@ -369,16 +369,20 @@ throughout all security processes.
             "control_domains_summary": {
                 domain_id: {
                     "domain_name": domain_name,
-                    "controls_in_domain": len([
-                        c
-                        for c in self.key_controls
-                        if c.control_id.startswith(domain_id)
-                    ]),
-                    "implemented_in_domain": len([
-                        c
-                        for c in implemented_controls
-                        if c.control_id.startswith(domain_id)
-                    ]),
+                    "controls_in_domain": len(
+                        [
+                            c
+                            for c in self.key_controls
+                            if c.control_id.startswith(domain_id)
+                        ]
+                    ),
+                    "implemented_in_domain": len(
+                        [
+                            c
+                            for c in implemented_controls
+                            if c.control_id.startswith(domain_id)
+                        ]
+                    ),
                 }
                 for domain_id, domain_name in self.control_domains.items()
             },
@@ -850,7 +854,7 @@ def calculate_iso27001_compliance_score(metrics: dict[str, Any]) -> float:
 
 
 def generate_iso27001_improvement_plan(
-    findings: list[dict[str, Any]]
+    findings: list[dict[str, Any]],
 ) -> dict[str, Any]:
     """Generate ISO 27001 improvement plan based on audit findings."""
 

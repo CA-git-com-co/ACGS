@@ -872,24 +872,30 @@ class OPAEvaluationEngine(PolicyEvaluationEngine):
         conditions = []
 
         if risk_score > 0.4:
-            conditions.append({
-                "type": "risk_mitigation",
-                "requirement": "Additional risk assessment required",
-                "timeline": "before_implementation",
-            })
+            conditions.append(
+                {
+                    "type": "risk_mitigation",
+                    "requirement": "Additional risk assessment required",
+                    "timeline": "before_implementation",
+                }
+            )
 
         if safety_score < 0.8:
-            conditions.append({
-                "type": "safety_enhancement",
-                "requirement": "Enhanced safety mechanisms required",
-                "timeline": "before_deployment",
-            })
+            conditions.append(
+                {
+                    "type": "safety_enhancement",
+                    "requirement": "Enhanced safety mechanisms required",
+                    "timeline": "before_deployment",
+                }
+            )
 
-        conditions.append({
-            "type": "monitoring",
-            "requirement": "Continuous monitoring during initial deployment",
-            "timeline": "during_operation",
-        })
+        conditions.append(
+            {
+                "type": "monitoring",
+                "requirement": "Continuous monitoring during initial deployment",
+                "timeline": "during_operation",
+            }
+        )
 
         return conditions
 
@@ -901,18 +907,22 @@ class OPAEvaluationEngine(PolicyEvaluationEngine):
         conditions = []
 
         if security_score < 0.8:
-            conditions.append({
-                "type": "authentication_enhancement",
-                "requirement": "Additional authentication required",
-                "timeline": "immediate",
-            })
+            conditions.append(
+                {
+                    "type": "authentication_enhancement",
+                    "requirement": "Additional authentication required",
+                    "timeline": "immediate",
+                }
+            )
 
         if threat_score > 0.3:
-            conditions.append({
-                "type": "threat_monitoring",
-                "requirement": "Enhanced threat monitoring",
-                "timeline": "continuous",
-            })
+            conditions.append(
+                {
+                    "type": "threat_monitoring",
+                    "requirement": "Enhanced threat monitoring",
+                    "timeline": "continuous",
+                }
+            )
 
         return conditions
 
@@ -1650,14 +1660,16 @@ class AdvancedGovernanceSynthesisEngine:
         audit_trail = []
 
         # Add context information
-        audit_trail.append({
-            "timestamp": context.timestamp.isoformat(),
-            "event": "synthesis_started",
-            "context_id": context.request_id,
-            "principal": context.principal.get("id", "unknown"),
-            "action": context.action,
-            "resource": context.resource.get("id", "unknown"),
-        })
+        audit_trail.append(
+            {
+                "timestamp": context.timestamp.isoformat(),
+                "event": "synthesis_started",
+                "context_id": context.request_id,
+                "principal": context.principal.get("id", "unknown"),
+                "action": context.action,
+                "resource": context.resource.get("id", "unknown"),
+            }
+        )
 
         # Add policy evaluations
         for decision in policy_decisions:
@@ -1665,24 +1677,28 @@ class AdvancedGovernanceSynthesisEngine:
 
         # Add conflicts
         for conflict in conflicts:
-            audit_trail.append({
-                "timestamp": datetime.now(timezone.utc).isoformat(),
-                "event": "conflict_detected",
-                "conflict_id": conflict.conflict_id,
-                "conflict_type": conflict.conflict_type.value,
-                "policies": conflict.policies_involved,
-                "severity": conflict.severity,
-            })
+            audit_trail.append(
+                {
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "event": "conflict_detected",
+                    "conflict_id": conflict.conflict_id,
+                    "conflict_type": conflict.conflict_type.value,
+                    "policies": conflict.policies_involved,
+                    "severity": conflict.severity,
+                }
+            )
 
         # Add resolutions
         for resolved_conflict in resolved_conflicts:
-            audit_trail.append({
-                "timestamp": datetime.now(timezone.utc).isoformat(),
-                "event": "conflict_resolved",
-                "conflict_id": resolved_conflict.conflict_id,
-                "resolution_strategy": resolved_conflict.resolution_strategy,
-                "confidence": resolved_conflict.resolution_confidence,
-            })
+            audit_trail.append(
+                {
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "event": "conflict_resolved",
+                    "conflict_id": resolved_conflict.conflict_id,
+                    "resolution_strategy": resolved_conflict.resolution_strategy,
+                    "confidence": resolved_conflict.resolution_confidence,
+                }
+            )
 
         return audit_trail
 

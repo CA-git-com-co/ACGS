@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Constitutional Hash: cdd01ef066bc6cf2
 """
 NVIDIA Qwen Integration Test Script
 Tests the integration of NVIDIA API with Qwen 3 235B reasoning model

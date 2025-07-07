@@ -16,7 +16,6 @@ import aiohttp
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class PerformanceOptimizer:
     def __init__(self):
         self.session = None

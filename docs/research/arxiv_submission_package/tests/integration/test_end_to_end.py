@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Constitutional Hash: cdd01ef066bc6cf2
 """
 End-to-end integration tests for Academic Submission System.
 
@@ -11,7 +12,6 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
-
 from quality_assurance.compliance_checker import ComplianceChecker
 from quality_assurance.submission_validator import SubmissionValidator
 
@@ -166,7 +166,8 @@ class TestEndToEndValidation:
         # Create large content
         large_content = "\\section{Large Section}\n" + "Content. " * 10000
 
-        (large_paper_dir / "main.tex").write_text(f"""
+        (large_paper_dir / "main.tex").write_text(
+            f"""
 \\documentclass{{article}}
 \\title{{Large Test Paper}}
 \\author{{Test Author}}
@@ -177,20 +178,23 @@ class TestEndToEndValidation:
 \\end{{abstract}}
 {large_content}
 \\end{{document}}
-""")
+"""
+        )
 
         (large_paper_dir / "README.txt").write_text("Large test paper")
 
         # Create large bibliography
         bib_entries = []
         for i in range(100):
-            bib_entries.append(f"""
+            bib_entries.append(
+                f"""
 @article{{ref{i:03d},
     title={{Reference {i}}},
     author={{Author {i}}},
     journal={{Journal {i}}},
     year={{2023}}
-}}""")
+}}"""
+            )
 
         (large_paper_dir / "references.bib").write_text("\n".join(bib_entries))
 
@@ -249,12 +253,14 @@ class TestEndToEndValidation:
         problem_paper_dir.mkdir()
 
         # Create file with encoding issues
-        (problem_paper_dir / "main.tex").write_bytes(b"""
+        (problem_paper_dir / "main.tex").write_bytes(
+            b"""
 \\documentclass{article}
 \\begin{document}
 \\title{Test with \xff encoding issues}
 \\end{document}
-""")
+"""
+        )
 
         # Create empty README
         (problem_paper_dir / "README.txt").write_text("")

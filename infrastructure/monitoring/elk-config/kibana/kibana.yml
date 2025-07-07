@@ -1,78 +1,33 @@
-# Constitutional Hash: cdd01ef066bc6cf2
-# ACGS-1 Kibana Security Configuration
-# Security dashboards and visualization platform
-
 server.name: acgs-kibana-security
-server.host: '0.0.0.0'
+server.host: 0.0.0.0
 server.port: 5601
-
-# Elasticsearch configuration
-elasticsearch.hosts: ['http://elasticsearch-security:9200']
+elasticsearch.hosts:
+- http://elasticsearch-security:9200
 elasticsearch.username: elastic
 elasticsearch.password: acgs_security_2024
-
-# Security settings
 xpack.security.enabled: true
-xpack.encryptedSavedObjects.encryptionKey: 'acgs_security_encryption_key_32_chars'
-xpack.reporting.encryptionKey: 'acgs_reporting_encryption_key_32_chars'
-xpack.security.encryptionKey: 'acgs_kibana_encryption_key_32_chars'
-
-# Machine Learning
+xpack.encryptedSavedObjects.encryptionKey: acgs_security_encryption_key_32_chars
+xpack.reporting.encryptionKey: acgs_reporting_encryption_key_32_chars
+xpack.security.encryptionKey: acgs_kibana_encryption_key_32_chars
 xpack.ml.enabled: true
-
-# Monitoring
 xpack.monitoring.enabled: true
 xpack.monitoring.kibana.collection.enabled: true
-
-# Alerting
 xpack.alerting.enabled: true
-
-# Actions and connectors
 xpack.actions.enabled: true
-
-# Canvas
 xpack.canvas.enabled: true
-
-# Maps
 xpack.maps.enabled: true
-
-# Graph
 xpack.graph.enabled: true
-
-# Watcher
 xpack.watcher.enabled: true
-
-# Index management
 xpack.index_management.enabled: true
-
-# Snapshot and restore
 xpack.snapshot_restore.enabled: true
-
-# Cross cluster search
 xpack.ccr.enabled: true
-
-# License management
 xpack.license_management.enabled: true
-
-# Rollup
 xpack.rollup.enabled: true
-
-# Index lifecycle management
 xpack.index_lifecycle_management.enabled: true
-
-# Ingest pipelines
 xpack.ingest_pipelines.enabled: true
-
-# Remote clusters
 xpack.remote_clusters.enabled: true
-
-# Spaces
 xpack.spaces.enabled: true
-
-# Translations
-i18n.locale: 'en'
-
-# Logging
+i18n.locale: en
 logging.appenders:
   file:
     type: file
@@ -84,68 +39,41 @@ logging.appenders:
     layout:
       type: pattern
       pattern: '[%date][%level][%logger] %message'
-
 logging.loggers:
-  - name: http.server.response
-    level: debug
-
+- name: http.server.response
+  level: debug
 logging.root:
-  appenders: [file, console]
+  appenders:
+  - file
+  - console
   level: info
-
-# Server settings
 server.maxPayload: 1048576
 server.keepaliveTimeout: 120000
 server.socketTimeout: 120000
-
-# Elasticsearch settings
 elasticsearch.requestTimeout: 30000
 elasticsearch.shardTimeout: 30000
 elasticsearch.pingTimeout: 3000
-
-# UI settings
 map.includeElasticMapsService: true
 telemetry.enabled: false
 telemetry.optIn: false
-
-# Security headers
-server.securityResponseHeaders.strictTransportSecurity: 'max-age=31536000'
-server.securityResponseHeaders.xContentTypeOptions: 'nosniff'
-server.securityResponseHeaders.xFrameOptions: 'DENY'
-
-# ACGS-specific settings
-kibana.index: '.kibana-acgs-security'
-kibana.defaultAppId: 'dashboard'
-
-# Data views
+server.securityResponseHeaders.strictTransportSecurity: max-age=31536000
+server.securityResponseHeaders.xContentTypeOptions: nosniff
+server.securityResponseHeaders.xFrameOptions: DENY
+kibana.index: .kibana-acgs-security
+kibana.defaultAppId: dashboard
 data.search.aggs.shardDelay.enabled: true
-
-# Saved objects
 savedObjects.maxImportPayloadBytes: 26214400
-
-# Status page
 status.allowAnonymous: false
-
-# Home page
 newsfeed.enabled: false
-
-# Telemetry
 telemetry.allowChangingOptInStatus: false
-
-# Advanced settings
 advanced_settings.enabled: true
-
-# Dev tools
 console.enabled: true
 searchprofiler.enabled: true
 grokdebugger.enabled: true
 painless_lab.enabled: true
-
-# Visualizations
 vis_type_vega.enabled: true
 vis_type_timeseries.enabled: true
 vis_type_tagcloud.enabled: true
 vis_type_table.enabled: true
-
-# Dashboard settings
 dashboard.defaultDarkMode: false
+constitutional_hash: cdd01ef066bc6cf2

@@ -32,15 +32,16 @@ __version__ = "1.0.0"
 __author__ = "ACGS Team"
 __constitutional_hash__ = "cdd01ef066bc6cf2"
 
+from .framework.config import E2ETestConfig
+
 # Export main testing components
 from .framework.core import E2ETestFramework
-from .framework.config import E2ETestConfig
-from .framework.runner import E2ETestRunner
 from .framework.reporter import E2ETestReporter
+from .framework.runner import E2ETestRunner
 
 __all__ = [
     "E2ETestFramework",
-    "E2ETestConfig", 
+    "E2ETestConfig",
     "E2ETestRunner",
     "E2ETestReporter",
 ]

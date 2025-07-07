@@ -9,15 +9,14 @@ import logging
 from datetime import datetime, timezone
 from typing import Any
 
-from ..schemas import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from ..schemas import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     ConstitutionalSynthesisInput,
     ConstitutionalSynthesisOutput,
     LLMInterpretationInput,
     LLMStructuredOutput,
+    "cdd01ef066bc6cf2",
+    =,
 )
 from .constitutional_prompting import ConstitutionalPromptBuilder
 from .llm_reliability_framework import (

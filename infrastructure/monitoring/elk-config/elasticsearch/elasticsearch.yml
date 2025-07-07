@@ -1,61 +1,33 @@
-# Constitutional Hash: cdd01ef066bc6cf2
-# ACGS-1 Elasticsearch Security Configuration
-# Enterprise-grade security monitoring and SIEM capabilities
-
 cluster.name: acgs-security-cluster
 node.name: acgs-security-node
-
-# Network settings
 network.host: 0.0.0.0
 http.port: 9200
 transport.port: 9300
-
-# Discovery settings
 discovery.type: single-node
-
-# Security settings
 xpack.security.enabled: true
 xpack.security.enrollment.enabled: true
 xpack.security.http.ssl.enabled: false
 xpack.security.transport.ssl.enabled: false
-
-# Machine Learning for anomaly detection
 xpack.ml.enabled: true
 xpack.ml.max_machine_memory_percent: 30
-
-# Monitoring (using newer settings)
 xpack.monitoring.templates.enabled: true
-
-# Security audit logging
 xpack.security.audit.enabled: true
 xpack.security.audit.logfile.events.include:
-  - access_denied
-  - access_granted
-  - anonymous_access_denied
-  - authentication_failed
-  - authentication_success
-  - connection_denied
-  - connection_granted
-  - tampered_request
-  - run_as_denied
-  - run_as_granted
-
-# Index settings will be configured via index templates
-
-# Memory settings
+- access_denied
+- access_granted
+- anonymous_access_denied
+- authentication_failed
+- authentication_success
+- connection_denied
+- connection_granted
+- tampered_request
+- run_as_denied
+- run_as_granted
 bootstrap.memory_lock: true
-
-# Disk allocation settings
 cluster.routing.allocation.disk.watermark.low: 85%
 cluster.routing.allocation.disk.watermark.high: 90%
 cluster.routing.allocation.disk.watermark.flood_stage: 95%
-
-# Index templates will be configured via API
-
-# Security index settings
 xpack.security.authc.realms.native.native1.order: 0
-
-# Logging configuration
 logger.org.elasticsearch.discovery: WARN
 logger.org.elasticsearch.cluster.service: WARN
 logger.org.elasticsearch.gateway: WARN
@@ -64,18 +36,11 @@ logger.org.elasticsearch.indices.recovery: WARN
 logger.org.elasticsearch.repositories: WARN
 logger.org.elasticsearch.snapshots: WARN
 logger.org.elasticsearch.transport: WARN
-
-# Performance tuning
 thread_pool.write.queue_size: 1000
 thread_pool.search.queue_size: 1000
 indices.memory.index_buffer_size: 20%
 indices.memory.min_index_buffer_size: 96mb
-
-# Security-specific index patterns
 action.auto_create_index: +acgs-security-*,+acgs-audit-*,+acgs-threat-*,+filebeat-*,+metricbeat-*,-*
-
-# Watcher for automated alerting
 xpack.watcher.enabled: true
-
-# Graph for security relationship analysis
 xpack.graph.enabled: true
+constitutional_hash: cdd01ef066bc6cf2

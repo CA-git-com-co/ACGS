@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Constitutional Hash: cdd01ef066bc6cf2
 """
 Microsoft Phi-4 Reasoning Plus Model Test Script
 Based on official documentation from: https://huggingface.co/microsoft/Phi-4-reasoning-plus

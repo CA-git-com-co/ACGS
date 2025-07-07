@@ -3,13 +3,15 @@ Tests for Unified Governance Engine
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import pytest
-from fastapi.testclient import TestClient
-from unittest.mock import patch
+import os
 
 # Import the app
 import sys
-import os
+from unittest.mock import patch
+
+import pytest
+from fastapi.testclient import TestClient
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.main import app
@@ -42,9 +44,13 @@ def test_policy_synthesis():
     synthesis_request = {
         "context": "user_access_control",
         "policy_type": "authorization",
-        "requirements": ["authenticated_user", "valid_permissions", "constitutional_compliance"]
+        "requirements": [
+            "authenticated_user",
+            "valid_permissions",
+            "constitutional_compliance",
+        ],
     }
-    
+
     response = client.post("/api/v1/synthesis/synthesize", json=synthesis_request)
     assert response.status_code == 200
     data = response.json()
@@ -58,9 +64,9 @@ def test_policy_enforcement():
     enforcement_request = {
         "policy_id": "test_policy_123",
         "context": {"user_id": "user123", "resource": "data"},
-        "action": "read"
+        "action": "read",
     }
-    
+
     response = client.post("/api/v1/enforcement/enforce", json=enforcement_request)
     assert response.status_code == 200
     data = response.json()
@@ -74,9 +80,9 @@ def test_compliance_check():
     compliance_request = {
         "context": {"user_id": "user123", "action": "read"},
         "policies": ["policy1", "policy2"],
-        "action": "read"
+        "action": "read",
     }
-    
+
     response = client.post("/api/v1/compliance/check", json=compliance_request)
     assert response.status_code == 200
     data = response.json()
@@ -98,8 +104,10 @@ def test_list_workflows():
 def test_execute_workflow():
     """Test workflow execution endpoint."""
     parameters = {"param1": "value1", "param2": "value2"}
-    
-    response = client.post("/api/v1/workflows/policy_synthesis/execute", json=parameters)
+
+    response = client.post(
+        "/api/v1/workflows/policy_synthesis/execute", json=parameters
+    )
     assert response.status_code == 200
     data = response.json()
     assert data["workflow_id"] == "policy_synthesis"
@@ -109,13 +117,8 @@ def test_execute_workflow():
 
 def test_constitutional_hash_consistency():
     """Test that constitutional hash is consistent across all endpoints."""
-    endpoints = [
-        "/health",
-        "/",
-        "/api/v1/workflows",
-        "/api/v1/compliance/status"
-    ]
-    
+    endpoints = ["/health", "/", "/api/v1/workflows", "/api/v1/compliance/status"]
+
     for endpoint in endpoints:
         response = client.get(endpoint)
         assert response.status_code == 200

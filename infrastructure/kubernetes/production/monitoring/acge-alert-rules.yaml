@@ -1,6 +1,3 @@
-# ACGE Phase 2 Alert Rules
-# Constitutional compliance and performance monitoring alerts
-
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -11,242 +8,118 @@ metadata:
     component: alerting
     phase: phase-2
 data:
-  acge-alerts.yml: |
-    groups:
-      - name: acge.constitutional.compliance
-        interval: 30s
-        rules:
-          # Critical constitutional compliance alerts
-          - alert: ConstitutionalComplianceCritical
-            expr: constitutional_compliance_score < 0.95
-            for: 3m
-            labels:
-              severity: critical
-              component: constitutional-ai
-              constitutional_hash: cdd01ef066bc6cf2
-            annotations:
-              summary: "Constitutional compliance below critical threshold"
-              description: "Constitutional compliance score is {{ $value }} for service {{ $labels.service }} in {{ $labels.environment }} environment. Immediate action required."
-              runbook_url: "https://docs.acgs.ai/runbooks/constitutional-compliance"
-
-          - alert: ConstitutionalHashMismatch
-            expr: constitutional_hash_valid != 1
-            for: 0s
-            labels:
-              severity: critical
-              component: constitutional-ai
-            annotations:
-              summary: "Constitutional hash validation failed"
-              description: "Constitutional hash mismatch detected for service {{ $labels.service }}. Expected: cdd01ef066bc6cf2"
-              runbook_url: "https://docs.acgs.ai/runbooks/constitutional-hash"
-
-          - alert: ACGEModelInferenceFailure
-            expr: acge_model_inference_errors_total > 0
-            for: 1m
-            labels:
-              severity: critical
-              component: acge-model
-            annotations:
-              summary: "ACGE model inference failures detected"
-              description: "ACGE model inference failures: {{ $value }} errors in the last minute"
-              runbook_url: "https://docs.acgs.ai/runbooks/acge-model"
-
-      - name: acge.performance
-        interval: 15s
-        rules:
-          # Performance alerts
-          - alert: ResponseTimeHigh
-            expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2.0
-            for: 2m
-            labels:
-              severity: high
-              component: performance
-            annotations:
-              summary: "Response time above threshold"
-              description: "95th percentile response time is {{ $value }}s for service {{ $labels.service }} in {{ $labels.environment }} environment"
-              runbook_url: "https://docs.acgs.ai/runbooks/performance"
-
-          - alert: ThroughputLow
-            expr: rate(http_requests_total[5m]) < 1000
-            for: 5m
-            labels:
-              severity: high
-              component: performance
-            annotations:
-              summary: "Throughput below target"
-              description: "Request rate is {{ $value }} RPS, below target of 1000 RPS"
-              runbook_url: "https://docs.acgs.ai/runbooks/throughput"
-
-          - alert: ErrorRateHigh
-            expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.01
-            for: 3m
-            labels:
-              severity: high
-              component: reliability
-            annotations:
-              summary: "Error rate above threshold"
-              description: "Error rate is {{ $value | humanizePercentage }} for service {{ $labels.service }}"
-              runbook_url: "https://docs.acgs.ai/runbooks/error-rate"
-
-      - name: acge.blue.green.deployment
-        interval: 30s
-        rules:
-          # Blue-green deployment alerts
-          - alert: BlueGreenTrafficImbalance
-            expr: abs(blue_traffic_percentage - green_traffic_percentage) > 50 and blue_traffic_percentage != 100 and green_traffic_percentage != 100
-            for: 5m
-            labels:
-              severity: warning
-              component: blue-green
-            annotations:
-              summary: "Blue-green traffic imbalance detected"
-              description: "Traffic distribution: Blue={{ $labels.blue_traffic_percentage }}%, Green={{ $labels.green_traffic_percentage }}%"
-
-          - alert: GreenEnvironmentUnhealthy
-            expr: up{environment="green"} == 0
-            for: 1m
-            labels:
-              severity: critical
-              component: blue-green
-            annotations:
-              summary: "Green environment service down"
-              description: "Service {{ $labels.service }} in green environment is down during migration"
-              runbook_url: "https://docs.acgs.ai/runbooks/blue-green-rollback"
-
-          - alert: MigrationStalled
-            expr: increase(migration_progress_total[10m]) == 0 and migration_in_progress == 1
-            for: 10m
-            labels:
-              severity: warning
-              component: migration
-            annotations:
-              summary: "Migration progress stalled"
-              description: "No migration progress detected in the last 10 minutes"
-
-      - name: acge.infrastructure
-        interval: 30s
-        rules:
-          # Infrastructure alerts
-          - alert: NodeResourceExhaustion
-            expr: (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) < 0.1
-            for: 5m
-            labels:
-              severity: warning
-              component: infrastructure
-            annotations:
-              summary: "Node memory exhaustion"
-              description: "Node {{ $labels.instance }} has less than 10% memory available"
-
-          - alert: PodCrashLooping
-            expr: rate(kube_pod_container_status_restarts_total[15m]) > 0
-            for: 5m
-            labels:
-              severity: warning
-              component: infrastructure
-            annotations:
-              summary: "Pod crash looping"
-              description: "Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} is crash looping"
-
-          - alert: GPUUtilizationLow
-            expr: nvidia_gpu_utilization_gpu < 50 and acge_model_requests_total > 0
-            for: 10m
-            labels:
-              severity: warning
-              component: gpu
-            annotations:
-              summary: "GPU utilization low during ACGE inference"
-              description: "GPU utilization is {{ $value }}% while ACGE model is receiving requests"
-
-      - name: acge.security
-        interval: 60s
-        rules:
-          # Security alerts
-          - alert: UnauthorizedAccess
-            expr: rate(http_requests_total{status="401"}[5m]) > 10
-            for: 2m
-            labels:
-              severity: high
-              component: security
-            annotations:
-              summary: "High rate of unauthorized access attempts"
-              description: "{{ $value }} unauthorized access attempts per second"
-
-          - alert: TLSCertificateExpiring
-            expr: probe_ssl_earliest_cert_expiry - time() < 86400 * 7
-            for: 1h
-            labels:
-              severity: warning
-              component: security
-            annotations:
-              summary: "TLS certificate expiring soon"
-              description: "TLS certificate for {{ $labels.instance }} expires in {{ $value | humanizeDuration }}"
-
-      - name: acge.data.integrity
-        interval: 60s
-        rules:
-          # Data integrity alerts
-          - alert: DatabaseConnectionFailure
-            expr: up{job="postgres"} == 0
-            for: 1m
-            labels:
-              severity: critical
-              component: database
-            annotations:
-              summary: "Database connection failure"
-              description: "Cannot connect to PostgreSQL database"
-              runbook_url: "https://docs.acgs.ai/runbooks/database"
-
-          - alert: RedisConnectionFailure
-            expr: up{job="redis"} == 0
-            for: 1m
-            labels:
-              severity: high
-              component: cache
-            annotations:
-              summary: "Redis connection failure"
-              description: "Cannot connect to Redis cache"
-
-          - alert: DataCorruption
-            expr: data_integrity_check_failures_total > 0
-            for: 0s
-            labels:
-              severity: critical
-              component: data-integrity
-            annotations:
-              summary: "Data corruption detected"
-              description: "Data integrity check failed: {{ $value }} failures detected"
-              runbook_url: "https://docs.acgs.ai/runbooks/data-corruption"
-
-      - name: acge.model.performance
-        interval: 30s
-        rules:
-          # ACGE model performance alerts
-          - alert: ACGEModelLatencyHigh
-            expr: histogram_quantile(0.95, rate(acge_model_inference_duration_seconds_bucket[5m])) > 1.5
-            for: 3m
-            labels:
-              severity: warning
-              component: acge-model
-            annotations:
-              summary: "ACGE model inference latency high"
-              description: "95th percentile ACGE model inference latency is {{ $value }}s"
-
-          - alert: ACGEModelMemoryUsageHigh
-            expr: acge_model_memory_usage_bytes / acge_model_memory_limit_bytes > 0.9
-            for: 5m
-            labels:
-              severity: warning
-              component: acge-model
-            annotations:
-              summary: "ACGE model memory usage high"
-              description: "ACGE model memory usage is {{ $value | humanizePercentage }} of limit"
-
-          - alert: ACGEModelGPUMemoryHigh
-            expr: nvidia_gpu_memory_used_bytes / nvidia_gpu_memory_total_bytes > 0.9
-            for: 5m
-            labels:
-              severity: warning
-              component: gpu
-            annotations:
-              summary: "GPU memory usage high"
-              description: "GPU memory usage is {{ $value | humanizePercentage }} for ACGE model inference"
+  acge-alerts.yml: "groups:\n  - name: acge.constitutional.compliance\n    interval:\
+    \ 30s\n    rules:\n      # Critical constitutional compliance alerts\n      -\
+    \ alert: ConstitutionalComplianceCritical\n        expr: constitutional_compliance_score\
+    \ < 0.95\n        for: 3m\n        labels:\n          severity: critical\n   \
+    \       component: constitutional-ai\n          constitutional_hash: cdd01ef066bc6cf2\n\
+    \        annotations:\n          summary: \"Constitutional compliance below critical\
+    \ threshold\"\n          description: \"Constitutional compliance score is {{\
+    \ $value }} for service {{ $labels.service }} in {{ $labels.environment }} environment.\
+    \ Immediate action required.\"\n          runbook_url: \"https://docs.acgs.ai/runbooks/constitutional-compliance\"\
+    \n\n      - alert: ConstitutionalHashMismatch\n        expr: constitutional_hash_valid\
+    \ != 1\n        for: 0s\n        labels:\n          severity: critical\n     \
+    \     component: constitutional-ai\n        annotations:\n          summary: \"\
+    Constitutional hash validation failed\"\n          description: \"Constitutional\
+    \ hash mismatch detected for service {{ $labels.service }}. Expected: cdd01ef066bc6cf2\"\
+    \n          runbook_url: \"https://docs.acgs.ai/runbooks/constitutional-hash\"\
+    \n\n      - alert: ACGEModelInferenceFailure\n        expr: acge_model_inference_errors_total\
+    \ > 0\n        for: 1m\n        labels:\n          severity: critical\n      \
+    \    component: acge-model\n        annotations:\n          summary: \"ACGE model\
+    \ inference failures detected\"\n          description: \"ACGE model inference\
+    \ failures: {{ $value }} errors in the last minute\"\n          runbook_url: \"\
+    https://docs.acgs.ai/runbooks/acge-model\"\n\n  - name: acge.performance\n   \
+    \ interval: 15s\n    rules:\n      # Performance alerts\n      - alert: ResponseTimeHigh\n\
+    \        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))\
+    \ > 2.0\n        for: 2m\n        labels:\n          severity: high\n        \
+    \  component: performance\n        annotations:\n          summary: \"Response\
+    \ time above threshold\"\n          description: \"95th percentile response time\
+    \ is {{ $value }}s for service {{ $labels.service }} in {{ $labels.environment\
+    \ }} environment\"\n          runbook_url: \"https://docs.acgs.ai/runbooks/performance\"\
+    \n\n      - alert: ThroughputLow\n        expr: rate(http_requests_total[5m])\
+    \ < 1000\n        for: 5m\n        labels:\n          severity: high\n       \
+    \   component: performance\n        annotations:\n          summary: \"Throughput\
+    \ below target\"\n          description: \"Request rate is {{ $value }} RPS, below\
+    \ target of 1000 RPS\"\n          runbook_url: \"https://docs.acgs.ai/runbooks/throughput\"\
+    \n\n      - alert: ErrorRateHigh\n        expr: rate(http_requests_total{status=~\"\
+    5..\"}[5m]) / rate(http_requests_total[5m]) > 0.01\n        for: 3m\n        labels:\n\
+    \          severity: high\n          component: reliability\n        annotations:\n\
+    \          summary: \"Error rate above threshold\"\n          description: \"\
+    Error rate is {{ $value | humanizePercentage }} for service {{ $labels.service\
+    \ }}\"\n          runbook_url: \"https://docs.acgs.ai/runbooks/error-rate\"\n\n\
+    \  - name: acge.blue.green.deployment\n    interval: 30s\n    rules:\n      #\
+    \ Blue-green deployment alerts\n      - alert: BlueGreenTrafficImbalance\n   \
+    \     expr: abs(blue_traffic_percentage - green_traffic_percentage) > 50 and blue_traffic_percentage\
+    \ != 100 and green_traffic_percentage != 100\n        for: 5m\n        labels:\n\
+    \          severity: warning\n          component: blue-green\n        annotations:\n\
+    \          summary: \"Blue-green traffic imbalance detected\"\n          description:\
+    \ \"Traffic distribution: Blue={{ $labels.blue_traffic_percentage }}%, Green={{\
+    \ $labels.green_traffic_percentage }}%\"\n\n      - alert: GreenEnvironmentUnhealthy\n\
+    \        expr: up{environment=\"green\"} == 0\n        for: 1m\n        labels:\n\
+    \          severity: critical\n          component: blue-green\n        annotations:\n\
+    \          summary: \"Green environment service down\"\n          description:\
+    \ \"Service {{ $labels.service }} in green environment is down during migration\"\
+    \n          runbook_url: \"https://docs.acgs.ai/runbooks/blue-green-rollback\"\
+    \n\n      - alert: MigrationStalled\n        expr: increase(migration_progress_total[10m])\
+    \ == 0 and migration_in_progress == 1\n        for: 10m\n        labels:\n   \
+    \       severity: warning\n          component: migration\n        annotations:\n\
+    \          summary: \"Migration progress stalled\"\n          description: \"\
+    No migration progress detected in the last 10 minutes\"\n\n  - name: acge.infrastructure\n\
+    \    interval: 30s\n    rules:\n      # Infrastructure alerts\n      - alert:\
+    \ NodeResourceExhaustion\n        expr: (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)\
+    \ < 0.1\n        for: 5m\n        labels:\n          severity: warning\n     \
+    \     component: infrastructure\n        annotations:\n          summary: \"Node\
+    \ memory exhaustion\"\n          description: \"Node {{ $labels.instance }} has\
+    \ less than 10% memory available\"\n\n      - alert: PodCrashLooping\n       \
+    \ expr: rate(kube_pod_container_status_restarts_total[15m]) > 0\n        for:\
+    \ 5m\n        labels:\n          severity: warning\n          component: infrastructure\n\
+    \        annotations:\n          summary: \"Pod crash looping\"\n          description:\
+    \ \"Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} is crash looping\"\
+    \n\n      - alert: GPUUtilizationLow\n        expr: nvidia_gpu_utilization_gpu\
+    \ < 50 and acge_model_requests_total > 0\n        for: 10m\n        labels:\n\
+    \          severity: warning\n          component: gpu\n        annotations:\n\
+    \          summary: \"GPU utilization low during ACGE inference\"\n          description:\
+    \ \"GPU utilization is {{ $value }}% while ACGE model is receiving requests\"\n\
+    \n  - name: acge.security\n    interval: 60s\n    rules:\n      # Security alerts\n\
+    \      - alert: UnauthorizedAccess\n        expr: rate(http_requests_total{status=\"\
+    401\"}[5m]) > 10\n        for: 2m\n        labels:\n          severity: high\n\
+    \          component: security\n        annotations:\n          summary: \"High\
+    \ rate of unauthorized access attempts\"\n          description: \"{{ $value }}\
+    \ unauthorized access attempts per second\"\n\n      - alert: TLSCertificateExpiring\n\
+    \        expr: probe_ssl_earliest_cert_expiry - time() < 86400 * 7\n        for:\
+    \ 1h\n        labels:\n          severity: warning\n          component: security\n\
+    \        annotations:\n          summary: \"TLS certificate expiring soon\"\n\
+    \          description: \"TLS certificate for {{ $labels.instance }} expires in\
+    \ {{ $value | humanizeDuration }}\"\n\n  - name: acge.data.integrity\n    interval:\
+    \ 60s\n    rules:\n      # Data integrity alerts\n      - alert: DatabaseConnectionFailure\n\
+    \        expr: up{job=\"postgres\"} == 0\n        for: 1m\n        labels:\n \
+    \         severity: critical\n          component: database\n        annotations:\n\
+    \          summary: \"Database connection failure\"\n          description: \"\
+    Cannot connect to PostgreSQL database\"\n          runbook_url: \"https://docs.acgs.ai/runbooks/database\"\
+    \n\n      - alert: RedisConnectionFailure\n        expr: up{job=\"redis\"} ==\
+    \ 0\n        for: 1m\n        labels:\n          severity: high\n          component:\
+    \ cache\n        annotations:\n          summary: \"Redis connection failure\"\
+    \n          description: \"Cannot connect to Redis cache\"\n\n      - alert: DataCorruption\n\
+    \        expr: data_integrity_check_failures_total > 0\n        for: 0s\n    \
+    \    labels:\n          severity: critical\n          component: data-integrity\n\
+    \        annotations:\n          summary: \"Data corruption detected\"\n     \
+    \     description: \"Data integrity check failed: {{ $value }} failures detected\"\
+    \n          runbook_url: \"https://docs.acgs.ai/runbooks/data-corruption\"\n\n\
+    \  - name: acge.model.performance\n    interval: 30s\n    rules:\n      # ACGE\
+    \ model performance alerts\n      - alert: ACGEModelLatencyHigh\n        expr:\
+    \ histogram_quantile(0.95, rate(acge_model_inference_duration_seconds_bucket[5m]))\
+    \ > 1.5\n        for: 3m\n        labels:\n          severity: warning\n     \
+    \     component: acge-model\n        annotations:\n          summary: \"ACGE model\
+    \ inference latency high\"\n          description: \"95th percentile ACGE model\
+    \ inference latency is {{ $value }}s\"\n\n      - alert: ACGEModelMemoryUsageHigh\n\
+    \        expr: acge_model_memory_usage_bytes / acge_model_memory_limit_bytes >\
+    \ 0.9\n        for: 5m\n        labels:\n          severity: warning\n       \
+    \   component: acge-model\n        annotations:\n          summary: \"ACGE model\
+    \ memory usage high\"\n          description: \"ACGE model memory usage is {{\
+    \ $value | humanizePercentage }} of limit\"\n\n      - alert: ACGEModelGPUMemoryHigh\n\
+    \        expr: nvidia_gpu_memory_used_bytes / nvidia_gpu_memory_total_bytes >\
+    \ 0.9\n        for: 5m\n        labels:\n          severity: warning\n       \
+    \   component: gpu\n        annotations:\n          summary: \"GPU memory usage\
+    \ high\"\n          description: \"GPU memory usage is {{ $value | humanizePercentage\
+    \ }} for ACGE model inference\"\n"
+constitutional_hash: cdd01ef066bc6cf2

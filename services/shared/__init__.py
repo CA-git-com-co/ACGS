@@ -1,4 +1,3 @@
-
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
@@ -7,8 +6,7 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 # Import legacy components for backward compatibility
 try:
-    from . import models, schemas, utils
-    from .utils import ACGSConfig, get_config, reset_config
+    from . import utils
 except ImportError:
     # Handle missing legacy modules gracefully
     pass
@@ -21,13 +19,11 @@ except ImportError:
 
 # You can optionally define __all__ to control what `from shared import *` imports
 __all__ = [
-    "ACGSConfig",
+    "CONSTITUTIONAL_HASH",
     # "common",
     # "di",
     # "events",
-    "get_config",
     # "models",
-    "reset_config",
     # "schemas",
     # "service_mesh",
     # "utils",

@@ -758,9 +758,9 @@ class APICodeSyncValidator:
                 summary["sync_score"] = (endpoint_score + constitutional_score) / 2
 
             # Count issues for this service
-            summary["issues_count"] = len([
-                issue for issue in self.sync_issues if issue.service == service_name
-            ])
+            summary["issues_count"] = len(
+                [issue for issue in self.sync_issues if issue.service == service_name]
+            )
 
             summaries[service_name] = summary
 

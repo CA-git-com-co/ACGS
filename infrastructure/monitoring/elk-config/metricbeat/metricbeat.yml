@@ -1,212 +1,198 @@
-# Constitutional Hash: cdd01ef066bc6cf2
-# ACGS-1 Metricbeat Security Configuration
-# System and application metrics collection for security monitoring
-
-# Metricbeat modules
 metricbeat.config.modules:
   path: ${path.config}/modules.d/*.yml
   reload.enabled: true
   reload.period: 10s
-
-# System module
 metricbeat.modules:
-  # System metrics
-  - module: system
-    metricsets:
-      - cpu
-      - load
-      - memory
-      - network
-      - process
-      - process_summary
-      - socket_summary
-      - entropy
-      - core
-      - diskio
-      - socket
-      - service
-      - users
-    enabled: true
-    period: 10s
-    processes: ['.*']
-    process.include_top_n:
-      by_cpu: 5
-      by_memory: 5
-    process.cmdline.cache.enabled: true
-    process.cgroups.enabled: true
-    process.env.whitelist: []
-    process.include_cpu_ticks: false
-    cpu.metrics: ['percentages', 'normalized_percentages']
-    core.metrics: ['percentages']
-
-  # Docker module
-  - module: docker
-    metricsets:
-      - container
-      - cpu
-      - diskio
-      - event
-      - healthcheck
-      - info
-      - memory
-      - network
-    hosts: ['unix:///var/run/docker.sock']
-    period: 10s
-    enabled: true
-
-  # HTTP module for ACGS services
-  - module: http
-    metricsets: ['json']
-    period: 30s
-    hosts: ['http://host.docker.internal:8000/health']
-    namespace: 'acgs_auth'
-    path: '/health'
-
-  - module: http
-    metricsets: ['json']
-    period: 30s
-    hosts: ['http://host.docker.internal:8001/health']
-    namespace: 'acgs_ac'
-    path: '/health'
-
-  - module: http
-    metricsets: ['json']
-    period: 30s
-    hosts: ['http://host.docker.internal:8002/health']
-    namespace: 'acgs_integrity'
-    path: '/health'
-
-  - module: http
-    metricsets: ['json']
-    period: 30s
-    hosts: ['http://host.docker.internal:8003/health']
-    namespace: 'acgs_fv'
-    path: '/health'
-
-  - module: http
-    metricsets: ['json']
-    period: 30s
-    hosts: ['http://host.docker.internal:8004/health']
-    namespace: 'acgs_gs'
-    path: '/health'
-
-  - module: http
-    metricsets: ['json']
-    period: 30s
-    hosts: ['http://host.docker.internal:8005/health']
-    namespace: 'acgs_pgc'
-    path: '/health'
-
-  - module: http
-    metricsets: ['json']
-    period: 30s
-    hosts: ['http://host.docker.internal:8006/health']
-    namespace: 'acgs_ec'
-    path: '/health'
-
-  # Elasticsearch module
-  - module: elasticsearch
-    metricsets:
-      - node
-      - node_stats
-      - cluster_stats
-      - index
-      - index_recovery
-      - index_summary
-      - shard
-      - ml_job
-    period: 10s
-    hosts: ['http://elasticsearch-security:9200']
-    username: 'elastic'
-    password: 'acgs_security_2024'
-
-  # Logstash module
-  - module: logstash
-    metricsets: ['node', 'node_stats']
-    period: 10s
-    hosts: ['http://logstash-security:9600']
-
-  # Kibana module
-  - module: kibana
-    metricsets: ['status', 'stats']
-    period: 10s
-    hosts: ['http://kibana-security:5601']
-    username: 'elastic'
-    password: 'acgs_security_2024'
-
-# Processors
+- module: system
+  metricsets:
+  - cpu
+  - load
+  - memory
+  - network
+  - process
+  - process_summary
+  - socket_summary
+  - entropy
+  - core
+  - diskio
+  - socket
+  - service
+  - users
+  enabled: true
+  period: 10s
+  processes:
+  - .*
+  process.include_top_n:
+    by_cpu: 5
+    by_memory: 5
+  process.cmdline.cache.enabled: true
+  process.cgroups.enabled: true
+  process.env.whitelist: []
+  process.include_cpu_ticks: false
+  cpu.metrics:
+  - percentages
+  - normalized_percentages
+  core.metrics:
+  - percentages
+- module: docker
+  metricsets:
+  - container
+  - cpu
+  - diskio
+  - event
+  - healthcheck
+  - info
+  - memory
+  - network
+  hosts:
+  - unix:///var/run/docker.sock
+  period: 10s
+  enabled: true
+- module: http
+  metricsets:
+  - json
+  period: 30s
+  hosts:
+  - http://host.docker.internal:8000/health
+  namespace: acgs_auth
+  path: /health
+- module: http
+  metricsets:
+  - json
+  period: 30s
+  hosts:
+  - http://host.docker.internal:8001/health
+  namespace: acgs_ac
+  path: /health
+- module: http
+  metricsets:
+  - json
+  period: 30s
+  hosts:
+  - http://host.docker.internal:8002/health
+  namespace: acgs_integrity
+  path: /health
+- module: http
+  metricsets:
+  - json
+  period: 30s
+  hosts:
+  - http://host.docker.internal:8003/health
+  namespace: acgs_fv
+  path: /health
+- module: http
+  metricsets:
+  - json
+  period: 30s
+  hosts:
+  - http://host.docker.internal:8004/health
+  namespace: acgs_gs
+  path: /health
+- module: http
+  metricsets:
+  - json
+  period: 30s
+  hosts:
+  - http://host.docker.internal:8005/health
+  namespace: acgs_pgc
+  path: /health
+- module: http
+  metricsets:
+  - json
+  period: 30s
+  hosts:
+  - http://host.docker.internal:8006/health
+  namespace: acgs_ec
+  path: /health
+- module: elasticsearch
+  metricsets:
+  - node
+  - node_stats
+  - cluster_stats
+  - index
+  - index_recovery
+  - index_summary
+  - shard
+  - ml_job
+  period: 10s
+  hosts:
+  - http://elasticsearch-security:9200
+  username: elastic
+  password: acgs_security_2024
+- module: logstash
+  metricsets:
+  - node
+  - node_stats
+  period: 10s
+  hosts:
+  - http://logstash-security:9600
+- module: kibana
+  metricsets:
+  - status
+  - stats
+  period: 10s
+  hosts:
+  - http://kibana-security:5601
+  username: elastic
+  password: acgs_security_2024
 processors:
-  - add_host_metadata:
-      when.not.contains.tags: forwarded
-  - add_docker_metadata: ~
-  - add_kubernetes_metadata: ~
-  - drop_fields:
-      fields: ['agent.ephemeral_id', 'agent.hostname', 'agent.id', 'agent.type', 'agent.version']
-      ignore_missing: true
-
-# Output configuration
+- add_host_metadata:
+    when.not.contains.tags: forwarded
+- add_docker_metadata: null
+- add_kubernetes_metadata: null
+- drop_fields:
+    fields:
+    - agent.ephemeral_id
+    - agent.hostname
+    - agent.id
+    - agent.type
+    - agent.version
+    ignore_missing: true
 output.elasticsearch:
-  hosts: ['elasticsearch-security:9200']
-  username: 'elastic'
-  password: 'acgs_security_2024'
-  index: 'metricbeat-acgs-%{+yyyy.MM.dd}'
-  template.name: 'metricbeat-acgs'
-  template.pattern: 'metricbeat-acgs-*'
-
-# Kibana setup
+  hosts:
+  - elasticsearch-security:9200
+  username: elastic
+  password: acgs_security_2024
+  index: metricbeat-acgs-%{+yyyy.MM.dd}
+  template.name: metricbeat-acgs
+  template.pattern: metricbeat-acgs-*
 setup.kibana:
-  host: 'kibana-security:5601'
-  username: 'elastic'
-  password: 'acgs_security_2024'
-
-# Index template settings
+  host: kibana-security:5601
+  username: elastic
+  password: acgs_security_2024
 setup.template.settings:
   index.number_of_shards: 1
   index.number_of_replicas: 0
   index.refresh_interval: 5s
-
-# ILM policy
 setup.ilm.enabled: true
-setup.ilm.rollover_alias: 'metricbeat-acgs'
+setup.ilm.rollover_alias: metricbeat-acgs
 setup.ilm.pattern: '{now/d}-000001'
-setup.ilm.policy: 'metricbeat-acgs-policy'
-
-# Dashboards
+setup.ilm.policy: metricbeat-acgs-policy
 setup.dashboards.enabled: true
-
-# Logging
 logging.level: info
 logging.to_files: true
 logging.files:
   path: /var/log/metricbeat
   name: metricbeat
   keepfiles: 7
-  permissions: 0644
-
-# Monitoring
+  permissions: 420
 monitoring.enabled: true
 monitoring.elasticsearch:
-  hosts: ['elasticsearch-security:9200']
-  username: 'elastic'
-  password: 'acgs_security_2024'
-
-# HTTP endpoint for health checks
+  hosts:
+  - elasticsearch-security:9200
+  username: elastic
+  password: acgs_security_2024
 http.enabled: true
 http.host: 0.0.0.0
 http.port: 5067
-
-# Performance tuning
 queue.mem:
   events: 4096
   flush.min_events: 512
   flush.timeout: 1s
-
-# Security settings
 ssl.verification_mode: none
-
-# Fields
 fields:
   environment: production
   system: acgs-1
   log_type: metrics
 fields_under_root: true
+constitutional_hash: cdd01ef066bc6cf2

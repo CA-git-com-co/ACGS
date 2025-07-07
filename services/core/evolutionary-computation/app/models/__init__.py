@@ -27,7 +27,7 @@ from .oversight import (
 
 __all__ = [
     "EvolutionRequest",
-    "EvolutionResult", 
+    "EvolutionResult",
     "EvolutionStatus",
     "EvolutionType",
     "FitnessMetrics",

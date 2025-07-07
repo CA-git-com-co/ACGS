@@ -1,6 +1,3 @@
-# ACGE Phase 2 Enhanced Prometheus Configuration
-# Constitutional compliance monitoring with blue-green deployment support
-
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -11,296 +8,108 @@ metadata:
     component: monitoring
     phase: phase-2
 data:
-  prometheus.yml: |
-    global:
-      scrape_interval: 15s
-      evaluation_interval: 15s
-      external_labels:
-        cluster: 'acge-production'
-        environment: 'production'
-        constitutional_hash: 'cdd01ef066bc6cf2'
-        phase: 'phase-2'
-
-    rule_files:
-      - "/etc/prometheus/rules/*.yml"
-
-    alerting:
-      alertmanagers:
-        - static_configs:
-            - targets:
-              - alertmanager:9093
-
-    scrape_configs:
-      # Prometheus self-monitoring
-      - job_name: 'prometheus'
-        static_configs:
-          - targets: ['localhost:9090']
-
-      # ACGE Model Service
-      - job_name: 'acge-model-service'
-        kubernetes_sd_configs:
-          - role: endpoints
-            namespaces:
-              names:
-                - acgs-shared
-        relabel_configs:
-          - source_labels: [__meta_kubernetes_service_name]
-            action: keep
-            regex: acge-model-service
-          - source_labels: [__meta_kubernetes_endpoint_port_name]
-            action: keep
-            regex: metrics
-        metrics_path: '/metrics'
-        scrape_interval: 10s
-        scrape_timeout: 5s
-
-      # Blue Environment Services
-      - job_name: 'acgs-blue-auth-service'
-        kubernetes_sd_configs:
-          - role: endpoints
-            namespaces:
-              names:
-                - acgs-blue
-        relabel_configs:
-          - source_labels: [__meta_kubernetes_service_name]
-            action: keep
-            regex: acgs-auth-service-blue
-          - source_labels: [__meta_kubernetes_endpoint_port_name]
-            action: keep
-            regex: metrics
-          - target_label: environment
-            replacement: blue
-          - target_label: service
-            replacement: auth
-        metrics_path: '/metrics'
-        scrape_interval: 10s
-
-      - job_name: 'acgs-blue-ac-service'
-        kubernetes_sd_configs:
-          - role: endpoints
-            namespaces:
-              names:
-                - acgs-blue
-        relabel_configs:
-          - source_labels: [__meta_kubernetes_service_name]
-            action: keep
-            regex: acgs-ac-service-blue
-          - target_label: environment
-            replacement: blue
-          - target_label: service
-            replacement: constitutional-ai
-        metrics_path: '/metrics'
-        scrape_interval: 10s
-
-      # Green Environment Services with ACGE Integration
-      - job_name: 'acgs-green-auth-service'
-        kubernetes_sd_configs:
-          - role: endpoints
-            namespaces:
-              names:
-                - acgs-green
-        relabel_configs:
-          - source_labels: [__meta_kubernetes_service_name]
-            action: keep
-            regex: acgs-auth-service-green
-          - target_label: environment
-            replacement: green
-          - target_label: service
-            replacement: auth
-          - target_label: acge_enabled
-            replacement: true
-        metrics_path: '/metrics'
-        scrape_interval: 10s
-
-      - job_name: 'acgs-green-ac-service'
-        kubernetes_sd_configs:
-          - role: endpoints
-            namespaces:
-              names:
-                - acgs-green
-        relabel_configs:
-          - source_labels: [__meta_kubernetes_service_name]
-            action: keep
-            regex: acgs-ac-service-green
-          - target_label: environment
-            replacement: green
-          - target_label: service
-            replacement: constitutional-ai
-          - target_label: acge_enabled
-            replacement: true
-          - target_label: single_model
-            replacement: true
-        metrics_path: '/metrics'
-        scrape_interval: 10s
-
-      - job_name: 'acgs-green-integrity-service'
-        kubernetes_sd_configs:
-          - role: endpoints
-            namespaces:
-              names:
-                - acgs-green
-        relabel_configs:
-          - source_labels: [__meta_kubernetes_service_name]
-            action: keep
-            regex: acgs-integrity-service-green
-          - target_label: environment
-            replacement: green
-          - target_label: service
-            replacement: integrity
-          - target_label: acge_enabled
-            replacement: true
-        metrics_path: '/metrics'
-        scrape_interval: 10s
-
-      - job_name: 'acgs-green-fv-service'
-        kubernetes_sd_configs:
-          - role: endpoints
-            namespaces:
-              names:
-                - acgs-green
-        relabel_configs:
-          - source_labels: [__meta_kubernetes_service_name]
-            action: keep
-            regex: acgs-fv-service-green
-          - target_label: environment
-            replacement: green
-          - target_label: service
-            replacement: formal-verification
-          - target_label: acge_enabled
-            replacement: true
-        metrics_path: '/metrics'
-        scrape_interval: 10s
-
-      - job_name: 'acgs-green-gs-service'
-        kubernetes_sd_configs:
-          - role: endpoints
-            namespaces:
-              names:
-                - acgs-green
-        relabel_configs:
-          - source_labels: [__meta_kubernetes_service_name]
-            action: keep
-            regex: acgs-gs-service-green
-          - target_label: environment
-            replacement: green
-          - target_label: service
-            replacement: governance-synthesis
-          - target_label: acge_enabled
-            replacement: true
-        metrics_path: '/metrics'
-        scrape_interval: 10s
-
-      - job_name: 'acgs-green-pgc-service'
-        kubernetes_sd_configs:
-          - role: endpoints
-            namespaces:
-              names:
-                - acgs-green
-        relabel_configs:
-          - source_labels: [__meta_kubernetes_service_name]
-            action: keep
-            regex: acgs-pgc-service-green
-          - target_label: environment
-            replacement: green
-          - target_label: service
-            replacement: policy-governance
-          - target_label: acge_enabled
-            replacement: true
-        metrics_path: '/metrics'
-        scrape_interval: 10s
-
-      - job_name: 'acgs-green-ec-service'
-        kubernetes_sd_configs:
-          - role: endpoints
-            namespaces:
-              names:
-                - acgs-green
-        relabel_configs:
-          - source_labels: [__meta_kubernetes_service_name]
-            action: keep
-            regex: acgs-ec-service-green
-          - target_label: environment
-            replacement: green
-          - target_label: service
-            replacement: executive-council
-          - target_label: acge_enabled
-            replacement: true
-        metrics_path: '/metrics'
-        scrape_interval: 10s
-
-      # Constitutional Compliance Monitoring
-      - job_name: 'constitutional-compliance'
-        kubernetes_sd_configs:
-          - role: pod
-            namespaces:
-              names:
-                - acgs-blue
-                - acgs-green
-                - acgs-shared
-        relabel_configs:
-          - source_labels: [__meta_kubernetes_pod_annotation_constitutional_monitoring]
-            action: keep
-            regex: true
-          - source_labels: [__meta_kubernetes_pod_annotation_constitutional_hash]
-            action: keep
-            regex: cdd01ef066bc6cf2
-        metrics_path: '/metrics/constitutional'
-        scrape_interval: 30s
-
-      # Istio Service Mesh Monitoring
-      - job_name: 'istio-mesh'
-        kubernetes_sd_configs:
-          - role: endpoints
-            namespaces:
-              names:
-                - istio-system
-        relabel_configs:
-          - source_labels: [__meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
-            action: keep
-            regex: istio-proxy;http-monitoring
-        metrics_path: '/stats/prometheus'
-        scrape_interval: 15s
-
-      # Infrastructure monitoring
-      - job_name: 'kubernetes-apiservers'
-        kubernetes_sd_configs:
-          - role: endpoints
-        scheme: https
-        tls_config:
-          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
-        relabel_configs:
-          - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
-            action: keep
-            regex: default;kubernetes;https
-
-      - job_name: 'kubernetes-nodes'
-        kubernetes_sd_configs:
-          - role: node
-        scheme: https
-        tls_config:
-          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
-        relabel_configs:
-          - action: labelmap
-            regex: __meta_kubernetes_node_label_(.+)
-          - target_label: __address__
-            replacement: kubernetes.default.svc:443
-          - source_labels: [__meta_kubernetes_node_name]
-            regex: (.+)
-            target_label: __metrics_path__
-            replacement: /api/v1/nodes/${1}/proxy/metrics
-
-      # GPU monitoring for ACGE model inference
-      - job_name: 'nvidia-gpu'
-        kubernetes_sd_configs:
-          - role: pod
-            namespaces:
-              names:
-                - acgs-shared
-        relabel_configs:
-          - source_labels: [__meta_kubernetes_pod_label_nvidia_com_gpu]
-            action: keep
-            regex: "true"
-        metrics_path: '/metrics'
-        scrape_interval: 30s
+  prometheus.yml: "global:\n  scrape_interval: 15s\n  evaluation_interval: 15s\n \
+    \ external_labels:\n    cluster: 'acge-production'\n    environment: 'production'\n\
+    \    constitutional_hash: 'cdd01ef066bc6cf2'\n    phase: 'phase-2'\n\nrule_files:\n\
+    \  - \"/etc/prometheus/rules/*.yml\"\n\nalerting:\n  alertmanagers:\n    - static_configs:\n\
+    \        - targets:\n          - alertmanager:9093\n\nscrape_configs:\n  # Prometheus\
+    \ self-monitoring\n  - job_name: 'prometheus'\n    static_configs:\n      - targets:\
+    \ ['localhost:9090']\n\n  # ACGE Model Service\n  - job_name: 'acge-model-service'\n\
+    \    kubernetes_sd_configs:\n      - role: endpoints\n        namespaces:\n  \
+    \        names:\n            - acgs-shared\n    relabel_configs:\n      - source_labels:\
+    \ [__meta_kubernetes_service_name]\n        action: keep\n        regex: acge-model-service\n\
+    \      - source_labels: [__meta_kubernetes_endpoint_port_name]\n        action:\
+    \ keep\n        regex: metrics\n    metrics_path: '/metrics'\n    scrape_interval:\
+    \ 10s\n    scrape_timeout: 5s\n\n  # Blue Environment Services\n  - job_name:\
+    \ 'acgs-blue-auth-service'\n    kubernetes_sd_configs:\n      - role: endpoints\n\
+    \        namespaces:\n          names:\n            - acgs-blue\n    relabel_configs:\n\
+    \      - source_labels: [__meta_kubernetes_service_name]\n        action: keep\n\
+    \        regex: acgs-auth-service-blue\n      - source_labels: [__meta_kubernetes_endpoint_port_name]\n\
+    \        action: keep\n        regex: metrics\n      - target_label: environment\n\
+    \        replacement: blue\n      - target_label: service\n        replacement:\
+    \ auth\n    metrics_path: '/metrics'\n    scrape_interval: 10s\n\n  - job_name:\
+    \ 'acgs-blue-ac-service'\n    kubernetes_sd_configs:\n      - role: endpoints\n\
+    \        namespaces:\n          names:\n            - acgs-blue\n    relabel_configs:\n\
+    \      - source_labels: [__meta_kubernetes_service_name]\n        action: keep\n\
+    \        regex: acgs-ac-service-blue\n      - target_label: environment\n    \
+    \    replacement: blue\n      - target_label: service\n        replacement: constitutional-ai\n\
+    \    metrics_path: '/metrics'\n    scrape_interval: 10s\n\n  # Green Environment\
+    \ Services with ACGE Integration\n  - job_name: 'acgs-green-auth-service'\n  \
+    \  kubernetes_sd_configs:\n      - role: endpoints\n        namespaces:\n    \
+    \      names:\n            - acgs-green\n    relabel_configs:\n      - source_labels:\
+    \ [__meta_kubernetes_service_name]\n        action: keep\n        regex: acgs-auth-service-green\n\
+    \      - target_label: environment\n        replacement: green\n      - target_label:\
+    \ service\n        replacement: auth\n      - target_label: acge_enabled\n   \
+    \     replacement: true\n    metrics_path: '/metrics'\n    scrape_interval: 10s\n\
+    \n  - job_name: 'acgs-green-ac-service'\n    kubernetes_sd_configs:\n      - role:\
+    \ endpoints\n        namespaces:\n          names:\n            - acgs-green\n\
+    \    relabel_configs:\n      - source_labels: [__meta_kubernetes_service_name]\n\
+    \        action: keep\n        regex: acgs-ac-service-green\n      - target_label:\
+    \ environment\n        replacement: green\n      - target_label: service\n   \
+    \     replacement: constitutional-ai\n      - target_label: acge_enabled\n   \
+    \     replacement: true\n      - target_label: single_model\n        replacement:\
+    \ true\n    metrics_path: '/metrics'\n    scrape_interval: 10s\n\n  - job_name:\
+    \ 'acgs-green-integrity-service'\n    kubernetes_sd_configs:\n      - role: endpoints\n\
+    \        namespaces:\n          names:\n            - acgs-green\n    relabel_configs:\n\
+    \      - source_labels: [__meta_kubernetes_service_name]\n        action: keep\n\
+    \        regex: acgs-integrity-service-green\n      - target_label: environment\n\
+    \        replacement: green\n      - target_label: service\n        replacement:\
+    \ integrity\n      - target_label: acge_enabled\n        replacement: true\n \
+    \   metrics_path: '/metrics'\n    scrape_interval: 10s\n\n  - job_name: 'acgs-green-fv-service'\n\
+    \    kubernetes_sd_configs:\n      - role: endpoints\n        namespaces:\n  \
+    \        names:\n            - acgs-green\n    relabel_configs:\n      - source_labels:\
+    \ [__meta_kubernetes_service_name]\n        action: keep\n        regex: acgs-fv-service-green\n\
+    \      - target_label: environment\n        replacement: green\n      - target_label:\
+    \ service\n        replacement: formal-verification\n      - target_label: acge_enabled\n\
+    \        replacement: true\n    metrics_path: '/metrics'\n    scrape_interval:\
+    \ 10s\n\n  - job_name: 'acgs-green-gs-service'\n    kubernetes_sd_configs:\n \
+    \     - role: endpoints\n        namespaces:\n          names:\n            -\
+    \ acgs-green\n    relabel_configs:\n      - source_labels: [__meta_kubernetes_service_name]\n\
+    \        action: keep\n        regex: acgs-gs-service-green\n      - target_label:\
+    \ environment\n        replacement: green\n      - target_label: service\n   \
+    \     replacement: governance-synthesis\n      - target_label: acge_enabled\n\
+    \        replacement: true\n    metrics_path: '/metrics'\n    scrape_interval:\
+    \ 10s\n\n  - job_name: 'acgs-green-pgc-service'\n    kubernetes_sd_configs:\n\
+    \      - role: endpoints\n        namespaces:\n          names:\n            -\
+    \ acgs-green\n    relabel_configs:\n      - source_labels: [__meta_kubernetes_service_name]\n\
+    \        action: keep\n        regex: acgs-pgc-service-green\n      - target_label:\
+    \ environment\n        replacement: green\n      - target_label: service\n   \
+    \     replacement: policy-governance\n      - target_label: acge_enabled\n   \
+    \     replacement: true\n    metrics_path: '/metrics'\n    scrape_interval: 10s\n\
+    \n  - job_name: 'acgs-green-ec-service'\n    kubernetes_sd_configs:\n      - role:\
+    \ endpoints\n        namespaces:\n          names:\n            - acgs-green\n\
+    \    relabel_configs:\n      - source_labels: [__meta_kubernetes_service_name]\n\
+    \        action: keep\n        regex: acgs-ec-service-green\n      - target_label:\
+    \ environment\n        replacement: green\n      - target_label: service\n   \
+    \     replacement: executive-council\n      - target_label: acge_enabled\n   \
+    \     replacement: true\n    metrics_path: '/metrics'\n    scrape_interval: 10s\n\
+    \n  # Constitutional Compliance Monitoring\n  - job_name: 'constitutional-compliance'\n\
+    \    kubernetes_sd_configs:\n      - role: pod\n        namespaces:\n        \
+    \  names:\n            - acgs-blue\n            - acgs-green\n            - acgs-shared\n\
+    \    relabel_configs:\n      - source_labels: [__meta_kubernetes_pod_annotation_constitutional_monitoring]\n\
+    \        action: keep\n        regex: true\n      - source_labels: [__meta_kubernetes_pod_annotation_constitutional_hash]\n\
+    \        action: keep\n        regex: cdd01ef066bc6cf2\n    metrics_path: '/metrics/constitutional'\n\
+    \    scrape_interval: 30s\n\n  # Istio Service Mesh Monitoring\n  - job_name:\
+    \ 'istio-mesh'\n    kubernetes_sd_configs:\n      - role: endpoints\n        namespaces:\n\
+    \          names:\n            - istio-system\n    relabel_configs:\n      - source_labels:\
+    \ [__meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]\n   \
+    \     action: keep\n        regex: istio-proxy;http-monitoring\n    metrics_path:\
+    \ '/stats/prometheus'\n    scrape_interval: 15s\n\n  # Infrastructure monitoring\n\
+    \  - job_name: 'kubernetes-apiservers'\n    kubernetes_sd_configs:\n      - role:\
+    \ endpoints\n    scheme: https\n    tls_config:\n      ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt\n\
+    \    bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token\n\
+    \    relabel_configs:\n      - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name,\
+    \ __meta_kubernetes_endpoint_port_name]\n        action: keep\n        regex:\
+    \ default;kubernetes;https\n\n  - job_name: 'kubernetes-nodes'\n    kubernetes_sd_configs:\n\
+    \      - role: node\n    scheme: https\n    tls_config:\n      ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt\n\
+    \    bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token\n\
+    \    relabel_configs:\n      - action: labelmap\n        regex: __meta_kubernetes_node_label_(.+)\n\
+    \      - target_label: __address__\n        replacement: kubernetes.default.svc:443\n\
+    \      - source_labels: [__meta_kubernetes_node_name]\n        regex: (.+)\n \
+    \       target_label: __metrics_path__\n        replacement: /api/v1/nodes/${1}/proxy/metrics\n\
+    \n  # GPU monitoring for ACGE model inference\n  - job_name: 'nvidia-gpu'\n  \
+    \  kubernetes_sd_configs:\n      - role: pod\n        namespaces:\n          names:\n\
+    \            - acgs-shared\n    relabel_configs:\n      - source_labels: [__meta_kubernetes_pod_label_nvidia_com_gpu]\n\
+    \        action: keep\n        regex: \"true\"\n    metrics_path: '/metrics'\n\
+    \    scrape_interval: 30s\n"
+constitutional_hash: cdd01ef066bc6cf2

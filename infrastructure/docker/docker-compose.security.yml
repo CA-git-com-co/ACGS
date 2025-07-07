@@ -1,215 +1,211 @@
 version: '3.8'
-
-# ACGS Security Stack
-# Comprehensive security monitoring, scanning, and compliance services
-
 services:
-  # =============================================================================
-  # Security Scanning Services
-  # =============================================================================
   vulnerability-scanner:
     image: aquasec/trivy:latest
     container_name: acgs_vulnerability_scanner
     command: server --listen 0.0.0.0:8080
     environment:
-      - TRIVY_LISTEN=0.0.0.0:8080
-      - TRIVY_CACHE_DIR=/cache
-      - TRIVY_DB_REPOSITORY=ghcr.io/aquasecurity/trivy-db
+    - TRIVY_LISTEN=0.0.0.0:8080
+    - TRIVY_CACHE_DIR=/cache
+    - TRIVY_DB_REPOSITORY=ghcr.io/aquasecurity/trivy-db
     ports:
-      - "8070:8080"
+    - 8070:8080
     volumes:
-      - trivy_cache:/cache
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+    - trivy_cache:/cache
+    - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
-      - acgs_network
+    - acgs_network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/healthz"]
+      test:
+      - CMD
+      - wget
+      - --quiet
+      - --tries=1
+      - --spider
+      - http://localhost:8080/healthz
       interval: 30s
       timeout: 10s
       retries: 3
-
   security-monitor:
     image: acgs/security-monitor:latest
     container_name: acgs_security_monitor
     environment:
-      - SCAN_INTERVAL=86400
-      - ALERT_THRESHOLD=high
-      - PROMETHEUS_URL=http://prometheus:9090
+    - SCAN_INTERVAL=86400
+    - ALERT_THRESHOLD=high
+    - PROMETHEUS_URL=http://prometheus:9090
     ports:
-      - "8071:8080"
+    - 8071:8080
     volumes:
-      - security_logs:/var/log/security
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+    - security_logs:/var/log/security
+    - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
-      - acgs_network
+    - acgs_network
     restart: unless-stopped
     depends_on:
-      - vulnerability-scanner
+    - vulnerability-scanner
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:8080/health
       interval: 30s
       timeout: 10s
       retries: 3
-
-  # =============================================================================
-  # Compliance Services
-  # =============================================================================
   compliance-checker:
     image: acgs/compliance-checker:latest
     container_name: acgs_compliance_checker
     environment:
-      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-      - CHECK_INTERVAL=3600
-      - COMPLIANCE_FRAMEWORKS=SOC2,ISO27001,GDPR
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - CHECK_INTERVAL=3600
+    - COMPLIANCE_FRAMEWORKS=SOC2,ISO27001,GDPR
     ports:
-      - "8072:8080"
+    - 8072:8080
     volumes:
-      - compliance_logs:/var/log/compliance
-      - ../compliance/policies:/policies:ro
+    - compliance_logs:/var/log/compliance
+    - ../compliance/policies:/policies:ro
     networks:
-      - acgs_network
+    - acgs_network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:8080/health
       interval: 30s
       timeout: 10s
       retries: 3
-
-  # =============================================================================
-  # Intrusion Detection
-  # =============================================================================
   ids-monitor:
     image: acgs/ids-monitor:latest
     container_name: acgs_ids_monitor
     environment:
-      - DETECTION_MODE=active
-      - LOG_LEVEL=INFO
-      - ALERT_WEBHOOK=http://alertmanager:9093/api/v1/alerts
+    - DETECTION_MODE=active
+    - LOG_LEVEL=INFO
+    - ALERT_WEBHOOK=http://alertmanager:9093/api/v1/alerts
     ports:
-      - "8073:8080"
+    - 8073:8080
     volumes:
-      - ids_logs:/var/log/ids
-      - /var/log:/host/var/log:ro
+    - ids_logs:/var/log/ids
+    - /var/log:/host/var/log:ro
     networks:
-      - acgs_network
+    - acgs_network
     restart: unless-stopped
     cap_add:
-      - NET_ADMIN
-      - NET_RAW
+    - NET_ADMIN
+    - NET_RAW
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:8080/health
       interval: 30s
       timeout: 10s
       retries: 3
-
-  # =============================================================================
-  # Security Metrics Exporter
-  # =============================================================================
   security-exporter:
     image: acgs/security-exporter:latest
     container_name: acgs_security_exporter
     environment:
-      - METRICS_PORT=9100
-      - EXPORT_INTERVAL=60
-      - SECURITY_EVENTS_PATH=/var/log/security
+    - METRICS_PORT=9100
+    - EXPORT_INTERVAL=60
+    - SECURITY_EVENTS_PATH=/var/log/security
     ports:
-      - "9120:9100"
+    - 9120:9100
     volumes:
-      - security_logs:/var/log/security:ro
-      - compliance_logs:/var/log/compliance:ro
-      - ids_logs:/var/log/ids:ro
+    - security_logs:/var/log/security:ro
+    - compliance_logs:/var/log/compliance:ro
+    - ids_logs:/var/log/ids:ro
     networks:
-      - acgs_network
+    - acgs_network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9100/metrics"]
+      test:
+      - CMD
+      - wget
+      - --quiet
+      - --tries=1
+      - --spider
+      - http://localhost:9100/metrics
       interval: 30s
       timeout: 10s
       retries: 3
-
-  # =============================================================================
-  # Certificate Management
-  # =============================================================================
   cert-manager:
     image: acgs/cert-manager:latest
     container_name: acgs_cert_manager
     environment:
-      - CERT_RENEWAL_DAYS=30
-      - CA_CERT_PATH=/certs/ca.crt
-      - CA_KEY_PATH=/certs/ca.key
+    - CERT_RENEWAL_DAYS=30
+    - CA_CERT_PATH=/certs/ca.crt
+    - CA_KEY_PATH=/certs/ca.key
     ports:
-      - "8074:8080"
+    - 8074:8080
     volumes:
-      - cert_storage:/certs
-      - cert_logs:/var/log/certs
+    - cert_storage:/certs
+    - cert_logs:/var/log/certs
     networks:
-      - acgs_network
+    - acgs_network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:8080/health
       interval: 30s
       timeout: 10s
       retries: 3
-
-  # =============================================================================
-  # Audit Logger
-  # =============================================================================
   audit-logger:
     image: acgs/audit-logger:latest
     container_name: acgs_audit_logger
     environment:
-      - LOG_RETENTION_DAYS=365
-      - AUDIT_LEVEL=INFO
-      - SIEM_ENDPOINT=http://siem:8080/events
+    - LOG_RETENTION_DAYS=365
+    - AUDIT_LEVEL=INFO
+    - SIEM_ENDPOINT=http://siem:8080/events
     ports:
-      - "8075:8080"
+    - 8075:8080
     volumes:
-      - audit_logs:/var/log/audit
-      - /var/log:/host/var/log:ro
+    - audit_logs:/var/log/audit
+    - /var/log:/host/var/log:ro
     networks:
-      - acgs_network
+    - acgs_network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:8080/health
       interval: 30s
       timeout: 10s
       retries: 3
-
-  # =============================================================================
-  # Security Dashboard
-  # =============================================================================
   security-dashboard:
     image: acgs/security-dashboard:latest
     container_name: acgs_security_dashboard
     environment:
-      - DASHBOARD_PORT=3000
-      - SECURITY_API_URL=http://security-monitor:8080
-      - COMPLIANCE_API_URL=http://compliance-checker:8080
+    - DASHBOARD_PORT=3000
+    - SECURITY_API_URL=http://security-monitor:8080
+    - COMPLIANCE_API_URL=http://compliance-checker:8080
     ports:
-      - "3010:3000"
+    - 3010:3000
     networks:
-      - acgs_network
+    - acgs_network
     restart: unless-stopped
     depends_on:
-      - security-monitor
-      - compliance-checker
+    - security-monitor
+    - compliance-checker
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:3000/health
       interval: 30s
       timeout: 10s
       retries: 3
-
-# =============================================================================
-# Networks
-# =============================================================================
 networks:
   acgs_network:
     external: true
-
-# =============================================================================
-# Volumes
-# =============================================================================
 volumes:
   trivy_cache:
     driver: local
@@ -225,3 +221,4 @@ volumes:
     driver: local
   audit_logs:
     driver: local
+constitutional_hash: cdd01ef066bc6cf2

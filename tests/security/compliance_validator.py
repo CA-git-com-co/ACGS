@@ -116,348 +116,366 @@ class ComplianceValidator:
         """Register SOC2 Trust Service Criteria controls."""
 
         # Security (Common Criteria)
-        self.compliance_controls.extend([
-            ComplianceControl(
-                control_id="CC6.1",
-                framework=ComplianceFramework.SOC2,
-                name="Logical and Physical Access Controls",
-                description=(
-                    "The entity implements logical access security software,"
-                    " infrastructure, and architectures"
+        self.compliance_controls.extend(
+            [
+                ComplianceControl(
+                    control_id="CC6.1",
+                    framework=ComplianceFramework.SOC2,
+                    name="Logical and Physical Access Controls",
+                    description=(
+                        "The entity implements logical access security software,"
+                        " infrastructure, and architectures"
+                    ),
+                    category="Security",
+                    test_function=self._test_soc2_access_controls,
                 ),
-                category="Security",
-                test_function=self._test_soc2_access_controls,
-            ),
-            ComplianceControl(
-                control_id="CC6.2",
-                framework=ComplianceFramework.SOC2,
-                name="Prior to Issuing System Credentials",
-                description=(
-                    "Prior to issuing system credentials and granting system access,"
-                    " the entity registers and authorizes new internal and external"
-                    " users"
+                ComplianceControl(
+                    control_id="CC6.2",
+                    framework=ComplianceFramework.SOC2,
+                    name="Prior to Issuing System Credentials",
+                    description=(
+                        "Prior to issuing system credentials and granting system access,"
+                        " the entity registers and authorizes new internal and external"
+                        " users"
+                    ),
+                    category="Security",
+                    test_function=self._test_soc2_user_registration,
                 ),
-                category="Security",
-                test_function=self._test_soc2_user_registration,
-            ),
-            ComplianceControl(
-                control_id="CC6.3",
-                framework=ComplianceFramework.SOC2,
-                name="Role-Based Access Control",
-                description=(
-                    "The entity authorizes, modifies, or removes access to data,"
-                    " software, functions, and other protected information assets"
+                ComplianceControl(
+                    control_id="CC6.3",
+                    framework=ComplianceFramework.SOC2,
+                    name="Role-Based Access Control",
+                    description=(
+                        "The entity authorizes, modifies, or removes access to data,"
+                        " software, functions, and other protected information assets"
+                    ),
+                    category="Security",
+                    test_function=self._test_soc2_rbac,
                 ),
-                category="Security",
-                test_function=self._test_soc2_rbac,
-            ),
-            ComplianceControl(
-                control_id="CC7.1",
-                framework=ComplianceFramework.SOC2,
-                name="Threat Detection",
-                description=(
-                    "To meet its objectives, the entity uses detection and monitoring"
-                    " procedures to identify anomalies and indicators of malicious"
-                    " activity"
+                ComplianceControl(
+                    control_id="CC7.1",
+                    framework=ComplianceFramework.SOC2,
+                    name="Threat Detection",
+                    description=(
+                        "To meet its objectives, the entity uses detection and monitoring"
+                        " procedures to identify anomalies and indicators of malicious"
+                        " activity"
+                    ),
+                    category="Security",
+                    test_function=self._test_soc2_threat_detection,
                 ),
-                category="Security",
-                test_function=self._test_soc2_threat_detection,
-            ),
-            ComplianceControl(
-                control_id="CC7.2",
-                framework=ComplianceFramework.SOC2,
-                name="Security Incident Response",
-                description=(
-                    "The entity monitors system components and the physical environment"
-                    " to detect security events"
+                ComplianceControl(
+                    control_id="CC7.2",
+                    framework=ComplianceFramework.SOC2,
+                    name="Security Incident Response",
+                    description=(
+                        "The entity monitors system components and the physical environment"
+                        " to detect security events"
+                    ),
+                    category="Security",
+                    test_function=self._test_soc2_incident_response,
                 ),
-                category="Security",
-                test_function=self._test_soc2_incident_response,
-            ),
-        ])
+            ]
+        )
 
         # Availability
-        self.compliance_controls.extend([
-            ComplianceControl(
-                control_id="A1.1",
-                framework=ComplianceFramework.SOC2,
-                name="Capacity Planning",
-                description=(
-                    "Current processing capacity and usage are maintained, monitored,"
-                    " and evaluated"
+        self.compliance_controls.extend(
+            [
+                ComplianceControl(
+                    control_id="A1.1",
+                    framework=ComplianceFramework.SOC2,
+                    name="Capacity Planning",
+                    description=(
+                        "Current processing capacity and usage are maintained, monitored,"
+                        " and evaluated"
+                    ),
+                    category="Availability",
+                    test_function=self._test_soc2_capacity_planning,
                 ),
-                category="Availability",
-                test_function=self._test_soc2_capacity_planning,
-            ),
-            ComplianceControl(
-                control_id="A1.2",
-                framework=ComplianceFramework.SOC2,
-                name="Environmental Protection",
-                description="Environmental protections have been implemented",
-                category="Availability",
-                test_function=self._test_soc2_environmental_protection,
-            ),
-        ])
+                ComplianceControl(
+                    control_id="A1.2",
+                    framework=ComplianceFramework.SOC2,
+                    name="Environmental Protection",
+                    description="Environmental protections have been implemented",
+                    category="Availability",
+                    test_function=self._test_soc2_environmental_protection,
+                ),
+            ]
+        )
 
         # Confidentiality
-        self.compliance_controls.extend([
-            ComplianceControl(
-                control_id="C1.1",
-                framework=ComplianceFramework.SOC2,
-                name="Confidential Information Protection",
-                description=(
-                    "The entity identifies and maintains confidential information to"
-                    " meet objectives"
-                ),
-                category="Confidentiality",
-                test_function=self._test_soc2_confidentiality,
-            )
-        ])
+        self.compliance_controls.extend(
+            [
+                ComplianceControl(
+                    control_id="C1.1",
+                    framework=ComplianceFramework.SOC2,
+                    name="Confidential Information Protection",
+                    description=(
+                        "The entity identifies and maintains confidential information to"
+                        " meet objectives"
+                    ),
+                    category="Confidentiality",
+                    test_function=self._test_soc2_confidentiality,
+                )
+            ]
+        )
 
         # Processing Integrity
-        self.compliance_controls.extend([
-            ComplianceControl(
-                control_id="PI1.1",
-                framework=ComplianceFramework.SOC2,
-                name="Processing Accuracy",
-                description=(
-                    "The entity implements policies and procedures over system"
-                    " processing"
-                ),
-                category="Processing Integrity",
-                test_function=self._test_soc2_processing_integrity,
-            )
-        ])
+        self.compliance_controls.extend(
+            [
+                ComplianceControl(
+                    control_id="PI1.1",
+                    framework=ComplianceFramework.SOC2,
+                    name="Processing Accuracy",
+                    description=(
+                        "The entity implements policies and procedures over system"
+                        " processing"
+                    ),
+                    category="Processing Integrity",
+                    test_function=self._test_soc2_processing_integrity,
+                )
+            ]
+        )
 
     def _register_iso27001_controls(self):
         """Register ISO27001 controls."""
 
-        self.compliance_controls.extend([
-            ComplianceControl(
-                control_id="A.5.1.1",
-                framework=ComplianceFramework.ISO27001,
-                name="Information Security Policy",
-                description=(
-                    "Policies for information security shall be defined, approved by"
-                    " management"
+        self.compliance_controls.extend(
+            [
+                ComplianceControl(
+                    control_id="A.5.1.1",
+                    framework=ComplianceFramework.ISO27001,
+                    name="Information Security Policy",
+                    description=(
+                        "Policies for information security shall be defined, approved by"
+                        " management"
+                    ),
+                    category="Information Security Policies",
+                    test_function=self._test_iso27001_security_policy,
                 ),
-                category="Information Security Policies",
-                test_function=self._test_iso27001_security_policy,
-            ),
-            ComplianceControl(
-                control_id="A.9.1.1",
-                framework=ComplianceFramework.ISO27001,
-                name="Access Control Policy",
-                description=(
-                    "An access control policy shall be established, documented and"
-                    " reviewed"
+                ComplianceControl(
+                    control_id="A.9.1.1",
+                    framework=ComplianceFramework.ISO27001,
+                    name="Access Control Policy",
+                    description=(
+                        "An access control policy shall be established, documented and"
+                        " reviewed"
+                    ),
+                    category="Access Control",
+                    test_function=self._test_iso27001_access_control,
                 ),
-                category="Access Control",
-                test_function=self._test_iso27001_access_control,
-            ),
-            ComplianceControl(
-                control_id="A.10.1.1",
-                framework=ComplianceFramework.ISO27001,
-                name="Cryptographic Controls",
-                description=(
-                    "A policy on the use of cryptographic controls shall be developed"
+                ComplianceControl(
+                    control_id="A.10.1.1",
+                    framework=ComplianceFramework.ISO27001,
+                    name="Cryptographic Controls",
+                    description=(
+                        "A policy on the use of cryptographic controls shall be developed"
+                    ),
+                    category="Cryptography",
+                    test_function=self._test_iso27001_cryptography,
                 ),
-                category="Cryptography",
-                test_function=self._test_iso27001_cryptography,
-            ),
-            ComplianceControl(
-                control_id="A.12.1.1",
-                framework=ComplianceFramework.ISO27001,
-                name="Operational Procedures",
-                description=(
-                    "Operating procedures shall be documented and made available"
+                ComplianceControl(
+                    control_id="A.12.1.1",
+                    framework=ComplianceFramework.ISO27001,
+                    name="Operational Procedures",
+                    description=(
+                        "Operating procedures shall be documented and made available"
+                    ),
+                    category="Operations Security",
+                    test_function=self._test_iso27001_operations,
                 ),
-                category="Operations Security",
-                test_function=self._test_iso27001_operations,
-            ),
-            ComplianceControl(
-                control_id="A.16.1.1",
-                framework=ComplianceFramework.ISO27001,
-                name="Information Security Incident Management",
-                description=(
-                    "Management responsibilities and procedures shall be established"
+                ComplianceControl(
+                    control_id="A.16.1.1",
+                    framework=ComplianceFramework.ISO27001,
+                    name="Information Security Incident Management",
+                    description=(
+                        "Management responsibilities and procedures shall be established"
+                    ),
+                    category="Incident Management",
+                    test_function=self._test_iso27001_incident_management,
                 ),
-                category="Incident Management",
-                test_function=self._test_iso27001_incident_management,
-            ),
-        ])
+            ]
+        )
 
     def _register_gdpr_controls(self):
         """Register GDPR compliance controls."""
 
-        self.compliance_controls.extend([
-            ComplianceControl(
-                control_id="Art.5",
-                framework=ComplianceFramework.GDPR,
-                name="Principles of Processing",
-                description=(
-                    "Personal data shall be processed lawfully, fairly and"
-                    " transparently"
+        self.compliance_controls.extend(
+            [
+                ComplianceControl(
+                    control_id="Art.5",
+                    framework=ComplianceFramework.GDPR,
+                    name="Principles of Processing",
+                    description=(
+                        "Personal data shall be processed lawfully, fairly and"
+                        " transparently"
+                    ),
+                    category="Data Processing Principles",
+                    test_function=self._test_gdpr_processing_principles,
                 ),
-                category="Data Processing Principles",
-                test_function=self._test_gdpr_processing_principles,
-            ),
-            ComplianceControl(
-                control_id="Art.15",
-                framework=ComplianceFramework.GDPR,
-                name="Right of Access",
-                description=(
-                    "The data subject shall have the right to obtain access to personal"
-                    " data"
+                ComplianceControl(
+                    control_id="Art.15",
+                    framework=ComplianceFramework.GDPR,
+                    name="Right of Access",
+                    description=(
+                        "The data subject shall have the right to obtain access to personal"
+                        " data"
+                    ),
+                    category="Data Subject Rights",
+                    test_function=self._test_gdpr_right_of_access,
                 ),
-                category="Data Subject Rights",
-                test_function=self._test_gdpr_right_of_access,
-            ),
-            ComplianceControl(
-                control_id="Art.17",
-                framework=ComplianceFramework.GDPR,
-                name="Right to Erasure",
-                description=(
-                    "The data subject shall have the right to erasure of personal data"
+                ComplianceControl(
+                    control_id="Art.17",
+                    framework=ComplianceFramework.GDPR,
+                    name="Right to Erasure",
+                    description=(
+                        "The data subject shall have the right to erasure of personal data"
+                    ),
+                    category="Data Subject Rights",
+                    test_function=self._test_gdpr_right_to_erasure,
                 ),
-                category="Data Subject Rights",
-                test_function=self._test_gdpr_right_to_erasure,
-            ),
-            ComplianceControl(
-                control_id="Art.25",
-                framework=ComplianceFramework.GDPR,
-                name="Data Protection by Design",
-                description=(
-                    "Appropriate technical and organisational measures shall be"
-                    " implemented"
+                ComplianceControl(
+                    control_id="Art.25",
+                    framework=ComplianceFramework.GDPR,
+                    name="Data Protection by Design",
+                    description=(
+                        "Appropriate technical and organisational measures shall be"
+                        " implemented"
+                    ),
+                    category="Data Protection",
+                    test_function=self._test_gdpr_privacy_by_design,
                 ),
-                category="Data Protection",
-                test_function=self._test_gdpr_privacy_by_design,
-            ),
-            ComplianceControl(
-                control_id="Art.32",
-                framework=ComplianceFramework.GDPR,
-                name="Security of Processing",
-                description=(
-                    "Appropriate technical and organisational measures to ensure"
-                    " security"
+                ComplianceControl(
+                    control_id="Art.32",
+                    framework=ComplianceFramework.GDPR,
+                    name="Security of Processing",
+                    description=(
+                        "Appropriate technical and organisational measures to ensure"
+                        " security"
+                    ),
+                    category="Security",
+                    test_function=self._test_gdpr_security,
                 ),
-                category="Security",
-                test_function=self._test_gdpr_security,
-            ),
-            ComplianceControl(
-                control_id="Art.33",
-                framework=ComplianceFramework.GDPR,
-                name="Breach Notification",
-                description="Personal data breach shall be notified within 72 hours",
-                category="Breach Management",
-                test_function=self._test_gdpr_breach_notification,
-            ),
-        ])
+                ComplianceControl(
+                    control_id="Art.33",
+                    framework=ComplianceFramework.GDPR,
+                    name="Breach Notification",
+                    description="Personal data breach shall be notified within 72 hours",
+                    category="Breach Management",
+                    test_function=self._test_gdpr_breach_notification,
+                ),
+            ]
+        )
 
     def _register_constitutional_controls(self):
         """Register constitutional compliance controls."""
 
-        self.compliance_controls.extend([
-            ComplianceControl(
-                control_id="CONST-001",
-                framework=ComplianceFramework.CONSTITUTIONAL,
-                name="Constitutional Hash Integrity",
-                description="All components must validate constitutional hash",
-                category="Constitutional Integrity",
-                test_function=self._test_constitutional_hash_integrity,
-                constitutional_requirement=True,
-            ),
-            ComplianceControl(
-                control_id="CONST-002",
-                framework=ComplianceFramework.CONSTITUTIONAL,
-                name="Formal Verification",
-                description="Z3 SMT solver integration for policy verification",
-                category="Formal Methods",
-                test_function=self._test_constitutional_formal_verification,
-                constitutional_requirement=True,
-            ),
-            ComplianceControl(
-                control_id="CONST-003",
-                framework=ComplianceFramework.CONSTITUTIONAL,
-                name="Audit Trail Integrity",
-                description="Cryptographic audit trail with tamper detection",
-                category="Audit Integrity",
-                test_function=self._test_constitutional_audit_integrity,
-                constitutional_requirement=True,
-            ),
-            ComplianceControl(
-                control_id="CONST-004",
-                framework=ComplianceFramework.CONSTITUTIONAL,
-                name="Democratic Governance",
-                description="Democratic decision-making and oversight",
-                category="Governance",
-                test_function=self._test_constitutional_democratic_governance,
-                constitutional_requirement=True,
-            ),
-            ComplianceControl(
-                control_id="CONST-005",
-                framework=ComplianceFramework.CONSTITUTIONAL,
-                name="Human Dignity Protection",
-                description="Respect for human dignity in all operations",
-                category="Ethical Principles",
-                test_function=self._test_constitutional_human_dignity,
-                constitutional_requirement=True,
-            ),
-            ComplianceControl(
-                control_id="CONST-006",
-                framework=ComplianceFramework.CONSTITUTIONAL,
-                name="Transparency Requirements",
-                description="Transparent decision-making processes",
-                category="Transparency",
-                test_function=self._test_constitutional_transparency,
-                constitutional_requirement=True,
-            ),
-        ])
+        self.compliance_controls.extend(
+            [
+                ComplianceControl(
+                    control_id="CONST-001",
+                    framework=ComplianceFramework.CONSTITUTIONAL,
+                    name="Constitutional Hash Integrity",
+                    description="All components must validate constitutional hash",
+                    category="Constitutional Integrity",
+                    test_function=self._test_constitutional_hash_integrity,
+                    constitutional_requirement=True,
+                ),
+                ComplianceControl(
+                    control_id="CONST-002",
+                    framework=ComplianceFramework.CONSTITUTIONAL,
+                    name="Formal Verification",
+                    description="Z3 SMT solver integration for policy verification",
+                    category="Formal Methods",
+                    test_function=self._test_constitutional_formal_verification,
+                    constitutional_requirement=True,
+                ),
+                ComplianceControl(
+                    control_id="CONST-003",
+                    framework=ComplianceFramework.CONSTITUTIONAL,
+                    name="Audit Trail Integrity",
+                    description="Cryptographic audit trail with tamper detection",
+                    category="Audit Integrity",
+                    test_function=self._test_constitutional_audit_integrity,
+                    constitutional_requirement=True,
+                ),
+                ComplianceControl(
+                    control_id="CONST-004",
+                    framework=ComplianceFramework.CONSTITUTIONAL,
+                    name="Democratic Governance",
+                    description="Democratic decision-making and oversight",
+                    category="Governance",
+                    test_function=self._test_constitutional_democratic_governance,
+                    constitutional_requirement=True,
+                ),
+                ComplianceControl(
+                    control_id="CONST-005",
+                    framework=ComplianceFramework.CONSTITUTIONAL,
+                    name="Human Dignity Protection",
+                    description="Respect for human dignity in all operations",
+                    category="Ethical Principles",
+                    test_function=self._test_constitutional_human_dignity,
+                    constitutional_requirement=True,
+                ),
+                ComplianceControl(
+                    control_id="CONST-006",
+                    framework=ComplianceFramework.CONSTITUTIONAL,
+                    name="Transparency Requirements",
+                    description="Transparent decision-making processes",
+                    category="Transparency",
+                    test_function=self._test_constitutional_transparency,
+                    constitutional_requirement=True,
+                ),
+            ]
+        )
 
     def _register_pci_dss_controls(self):
         """Register PCI-DSS controls (if applicable)."""
 
-        self.compliance_controls.extend([
-            ComplianceControl(
-                control_id="PCI-1.1",
-                framework=ComplianceFramework.PCI_DSS,
-                name="Firewall Configuration",
-                description="Install and maintain firewall configuration",
-                category="Network Security",
-                test_function=self._test_pci_firewall,
-            ),
-            ComplianceControl(
-                control_id="PCI-2.1",
-                framework=ComplianceFramework.PCI_DSS,
-                name="Default Passwords",
-                description="Do not use vendor-supplied defaults",
-                category="Configuration",
-                test_function=self._test_pci_default_passwords,
-            ),
-        ])
+        self.compliance_controls.extend(
+            [
+                ComplianceControl(
+                    control_id="PCI-1.1",
+                    framework=ComplianceFramework.PCI_DSS,
+                    name="Firewall Configuration",
+                    description="Install and maintain firewall configuration",
+                    category="Network Security",
+                    test_function=self._test_pci_firewall,
+                ),
+                ComplianceControl(
+                    control_id="PCI-2.1",
+                    framework=ComplianceFramework.PCI_DSS,
+                    name="Default Passwords",
+                    description="Do not use vendor-supplied defaults",
+                    category="Configuration",
+                    test_function=self._test_pci_default_passwords,
+                ),
+            ]
+        )
 
     def _register_hipaa_controls(self):
         """Register HIPAA controls (if applicable)."""
 
-        self.compliance_controls.extend([
-            ComplianceControl(
-                control_id="HIPAA-164.308",
-                framework=ComplianceFramework.HIPAA,
-                name="Administrative Safeguards",
-                description="Administrative safeguards for PHI",
-                category="Administrative",
-                test_function=self._test_hipaa_administrative,
-            ),
-            ComplianceControl(
-                control_id="HIPAA-164.312",
-                framework=ComplianceFramework.HIPAA,
-                name="Technical Safeguards",
-                description="Technical safeguards for electronic PHI",
-                category="Technical",
-                test_function=self._test_hipaa_technical,
-            ),
-        ])
+        self.compliance_controls.extend(
+            [
+                ComplianceControl(
+                    control_id="HIPAA-164.308",
+                    framework=ComplianceFramework.HIPAA,
+                    name="Administrative Safeguards",
+                    description="Administrative safeguards for PHI",
+                    category="Administrative",
+                    test_function=self._test_hipaa_administrative,
+                ),
+                ComplianceControl(
+                    control_id="HIPAA-164.312",
+                    framework=ComplianceFramework.HIPAA,
+                    name="Technical Safeguards",
+                    description="Technical safeguards for electronic PHI",
+                    category="Technical",
+                    test_function=self._test_hipaa_technical,
+                ),
+            ]
+        )
 
     async def validate_all_frameworks(self) -> dict[str, Any]:
         """Validate compliance across all frameworks."""
@@ -1341,15 +1359,15 @@ class ComplianceValidator:
         # Calculate compliance scores by framework
         framework_scores = {}
         for framework, results in self.test_results.items():
-            compliant = len([
-                r for r in results if r.status == ComplianceStatus.COMPLIANT
-            ])
-            partial = len([
-                r for r in results if r.status == ComplianceStatus.PARTIALLY_COMPLIANT
-            ])
-            non_compliant = len([
-                r for r in results if r.status == ComplianceStatus.NON_COMPLIANT
-            ])
+            compliant = len(
+                [r for r in results if r.status == ComplianceStatus.COMPLIANT]
+            )
+            partial = len(
+                [r for r in results if r.status == ComplianceStatus.PARTIALLY_COMPLIANT]
+            )
+            non_compliant = len(
+                [r for r in results if r.status == ComplianceStatus.NON_COMPLIANT]
+            )
             total = len(results)
 
             if total > 0:
@@ -1373,9 +1391,9 @@ class ComplianceValidator:
 
         # Constitutional compliance
         const_results = self.test_results.get(ComplianceFramework.CONSTITUTIONAL, [])
-        const_compliant = len([
-            r for r in const_results if r.status == ComplianceStatus.COMPLIANT
-        ])
+        const_compliant = len(
+            [r for r in const_results if r.status == ComplianceStatus.COMPLIANT]
+        )
         constitutional_score = (
             (const_compliant / len(const_results) * 100) if const_results else 0
         )
@@ -1434,12 +1452,12 @@ class ComplianceValidator:
         results = self.test_results.get(framework, [])
 
         compliant = len([r for r in results if r.status == ComplianceStatus.COMPLIANT])
-        partial = len([
-            r for r in results if r.status == ComplianceStatus.PARTIALLY_COMPLIANT
-        ])
-        non_compliant = len([
-            r for r in results if r.status == ComplianceStatus.NON_COMPLIANT
-        ])
+        partial = len(
+            [r for r in results if r.status == ComplianceStatus.PARTIALLY_COMPLIANT]
+        )
+        non_compliant = len(
+            [r for r in results if r.status == ComplianceStatus.NON_COMPLIANT]
+        )
         total = len(results)
 
         score = ((compliant * 1.0) + (partial * 0.5)) / total * 100 if total > 0 else 0
@@ -1490,13 +1508,15 @@ class ComplianceValidator:
             )
 
         # General recommendations
-        recommendations.extend([
-            "Implement continuous compliance monitoring",
-            "Regularly update compliance controls as frameworks evolve",
-            "Conduct quarterly compliance assessments",
-            "Maintain comprehensive audit trails for all compliance activities",
-            "Ensure all team members receive compliance training",
-        ])
+        recommendations.extend(
+            [
+                "Implement continuous compliance monitoring",
+                "Regularly update compliance controls as frameworks evolve",
+                "Conduct quarterly compliance assessments",
+                "Maintain comprehensive audit trails for all compliance activities",
+                "Ensure all team members receive compliance training",
+            ]
+        )
 
         return recommendations
 

@@ -1,5 +1,6 @@
 # Multi-stage Dockerfile for ACGS Mock Services
 # Provides lightweight mock implementations of ACGS services for E2E testing
+# Constitutional Hash: cdd01ef066bc6cf2
 
 # =============================================================================
 # Base Stage - Common dependencies

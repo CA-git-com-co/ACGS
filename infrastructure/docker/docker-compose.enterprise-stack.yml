@@ -1,317 +1,304 @@
-# Constitutional Hash: cdd01ef066bc6cf2
 version: '3.8'
-
-# ACGS Enterprise Stack
-# Complete enterprise-grade infrastructure stack
-
 services:
-  # =============================================================================
-  # Load Balancer and Reverse Proxy
-  # =============================================================================
   haproxy:
     image: haproxy:2.8
     container_name: acgs_haproxy
     ports:
-      - "80:80"
-      - "443:443"
-      - "8404:8404"  # HAProxy stats
+    - 80:80
+    - 443:443
+    - 8404:8404
     volumes:
-      - ../haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
-      - ../haproxy/ssl:/etc/ssl/certs:ro
+    - ../haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    - ../haproxy/ssl:/etc/ssl/certs:ro
     networks:
-      - acgs_network
+    - acgs_network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8404/stats"]
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:8404/stats
       interval: 30s
       timeout: 10s
       retries: 3
-
-  # =============================================================================
-  # Service Discovery and Configuration
-  # =============================================================================
   consul:
     image: consul:1.16
     container_name: acgs_consul
     command: agent -server -bootstrap-expect=1 -ui -client=0.0.0.0 -data-dir=/consul/data
     ports:
-      - "8500:8500"
-      - "8600:8600/udp"
+    - 8500:8500
+    - 8600:8600/udp
     volumes:
-      - consul_data:/consul/data
+    - consul_data:/consul/data
     networks:
-      - acgs_network
+    - acgs_network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "consul", "members"]
+      test:
+      - CMD
+      - consul
+      - members
       interval: 30s
       timeout: 10s
       retries: 3
-
-  # =============================================================================
-  # Secrets Management
-  # =============================================================================
   vault:
     image: vault:1.14
     container_name: acgs_vault
     cap_add:
-      - IPC_LOCK
+    - IPC_LOCK
     environment:
-      - VAULT_DEV_ROOT_TOKEN_ID=acgs-root-token
-      - VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200
+    - VAULT_DEV_ROOT_TOKEN_ID=acgs-root-token
+    - VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200
     ports:
-      - "8200:8200"
+    - 8200:8200
     volumes:
-      - vault_data:/vault/data
-      - vault_logs:/vault/logs
+    - vault_data:/vault/data
+    - vault_logs:/vault/logs
     networks:
-      - acgs_network
+    - acgs_network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "vault", "status"]
+      test:
+      - CMD
+      - vault
+      - status
       interval: 30s
       timeout: 10s
       retries: 3
-
-  # =============================================================================
-  # Message Queue and Event Streaming
-  # =============================================================================
   nats:
     image: nats:2.10
     container_name: acgs_nats
-    command: 
-      - "--jetstream"
-      - "--store_dir=/data"
-      - "--max_file_store=10GB"
-      - "--max_mem_store=1GB"
+    command:
+    - --jetstream
+    - --store_dir=/data
+    - --max_file_store=10GB
+    - --max_mem_store=1GB
     ports:
-      - "4222:4222"
-      - "8222:8222"  # HTTP monitoring
-      - "6222:6222"  # Cluster
+    - 4222:4222
+    - 8222:8222
+    - 6222:6222
     volumes:
-      - nats_data:/data
+    - nats_data:/data
     networks:
-      - acgs_network
+    - acgs_network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8222/healthz"]
+      test:
+      - CMD
+      - wget
+      - --quiet
+      - --tries=1
+      - --spider
+      - http://localhost:8222/healthz
       interval: 30s
       timeout: 10s
       retries: 3
-
-  # =============================================================================
-  # Distributed Cache
-  # =============================================================================
   redis-cluster:
     image: redis:7.2
     container_name: acgs_redis_cluster
     command: redis-server /usr/local/etc/redis/redis.conf
     ports:
-      - "6379:6379"
-      - "16379:16379"
+    - 6379:6379
+    - 16379:16379
     volumes:
-      - ../redis/redis-cluster-config.conf:/usr/local/etc/redis/redis.conf:ro
-      - redis_cluster_data:/data
+    - ../redis/redis-cluster-config.conf:/usr/local/etc/redis/redis.conf:ro
+    - redis_cluster_data:/data
     networks:
-      - acgs_network
+    - acgs_network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test:
+      - CMD
+      - redis-cli
+      - ping
       interval: 30s
       timeout: 10s
       retries: 3
-
-  # =============================================================================
-  # Database Cluster
-  # =============================================================================
   postgresql-primary:
     image: postgres:15
     container_name: acgs_postgresql_primary
     environment:
-      - POSTGRES_DB=acgs
-      - POSTGRES_USER=acgs
-      - POSTGRES_PASSWORD=acgs123
-      - POSTGRES_REPLICATION_MODE=master
-      - POSTGRES_REPLICATION_USER=replicator
-      - POSTGRES_REPLICATION_PASSWORD=replicator123
+    - POSTGRES_DB=acgs
+    - POSTGRES_USER=acgs
+    - POSTGRES_PASSWORD=acgs123
+    - POSTGRES_REPLICATION_MODE=master
+    - POSTGRES_REPLICATION_USER=replicator
+    - POSTGRES_REPLICATION_PASSWORD=replicator123
     ports:
-      - "5432:5432"
+    - 5432:5432
     volumes:
-      - postgresql_primary_data:/var/lib/postgresql/data
-      - ../database/postgresql-performance.conf:/etc/postgresql/postgresql.conf:ro
+    - postgresql_primary_data:/var/lib/postgresql/data
+    - ../database/postgresql-performance.conf:/etc/postgresql/postgresql.conf:ro
     networks:
-      - acgs_network
+    - acgs_network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U acgs"]
+      test:
+      - CMD-SHELL
+      - pg_isready -U acgs
       interval: 30s
       timeout: 10s
       retries: 3
-
   postgresql-replica:
     image: postgres:15
     container_name: acgs_postgresql_replica
     environment:
-      - POSTGRES_MASTER_SERVICE=postgresql-primary
-      - POSTGRES_REPLICATION_MODE=slave
-      - POSTGRES_REPLICATION_USER=replicator
-      - POSTGRES_REPLICATION_PASSWORD=replicator123
-      - POSTGRES_MASTER_PORT_NUMBER=5432
+    - POSTGRES_MASTER_SERVICE=postgresql-primary
+    - POSTGRES_REPLICATION_MODE=slave
+    - POSTGRES_REPLICATION_USER=replicator
+    - POSTGRES_REPLICATION_PASSWORD=replicator123
+    - POSTGRES_MASTER_PORT_NUMBER=5432
     ports:
-      - "5433:5432"
+    - 5433:5432
     volumes:
-      - postgresql_replica_data:/var/lib/postgresql/data
+    - postgresql_replica_data:/var/lib/postgresql/data
     networks:
-      - acgs_network
+    - acgs_network
     restart: unless-stopped
     depends_on:
-      - postgresql-primary
+    - postgresql-primary
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test:
+      - CMD-SHELL
+      - pg_isready -U postgres
       interval: 30s
       timeout: 10s
       retries: 3
-
-  # =============================================================================
-  # Search and Analytics
-  # =============================================================================
   elasticsearch:
     image: elasticsearch:8.10.0
     container_name: acgs_elasticsearch
     environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=false
-      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+    - discovery.type=single-node
+    - xpack.security.enabled=false
+    - ES_JAVA_OPTS=-Xms1g -Xmx1g
     ports:
-      - "9200:9200"
-      - "9300:9300"
+    - 9200:9200
+    - 9300:9300
     volumes:
-      - elasticsearch_data:/usr/share/elasticsearch/data
+    - elasticsearch_data:/usr/share/elasticsearch/data
     networks:
-      - acgs_network
+    - acgs_network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9200/_cluster/health"]
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:9200/_cluster/health
       interval: 30s
       timeout: 10s
       retries: 3
-
-  # =============================================================================
-  # Log Processing
-  # =============================================================================
   logstash:
     image: logstash:8.10.0
     container_name: acgs_logstash
     volumes:
-      - ../logging/logstash/pipeline:/usr/share/logstash/pipeline:ro
-      - ../logging/logstash/config:/usr/share/logstash/config:ro
+    - ../logging/logstash/pipeline:/usr/share/logstash/pipeline:ro
+    - ../logging/logstash/config:/usr/share/logstash/config:ro
     ports:
-      - "5044:5044"
-      - "9600:9600"
+    - 5044:5044
+    - 9600:9600
     networks:
-      - acgs_network
+    - acgs_network
     restart: unless-stopped
     depends_on:
-      - elasticsearch
+    - elasticsearch
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9600"]
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:9600
       interval: 30s
       timeout: 10s
       retries: 3
-
-  # =============================================================================
-  # API Gateway
-  # =============================================================================
   kong:
     image: kong:3.4
     container_name: acgs_kong
     environment:
-      - KONG_DATABASE=off
-      - KONG_DECLARATIVE_CONFIG=/kong/declarative/kong.yml
-      - KONG_PROXY_ACCESS_LOG=/dev/stdout
-      - KONG_ADMIN_ACCESS_LOG=/dev/stdout
-      - KONG_PROXY_ERROR_LOG=/dev/stderr
-      - KONG_ADMIN_ERROR_LOG=/dev/stderr
-      - KONG_ADMIN_LISTEN=0.0.0.0:8001
+    - KONG_DATABASE=off
+    - KONG_DECLARATIVE_CONFIG=/kong/declarative/kong.yml
+    - KONG_PROXY_ACCESS_LOG=/dev/stdout
+    - KONG_ADMIN_ACCESS_LOG=/dev/stdout
+    - KONG_PROXY_ERROR_LOG=/dev/stderr
+    - KONG_ADMIN_ERROR_LOG=/dev/stderr
+    - KONG_ADMIN_LISTEN=0.0.0.0:8001
     ports:
-      - "8000:8000"
-      - "8443:8443"
-      - "8001:8001"
-      - "8444:8444"
+    - 8000:8000
+    - 8443:8443
+    - 8001:8001
+    - 8444:8444
     volumes:
-      - ../kong/kong.yml:/kong/declarative/kong.yml:ro
+    - ../kong/kong.yml:/kong/declarative/kong.yml:ro
     networks:
-      - acgs_network
+    - acgs_network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "kong", "health"]
+      test:
+      - CMD
+      - kong
+      - health
       interval: 30s
       timeout: 10s
       retries: 3
-
-  # =============================================================================
-  # Container Registry
-  # =============================================================================
   registry:
     image: registry:2.8
     container_name: acgs_registry
     environment:
-      - REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY=/var/lib/registry
-      - REGISTRY_AUTH=htpasswd
-      - REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm
-      - REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd
+    - REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY=/var/lib/registry
+    - REGISTRY_AUTH=htpasswd
+    - REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm
+    - REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd
     ports:
-      - "5000:5000"
+    - 5000:5000
     volumes:
-      - registry_data:/var/lib/registry
-      - ../registry/auth:/auth:ro
-      - ../registry/config.yml:/etc/docker/registry/config.yml:ro
+    - registry_data:/var/lib/registry
+    - ../registry/auth:/auth:ro
+    - ../registry/config.yml:/etc/docker/registry/config.yml:ro
     networks:
-      - acgs_network
+    - acgs_network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:5000/v2/"]
+      test:
+      - CMD
+      - wget
+      - --quiet
+      - --tries=1
+      - --spider
+      - http://localhost:5000/v2/
       interval: 30s
       timeout: 10s
       retries: 3
-
-  # =============================================================================
-  # Backup and Archive Storage
-  # =============================================================================
   minio:
     image: minio/minio:RELEASE.2023-09-30T07-02-29Z
     container_name: acgs_minio
     command: server /data --console-address ":9001"
     environment:
-      - MINIO_ROOT_USER=acgs
-      - MINIO_ROOT_PASSWORD=acgs123456
+    - MINIO_ROOT_USER=acgs
+    - MINIO_ROOT_PASSWORD=acgs123456
     ports:
-      - "9000:9000"
-      - "9001:9001"
+    - 9000:9000
+    - 9001:9001
     volumes:
-      - minio_data:/data
+    - minio_data:/data
     networks:
-      - acgs_network
+    - acgs_network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:9000/minio/health/live
       interval: 30s
       timeout: 10s
       retries: 3
-
-# =============================================================================
-# Networks
-# =============================================================================
 networks:
   acgs_network:
     driver: bridge
     ipam:
       config:
-        - subnet: 172.20.0.0/16
-
-# =============================================================================
-# Volumes
-# =============================================================================
+      - subnet: 172.20.0.0/16
 volumes:
   consul_data:
     driver: local
@@ -333,3 +320,4 @@ volumes:
     driver: local
   minio_data:
     driver: local
+constitutional_hash: cdd01ef066bc6cf2

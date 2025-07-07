@@ -12,6 +12,7 @@ Key Features:
 - Model comparison capabilities
 - Production-ready bias monitoring integration
 """
+
 # Constitutional Hash: cdd01ef066bc6cf2
 
 import json
@@ -232,12 +233,14 @@ class WhatIfToolAnalyzer:
                         counterfactuals.append(counterfactual)
 
             # Log counterfactual analysis
-            await self.audit_logger.log_model_analysis({
-                "analysis_type": "counterfactual",
-                "protected_attribute": protected_attribute,
-                "num_examples_analyzed": len(counterfactuals),
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_model_analysis(
+                {
+                    "analysis_type": "counterfactual",
+                    "protected_attribute": protected_attribute,
+                    "num_examples_analyzed": len(counterfactuals),
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
             return counterfactuals
 
@@ -354,12 +357,14 @@ class WhatIfToolAnalyzer:
                         )
 
             # Log feature importance analysis
-            await self.audit_logger.log_model_analysis({
-                "analysis_type": "feature_importance_bias",
-                "protected_attributes": protected_attributes,
-                "feature_importance_scores": feature_importance,
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_model_analysis(
+                {
+                    "analysis_type": "feature_importance_bias",
+                    "protected_attributes": protected_attributes,
+                    "feature_importance_scores": feature_importance,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
             return feature_importance
 
@@ -451,14 +456,16 @@ class WhatIfToolAnalyzer:
                 )
 
             # Log comprehensive analysis
-            await self.audit_logger.log_model_analysis({
-                "analysis_type": "comprehensive_bias_analysis",
-                "protected_attribute": protected_attribute,
-                "bias_score": bias_score,
-                "num_counterfactuals": len(counterfactuals),
-                "confidence": confidence,
-                "timestamp": result.timestamp.isoformat(),
-            })
+            await self.audit_logger.log_model_analysis(
+                {
+                    "analysis_type": "comprehensive_bias_analysis",
+                    "protected_attribute": protected_attribute,
+                    "bias_score": bias_score,
+                    "num_counterfactuals": len(counterfactuals),
+                    "confidence": confidence,
+                    "timestamp": result.timestamp.isoformat(),
+                }
+            )
 
             return result
 
@@ -539,14 +546,16 @@ class WhatIfToolAnalyzer:
 
                 # Add counterfactual insights
                 if result.counterfactual_examples:
-                    avg_change = np.mean([
-                        cf.prediction_change for cf in result.counterfactual_examples
-                    ])
-                    report["counterfactual_insights"].append({
-                        "attribute": result.protected_attribute,
-                        "avg_prediction_change": avg_change,
-                        "num_examples": len(result.counterfactual_examples),
-                    })
+                    avg_change = np.mean(
+                        [cf.prediction_change for cf in result.counterfactual_examples]
+                    )
+                    report["counterfactual_insights"].append(
+                        {
+                            "attribute": result.protected_attribute,
+                            "avg_prediction_change": avg_change,
+                            "num_examples": len(result.counterfactual_examples),
+                        }
+                    )
 
             # Overall risk assessment
             if report["high_risk_attributes"]:
@@ -606,13 +615,15 @@ async def example_usage():
     analyzer = WhatIfToolAnalyzer()
 
     # Sample data (in production, this would be your actual model data)
-    data = pd.DataFrame({
-        "feature1": np.random.randn(1000),
-        "feature2": np.random.randn(1000),
-        "gender": np.random.choice(["M", "F"], 1000),
-        "race": np.random.choice(["White", "Black", "Hispanic", "Asian"], 1000),
-        "target": np.random.randint(0, 2, 1000),
-    })
+    data = pd.DataFrame(
+        {
+            "feature1": np.random.randn(1000),
+            "feature2": np.random.randn(1000),
+            "gender": np.random.choice(["M", "F"], 1000),
+            "race": np.random.choice(["White", "Black", "Hispanic", "Asian"], 1000),
+            "target": np.random.randint(0, 2, 1000),
+        }
+    )
 
     # Mock model (in production, use your actual model)
     class MockModel:

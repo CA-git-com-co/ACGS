@@ -14,9 +14,8 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-import yaml
-
 import docker
+import yaml
 
 # Configure logging
 logging.basicConfig(

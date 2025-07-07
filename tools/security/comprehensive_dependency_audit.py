@@ -12,7 +12,6 @@ import sys
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 def run_dependency_audit():
     """Run comprehensive dependency vulnerability audit."""
     print("🔍 Running comprehensive dependency audit...")

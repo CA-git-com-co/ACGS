@@ -1,254 +1,215 @@
-# Constitutional Hash: cdd01ef066bc6cf2
-# ACGS-1 Governance Workflow Alert Rules
-# Monitoring for 5 core governance workflows with constitutional compliance
-
 groups:
-  - name: policy_creation_workflow
-    rules:
-      # Policy Creation Workflow Health
-      - alert: PolicyCreationWorkflowDown
-        expr: acgs_workflow_health{workflow="policy_creation"} < 0.9
-        for: 2m
-        labels:
-          severity: critical
-          workflow: policy_creation
-          component: governance_workflow
-        annotations:
-          summary: 'Policy Creation workflow health degraded'
-          description: 'Policy Creation workflow health: {{ $value }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/policy-creation-workflow'
-
-      # Policy Draft Processing Time
-      - alert: PolicyDraftProcessingDelay
-        expr: histogram_quantile(0.95, rate(acgs_policy_draft_processing_duration_seconds_bucket[5m])) > 300
-        for: 5m
-        labels:
-          severity: warning
-          workflow: policy_creation
-          component: policy_drafting
-        annotations:
-          summary: 'Policy draft processing taking too long'
-          description: '95th percentile processing time: {{ $value }}s'
-
-      # Policy Review Backlog
-      - alert: PolicyReviewBacklog
-        expr: acgs_policy_review_queue_size > 20
-        for: 10m
-        labels:
-          severity: warning
-          workflow: policy_creation
-          component: policy_review
-        annotations:
-          summary: 'Policy review queue backing up'
-          description: '{{ $value }} policies waiting for review'
-
-  - name: constitutional_compliance_workflow
-    rules:
-      # Constitutional Compliance Workflow Health
-      - alert: ConstitutionalComplianceWorkflowDown
-        expr: acgs_workflow_health{workflow="constitutional_compliance"} < 0.95
-        for: 1m
-        labels:
-          severity: critical
-          workflow: constitutional_compliance
-          component: governance_workflow
-        annotations:
-          summary: 'Constitutional Compliance workflow critical'
-          description: 'Constitutional Compliance workflow health: {{ $value }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/constitutional-compliance'
-
-      # Compliance Check Failures
-      - alert: ComplianceCheckFailures
-        expr: rate(acgs_compliance_check_failures_total[5m]) > 0.02
-        for: 2m
-        labels:
-          severity: critical
-          workflow: constitutional_compliance
-          component: compliance_validation
-        annotations:
-          summary: 'High rate of compliance check failures'
-          description: '{{ $value }} compliance check failures per second'
-
-      # Constitutional Hash Mismatch
-      - alert: ConstitutionalHashMismatch
-        expr: acgs_constitutional_hash_mismatches_total > 0
-        for: 0s
-        labels:
-          severity: critical
-          workflow: constitutional_compliance
-          component: constitutional_integrity
-        annotations:
-          summary: 'Constitutional hash mismatch detected'
-          description: 'Constitutional integrity compromised - immediate investigation required'
-
-      # PGC Service Response Time
-      - alert: PGCServiceSlowResponse
-        expr: histogram_quantile(0.95, rate(acgs_pgc_response_duration_seconds_bucket[5m])) > 0.05
-        for: 3m
-        labels:
-          severity: warning
-          workflow: constitutional_compliance
-          component: pgc_service
-        annotations:
-          summary: 'PGC service responding slowly'
-          description: '95th percentile PGC response time: {{ $value }}s (target: <50ms)'
-
-  - name: policy_enforcement_workflow
-    rules:
-      # Policy Enforcement Workflow Health
-      - alert: PolicyEnforcementWorkflowDown
-        expr: acgs_workflow_health{workflow="policy_enforcement"} < 0.9
-        for: 2m
-        labels:
-          severity: critical
-          workflow: policy_enforcement
-          component: governance_workflow
-        annotations:
-          summary: 'Policy Enforcement workflow degraded'
-          description: 'Policy Enforcement workflow health: {{ $value }}'
-
-      # Policy Violation Detection
-      - alert: PolicyViolationDetected
-        expr: rate(acgs_policy_violations_total[5m]) > 0.1
-        for: 1m
-        labels:
-          severity: warning
-          workflow: policy_enforcement
-          component: violation_detection
-        annotations:
-          summary: 'Policy violations detected'
-          description: '{{ $value }} policy violations per second'
-
-      # Enforcement Action Failures
-      - alert: EnforcementActionFailures
-        expr: rate(acgs_enforcement_action_failures_total[5m]) > 0.01
-        for: 2m
-        labels:
-          severity: critical
-          workflow: policy_enforcement
-          component: enforcement_actions
-        annotations:
-          summary: 'Enforcement actions failing'
-          description: '{{ $value }} enforcement action failures per second'
-
-  - name: wina_oversight_workflow
-    rules:
-      # WINA Oversight Workflow Health
-      - alert: WINAOversightWorkflowDown
-        expr: acgs_workflow_health{workflow="wina_oversight"} < 0.9
-        for: 2m
-        labels:
-          severity: critical
-          workflow: wina_oversight
-          component: governance_workflow
-        annotations:
-          summary: 'WINA Oversight workflow degraded'
-          description: 'WINA Oversight workflow health: {{ $value }}'
-
-      # WINA Algorithm Performance
-      - alert: WINAAlgorithmPerformanceDegraded
-        expr: acgs_wina_algorithm_performance_score < 0.85
-        for: 5m
-        labels:
-          severity: warning
-          workflow: wina_oversight
-          component: wina_algorithm
-        annotations:
-          summary: 'WINA algorithm performance degraded'
-          description: 'WINA performance score: {{ $value }}'
-
-      # Evolutionary Computation Stagnation
-      - alert: EvolutionaryComputationStagnation
-        expr: rate(acgs_ec_improvement_rate[30m]) < 0.001
-        for: 30m
-        labels:
-          severity: warning
-          workflow: wina_oversight
-          component: evolutionary_computation
-        annotations:
-          summary: 'Evolutionary computation showing no improvement'
-          description: 'No significant improvements in the last 30 minutes'
-
-  - name: audit_transparency_workflow
-    rules:
-      # Audit and Transparency Workflow Health
-      - alert: AuditTransparencyWorkflowDown
-        expr: acgs_workflow_health{workflow="audit_transparency"} < 0.9
-        for: 2m
-        labels:
-          severity: warning
-          workflow: audit_transparency
-          component: governance_workflow
-        annotations:
-          summary: 'Audit and Transparency workflow degraded'
-          description: 'Audit and Transparency workflow health: {{ $value }}'
-
-      # Audit Log Integrity Issues
-      - alert: AuditLogIntegrityIssues
-        expr: rate(acgs_audit_log_integrity_failures_total[5m]) > 0
-        for: 1m
-        labels:
-          severity: critical
-          workflow: audit_transparency
-          component: audit_logging
-        annotations:
-          summary: 'Audit log integrity compromised'
-          description: '{{ $value }} audit log integrity failures per second'
-
-      # Transparency Report Generation Failures
-      - alert: TransparencyReportFailures
-        expr: rate(acgs_transparency_report_failures_total[5m]) > 0.01
-        for: 5m
-        labels:
-          severity: warning
-          workflow: audit_transparency
-          component: transparency_reporting
-        annotations:
-          summary: 'Transparency report generation failing'
-          description: '{{ $value }} transparency report failures per second'
-
-  - name: cross_workflow_coordination
-    rules:
-      # Workflow Coordination Issues
-      - alert: WorkflowCoordinationIssues
-        expr: acgs_workflow_coordination_failures_total > 0
-        for: 1m
-        labels:
-          severity: warning
-          component: workflow_coordination
-        annotations:
-          summary: 'Workflow coordination issues detected'
-          description: '{{ $value }} workflow coordination failures'
-
-      # Inter-Service Communication Failures
-      - alert: InterServiceCommunicationFailures
-        expr: rate(acgs_inter_service_communication_failures_total[5m]) > 0.05
-        for: 2m
-        labels:
-          severity: warning
-          component: service_communication
-        annotations:
-          summary: 'Inter-service communication issues'
-          description: '{{ $value }} communication failures per second between services'
-
-      # Governance State Inconsistency
-      - alert: GovernanceStateInconsistency
-        expr: acgs_governance_state_inconsistencies_total > 0
-        for: 0s
-        labels:
-          severity: critical
-          component: governance_state
-        annotations:
-          summary: 'Governance state inconsistency detected'
-          description: 'Critical: Governance state inconsistency requires immediate attention'
-
-      # Workflow Performance Degradation
-      - alert: WorkflowPerformanceDegradation
-        expr: avg(acgs_workflow_health) < 0.9
-        for: 5m
-        labels:
-          severity: warning
-          component: overall_performance
-        annotations:
-          summary: 'Overall workflow performance degraded'
-          description: 'Average workflow health: {{ $value }}'
+- name: policy_creation_workflow
+  rules:
+  - alert: PolicyCreationWorkflowDown
+    expr: acgs_workflow_health{workflow="policy_creation"} < 0.9
+    for: 2m
+    labels:
+      severity: critical
+      workflow: policy_creation
+      component: governance_workflow
+    annotations:
+      summary: Policy Creation workflow health degraded
+      description: 'Policy Creation workflow health: {{ $value }}'
+      runbook_url: https://docs.acgs.ai/runbooks/policy-creation-workflow
+  - alert: PolicyDraftProcessingDelay
+    expr: histogram_quantile(0.95, rate(acgs_policy_draft_processing_duration_seconds_bucket[5m]))
+      > 300
+    for: 5m
+    labels:
+      severity: warning
+      workflow: policy_creation
+      component: policy_drafting
+    annotations:
+      summary: Policy draft processing taking too long
+      description: '95th percentile processing time: {{ $value }}s'
+  - alert: PolicyReviewBacklog
+    expr: acgs_policy_review_queue_size > 20
+    for: 10m
+    labels:
+      severity: warning
+      workflow: policy_creation
+      component: policy_review
+    annotations:
+      summary: Policy review queue backing up
+      description: '{{ $value }} policies waiting for review'
+- name: constitutional_compliance_workflow
+  rules:
+  - alert: ConstitutionalComplianceWorkflowDown
+    expr: acgs_workflow_health{workflow="constitutional_compliance"} < 0.95
+    for: 1m
+    labels:
+      severity: critical
+      workflow: constitutional_compliance
+      component: governance_workflow
+    annotations:
+      summary: Constitutional Compliance workflow critical
+      description: 'Constitutional Compliance workflow health: {{ $value }}'
+      runbook_url: https://docs.acgs.ai/runbooks/constitutional-compliance
+  - alert: ComplianceCheckFailures
+    expr: rate(acgs_compliance_check_failures_total[5m]) > 0.02
+    for: 2m
+    labels:
+      severity: critical
+      workflow: constitutional_compliance
+      component: compliance_validation
+    annotations:
+      summary: High rate of compliance check failures
+      description: '{{ $value }} compliance check failures per second'
+  - alert: ConstitutionalHashMismatch
+    expr: acgs_constitutional_hash_mismatches_total > 0
+    for: 0s
+    labels:
+      severity: critical
+      workflow: constitutional_compliance
+      component: constitutional_integrity
+    annotations:
+      summary: Constitutional hash mismatch detected
+      description: Constitutional integrity compromised - immediate investigation
+        required
+  - alert: PGCServiceSlowResponse
+    expr: histogram_quantile(0.95, rate(acgs_pgc_response_duration_seconds_bucket[5m]))
+      > 0.05
+    for: 3m
+    labels:
+      severity: warning
+      workflow: constitutional_compliance
+      component: pgc_service
+    annotations:
+      summary: PGC service responding slowly
+      description: '95th percentile PGC response time: {{ $value }}s (target: <50ms)'
+- name: policy_enforcement_workflow
+  rules:
+  - alert: PolicyEnforcementWorkflowDown
+    expr: acgs_workflow_health{workflow="policy_enforcement"} < 0.9
+    for: 2m
+    labels:
+      severity: critical
+      workflow: policy_enforcement
+      component: governance_workflow
+    annotations:
+      summary: Policy Enforcement workflow degraded
+      description: 'Policy Enforcement workflow health: {{ $value }}'
+  - alert: PolicyViolationDetected
+    expr: rate(acgs_policy_violations_total[5m]) > 0.1
+    for: 1m
+    labels:
+      severity: warning
+      workflow: policy_enforcement
+      component: violation_detection
+    annotations:
+      summary: Policy violations detected
+      description: '{{ $value }} policy violations per second'
+  - alert: EnforcementActionFailures
+    expr: rate(acgs_enforcement_action_failures_total[5m]) > 0.01
+    for: 2m
+    labels:
+      severity: critical
+      workflow: policy_enforcement
+      component: enforcement_actions
+    annotations:
+      summary: Enforcement actions failing
+      description: '{{ $value }} enforcement action failures per second'
+- name: wina_oversight_workflow
+  rules:
+  - alert: WINAOversightWorkflowDown
+    expr: acgs_workflow_health{workflow="wina_oversight"} < 0.9
+    for: 2m
+    labels:
+      severity: critical
+      workflow: wina_oversight
+      component: governance_workflow
+    annotations:
+      summary: WINA Oversight workflow degraded
+      description: 'WINA Oversight workflow health: {{ $value }}'
+  - alert: WINAAlgorithmPerformanceDegraded
+    expr: acgs_wina_algorithm_performance_score < 0.85
+    for: 5m
+    labels:
+      severity: warning
+      workflow: wina_oversight
+      component: wina_algorithm
+    annotations:
+      summary: WINA algorithm performance degraded
+      description: 'WINA performance score: {{ $value }}'
+  - alert: EvolutionaryComputationStagnation
+    expr: rate(acgs_ec_improvement_rate[30m]) < 0.001
+    for: 30m
+    labels:
+      severity: warning
+      workflow: wina_oversight
+      component: evolutionary_computation
+    annotations:
+      summary: Evolutionary computation showing no improvement
+      description: No significant improvements in the last 30 minutes
+- name: audit_transparency_workflow
+  rules:
+  - alert: AuditTransparencyWorkflowDown
+    expr: acgs_workflow_health{workflow="audit_transparency"} < 0.9
+    for: 2m
+    labels:
+      severity: warning
+      workflow: audit_transparency
+      component: governance_workflow
+    annotations:
+      summary: Audit and Transparency workflow degraded
+      description: 'Audit and Transparency workflow health: {{ $value }}'
+  - alert: AuditLogIntegrityIssues
+    expr: rate(acgs_audit_log_integrity_failures_total[5m]) > 0
+    for: 1m
+    labels:
+      severity: critical
+      workflow: audit_transparency
+      component: audit_logging
+    annotations:
+      summary: Audit log integrity compromised
+      description: '{{ $value }} audit log integrity failures per second'
+  - alert: TransparencyReportFailures
+    expr: rate(acgs_transparency_report_failures_total[5m]) > 0.01
+    for: 5m
+    labels:
+      severity: warning
+      workflow: audit_transparency
+      component: transparency_reporting
+    annotations:
+      summary: Transparency report generation failing
+      description: '{{ $value }} transparency report failures per second'
+- name: cross_workflow_coordination
+  rules:
+  - alert: WorkflowCoordinationIssues
+    expr: acgs_workflow_coordination_failures_total > 0
+    for: 1m
+    labels:
+      severity: warning
+      component: workflow_coordination
+    annotations:
+      summary: Workflow coordination issues detected
+      description: '{{ $value }} workflow coordination failures'
+  - alert: InterServiceCommunicationFailures
+    expr: rate(acgs_inter_service_communication_failures_total[5m]) > 0.05
+    for: 2m
+    labels:
+      severity: warning
+      component: service_communication
+    annotations:
+      summary: Inter-service communication issues
+      description: '{{ $value }} communication failures per second between services'
+  - alert: GovernanceStateInconsistency
+    expr: acgs_governance_state_inconsistencies_total > 0
+    for: 0s
+    labels:
+      severity: critical
+      component: governance_state
+    annotations:
+      summary: Governance state inconsistency detected
+      description: 'Critical: Governance state inconsistency requires immediate attention'
+  - alert: WorkflowPerformanceDegradation
+    expr: avg(acgs_workflow_health) < 0.9
+    for: 5m
+    labels:
+      severity: warning
+      component: overall_performance
+    annotations:
+      summary: Overall workflow performance degraded
+      description: 'Average workflow health: {{ $value }}'
+constitutional_hash: cdd01ef066bc6cf2

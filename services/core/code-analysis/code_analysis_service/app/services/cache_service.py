@@ -418,15 +418,17 @@ class CacheService:
                 exc_info=True,
             )
 
-            return ensure_constitutional_compliance({
-                "is_connected": self.is_connected,
-                "error": str(e),
-                "statistics": {
-                    "cache_hits": self.cache_hits,
-                    "cache_misses": self.cache_misses,
-                    "cache_errors": self.cache_errors,
-                },
-            })
+            return ensure_constitutional_compliance(
+                {
+                    "is_connected": self.is_connected,
+                    "error": str(e),
+                    "statistics": {
+                        "cache_hits": self.cache_hits,
+                        "cache_misses": self.cache_misses,
+                        "cache_errors": self.cache_errors,
+                    },
+                }
+            )
 
     def _build_key(self, key: str) -> str:
         """Build full cache key with prefix."""

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Constitutional Hash: cdd01ef066bc6cf2
 """
 Issue Prioritization and Classification Framework for ACGS-2
 Analyzes all discovered issues from testing phases, classifies by severity,

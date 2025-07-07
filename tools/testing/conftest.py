@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 """
 Pytest configuration for ACGS-1 test suite.
 Sets up Python path and imports for services with hyphened directory names.

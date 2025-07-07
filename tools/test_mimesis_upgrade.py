@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Constitutional Hash: cdd01ef066bc6cf2
 """
 Staging validation script for mimesis upgrade (PR #104)
 Tests data generation functionality before merge

@@ -1,4 +1,6 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 import os
+
 #!/usr/bin/env python3
 """
 Authentication workflow testing script for ACGS-PGP Phase 1 remediation.

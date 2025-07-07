@@ -1,274 +1,214 @@
-# Constitutional Hash: cdd01ef066bc6cf2
 groups:
-  - name: acgs_business_metrics
-    interval: 30s
-    rules:
-      # Constitutional Governance Business Metrics
-      - record: acgs:constitutional_compliance_rate
-        expr: |
-          (
-            sum(rate(acgs_constitutional_validations_total{status="success"}[5m])) /
-            sum(rate(acgs_constitutional_validations_total[5m]))
-          ) * 100
-        labels:
-          metric_type: 'business'
-          category: 'constitutional_governance'
+- name: acgs_business_metrics
+  interval: 30s
+  rules:
+  - record: acgs:constitutional_compliance_rate
+    expr: "(\n  sum(rate(acgs_constitutional_validations_total{status=\"success\"\
+      }[5m])) /\n  sum(rate(acgs_constitutional_validations_total[5m]))\n) * 100\n"
+    labels:
+      metric_type: business
+      category: constitutional_governance
+  - record: acgs:policy_synthesis_success_rate
+    expr: "(\n  sum(rate(acgs_policy_operations_total{operation_type=\"synthesis\"\
+      , status=\"success\"}[5m])) /\n  sum(rate(acgs_policy_operations_total{operation_type=\"\
+      synthesis\"}[5m]))\n) * 100\n"
+    labels:
+      metric_type: business
+      category: policy_management
+  - record: acgs:governance_workflow_completion_rate
+    expr: "(\n  sum(rate(acgs_governance_workflows_total{status=\"completed\"}[5m]))\
+      \ /\n  sum(rate(acgs_governance_workflows_total[5m]))\n) * 100\n"
+    labels:
+      metric_type: business
+      category: workflow_management
+  - record: acgs:service_availability_sla
+    expr: "(\n  sum(up{job=~\"acgs-.*\"}) /\n  count(up{job=~\"acgs-.*\"})\n) * 100\n"
+    labels:
+      metric_type: business
+      category: service_availability
+  - record: acgs:response_time_sla_compliance
+    expr: "(\n  sum(rate(acgs_http_request_duration_seconds_bucket{le=\"0.5\"}[5m]))\
+      \ /\n  sum(rate(acgs_http_request_duration_seconds_count[5m]))\n) * 100\n"
+    labels:
+      metric_type: business
+      category: performance_sla
+  - record: acgs:concurrent_user_capacity
+    expr: 'sum(acgs_active_connections) by (service)
 
-      - record: acgs:policy_synthesis_success_rate
-        expr: |
-          (
-            sum(rate(acgs_policy_operations_total{operation_type="synthesis", status="success"}[5m])) /
-            sum(rate(acgs_policy_operations_total{operation_type="synthesis"}[5m]))
-          ) * 100
-        labels:
-          metric_type: 'business'
-          category: 'policy_management'
+      '
+    labels:
+      metric_type: business
+      category: capacity_planning
+  - record: acgs:throughput_per_service
+    expr: 'sum(rate(acgs_http_requests_total[5m])) by (service)
 
-      - record: acgs:governance_workflow_completion_rate
-        expr: |
-          (
-            sum(rate(acgs_governance_workflows_total{status="completed"}[5m])) /
-            sum(rate(acgs_governance_workflows_total[5m]))
-          ) * 100
-        labels:
-          metric_type: 'business'
-          category: 'workflow_management'
+      '
+    labels:
+      metric_type: business
+      category: throughput
+  - record: acgs:security_incident_rate
+    expr: 'sum(rate(acgs_security_events_total{severity=~"high|critical"}[1h]))
 
-      # Performance Business Metrics
-      - record: acgs:service_availability_sla
-        expr: |
-          (
-            sum(up{job=~"acgs-.*"}) /
-            count(up{job=~"acgs-.*"})
-          ) * 100
-        labels:
-          metric_type: 'business'
-          category: 'service_availability'
+      '
+    labels:
+      metric_type: business
+      category: security
+  - record: acgs:authentication_success_rate
+    expr: "(\n  sum(rate(acgs_auth_operations_total{status=\"success\"}[5m])) /\n\
+      \  sum(rate(acgs_auth_operations_total[5m]))\n) * 100\n"
+    labels:
+      metric_type: business
+      category: authentication
+- name: acgs_business_alerts
+  rules:
+  - alert: ConstitutionalComplianceBelow95Percent
+    expr: acgs:constitutional_compliance_rate < 95
+    for: 2m
+    labels:
+      severity: critical
+      category: constitutional_governance
+      business_impact: high
+    annotations:
+      summary: Constitutional compliance rate below 95%
+      description: Constitutional compliance rate is {{ $value }}%, below the required
+        95% threshold
+      runbook_url: https://docs.acgs.local/runbooks/constitutional-compliance
+      business_impact: Critical governance functionality compromised
+  - alert: PolicySynthesisFailureRateHigh
+    expr: acgs:policy_synthesis_success_rate < 90
+    for: 5m
+    labels:
+      severity: warning
+      category: policy_management
+      business_impact: medium
+    annotations:
+      summary: Policy synthesis failure rate above 10%
+      description: Policy synthesis success rate is {{ $value }}%, below the required
+        90% threshold
+      runbook_url: https://docs.acgs.local/runbooks/policy-synthesis
+  - alert: ServiceAvailabilityBelowSLA
+    expr: acgs:service_availability_sla < 99.9
+    for: 1m
+    labels:
+      severity: critical
+      category: service_availability
+      business_impact: high
+    annotations:
+      summary: Service availability below 99.9% SLA
+      description: Service availability is {{ $value }}%, below the 99.9% SLA requirement
+      runbook_url: https://docs.acgs.local/runbooks/service-availability
+      business_impact: System availability SLA breach
+  - alert: ResponseTimeSLABreach
+    expr: acgs:response_time_sla_compliance < 95
+    for: 3m
+    labels:
+      severity: warning
+      category: performance_sla
+      business_impact: medium
+    annotations:
+      summary: Response time SLA compliance below 95%
+      description: Only {{ $value }}% of requests meet the <500ms response time SLA
+      runbook_url: https://docs.acgs.local/runbooks/performance-optimization
+  - alert: ConcurrentUserCapacityNearLimit
+    expr: acgs:concurrent_user_capacity > 800
+    for: 2m
+    labels:
+      severity: warning
+      category: capacity_planning
+      business_impact: medium
+    annotations:
+      summary: Concurrent user capacity approaching limit
+      description: 'Current concurrent users: {{ $value }}, approaching 1000 user
+        limit'
+      runbook_url: https://docs.acgs.local/runbooks/capacity-scaling
+  - alert: SecurityIncidentRateHigh
+    expr: acgs:security_incident_rate > 5
+    for: 1m
+    labels:
+      severity: critical
+      category: security
+      business_impact: high
+    annotations:
+      summary: High security incident rate detected
+      description: '{{ $value }} high/critical security incidents in the last hour'
+      runbook_url: https://docs.acgs.local/runbooks/security-incidents
+      business_impact: Security posture compromised
+  - alert: AuthenticationFailureRateHigh
+    expr: acgs:authentication_success_rate < 95
+    for: 3m
+    labels:
+      severity: warning
+      category: authentication
+      business_impact: medium
+    annotations:
+      summary: Authentication failure rate above 5%
+      description: Authentication success rate is {{ $value }}%, below 95% threshold
+      runbook_url: https://docs.acgs.local/runbooks/authentication-issues
+- name: acgs_governance_workflow_metrics
+  interval: 15s
+  rules:
+  - record: acgs:policy_creation_workflow_duration
+    expr: "histogram_quantile(0.95, \n  sum(rate(acgs_governance_workflow_duration_seconds_bucket{workflow=\"\
+      policy_creation\"}[5m])) by (le)\n)\n"
+    labels:
+      metric_type: business
+      category: governance_workflows
+      workflow: policy_creation
+  - record: acgs:constitutional_compliance_workflow_duration
+    expr: "histogram_quantile(0.95,\n  sum(rate(acgs_governance_workflow_duration_seconds_bucket{workflow=\"\
+      constitutional_compliance\"}[5m])) by (le)\n)\n"
+    labels:
+      metric_type: business
+      category: governance_workflows
+      workflow: constitutional_compliance
+  - record: acgs:policy_enforcement_workflow_duration
+    expr: "histogram_quantile(0.95,\n  sum(rate(acgs_governance_workflow_duration_seconds_bucket{workflow=\"\
+      policy_enforcement\"}[5m])) by (le)\n)\n"
+    labels:
+      metric_type: business
+      category: governance_workflows
+      workflow: policy_enforcement
+  - record: acgs:wina_oversight_workflow_duration
+    expr: "histogram_quantile(0.95,\n  sum(rate(acgs_governance_workflow_duration_seconds_bucket{workflow=\"\
+      wina_oversight\"}[5m])) by (le)\n)\n"
+    labels:
+      metric_type: business
+      category: governance_workflows
+      workflow: wina_oversight
+  - record: acgs:audit_transparency_workflow_duration
+    expr: "histogram_quantile(0.95,\n  sum(rate(acgs_governance_workflow_duration_seconds_bucket{workflow=\"\
+      audit_transparency\"}[5m])) by (le)\n)\n"
+    labels:
+      metric_type: business
+      category: governance_workflows
+      workflow: audit_transparency
+- name: acgs_quantumagi_blockchain_metrics
+  interval: 30s
+  rules:
+  - record: acgs:solana_transaction_success_rate
+    expr: "(\n  sum(rate(acgs_solana_transactions_total{status=\"success\"}[5m]))\
+      \ /\n  sum(rate(acgs_solana_transactions_total[5m]))\n) * 100\n"
+    labels:
+      metric_type: business
+      category: blockchain_integration
+  - record: acgs:solana_transaction_cost_avg
+    expr: 'avg(acgs_solana_transaction_cost_sol)
 
-      - record: acgs:response_time_sla_compliance
-        expr: |
-          (
-            sum(rate(acgs_http_request_duration_seconds_bucket{le="0.5"}[5m])) /
-            sum(rate(acgs_http_request_duration_seconds_count[5m]))
-          ) * 100
-        labels:
-          metric_type: 'business'
-          category: 'performance_sla'
-
-      # Capacity and Scaling Metrics
-      - record: acgs:concurrent_user_capacity
-        expr: |
-          sum(acgs_active_connections) by (service)
-        labels:
-          metric_type: 'business'
-          category: 'capacity_planning'
-
-      - record: acgs:throughput_per_service
-        expr: |
-          sum(rate(acgs_http_requests_total[5m])) by (service)
-        labels:
-          metric_type: 'business'
-          category: 'throughput'
-
-      # Security and Compliance Metrics
-      - record: acgs:security_incident_rate
-        expr: |
-          sum(rate(acgs_security_events_total{severity=~"high|critical"}[1h]))
-        labels:
-          metric_type: 'business'
-          category: 'security'
-
-      - record: acgs:authentication_success_rate
-        expr: |
-          (
-            sum(rate(acgs_auth_operations_total{status="success"}[5m])) /
-            sum(rate(acgs_auth_operations_total[5m]))
-          ) * 100
-        labels:
-          metric_type: 'business'
-          category: 'authentication'
-
-  - name: acgs_business_alerts
-    rules:
-      # Critical Business Alerts
-      - alert: ConstitutionalComplianceBelow95Percent
-        expr: acgs:constitutional_compliance_rate < 95
-        for: 2m
-        labels:
-          severity: critical
-          category: constitutional_governance
-          business_impact: high
-        annotations:
-          summary: 'Constitutional compliance rate below 95%'
-          description: 'Constitutional compliance rate is {{ $value }}%, below the required 95% threshold'
-          runbook_url: 'https://docs.acgs.local/runbooks/constitutional-compliance'
-          business_impact: 'Critical governance functionality compromised'
-
-      - alert: PolicySynthesisFailureRateHigh
-        expr: acgs:policy_synthesis_success_rate < 90
-        for: 5m
-        labels:
-          severity: warning
-          category: policy_management
-          business_impact: medium
-        annotations:
-          summary: 'Policy synthesis failure rate above 10%'
-          description: 'Policy synthesis success rate is {{ $value }}%, below the required 90% threshold'
-          runbook_url: 'https://docs.acgs.local/runbooks/policy-synthesis'
-
-      - alert: ServiceAvailabilityBelowSLA
-        expr: acgs:service_availability_sla < 99.9
-        for: 1m
-        labels:
-          severity: critical
-          category: service_availability
-          business_impact: high
-        annotations:
-          summary: 'Service availability below 99.9% SLA'
-          description: 'Service availability is {{ $value }}%, below the 99.9% SLA requirement'
-          runbook_url: 'https://docs.acgs.local/runbooks/service-availability'
-          business_impact: 'System availability SLA breach'
-
-      - alert: ResponseTimeSLABreach
-        expr: acgs:response_time_sla_compliance < 95
-        for: 3m
-        labels:
-          severity: warning
-          category: performance_sla
-          business_impact: medium
-        annotations:
-          summary: 'Response time SLA compliance below 95%'
-          description: 'Only {{ $value }}% of requests meet the <500ms response time SLA'
-          runbook_url: 'https://docs.acgs.local/runbooks/performance-optimization'
-
-      - alert: ConcurrentUserCapacityNearLimit
-        expr: acgs:concurrent_user_capacity > 800
-        for: 2m
-        labels:
-          severity: warning
-          category: capacity_planning
-          business_impact: medium
-        annotations:
-          summary: 'Concurrent user capacity approaching limit'
-          description: 'Current concurrent users: {{ $value }}, approaching 1000 user limit'
-          runbook_url: 'https://docs.acgs.local/runbooks/capacity-scaling'
-
-      - alert: SecurityIncidentRateHigh
-        expr: acgs:security_incident_rate > 5
-        for: 1m
-        labels:
-          severity: critical
-          category: security
-          business_impact: high
-        annotations:
-          summary: 'High security incident rate detected'
-          description: '{{ $value }} high/critical security incidents in the last hour'
-          runbook_url: 'https://docs.acgs.local/runbooks/security-incidents'
-          business_impact: 'Security posture compromised'
-
-      - alert: AuthenticationFailureRateHigh
-        expr: acgs:authentication_success_rate < 95
-        for: 3m
-        labels:
-          severity: warning
-          category: authentication
-          business_impact: medium
-        annotations:
-          summary: 'Authentication failure rate above 5%'
-          description: 'Authentication success rate is {{ $value }}%, below 95% threshold'
-          runbook_url: 'https://docs.acgs.local/runbooks/authentication-issues'
-
-  - name: acgs_governance_workflow_metrics
-    interval: 15s
-    rules:
-      # Governance Workflow Specific Metrics
-      - record: acgs:policy_creation_workflow_duration
-        expr: |
-          histogram_quantile(0.95, 
-            sum(rate(acgs_governance_workflow_duration_seconds_bucket{workflow="policy_creation"}[5m])) by (le)
-          )
-        labels:
-          metric_type: 'business'
-          category: 'governance_workflows'
-          workflow: 'policy_creation'
-
-      - record: acgs:constitutional_compliance_workflow_duration
-        expr: |
-          histogram_quantile(0.95,
-            sum(rate(acgs_governance_workflow_duration_seconds_bucket{workflow="constitutional_compliance"}[5m])) by (le)
-          )
-        labels:
-          metric_type: 'business'
-          category: 'governance_workflows'
-          workflow: 'constitutional_compliance'
-
-      - record: acgs:policy_enforcement_workflow_duration
-        expr: |
-          histogram_quantile(0.95,
-            sum(rate(acgs_governance_workflow_duration_seconds_bucket{workflow="policy_enforcement"}[5m])) by (le)
-          )
-        labels:
-          metric_type: 'business'
-          category: 'governance_workflows'
-          workflow: 'policy_enforcement'
-
-      - record: acgs:wina_oversight_workflow_duration
-        expr: |
-          histogram_quantile(0.95,
-            sum(rate(acgs_governance_workflow_duration_seconds_bucket{workflow="wina_oversight"}[5m])) by (le)
-          )
-        labels:
-          metric_type: 'business'
-          category: 'governance_workflows'
-          workflow: 'wina_oversight'
-
-      - record: acgs:audit_transparency_workflow_duration
-        expr: |
-          histogram_quantile(0.95,
-            sum(rate(acgs_governance_workflow_duration_seconds_bucket{workflow="audit_transparency"}[5m])) by (le)
-          )
-        labels:
-          metric_type: 'business'
-          category: 'governance_workflows'
-          workflow: 'audit_transparency'
-
-  - name: acgs_quantumagi_blockchain_metrics
-    interval: 30s
-    rules:
-      # Quantumagi Blockchain Integration Metrics
-      - record: acgs:solana_transaction_success_rate
-        expr: |
-          (
-            sum(rate(acgs_solana_transactions_total{status="success"}[5m])) /
-            sum(rate(acgs_solana_transactions_total[5m]))
-          ) * 100
-        labels:
-          metric_type: 'business'
-          category: 'blockchain_integration'
-
-      - record: acgs:solana_transaction_cost_avg
-        expr: |
-          avg(acgs_solana_transaction_cost_sol)
-        labels:
-          metric_type: 'business'
-          category: 'blockchain_cost'
-
-      - record: acgs:constitutional_hash_validation_rate
-        expr: |
-          (
-            sum(rate(acgs_constitutional_hash_validations_total{status="success"}[5m])) /
-            sum(rate(acgs_constitutional_hash_validations_total[5m]))
-          ) * 100
-        labels:
-          metric_type: 'business'
-          category: 'constitutional_validation'
-
-      - record: acgs:quantumagi_program_call_success_rate
-        expr: |
-          (
-            sum(rate(acgs_quantumagi_program_calls_total{status="success"}[5m])) /
-            sum(rate(acgs_quantumagi_program_calls_total[5m]))
-          ) * 100
-        labels:
-          metric_type: 'business'
-          category: 'quantumagi_integration'
+      '
+    labels:
+      metric_type: business
+      category: blockchain_cost
+  - record: acgs:constitutional_hash_validation_rate
+    expr: "(\n  sum(rate(acgs_constitutional_hash_validations_total{status=\"success\"\
+      }[5m])) /\n  sum(rate(acgs_constitutional_hash_validations_total[5m]))\n) *\
+      \ 100\n"
+    labels:
+      metric_type: business
+      category: constitutional_validation
+  - record: acgs:quantumagi_program_call_success_rate
+    expr: "(\n  sum(rate(acgs_quantumagi_program_calls_total{status=\"success\"}[5m]))\
+      \ /\n  sum(rate(acgs_quantumagi_program_calls_total[5m]))\n) * 100\n"
+    labels:
+      metric_type: business
+      category: quantumagi_integration
+constitutional_hash: cdd01ef066bc6cf2

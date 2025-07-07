@@ -15,7 +15,6 @@ from .security import create_access_token, create_refresh_token
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class OAuthProvider:
     """Base OAuth 2.0 provider implementation"""
 

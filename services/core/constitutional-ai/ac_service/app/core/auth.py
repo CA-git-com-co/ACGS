@@ -1,10 +1,9 @@
 # Import shared authentication utilities
-from services.shared.auth import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from services.shared.auth import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     RoleChecker,
+    "cdd01ef066bc6cf2",
+    =,
     get_current_active_user,
     get_current_user_from_token,
     require_ac_admin,

@@ -7,11 +7,8 @@ import hashlib
 import logging
 import time
 
-from ..schemas import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from ..schemas import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     ConflictCheckRequest,
     ConflictCheckResponse,
     ConflictDetectionResult,
@@ -21,6 +18,8 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
     SafetyCheckResponse,
     SafetyCheckResult,
     SafetyProperty,
+    "cdd01ef066bc6cf2",
+    =,
 )
 
 logger = logging.getLogger(__name__)

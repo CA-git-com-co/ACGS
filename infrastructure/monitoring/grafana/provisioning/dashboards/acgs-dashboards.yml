@@ -1,41 +1,33 @@
-# ACGS Dashboard Provisioning Configuration
-# Constitutional Hash: cdd01ef066bc6cf2
-#
-# This configuration automatically provisions ACGS constitutional compliance dashboards
-# into Grafana on startup, ensuring consistent monitoring across environments.
-
 apiVersion: 1
-
 providers:
-  - name: 'ACGS Constitutional Compliance'
-    orgId: 1
-    folder: 'ACGS Monitoring'
-    type: file
-    disableDeletion: false
-    updateIntervalSeconds: 10
-    allowUiUpdates: true
-    options:
-      path: /var/lib/grafana/dashboards/acgs
-      foldersFromFilesStructure: true
-
-  - name: 'ACGS System Health'
-    orgId: 1
-    folder: 'ACGS System'
-    type: file
-    disableDeletion: false
-    updateIntervalSeconds: 10
-    allowUiUpdates: true
-    options:
-      path: /var/lib/grafana/dashboards/system
-      foldersFromFilesStructure: true
-
-  - name: 'ACGS Performance'
-    orgId: 1
-    folder: 'ACGS Performance'
-    type: file
-    disableDeletion: false
-    updateIntervalSeconds: 10
-    allowUiUpdates: true
-    options:
-      path: /var/lib/grafana/dashboards/performance
-      foldersFromFilesStructure: true
+- name: ACGS Constitutional Compliance
+  orgId: 1
+  folder: ACGS Monitoring
+  type: file
+  disableDeletion: false
+  updateIntervalSeconds: 10
+  allowUiUpdates: true
+  options:
+    path: /var/lib/grafana/dashboards/acgs
+    foldersFromFilesStructure: true
+- name: ACGS System Health
+  orgId: 1
+  folder: ACGS System
+  type: file
+  disableDeletion: false
+  updateIntervalSeconds: 10
+  allowUiUpdates: true
+  options:
+    path: /var/lib/grafana/dashboards/system
+    foldersFromFilesStructure: true
+- name: ACGS Performance
+  orgId: 1
+  folder: ACGS Performance
+  type: file
+  disableDeletion: false
+  updateIntervalSeconds: 10
+  allowUiUpdates: true
+  options:
+    path: /var/lib/grafana/dashboards/performance
+    foldersFromFilesStructure: true
+constitutional_hash: cdd01ef066bc6cf2

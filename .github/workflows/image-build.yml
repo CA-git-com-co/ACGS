@@ -1,6 +1,7 @@
 # This workflow builds various Docker images for the project on every push and pull request.
 # Its primary purpose is to validate that the Dockerfiles are correct and the images can be successfully built.
 # These images are NOT pushed to a container registry by this workflow. Image pushing is handled by the main ci.yml workflow.
+# Constitutional Hash: cdd01ef066bc6cf2
 name: Docker images
 
 on:

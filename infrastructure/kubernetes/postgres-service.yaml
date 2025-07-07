@@ -1,17 +1,15 @@
-# Constitutional Hash: cdd01ef066bc6cf2
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres-service # This service provides a stable internal DNS for PostgreSQL
+  name: postgres-service
   labels:
     app: postgres
 spec:
   selector:
-    app: postgres # Matches the labels of the PostgreSQL deployment's pods
+    app: postgres
   ports:
-    - protocol: TCP
-      port: 5432 # Port the service will be available on within the K8s cluster
-      targetPort: 5432 # Port the PostgreSQL container is listening on
-  type:
-    ClusterIP # Exposes the service on a cluster-internal IP.
-    # Backend services will connect to PostgreSQL using this service name (e.g., postgres-service:5432)
+  - protocol: TCP
+    port: 5432
+    targetPort: 5432
+  type: ClusterIP
+constitutional_hash: cdd01ef066bc6cf2

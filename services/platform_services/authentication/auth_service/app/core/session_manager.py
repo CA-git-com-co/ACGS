@@ -16,7 +16,6 @@ from ..models import User, UserSession
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class SessionManager:
     """Enterprise Session Management Service"""
 

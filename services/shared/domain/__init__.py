@@ -6,40 +6,34 @@ This module provides the base classes for Domain-Driven Design implementation.
 """
 
 from .base import (
-    Entity,
-    ValueObject,
+    CONSTITUTIONAL_HASH,
     AggregateRoot,
     DomainException,
-    CONSTITUTIONAL_HASH
+    Entity,
+    ValueObject,
 )
-from .events import (
-    DomainEvent,
-    DomainEventHandler,
-    EventMetadata
-)
+from .events import DomainEvent, DomainEventHandler, EventMetadata
 from .specifications import (
-    Specification,
     AndSpecification,
+    NotSpecification,
     OrSpecification,
-    NotSpecification
+    Specification,
 )
 
 __all__ = [
     # Base classes
     "Entity",
-    "ValueObject", 
+    "ValueObject",
     "AggregateRoot",
     "DomainException",
     "CONSTITUTIONAL_HASH",
-    
     # Events
     "DomainEvent",
     "DomainEventHandler",
     "EventMetadata",
-    
     # Specifications
     "Specification",
     "AndSpecification",
     "OrSpecification",
-    "NotSpecification"
+    "NotSpecification",
 ]

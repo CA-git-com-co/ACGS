@@ -21,7 +21,6 @@ from .task_manager import TaskManager
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class BlackboardService:
     """
     Redis-based blackboard service for multi-agent coordination.
@@ -503,7 +502,7 @@ class BlackboardService:
             raise RuntimeError("Service not initialized")
 
         import json
-        from datetime import datetime, timezone, timedelta
+        from datetime import datetime, timedelta, timezone
 
         timed_out_agents = []
         active_agents = await self.get_active_agents()
@@ -522,11 +521,15 @@ class BlackboardService:
                     last_heartbeat_str = agent_data.get("last_heartbeat")
 
                     if last_heartbeat_str:
-                        last_heartbeat = datetime.fromisoformat(last_heartbeat_str.replace('Z', '+00:00'))
+                        last_heartbeat = datetime.fromisoformat(
+                            last_heartbeat_str.replace("Z", "+00:00")
+                        )
                         if last_heartbeat < timeout_threshold:
                             timed_out_agents.append(agent_id)
                             # Remove from active agents
-                            await self.redis_client.srem(f"{self.spaces['agents']}:active", agent_id)
+                            await self.redis_client.srem(
+                                f"{self.spaces['agents']}:active", agent_id
+                            )
                 except (json.JSONDecodeError, ValueError) as e:
                     self.logger.warning(f"Error parsing agent data for {agent_id}: {e}")
 

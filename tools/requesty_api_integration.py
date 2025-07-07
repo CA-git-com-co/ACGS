@@ -11,7 +11,6 @@ from requesty_example import RequestyAPIClient
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class RequestyAPI:
     """
     Simplified RequestyAPI wrapper for DGM integration.

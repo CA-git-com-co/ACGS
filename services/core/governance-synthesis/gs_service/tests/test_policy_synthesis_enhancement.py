@@ -7,19 +7,21 @@ Tests the comprehensive Policy Synthesis Enhancement system including:
 - Multi-model consensus engine
 - Performance optimization and tracking
 """
+
 # Constitutional Hash: cdd01ef066bc6cf2
 
 from unittest.mock import Mock
 
 import pytest
-
-from services.shared.models import Principle
-
 from services.core.governance_synthesis.gs_service.core.performance_optimizer import (
     SynthesisPerformanceMetrics,
     WINAPerformanceOptimizer,
 )
-from services.core.governance_synthesis.gs_service.services.qec_error_correction_service import QECErrorCorrectionService
+from services.core.governance_synthesis.gs_service.services.qec_error_correction_service import (
+    QECErrorCorrectionService,
+)
+
+from services.shared.models import Principle
 
 
 class TestProactiveErrorPrediction:

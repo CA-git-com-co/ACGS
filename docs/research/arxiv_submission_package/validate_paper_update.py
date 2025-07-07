@@ -30,23 +30,27 @@ class PaperValidator:
         if match:
             title = match.group(1)
             is_updated = "ACGS-PGP" in title and "Production-Ready" in title
-            self.validation_results.append({
-                "check": "Title Update",
-                "status": "PASS" if is_updated else "FAIL",
-                "found": title,
-                "expected": (
-                    "ACGS-PGP: A Production-Ready Constitutional AI Governance"
-                    " System..."
-                ),
-            })
+            self.validation_results.append(
+                {
+                    "check": "Title Update",
+                    "status": "PASS" if is_updated else "FAIL",
+                    "found": title,
+                    "expected": (
+                        "ACGS-PGP: A Production-Ready Constitutional AI Governance"
+                        " System..."
+                    ),
+                }
+            )
             return is_updated
 
-        self.validation_results.append({
-            "check": "Title Update",
-            "status": "FAIL",
-            "found": "No title found",
-            "expected": "ACGS-PGP title",
-        })
+        self.validation_results.append(
+            {
+                "check": "Title Update",
+                "status": "FAIL",
+                "found": "No title found",
+                "expected": "ACGS-PGP title",
+            }
+        )
         return False
 
     def validate_abstract_content(self) -> bool:
@@ -68,12 +72,14 @@ class PaperValidator:
             found_terms = [term for term in required_terms if term in abstract]
             is_valid = len(found_terms) >= 4  # At least 4 out of 6 terms
 
-            self.validation_results.append({
-                "check": "Abstract Content",
-                "status": "PASS" if is_valid else "FAIL",
-                "found": f"{len(found_terms)}/{len(required_terms)} required terms",
-                "expected": "At least 4 key terms about current system",
-            })
+            self.validation_results.append(
+                {
+                    "check": "Abstract Content",
+                    "status": "PASS" if is_valid else "FAIL",
+                    "found": f"{len(found_terms)}/{len(required_terms)} required terms",
+                    "expected": "At least 4 key terms about current system",
+                }
+            )
             return is_valid
 
         return False
@@ -94,12 +100,14 @@ class PaperValidator:
         found_services = [service for service in services if service in self.content]
         is_valid = len(found_services) >= 5  # At least 5 out of 7 services mentioned
 
-        self.validation_results.append({
-            "check": "Architecture Description",
-            "status": "PASS" if is_valid else "FAIL",
-            "found": f"{len(found_services)}/{len(services)} services mentioned",
-            "expected": "At least 5 of 7 microservices described",
-        })
+        self.validation_results.append(
+            {
+                "check": "Architecture Description",
+                "status": "PASS" if is_valid else "FAIL",
+                "found": f"{len(found_services)}/{len(services)} services mentioned",
+                "expected": "At least 5 of 7 microservices described",
+            }
+        )
         return is_valid
 
     def validate_constitutional_hash(self) -> bool:
@@ -107,12 +115,14 @@ class PaperValidator:
         hash_pattern = r"cdd01ef066bc6cf2"
         has_hash = bool(re.search(hash_pattern, self.content))
 
-        self.validation_results.append({
-            "check": "Constitutional Hash",
-            "status": "PASS" if has_hash else "FAIL",
-            "found": "Hash found" if has_hash else "Hash not found",
-            "expected": "Constitutional hash cdd01ef066bc6cf2",
-        })
+        self.validation_results.append(
+            {
+                "check": "Constitutional Hash",
+                "status": "PASS" if has_hash else "FAIL",
+                "found": "Hash found" if has_hash else "Hash not found",
+                "expected": "Constitutional hash cdd01ef066bc6cf2",
+            }
+        )
         return has_hash
 
     def validate_qec_sft_content(self) -> bool:
@@ -128,12 +138,14 @@ class PaperValidator:
         found_terms = [term for term in qec_terms if term in self.content]
         is_valid = len(found_terms) >= 3
 
-        self.validation_results.append({
-            "check": "QEC-SFT Content",
-            "status": "PASS" if is_valid else "FAIL",
-            "found": f"{len(found_terms)}/{len(qec_terms)} QEC-SFT terms",
-            "expected": "At least 3 QEC-SFT related terms",
-        })
+        self.validation_results.append(
+            {
+                "check": "QEC-SFT Content",
+                "status": "PASS" if is_valid else "FAIL",
+                "found": f"{len(found_terms)}/{len(qec_terms)} QEC-SFT terms",
+                "expected": "At least 3 QEC-SFT related terms",
+            }
+        )
         return is_valid
 
     def validate_performance_metrics(self) -> bool:
@@ -149,12 +161,14 @@ class PaperValidator:
         found_metrics = [metric for metric in metrics if metric in self.content]
         is_valid = len(found_metrics) >= 3
 
-        self.validation_results.append({
-            "check": "Performance Metrics",
-            "status": "PASS" if is_valid else "FAIL",
-            "found": f"{len(found_metrics)}/{len(metrics)} metrics found",
-            "expected": "At least 3 production metrics",
-        })
+        self.validation_results.append(
+            {
+                "check": "Performance Metrics",
+                "status": "PASS" if is_valid else "FAIL",
+                "found": f"{len(found_metrics)}/{len(metrics)} metrics found",
+                "expected": "At least 3 production metrics",
+            }
+        )
         return is_valid
 
     def validate_removed_evolutionary_content(self) -> bool:
@@ -175,12 +189,14 @@ class PaperValidator:
         # Should be minimal (less than 10 total occurrences)
         is_valid = total_occurrences < 10
 
-        self.validation_results.append({
-            "check": "Evolutionary Content Removal",
-            "status": "PASS" if is_valid else "FAIL",
-            "found": f"{total_occurrences} evolutionary term occurrences",
-            "expected": "Less than 10 occurrences",
-        })
+        self.validation_results.append(
+            {
+                "check": "Evolutionary Content Removal",
+                "status": "PASS" if is_valid else "FAIL",
+                "found": f"{total_occurrences} evolutionary term occurrences",
+                "expected": "Less than 10 occurrences",
+            }
+        )
         return is_valid
 
     def run_all_validations(self) -> dict:

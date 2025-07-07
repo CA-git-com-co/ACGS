@@ -7,53 +7,39 @@ repositories, and cross-cutting concerns.
 """
 
 from .event_store import (
+    ConcurrentAppendError,
     EventStore,
-    PostgreSQLEventStore,
     EventStream,
+    PostgreSQLEventStore,
     StreamVersion,
-    ConcurrentAppendError
 )
-
-from .unit_of_work import (
-    UnitOfWork,
-    PostgreSQLUnitOfWork,
-    UnitOfWorkManager
-)
-
+from .outbox import OutboxEntry, OutboxPattern, PostgreSQLOutboxPattern
 from .repositories import (
-    Repository,
     EventSourcedRepository,
     PostgreSQLRepository,
-    RepositoryRegistry
+    Repository,
+    RepositoryRegistry,
 )
-
-from .outbox import (
-    OutboxEntry,
-    OutboxPattern,
-    PostgreSQLOutboxPattern
-)
+from .unit_of_work import PostgreSQLUnitOfWork, UnitOfWork, UnitOfWorkManager
 
 __all__ = [
     # Event Store
     "EventStore",
-    "PostgreSQLEventStore", 
+    "PostgreSQLEventStore",
     "EventStream",
     "StreamVersion",
     "ConcurrentAppendError",
-    
     # Unit of Work
     "UnitOfWork",
     "PostgreSQLUnitOfWork",
     "UnitOfWorkManager",
-    
     # Repositories
     "Repository",
     "EventSourcedRepository",
     "PostgreSQLRepository",
     "RepositoryRegistry",
-    
     # Outbox Pattern
     "OutboxEntry",
     "OutboxPattern",
-    "PostgreSQLOutboxPattern"
+    "PostgreSQLOutboxPattern",
 ]

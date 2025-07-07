@@ -5,7 +5,6 @@ from typing import Any
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 @dataclass
 class ConstitutionalPrinciple:
     """Represents a constitutional principle for policy synthesis."""

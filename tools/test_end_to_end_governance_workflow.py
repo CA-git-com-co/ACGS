@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Constitutional Hash: cdd01ef066bc6cf2
 """
 End-to-End Governance Workflow Testing for ACGS-1 Task 10
 

@@ -8,13 +8,13 @@ Tests all components of the intelligent conflict resolution system including:
 - Audit trail and monitoring
 - Performance metrics and targets
 """
+
 # Constitutional Hash: cdd01ef066bc6cf2
 
 from datetime import datetime
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
-
 from services.core.constitutional_ai.ac_service.services.automated_resolution_engine import (
     AutomatedResolutionEngine,
     ResolutionResult,
@@ -25,7 +25,9 @@ from services.core.constitutional_ai.ac_service.services.conflict_audit_system i
     ConflictAuditSystem,
     PerformanceMetrics,
 )
-from services.core.constitutional_ai.ac_service.services.conflict_resolution_orchestrator import ConflictResolutionOrchestrator
+from services.core.constitutional_ai.ac_service.services.conflict_resolution_orchestrator import (
+    ConflictResolutionOrchestrator,
+)
 from services.core.constitutional_ai.ac_service.services.human_escalation_system import (
     EscalationLevel,
     EscalationRequest,

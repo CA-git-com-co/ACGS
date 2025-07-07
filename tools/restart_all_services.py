@@ -19,7 +19,6 @@ import httpx
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class ACGSServiceManager:
     """Manages ACGS-1 service lifecycle and health monitoring."""
 

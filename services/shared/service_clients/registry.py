@@ -14,33 +14,37 @@ from .base_client import BaseServiceClient, create_client
 class ServiceRegistry:
     """
     Centralized registry for all ACGS services.
-    
+
     This eliminates the need for services to directly import each other,
     preventing circular dependencies.
     """
-    
+
     def __init__(self):
         self._clients: Dict[str, BaseServiceClient] = {}
         self._service_urls = {
-            "constitutional-core": os.getenv("CONSTITUTIONAL_CORE_URL", "http://localhost:8001"),
-            "governance-engine": os.getenv("GOVERNANCE_ENGINE_URL", "http://localhost:8004"),
+            "constitutional-core": os.getenv(
+                "CONSTITUTIONAL_CORE_URL", "http://localhost:8001"
+            ),
+            "governance-engine": os.getenv(
+                "GOVERNANCE_ENGINE_URL", "http://localhost:8004"
+            ),
             "integrity": os.getenv("INTEGRITY_SERVICE_URL", "http://localhost:8002"),
             "authentication": os.getenv("AUTH_SERVICE_URL", "http://localhost:8016"),
-            "api-gateway": os.getenv("API_GATEWAY_URL", "http://localhost:8080")
+            "api-gateway": os.getenv("API_GATEWAY_URL", "http://localhost:8080"),
         }
-    
+
     async def get_client(self, service_name: str) -> Optional[BaseServiceClient]:
         """Get a client for the specified service"""
         if service_name not in self._clients:
             url = self._service_urls.get(service_name)
             if not url:
                 return None
-            
+
             self._clients[service_name] = create_client(service_name, url)
             await self._clients[service_name].connect()
-        
+
         return self._clients[service_name]
-    
+
     async def health_check_all(self) -> Dict[str, bool]:
         """Check health of all registered services"""
         results = {}
@@ -53,9 +57,9 @@ class ServiceRegistry:
                     results[service_name] = False
             except Exception:
                 results[service_name] = False
-        
+
         return results
-    
+
     async def disconnect_all(self):
         """Disconnect all clients"""
         for client in self._clients.values():

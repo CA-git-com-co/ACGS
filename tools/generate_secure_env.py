@@ -19,7 +19,6 @@ from datetime import datetime
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 def generate_secure_key(length: int = 64) -> str:
     """Generate a cryptographically secure random key."""
     return secrets.token_urlsafe(length)

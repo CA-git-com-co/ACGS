@@ -14,6 +14,7 @@ from enum import Enum
 from typing import Any
 
 import aiohttp
+import docker
 import psutil
 from prometheus_client import (
     CollectorRegistry,
@@ -22,8 +23,6 @@ from prometheus_client import (
     Histogram,
     start_http_server,
 )
-
-import docker
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

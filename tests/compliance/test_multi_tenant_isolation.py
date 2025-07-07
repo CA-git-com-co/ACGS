@@ -14,6 +14,7 @@ from datetime import datetime, timezone
 from unittest.mock import Mock
 
 import pytest
+
 from services.shared.audit.compliance_audit_logger import (
     AuditEventType,
     ComplianceAuditLogger,

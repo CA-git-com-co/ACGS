@@ -439,9 +439,9 @@ _What problems did you encounter?_
         )
 
         # Calculate satisfaction percentage (4-5 ratings considered satisfied)
-        satisfied_users = len([
-            f for f in sample_feedback if f["overall_satisfaction"] >= 4
-        ])
+        satisfied_users = len(
+            [f for f in sample_feedback if f["overall_satisfaction"] >= 4]
+        )
         satisfaction_percentage = (satisfied_users / total_responses) * 100
 
         analytics = {

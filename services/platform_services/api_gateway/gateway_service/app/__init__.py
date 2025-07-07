@@ -14,6 +14,6 @@ from .routing.service_router import ServiceRouter
 
 __all__ = [
     "GatewayConfig",
-    "ConstitutionalComplianceMiddleware", 
+    "ConstitutionalComplianceMiddleware",
     "ServiceRouter",
 ]

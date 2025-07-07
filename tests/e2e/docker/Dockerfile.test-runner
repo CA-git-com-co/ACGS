@@ -1,5 +1,6 @@
 # Dockerfile for ACGS E2E Test Runner
 # Provides a containerized environment for running E2E tests
+# Constitutional Hash: cdd01ef066bc6cf2
 
 FROM python:3.11-slim
 

@@ -13,7 +13,6 @@ from pathlib import Path
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 def analyze_cleanup_results(results_file: str):
     """Analyze cleanup results and generate actionable recommendations."""
 

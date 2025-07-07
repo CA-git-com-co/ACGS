@@ -6,6 +6,10 @@ of constitutional policies and governance rules within the ACGS framework.
 """
 
 import logging
+import os
+
+# Import the advanced proof engine
+import sys
 import time
 from dataclasses import dataclass
 from enum import Enum
@@ -13,9 +17,6 @@ from typing import Any, Optional
 
 import z3
 
-# Import the advanced proof engine
-import sys
-import os
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../.."))
 from advanced_proof_engine import AdvancedProofEngine
 from advanced_proof_engine import ProofObligation as AdvancedProofObligation
@@ -650,13 +651,15 @@ class Z3ConstitutionalSolver:
                     obligation, property_spec
                 )
 
-                results.append({
-                    "property": property_spec,
-                    "verification_result": result.status.value,
-                    "proof_time_ms": result.verification_time_ms,
-                    "counterexample": result.counterexample,
-                    "constitutional_compliance": result.constitutional_compliance,
-                })
+                results.append(
+                    {
+                        "property": property_spec,
+                        "verification_result": result.status.value,
+                        "proof_time_ms": result.verification_time_ms,
+                        "counterexample": result.counterexample,
+                        "constitutional_compliance": result.constitutional_compliance,
+                    }
+                )
 
             return {
                 "policy_text": policy_text,

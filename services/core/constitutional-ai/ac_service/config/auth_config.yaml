@@ -2,8 +2,8 @@ authentication:
   enabled: true
   jwt_validation: true
   public_endpoints:
-    - /health
-    - /api/v1/constitution/public
+  - /health
+  - /api/v1/constitution/public
   service_auth: true
 authorization:
   permission_checking: true
@@ -13,3 +13,4 @@ security:
   audit_logging: true
   rate_limiting: true
   threat_detection: true
+constitutional_hash: cdd01ef066bc6cf2

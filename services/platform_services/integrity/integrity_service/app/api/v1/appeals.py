@@ -3,11 +3,11 @@ Phase 3: Appeal and Dispute Resolution API endpoints for ACGS-PGP
 Provides democratic governance mechanisms for challenging algorithmic decisions
 """
 
+from app import crud, schemas
+
 # from .core.auth import get_current_user_placeholder as get_current_user, require_integrity_admin, require_auditor
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from app import crud, schemas
 
 from .database import get_async_db
 

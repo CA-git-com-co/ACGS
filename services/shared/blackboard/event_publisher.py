@@ -15,7 +15,6 @@ import redis.asyncio as redis
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class EventPublisher:
     """
     Publishes events for blackboard notifications.

@@ -2,7 +2,13 @@
   "dashboard": {
     "id": null,
     "title": "Integrity Service Dashboard",
-    "tags": ["acgs", "integrity", "cryptography", "audit", "service"],
+    "tags": [
+      "acgs",
+      "integrity",
+      "cryptography",
+      "audit",
+      "service"
+    ],
     "timezone": "browser",
     "refresh": "30s",
     "time": {
@@ -27,17 +33,42 @@
             },
             "thresholds": {
               "steps": [
-                { "color": "red", "value": 0 },
-                { "color": "green", "value": 1 }
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "green",
+                  "value": 1
+                }
               ]
             },
             "mappings": [
-              { "options": { "0": { "text": "Down" } }, "type": "value" },
-              { "options": { "1": { "text": "Up" } }, "type": "value" }
+              {
+                "options": {
+                  "0": {
+                    "text": "Down"
+                  }
+                },
+                "type": "value"
+              },
+              {
+                "options": {
+                  "1": {
+                    "text": "Up"
+                  }
+                },
+                "type": "value"
+              }
             ]
           }
         },
-        "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 }
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 0,
+          "y": 0
+        }
       },
       {
         "id": 2,
@@ -55,7 +86,12 @@
             "min": 0
           }
         ],
-        "gridPos": { "h": 8, "w": 12, "x": 6, "y": 0 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 6,
+          "y": 0
+        }
       },
       {
         "id": 3,
@@ -73,7 +109,12 @@
             "min": 0
           }
         ],
-        "gridPos": { "h": 8, "w": 6, "x": 18, "y": 0 }
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 18,
+          "y": 0
+        }
       },
       {
         "id": 4,
@@ -92,9 +133,18 @@
             },
             "thresholds": {
               "steps": [
-                { "color": "red", "value": 0 },
-                { "color": "yellow", "value": 0.95 },
-                { "color": "green", "value": 0.99 }
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 0.95
+                },
+                {
+                  "color": "green",
+                  "value": 0.99
+                }
               ]
             },
             "unit": "percentunit",
@@ -102,7 +152,12 @@
             "max": 1
           }
         },
-        "gridPos": { "h": 4, "w": 6, "x": 0, "y": 4 }
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 0,
+          "y": 4
+        }
       },
       {
         "id": 5,
@@ -120,7 +175,12 @@
             "min": 0
           }
         ],
-        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        }
       },
       {
         "id": 6,
@@ -138,7 +198,12 @@
             "min": 0
           }
         ],
-        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        }
       },
       {
         "id": 7,
@@ -160,7 +225,12 @@
             "max": 1.0
           }
         ],
-        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 16
+        }
       },
       {
         "id": 8,
@@ -178,7 +248,12 @@
             "min": 0
           }
         ],
-        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 16
+        }
       },
       {
         "id": 9,
@@ -196,7 +271,12 @@
             "min": 0
           }
         ],
-        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 24 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 24
+        }
       },
       {
         "id": 10,
@@ -218,8 +298,15 @@
             "max": 1.0
           }
         ],
-        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 24 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 24
+        }
       }
     ]
-  }
+  },
+  "_constitutional_hash": "cdd01ef066bc6cf2",
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }

@@ -13,7 +13,6 @@ from ..models import SecurityEvent
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class SecurityAuditLogger:
     """Enterprise Security Audit Logging Service"""
 

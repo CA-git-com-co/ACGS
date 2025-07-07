@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 [workspace]
 members = [ "programs/*", "client/rust", "scripts",]
 resolver = "1"

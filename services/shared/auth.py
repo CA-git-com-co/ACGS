@@ -20,6 +20,7 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 # Import secrets manager
 try:
     from services.shared.secrets_manager import secrets_manager
+
     SECRETS_MANAGER_AVAILABLE = True
 except ImportError:
     SECRETS_MANAGER_AVAILABLE = False
@@ -33,7 +34,9 @@ if SECRETS_MANAGER_AVAILABLE:
 else:
     SECRET_KEY = os.getenv("SECRET_KEY")
     if not SECRET_KEY:
-        raise ValueError("SECRET_KEY must be set as environment variable. Never use hardcoded secrets in production.")
+        raise ValueError(
+            "SECRET_KEY must be set as environment variable. Never use hardcoded secrets in production."
+        )
 
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
 

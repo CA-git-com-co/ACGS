@@ -4,7 +4,14 @@
     "uid": "acgs-executive-overview",
     "title": "ACGS-1 Executive Overview Dashboard",
     "description": "High-level executive dashboard for ACGS-1 Constitutional Governance System with business KPIs, SLA compliance, and strategic insights",
-    "tags": ["acgs", "executive", "business", "kpi", "governance", "strategic"],
+    "tags": [
+      "acgs",
+      "executive",
+      "business",
+      "kpi",
+      "governance",
+      "strategic"
+    ],
     "timezone": "browser",
     "refresh": "30s",
     "time": {
@@ -12,8 +19,25 @@
       "to": "now"
     },
     "timepicker": {
-      "refresh_intervals": ["30s", "1m", "5m", "15m", "30m", "1h"],
-      "time_options": ["5m", "15m", "1h", "6h", "12h", "24h", "2d", "7d", "30d"]
+      "refresh_intervals": [
+        "30s",
+        "1m",
+        "5m",
+        "15m",
+        "30m",
+        "1h"
+      ],
+      "time_options": [
+        "5m",
+        "15m",
+        "1h",
+        "6h",
+        "12h",
+        "24h",
+        "2d",
+        "7d",
+        "30d"
+      ]
     },
     "templating": {
       "list": [
@@ -67,9 +91,18 @@
             },
             "thresholds": {
               "steps": [
-                { "color": "red", "value": 0 },
-                { "color": "yellow", "value": 80 },
-                { "color": "green", "value": 95 }
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 80
+                },
+                {
+                  "color": "green",
+                  "value": 95
+                }
               ]
             },
             "unit": "percent",
@@ -78,7 +111,12 @@
             "displayName": "System Health"
           }
         },
-        "gridPos": { "h": 8, "w": 6, "x": 0, "y": 0 }
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 0,
+          "y": 0
+        }
       },
       {
         "id": 2,
@@ -109,9 +147,18 @@
             },
             "thresholds": {
               "steps": [
-                { "color": "red", "value": 0 },
-                { "color": "yellow", "value": 95 },
-                { "color": "green", "value": 99.9 }
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 95
+                },
+                {
+                  "color": "green",
+                  "value": 99.9
+                }
               ]
             },
             "unit": "percent",
@@ -119,7 +166,12 @@
             "max": 100
           }
         },
-        "gridPos": { "h": 8, "w": 12, "x": 6, "y": 0 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 6,
+          "y": 0
+        }
       },
       {
         "id": 3,
@@ -140,9 +192,18 @@
             },
             "thresholds": {
               "steps": [
-                { "color": "green", "value": 0 },
-                { "color": "yellow", "value": 70 },
-                { "color": "red", "value": 90 }
+                {
+                  "color": "green",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 70
+                },
+                {
+                  "color": "red",
+                  "value": 90
+                }
               ]
             },
             "unit": "percent",
@@ -151,7 +212,12 @@
             "displayName": "Capacity Utilization"
           }
         },
-        "gridPos": { "h": 8, "w": 6, "x": 18, "y": 0 }
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 18,
+          "y": 0
+        }
       },
       {
         "id": 4,
@@ -195,14 +261,28 @@
             "unit": "ms",
             "thresholds": {
               "steps": [
-                { "color": "green", "value": 0 },
-                { "color": "yellow", "value": 500 },
-                { "color": "red", "value": 1000 }
+                {
+                  "color": "green",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 500
+                },
+                {
+                  "color": "red",
+                  "value": 1000
+                }
               ]
             }
           }
         },
-        "gridPos": { "h": 8, "w": 24, "x": 0, "y": 8 }
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 8
+        }
       },
       {
         "id": 5,
@@ -241,14 +321,28 @@
             "max": 100,
             "thresholds": {
               "steps": [
-                { "color": "red", "value": 0 },
-                { "color": "yellow", "value": 90 },
-                { "color": "green", "value": 95 }
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 90
+                },
+                {
+                  "color": "green",
+                  "value": 95
+                }
               ]
             }
           }
         },
-        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 16
+        }
       },
       {
         "id": 6,
@@ -279,25 +373,52 @@
             },
             "thresholds": {
               "steps": [
-                { "color": "red", "value": 0 },
-                { "color": "yellow", "value": 95 },
-                { "color": "green", "value": 99 }
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 95
+                },
+                {
+                  "color": "green",
+                  "value": 99
+                }
               ]
             }
           },
           "overrides": [
             {
-              "matcher": { "id": "byName", "options": "Avg Cost (SOL)" },
+              "matcher": {
+                "id": "byName",
+                "options": "Avg Cost (SOL)"
+              },
               "properties": [
-                { "id": "unit", "value": "short" },
-                { "id": "max", "value": 0.01 },
+                {
+                  "id": "unit",
+                  "value": "short"
+                },
+                {
+                  "id": "max",
+                  "value": 0.01
+                },
                 {
                   "id": "thresholds",
                   "value": {
                     "steps": [
-                      { "color": "green", "value": 0 },
-                      { "color": "yellow", "value": 0.005 },
-                      { "color": "red", "value": 0.01 }
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "yellow",
+                        "value": 0.005
+                      },
+                      {
+                        "color": "red",
+                        "value": 0.01
+                      }
                     ]
                   }
                 }
@@ -305,7 +426,12 @@
             }
           ]
         },
-        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 16
+        }
       },
       {
         "id": 7,
@@ -327,7 +453,12 @@
             }
           }
         },
-        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 24 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 24
+        }
       },
       {
         "id": 8,
@@ -348,14 +479,28 @@
             },
             "thresholds": {
               "steps": [
-                { "color": "green", "value": 0 },
-                { "color": "yellow", "value": 1 },
-                { "color": "red", "value": 5 }
+                {
+                  "color": "green",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 1
+                },
+                {
+                  "color": "red",
+                  "value": 5
+                }
               ]
             }
           }
         },
-        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 24 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 24
+        }
       },
       {
         "id": 9,
@@ -387,19 +532,41 @@
           },
           "overrides": [
             {
-              "matcher": { "id": "byName", "options": "Current Capacity" },
+              "matcher": {
+                "id": "byName",
+                "options": "Current Capacity"
+              },
               "properties": [
-                { "id": "unit", "value": "short" },
-                { "id": "max", "value": 1000 }
+                {
+                  "id": "unit",
+                  "value": "short"
+                },
+                {
+                  "id": "max",
+                  "value": 1000
+                }
               ]
             },
             {
-              "matcher": { "id": "byName", "options": "Hours to Capacity" },
-              "properties": [{ "id": "unit", "value": "h" }]
+              "matcher": {
+                "id": "byName",
+                "options": "Hours to Capacity"
+              },
+              "properties": [
+                {
+                  "id": "unit",
+                  "value": "h"
+                }
+              ]
             }
           ]
         },
-        "gridPos": { "h": 8, "w": 24, "x": 0, "y": 32 }
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 32
+        }
       }
     ],
     "links": [
@@ -427,5 +594,7 @@
   },
   "overwrite": true,
   "folderId": 1,
-  "folderTitle": "Executive Dashboard"
+  "folderTitle": "Executive Dashboard",
+  "_constitutional_hash": "cdd01ef066bc6cf2",
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }

@@ -9,7 +9,6 @@ from pathlib import Path
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 def fix_anchor_imports():
     """Fix Anchor imports in all TypeScript test files."""
 

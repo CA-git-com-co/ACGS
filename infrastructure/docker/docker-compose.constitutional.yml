@@ -1,44 +1,30 @@
-# ACGS-2 Constitutional Compliance Docker Compose Configuration
-# Enhanced with constitutional hash validation and infrastructure port validation
-# Constitutional Hash: cdd01ef066bc6cf2
-
-version: "3.8"
-
-# Custom network for constitutional compliance
+version: '3.8'
 networks:
   acgs_constitutional:
     driver: bridge
     ipam:
       config:
-        - subnet: 172.21.0.0/16
+      - subnet: 172.21.0.0/16
     labels:
-      - "constitutional_hash=cdd01ef066bc6cf2"
-      - "compliance_level=active"
-
-# Persistent volumes with constitutional metadata
+    - constitutional_hash=cdd01ef066bc6cf2
+    - compliance_level=active
 volumes:
   postgres_constitutional:
     driver: local
     labels:
-      - "constitutional_hash=cdd01ef066bc6cf2"
-      - "data_integrity=enforced"
+    - constitutional_hash=cdd01ef066bc6cf2
+    - data_integrity=enforced
   redis_constitutional:
     driver: local
     labels:
-      - "constitutional_hash=cdd01ef066bc6cf2"
-      - "cache_validation=active"
+    - constitutional_hash=cdd01ef066bc6cf2
+    - cache_validation=active
   acgs_constitutional_logs:
     driver: local
     labels:
-      - "constitutional_hash=cdd01ef066bc6cf2"
-      - "audit_logging=enabled"
-
+    - constitutional_hash=cdd01ef066bc6cf2
+    - audit_logging=enabled
 services:
-  # =============================================================================
-  # Infrastructure Services with Constitutional Compliance
-  # =============================================================================
-
-  # PostgreSQL with Constitutional Metadata
   postgres_constitutional:
     image: postgres:15-alpine
     container_name: acgs_postgres_constitutional
@@ -49,15 +35,15 @@ services:
       CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
       CONSTITUTIONAL_COMPLIANCE: active
     volumes:
-      - postgres_constitutional:/var/lib/postgresql/data
+    - postgres_constitutional:/var/lib/postgresql/data
     ports:
-      - "5432:5432"  # Infrastructure port validation
+    - 5432:5432
     networks:
-      - acgs_constitutional
+    - acgs_constitutional
     healthcheck:
-      test: 
-        - "CMD-SHELL"
-        - "pg_isready -U ${POSTGRES_USER:-acgs_user} -d ${POSTGRES_DB:-acgs_constitutional}"
+      test:
+      - CMD-SHELL
+      - pg_isready -U ${POSTGRES_USER:-acgs_user} -d ${POSTGRES_DB:-acgs_constitutional}
       interval: 10s
       timeout: 5s
       retries: 5
@@ -67,13 +53,11 @@ services:
       resources:
         limits:
           memory: 1G
-          cpus: "0.5"
+          cpus: '0.5'
     labels:
-      - "constitutional_hash=cdd01ef066bc6cf2"
-      - "infrastructure_port=5432"
-      - "compliance_level=critical"
-
-  # Redis with Constitutional Validation
+    - constitutional_hash=cdd01ef066bc6cf2
+    - infrastructure_port=5432
+    - compliance_level=critical
   redis_constitutional:
     image: redis:7-alpine
     container_name: acgs_redis_constitutional
@@ -82,13 +66,16 @@ services:
       CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
       CONSTITUTIONAL_COMPLIANCE: active
     volumes:
-      - redis_constitutional:/data
+    - redis_constitutional:/data
     ports:
-      - "6379:6379"  # Infrastructure port validation
+    - 6379:6379
     networks:
-      - acgs_constitutional
+    - acgs_constitutional
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test:
+      - CMD
+      - redis-cli
+      - ping
       interval: 10s
       timeout: 5s
       retries: 5
@@ -98,17 +85,11 @@ services:
       resources:
         limits:
           memory: 512M
-          cpus: "0.25"
+          cpus: '0.25'
     labels:
-      - "constitutional_hash=cdd01ef066bc6cf2"
-      - "infrastructure_port=6379"
-      - "compliance_level=high"
-
-  # =============================================================================
-  # ACGS Constitutional Services
-  # =============================================================================
-
-  # API Gateway with Constitutional Routing (Port 8080)
+    - constitutional_hash=cdd01ef066bc6cf2
+    - infrastructure_port=6379
+    - compliance_level=high
   api_gateway_constitutional:
     build:
       context: ../../
@@ -116,55 +97,64 @@ services:
       target: production-runtime
     container_name: acgs_api_gateway_constitutional
     environment:
-      - SERVICE_NAME=api_gateway_constitutional
-      - SERVICE_PORT=8080
-      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-      - CONSTITUTIONAL_COMPLIANCE=active
-      - INFRASTRUCTURE_PORT_VALIDATION=enabled
-      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres_constitutional:5432/${POSTGRES_DB:-acgs_constitutional}
-      - REDIS_URL=redis://redis_constitutional:6379/0
-      - LOG_LEVEL=${LOG_LEVEL:-INFO}
-      - LOG_FORMAT=json
-      - STRUCTURED_LOGGING=enabled
+    - SERVICE_NAME=api_gateway_constitutional
+    - SERVICE_PORT=8080
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - CONSTITUTIONAL_COMPLIANCE=active
+    - INFRASTRUCTURE_PORT_VALIDATION=enabled
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres_constitutional:5432/${POSTGRES_DB:-acgs_constitutional}
+    - REDIS_URL=redis://redis_constitutional:6379/0
+    - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    - LOG_FORMAT=json
+    - STRUCTURED_LOGGING=enabled
     working_dir: /app/services/platform_services/api_gateway/gateway_service
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
+    command:
+    - uvicorn
+    - app.main:app
+    - --host
+    - 0.0.0.0
+    - --port
+    - '8080'
     ports:
-      - "8080:8080"  # Infrastructure port validation
+    - 8080:8080
     volumes:
-      - acgs_constitutional_logs:/app/logs
+    - acgs_constitutional_logs:/app/logs
     networks:
-      - acgs_constitutional
+    - acgs_constitutional
     depends_on:
       postgres_constitutional:
         condition: service_healthy
       redis_constitutional:
         condition: service_healthy
     healthcheck:
-      # Standard health check
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health", "||", "exit", "1"]
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:8080/health
+      - '||'
+      - exit
+      - '1'
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 60s
     extra_hosts:
-      - "constitutional-check:127.0.0.1"
-    # Constitutional compliance check (separate from standard health check)
+    - constitutional-check:127.0.0.1
     deploy:
       resources:
         limits:
           memory: 1.5Gi
-          cpus: "750m"
+          cpus: 750m
         reservations:
           memory: 768Mi
-          cpus: "300m"
+          cpus: 300m
     restart: unless-stopped
     labels:
-      - "constitutional_hash=cdd01ef066bc6cf2"
-      - "infrastructure_port=8080"
-      - "compliance_level=critical"
-      - "service_type=gateway"
-
-  # Constitutional Core Service (Port 8001)
+    - constitutional_hash=cdd01ef066bc6cf2
+    - infrastructure_port=8080
+    - compliance_level=critical
+    - service_type=gateway
   constitutional_core:
     build:
       context: ../../
@@ -172,30 +162,42 @@ services:
       target: production-runtime
     container_name: acgs_constitutional_core
     environment:
-      - SERVICE_NAME=constitutional_core
-      - SERVICE_PORT=8001
-      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-      - CONSTITUTIONAL_COMPLIANCE=active
-      - INFRASTRUCTURE_PORT_VALIDATION=enabled
-      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres_constitutional:5432/${POSTGRES_DB:-acgs_constitutional}
-      - REDIS_URL=redis://redis_constitutional:6379/1
-      - LOG_LEVEL=${LOG_LEVEL:-INFO}
-      - LOG_FORMAT=json
-      - STRUCTURED_LOGGING=enabled
+    - SERVICE_NAME=constitutional_core
+    - SERVICE_PORT=8001
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - CONSTITUTIONAL_COMPLIANCE=active
+    - INFRASTRUCTURE_PORT_VALIDATION=enabled
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres_constitutional:5432/${POSTGRES_DB:-acgs_constitutional}
+    - REDIS_URL=redis://redis_constitutional:6379/1
+    - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    - LOG_FORMAT=json
+    - STRUCTURED_LOGGING=enabled
     working_dir: /app/services/core/constitutional-core
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001"]
+    command:
+    - uvicorn
+    - app.main:app
+    - --host
+    - 0.0.0.0
+    - --port
+    - '8001'
     ports:
-      - "8001:8001"  # Infrastructure port validation
+    - 8001:8001
     volumes:
-      - acgs_constitutional_logs:/app/logs
+    - acgs_constitutional_logs:/app/logs
     networks:
-      - acgs_constitutional
+    - acgs_constitutional
     depends_on:
       api_gateway_constitutional:
         condition: service_healthy
     healthcheck:
-      # Standard health check
-      test: ["CMD", "curl", "-f", "http://localhost:8001/health", "||", "exit", "1"]
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:8001/health
+      - '||'
+      - exit
+      - '1'
       interval: 30s
       timeout: 10s
       retries: 3
@@ -205,17 +207,15 @@ services:
       resources:
         limits:
           memory: 1.5Gi
-          cpus: "750m"
+          cpus: 750m
         reservations:
           memory: 768Mi
-          cpus: "300m"
+          cpus: 300m
     labels:
-      - "constitutional_hash=cdd01ef066bc6cf2"
-      - "infrastructure_port=8001"
-      - "compliance_level=critical"
-      - "service_type=constitutional_ai"
-
-  # Integrity Service with Constitutional Audit (Port 8002)
+    - constitutional_hash=cdd01ef066bc6cf2
+    - infrastructure_port=8001
+    - compliance_level=critical
+    - service_type=constitutional_ai
   integrity_constitutional:
     build:
       context: ../../
@@ -223,30 +223,42 @@ services:
       target: production-runtime
     container_name: acgs_integrity_constitutional
     environment:
-      - SERVICE_NAME=integrity_constitutional
-      - SERVICE_PORT=8002
-      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-      - CONSTITUTIONAL_COMPLIANCE=active
-      - INFRASTRUCTURE_PORT_VALIDATION=enabled
-      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres_constitutional:5432/${POSTGRES_DB:-acgs_constitutional}
-      - REDIS_URL=redis://redis_constitutional:6379/2
-      - LOG_LEVEL=${LOG_LEVEL:-INFO}
-      - LOG_FORMAT=json
-      - STRUCTURED_LOGGING=enabled
+    - SERVICE_NAME=integrity_constitutional
+    - SERVICE_PORT=8002
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - CONSTITUTIONAL_COMPLIANCE=active
+    - INFRASTRUCTURE_PORT_VALIDATION=enabled
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres_constitutional:5432/${POSTGRES_DB:-acgs_constitutional}
+    - REDIS_URL=redis://redis_constitutional:6379/2
+    - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    - LOG_FORMAT=json
+    - STRUCTURED_LOGGING=enabled
     working_dir: /app/services/platform/integrity/integrity_service
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8002"]
+    command:
+    - uvicorn
+    - app.main:app
+    - --host
+    - 0.0.0.0
+    - --port
+    - '8002'
     ports:
-      - "8002:8002"  # Infrastructure port validation
+    - 8002:8002
     volumes:
-      - acgs_constitutional_logs:/app/logs
+    - acgs_constitutional_logs:/app/logs
     networks:
-      - acgs_constitutional
+    - acgs_constitutional
     depends_on:
       constitutional_core:
         condition: service_healthy
     healthcheck:
-      # Standard health check
-      test: ["CMD", "curl", "-f", "http://localhost:8002/health", "||", "exit", "1"]
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:8002/health
+      - '||'
+      - exit
+      - '1'
       interval: 30s
       timeout: 10s
       retries: 3
@@ -256,17 +268,15 @@ services:
       resources:
         limits:
           memory: 1Gi
-          cpus: "500m"
+          cpus: 500m
         reservations:
           memory: 512Mi
-          cpus: "200m"
+          cpus: 200m
     labels:
-      - "constitutional_hash=cdd01ef066bc6cf2"
-      - "infrastructure_port=8002"
-      - "compliance_level=high"
-      - "service_type=integrity"
-
-  # Governance Engine with Constitutional Policy Management (Port 8004)
+    - constitutional_hash=cdd01ef066bc6cf2
+    - infrastructure_port=8002
+    - compliance_level=high
+    - service_type=integrity
   governance_constitutional:
     build:
       context: ../../
@@ -274,30 +284,42 @@ services:
       target: production-runtime
     container_name: acgs_governance_constitutional
     environment:
-      - SERVICE_NAME=governance_constitutional
-      - SERVICE_PORT=8004
-      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-      - CONSTITUTIONAL_COMPLIANCE=active
-      - INFRASTRUCTURE_PORT_VALIDATION=enabled
-      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres_constitutional:5432/${POSTGRES_DB:-acgs_constitutional}
-      - REDIS_URL=redis://redis_constitutional:6379/4
-      - LOG_LEVEL=${LOG_LEVEL:-INFO}
-      - LOG_FORMAT=json
-      - STRUCTURED_LOGGING=enabled
+    - SERVICE_NAME=governance_constitutional
+    - SERVICE_PORT=8004
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - CONSTITUTIONAL_COMPLIANCE=active
+    - INFRASTRUCTURE_PORT_VALIDATION=enabled
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres_constitutional:5432/${POSTGRES_DB:-acgs_constitutional}
+    - REDIS_URL=redis://redis_constitutional:6379/4
+    - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    - LOG_FORMAT=json
+    - STRUCTURED_LOGGING=enabled
     working_dir: /app/services/core/governance-engine
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8004"]
+    command:
+    - uvicorn
+    - app.main:app
+    - --host
+    - 0.0.0.0
+    - --port
+    - '8004'
     ports:
-      - "8004:8004"  # Infrastructure port validation
+    - 8004:8004
     volumes:
-      - acgs_constitutional_logs:/app/logs
+    - acgs_constitutional_logs:/app/logs
     networks:
-      - acgs_constitutional
+    - acgs_constitutional
     depends_on:
       constitutional_core:
         condition: service_healthy
     healthcheck:
-      # Standard health check
-      test: ["CMD", "curl", "-f", "http://localhost:8004/health", "||", "exit", "1"]
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:8004/health
+      - '||'
+      - exit
+      - '1'
       interval: 30s
       timeout: 10s
       retries: 3
@@ -307,174 +329,146 @@ services:
       resources:
         limits:
           memory: 1.5Gi
-          cpus: "750m"
+          cpus: 750m
         reservations:
           memory: 768Mi
-          cpus: "300m"
+          cpus: 300m
     labels:
-      - "constitutional_hash=cdd01ef066bc6cf2"
-      - "infrastructure_port=8004"
-      - "compliance_level=critical"
-      - "service_type=governance"
-
-  # =============================================================================
-  # Constitutional Monitoring and Health Validation
-  # =============================================================================
-
-  # Constitutional Health Validator Service
+    - constitutional_hash=cdd01ef066bc6cf2
+    - infrastructure_port=8004
+    - compliance_level=critical
+    - service_type=governance
   constitutional_health_validator:
     image: curlimages/curl:latest
     container_name: acgs_constitutional_health_validator
     environment:
-      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-      - VALIDATION_INTERVAL=30
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - VALIDATION_INTERVAL=30
     networks:
-      - acgs_constitutional
+    - acgs_constitutional
     depends_on:
-      - api_gateway_constitutional
-      - constitutional_core
-      - integrity_constitutional
-      - governance_constitutional
-    command: >
-      sh -c "
-      while true; do
-        echo '🏛️ Constitutional Health Validation - $(date)'
-        echo 'Constitutional Hash: cdd01ef066bc6cf2'
-        
-        # Validate API Gateway (Port 8080)
-        echo 'Validating API Gateway constitutional compliance...'
-        curl -f http://api_gateway_constitutional:8080/health/constitutional || echo 'API Gateway constitutional compliance check failed'
-        
-        # Validate Constitutional Core (Port 8001)
-        echo 'Validating Constitutional Core compliance...'
-        curl -f http://constitutional_core:8001/health/constitutional || echo 'Constitutional Core compliance check failed'
-        
-        # Validate Integrity Service (Port 8002)
-        echo 'Validating Integrity Service constitutional compliance...'
-        curl -f http://integrity_constitutional:8002/health/constitutional || echo 'Integrity Service constitutional compliance check failed'
-        
-        # Validate Governance Engine (Port 8004)
-        echo 'Validating Governance Engine constitutional compliance...'
-        curl -f http://governance_constitutional:8004/health/constitutional || echo 'Governance Engine constitutional compliance check failed'
-        
-        echo 'Constitutional validation cycle complete'
-        sleep 30
-      done
-      "
+    - api_gateway_constitutional
+    - constitutional_core
+    - integrity_constitutional
+    - governance_constitutional
+    command: "sh -c \" while true; do\n  echo '\U0001F3DB\uFE0F Constitutional Health\
+      \ Validation - $(date)'\n  echo 'Constitutional Hash: cdd01ef066bc6cf2'\n  \n\
+      \  # Validate API Gateway (Port 8080)\n  echo 'Validating API Gateway constitutional\
+      \ compliance...'\n  curl -f http://api_gateway_constitutional:8080/health/constitutional\
+      \ || echo 'API Gateway constitutional compliance check failed'\n  \n  # Validate\
+      \ Constitutional Core (Port 8001)\n  echo 'Validating Constitutional Core compliance...'\n\
+      \  curl -f http://constitutional_core:8001/health/constitutional || echo 'Constitutional\
+      \ Core compliance check failed'\n  \n  # Validate Integrity Service (Port 8002)\n\
+      \  echo 'Validating Integrity Service constitutional compliance...'\n  curl\
+      \ -f http://integrity_constitutional:8002/health/constitutional || echo 'Integrity\
+      \ Service constitutional compliance check failed'\n  \n  # Validate Governance\
+      \ Engine (Port 8004)\n  echo 'Validating Governance Engine constitutional compliance...'\n\
+      \  curl -f http://governance_constitutional:8004/health/constitutional || echo\
+      \ 'Governance Engine constitutional compliance check failed'\n  \n  echo 'Constitutional\
+      \ validation cycle complete'\n  sleep 30\ndone \"\n"
     restart: unless-stopped
     labels:
-      - "constitutional_hash=cdd01ef066bc6cf2"
-      - "service_type=constitutional_validator"
-      - "compliance_level=critical"
-
-  # Structured Logging Aggregator
+    - constitutional_hash=cdd01ef066bc6cf2
+    - service_type=constitutional_validator
+    - compliance_level=critical
   constitutional_log_aggregator:
     image: fluent/fluent-bit:2.2
     container_name: acgs_constitutional_log_aggregator
     environment:
-      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-      - LOG_AGGREGATION_ENABLED=true
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - LOG_AGGREGATION_ENABLED=true
     volumes:
-      - acgs_constitutional_logs:/fluent-bit/logs:ro
-      - ./config/logging/fluent-bit-constitutional.conf:/fluent-bit/etc/fluent-bit.conf:ro
+    - acgs_constitutional_logs:/fluent-bit/logs:ro
+    - ./config/logging/fluent-bit-constitutional.conf:/fluent-bit/etc/fluent-bit.conf:ro
     networks:
-      - acgs_constitutional
+    - acgs_constitutional
     depends_on:
-      - api_gateway_constitutional
-      - constitutional_core
-      - integrity_constitutional
-      - governance_constitutional
+    - api_gateway_constitutional
+    - constitutional_core
+    - integrity_constitutional
+    - governance_constitutional
     restart: unless-stopped
     labels:
-      - "constitutional_hash=cdd01ef066bc6cf2"
-      - "service_type=log_aggregator"
-      - "compliance_level=high"
-
-  # =============================================================================
-  # Constitutional Monitoring Stack
-  # =============================================================================
-
-  # Prometheus with Constitutional Metrics
+    - constitutional_hash=cdd01ef066bc6cf2
+    - service_type=log_aggregator
+    - compliance_level=high
   prometheus_constitutional:
     image: prom/prometheus:v2.48.0
     container_name: acgs_prometheus_constitutional
     environment:
-      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-      - "--storage.tsdb.path=/prometheus"
-      - "--web.console.libraries=/etc/prometheus/console_libraries"
-      - "--web.console.templates=/etc/prometheus/consoles"
-      - "--storage.tsdb.retention.time=200h"
-      - "--web.enable-lifecycle"
+    - --config.file=/etc/prometheus/prometheus.yml
+    - --storage.tsdb.path=/prometheus
+    - --web.console.libraries=/etc/prometheus/console_libraries
+    - --web.console.templates=/etc/prometheus/consoles
+    - --storage.tsdb.retention.time=200h
+    - --web.enable-lifecycle
     volumes:
-      - ./config/monitoring/prometheus-constitutional.yml:/etc/prometheus/prometheus.yml:ro
+    - ./config/monitoring/prometheus-constitutional.yml:/etc/prometheus/prometheus.yml:ro
     ports:
-      - "9090:9090"  # Infrastructure port validation
+    - 9090:9090
     networks:
-      - acgs_constitutional
+    - acgs_constitutional
     depends_on:
-      - api_gateway_constitutional
-      - constitutional_core
-      - integrity_constitutional
-      - governance_constitutional
+    - api_gateway_constitutional
+    - constitutional_core
+    - integrity_constitutional
+    - governance_constitutional
     restart: unless-stopped
     deploy:
       resources:
         limits:
           memory: 512M
-          cpus: "0.5"
+          cpus: '0.5'
     labels:
-      - "constitutional_hash=cdd01ef066bc6cf2"
-      - "infrastructure_port=9090"
-      - "service_type=monitoring"
-      - "compliance_level=high"
-
-  # Grafana with Constitutional Dashboards
+    - constitutional_hash=cdd01ef066bc6cf2
+    - infrastructure_port=9090
+    - service_type=monitoring
+    - compliance_level=high
   grafana_constitutional:
     image: grafana/grafana:10.2.0
     container_name: acgs_grafana_constitutional
     environment:
-      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin123}
-      - GF_USERS_ALLOW_SIGN_UP=false
-      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+    - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin123}
+    - GF_USERS_ALLOW_SIGN_UP=false
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     volumes:
-      - ./config/monitoring/grafana/constitutional-provisioning:/etc/grafana/provisioning:ro
-      - ./config/monitoring/grafana/constitutional-dashboards:/var/lib/grafana/dashboards:ro
+    - ./config/monitoring/grafana/constitutional-provisioning:/etc/grafana/provisioning:ro
+    - ./config/monitoring/grafana/constitutional-dashboards:/var/lib/grafana/dashboards:ro
     ports:
-      - "3000:3000"  # Infrastructure port validation
+    - 3000:3000
     networks:
-      - acgs_constitutional
+    - acgs_constitutional
     depends_on:
-      - prometheus_constitutional
+    - prometheus_constitutional
     restart: unless-stopped
     deploy:
       resources:
         limits:
           memory: 512M
-          cpus: "0.5"
+          cpus: '0.5'
     labels:
-      - "constitutional_hash=cdd01ef066bc6cf2"
-      - "infrastructure_port=3000"
-      - "service_type=dashboard"
-      - "compliance_level=medium"
-
-# Constitutional compliance metadata
+    - constitutional_hash=cdd01ef066bc6cf2
+    - infrastructure_port=3000
+    - service_type=dashboard
+    - compliance_level=medium
 x-constitutional-metadata:
   hash: cdd01ef066bc6cf2
   compliance_level: active
   infrastructure_ports:
-    - 5432  # PostgreSQL
-    - 6379  # Redis
-    - 8080  # API Gateway
-    - 8001  # Constitutional Core
-    - 8002  # Integrity Service
-    - 8004  # Governance Engine
-    - 9090  # Prometheus
-    - 3000  # Grafana
+  - 5432
+  - 6379
+  - 8080
+  - 8001
+  - 8002
+  - 8004
+  - 9090
+  - 3000
   health_checks:
     constitutional_validation: enabled
     infrastructure_port_validation: enabled
     structured_logging: enabled
-  generated_at: "2025-01-08T10:30:00Z"
+  generated_at: '2025-01-08T10:30:00Z'
+constitutional_hash: cdd01ef066bc6cf2

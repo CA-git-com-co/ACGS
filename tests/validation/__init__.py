@@ -13,6 +13,6 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 __version__ = "1.0.0"
 __all__ = [
     "test_pattern_extraction",
-    "test_port_alignment", 
-    "test_constitutional_hash_validation"
+    "test_port_alignment",
+    "test_constitutional_hash_validation",
 ]

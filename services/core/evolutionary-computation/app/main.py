@@ -34,15 +34,15 @@ try:
     sys.path.insert(0, str(shared_middleware_path))
     
     from error_handling import (
-        setup_error_handlers,
-        ErrorHandlingMiddleware,
         ACGSException,
-        ConstitutionalComplianceError,
-        SecurityValidationError,
         AuthenticationError,
+        ConstitutionalComplianceError,
+        ErrorContext,
+        ErrorHandlingMiddleware,
+        SecurityValidationError,
         ValidationError,
         log_error_with_context,
-        ErrorContext
+        setup_error_handlers,
     )
     ACGS_ERROR_HANDLING_AVAILABLE = True
     print(f"✅ ACGS Error handling loaded for {service_name}")
@@ -59,12 +59,12 @@ try:
     sys.path.insert(0, str(shared_security_path))
     
     from middleware_integration import (
-        apply_acgs_security_middleware,
-        setup_security_monitoring,
-        get_security_headers,
         SecurityLevel,
+        apply_acgs_security_middleware,
+        create_secure_endpoint_decorator,
+        get_security_headers,
+        setup_security_monitoring,
         validate_request_body,
-        create_secure_endpoint_decorator
     )
     ACGS_SECURITY_AVAILABLE = True
     print(f"✅ ACGS Security middleware loaded for {service_name}")
@@ -204,8 +204,8 @@ def get_config():
 
 # Import local components
 try:
+    from services.shared.wina.performance_api import router as wina_performance_router
     from services.shared.wina.performance_api import (
-        router as wina_performance_router,
         set_collector_getter,
     )
 except ImportError:

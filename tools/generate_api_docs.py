@@ -11,7 +11,6 @@ from pathlib import Path
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 def create_service_api_doc(service_name, port, description, endpoints):
     """Create API documentation for a service."""
 

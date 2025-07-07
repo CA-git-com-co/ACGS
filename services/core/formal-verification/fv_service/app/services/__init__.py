@@ -1,4 +1,3 @@
-
 """
 Service modules for ACGS Formal Verification Service.
 

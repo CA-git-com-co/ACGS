@@ -6,7 +6,6 @@ from pydantic import BaseModel, Field
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class NeuronActivationInput(BaseModel):
     """
     Represents the raw activation data for a set of neurons.

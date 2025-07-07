@@ -16,7 +16,6 @@ import yaml
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class CIPipelineValidator:
     def __init__(self, repo_root: str = "."):
         self.repo_root = Path(repo_root)

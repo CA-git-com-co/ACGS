@@ -103,10 +103,12 @@ async def test_database_connectivity():
         assert result == 1, "Basic query failed"
 
         # Test audit tables exist
-        tables = await conn.fetch("""
+        tables = await conn.fetch(
+            """
             SELECT table_name FROM information_schema.tables
             WHERE table_schema = 'public' AND table_name IN ('audit_events', 'audit_blocks')
-        """)
+        """
+        )
 
         table_names = [row["table_name"] for row in tables]
         assert "audit_events" in table_names, "audit_events table not found"

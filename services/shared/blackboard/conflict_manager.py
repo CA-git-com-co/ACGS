@@ -18,7 +18,6 @@ from .models import ConflictItem
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class ConflictManager:
     """
     Manages conflicts on the blackboard system.

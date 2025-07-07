@@ -8,9 +8,16 @@ from typing import Any, Optional
 
 import structlog
 
+from services.core.governance-synthesis.gs_service.app.services.advanced_cache import (
+    LRUCache,
+    MultiTierCache,
+    RedisCache,
+)
+from services.shared.cache.enhanced_cache_optimizer import (
+    CacheDataType,
+    EnhancedCacheOptimizer,
+)
 from services.shared.redis_client import ACGSRedisClient, get_redis_client
-from services.shared.cache.enhanced_cache_optimizer import EnhancedCacheOptimizer, CacheDataType
-from services.core.governance-synthesis.gs_service.app.services.advanced_cache import MultiTierCache, LRUCache, RedisCache
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"

@@ -7,7 +7,9 @@ import pytest
 from fastapi import status
 from httpx import AsyncClient
 
-from services.platform_services.authentication.auth_service.app.core.config import settings  # For API prefixes
+from services.platform_services.authentication.auth_service.app.core.config import (  # For API prefixes
+    settings,
+)
 
 # Pytest marker for async tests
 pytestmark = pytest.mark.asyncio

@@ -11,16 +11,15 @@ import logging
 import time
 
 import asyncpg
-from prometheus_client import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from prometheus_client import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     CollectorRegistry,
     Counter,
     Gauge,
     Histogram,
     Info,
+    "cdd01ef066bc6cf2",
+    =,
     generate_latest,
     start_http_server,
 )

@@ -13,7 +13,6 @@ from pathlib import Path
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class FinalDuplicateCleanup:
     def __init__(self, project_root: str = "/home/dislove/ACGS-1"):
         self.project_root = Path(project_root)

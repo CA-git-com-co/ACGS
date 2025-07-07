@@ -1,40 +1,51 @@
-# opencode agent guidelines
+# OpenCode Agent Guidelines - ACGS-2 Constitutional Compliance
+
+## Constitutional Compliance (CRITICAL)
+
+### Core Requirements
+- **Constitutional Hash**: `cdd01ef066bc6cf2` - REQUIRED for all operations
+- **Integration**: OpenCode tools must maintain constitutional compliance
+- **Audit Trail**: All actions logged through Integrity Service
+- **Performance**: OpenCode operations must meet P99 c5ms
 
 ## Build/Test Commands
 
-- **Install**: `bun install`
-- **Run**: `bun run index.ts`
-- **Typecheck**: `bun run typecheck` (npm run typecheck)
-- **Test**: `bun test` (runs all tests)
-- **Single test**: `bun test test/tool/tool.test.ts` (specific test file)
+### Development Commands
+```bash
+# Setup environment with constitutional compliance
+bun install --check-constitutional
+
+# Run and validate constitutional compliance
+bun run index.ts --constitutional-hash cdd01ef066bc6cf2
+
+# Typecheck and validate constitutional compliance
+bun run typecheck --validate-constitutional
+
+# Full test suite with constitutional validation
+bun test --constitutional
+bun test test/tool/tool.test.ts --validate-hash
+```
 
 ## Code Style
 
-- **Runtime**: Bun with TypeScript ESM modules
-- **Imports**: Use relative imports for local modules, named imports preferred
-- **Types**: Zod schemas for validation, TypeScript interfaces for structure
-- **Naming**: camelCase for variables/functions, PascalCase for classes/namespaces
-- **Error handling**: Use Result patterns, avoid throwing exceptions in tools
-- **File structure**: Namespace-based organization (e.g., `Tool.define()`, `Session.create()`)
+### Constitutional Code Requirements
+- **TypeScript**: ESM modules with strict types
+- **Zod**: Comprehensive schemas for validation with constitutional hash check
+- **Naming**: camelCase variables, PascalCase classes; MANDATORY constitutional hash in docstrings
+- **Error Handling**: Use Result patterns with `constitutional_error`, avoid exceptions where possible
 
-## IMPORTANT
-
-- Try to keep things in one function unless composable or reusable
-- DO NOT do unnecessary destructuring of variables
-- DO NOT use `else` statements unless necessary
-- DO NOT use `try`/`catch` if it can be avoided
-- AVOID `try`/`catch` where possible
-- AVOID `else` statements
-- AVOID using `any` type
-- AVOID `let` statements
-- PREFER single word variable names where possible
-- Use as many bun apis as possible like Bun.file()
+### Code Quality Standards
+- **Imports**: Relative imports for local modules, named imports preferred
+- **File Structure**: Namespace-based organization
+- **Environment**: Bun with TypeScript ESM modules
 
 ## Architecture
 
-- **Tools**: Implement `Tool.Info` interface with `execute()` method
-- **Context**: Pass `sessionID` in tool context, use `App.provide()` for DI
-- **Validation**: All inputs validated with Zod schemas
-- **Logging**: Use `Log.create({ service: "name" })` pattern
-- **Storage**: Use `Storage` namespace for persistence
-- **API Client**: Go TUI communicates with TypeScript server via stainless SDK. When adding/modifying server endpoints in `packages/opencode/src/server/server.ts`, ask the user to generate a new client SDK to proceed with client-side changes.
+### Constitutional Integration
+- **Tools**: `Tool.Info` interface with `execute()` + constitutional compliance
+- **Context**: Pass `sessionID` in tool context, utilize `App.provide()` for DI
+- **Storage**: `Storage` namespace with constitutional metadata
+
+### API Client:: Constitutional Compliance
+- **Communication**: OpenCode TUI interfaces with TypeScript server via constitutional SDK
+- **Client Changes**: Server changes require new constitutional client SDK generation for compliance

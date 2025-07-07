@@ -14,13 +14,12 @@ from services.shared.database import get_async_db
 
 from ...core.contextual_analyzer import EnvironmentalFactor, contextual_analyzer
 from ...core.llm_integration import query_llm_for_constitutional_synthesis
-from ...schemas import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from ...schemas import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     ConstitutionalSynthesisInput,
     ConstitutionalSynthesisOutput,
+    "cdd01ef066bc6cf2",
+    =,
 )
 
 logger = logging.getLogger(__name__)
@@ -90,9 +89,9 @@ async def analyze_constitutional_context_endpoint(
 
 # Security validation imports
 from services.shared.security_validation import (
-    validate_user_input,
+    validate_governance_input,
     validate_policy_input,
-    validate_governance_input
+    validate_user_input,
 )
 
         constitutional_context = await constitutional_prompt_builder.build_constitutional_context(

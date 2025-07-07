@@ -1,6 +1,8 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 # Security Patterns & Definitions
 # Extracted security knowledge patterns for reuse across commands
 
+# Constitutional Hash: cdd01ef066bc6cf2
 @include universal-constants.yml#Universal_Legend
 
 ## OWASP Top 10 Security Patterns

@@ -17,7 +17,6 @@ from .policy_format_router import PolicyFormatRouter, PolicyFramework
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 # Local mock implementation to avoid blocking imports
 class MockCryptoService:
     """Mock crypto service to avoid alphaevolve_gs_engine dependency"""

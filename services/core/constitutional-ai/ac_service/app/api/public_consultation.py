@@ -18,12 +18,13 @@ from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from services.shared.auth import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
+    "cdd01ef066bc6cf2",
+    =,
+)
 from services.shared.auth import get_current_active_user as get_current_user
-from services.shared.auth import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from services.shared.auth import (  # Constitutional compliance hash for ACGS
     require_admin,
 )
 from services.shared.database import get_async_db as get_db
@@ -37,14 +38,15 @@ from ..schemas import (
     PublicProposalResponse,
 )
 from ..services.human_in_the_loop_sampler import HumanInTheLoopSampler
-from ..services.public_consultation_service import (
-
-# Security validation imports
-from services.shared.security_validation import (
-    validate_user_input,
+from ..services.public_consultation_service import (  # Security validation imports
+    from,
+    import,
+    services.shared.security_validation,
+    validate_governance_input,
     validate_policy_input,
-    validate_governance_input
+    validate_user_input,
 )
+
     FeedbackType,
     PublicConsultationService,
     PublicFeedback,

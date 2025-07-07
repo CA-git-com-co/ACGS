@@ -6,10 +6,11 @@ Tests for shared modules to improve test coverage including database,
 auth, validation helpers, and other shared components.
 """
 
-import pytest
-import sys
 import os
+import sys
 from unittest.mock import Mock, patch
+
+import pytest
 
 # Add project root to path
 project_root = os.path.join(os.path.dirname(__file__), "../../..")
@@ -26,6 +27,7 @@ class TestSharedDatabase:
         """Test that database module can be imported."""
         try:
             from services.shared import database
+
             assert database is not None
         except ImportError:
             pytest.skip("Database module not available")
@@ -34,6 +36,7 @@ class TestSharedDatabase:
         """Test database configuration constants."""
         try:
             from services.shared.database import DATABASE_URL, REDIS_URL
+
             # These should be strings (even if default values)
             assert isinstance(DATABASE_URL, str) or DATABASE_URL is None
             assert isinstance(REDIS_URL, str) or REDIS_URL is None
@@ -48,6 +51,7 @@ class TestSharedAuth:
         """Test that auth module can be imported."""
         try:
             from services.shared import auth
+
             assert auth is not None
         except ImportError:
             pytest.skip("Auth module not available")
@@ -55,7 +59,8 @@ class TestSharedAuth:
     def test_auth_constants(self):
         """Test auth module constants."""
         try:
-            from services.shared.auth import JWT_SECRET_KEY, JWT_ALGORITHM
+            from services.shared.auth import JWT_ALGORITHM, JWT_SECRET_KEY
+
             # These should be strings
             assert isinstance(JWT_SECRET_KEY, str) or JWT_SECRET_KEY is None
             assert isinstance(JWT_ALGORITHM, str) or JWT_ALGORITHM is None
@@ -70,6 +75,7 @@ class TestSharedValidationHelpers:
         """Test that validation helpers can be imported."""
         try:
             from services.shared import validation_helpers
+
             assert validation_helpers is not None
         except ImportError:
             pytest.skip("Validation helpers not available")
@@ -78,6 +84,7 @@ class TestSharedValidationHelpers:
         """Test that validation models can be imported."""
         try:
             from services.shared import validation_models
+
             assert validation_models is not None
         except ImportError:
             pytest.skip("Validation models not available")
@@ -90,6 +97,7 @@ class TestSharedRedisClient:
         """Test that Redis client can be imported."""
         try:
             from services.shared import redis_client
+
             assert redis_client is not None
         except ImportError:
             pytest.skip("Redis client not available")
@@ -98,6 +106,7 @@ class TestSharedRedisClient:
         """Test Redis client class structure."""
         try:
             from services.shared.redis_client import RedisClient
+
             # Should be a class
             assert isinstance(RedisClient, type)
         except ImportError:
@@ -111,6 +120,7 @@ class TestSharedPerformanceMonitoring:
         """Test that performance monitoring can be imported."""
         try:
             from services.shared import performance_monitoring
+
             assert performance_monitoring is not None
         except ImportError:
             pytest.skip("Performance monitoring not available")
@@ -119,6 +129,7 @@ class TestSharedPerformanceMonitoring:
         """Test that performance optimizer can be imported."""
         try:
             from services.shared import performance_optimizer
+
             assert performance_optimizer is not None
         except ImportError:
             pytest.skip("Performance optimizer not available")
@@ -131,6 +142,7 @@ class TestSharedConstitutionalCache:
         """Test that constitutional cache can be imported."""
         try:
             from services.shared import constitutional_cache
+
             assert constitutional_cache is not None
         except ImportError:
             pytest.skip("Constitutional cache not available")
@@ -139,6 +151,7 @@ class TestSharedConstitutionalCache:
         """Test constitutional cache class."""
         try:
             from services.shared.constitutional_cache import ConstitutionalCache
+
             assert isinstance(ConstitutionalCache, type)
         except ImportError:
             pytest.skip("ConstitutionalCache class not available")
@@ -151,6 +164,7 @@ class TestSharedAPIModels:
         """Test that API models can be imported."""
         try:
             from services.shared import api_models
+
             assert api_models is not None
         except ImportError:
             pytest.skip("API models not available")
@@ -163,6 +177,7 @@ class TestSharedExceptions:
         """Test that exceptions module can be imported."""
         try:
             from services.shared import exceptions
+
             assert exceptions is not None
         except ImportError:
             pytest.skip("Exceptions module not available")
@@ -175,6 +190,7 @@ class TestSharedConfig:
         """Test that config module can be imported."""
         try:
             from services.shared import config
+
             assert config is not None
         except ImportError:
             pytest.skip("Config module not available")
@@ -183,6 +199,7 @@ class TestSharedConfig:
         """Test that service registry can be imported."""
         try:
             from services.shared.config import service_registry
+
             assert service_registry is not None
         except ImportError:
             pytest.skip("Service registry not available")
@@ -195,6 +212,7 @@ class TestSharedTypes:
         """Test that types module can be imported."""
         try:
             from services.shared import types
+
             assert types is not None
         except ImportError:
             pytest.skip("Types module not available")
@@ -207,6 +225,7 @@ class TestSharedUtils:
         """Test that utils module can be imported."""
         try:
             from services.shared import utils
+
             assert utils is not None
         except ImportError:
             pytest.skip("Utils module not available")
@@ -219,6 +238,7 @@ class TestSharedInterfaces:
         """Test that interfaces module can be imported."""
         try:
             from services.shared import interfaces
+
             assert interfaces is not None
         except ImportError:
             pytest.skip("Interfaces module not available")
@@ -231,6 +251,7 @@ class TestSharedEvents:
         """Test that events module can be imported."""
         try:
             from services.shared import events
+
             assert events is not None
         except ImportError:
             pytest.skip("Events module not available")
@@ -239,6 +260,7 @@ class TestSharedEvents:
         """Test that event bus can be imported."""
         try:
             from services.shared.events import bus
+
             assert bus is not None
         except ImportError:
             pytest.skip("Event bus not available")
@@ -251,6 +273,7 @@ class TestSharedCommon:
         """Test that common module can be imported."""
         try:
             from services.shared import common
+
             assert common is not None
         except ImportError:
             pytest.skip("Common module not available")
@@ -259,6 +282,7 @@ class TestSharedCommon:
         """Test that error handling can be imported."""
         try:
             from services.shared.common import error_handling
+
             assert error_handling is not None
         except ImportError:
             pytest.skip("Error handling not available")
@@ -267,6 +291,7 @@ class TestSharedCommon:
         """Test that validation can be imported."""
         try:
             from services.shared.common import validation
+
             assert validation is not None
         except ImportError:
             pytest.skip("Validation not available")
@@ -275,6 +300,7 @@ class TestSharedCommon:
         """Test that formatting can be imported."""
         try:
             from services.shared.common import formatting
+
             assert formatting is not None
         except ImportError:
             pytest.skip("Formatting not available")
@@ -300,7 +326,7 @@ class TestConstitutionalCompliance:
         # Should not be all zeros or all same character
         assert not all(c == "0" for c in CONSTITUTIONAL_HASH)
         assert not all(c == CONSTITUTIONAL_HASH[0] for c in CONSTITUTIONAL_HASH)
-        
+
         # Should have reasonable entropy (at least 8 different characters)
         unique_chars = set(CONSTITUTIONAL_HASH)
         assert len(unique_chars) >= 8

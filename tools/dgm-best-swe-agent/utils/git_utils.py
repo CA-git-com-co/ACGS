@@ -7,7 +7,6 @@ import git
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 def get_git_commit_hash(repo_path="."):
     try:
         # Load the repository

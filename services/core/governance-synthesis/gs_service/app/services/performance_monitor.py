@@ -22,14 +22,13 @@ from typing import Any
 import psutil
 import redis
 import structlog
-from prometheus_client import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from prometheus_client import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     Counter,
     Gauge,
     Histogram,
+    "cdd01ef066bc6cf2",
+    =,
 )
 
 logger = structlog.get_logger(__name__)

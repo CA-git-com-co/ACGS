@@ -65,13 +65,15 @@ try:
     sys.path.insert(0, str(shared_path))
 
     from enhanced_constitutional_analyzer import (
-
-# Security validation imports
-from services.shared.security_validation import (
-    validate_user_input,
-    validate_policy_input,
-    validate_governance_input
-)
+        curity,
+        import,
+        imports,
+        services.shared.security_validation,
+        validate_governance_input,
+        validate_policy_input,
+        validate_user_input,
+        validation,
+    )
         AnalysisType,
         get_enhanced_constitutional_analyzer,
         integrate_with_pgc_service,

@@ -14,7 +14,6 @@ import asyncpg
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 async def check_replica_health():
     """Check health of all read replicas."""
 

@@ -6,6 +6,7 @@ constitutional compliance, conflict detection, and performance requirements.
 
 Phase 2: Governance Synthesis Hardening with Rego/OPA Integration
 """
+
 # Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
@@ -13,7 +14,6 @@ import time
 from unittest.mock import AsyncMock, patch
 
 import pytest
-
 from services.core.governance_synthesis.app.core.opa_integration import (
     OPAIntegrationError,
     PolicyDecisionResponse,

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Constitutional Hash: cdd01ef066bc6cf2
 """
 Comprehensive testing suite for anthropic upgrade (PR #107)
 CRITICAL: Do not merge until all tests pass

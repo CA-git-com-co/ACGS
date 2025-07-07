@@ -215,12 +215,16 @@ class IntegrationExamples:
                         f" {result['constitutional_compliant']}"
                     )
 
-                    search_results.append({
-                        "query": query,
-                        "total_results": result["total"],
-                        "search_time_ms": search_time,
-                        "constitutional_compliant": result["constitutional_compliant"],
-                    })
+                    search_results.append(
+                        {
+                            "query": query,
+                            "total_results": result["total"],
+                            "search_time_ms": search_time,
+                            "constitutional_compliant": result[
+                                "constitutional_compliant"
+                            ],
+                        }
+                    )
 
                 self.results["code_search_integration"] = {
                     "status": "success",
@@ -302,12 +306,16 @@ class DatabaseManager:
                         f" {result['constitutional_compliant']}"
                     )
 
-                    analysis_results.append({
-                        "name": example["name"],
-                        "language": example["language"],
-                        "analysis_time_ms": analysis_time,
-                        "constitutional_compliant": result["constitutional_compliant"],
-                    })
+                    analysis_results.append(
+                        {
+                            "name": example["name"],
+                            "language": example["language"],
+                            "analysis_time_ms": analysis_time,
+                            "constitutional_compliant": result[
+                                "constitutional_compliant"
+                            ],
+                        }
+                    )
 
                 self.results["code_analysis_integration"] = {
                     "status": "success",

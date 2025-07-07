@@ -10,7 +10,6 @@ from pathlib import Path
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 def fix_python_dependencies():
     """Update Python dependencies to fix security vulnerabilities."""
     print("🔧 Fixing Python dependencies...")

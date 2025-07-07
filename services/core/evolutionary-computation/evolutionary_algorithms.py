@@ -143,7 +143,9 @@ class Individual:
     def __init__(self, genome=None, **kwargs):
         """Initialize Individual with optional genome parameter for backward compatibility."""
         if genome is not None:
-            self.genome = np.array(genome) if not isinstance(genome, np.ndarray) else genome
+            self.genome = (
+                np.array(genome) if not isinstance(genome, np.ndarray) else genome
+            )
             # Convert genome to genotype for internal consistency
             self.genotype = {"genome": self.genome.tolist()}
 
@@ -153,21 +155,21 @@ class Individual:
                 setattr(self, key, value)
 
         # Set defaults for required fields
-        if not hasattr(self, 'id') or not self.id:
+        if not hasattr(self, "id") or not self.id:
             self.id = str(uuid.uuid4())
-        if not hasattr(self, 'genotype'):
+        if not hasattr(self, "genotype"):
             self.genotype = {}
-        if not hasattr(self, 'phenotype'):
+        if not hasattr(self, "phenotype"):
             self.phenotype = {}
-        if not hasattr(self, 'fitness'):
+        if not hasattr(self, "fitness"):
             self.fitness = {}
-        if not hasattr(self, 'age'):
+        if not hasattr(self, "age"):
             self.age = 0
-        if not hasattr(self, 'generation'):
+        if not hasattr(self, "generation"):
             self.generation = 0
-        if not hasattr(self, 'parent_ids'):
+        if not hasattr(self, "parent_ids"):
             self.parent_ids = []
-        if not hasattr(self, 'constitutional_compliance'):
+        if not hasattr(self, "constitutional_compliance"):
             self.constitutional_compliance = 0.0
 
     def total_fitness(self, weights: dict[str, float] = None) -> float:
@@ -571,12 +573,14 @@ class EvolutionaryAlgorithm(ABC):
             avg_fitness = np.mean([ind.total_fitness() for ind in self.population])
             diversity = self._calculate_diversity(self.population)
 
-            self.fitness_history.append({
-                "generation": generation,
-                "best_fitness": self.best_individual.total_fitness(),
-                "avg_fitness": avg_fitness,
-                "diversity": diversity,
-            })
+            self.fitness_history.append(
+                {
+                    "generation": generation,
+                    "best_fitness": self.best_individual.total_fitness(),
+                    "avg_fitness": avg_fitness,
+                    "diversity": diversity,
+                }
+            )
 
             # Check for convergence
             improvement = self.best_individual.total_fitness() - previous_best_fitness
@@ -761,12 +765,12 @@ class GeneticAlgorithm(EvolutionaryAlgorithm):
         """Single point crossover."""
         crossover_point = np.random.randint(1, len(parent1.genome))
 
-        child1_genome = np.concatenate([
-            parent1.genome[:crossover_point], parent2.genome[crossover_point:]
-        ])
-        child2_genome = np.concatenate([
-            parent2.genome[:crossover_point], parent1.genome[crossover_point:]
-        ])
+        child1_genome = np.concatenate(
+            [parent1.genome[:crossover_point], parent2.genome[crossover_point:]]
+        )
+        child2_genome = np.concatenate(
+            [parent2.genome[:crossover_point], parent1.genome[crossover_point:]]
+        )
 
         return Individual(genome=child1_genome), Individual(genome=child2_genome)
 

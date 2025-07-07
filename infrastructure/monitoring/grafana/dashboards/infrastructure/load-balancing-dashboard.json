@@ -2,7 +2,13 @@
   "dashboard": {
     "id": null,
     "title": "Load Balancing & Circuit Breaker Dashboard",
-    "tags": ["acgs", "infrastructure", "load-balancing", "haproxy", "circuit-breaker"],
+    "tags": [
+      "acgs",
+      "infrastructure",
+      "load-balancing",
+      "haproxy",
+      "circuit-breaker"
+    ],
     "timezone": "browser",
     "refresh": "30s",
     "time": {
@@ -31,17 +37,42 @@
             },
             "thresholds": {
               "steps": [
-                { "color": "red", "value": 0 },
-                { "color": "green", "value": 1 }
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "green",
+                  "value": 1
+                }
               ]
             },
             "mappings": [
-              { "options": { "0": { "text": "Down" } }, "type": "value" },
-              { "options": { "1": { "text": "Up" } }, "type": "value" }
+              {
+                "options": {
+                  "0": {
+                    "text": "Down"
+                  }
+                },
+                "type": "value"
+              },
+              {
+                "options": {
+                  "1": {
+                    "text": "Up"
+                  }
+                },
+                "type": "value"
+              }
             ]
           }
         },
-        "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 }
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 0,
+          "y": 0
+        }
       },
       {
         "id": 2,
@@ -63,7 +94,12 @@
             "min": 0
           }
         ],
-        "gridPos": { "h": 8, "w": 12, "x": 6, "y": 0 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 6,
+          "y": 0
+        }
       },
       {
         "id": 3,
@@ -82,19 +118,54 @@
             },
             "thresholds": {
               "steps": [
-                { "color": "green", "value": 0 },
-                { "color": "yellow", "value": 0.5 },
-                { "color": "red", "value": 1 }
+                {
+                  "color": "green",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 0.5
+                },
+                {
+                  "color": "red",
+                  "value": 1
+                }
               ]
             },
             "mappings": [
-              { "options": { "0": { "text": "Closed" } }, "type": "value" },
-              { "options": { "0.5": { "text": "Half-Open" } }, "type": "value" },
-              { "options": { "1": { "text": "Open" } }, "type": "value" }
+              {
+                "options": {
+                  "0": {
+                    "text": "Closed"
+                  }
+                },
+                "type": "value"
+              },
+              {
+                "options": {
+                  "0.5": {
+                    "text": "Half-Open"
+                  }
+                },
+                "type": "value"
+              },
+              {
+                "options": {
+                  "1": {
+                    "text": "Open"
+                  }
+                },
+                "type": "value"
+              }
             ]
           }
         },
-        "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 }
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 18,
+          "y": 0
+        }
       },
       {
         "id": 4,
@@ -117,17 +188,42 @@
             },
             "thresholds": {
               "steps": [
-                { "color": "red", "value": 0 },
-                { "color": "green", "value": 1 }
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "green",
+                  "value": 1
+                }
               ]
             },
             "mappings": [
-              { "options": { "0": { "text": "Unhealthy" } }, "type": "value" },
-              { "options": { "1": { "text": "Healthy" } }, "type": "value" }
+              {
+                "options": {
+                  "0": {
+                    "text": "Unhealthy"
+                  }
+                },
+                "type": "value"
+              },
+              {
+                "options": {
+                  "1": {
+                    "text": "Healthy"
+                  }
+                },
+                "type": "value"
+              }
             ]
           }
         },
-        "gridPos": { "h": 4, "w": 6, "x": 0, "y": 4 }
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 0,
+          "y": 4
+        }
       },
       {
         "id": 5,
@@ -149,7 +245,12 @@
             "max": 1.0
           }
         ],
-        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        }
       },
       {
         "id": 6,
@@ -167,7 +268,12 @@
             "min": 0
           }
         ],
-        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        }
       },
       {
         "id": 7,
@@ -185,7 +291,12 @@
             "min": 0
           }
         ],
-        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 16
+        }
       },
       {
         "id": 8,
@@ -203,7 +314,12 @@
             "min": 0
           }
         ],
-        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 16
+        }
       },
       {
         "id": 9,
@@ -221,7 +337,12 @@
             "min": 0
           }
         ],
-        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 24 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 24
+        }
       },
       {
         "id": 10,
@@ -239,7 +360,12 @@
             "min": 0
           }
         ],
-        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 24 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 24
+        }
       },
       {
         "id": 11,
@@ -257,7 +383,12 @@
             "max": 1.0
           }
         ],
-        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 32 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 32
+        }
       },
       {
         "id": 12,
@@ -276,17 +407,42 @@
             },
             "thresholds": {
               "steps": [
-                { "color": "red", "value": 0 },
-                { "color": "green", "value": 1 }
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "green",
+                  "value": 1
+                }
               ]
             },
             "mappings": [
-              { "options": { "0": { "text": "Down" } }, "type": "value" },
-              { "options": { "1": { "text": "Up" } }, "type": "value" }
+              {
+                "options": {
+                  "0": {
+                    "text": "Down"
+                  }
+                },
+                "type": "value"
+              },
+              {
+                "options": {
+                  "1": {
+                    "text": "Up"
+                  }
+                },
+                "type": "value"
+              }
             ]
           }
         },
-        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 32 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 32
+        }
       },
       {
         "id": 13,
@@ -304,7 +460,12 @@
             "min": 0
           }
         ],
-        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 40 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 40
+        }
       },
       {
         "id": 14,
@@ -322,8 +483,15 @@
             "min": 0
           }
         ],
-        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 40 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 40
+        }
       }
     ]
-  }
+  },
+  "_constitutional_hash": "cdd01ef066bc6cf2",
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }

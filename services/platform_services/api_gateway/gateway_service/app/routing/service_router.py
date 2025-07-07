@@ -129,14 +129,19 @@ class ServiceRouter:
             },
         }
 
-        logger.info("Service router initialized with constitutional compliance and service discovery")
+        logger.info(
+            "Service router initialized with constitutional compliance and service discovery"
+        )
 
     async def initialize(self):
         """Initialize service router."""
 
         # Initialize service discovery client
         try:
-            from services.shared.middleware.service_discovery_middleware import get_discovery_client
+            from services.shared.middleware.service_discovery_middleware import (
+                get_discovery_client,
+            )
+
             self.service_discovery_client = await get_discovery_client()
             logger.info("Service discovery client initialized")
         except Exception as e:
@@ -153,12 +158,14 @@ class ServiceRouter:
 
     async def _discover_and_register_services(self):
         """Discover and register services from service registry or static config."""
-        
+
         if self.service_discovery_client:
             try:
                 # Get services from dynamic service discovery
-                discovered_services = await self.service_discovery_client.discover_all_services()
-                
+                discovered_services = (
+                    await self.service_discovery_client.discover_all_services()
+                )
+
                 # Convert discovered services to our format
                 for service_name, service_url in discovered_services.items():
                     config = {
@@ -168,17 +175,25 @@ class ServiceRouter:
                         "constitutional_required": True,
                     }
                     await self._register_service(service_name, config)
-                
-                logger.info(f"Registered {len(discovered_services)} services from service discovery")
-                
+
+                logger.info(
+                    f"Registered {len(discovered_services)} services from service discovery"
+                )
+
                 # Also get service capabilities
                 for service_name in discovered_services.keys():
                     try:
-                        capabilities = await self.service_discovery_client.get_service_capabilities(service_name)
-                        logger.info(f"Service {service_name} capabilities: {capabilities}")
+                        capabilities = await self.service_discovery_client.get_service_capabilities(
+                            service_name
+                        )
+                        logger.info(
+                            f"Service {service_name} capabilities: {capabilities}"
+                        )
                     except Exception as e:
-                        logger.debug(f"Could not get capabilities for {service_name}: {e}")
-                
+                        logger.debug(
+                            f"Could not get capabilities for {service_name}: {e}"
+                        )
+
             except Exception as e:
                 logger.error(f"Failed to discover services: {e}")
                 # Fall back to static config
@@ -191,7 +206,9 @@ class ServiceRouter:
         """Register services from static configuration."""
         for service_name, config in self.static_service_registry.items():
             await self._register_service(service_name, config)
-        logger.info(f"Registered {len(self.static_service_registry)} services from static config")
+        logger.info(
+            f"Registered {len(self.static_service_registry)} services from static config"
+        )
 
     async def cleanup(self):
         """Cleanup resources."""
@@ -720,9 +737,9 @@ class ServiceRouter:
             "services": {
                 name: {
                     "instances": len(instances),
-                    "healthy": len([
-                        i for i in instances if i.status == ServiceStatus.HEALTHY
-                    ]),
+                    "healthy": len(
+                        [i for i in instances if i.status == ServiceStatus.HEALTHY]
+                    ),
                     "circuit_breaker_state": self.circuit_breakers[name].state.value,
                 }
                 for name, instances in self.services.items()

@@ -15,7 +15,9 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 logger = logging.getLogger(__name__)
 
 # Database configuration
-DATABASE_URL = "postgresql+asyncpg://acgs_user:acgs_password@localhost:5439/acgs_integrity"
+DATABASE_URL = (
+    "postgresql+asyncpg://acgs_user:acgs_password@localhost:5439/acgs_integrity"
+)
 
 # Create async engine
 engine = create_async_engine(
@@ -38,7 +40,7 @@ AsyncSessionLocal = sessionmaker(
 async def get_async_db() -> AsyncGenerator[AsyncSession, None]:
     """
     Dependency to get async database session.
-    
+
     Yields:
         AsyncSession: Database session
     """
@@ -58,12 +60,12 @@ async def init_database():
     """Initialize database tables."""
     try:
         from ...models import Base
-        
+
         async with engine.begin() as conn:
             # Create all tables
             await conn.run_sync(Base.metadata.create_all)
             logger.info("Database tables created successfully")
-            
+
     except Exception as e:
         logger.error(f"Failed to initialize database: {e}")
         raise
@@ -72,7 +74,7 @@ async def init_database():
 async def check_database_connection() -> bool:
     """
     Check if database connection is working.
-    
+
     Returns:
         bool: True if connection is working, False otherwise
     """
@@ -89,7 +91,7 @@ async def check_database_connection() -> bool:
 async def get_database_stats() -> dict:
     """
     Get database statistics.
-    
+
     Returns:
         dict: Database statistics
     """
@@ -103,9 +105,9 @@ async def get_database_stats() -> dict:
                 "engine_pool_checked_in": engine.pool.checkedin(),
                 "engine_pool_checked_out": engine.pool.checkedout(),
             }
-            
+
             return stats
-            
+
     except Exception as e:
         logger.error(f"Failed to get database stats: {e}")
         return {
@@ -119,21 +121,21 @@ async def get_database_stats() -> dict:
 async def database_health_check() -> dict:
     """
     Perform database health check.
-    
+
     Returns:
         dict: Health check results
     """
     try:
         is_connected = await check_database_connection()
         stats = await get_database_stats()
-        
+
         return {
             "status": "healthy" if is_connected else "unhealthy",
             "connection": "connected" if is_connected else "disconnected",
             "constitutional_hash": CONSTITUTIONAL_HASH,
             "stats": stats,
         }
-        
+
     except Exception as e:
         logger.error(f"Database health check failed: {e}")
         return {

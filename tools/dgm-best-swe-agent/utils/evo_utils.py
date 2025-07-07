@@ -7,7 +7,6 @@ from utils.common_utils import load_json_file, read_file
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 def load_dgm_metadata(dgm_metadata_path, last_only=False):
     # Load all archives from given metadata file
     if not os.path.exists(dgm_metadata_path):

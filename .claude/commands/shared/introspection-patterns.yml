@@ -1,6 +1,8 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 # Introspection Behavioral Patterns
 # Defines how --introspect flag transforms command execution
 
+# Constitutional Hash: cdd01ef066bc6cf2
 Introspection_Mode:
   Purpose: "Transform execution into transparent learning dialogue"
   Activation: "--introspect flag | SuperClaude-specific development"

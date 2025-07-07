@@ -10,7 +10,7 @@ This is a minimal implementation to ensure constitutional compliance.
 import logging
 import time
 from datetime import datetime, timezone
-from typing import Dict, Any, List
+from typing import Any, Dict, List
 
 import uvicorn
 from fastapi import FastAPI, HTTPException, status
@@ -59,6 +59,7 @@ coordination_data = {
     "performance_metrics": [],
 }
 
+
 # Pydantic models
 class CoordinationRequest(BaseModel):
     id: str
@@ -70,6 +71,7 @@ class CoordinationRequest(BaseModel):
     timestamp: str
     constitutional_hash: str = CONSTITUTIONAL_HASH
 
+
 class AgentAssignment(BaseModel):
     id: str
     request_id: str
@@ -79,11 +81,12 @@ class AgentAssignment(BaseModel):
     timestamp: str
     constitutional_hash: str = CONSTITUTIONAL_HASH
 
+
 @app.get("/health", status_code=status.HTTP_200_OK)
 async def health_check():
     """Health check endpoint with constitutional compliance."""
     uptime_seconds = time.time() - service_start_time
-    
+
     return {
         "status": "healthy",
         "service": SERVICE_NAME,
@@ -109,6 +112,7 @@ async def health_check():
         },
     }
 
+
 @app.get("/")
 async def root():
     """Root endpoint with service information."""
@@ -127,6 +131,7 @@ async def root():
         ],
     }
 
+
 @app.get("/api/v1/requests")
 async def get_coordination_requests():
     """Get all coordination requests."""
@@ -139,21 +144,23 @@ async def get_coordination_requests():
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
+
 @app.post("/api/v1/requests")
 async def create_coordination_request(request: CoordinationRequest):
     """Create a new coordination request."""
     request.constitutional_hash = CONSTITUTIONAL_HASH
     request.timestamp = datetime.now(timezone.utc).isoformat()
     request.status = "pending"
-    
+
     coordination_data["active_requests"].append(request.dict())
-    
+
     return {
         "status": "request_created",
         "request_id": request.id,
         "constitutional_hash": CONSTITUTIONAL_HASH,
         "timestamp": request.timestamp,
     }
+
 
 @app.get("/api/v1/assignments")
 async def get_agent_assignments():
@@ -165,15 +172,16 @@ async def get_agent_assignments():
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
+
 @app.post("/api/v1/assignments")
 async def create_agent_assignment(assignment: AgentAssignment):
     """Create a new agent assignment."""
     assignment.constitutional_hash = CONSTITUTIONAL_HASH
     assignment.timestamp = datetime.now(timezone.utc).isoformat()
     assignment.status = "assigned"
-    
+
     coordination_data["agent_assignments"].append(assignment.dict())
-    
+
     return {
         "status": "assignment_created",
         "assignment_id": assignment.id,
@@ -181,22 +189,25 @@ async def create_agent_assignment(assignment: AgentAssignment):
         "timestamp": assignment.timestamp,
     }
 
+
 @app.get("/api/v1/performance")
 async def get_performance_metrics():
     """Get coordination performance metrics."""
     uptime_seconds = time.time() - service_start_time
-    
+
     return {
         "service": SERVICE_NAME,
         "constitutional_hash": CONSTITUTIONAL_HASH,
         "performance_metrics": {
             "uptime_seconds": uptime_seconds,
-            "requests_per_second": len(coordination_data["active_requests"]) / max(uptime_seconds, 1),
+            "requests_per_second": len(coordination_data["active_requests"])
+            / max(uptime_seconds, 1),
             "average_response_time_ms": 2.5,  # Simulated
             "success_rate_percent": 99.8,  # Simulated
         },
         "coordination_statistics": {
-            "total_requests": len(coordination_data["active_requests"]) + len(coordination_data["completed_requests"]),
+            "total_requests": len(coordination_data["active_requests"])
+            + len(coordination_data["completed_requests"]),
             "active_requests": len(coordination_data["active_requests"]),
             "completed_requests": len(coordination_data["completed_requests"]),
             "agent_assignments": len(coordination_data["agent_assignments"]),
@@ -204,11 +215,12 @@ async def get_performance_metrics():
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
+
 @app.get("/api/v1/status")
 async def get_service_status():
     """Get detailed service status."""
     uptime_seconds = time.time() - service_start_time
-    
+
     return {
         "service": SERVICE_NAME,
         "version": SERVICE_VERSION,
@@ -237,15 +249,16 @@ async def get_service_status():
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
+
 @app.get("/constitutional/validate")
 async def validate_constitutional_hash(hash: str = None):
     """Validate constitutional hash compliance."""
     if hash and hash != CONSTITUTIONAL_HASH:
         raise HTTPException(
             status_code=400,
-            detail=f"Invalid constitutional hash. Expected: {CONSTITUTIONAL_HASH}"
+            detail=f"Invalid constitutional hash. Expected: {CONSTITUTIONAL_HASH}",
         )
-    
+
     return {
         "valid": True,
         "constitutional_hash": CONSTITUTIONAL_HASH,
@@ -259,11 +272,12 @@ async def validate_constitutional_hash(hash: str = None):
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
+
 @app.post("/api/v1/coordinate")
 async def coordinate_agents(coordination_request: Dict[str, Any]):
     """Coordinate multiple agents for a complex task."""
     request_id = f"coord_{int(time.time())}"
-    
+
     # Simulate coordination logic
     coordination_result = {
         "request_id": request_id,
@@ -274,14 +288,15 @@ async def coordinate_agents(coordination_request: Dict[str, Any]):
         "coordination_strategy": "hierarchical_decomposition",
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
-    
+
     return coordination_result
+
 
 def main():
     """Main function to run the coordinator service."""
     logger.info(f"Starting {SERVICE_NAME} on port {SERVICE_PORT}")
     logger.info(f"Constitutional Hash: {CONSTITUTIONAL_HASH}")
-    
+
     uvicorn.run(
         "simple_coordinator_main:app",
         host="0.0.0.0",
@@ -289,6 +304,7 @@ def main():
         log_level="info",
         access_log=True,
     )
+
 
 if __name__ == "__main__":
     main()

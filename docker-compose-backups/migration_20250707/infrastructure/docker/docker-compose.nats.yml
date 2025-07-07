@@ -1,173 +1,165 @@
-# Constitutional Hash: cdd01ef066bc6cf2
 version: '3.8'
-
 services:
-  # NATS Server with JetStream
   nats:
     image: nats:2.10-alpine
     container_name: acgs_nats
     ports:
-      - '4222:4222' # NATS client port
-      - '8222:8222' # HTTP monitoring port
-      - '6222:6222' # Cluster port
-    command: >
-      --jetstream
-      --store_dir=/data
-      --max_memory_store=1GB
-      --max_file_store=10GB
-      --http_port=8222
-      --cluster_name=acgs_cluster
-      --cluster=nats://0.0.0.0:6222
-      --routes=nats://nats:6222
+    - 4222:4222
+    - 8222:8222
+    - 6222:6222
+    command: '--jetstream --store_dir=/data --max_memory_store=1GB --max_file_store=10GB
+      --http_port=8222 --cluster_name=acgs_cluster --cluster=nats://0.0.0.0:6222 --routes=nats://nats:6222
+
+      '
     volumes:
-      - nats_data:/data
+    - nats_data:/data
     networks:
-      - acgs_network
+    - acgs_network
     restart: unless-stopped
     healthcheck:
-      test: ['CMD', 'nats', 'server', 'check', '--server', 'nats://localhost:4222']
+      test:
+      - CMD
+      - nats
+      - server
+      - check
+      - --server
+      - nats://localhost:4222
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
-
-  # NATS Monitoring Dashboard (optional)
   nats-surveyor:
     image: natsio/nats-surveyor:latest
     container_name: acgs_nats_surveyor
     ports:
-      - '7777:7777'
+    - 7777:7777
     environment:
-      - NATS_SURVEYOR_SERVER_COUNT=1
-      - NATS_SURVEYOR_SERVERS=nats://nats:4222
+    - NATS_SURVEYOR_SERVER_COUNT=1
+    - NATS_SURVEYOR_SERVERS=nats://nats:4222
     depends_on:
-      - nats
+    - nats
     networks:
-      - acgs_network
+    - acgs_network
     restart: unless-stopped
-
-  # DGM Service with NATS integration
   dgm-service:
     build:
       context: ../../services/core/dgm-service
       dockerfile: Dockerfile
     container_name: acgs_dgm_service
     ports:
-      - '8007:8007'
+    - 8007:8007
     environment:
-      - ENVIRONMENT=development
-      - DATABASE_URL=postgresql+asyncpg://acgs:acgs@postgres:5432/acgs_dev
-      - REDIS_URL=redis://redis:6379/0
-      - NATS_SERVERS=nats://nats:4222
-      - NATS_STREAM_NAME=DGM_EVENTS
-      - NATS_ENABLE_JETSTREAM=true
-      - AUTH_SERVICE_URL=http://auth-service:8000
-      - AC_SERVICE_URL=http://ac-service:8001
-      - GS_SERVICE_URL=http://gs-service:8002
+    - ENVIRONMENT=development
+    - DATABASE_URL=postgresql+asyncpg://acgs:acgs@postgres:5432/acgs_dev
+    - REDIS_URL=redis://redis:6379/0
+    - NATS_SERVERS=nats://nats:4222
+    - NATS_STREAM_NAME=DGM_EVENTS
+    - NATS_ENABLE_JETSTREAM=true
+    - AUTH_SERVICE_URL=http://auth-service:8000
+    - AC_SERVICE_URL=http://ac-service:8001
+    - GS_SERVICE_URL=http://gs-service:8002
     depends_on:
-      - postgres
-      - redis
-      - nats
-      - auth-service
-      - ac-service
+    - postgres
+    - redis
+    - nats
+    - auth-service
+    - ac-service
     networks:
-      - acgs_network
+    - acgs_network
     restart: unless-stopped
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:8007/health']
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:8007/health
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 60s
-
-  # PostgreSQL Database
   postgres:
     image: postgres:15-alpine
     container_name: acgs_postgres
     environment:
-      - POSTGRES_DB=acgs_dev
-      - POSTGRES_USER=acgs
-      - POSTGRES_PASSWORD=acgs
-      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
+    - POSTGRES_DB=acgs_dev
+    - POSTGRES_USER=acgs
+    - POSTGRES_PASSWORD=acgs
+    - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
     ports:
-      - '5432:5432'
+    - 5432:5432
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./init-scripts:/docker-entrypoint-initdb.d
+    - postgres_data:/var/lib/postgresql/data
+    - ./init-scripts:/docker-entrypoint-initdb.d
     networks:
-      - acgs_network
+    - acgs_network
     restart: unless-stopped
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U acgs -d acgs_dev']
+      test:
+      - CMD-SHELL
+      - pg_isready -U acgs -d acgs_dev
       interval: 30s
       timeout: 10s
       retries: 3
-
-  # Redis Cache
   redis:
     image: redis:7-alpine
     container_name: acgs_redis
     ports:
-      - '6379:6379'
+    - 6379:6379
     volumes:
-      - redis_data:/data
+    - redis_data:/data
     networks:
-      - acgs_network
+    - acgs_network
     restart: unless-stopped
     healthcheck:
-      test: ['CMD', 'redis-cli', 'ping']
+      test:
+      - CMD
+      - redis-cli
+      - ping
       interval: 30s
       timeout: 10s
       retries: 3
-
-  # Auth Service
   auth-service:
     build: ../../services/platform/authentication
     container_name: acgs_auth_service
     ports:
-      - '8000:8000'
+    - 8000:8000
     environment:
-      - ENVIRONMENT=development
-      - DATABASE_URL=postgresql+asyncpg://acgs:acgs@postgres:5432/acgs_dev
-      - REDIS_URL=redis://redis:6379/1
-      - NATS_SERVERS=nats://nats:4222
+    - ENVIRONMENT=development
+    - DATABASE_URL=postgresql+asyncpg://acgs:acgs@postgres:5432/acgs_dev
+    - REDIS_URL=redis://redis:6379/1
+    - NATS_SERVERS=nats://nats:4222
     depends_on:
-      - postgres
-      - redis
-      - nats
+    - postgres
+    - redis
+    - nats
     networks:
-      - acgs_network
+    - acgs_network
     restart: unless-stopped
-
-  # Constitutional AI Service
   ac-service:
     build: ../../services/core/constitutional-ai
     container_name: acgs_ac_service
     ports:
-      - '8001:8001'
+    - 8001:8001
     environment:
-      - ENVIRONMENT=development
-      - DATABASE_URL=postgresql+asyncpg://acgs:acgs@postgres:5432/acgs_dev
-      - REDIS_URL=redis://redis:6379/2
-      - NATS_SERVERS=nats://nats:4222
+    - ENVIRONMENT=development
+    - DATABASE_URL=postgresql+asyncpg://acgs:acgs@postgres:5432/acgs_dev
+    - REDIS_URL=redis://redis:6379/2
+    - NATS_SERVERS=nats://nats:4222
     depends_on:
-      - postgres
-      - redis
-      - nats
+    - postgres
+    - redis
+    - nats
     networks:
-      - acgs_network
+    - acgs_network
     restart: unless-stopped
-
-  # Governance Synthesis Service (placeholder)
   gs-service:
     image: nginx:alpine
     container_name: acgs_gs_service_placeholder
     ports:
-      - '8002:80'
+    - 8002:80
     networks:
-      - acgs_network
+    - acgs_network
     restart: unless-stopped
-
 volumes:
   postgres_data:
     driver: local
@@ -175,10 +167,10 @@ volumes:
     driver: local
   nats_data:
     driver: local
-
 networks:
   acgs_network:
     driver: bridge
     ipam:
       config:
-        - subnet: 172.20.0.0/16
+      - subnet: 172.20.0.0/16
+constitutional_hash: cdd01ef066bc6cf2

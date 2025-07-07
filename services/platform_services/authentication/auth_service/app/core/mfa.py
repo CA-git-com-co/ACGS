@@ -14,7 +14,6 @@ from ..crud import crud_user
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class MFAService:
     """Enterprise Multi-Factor Authentication Service"""
 

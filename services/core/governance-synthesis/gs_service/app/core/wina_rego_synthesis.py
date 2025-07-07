@@ -26,13 +26,12 @@ from services.shared.wina.config import load_wina_config_from_env
 from services.shared.wina.metrics import WINAMetrics
 
 # Import WINA components
-from services.shared.wina.model_integration import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from services.shared.wina.model_integration import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     WINAModelIntegrator,
     WINAOptimizationResult,
+    "cdd01ef066bc6cf2",
+    =,
 )
 
 from ..schemas import ConstitutionalSynthesisInput

@@ -58,70 +58,84 @@ class TaskDecompositionStrategy:
         tasks = []
 
         # Ethical analysis task
-        tasks.append({
-            "task_type": "ethical_analysis",
-            "priority": 1,
-            "requirements": {
-                "analysis_types": [
-                    "bias_assessment",
-                    "fairness_evaluation",
-                    "harm_potential",
-                ],
-                "constitutional_principles": ["safety", "transparency", "consent"],
-            },
-            "input_data": {
-                "model_info": request.input_data.get("model_info", {}),
-                "deployment_context": request.input_data.get("deployment_context", {}),
-                "stakeholder_impact": request.input_data.get("stakeholder_impact", {}),
-            },
-        })
+        tasks.append(
+            {
+                "task_type": "ethical_analysis",
+                "priority": 1,
+                "requirements": {
+                    "analysis_types": [
+                        "bias_assessment",
+                        "fairness_evaluation",
+                        "harm_potential",
+                    ],
+                    "constitutional_principles": ["safety", "transparency", "consent"],
+                },
+                "input_data": {
+                    "model_info": request.input_data.get("model_info", {}),
+                    "deployment_context": request.input_data.get(
+                        "deployment_context", {}
+                    ),
+                    "stakeholder_impact": request.input_data.get(
+                        "stakeholder_impact", {}
+                    ),
+                },
+            }
+        )
 
         # Legal compliance task
-        tasks.append({
-            "task_type": "legal_compliance",
-            "priority": 1,
-            "requirements": {
-                "jurisdictions": request.input_data.get("jurisdictions", ["US", "EU"]),
-                "compliance_frameworks": ["GDPR", "CCPA", "AI_Act"],
-                "constitutional_principles": [
-                    "data_privacy",
-                    "consent",
-                    "transparency",
-                ],
-            },
-            "input_data": {
-                "model_info": request.input_data.get("model_info", {}),
-                "data_sources": request.input_data.get("data_sources", {}),
-                "user_interactions": request.input_data.get("user_interactions", {}),
-            },
-        })
+        tasks.append(
+            {
+                "task_type": "legal_compliance",
+                "priority": 1,
+                "requirements": {
+                    "jurisdictions": request.input_data.get(
+                        "jurisdictions", ["US", "EU"]
+                    ),
+                    "compliance_frameworks": ["GDPR", "CCPA", "AI_Act"],
+                    "constitutional_principles": [
+                        "data_privacy",
+                        "consent",
+                        "transparency",
+                    ],
+                },
+                "input_data": {
+                    "model_info": request.input_data.get("model_info", {}),
+                    "data_sources": request.input_data.get("data_sources", {}),
+                    "user_interactions": request.input_data.get(
+                        "user_interactions", {}
+                    ),
+                },
+            }
+        )
 
         # Operational validation task
-        tasks.append({
-            "task_type": "operational_validation",
-            "priority": 2,
-            "requirements": {
-                "performance_thresholds": request.input_data.get(
-                    "performance_requirements", {}
-                ),
-                "scalability_requirements": request.input_data.get(
-                    "scalability_requirements", {}
-                ),
-                "constitutional_principles": ["resource_limits", "reversibility"],
-            },
-            "input_data": {
-                "model_info": request.input_data.get("model_info", {}),
-                "infrastructure_constraints": request.input_data.get(
-                    "infrastructure_constraints", {}
-                ),
-                "performance_benchmarks": request.input_data.get(
-                    "performance_benchmarks", {}
-                ),
-            },
-            "dependencies": [
-                "ethical_analysis"
-            ],  # Wait for ethical analysis before operational validation
-        })
+        tasks.append(
+            {
+                "task_type": "operational_validation",
+                "priority": 2,
+                "requirements": {
+                    "performance_thresholds": request.input_data.get(
+                        "performance_requirements", {}
+                    ),
+                    "scalability_requirements": request.input_data.get(
+                        "scalability_requirements", {}
+                    ),
+                    "constitutional_principles": ["resource_limits", "reversibility"],
+                },
+                "input_data": {
+                    "model_info": request.input_data.get("model_info", {}),
+                    "infrastructure_constraints": request.input_data.get(
+                        "infrastructure_constraints", {}
+                    ),
+                    "performance_benchmarks": request.input_data.get(
+                        "performance_benchmarks", {}
+                    ),
+                },
+                "dependencies": [
+                    "ethical_analysis"
+                ],  # Wait for ethical analysis before operational validation
+            }
+        )
 
         return tasks
 
@@ -133,70 +147,78 @@ class TaskDecompositionStrategy:
         tasks = []
 
         # Policy analysis task
-        tasks.append({
-            "task_type": "policy_analysis",
-            "priority": 1,
-            "requirements": {
-                "policy_scope": request.input_data.get(
-                    "policy_scope", "organizational"
-                ),
-                "stakeholder_analysis": True,
-                "constitutional_principles": [
-                    "transparency",
-                    "consent",
-                    "least_privilege",
-                ],
-            },
-            "input_data": {
-                "policy_document": request.input_data.get("policy_document", {}),
-                "enforcement_context": request.input_data.get(
-                    "enforcement_context", {}
-                ),
-                "affected_systems": request.input_data.get("affected_systems", []),
-            },
-        })
+        tasks.append(
+            {
+                "task_type": "policy_analysis",
+                "priority": 1,
+                "requirements": {
+                    "policy_scope": request.input_data.get(
+                        "policy_scope", "organizational"
+                    ),
+                    "stakeholder_analysis": True,
+                    "constitutional_principles": [
+                        "transparency",
+                        "consent",
+                        "least_privilege",
+                    ],
+                },
+                "input_data": {
+                    "policy_document": request.input_data.get("policy_document", {}),
+                    "enforcement_context": request.input_data.get(
+                        "enforcement_context", {}
+                    ),
+                    "affected_systems": request.input_data.get("affected_systems", []),
+                },
+            }
+        )
 
         # Implementation planning task
-        tasks.append({
-            "task_type": "implementation_planning",
-            "priority": 2,
-            "requirements": {
-                "rollout_strategy": "phased",
-                "monitoring_requirements": True,
-                "constitutional_principles": ["reversibility", "least_privilege"],
-            },
-            "input_data": {
-                "policy_requirements": request.input_data.get(
-                    "policy_requirements", {}
-                ),
-                "system_architecture": request.input_data.get(
-                    "system_architecture", {}
-                ),
-                "resource_constraints": request.input_data.get(
-                    "resource_constraints", {}
-                ),
-            },
-            "dependencies": ["policy_analysis"],
-        })
+        tasks.append(
+            {
+                "task_type": "implementation_planning",
+                "priority": 2,
+                "requirements": {
+                    "rollout_strategy": "phased",
+                    "monitoring_requirements": True,
+                    "constitutional_principles": ["reversibility", "least_privilege"],
+                },
+                "input_data": {
+                    "policy_requirements": request.input_data.get(
+                        "policy_requirements", {}
+                    ),
+                    "system_architecture": request.input_data.get(
+                        "system_architecture", {}
+                    ),
+                    "resource_constraints": request.input_data.get(
+                        "resource_constraints", {}
+                    ),
+                },
+                "dependencies": ["policy_analysis"],
+            }
+        )
 
         # Compliance monitoring task
-        tasks.append({
-            "task_type": "compliance_monitoring",
-            "priority": 3,
-            "requirements": {
-                "monitoring_frequency": "continuous",
-                "alert_thresholds": request.input_data.get("alert_thresholds", {}),
-                "constitutional_principles": ["transparency", "consent"],
-            },
-            "input_data": {
-                "monitoring_scope": request.input_data.get("monitoring_scope", {}),
-                "compliance_metrics": request.input_data.get("compliance_metrics", {}),
-                "reporting_requirements": request.input_data.get(
-                    "reporting_requirements", {}
-                ),
-            },
-            "dependencies": ["implementation_planning"],
-        })
+        tasks.append(
+            {
+                "task_type": "compliance_monitoring",
+                "priority": 3,
+                "requirements": {
+                    "monitoring_frequency": "continuous",
+                    "alert_thresholds": request.input_data.get("alert_thresholds", {}),
+                    "constitutional_principles": ["transparency", "consent"],
+                },
+                "input_data": {
+                    "monitoring_scope": request.input_data.get("monitoring_scope", {}),
+                    "compliance_metrics": request.input_data.get(
+                        "compliance_metrics", {}
+                    ),
+                    "reporting_requirements": request.input_data.get(
+                        "reporting_requirements", {}
+                    ),
+                },
+                "dependencies": ["implementation_planning"],
+            }
+        )
 
         return tasks
 
@@ -807,11 +829,13 @@ class CoordinatorAgent:
 
         # Add common metadata to all tasks
         for task in tasks:
-            task.update({
-                "governance_request_id": request.id,
-                "deadline": request.deadline,
-                "constitutional_requirements": request.constitutional_requirements,
-            })
+            task.update(
+                {
+                    "governance_request_id": request.id,
+                    "deadline": request.deadline,
+                    "constitutional_requirements": request.constitutional_requirements,
+                }
+            )
 
         return tasks
 
@@ -1237,21 +1261,27 @@ class CoordinatorAgent:
 
         # Add specific result fields based on request type
         if request.request_type == "model_deployment":
-            integrated_result.update({
-                "deployment_approved": integrated_result["success"],
-                "ethical_assessment": task_results.get("ethical_analysis", {}),
-                "legal_assessment": task_results.get("legal_compliance", {}),
-                "operational_assessment": task_results.get(
-                    "operational_validation", {}
-                ),
-            })
+            integrated_result.update(
+                {
+                    "deployment_approved": integrated_result["success"],
+                    "ethical_assessment": task_results.get("ethical_analysis", {}),
+                    "legal_assessment": task_results.get("legal_compliance", {}),
+                    "operational_assessment": task_results.get(
+                        "operational_validation", {}
+                    ),
+                }
+            )
         elif request.request_type == "policy_enforcement":
-            integrated_result.update({
-                "enforcement_approved": integrated_result["success"],
-                "policy_analysis": task_results.get("policy_analysis", {}),
-                "implementation_plan": task_results.get("implementation_planning", {}),
-                "monitoring_plan": task_results.get("compliance_monitoring", {}),
-            })
+            integrated_result.update(
+                {
+                    "enforcement_approved": integrated_result["success"],
+                    "policy_analysis": task_results.get("policy_analysis", {}),
+                    "implementation_plan": task_results.get(
+                        "implementation_planning", {}
+                    ),
+                    "monitoring_plan": task_results.get("compliance_monitoring", {}),
+                }
+            )
 
         return integrated_result
 
@@ -1268,12 +1298,14 @@ class CoordinatorAgent:
                 approvals[task_type] = result["approved"]
 
         if len(set(approvals.values())) > 1:
-            conflicts.append({
-                "type": "approval_conflict",
-                "description": f"Conflicting approval decisions: {approvals}",
-                "severity": "high",
-                "involved_tasks": list(approvals.keys()),
-            })
+            conflicts.append(
+                {
+                    "type": "approval_conflict",
+                    "description": f"Conflicting approval decisions: {approvals}",
+                    "severity": "high",
+                    "involved_tasks": list(approvals.keys()),
+                }
+            )
 
         # Check for risk level conflicts
         risk_levels = {}
@@ -1287,12 +1319,14 @@ class CoordinatorAgent:
             min_risk = min(risk_levels.values(), key=lambda x: risk_values.get(x, 2))
 
             if risk_values.get(max_risk, 2) - risk_values.get(min_risk, 2) > 1:
-                conflicts.append({
-                    "type": "risk_assessment_conflict",
-                    "description": f"Conflicting risk assessments: {risk_levels}",
-                    "severity": "medium",
-                    "involved_tasks": list(risk_levels.keys()),
-                })
+                conflicts.append(
+                    {
+                        "type": "risk_assessment_conflict",
+                        "description": f"Conflicting risk assessments: {risk_levels}",
+                        "severity": "medium",
+                        "involved_tasks": list(risk_levels.keys()),
+                    }
+                )
 
         return conflicts
 
@@ -1470,75 +1504,81 @@ class CoordinatorAgent:
         tasks = []
 
         # Data compliance audit
-        tasks.append({
-            "task_type": "data_compliance_audit",
-            "priority": 1,
-            "requirements": {
-                "audit_scope": request.input_data.get("audit_scope", "full"),
-                "compliance_frameworks": request.input_data.get(
-                    "frameworks", ["GDPR", "CCPA"]
-                ),
-                "constitutional_principles": [
-                    "data_privacy",
-                    "transparency",
-                    "consent",
-                ],
-            },
-            "input_data": {
-                "data_sources": request.input_data.get("data_sources", {}),
-                "processing_activities": request.input_data.get(
-                    "processing_activities", {}
-                ),
-                "data_subject_rights": request.input_data.get(
-                    "data_subject_rights", {}
-                ),
-            },
-        })
+        tasks.append(
+            {
+                "task_type": "data_compliance_audit",
+                "priority": 1,
+                "requirements": {
+                    "audit_scope": request.input_data.get("audit_scope", "full"),
+                    "compliance_frameworks": request.input_data.get(
+                        "frameworks", ["GDPR", "CCPA"]
+                    ),
+                    "constitutional_principles": [
+                        "data_privacy",
+                        "transparency",
+                        "consent",
+                    ],
+                },
+                "input_data": {
+                    "data_sources": request.input_data.get("data_sources", {}),
+                    "processing_activities": request.input_data.get(
+                        "processing_activities", {}
+                    ),
+                    "data_subject_rights": request.input_data.get(
+                        "data_subject_rights", {}
+                    ),
+                },
+            }
+        )
 
         # System compliance audit
-        tasks.append({
-            "task_type": "system_compliance_audit",
-            "priority": 2,
-            "requirements": {
-                "system_scope": request.input_data.get("system_scope", {}),
-                "security_requirements": request.input_data.get(
-                    "security_requirements", {}
-                ),
-                "constitutional_principles": [
-                    "safety",
-                    "least_privilege",
-                    "reversibility",
-                ],
-            },
-            "input_data": {
-                "system_architecture": request.input_data.get(
-                    "system_architecture", {}
-                ),
-                "access_controls": request.input_data.get("access_controls", {}),
-                "audit_logs": request.input_data.get("audit_logs", {}),
-            },
-        })
+        tasks.append(
+            {
+                "task_type": "system_compliance_audit",
+                "priority": 2,
+                "requirements": {
+                    "system_scope": request.input_data.get("system_scope", {}),
+                    "security_requirements": request.input_data.get(
+                        "security_requirements", {}
+                    ),
+                    "constitutional_principles": [
+                        "safety",
+                        "least_privilege",
+                        "reversibility",
+                    ],
+                },
+                "input_data": {
+                    "system_architecture": request.input_data.get(
+                        "system_architecture", {}
+                    ),
+                    "access_controls": request.input_data.get("access_controls", {}),
+                    "audit_logs": request.input_data.get("audit_logs", {}),
+                },
+            }
+        )
 
         # Governance compliance audit
-        tasks.append({
-            "task_type": "governance_compliance_audit",
-            "priority": 3,
-            "requirements": {
-                "governance_framework": "ACGS-PGP",
-                "policy_compliance": True,
-                "constitutional_principles": ["transparency", "consent", "safety"],
-            },
-            "input_data": {
-                "governance_policies": request.input_data.get(
-                    "governance_policies", {}
-                ),
-                "decision_logs": request.input_data.get("decision_logs", {}),
-                "stakeholder_feedback": request.input_data.get(
-                    "stakeholder_feedback", {}
-                ),
-            },
-            "dependencies": ["data_compliance_audit", "system_compliance_audit"],
-        })
+        tasks.append(
+            {
+                "task_type": "governance_compliance_audit",
+                "priority": 3,
+                "requirements": {
+                    "governance_framework": "ACGS-PGP",
+                    "policy_compliance": True,
+                    "constitutional_principles": ["transparency", "consent", "safety"],
+                },
+                "input_data": {
+                    "governance_policies": request.input_data.get(
+                        "governance_policies", {}
+                    ),
+                    "decision_logs": request.input_data.get("decision_logs", {}),
+                    "stakeholder_feedback": request.input_data.get(
+                        "stakeholder_feedback", {}
+                    ),
+                },
+                "dependencies": ["data_compliance_audit", "system_compliance_audit"],
+            }
+        )
 
         return tasks
 
@@ -1610,23 +1650,27 @@ class CoordinatorAgent:
 
                 # Detect risk level conflicts
                 if len(set(risk_levels.values())) > 1:
-                    conflicts.append({
-                        "type": "risk_assessment_conflict",
-                        "description": f"Conflicting risk assessments: {risk_levels}",
-                        "severity": "medium",
-                        "involved_agents": list(risk_levels.keys()),
-                        "details": risk_levels,
-                    })
+                    conflicts.append(
+                        {
+                            "type": "risk_assessment_conflict",
+                            "description": f"Conflicting risk assessments: {risk_levels}",
+                            "severity": "medium",
+                            "involved_agents": list(risk_levels.keys()),
+                            "details": risk_levels,
+                        }
+                    )
 
                 # Detect approval conflicts
                 if len(set(approvals.values())) > 1:
-                    conflicts.append({
-                        "type": "approval_conflict",
-                        "description": f"Conflicting approval decisions: {approvals}",
-                        "severity": "high",
-                        "involved_agents": list(approvals.keys()),
-                        "details": approvals,
-                    })
+                    conflicts.append(
+                        {
+                            "type": "approval_conflict",
+                            "description": f"Conflicting approval decisions: {approvals}",
+                            "severity": "high",
+                            "involved_agents": list(approvals.keys()),
+                            "details": approvals,
+                        }
+                    )
 
         except Exception as e:
             self.logger.error(

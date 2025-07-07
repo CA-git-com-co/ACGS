@@ -18,14 +18,14 @@ import asyncio
 import json
 import logging
 import time
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Union
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any, Dict, List, Optional, Union
 
 import aiohttp
-import asyncpg
 import aioredis
+import asyncpg
 from pydantic import BaseModel, Field, validator
 
 # Constitutional compliance hash - MUST be validated in all operations
@@ -52,53 +52,58 @@ ACGS_SERVICES = {
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
 
 class ConstitutionalComplianceError(Exception):
     """Exception raised for constitutional compliance violations."""
+
     pass
 
 
 class ACGSServiceConfig(BaseModel):
     """ACGS service configuration model."""
+
     url: str = Field(..., description="Service URL")
     name: str = Field(..., description="Service name")
     required: bool = Field(True, description="Whether service is required")
     timeout: int = Field(10, description="Connection timeout in seconds")
-    
-    @validator('url')
+
+    @validator("url")
     def validate_url(cls, v):
         """Validate service URL format."""
-        if not v.startswith(('http://', 'https://', 'postgresql://', 'redis://')):
-            raise ValueError('Invalid URL format')
+        if not v.startswith(("http://", "https://", "postgresql://", "redis://")):
+            raise ValueError("Invalid URL format")
         return v
 
 
 class ComplianceValidationRequest(BaseModel):
     """Request model for compliance validation."""
+
     constitutional_hash: str = Field(..., description="Constitutional hash to validate")
     service_name: str = Field(..., description="Name of the requesting service")
     operation: str = Field(..., description="Operation being performed")
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     metadata: Dict[str, Any] = Field(default_factory=dict)
-    
-    @validator('constitutional_hash')
+
+    @validator("constitutional_hash")
     def validate_constitutional_hash(cls, v):
         """Validate constitutional hash."""
         if v != CONSTITUTIONAL_HASH:
-            raise ValueError(f'Invalid constitutional hash: {v}')
+            raise ValueError(f"Invalid constitutional hash: {v}")
         return v
 
 
 class ComplianceValidationResponse(BaseModel):
     """Response model for compliance validation."""
+
     is_compliant: bool = Field(..., description="Whether request is compliant")
     constitutional_hash: str = Field(..., description="Validated constitutional hash")
-    validation_timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    validation_timestamp: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
     service_status: Dict[str, Any] = Field(default_factory=dict)
     compliance_score: float = Field(..., description="Compliance score (0-100)")
     violations: List[str] = Field(default_factory=list)
@@ -108,6 +113,7 @@ class ComplianceValidationResponse(BaseModel):
 @dataclass
 class ComplianceMetrics:
     """Compliance metrics tracking."""
+
     total_validations: int = 0
     successful_validations: int = 0
     failed_validations: int = 0
@@ -118,54 +124,54 @@ class ComplianceMetrics:
 
 class ACGSConstitutionalComplianceFramework:
     """Unified constitutional compliance framework for ACGS tools."""
-    
+
     def __init__(self):
         self.db_pool: Optional[asyncpg.Pool] = None
         self.redis_client: Optional[aioredis.Redis] = None
         self.session: Optional[aiohttp.ClientSession] = None
         self.compliance_metrics = ComplianceMetrics()
         self.audit_log: List[Dict[str, Any]] = []
-        
+
     async def __aenter__(self):
         """Async context manager entry."""
         await self.initialize()
         return self
-        
+
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         """Async context manager exit."""
         await self.cleanup()
-        
+
     async def initialize(self):
         """Initialize compliance framework."""
         logger.info("🏛️ Initializing ACGS Constitutional Compliance Framework...")
-        
+
         # Validate constitutional hash first
         if not self._validate_constitutional_hash(CONSTITUTIONAL_HASH):
             raise ConstitutionalComplianceError(
                 f"Invalid constitutional hash: {CONSTITUTIONAL_HASH}"
             )
-        
+
         # Initialize service connections
         await self._initialize_service_connections()
-        
+
         # Setup compliance monitoring
         await self._setup_compliance_monitoring()
-        
+
         logger.info("✅ Constitutional compliance framework initialized")
-        
+
     async def cleanup(self):
         """Cleanup resources."""
         logger.info("🧹 Cleaning up compliance framework...")
-        
+
         if self.session:
             await self.session.close()
-            
+
         if self.redis_client:
             await self.redis_client.close()
-            
+
         if self.db_pool:
             await self.db_pool.close()
-            
+
         logger.info("✅ Cleanup completed")
 
     def _validate_constitutional_hash(self, hash_value: str) -> bool:
@@ -175,11 +181,11 @@ class ACGSConstitutionalComplianceFramework:
     async def _initialize_service_connections(self):
         """Initialize connections to ACGS services."""
         logger.info("🔗 Initializing ACGS service connections...")
-        
+
         # Initialize HTTP session
         timeout = aiohttp.ClientTimeout(total=10)
         self.session = aiohttp.ClientSession(timeout=timeout)
-        
+
         # Initialize database connection
         try:
             db_config = {
@@ -196,13 +202,11 @@ class ACGSConstitutionalComplianceFramework:
             logger.info("✅ Database connection established")
         except Exception as e:
             logger.warning(f"⚠️ Database connection failed: {e}")
-            
+
         # Initialize Redis connection
         try:
             self.redis_client = await aioredis.from_url(
-                "redis://localhost:6389/0",
-                encoding="utf-8",
-                decode_responses=True
+                "redis://localhost:6389/0", encoding="utf-8", decode_responses=True
             )
             await self.redis_client.ping()
             logger.info("✅ Redis connection established")
@@ -212,27 +216,26 @@ class ACGSConstitutionalComplianceFramework:
     async def _setup_compliance_monitoring(self):
         """Setup compliance monitoring infrastructure."""
         logger.info("📊 Setting up compliance monitoring...")
-        
+
         try:
             # Store constitutional hash in Redis for validation
             if self.redis_client:
                 await self.redis_client.set(
-                    "constitutional:hash",
-                    CONSTITUTIONAL_HASH,
-                    ex=86400  # 24 hours
+                    "constitutional:hash", CONSTITUTIONAL_HASH, ex=86400  # 24 hours
                 )
-                
+
                 # Initialize compliance metrics
                 await self.redis_client.set(
                     "compliance:metrics",
                     json.dumps(self.compliance_metrics.__dict__),
-                    ex=3600  # 1 hour
+                    ex=3600,  # 1 hour
                 )
-            
+
             # Create compliance audit table if database available
             if self.db_pool:
                 async with self.db_pool.acquire() as conn:
-                    await conn.execute("""
+                    await conn.execute(
+                        """
                         CREATE TABLE IF NOT EXISTS compliance_audit (
                             id SERIAL PRIMARY KEY,
                             constitutional_hash VARCHAR(32) NOT NULL,
@@ -244,55 +247,61 @@ class ACGSConstitutionalComplianceFramework:
                             timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
                             metadata JSONB
                         )
-                    """)
-                    
+                    """
+                    )
+
                     # Create index for performance
-                    await conn.execute("""
+                    await conn.execute(
+                        """
                         CREATE INDEX IF NOT EXISTS idx_compliance_audit_hash 
                         ON compliance_audit(constitutional_hash)
-                    """)
-                    
-                    await conn.execute("""
+                    """
+                    )
+
+                    await conn.execute(
+                        """
                         CREATE INDEX IF NOT EXISTS idx_compliance_audit_timestamp 
                         ON compliance_audit(timestamp)
-                    """)
-            
+                    """
+                    )
+
             logger.info("✅ Compliance monitoring setup completed")
-            
+
         except Exception as e:
             logger.error(f"❌ Compliance monitoring setup failed: {e}")
 
     async def validate_compliance(
-        self, 
-        request: ComplianceValidationRequest
+        self, request: ComplianceValidationRequest
     ) -> ComplianceValidationResponse:
         """Validate constitutional compliance for a request."""
         start_time = time.perf_counter()
-        
-        logger.info(f"🔍 Validating compliance for {request.service_name}:{request.operation}")
-        
+
+        logger.info(
+            f"🔍 Validating compliance for {request.service_name}:{request.operation}"
+        )
+
         try:
             # Validate constitutional hash
             if not self._validate_constitutional_hash(request.constitutional_hash):
                 raise ConstitutionalComplianceError(
                     f"Invalid constitutional hash: {request.constitutional_hash}"
                 )
-            
+
             # Check service connectivity
             service_status = await self._check_service_connectivity()
-            
+
             # Calculate compliance score
             compliance_score = self._calculate_compliance_score(service_status, request)
-            
+
             # Identify violations
             violations = self._identify_violations(service_status, request)
-            
+
             # Generate recommendations
             recommendations = self._generate_recommendations(violations, service_status)
-            
+
             # Determine overall compliance
             is_compliant = compliance_score >= 90.0 and len(violations) == 0
-            
+
             # Create response
             response = ComplianceValidationResponse(
                 is_compliant=is_compliant,
@@ -302,25 +311,25 @@ class ACGSConstitutionalComplianceFramework:
                 violations=violations,
                 recommendations=recommendations,
             )
-            
+
             # Update metrics
             validation_time_ms = (time.perf_counter() - start_time) * 1000
             await self._update_compliance_metrics(is_compliant, validation_time_ms)
-            
+
             # Log audit record
             await self._log_compliance_audit(request, response, validation_time_ms)
-            
+
             logger.info(
                 f"✅ Compliance validation completed: "
                 f"{'COMPLIANT' if is_compliant else 'NON-COMPLIANT'} "
                 f"(Score: {compliance_score:.1f}/100)"
             )
-            
+
             return response
-            
+
         except Exception as e:
             logger.error(f"❌ Compliance validation failed: {e}")
-            
+
             # Create error response
             response = ComplianceValidationResponse(
                 is_compliant=False,
@@ -329,17 +338,17 @@ class ACGSConstitutionalComplianceFramework:
                 violations=[f"Validation error: {str(e)}"],
                 recommendations=["Fix validation errors and retry"],
             )
-            
+
             # Update metrics for failure
             validation_time_ms = (time.perf_counter() - start_time) * 1000
             await self._update_compliance_metrics(False, validation_time_ms)
-            
+
             return response
 
     async def _check_service_connectivity(self) -> Dict[str, Any]:
         """Check connectivity to all ACGS services."""
         service_status = {}
-        
+
         # Check Auth Service
         try:
             async with self.session.get("http://localhost:8016/health") as response:
@@ -353,13 +362,13 @@ class ACGSConstitutionalComplianceFramework:
                 "available": False,
                 "error": str(e),
             }
-        
+
         # Check PostgreSQL
         service_status["postgresql"] = {
             "available": self.db_pool is not None,
             "pool_size": self.db_pool.get_size() if self.db_pool else 0,
         }
-        
+
         # Check Redis
         try:
             if self.redis_client:
@@ -372,13 +381,11 @@ class ACGSConstitutionalComplianceFramework:
                 "available": False,
                 "error": str(e),
             }
-        
+
         return service_status
 
     def _calculate_compliance_score(
-        self,
-        service_status: Dict[str, Any],
-        request: ComplianceValidationRequest
+        self, service_status: Dict[str, Any], request: ComplianceValidationRequest
     ) -> float:
         """Calculate compliance score based on various factors."""
         score = 100.0
@@ -406,23 +413,25 @@ class ACGSConstitutionalComplianceFramework:
             score -= 10.0
 
         # Timestamp validation (10 points)
-        time_diff = abs((datetime.now(timezone.utc) - request.timestamp).total_seconds())
+        time_diff = abs(
+            (datetime.now(timezone.utc) - request.timestamp).total_seconds()
+        )
         if time_diff > 300:  # More than 5 minutes old
             score -= 10.0
 
         return max(0.0, score)
 
     def _identify_violations(
-        self,
-        service_status: Dict[str, Any],
-        request: ComplianceValidationRequest
+        self, service_status: Dict[str, Any], request: ComplianceValidationRequest
     ) -> List[str]:
         """Identify compliance violations."""
         violations = []
 
         # Constitutional hash violations
         if request.constitutional_hash != CONSTITUTIONAL_HASH:
-            violations.append(f"Invalid constitutional hash: {request.constitutional_hash}")
+            violations.append(
+                f"Invalid constitutional hash: {request.constitutional_hash}"
+            )
 
         # Service availability violations
         if not service_status.get("auth", {}).get("available", False):
@@ -439,23 +448,25 @@ class ACGSConstitutionalComplianceFramework:
             violations.append("Missing or empty operation")
 
         # Timestamp violations
-        time_diff = abs((datetime.now(timezone.utc) - request.timestamp).total_seconds())
+        time_diff = abs(
+            (datetime.now(timezone.utc) - request.timestamp).total_seconds()
+        )
         if time_diff > 300:
             violations.append(f"Request timestamp too old: {time_diff:.1f}s")
 
         return violations
 
     def _generate_recommendations(
-        self,
-        violations: List[str],
-        service_status: Dict[str, Any]
+        self, violations: List[str], service_status: Dict[str, Any]
     ) -> List[str]:
         """Generate recommendations based on violations and service status."""
         recommendations = []
 
         # Constitutional hash recommendations
         if any("constitutional hash" in v for v in violations):
-            recommendations.append(f"Use correct constitutional hash: {CONSTITUTIONAL_HASH}")
+            recommendations.append(
+                f"Use correct constitutional hash: {CONSTITUTIONAL_HASH}"
+            )
 
         # Service availability recommendations
         if not service_status.get("auth", {}).get("available", False):
@@ -484,7 +495,9 @@ class ACGSConstitutionalComplianceFramework:
 
         return recommendations
 
-    async def _update_compliance_metrics(self, is_compliant: bool, validation_time_ms: float):
+    async def _update_compliance_metrics(
+        self, is_compliant: bool, validation_time_ms: float
+    ):
         """Update compliance metrics."""
         self.compliance_metrics.total_validations += 1
 
@@ -495,15 +508,15 @@ class ACGSConstitutionalComplianceFramework:
 
         # Update compliance rate
         self.compliance_metrics.compliance_rate = (
-            self.compliance_metrics.successful_validations /
-            self.compliance_metrics.total_validations
+            self.compliance_metrics.successful_validations
+            / self.compliance_metrics.total_validations
         )
 
         # Update average validation time
         total_time = (
-            self.compliance_metrics.avg_validation_time_ms *
-            (self.compliance_metrics.total_validations - 1) +
-            validation_time_ms
+            self.compliance_metrics.avg_validation_time_ms
+            * (self.compliance_metrics.total_validations - 1)
+            + validation_time_ms
         )
         self.compliance_metrics.avg_validation_time_ms = (
             total_time / self.compliance_metrics.total_validations
@@ -515,7 +528,7 @@ class ACGSConstitutionalComplianceFramework:
                 await self.redis_client.set(
                     "compliance:metrics",
                     json.dumps(self.compliance_metrics.__dict__),
-                    ex=3600
+                    ex=3600,
                 )
             except Exception as e:
                 logger.error(f"Failed to update metrics in Redis: {e}")
@@ -524,7 +537,7 @@ class ACGSConstitutionalComplianceFramework:
         self,
         request: ComplianceValidationRequest,
         response: ComplianceValidationResponse,
-        validation_time_ms: float
+        validation_time_ms: float,
     ):
         """Log compliance audit record."""
         audit_record = {
@@ -550,21 +563,22 @@ class ACGSConstitutionalComplianceFramework:
         if self.db_pool:
             try:
                 async with self.db_pool.acquire() as conn:
-                    await conn.execute("""
+                    await conn.execute(
+                        """
                         INSERT INTO compliance_audit (
                             constitutional_hash, service_name, operation,
                             is_compliant, compliance_score, violations,
                             timestamp, metadata
                         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
                     """,
-                    request.constitutional_hash,
-                    request.service_name,
-                    request.operation,
-                    response.is_compliant,
-                    response.compliance_score,
-                    response.violations,
-                    datetime.now(timezone.utc),
-                    json.dumps(request.metadata)
+                        request.constitutional_hash,
+                        request.service_name,
+                        request.operation,
+                        response.is_compliant,
+                        response.compliance_score,
+                        response.violations,
+                        datetime.now(timezone.utc),
+                        json.dumps(request.metadata),
                     )
             except Exception as e:
                 logger.error(f"Failed to log audit record to database: {e}")
@@ -574,8 +588,7 @@ class ACGSConstitutionalComplianceFramework:
             try:
                 # Store latest audit records
                 await self.redis_client.lpush(
-                    "compliance:audit_log",
-                    json.dumps(audit_record, default=str)
+                    "compliance:audit_log", json.dumps(audit_record, default=str)
                 )
                 # Keep only last 100 records
                 await self.redis_client.ltrim("compliance:audit_log", 0, 99)
@@ -591,7 +604,9 @@ class ACGSConstitutionalComplianceFramework:
             service_status = await self._check_service_connectivity()
 
             # Calculate overall system compliance
-            system_compliance_score = self._calculate_system_compliance_score(service_status)
+            system_compliance_score = self._calculate_system_compliance_score(
+                service_status
+            )
 
             # Get recent audit records
             recent_audits = self.audit_log[-50:] if self.audit_log else []
@@ -610,7 +625,9 @@ class ACGSConstitutionalComplianceFramework:
                 "metrics": self.compliance_metrics.__dict__,
                 "trends": compliance_trends,
                 "recent_audits": recent_audits,
-                "recommendations": self._generate_system_recommendations(service_status),
+                "recommendations": self._generate_system_recommendations(
+                    service_status
+                ),
             }
 
             # Save report
@@ -622,7 +639,9 @@ class ACGSConstitutionalComplianceFramework:
             logger.error(f"Failed to generate compliance report: {e}")
             return {"error": str(e)}
 
-    def _calculate_system_compliance_score(self, service_status: Dict[str, Any]) -> float:
+    def _calculate_system_compliance_score(
+        self, service_status: Dict[str, Any]
+    ) -> float:
         """Calculate overall system compliance score."""
         score = 100.0
 
@@ -642,17 +661,23 @@ class ACGSConstitutionalComplianceFramework:
         # Performance scoring
         avg_validation_time = self.compliance_metrics.avg_validation_time_ms
         if avg_validation_time > 100:  # More than 100ms
-            score -= min(20.0, (avg_validation_time - 100) / 10)  # Up to 20 point penalty
+            score -= min(
+                20.0, (avg_validation_time - 100) / 10
+            )  # Up to 20 point penalty
 
         return max(0.0, score)
 
-    def _calculate_compliance_trends(self, recent_audits: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def _calculate_compliance_trends(
+        self, recent_audits: List[Dict[str, Any]]
+    ) -> Dict[str, Any]:
         """Calculate compliance trends from recent audit data."""
         if not recent_audits:
             return {"error": "No audit data available"}
 
         # Calculate compliance rate trend
-        compliant_count = sum(1 for audit in recent_audits if audit.get("is_compliant", False))
+        compliant_count = sum(
+            1 for audit in recent_audits if audit.get("is_compliant", False)
+        )
         compliance_rate = compliant_count / len(recent_audits)
 
         # Calculate average score trend
@@ -670,10 +695,10 @@ class ACGSConstitutionalComplianceFramework:
 
         # Sort violations by frequency
         common_violations = sorted(
-            violation_counts.items(),
-            key=lambda x: x[1],
-            reverse=True
-        )[:5]  # Top 5
+            violation_counts.items(), key=lambda x: x[1], reverse=True
+        )[
+            :5
+        ]  # Top 5
 
         return {
             "compliance_rate": round(compliance_rate, 3),
@@ -683,7 +708,9 @@ class ACGSConstitutionalComplianceFramework:
             "common_violations": common_violations,
         }
 
-    def _generate_system_recommendations(self, service_status: Dict[str, Any]) -> List[str]:
+    def _generate_system_recommendations(
+        self, service_status: Dict[str, Any]
+    ) -> List[str]:
         """Generate system-wide recommendations."""
         recommendations = []
 
@@ -704,12 +731,14 @@ class ACGSConstitutionalComplianceFramework:
             recommendations.append("Improve compliance rate to >95%")
 
         # General recommendations
-        recommendations.extend([
-            "Implement automated compliance monitoring",
-            "Set up compliance alerting for violations",
-            "Regular compliance audits and reviews",
-            f"Maintain constitutional hash: {CONSTITUTIONAL_HASH}",
-        ])
+        recommendations.extend(
+            [
+                "Implement automated compliance monitoring",
+                "Set up compliance alerting for violations",
+                "Regular compliance audits and reviews",
+                f"Maintain constitutional hash: {CONSTITUTIONAL_HASH}",
+            ]
+        )
 
         return recommendations
 
@@ -742,9 +771,7 @@ class ACGSConstitutionalComplianceFramework:
 
 # Utility functions for easy integration
 async def validate_constitutional_compliance(
-    service_name: str,
-    operation: str,
-    metadata: Optional[Dict[str, Any]] = None
+    service_name: str, operation: str, metadata: Optional[Dict[str, Any]] = None
 ) -> ComplianceValidationResponse:
     """Utility function for quick compliance validation."""
     async with ACGSConstitutionalComplianceFramework() as framework:
@@ -752,7 +779,7 @@ async def validate_constitutional_compliance(
             constitutional_hash=CONSTITUTIONAL_HASH,
             service_name=service_name,
             operation=operation,
-            metadata=metadata or {}
+            metadata=metadata or {},
         )
         return await framework.validate_compliance(request)
 
@@ -768,14 +795,14 @@ async def main():
                 constitutional_hash=CONSTITUTIONAL_HASH,
                 service_name="test_service",
                 operation="test_operation",
-                metadata={"test": True}
+                metadata={"test": True},
             )
 
             response = await framework.validate_compliance(request)
 
-            print("\n" + "="*60)
+            print("\n" + "=" * 60)
             print("🏛️ CONSTITUTIONAL COMPLIANCE TEST RESULTS")
-            print("="*60)
+            print("=" * 60)
             print(f"Compliant: {'✅' if response.is_compliant else '❌'}")
             print(f"Score: {response.compliance_score:.1f}/100")
             print(f"Violations: {len(response.violations)}")
@@ -791,11 +818,13 @@ async def main():
                 for i, rec in enumerate(response.recommendations, 1):
                     print(f"  {i}. {rec}")
 
-            print("="*60)
+            print("=" * 60)
 
             # Generate compliance report
             report = await framework.get_compliance_report()
-            print(f"\n📊 System Compliance Score: {report.get('system_compliance', {}).get('overall_score', 0):.1f}/100")
+            print(
+                f"\n📊 System Compliance Score: {report.get('system_compliance', {}).get('overall_score', 0):.1f}/100"
+            )
 
         except Exception as e:
             logger.error(f"❌ Compliance test failed: {e}")

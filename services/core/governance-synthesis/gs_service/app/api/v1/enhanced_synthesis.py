@@ -15,12 +15,11 @@ from fastapi import APIRouter, BackgroundTasks, HTTPException, status
 from pydantic import BaseModel, Field
 
 from ...core.opa_integration import OPAIntegrationError
-from ...services.enhanced_governance_synthesis import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from ...services.enhanced_governance_synthesis import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     EnhancedSynthesisRequest,
+    "cdd01ef066bc6cf2",
+    =,
     get_enhanced_synthesis_service,
 )
 from ...services.policy_validator import ValidationLevel
@@ -422,13 +421,15 @@ async def multi_model_consensus_synthesis(
     import uuid
 
     from ..core.phase_a3_multi_model_consensus import (
-
-# Security validation imports
-from services.shared.security_validation import (
-    validate_user_input,
-    validate_policy_input,
-    validate_governance_input
-)
+        curity,
+        import,
+        imports,
+        services.shared.security_validation,
+        validate_governance_input,
+        validate_policy_input,
+        validate_user_input,
+        validation,
+    )
         ConsensusStrategy,
         PhaseA3MultiModelConsensusEngine,
     )

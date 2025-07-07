@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Constitutional Hash: cdd01ef066bc6cf2
 """
 Test script for Qwen3-32B (Groq) and DeepSeek R1 (OpenRouter) integration
 Replaces GPT-4 usage in ACGS-1 constitutional governance system.

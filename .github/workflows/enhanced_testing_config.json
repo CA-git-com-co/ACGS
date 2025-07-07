@@ -2,5 +2,6 @@
   "anchor_test_coverage_threshold": 80,
   "python_test_coverage_threshold": 80,
   "e2e_test_timeout": 600,
-  "performance_benchmark_enabled": true
+  "performance_benchmark_enabled": true,
+  "_constitutional_hash": "cdd01ef066bc6cf2"
 }

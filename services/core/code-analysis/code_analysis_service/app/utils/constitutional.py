@@ -131,15 +131,17 @@ class ConstitutionalValidator:
         """
         enhanced_data = data.copy()
 
-        enhanced_data.update({
-            "constitutional_hash": self.constitutional_hash,
-            "constitutional_compliance": {
-                "validated": True,
-                "validation_timestamp": datetime.now(timezone.utc).isoformat(),
-                "validator_version": "1.0.0",
-                "compliance_signature": self.generate_compliance_signature(data),
-            },
-        })
+        enhanced_data.update(
+            {
+                "constitutional_hash": self.constitutional_hash,
+                "constitutional_compliance": {
+                    "validated": True,
+                    "validation_timestamp": datetime.now(timezone.utc).isoformat(),
+                    "validator_version": "1.0.0",
+                    "compliance_signature": self.generate_compliance_signature(data),
+                },
+            }
+        )
 
         return enhanced_data
 

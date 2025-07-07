@@ -14,7 +14,6 @@ from datetime import datetime
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class ProductionConfigManager:
     def __init__(self):
         self.config_issues = []

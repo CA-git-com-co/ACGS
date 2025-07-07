@@ -9,14 +9,13 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 
-from .services.pgp_assurance import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from .services.pgp_assurance import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     HashAlgorithm,
     PGPAssuranceService,
     SignatureAlgorithm,
+    "cdd01ef066bc6cf2",
+    =,
 )
 
 # from .core.auth import require_integrity_admin, require_internal_service, User

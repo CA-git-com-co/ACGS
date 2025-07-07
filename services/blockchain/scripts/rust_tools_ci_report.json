@@ -12,5 +12,7 @@
   "integration_status": "verified",
   "environment": "ci_cd",
   "rust_version": "rustc 1.87.0 (17067e9ac 2025-05-09)",
-  "cargo_version": "cargo 1.87.0 (99624be96 2025-05-06)"
+  "cargo_version": "cargo 1.87.0 (99624be96 2025-05-06)",
+  "_constitutional_hash": "cdd01ef066bc6cf2",
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }

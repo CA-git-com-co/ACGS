@@ -536,12 +536,14 @@ class ContextEngine:
             search_latency = (time.time() - start_time) * 1000
             self._update_metrics("search", search_latency, True)
 
-            search_metadata.update({
-                "total_results": len(paginated_results),
-                "latency_ms": search_latency,
-                "query_embedding_generated": query_embedding is not None,
-                "wina_optimization_applied": False,  # TODO: Track WINA usage
-            })
+            search_metadata.update(
+                {
+                    "total_results": len(paginated_results),
+                    "latency_ms": search_latency,
+                    "query_embedding_generated": query_embedding is not None,
+                    "wina_optimization_applied": False,  # TODO: Track WINA usage
+                }
+            )
 
             logger.debug(
                 f"Search completed: {len(paginated_results)} results in"
@@ -687,17 +689,19 @@ class ContextEngine:
                     self.constitutional_validator, "audit_logger"
                 ):
                     await (
-                        self.constitutional_validator.audit_logger.log_streaming_event({
-                            "event_type": "constitutional_violation_detected",
-                            "context_type": context_type.value,
-                            "content_hash": (
-                                hashlib.sha256(content.encode()).hexdigest()
-                            ),
-                            "violation_details": (
-                                getattr(validation_result, "violations", [])
-                            ),
-                            "timestamp": datetime.utcnow().isoformat(),
-                        })
+                        self.constitutional_validator.audit_logger.log_streaming_event(
+                            {
+                                "event_type": "constitutional_violation_detected",
+                                "context_type": context_type.value,
+                                "content_hash": (
+                                    hashlib.sha256(content.encode()).hexdigest()
+                                ),
+                                "violation_details": (
+                                    getattr(validation_result, "violations", [])
+                                ),
+                                "timestamp": datetime.utcnow().isoformat(),
+                            }
+                        )
                     )
 
             return is_compliant

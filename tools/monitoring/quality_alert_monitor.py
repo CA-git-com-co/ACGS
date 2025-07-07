@@ -55,12 +55,14 @@ def check_quality_issues(metrics: dict[str, Any]) -> list[dict[str, Any]]:
     issues = []
 
     if not metrics or "metrics" not in metrics:
-        issues.append({
-            "severity": SEVERITY_CRITICAL,
-            "category": "system",
-            "message": "No metrics data available",
-            "details": "Metrics collection may have failed",
-        })
+        issues.append(
+            {
+                "severity": SEVERITY_CRITICAL,
+                "category": "system",
+                "message": "No metrics data available",
+                "details": "Metrics collection may have failed",
+            }
+        )
         return issues
 
     metrics_data = metrics["metrics"]
@@ -69,32 +71,36 @@ def check_quality_issues(metrics: dict[str, Any]) -> list[dict[str, Any]]:
     compliance = metrics_data.get("constitutional_compliance", {})
     compliance_rate = compliance.get("rate", 0)
     if compliance_rate < THRESHOLDS["constitutional_compliance"]:
-        issues.append({
-            "severity": SEVERITY_CRITICAL,
-            "category": "constitutional_compliance",
-            "message": f"Constitutional compliance below 100% ({compliance_rate}%)",
-            "details": (
-                "Missing constitutional hash in"
-                f" {compliance.get('total_docs', 0) - compliance.get('compliant_docs', 0)} files"
-            ),
-            "action": (
-                f"Add constitutional hash '{CONSTITUTIONAL_HASH}' to all documentation"
-                " files"
-            ),
-        })
+        issues.append(
+            {
+                "severity": SEVERITY_CRITICAL,
+                "category": "constitutional_compliance",
+                "message": f"Constitutional compliance below 100% ({compliance_rate}%)",
+                "details": (
+                    "Missing constitutional hash in"
+                    f" {compliance.get('total_docs', 0) - compliance.get('compliant_docs', 0)} files"
+                ),
+                "action": (
+                    f"Add constitutional hash '{CONSTITUTIONAL_HASH}' to all documentation"
+                    " files"
+                ),
+            }
+        )
 
     # Check link validity
     link_validity = metrics_data.get("link_validity", {})
     link_rate = link_validity.get("rate", 0)
     if link_rate < THRESHOLDS["link_validity"]:
         broken_links = link_validity.get("broken_links", 0)
-        issues.append({
-            "severity": SEVERITY_HIGH,
-            "category": "link_validity",
-            "message": f"Link validity below 100% ({link_rate}%)",
-            "details": f"{broken_links} broken internal links found",
-            "action": "Fix broken documentation links to maintain navigation integrity",
-        })
+        issues.append(
+            {
+                "severity": SEVERITY_HIGH,
+                "category": "link_validity",
+                "message": f"Link validity below 100% ({link_rate}%)",
+                "details": f"{broken_links} broken internal links found",
+                "action": "Fix broken documentation links to maintain navigation integrity",
+            }
+        )
 
     # Check documentation freshness
     freshness = metrics_data.get("documentation_freshness", {})
@@ -102,13 +108,15 @@ def check_quality_issues(metrics: dict[str, Any]) -> list[dict[str, Any]]:
     if freshness_rate < THRESHOLDS["documentation_freshness"]:
         stale_docs = freshness.get("stale_docs", 0)
         severity = SEVERITY_HIGH if freshness_rate < 70 else SEVERITY_MEDIUM
-        issues.append({
-            "severity": severity,
-            "category": "documentation_freshness",
-            "message": f"Documentation freshness below 85% ({freshness_rate}%)",
-            "details": f"{stale_docs} documents not updated in >90 days",
-            "action": "Review and update stale documentation",
-        })
+        issues.append(
+            {
+                "severity": severity,
+                "category": "documentation_freshness",
+                "message": f"Documentation freshness below 85% ({freshness_rate}%)",
+                "details": f"{stale_docs} documents not updated in >90 days",
+                "action": "Review and update stale documentation",
+            }
+        )
 
     # Check documentation coverage
     coverage = metrics_data.get("documentation_coverage", {})
@@ -118,13 +126,15 @@ def check_quality_issues(metrics: dict[str, Any]) -> list[dict[str, Any]]:
             "documented_services", 0
         )
         severity = SEVERITY_HIGH if coverage_rate < 60 else SEVERITY_MEDIUM
-        issues.append({
-            "severity": severity,
-            "category": "documentation_coverage",
-            "message": f"Documentation coverage below 80% ({coverage_rate}%)",
-            "details": f"{missing_docs} services missing API documentation",
-            "action": "Create missing service API documentation",
-        })
+        issues.append(
+            {
+                "severity": severity,
+                "category": "documentation_coverage",
+                "message": f"Documentation coverage below 80% ({coverage_rate}%)",
+                "details": f"{missing_docs} services missing API documentation",
+                "action": "Create missing service API documentation",
+            }
+        )
 
     # Check overall quality score
     overall = metrics_data.get("overall_quality", {})
@@ -137,13 +147,15 @@ def check_quality_issues(metrics: dict[str, Any]) -> list[dict[str, Any]]:
         else:
             severity = SEVERITY_MEDIUM
 
-        issues.append({
-            "severity": severity,
-            "category": "overall_quality",
-            "message": f"Overall quality score below 85% ({overall_score}%)",
-            "details": f"Quality status: {overall.get('status', 'UNKNOWN')}",
-            "action": "Address individual metric issues to improve overall quality",
-        })
+        issues.append(
+            {
+                "severity": severity,
+                "category": "overall_quality",
+                "message": f"Overall quality score below 85% ({overall_score}%)",
+                "details": f"Quality status: {overall.get('status', 'UNKNOWN')}",
+                "action": "Address individual metric issues to improve overall quality",
+            }
+        )
 
     return issues
 

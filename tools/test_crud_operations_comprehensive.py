@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Constitutional Hash: cdd01ef066bc6cf2
 """
 Comprehensive CRUD operations testing script for ACGS-PGP Phase 1 remediation.
 Tests all API endpoints across ports 8000-8005 using curl commands.

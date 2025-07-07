@@ -44,7 +44,12 @@ def upgrade():
         sa.Column("resource", sa.String(255), nullable=True),
         sa.Column("result", sa.String(50), nullable=False),  # success, denied, error
         sa.Column("ip_address", sa.String(45), nullable=True),
-        sa.Column("constitutional_hash", sa.String(64), nullable=False, server_default=CONSTITUTIONAL_HASH),
+        sa.Column(
+            "constitutional_hash",
+            sa.String(64),
+            nullable=False,
+            server_default=CONSTITUTIONAL_HASH,
+        ),
         sa.Column(
             "created_at",
             sa.DateTime(timezone=True),
@@ -55,15 +60,22 @@ def upgrade():
     )
 
     # Create efficient indexes for the simplified audit table
-    op.create_index("idx_tenant_access_tenant_time", "tenant_access_log", ["tenant_id", "created_at"])
-    op.create_index("idx_tenant_access_user_time", "tenant_access_log", ["user_id", "created_at"])
+    op.create_index(
+        "idx_tenant_access_tenant_time",
+        "tenant_access_log",
+        ["tenant_id", "created_at"],
+    )
+    op.create_index(
+        "idx_tenant_access_user_time", "tenant_access_log", ["user_id", "created_at"]
+    )
     op.create_index("idx_tenant_access_result", "tenant_access_log", ["result"])
 
     # Enable RLS on the new simplified audit table
     op.execute("ALTER TABLE tenant_access_log ENABLE ROW LEVEL SECURITY")
 
     # Create simplified RLS policy for access log
-    op.execute("""
+    op.execute(
+        """
         CREATE POLICY simple_access_log_policy ON tenant_access_log
         FOR ALL TO PUBLIC
         USING (
@@ -71,10 +83,12 @@ def upgrade():
             OR current_setting('app.bypass_rls', true) = 'true'
             OR current_setting('app.is_admin', true) = 'true'
         )
-    """)
+    """
+    )
 
     # Replace complex set_secure_tenant_context with simplified version
-    op.execute(f"""
+    op.execute(
+        f"""
         CREATE OR REPLACE FUNCTION set_simple_tenant_context(
             p_tenant_id uuid,
             p_user_id integer DEFAULT NULL,
@@ -124,10 +138,12 @@ def upgrade():
             );
         END;
         $$ LANGUAGE plpgsql SECURITY DEFINER;
-    """)
+    """
+    )
 
     # Simplified constitutional compliance check (replace complex version)
-    op.execute(f"""
+    op.execute(
+        f"""
         CREATE OR REPLACE FUNCTION simple_constitutional_check()
         RETURNS TRIGGER AS $$
         DECLARE
@@ -156,18 +172,27 @@ def upgrade():
             RETURN NEW;
         END;
         $$ LANGUAGE plpgsql;
-    """)
+    """
+    )
 
     # Replace existing complex RLS policies with simplified versions
-    tables_to_simplify = ['tenants', 'tenant_users', 'tenant_settings', 'tenant_invitations']
-    
+    tables_to_simplify = [
+        "tenants",
+        "tenant_users",
+        "tenant_settings",
+        "tenant_invitations",
+    ]
+
     for table_name in tables_to_simplify:
         # Drop existing complex policies
-        op.execute(f"DROP POLICY IF EXISTS {table_name}_isolation_policy ON {table_name}")
+        op.execute(
+            f"DROP POLICY IF EXISTS {table_name}_isolation_policy ON {table_name}"
+        )
         op.execute(f"DROP POLICY IF EXISTS tenant_isolation_policy ON {table_name}")
-        
+
         # Create simplified policy
-        op.execute(f"""
+        op.execute(
+            f"""
             CREATE POLICY simple_tenant_policy ON {table_name}
             FOR ALL TO PUBLIC
             USING (
@@ -175,21 +200,30 @@ def upgrade():
                 OR current_setting('app.bypass_rls', true) = 'true'
                 OR current_setting('app.is_admin', true) = 'true'
             )
-        """)
+        """
+        )
 
     # Replace complex constitutional compliance triggers with simplified version
-    for table_name in ['tenants', 'tenant_users', 'tenant_settings', 'tenant_access_log']:
-        op.execute(f"""
+    for table_name in [
+        "tenants",
+        "tenant_users",
+        "tenant_settings",
+        "tenant_access_log",
+    ]:
+        op.execute(
+            f"""
             DROP TRIGGER IF EXISTS constitutional_compliance_trigger ON {table_name};
             DROP TRIGGER IF EXISTS enhanced_constitutional_compliance_trigger ON {table_name};
             CREATE TRIGGER simple_constitutional_trigger
                 BEFORE INSERT OR UPDATE ON {table_name}
                 FOR EACH ROW
                 EXECUTE FUNCTION simple_constitutional_check();
-        """)
+        """
+        )
 
     # Create simplified tenant management view
-    op.execute("""
+    op.execute(
+        """
         CREATE OR REPLACE VIEW simple_tenant_dashboard AS
         SELECT 
             t.id as tenant_id,
@@ -205,10 +239,12 @@ def upgrade():
         LEFT JOIN tenant_users tu ON t.id = tu.tenant_id AND tu.is_active = true
         LEFT JOIN tenant_access_log tal ON t.id = tal.tenant_id
         GROUP BY t.id, t.name, t.status, t.security_level, t.constitutional_compliance_score, t.constitutional_hash;
-    """)
+    """
+    )
 
     # Create simplified maintenance function
-    op.execute("""
+    op.execute(
+        """
         CREATE OR REPLACE FUNCTION simple_tenant_maintenance()
         RETURNS void AS $$
         BEGIN
@@ -227,19 +263,23 @@ def upgrade():
             );
         END;
         $$ LANGUAGE plpgsql SECURITY DEFINER;
-    """)
+    """
+    )
 
     # Remove complex unused functions and tables that add unnecessary complexity
     # (Keep them for now but mark for future removal)
-    op.execute("""
+    op.execute(
+        """
         COMMENT ON FUNCTION monitor_rls_violations() IS 'DEPRECATED: Use simple_tenant_maintenance() instead';
         COMMENT ON FUNCTION validate_cross_tenant_operation(uuid, uuid, text, integer) IS 'DEPRECATED: Simplified in application layer';
         COMMENT ON TABLE rls_audit_events IS 'DEPRECATED: Replaced by tenant_access_log';
         COMMENT ON TABLE tenant_security_policies IS 'DEPRECATED: Policies now managed in application layer';
-    """)
+    """
+    )
 
     # Create indexes to improve performance of simplified implementation
-    op.execute("""
+    op.execute(
+        """
         -- Optimize tenant queries
         CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_tenants_status_hash 
         ON tenants(status, constitutional_hash);
@@ -248,33 +288,48 @@ def upgrade():
         CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_tenant_users_active_lookup 
         ON tenant_users(user_id, tenant_id, is_active) 
         WHERE is_active = true;
-    """)
+    """
+    )
 
 
 def downgrade():
     """Revert simplifications and restore complex RLS implementation."""
-    
+
     # Drop simplified components
     op.execute("DROP VIEW IF EXISTS simple_tenant_dashboard")
     op.execute("DROP FUNCTION IF EXISTS simple_tenant_maintenance()")
     op.execute("DROP FUNCTION IF EXISTS simple_constitutional_check()")
-    op.execute("DROP FUNCTION IF EXISTS set_simple_tenant_context(uuid, integer, boolean, boolean, text)")
-    
+    op.execute(
+        "DROP FUNCTION IF EXISTS set_simple_tenant_context(uuid, integer, boolean, boolean, text)"
+    )
+
     # Drop simplified triggers
-    for table_name in ['tenants', 'tenant_users', 'tenant_settings', 'tenant_access_log']:
-        op.execute(f"DROP TRIGGER IF EXISTS simple_constitutional_trigger ON {table_name}")
-    
+    for table_name in [
+        "tenants",
+        "tenant_users",
+        "tenant_settings",
+        "tenant_access_log",
+    ]:
+        op.execute(
+            f"DROP TRIGGER IF EXISTS simple_constitutional_trigger ON {table_name}"
+        )
+
     # Drop simplified policies
-    tables_to_restore = ['tenants', 'tenant_users', 'tenant_settings', 'tenant_invitations']
+    tables_to_restore = [
+        "tenants",
+        "tenant_users",
+        "tenant_settings",
+        "tenant_invitations",
+    ]
     for table_name in tables_to_restore:
         op.execute(f"DROP POLICY IF EXISTS simple_tenant_policy ON {table_name}")
-    
+
     # Drop simplified audit table
     op.drop_table("tenant_access_log")
-    
+
     # Drop performance indexes
     op.execute("DROP INDEX CONCURRENTLY IF EXISTS idx_tenants_status_hash")
     op.execute("DROP INDEX CONCURRENTLY IF EXISTS idx_tenant_users_active_lookup")
-    
+
     # Note: Original complex functions and policies from 002_enhance_rls remain
     # They would need to be recreated if this was a full rollback

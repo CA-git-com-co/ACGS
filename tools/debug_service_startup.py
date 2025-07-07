@@ -17,7 +17,6 @@ import httpx
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class ServiceStartupDebugger:
     """Debug service startup issues with detailed logging."""
 

@@ -2,7 +2,12 @@
   "dashboard": {
     "id": null,
     "title": "ACGS Constitutional Compliance Dashboard",
-    "tags": ["acgs", "constitutional", "compliance", "constitutional_hash:cdd01ef066bc6cf2"],
+    "tags": [
+      "acgs",
+      "constitutional",
+      "compliance",
+      "constitutional_hash:cdd01ef066bc6cf2"
+    ],
     "timezone": "browser",
     "panels": [
       {
@@ -21,14 +26,28 @@
             "unit": "percentunit",
             "thresholds": {
               "steps": [
-                {"color": "red", "value": null},
-                {"color": "yellow", "value": 0.95},
-                {"color": "green", "value": 1.0}
+                {
+                  "color": "red",
+                  "value": null
+                },
+                {
+                  "color": "yellow",
+                  "value": 0.95
+                },
+                {
+                  "color": "green",
+                  "value": 1.0
+                }
               ]
             }
           }
         },
-        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 0}
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 0,
+          "y": 0
+        }
       },
       {
         "id": 2,
@@ -46,14 +65,28 @@
             "unit": "percentunit",
             "thresholds": {
               "steps": [
-                {"color": "red", "value": null},
-                {"color": "yellow", "value": 0.95},
-                {"color": "green", "value": 1.0}
+                {
+                  "color": "red",
+                  "value": null
+                },
+                {
+                  "color": "yellow",
+                  "value": 0.95
+                },
+                {
+                  "color": "green",
+                  "value": 1.0
+                }
               ]
             }
           }
         },
-        "gridPos": {"h": 8, "w": 8, "x": 8, "y": 0}
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 8,
+          "y": 0
+        }
       },
       {
         "id": 3,
@@ -71,14 +104,28 @@
             "unit": "short",
             "thresholds": {
               "steps": [
-                {"color": "green", "value": null},
-                {"color": "yellow", "value": 1},
-                {"color": "red", "value": 5}
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "yellow",
+                  "value": 1
+                },
+                {
+                  "color": "red",
+                  "value": 5
+                }
               ]
             }
           }
         },
-        "gridPos": {"h": 8, "w": 8, "x": 16, "y": 0}
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 16,
+          "y": 0
+        }
       },
       {
         "id": 4,
@@ -98,7 +145,12 @@
             "max": 1
           }
         },
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        }
       },
       {
         "id": 5,
@@ -121,11 +173,20 @@
             "unit": "short"
           }
         },
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        }
       }
     ],
-    "time": {"from": "now-1h", "to": "now"},
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
     "refresh": "5s"
   },
-  "overwrite": true
+  "overwrite": true,
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }

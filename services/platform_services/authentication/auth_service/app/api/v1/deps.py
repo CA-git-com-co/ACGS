@@ -13,7 +13,6 @@ from ...core.security import get_current_active_user
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 # Wrapper for get_async_db to provide the session.
 # Endpoints will depend on this to get an AsyncSession.
 async def get_db() -> AsyncGenerator[AsyncSession, None]:

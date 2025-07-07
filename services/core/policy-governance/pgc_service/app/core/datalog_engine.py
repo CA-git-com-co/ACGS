@@ -1,6 +1,6 @@
-
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
 
 # Mock implementation to avoid pyDatalog dependency
 class MockPyDatalog:

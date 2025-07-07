@@ -1,82 +1,73 @@
-# Constitutional Hash: cdd01ef066bc6cf2
-# ACGS-1 Simplified Alertmanager Configuration
-# Minimal working configuration for production deployment
-
 global:
-  smtp_smarthost: 'localhost:587'
-  smtp_from: 'acgs-alerts@acgs.ai'
-  smtp_auth_username: 'acgs-alerts@acgs.ai'
-  smtp_auth_password: 'secure_password_here'
+  smtp_smarthost: localhost:587
+  smtp_from: acgs-alerts@acgs.ai
+  smtp_auth_username: acgs-alerts@acgs.ai
+  smtp_auth_password: secure_password_here
   smtp_require_tls: false
   resolve_timeout: 5m
-
 route:
-  group_by: ['alertname', 'severity', 'service']
+  group_by:
+  - alertname
+  - severity
+  - service
   group_wait: 10s
   group_interval: 5m
   repeat_interval: 12h
-  receiver: 'default-receiver'
-
+  receiver: default-receiver
   routes:
-    - match:
-        severity: critical
-      receiver: 'critical-alerts'
-      group_wait: 5s
-      group_interval: 2m
-      repeat_interval: 5m
-
-    - match:
-        severity: warning
-      receiver: 'warning-alerts'
-      group_wait: 30s
-      group_interval: 10m
-      repeat_interval: 2h
-
+  - match:
+      severity: critical
+    receiver: critical-alerts
+    group_wait: 5s
+    group_interval: 2m
+    repeat_interval: 5m
+  - match:
+      severity: warning
+    receiver: warning-alerts
+    group_wait: 30s
+    group_interval: 10m
+    repeat_interval: 2h
 receivers:
-  - name: 'default-receiver'
-    email_configs:
-      - to: 'ops-team@acgs.ai'
-        subject: '[ACGS-1] {{ .GroupLabels.alertname }} - {{ .Status | toUpper }}'
-        body: |
-          {{ range .Alerts }}
-          Alert: {{ .Annotations.summary }}
-          Description: {{ .Annotations.description }}
-          Severity: {{ .Labels.severity }}
-          Service: {{ .Labels.service }}
-          Component: {{ .Labels.component }}
-          {{ end }}
+- name: default-receiver
+  email_configs:
+  - to: ops-team@acgs.ai
+    subject: '[ACGS-1] {{ .GroupLabels.alertname }} - {{ .Status | toUpper }}'
+    body: '{{ range .Alerts }}
 
-  - name: 'critical-alerts'
-    email_configs:
-      - to: 'critical-alerts@acgs.ai'
-        subject: '[CRITICAL] ACGS-1 {{ .GroupLabels.alertname }}'
-        body: |
-          🚨 CRITICAL ALERT 🚨
+      Alert: {{ .Annotations.summary }}
 
-          {{ range .Alerts }}
-          Alert: {{ .Annotations.summary }}
-          Description: {{ .Annotations.description }}
-          Service: {{ .Labels.service }}
-          Component: {{ .Labels.component }}
-          {{ end }}
+      Description: {{ .Annotations.description }}
 
-  - name: 'warning-alerts'
-    email_configs:
-      - to: 'ops-team@acgs.ai'
-        subject: '[WARNING] ACGS-1 {{ .GroupLabels.alertname }}'
-        body: |
-          ⚠️ WARNING ALERT ⚠️
+      Severity: {{ .Labels.severity }}
 
-          {{ range .Alerts }}
-          Alert: {{ .Annotations.summary }}
-          Description: {{ .Annotations.description }}
-          Service: {{ .Labels.service }}
-          Component: {{ .Labels.component }}
-          {{ end }}
+      Service: {{ .Labels.service }}
 
+      Component: {{ .Labels.component }}
+
+      {{ end }}
+
+      '
+- name: critical-alerts
+  email_configs:
+  - to: critical-alerts@acgs.ai
+    subject: '[CRITICAL] ACGS-1 {{ .GroupLabels.alertname }}'
+    body: "\U0001F6A8 CRITICAL ALERT \U0001F6A8\n\n{{ range .Alerts }}\nAlert: {{\
+      \ .Annotations.summary }}\nDescription: {{ .Annotations.description }}\nService:\
+      \ {{ .Labels.service }}\nComponent: {{ .Labels.component }}\n{{ end }}\n"
+- name: warning-alerts
+  email_configs:
+  - to: ops-team@acgs.ai
+    subject: '[WARNING] ACGS-1 {{ .GroupLabels.alertname }}'
+    body: "\u26A0\uFE0F WARNING ALERT \u26A0\uFE0F\n\n{{ range .Alerts }}\nAlert:\
+      \ {{ .Annotations.summary }}\nDescription: {{ .Annotations.description }}\n\
+      Service: {{ .Labels.service }}\nComponent: {{ .Labels.component }}\n{{ end }}\n"
 inhibit_rules:
-  - source_match:
-      severity: 'critical'
-    target_match:
-      severity: 'warning'
-    equal: ['alertname', 'service', 'component']
+- source_match:
+    severity: critical
+  target_match:
+    severity: warning
+  equal:
+  - alertname
+  - service
+  - component
+constitutional_hash: cdd01ef066bc6cf2

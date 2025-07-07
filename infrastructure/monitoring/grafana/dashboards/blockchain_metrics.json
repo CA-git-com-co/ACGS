@@ -2,7 +2,11 @@
   "dashboard": {
     "id": null,
     "title": "Blockchain & Quantumagi Metrics",
-    "tags": ["acgs", "blockchain", "solana"],
+    "tags": [
+      "acgs",
+      "blockchain",
+      "solana"
+    ],
     "panels": [
       {
         "id": 1,
@@ -39,5 +43,7 @@
         }
       }
     ]
-  }
+  },
+  "_constitutional_hash": "cdd01ef066bc6cf2",
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }

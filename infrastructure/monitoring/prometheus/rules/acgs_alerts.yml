@@ -1,51 +1,50 @@
-# Constitutional Hash: cdd01ef066bc6cf2
 groups:
-  - name: acgs_service_health
-    rules:
-      - alert: ServiceDown
-        annotations:
-          description: Service {{ $labels.job }} has been down for more than 1 minute.
-          summary: ACGS service {{ $labels.job }} is down
-        expr: up{job=~"acgs-.*"} == 0
-        for: 1m
-        labels:
-          severity: critical
-      - alert: HighResponseTime
-        annotations:
-          description: 95th percentile response time is {{ $value }}s, exceeding 2s target.
-          summary: High response time for {{ $labels.job }}
-        expr:
-          histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=~"acgs-.*"}[5m]))
-          > 2
-        for: 5m
-        labels:
-          severity: warning
-  - name: acgs_governance
-    rules:
-      - alert: LowConstitutionalCompliance
-        annotations:
-          description: Constitutional compliance rate is {{ $value }}%, below 95% threshold.
-          summary: Constitutional compliance below threshold
-        expr: acgs_constitutional_compliance_rate < 95
-        for: 2m
-        labels:
-          severity: critical
-      - alert: HighGovernanceCosts
-        annotations:
-          description: Governance action cost is {{ $value }} SOL, exceeding 0.01 SOL
-            target.
-          summary: Governance action costs too high
-        expr: acgs_governance_action_cost_sol > 0.01
-        for: 1m
-        labels:
-          severity: warning
-  - name: acgs_blockchain
-    rules:
-      - alert: QuantumagiProgramError
-        annotations:
-          description: Error rate is {{ $value }} errors/sec in {{ $labels.program }}.
-          summary: High error rate in Quantumagi programs
-        expr: rate(quantumagi_program_errors_total[5m]) > 0.1
-        for: 2m
-        labels:
-          severity: critical
+- name: acgs_service_health
+  rules:
+  - alert: ServiceDown
+    annotations:
+      description: Service {{ $labels.job }} has been down for more than 1 minute.
+      summary: ACGS service {{ $labels.job }} is down
+    expr: up{job=~"acgs-.*"} == 0
+    for: 1m
+    labels:
+      severity: critical
+  - alert: HighResponseTime
+    annotations:
+      description: 95th percentile response time is {{ $value }}s, exceeding 2s target.
+      summary: High response time for {{ $labels.job }}
+    expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=~"acgs-.*"}[5m]))
+      > 2
+    for: 5m
+    labels:
+      severity: warning
+- name: acgs_governance
+  rules:
+  - alert: LowConstitutionalCompliance
+    annotations:
+      description: Constitutional compliance rate is {{ $value }}%, below 95% threshold.
+      summary: Constitutional compliance below threshold
+    expr: acgs_constitutional_compliance_rate < 95
+    for: 2m
+    labels:
+      severity: critical
+  - alert: HighGovernanceCosts
+    annotations:
+      description: Governance action cost is {{ $value }} SOL, exceeding 0.01 SOL
+        target.
+      summary: Governance action costs too high
+    expr: acgs_governance_action_cost_sol > 0.01
+    for: 1m
+    labels:
+      severity: warning
+- name: acgs_blockchain
+  rules:
+  - alert: QuantumagiProgramError
+    annotations:
+      description: Error rate is {{ $value }} errors/sec in {{ $labels.program }}.
+      summary: High error rate in Quantumagi programs
+    expr: rate(quantumagi_program_errors_total[5m]) > 0.1
+    for: 2m
+    labels:
+      severity: critical
+constitutional_hash: cdd01ef066bc6cf2

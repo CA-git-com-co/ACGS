@@ -11,7 +11,6 @@ from pathlib import Path
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 def start_service(service_name: str, port: int, working_dir: str) -> bool:
     """Start a single service."""
     try:

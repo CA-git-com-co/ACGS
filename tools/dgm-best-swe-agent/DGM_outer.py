@@ -5,13 +5,12 @@ import math
 import os
 import random
 import shutil
-from concurrent.futures import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from concurrent.futures import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     ThreadPoolExecutor,
     TimeoutError,
+    "cdd01ef066bc6cf2",
+    =,
     as_completed,
 )
 

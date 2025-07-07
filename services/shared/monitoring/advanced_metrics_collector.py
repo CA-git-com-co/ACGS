@@ -13,6 +13,7 @@ Key Features:
 - Constitutional compliance metrics
 - Real-time alerting and threshold management
 """
+
 # Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
@@ -598,34 +599,42 @@ class AdvancedMetricsCollector:
         remediation_actions = []
 
         if drift_type == DriftType.DATA_DRIFT:
-            remediation_actions.extend([
-                "Review data sources for quality issues",
-                "Check for changes in data collection processes",
-                "Consider retraining with recent data",
-                "Investigate feature engineering pipeline",
-            ])
+            remediation_actions.extend(
+                [
+                    "Review data sources for quality issues",
+                    "Check for changes in data collection processes",
+                    "Consider retraining with recent data",
+                    "Investigate feature engineering pipeline",
+                ]
+            )
         elif drift_type == DriftType.PREDICTION_DRIFT:
-            remediation_actions.extend([
-                "Analyze prediction patterns for anomalies",
-                "Review model confidence thresholds",
-                "Consider model recalibration",
-                "Investigate input data changes",
-            ])
+            remediation_actions.extend(
+                [
+                    "Analyze prediction patterns for anomalies",
+                    "Review model confidence thresholds",
+                    "Consider model recalibration",
+                    "Investigate input data changes",
+                ]
+            )
         elif drift_type == DriftType.PERFORMANCE_DRIFT:
-            remediation_actions.extend([
-                "Conduct comprehensive model evaluation",
-                "Consider model retraining or fine-tuning",
-                "Review system resource allocation",
-                "Investigate data quality degradation",
-            ])
+            remediation_actions.extend(
+                [
+                    "Conduct comprehensive model evaluation",
+                    "Consider model retraining or fine-tuning",
+                    "Review system resource allocation",
+                    "Investigate data quality degradation",
+                ]
+            )
 
         # Add severity-specific actions
         if drift_score >= 0.5:
-            remediation_actions.extend([
-                "URGENT: Implement immediate monitoring",
-                "Consider emergency model rollback",
-                "Escalate to ML engineering team",
-            ])
+            remediation_actions.extend(
+                [
+                    "URGENT: Implement immediate monitoring",
+                    "Consider emergency model rollback",
+                    "Escalate to ML engineering team",
+                ]
+            )
 
         return remediation_actions
 
@@ -638,14 +647,16 @@ class AdvancedMetricsCollector:
             )
 
             # Log drift detection
-            await self.audit_logger.log_compliance_event({
-                "event_type": "drift_detected",
-                "drift_type": drift_measurement.drift_type.value,
-                "severity": drift_measurement.severity.value,
-                "drift_score": drift_measurement.drift_score,
-                "threshold": drift_measurement.threshold,
-                "timestamp": drift_measurement.timestamp.isoformat(),
-            })
+            await self.audit_logger.log_compliance_event(
+                {
+                    "event_type": "drift_detected",
+                    "drift_type": drift_measurement.drift_type.value,
+                    "severity": drift_measurement.severity.value,
+                    "drift_score": drift_measurement.drift_score,
+                    "threshold": drift_measurement.threshold,
+                    "timestamp": drift_measurement.timestamp.isoformat(),
+                }
+            )
 
             # Send alert based on severity
             alert_severity = {
@@ -687,11 +698,13 @@ class AdvancedMetricsCollector:
 
                 # Calculate intervention rate
                 intervention_rate = len(recent_interventions) / 60  # per minute
-                self.intervention_rate_window.append({
-                    "timestamp": current_time,
-                    "rate": intervention_rate,
-                    "count": len(recent_interventions),
-                })
+                self.intervention_rate_window.append(
+                    {
+                        "timestamp": current_time,
+                        "rate": intervention_rate,
+                        "count": len(recent_interventions),
+                    }
+                )
 
                 # Analyze intervention patterns
                 await self._analyze_intervention_patterns(recent_interventions)
@@ -746,15 +759,17 @@ class AdvancedMetricsCollector:
                 )
 
             # Log intervention analysis
-            await self.audit_logger.log_compliance_event({
-                "event_type": "intervention_analysis",
-                "total_interventions": len(interventions),
-                "critical_interventions": critical_interventions,
-                "avg_duration_seconds": avg_duration,
-                "avg_quality_score": avg_quality,
-                "reason_breakdown": reason_counts,
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_compliance_event(
+                {
+                    "event_type": "intervention_analysis",
+                    "total_interventions": len(interventions),
+                    "critical_interventions": critical_interventions,
+                    "avg_duration_seconds": avg_duration,
+                    "avg_quality_score": avg_quality,
+                    "reason_breakdown": reason_counts,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
         except Exception as e:
             logger.error(f"Intervention pattern analysis failed: {e}")
@@ -846,12 +861,14 @@ class AdvancedMetricsCollector:
                     severity="high",
                 )
 
-                await self.audit_logger.log_compliance_event({
-                    "event_type": "performance_threshold_violation",
-                    "violations": violations,
-                    "metrics": asdict(metrics),
-                    "timestamp": datetime.utcnow().isoformat(),
-                })
+                await self.audit_logger.log_compliance_event(
+                    {
+                        "event_type": "performance_threshold_violation",
+                        "violations": violations,
+                        "metrics": asdict(metrics),
+                        "timestamp": datetime.utcnow().isoformat(),
+                    }
+                )
 
         except Exception as e:
             logger.error(f"Performance threshold check failed: {e}")
@@ -1080,27 +1097,27 @@ class AdvancedMetricsCollector:
                     "total": len(recent_interventions),
                     "rate_per_minute": intervention_rate,
                     "by_reason": {
-                        ir.value: len([
-                            i for i in recent_interventions if i.reason == ir
-                        ])
+                        ir.value: len(
+                            [i for i in recent_interventions if i.reason == ir]
+                        )
                         for ir in InterventionReason
                     },
                 },
                 "system_health": {
-                    "performance_metrics_collected": len([
-                        m for m in self.performance_history if hasattr(m, "accuracy")
-                    ]),
+                    "performance_metrics_collected": len(
+                        [m for m in self.performance_history if hasattr(m, "accuracy")]
+                    ),
                     "bias_metrics_collected": len([m for m in self.bias_history]),
-                    "constitutional_metrics_collected": len([
-                        m for m in self.constitutional_metrics_history
-                    ]),
+                    "constitutional_metrics_collected": len(
+                        [m for m in self.constitutional_metrics_history]
+                    ),
                 },
             }
 
             # Log summary
-            await self.audit_logger.log_compliance_event({
-                "event_type": "hourly_metrics_summary", "summary": summary
-            })
+            await self.audit_logger.log_compliance_event(
+                {"event_type": "hourly_metrics_summary", "summary": summary}
+            )
 
             # Alert on concerning patterns
             if len(recent_drift) > 5:  # More than 5 drift detections per hour
@@ -1154,13 +1171,15 @@ class AdvancedMetricsCollector:
             self.intervention_reasons_counter[intervention.reason] += 1
 
             # Log intervention
-            await self.audit_logger.log_compliance_event({
-                "event_type": "human_intervention_recorded",
-                "intervention_id": intervention_id,
-                "reason": intervention.reason.value,
-                "duration_seconds": intervention.intervention_duration_seconds,
-                "timestamp": intervention.timestamp.isoformat(),
-            })
+            await self.audit_logger.log_compliance_event(
+                {
+                    "event_type": "human_intervention_recorded",
+                    "intervention_id": intervention_id,
+                    "reason": intervention.reason.value,
+                    "duration_seconds": intervention.intervention_duration_seconds,
+                    "timestamp": intervention.timestamp.isoformat(),
+                }
+            )
 
             return intervention_id
 
@@ -1177,11 +1196,13 @@ class AdvancedMetricsCollector:
 
             logger.info(f"Baseline established with {len(baseline_data)} data points")
 
-            await self.audit_logger.log_compliance_event({
-                "event_type": "baseline_established",
-                "baseline_size": len(baseline_data),
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_compliance_event(
+                {
+                    "event_type": "baseline_established",
+                    "baseline_size": len(baseline_data),
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
         except Exception as e:
             logger.error(f"Failed to establish baseline: {e}")
@@ -1201,20 +1222,24 @@ class AdvancedMetricsCollector:
             "drift_monitoring": {
                 "total_measurements": len(self.drift_measurements),
                 "current_window_size": len(self.current_window_data),
-                "recent_drift_detections": len([
-                    dm
-                    for dm in self.drift_measurements.values()
-                    if dm.timestamp >= current_time - timedelta(hours=24)
-                ]),
+                "recent_drift_detections": len(
+                    [
+                        dm
+                        for dm in self.drift_measurements.values()
+                        if dm.timestamp >= current_time - timedelta(hours=24)
+                    ]
+                ),
             },
             "intervention_monitoring": {
                 "total_interventions": len(self.intervention_records),
                 "current_rate_per_minute": len(self.intervention_rate_window),
-                "recent_interventions": len([
-                    ir
-                    for ir in self.intervention_records.values()
-                    if ir.timestamp >= current_time - timedelta(hours=24)
-                ]),
+                "recent_interventions": len(
+                    [
+                        ir
+                        for ir in self.intervention_records.values()
+                        if ir.timestamp >= current_time - timedelta(hours=24)
+                    ]
+                ),
                 "intervention_reasons": dict(self.intervention_reasons_counter),
             },
             "performance_monitoring": {
@@ -1229,11 +1254,13 @@ class AdvancedMetricsCollector:
 async def example_usage():
     """Example of using the advanced metrics collector"""
     # Initialize collector
-    collector = AdvancedMetricsCollector({
-        "collection_interval_seconds": 30,
-        "drift_detection_window": 50,
-        "intervention_tracking_enabled": True,
-    })
+    collector = AdvancedMetricsCollector(
+        {
+            "collection_interval_seconds": 30,
+            "drift_detection_window": 50,
+            "intervention_tracking_enabled": True,
+        }
+    )
 
     # Establish baseline
     baseline_data = [
@@ -1253,14 +1280,16 @@ async def example_usage():
 
     # Simulate some interventions
     for i in range(3):
-        await collector.record_human_intervention({
-            "reason": "low_confidence",
-            "decision_id": f"decision_{i}",
-            "duration_seconds": 45.0,
-            "reviewer_id": "reviewer_001",
-            "confidence_before": 0.6,
-            "confidence_after": 0.9,
-        })
+        await collector.record_human_intervention(
+            {
+                "reason": "low_confidence",
+                "decision_id": f"decision_{i}",
+                "duration_seconds": 45.0,
+                "reviewer_id": "reviewer_001",
+                "confidence_before": 0.6,
+                "confidence_after": 0.9,
+            }
+        )
         await asyncio.sleep(1)
 
     # Let it run for a short period

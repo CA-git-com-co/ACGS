@@ -2,7 +2,13 @@
   "dashboard": {
     "id": null,
     "title": "Quantumagi Blockchain Integration Dashboard",
-    "tags": ["acgs", "blockchain", "quantumagi", "solana", "constitutional-governance"],
+    "tags": [
+      "acgs",
+      "blockchain",
+      "quantumagi",
+      "solana",
+      "constitutional-governance"
+    ],
     "timezone": "browser",
     "refresh": "30s",
     "time": {
@@ -27,17 +33,42 @@
             },
             "thresholds": {
               "steps": [
-                { "color": "red", "value": 0 },
-                { "color": "green", "value": 1 }
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "green",
+                  "value": 1
+                }
               ]
             },
             "mappings": [
-              { "options": { "0": { "text": "Unhealthy" } }, "type": "value" },
-              { "options": { "1": { "text": "Healthy" } }, "type": "value" }
+              {
+                "options": {
+                  "0": {
+                    "text": "Unhealthy"
+                  }
+                },
+                "type": "value"
+              },
+              {
+                "options": {
+                  "1": {
+                    "text": "Healthy"
+                  }
+                },
+                "type": "value"
+              }
             ]
           }
         },
-        "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 }
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 0,
+          "y": 0
+        }
       },
       {
         "id": 2,
@@ -55,7 +86,12 @@
             "min": 0
           }
         ],
-        "gridPos": { "h": 8, "w": 12, "x": 6, "y": 0 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 6,
+          "y": 0
+        }
       },
       {
         "id": 3,
@@ -74,9 +110,18 @@
             },
             "thresholds": {
               "steps": [
-                { "color": "red", "value": 0 },
-                { "color": "yellow", "value": 0.95 },
-                { "color": "green", "value": 1.0 }
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 0.95
+                },
+                {
+                  "color": "green",
+                  "value": 1.0
+                }
               ]
             },
             "unit": "percentunit",
@@ -84,7 +129,12 @@
             "max": 1
           }
         },
-        "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 }
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 18,
+          "y": 0
+        }
       },
       {
         "id": 4,
@@ -102,7 +152,12 @@
             "min": 0
           }
         ],
-        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        }
       },
       {
         "id": 5,
@@ -124,7 +179,12 @@
             "max": 5.0
           }
         ],
-        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        }
       },
       {
         "id": 6,
@@ -142,7 +202,12 @@
             "min": 0
           }
         ],
-        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 16
+        }
       },
       {
         "id": 7,
@@ -160,7 +225,12 @@
             "min": 0
           }
         ],
-        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 16
+        }
       },
       {
         "id": 8,
@@ -178,7 +248,12 @@
             "min": 0
           }
         ],
-        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 24 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 24
+        }
       },
       {
         "id": 9,
@@ -197,9 +272,18 @@
             },
             "thresholds": {
               "steps": [
-                { "color": "red", "value": 0 },
-                { "color": "yellow", "value": 0.8 },
-                { "color": "green", "value": 0.95 }
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 0.8
+                },
+                {
+                  "color": "green",
+                  "value": 0.95
+                }
               ]
             },
             "unit": "percentunit",
@@ -207,7 +291,12 @@
             "max": 1
           }
         },
-        "gridPos": { "h": 4, "w": 6, "x": 0, "y": 4 }
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 0,
+          "y": 4
+        }
       },
       {
         "id": 10,
@@ -233,8 +322,15 @@
             "op": "gt"
           }
         ],
-        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 24 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 24
+        }
       }
     ]
-  }
+  },
+  "_constitutional_hash": "cdd01ef066bc6cf2",
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }

@@ -47,24 +47,46 @@
     "maintenance_orchestrator": {
       "script": "tools/automation/maintenance_orchestrator.py",
       "description": "Orchestrates all maintenance tasks",
-      "features": ["task_scheduling", "failure_handling", "notification"]
+      "features": [
+        "task_scheduling",
+        "failure_handling",
+        "notification"
+      ]
     },
     "health_monitor": {
       "script": "tools/automation/health_monitor.py",
       "description": "Continuous health monitoring",
-      "features": ["real_time_monitoring", "alert_generation", "auto_remediation"]
+      "features": [
+        "real_time_monitoring",
+        "alert_generation",
+        "auto_remediation"
+      ]
     }
   },
   "notification_system": {
     "success_notifications": {
-      "channels": ["slack", "email"],
-      "recipients": ["api_team"],
+      "channels": [
+        "slack",
+        "email"
+      ],
+      "recipients": [
+        "api_team"
+      ],
       "frequency": "weekly_summary"
     },
     "failure_notifications": {
-      "channels": ["slack", "email", "pagerduty"],
-      "recipients": ["on_call_engineer", "api_team_lead"],
+      "channels": [
+        "slack",
+        "email",
+        "pagerduty"
+      ],
+      "recipients": [
+        "on_call_engineer",
+        "api_team_lead"
+      ],
       "frequency": "immediate"
     }
-  }
+  },
+  "_constitutional_hash": "cdd01ef066bc6cf2",
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }

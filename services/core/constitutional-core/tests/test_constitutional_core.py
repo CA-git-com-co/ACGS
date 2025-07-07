@@ -3,13 +3,15 @@ Tests for Constitutional Core Service
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import pytest
-from fastapi.testclient import TestClient
-from unittest.mock import patch
+import os
 
 # Import the app
 import sys
-import os
+from unittest.mock import patch
+
+import pytest
+from fastapi.testclient import TestClient
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.main import app
@@ -43,9 +45,9 @@ def test_constitutional_validation():
     validation_request = {
         "content": "This system treats all users fairly and transparently",
         "context": {"domain": "healthcare", "high_risk": False},
-        "principles": ["fairness", "transparency"]
+        "principles": ["fairness", "transparency"],
     }
-    
+
     response = client.post("/api/v1/constitutional/validate", json=validation_request)
     assert response.status_code == 200
     data = response.json()
@@ -60,9 +62,9 @@ def test_constitutional_validation_with_violations():
     validation_request = {
         "content": "This biased system discriminates against certain groups",
         "context": {"domain": "hiring", "high_risk": True},
-        "principles": ["fairness", "human_dignity"]
+        "principles": ["fairness", "human_dignity"],
     }
-    
+
     response = client.post("/api/v1/constitutional/validate", json=validation_request)
     assert response.status_code == 200
     data = response.json()
@@ -77,9 +79,9 @@ def test_formal_verification():
         "specification": "fairness_score >= 0.8",
         "context": {"demographic_parity": True},
         "verification_type": "smt",
-        "timeout_seconds": 10
+        "timeout_seconds": 10,
     }
-    
+
     response = client.post("/api/v1/verification/verify", json=verification_request)
     assert response.status_code == 200
     data = response.json()
@@ -107,9 +109,9 @@ def test_unified_compliance():
         "context": {"domain": "finance", "high_risk": True},
         "principles": ["fairness", "transparency", "accountability"],
         "formal_specifications": ["fairness_score >= 0.8", "transparency_score >= 0.7"],
-        "require_mathematical_proof": True
+        "require_mathematical_proof": True,
     }
-    
+
     response = client.post("/api/v1/unified/compliance", json=unified_request)
     assert response.status_code == 200
     data = response.json()
@@ -127,13 +129,13 @@ def test_unified_compliance_with_proof():
         "context": {"domain": "governance"},
         "principles": ["fairness", "transparency"],
         "formal_specifications": ["fairness_score >= 0.8"],
-        "require_mathematical_proof": True
+        "require_mathematical_proof": True,
     }
-    
+
     response = client.post("/api/v1/unified/compliance", json=unified_request)
     assert response.status_code == 200
     data = response.json()
-    
+
     if data["overall_compliant"]:
         assert data["mathematical_proof"] is not None
         assert "Formal Proof" in data["mathematical_proof"]
@@ -184,9 +186,9 @@ def test_constitutional_hash_consistency():
         "/health",
         "/api/v1/constitutional/principles",
         "/api/v1/verification/capabilities",
-        "/api/v1/unified/status"
+        "/api/v1/unified/status",
     ]
-    
+
     for endpoint in endpoints:
         response = client.get(endpoint)
         assert response.status_code == 200
@@ -200,13 +202,13 @@ def test_validation_with_formal_proof():
         "content": "Fair and transparent AI system",
         "context": {"domain": "education"},
         "principles": ["fairness", "transparency"],
-        "require_formal_proof": True
+        "require_formal_proof": True,
     }
-    
+
     response = client.post("/api/v1/constitutional/validate", json=validation_request)
     assert response.status_code == 200
     data = response.json()
-    
+
     if data["compliant"]:
         assert data["formal_proof"] is not None
         assert "Formal Proof" in data["formal_proof"]
@@ -218,9 +220,9 @@ def test_error_handling():
     invalid_request = {
         "specification": "",  # Empty specification
         "context": {},
-        "timeout_seconds": -1  # Invalid timeout
+        "timeout_seconds": -1,  # Invalid timeout
     }
-    
+
     response = client.post("/api/v1/verification/verify", json=invalid_request)
     # Should handle gracefully, either with validation error or processed result
     assert response.status_code in [200, 422]  # 422 for validation error
@@ -231,13 +233,13 @@ def test_high_risk_context():
     validation_request = {
         "content": "AI system for critical infrastructure",
         "context": {"domain": "critical_infrastructure", "high_risk": True},
-        "principles": ["fairness", "accountability", "human_dignity"]
+        "principles": ["fairness", "accountability", "human_dignity"],
     }
-    
+
     response = client.post("/api/v1/constitutional/validate", json=validation_request)
     assert response.status_code == 200
     data = response.json()
-    
+
     # High-risk contexts should have higher standards
     assert "metadata" in data
     assert data["constitutional_hash"] == "cdd01ef066bc6cf2"
@@ -252,11 +254,11 @@ def test_multiple_formal_specifications():
         "formal_specifications": [
             "fairness_score >= 0.8",
             "transparency_score >= 0.7",
-            "audit_trail = True"
+            "audit_trail = True",
         ],
-        "require_mathematical_proof": False
+        "require_mathematical_proof": False,
     }
-    
+
     response = client.post("/api/v1/unified/compliance", json=unified_request)
     assert response.status_code == 200
     data = response.json()
