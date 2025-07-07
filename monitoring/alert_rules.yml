@@ -1,0 +1,121 @@
+# ACGS Alert Rules
+# Constitutional Hash: cdd01ef066bc6cf2
+
+groups:
+  - name: acgs_constitutional_compliance
+    rules:
+      - alert: ConstitutionalHashMismatch
+        expr: acgs_constitutional_hash_valid != 1
+        for: 0s
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Constitutional hash validation failed"
+          description: "Service {{ $labels.instance }} has invalid constitutional hash"
+
+      - alert: ConstitutionalComplianceFailure
+        expr: acgs_constitutional_compliance_score < 1.0
+        for: 30s
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Constitutional compliance score below 100%"
+          description: "Service {{ $labels.instance }} compliance score: {{ $value }}"
+
+  - name: acgs_performance
+    rules:
+      - alert: HighLatency
+        expr: histogram_quantile(0.99, acgs_request_duration_seconds_bucket) > 0.005
+        for: 60s
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "P99 latency exceeds 5ms target"
+          description: "Service {{ $labels.instance }} P99 latency: {{ $value }}s"
+
+      - alert: CriticalLatency
+        expr: histogram_quantile(0.99, acgs_request_duration_seconds_bucket) > 0.010
+        for: 30s
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "P99 latency critically high"
+          description: "Service {{ $labels.instance }} P99 latency: {{ $value }}s"
+
+      - alert: LowCacheHitRate
+        expr: acgs_cache_hit_rate < 0.85
+        for: 120s
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Cache hit rate below 85% target"
+          description: "Service {{ $labels.instance }} cache hit rate: {{ $value }}"
+
+      - alert: LowThroughput
+        expr: rate(acgs_requests_total[5m]) < 100
+        for: 300s
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Request throughput below 100 RPS target"
+          description: "Service {{ $labels.instance }} throughput: {{ $value }} RPS"
+
+  - name: acgs_availability
+    rules:
+      - alert: ServiceDown
+        expr: up == 0
+        for: 30s
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "ACGS service is down"
+          description: "Service {{ $labels.instance }} has been down for more than 30 seconds"
+
+      - alert: HighErrorRate
+        expr: rate(acgs_requests_total{status=~"5.."}[5m]) / rate(acgs_requests_total[5m]) > 0.01
+        for: 60s
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "High error rate detected"
+          description: "Service {{ $labels.instance }} error rate: {{ $value }}"
+
+  - name: acgs_infrastructure
+    rules:
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 300s
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage is above 80% for 5 minutes"
+
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 80
+        for: 300s
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is above 80%"
+
+      - alert: DiskSpaceLow
+        expr: (1 - (node_filesystem_avail_bytes / node_filesystem_size_bytes)) * 100 > 85
+        for: 300s
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Low disk space"
+          description: "Disk usage is above 85%"

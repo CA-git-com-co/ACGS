@@ -1,0 +1,127 @@
+# Prometheus Configuration for ACGS Services
+# Constitutional Hash: cdd01ef066bc6cf2
+
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+  external_labels:
+    constitutional_hash: 'cdd01ef066bc6cf2'
+    environment: 'production'
+    cluster: 'acgs-main'
+
+rule_files:
+  - "alert_rules.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  # ACGS Core Services
+  - job_name: 'acgs-constitutional-ai'
+    static_configs:
+      - targets: ['localhost:8001']
+    metrics_path: '/metrics'
+    scrape_interval: 5s
+    scrape_timeout: 3s
+    params:
+      constitutional_hash: ['cdd01ef066bc6cf2']
+
+  - job_name: 'acgs-integrity-service'
+    static_configs:
+      - targets: ['localhost:8002']
+    metrics_path: '/metrics'
+    scrape_interval: 5s
+    scrape_timeout: 3s
+    params:
+      constitutional_hash: ['cdd01ef066bc6cf2']
+
+  - job_name: 'acgs-formal-verification'
+    static_configs:
+      - targets: ['localhost:8003']
+    metrics_path: '/metrics'
+    scrape_interval: 5s
+    scrape_timeout: 3s
+    params:
+      constitutional_hash: ['cdd01ef066bc6cf2']
+
+  - job_name: 'acgs-governance-synthesis'
+    static_configs:
+      - targets: ['localhost:8004']
+    metrics_path: '/metrics'
+    scrape_interval: 5s
+    scrape_timeout: 3s
+    params:
+      constitutional_hash: ['cdd01ef066bc6cf2']
+
+  - job_name: 'acgs-policy-governance'
+    static_configs:
+      - targets: ['localhost:8005']
+    metrics_path: '/metrics'
+    scrape_interval: 5s
+    scrape_timeout: 3s
+    params:
+      constitutional_hash: ['cdd01ef066bc6cf2']
+
+  - job_name: 'acgs-evolutionary-computation'
+    static_configs:
+      - targets: ['localhost:8006']
+    metrics_path: '/metrics'
+    scrape_interval: 5s
+    scrape_timeout: 3s
+    params:
+      constitutional_hash: ['cdd01ef066bc6cf2']
+
+  - job_name: 'acgs-code-analysis'
+    static_configs:
+      - targets: ['localhost:8007']
+    metrics_path: '/metrics'
+    scrape_interval: 5s
+    scrape_timeout: 3s
+    params:
+      constitutional_hash: ['cdd01ef066bc6cf2']
+
+  - job_name: 'acgs-context-service'
+    static_configs:
+      - targets: ['localhost:8012']
+    metrics_path: '/metrics'
+    scrape_interval: 5s
+    scrape_timeout: 3s
+    params:
+      constitutional_hash: ['cdd01ef066bc6cf2']
+
+  - job_name: 'acgs-authentication'
+    static_configs:
+      - targets: ['localhost:8016']
+    metrics_path: '/metrics'
+    scrape_interval: 5s
+    scrape_timeout: 3s
+    params:
+      constitutional_hash: ['cdd01ef066bc6cf2']
+
+  # Infrastructure Services
+  - job_name: 'postgresql'
+    static_configs:
+      - targets: ['localhost:5439']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['localhost:6379', 'localhost:6389']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 5s
+
+  # Node exporter for system metrics
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['localhost:9100']
+    scrape_interval: 10s
