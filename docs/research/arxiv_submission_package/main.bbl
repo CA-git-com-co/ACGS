@@ -438,10 +438,8 @@
   Framework for Regulatory Technology}.
 \newblock
 \newblock
-\urldef\tempurl%
-\url{https://www.researchgate.net/publication/autopac-framework}
-\showURL{%
-\tempurl}
+\newblock
+\shownote{Technical Report}.
 
 
 \bibitem[Lee et~al\mbox{.}(2024)]%
@@ -630,10 +628,8 @@
   {AI}: A Comprehensive Guide}.
 \newblock
 \newblock
-\urldef\tempurl%
-\url{https://www.analyticsvidhya.com/blog/constitutional-ai-prompting}
-\showURL{%
-\tempurl}
+\newblock
+\shownote{Technical Blog Post}.
 
 
 \bibitem[{Social Science Research Council}(2025)]%
