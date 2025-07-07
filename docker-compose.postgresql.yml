@@ -1,4 +1,3 @@
-# Constitutional Hash: cdd01ef066bc6cf2
 services:
   postgresql:
     command:
@@ -24,7 +23,8 @@ services:
     restart: unless-stopped
     volumes:
     - postgresql_data:/var/lib/postgresql/data
-    - ./config/postgresql/postgresql.conf:/etc/postgresql/postgresql.conf
+    - ${ACGS_ROOT}/config/postgresql/postgresql.conf:/etc/postgresql/postgresql.conf
 version: '3.8'
 volumes:
   postgresql_data: {}
+# constitutional_hash: cdd01ef066bc6cf2
