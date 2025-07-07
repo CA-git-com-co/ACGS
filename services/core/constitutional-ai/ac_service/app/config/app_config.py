@@ -55,8 +55,14 @@ class ConstitutionalAIConfig:
         self.allowed_hosts = os.getenv("ALLOWED_HOSTS", "*").split(",")
         self.cors_origins = os.getenv("CORS_ORIGINS", "*").split(",")
         
+        # Database and cache configuration
+        self.redis_url = os.getenv("REDIS_URL", "redis://localhost:6389")
+        self.postgres_dsn = os.getenv("POSTGRES_DSN", "postgresql://postgres:password@localhost:5439/acgs")
+        
         logger.info(f"Environment: {self.environment}")
         logger.info(f"Debug mode: {self.debug}")
+        logger.info(f"Redis URL: {self.redis_url}")
+        logger.info(f"PostgreSQL DSN: {self.postgres_dsn.replace('password', '***')}")
     
     def get_cors_config(self) -> dict:
         """Get CORS configuration."""
@@ -246,6 +252,8 @@ class MiddlewareManager:
         self._setup_cors_middleware(app)
         self._setup_trusted_host_middleware(app)
         self._setup_tenant_middleware(app)
+        self._setup_health_check_middleware(app)
+        self._setup_prometheus_metrics_middleware(app)
         self._setup_custom_middleware(app)
     
     def _setup_security_middleware(self, app: FastAPI):
@@ -291,6 +299,65 @@ class MiddlewareManager:
         except ImportError:
             logger.warning("Tenant middleware not available")
     
+    def _setup_health_check_middleware(self, app: FastAPI):
+        """Setup comprehensive health check endpoints."""
+        try:
+            from services.shared.middleware.health_check_middleware import (
+                setup_health_check_endpoints,
+                HealthCheckConfig,
+                HealthCheckLevel
+            )
+            
+            # Configure health check
+            health_config = HealthCheckConfig(
+                service_name=self.config.service_name,
+                service_version="1.0.0",
+                check_level=HealthCheckLevel.COMPREHENSIVE,
+                check_timeout=5.0,
+                enable_dependency_checks=True,
+                enable_performance_metrics=True,
+                redis_url=self.config.redis_url,
+                postgres_dsn=self.config.postgres_dsn
+            )
+            
+            # Setup health check endpoints
+            health_manager = setup_health_check_endpoints(app, health_config)
+            app.state.health_manager = health_manager
+            
+            logger.info("✅ Health check middleware configured")
+            
+        except ImportError as e:
+            logger.warning(f"Health check middleware not available: {e}")
+        except Exception as e:
+            logger.error(f"Health check middleware setup failed: {e}")
+
+    def _setup_prometheus_metrics_middleware(self, app: FastAPI):
+        """Setup comprehensive Prometheus metrics collection."""
+        try:
+            from services.shared.middleware.prometheus_metrics_middleware import (
+                setup_prometheus_metrics
+            )
+            
+            # Setup Prometheus metrics
+            metrics = setup_prometheus_metrics(
+                app=app,
+                service_name=self.config.service_name,
+                enable_multiprocess=False,
+                metrics_endpoint="/metrics",
+                enable_system_metrics=True,
+                system_metrics_interval=30
+            )
+            
+            # Store metrics in app state for use by other components
+            app.state.prometheus_metrics = metrics
+            
+            logger.info("✅ Prometheus metrics middleware configured")
+            
+        except ImportError as e:
+            logger.warning(f"Prometheus metrics middleware not available: {e}")
+        except Exception as e:
+            logger.error(f"Prometheus metrics middleware setup failed: {e}")
+
     def _setup_custom_middleware(self, app: FastAPI):
         """Setup custom middleware."""
         
