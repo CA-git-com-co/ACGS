@@ -16,6 +16,17 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+class SMTSolverIntegration:
+    """SMT Solver Integration for formal verification."""
+    
+    def __init__(self):
+        self.solver_client = Z3SMTSolverClient()
+    
+    def verify_constraints(self, constraints):
+        """Verify SMT constraints."""
+        return self.solver_client.verify_constraints(constraints)
+
+
 class Z3SMTSolverClient:
     """
     Enhanced Z3 SMT Solver integration with policy-to-SMT compilation for formal verification.

@@ -11,7 +11,7 @@ import time
 from typing import Any, Dict, List, Optional
 
 import aiohttp
-import aioredis
+import redis.asyncio as aioredis
 from prometheus_client import Counter, Gauge, Histogram
 
 from ..models.gateway import (

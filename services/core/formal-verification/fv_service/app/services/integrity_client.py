@@ -2,11 +2,10 @@ import os
 
 import httpx
 
-from ..schemas import (  # Using schemas defined in fv_service
-
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
+from ..schemas import (  # Using schemas defined in fv_service
     PolicyRule,
     PolicyRuleStatusUpdate,
 )

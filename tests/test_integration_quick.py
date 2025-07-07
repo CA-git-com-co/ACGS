@@ -141,6 +141,7 @@ class TestConstitutionalCompliance:
 class TestServiceConnectivity:
     """Test connectivity between enhanced services."""
 
+    @pytest.mark.asyncio
     async def test_constitutional_ai_basic_validation(self):
         """Test basic Constitutional AI validation functionality."""
         try:
@@ -193,6 +194,7 @@ class TestServiceConnectivity:
         except ImportError:
             pytest.skip("Evolutionary Computation service not available")
 
+    @pytest.mark.asyncio
     async def test_governance_synthesis_basic_functionality(self):
         """Test basic governance synthesis functionality."""
         try:

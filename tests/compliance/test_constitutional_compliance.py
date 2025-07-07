@@ -18,7 +18,10 @@ import pytest
 from infrastructure.monitoring.compliance.compliance_reporter import ComplianceReporter
 
 # Import ACGS components
-from services.core.formal_verification.fv_service.app.services.z3_solver import (
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), "../..", "services", "core", "formal-verification"))
+from fv_service.app.services.z3_solver import (
     Z3ConstitutionalSolver,
 )
 from services.platform_services.integrity.integrity_service.app.core.persistent_audit_trail import (

@@ -25,7 +25,7 @@ from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Optional
 
-import aioredis
+import redis.asyncio as aioredis
 import asyncpg
 import httpx
 import uvicorn

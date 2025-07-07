@@ -14,9 +14,12 @@ from typing import Any, Optional
 import z3
 
 # Import the advanced proof engine
-from ...advanced_proof_engine import AdvancedProofEngine
-from ...advanced_proof_engine import ProofObligation as AdvancedProofObligation
-from ...advanced_proof_engine import ProofStrategy, PropertyType
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../../.."))
+from advanced_proof_engine import AdvancedProofEngine
+from advanced_proof_engine import ProofObligation as AdvancedProofObligation
+from advanced_proof_engine import ProofStrategy, PropertyType
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"

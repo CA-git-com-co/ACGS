@@ -19,7 +19,7 @@ from services.shared.audit.compliance_audit_logger import (
     ComplianceAuditLogger,
 )
 from services.shared.auth.multi_tenant_jwt import MultiTenantJWTHandler
-from services.shared.middleware.tenant_context import TenantContextMiddleware
+from services.shared.middleware.tenant_middleware import TenantContextMiddleware
 
 # Import ACGS components
 from services.shared.models.multi_tenant import Organization, Tenant, TenantUser
@@ -39,7 +39,8 @@ class TestMultiTenantIsolation:
         return Organization(
             id=uuid.uuid4(),
             name="Test Organization",
-            domain="test.example.com",
+            slug="test-organization",
+            contact_email="test@example.com",
             constitutional_hash=CONSTITUTIONAL_HASH,
             created_at=datetime.now(timezone.utc),
         )

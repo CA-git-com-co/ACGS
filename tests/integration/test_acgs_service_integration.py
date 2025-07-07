@@ -39,8 +39,17 @@ SERVICE_ENDPOINTS = {
 async def mock_http_client():
     """Mock HTTP client for service communication."""
     client = AsyncMock(spec=httpx.AsyncClient)
-    client.get.return_value = Mock(status_code=200, json=lambda: {"status": "healthy"})
-    client.post.return_value = Mock(status_code=200, json=lambda: {"result": "success"})
+
+    # Configure async methods properly
+    mock_response = Mock()
+    mock_response.status_code = 200
+    mock_response.json = Mock(return_value={"status": "healthy", "constitutional_hash": CONSTITUTIONAL_HASH})
+
+    client.get = AsyncMock(return_value=mock_response)
+    client.post = AsyncMock(return_value=mock_response)
+    client.put = AsyncMock(return_value=mock_response)
+    client.delete = AsyncMock(return_value=mock_response)
+
     return client
 
 

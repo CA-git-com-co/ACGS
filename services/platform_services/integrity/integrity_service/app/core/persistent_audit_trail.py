@@ -58,16 +58,16 @@ class AuditSeverity(str, Enum):
 class AuditEvent:
     """Represents an audit event with full metadata."""
 
-    event_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     event_type: AuditEventType
-    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     service_name: str
-    user_id: Optional[str] = None
-    session_id: Optional[str] = None
     action: str
     resource_type: str
-    resource_id: Optional[str] = None
     description: str
+    event_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    user_id: Optional[str] = None
+    session_id: Optional[str] = None
+    resource_id: Optional[str] = None
     metadata: dict[str, Any] = field(default_factory=dict)
     severity: AuditSeverity = AuditSeverity.MEDIUM
     constitutional_hash: str = CONSTITUTIONAL_HASH

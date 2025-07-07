@@ -25,7 +25,7 @@ try:
 except ImportError:
     REPORTING_LIBS_AVAILABLE = False
 
-from ..shared.audit.compliance_audit_logger import ComplianceStandard
+from services.shared.audit.compliance_audit_logger import ComplianceStandard
 
 # Constitutional compliance hash
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"

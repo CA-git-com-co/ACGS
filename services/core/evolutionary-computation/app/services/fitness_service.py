@@ -10,7 +10,7 @@ import logging
 import time
 from typing import Any, Dict, List, Optional, Tuple
 
-import aioredis
+import redis.asyncio as aioredis
 from prometheus_client import Counter, Histogram
 
 from ..models.evolution import FitnessMetrics, Individual

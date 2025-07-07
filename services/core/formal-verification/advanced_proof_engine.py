@@ -132,6 +132,7 @@ class AdvancedProofEngine:
 
     def __init__(self, timeout_seconds: int = 60):
         self.timeout_seconds = timeout_seconds
+        self.constitutional_hash = "cdd01ef066bc6cf2"  # Constitutional compliance hash
         self.constitutional_principles = self._initialize_constitutional_principles()
         self.proof_certificates: dict[str, ProofCertificate] = {}
         self.verification_cache: dict[str, Any] = {}
@@ -144,6 +145,40 @@ class AdvancedProofEngine:
         self._setup_constitutional_framework()
 
         logger.info("Advanced Proof Engine initialized with constitutional framework")
+
+    async def generate_proof(self, obligation: ProofObligation, **kwargs) -> ProofCertificate:
+        """Generate a proof for the given obligation using appropriate strategy."""
+        try:
+            if obligation.property_type == PropertyType.CONSTITUTIONAL:
+                policy_constraints = kwargs.get("policy_constraints", [])
+                policy_content = kwargs.get("policy_content", "")
+                return await self._generate_constitutional_proof(obligation, policy_constraints, policy_content)
+            elif obligation.property_type == PropertyType.SAFETY:
+                system_model = kwargs.get("system_model", {})
+                bounds = kwargs.get("bounds", 10)
+                return await self._generate_safety_proof(obligation, system_model, bounds)
+            elif obligation.property_type == PropertyType.LIVENESS:
+                system_model = kwargs.get("system_model", {})
+                fairness_constraints = kwargs.get("fairness_constraints", [])
+                return await self._generate_liveness_proof(obligation, system_model, fairness_constraints)
+            elif obligation.property_type == PropertyType.INVARIANT:
+                base_case = kwargs.get("base_case", "")
+                inductive_step = kwargs.get("inductive_step", "")
+                return await self._generate_inductive_proof(obligation, base_case, inductive_step)
+            else:
+                # Default to constitutional proof
+                return await self._generate_constitutional_proof(obligation, [], "")
+        except Exception as e:
+            logger.error(f"Failed to generate proof for obligation {obligation.id}: {e}")
+            # Return a failed proof certificate
+            return ProofCertificate(
+                proof_id=str(uuid.uuid4()),
+                obligation_id=obligation.id,
+                steps=[f"Proof generation failed: {str(e)}"],
+                is_valid=False,
+                verification_time_ms=0.0,
+                constitutional_compliance_score=0.0
+            )
 
     def _initialize_constitutional_principles(self) -> list[ConstitutionalPrinciple]:
         """Initialize comprehensive constitutional principles."""

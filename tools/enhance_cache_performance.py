@@ -13,7 +13,7 @@ import json
 import logging
 import time
 
-import aioredis
+import redis.asyncio as aioredis
 
 <<<<<<< HEAD
 from datetime import datetime

@@ -33,11 +33,16 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 async def mock_redis():
     """Mock Redis client for performance testing."""
     redis_mock = AsyncMock()
-    redis_mock.get.return_value = None
-    redis_mock.set.return_value = True
-    redis_mock.exists.return_value = False
-    redis_mock.hget.return_value = None
-    redis_mock.hset.return_value = True
+
+    # Configure async methods properly
+    redis_mock.get = AsyncMock(return_value=None)
+    redis_mock.set = AsyncMock(return_value=True)
+    redis_mock.exists = AsyncMock(return_value=False)
+    redis_mock.hget = AsyncMock(return_value=None)
+    redis_mock.hset = AsyncMock(return_value=True)
+    redis_mock.delete = AsyncMock(return_value=True)
+    redis_mock.flushdb = AsyncMock(return_value=True)
+
     return redis_mock
 
 

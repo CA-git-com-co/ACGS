@@ -138,6 +138,37 @@ class Individual:
     generation: int = 0
     parent_ids: list[str] = field(default_factory=list)
     constitutional_compliance: float = 0.0
+    genome: np.ndarray = field(default_factory=lambda: np.array([]))
+
+    def __init__(self, genome=None, **kwargs):
+        """Initialize Individual with optional genome parameter for backward compatibility."""
+        if genome is not None:
+            self.genome = np.array(genome) if not isinstance(genome, np.ndarray) else genome
+            # Convert genome to genotype for internal consistency
+            self.genotype = {"genome": self.genome.tolist()}
+
+        # Set other fields
+        for key, value in kwargs.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
+
+        # Set defaults for required fields
+        if not hasattr(self, 'id') or not self.id:
+            self.id = str(uuid.uuid4())
+        if not hasattr(self, 'genotype'):
+            self.genotype = {}
+        if not hasattr(self, 'phenotype'):
+            self.phenotype = {}
+        if not hasattr(self, 'fitness'):
+            self.fitness = {}
+        if not hasattr(self, 'age'):
+            self.age = 0
+        if not hasattr(self, 'generation'):
+            self.generation = 0
+        if not hasattr(self, 'parent_ids'):
+            self.parent_ids = []
+        if not hasattr(self, 'constitutional_compliance'):
+            self.constitutional_compliance = 0.0
 
     def total_fitness(self, weights: dict[str, float] = None) -> float:
         """Calculate weighted total fitness across all objectives."""

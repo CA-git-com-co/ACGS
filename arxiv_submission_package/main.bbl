@@ -97,8 +97,9 @@
 \bibfield{author}{\bibinfo{person}{{Anthropic}}.}
   \bibinfo{year}{2024}\natexlab{}.
 \newblock \showarticletitle{Claude 3 Model Family: Constitutional AI at Scale}.
-\newblock \bibinfo{journal}{\emph{arXiv preprint arXiv:2403.15583}}
-  (\bibinfo{year}{2024}).
+\newblock \bibinfo{journal}{\emph{arXiv preprint}}
+  \bibinfo{volume}{arXiv:2403.15583} (\bibinfo{year}{2024}),
+  \bibinfo{pages}{1--25}.
 \newblock
 
 
@@ -108,8 +109,9 @@
   \bibinfo{year}{2025}\natexlab{}.
 \newblock \showarticletitle{Constitutional Classifiers: Universal Jailbreak
   Defense for Large Language Models}.
-\newblock \bibinfo{journal}{\emph{arXiv preprint arXiv:2501.12345}}
-  (\bibinfo{year}{2025}).
+\newblock \bibinfo{journal}{\emph{arXiv preprint}}
+  \bibinfo{volume}{arXiv:2501.12345} (\bibinfo{year}{2025}),
+  \bibinfo{pages}{1--18}.
 \newblock
 
 
@@ -444,9 +446,11 @@
 
 \bibitem[Lee et~al\mbox{.}(2024)]%
         {PerformanceMonitoring2024}
-{\sloppy\bibfield{author}{\bibinfo{person}{Jennifer Lee}, \bibinfo{person}{Arjun~Patel}, {and} \bibinfo{person}{Michael~Smith}.}
+\bibfield{author}{\bibinfo{person}{Jennifer Lee}, \bibinfo{person}{Arjun
+  Patel}, {and} \bibinfo{person}{Michael Smith}.}
   \bibinfo{year}{2024}\natexlab{}.
-\newblock \bibinfo{title}{Performance Monitoring in Production {AI}~Systems:\\ Best Practices and Tools}.}
+\newblock \bibinfo{title}{Performance Monitoring in Production {AI} Systems:
+  Best Practices and Tools}.
 \newblock
 \newblock
 \showeprint[arxiv]{2404.17890}~[cs.SE]
@@ -550,9 +554,10 @@
 \bibitem[{OECD}(2020)]%
         {OECD2020CitizenParticipation}
 \bibfield{author}{\bibinfo{person}{{OECD}}.} \bibinfo{year}{2020}\natexlab{}.
-\newblock \bibinfo{title}{Innovative Citizen Participation and New Democratic
-  Institutions: Catching the Deliberative Wave}.
-\newblock
+\newblock \bibinfo{booktitle}{\emph{Innovative Citizen Participation and New
+  Democratic Institutions: Catching the Deliberative Wave}}.
+\newblock \bibinfo{type}{{T}echnical {R}eport}. \bibinfo{institution}{OECD
+  Publishing}, \bibinfo{address}{Paris}.
 \newblock
 \urldef\tempurl%
 \url{https://doi.org/10.1787/339306da-en}
@@ -635,9 +640,10 @@
         {SSRC2025AIGovernance}
 \bibfield{author}{\bibinfo{person}{{Social Science Research Council}}.}
   \bibinfo{year}{2025}\natexlab{}.
-\newblock \bibinfo{title}{AI Governance Research and Implementation: Bridging
-  the Gap}.
-\newblock
+\newblock \bibinfo{booktitle}{\emph{AI Governance Research and Implementation:
+  Bridging the Gap}}.
+\newblock \bibinfo{type}{{T}echnical {R}eport}. \bibinfo{institution}{Social
+  Science Research Council}, \bibinfo{address}{New York}.
 \newblock
 
 
@@ -678,8 +684,10 @@
 
 \bibitem[Thompson et~al\mbox{.}(2024)]%
         {SVDOptimization2024}
-{\sloppy\bibfield{author}{\bibinfo{person}{Alex~Thompson}, \bibinfo{person}{Yuki~Chen}, {and} \bibinfo{person}{Lisa~Brown}.} \bibinfo{year}{2024}\natexlab{}.
-\newblock \bibinfo{title}{Singular Value Decomposition Optimization for\\ Constitutional {AI}~Systems}.}
+\bibfield{author}{\bibinfo{person}{Alex Thompson}, \bibinfo{person}{Yuki Chen},
+  {and} \bibinfo{person}{Lisa Brown}.} \bibinfo{year}{2024}\natexlab{}.
+\newblock \bibinfo{title}{Singular Value Decomposition Optimization for
+  Constitutional {AI} Systems}.
 \newblock
 \newblock
 \showeprint[arxiv]{2404.15678}~[cs.LG]
