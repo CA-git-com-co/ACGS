@@ -55,8 +55,12 @@ class DatabasePerformanceTester:
         self.postgresql_available = False
 
     async def run_comprehensive_tests(self):
-        """Run comprehensive database and caching performance tests."""
+        """Run comprehensive database and caching performance tests.
+
+        Constitutional Hash: cdd01ef066bc6cf2
+        """
         print("🧪 ACGS-1 Database and Caching Performance Test Suite")
+        print("Constitutional Hash: cdd01ef066bc6cf2")
         print("=" * 65)
         print("🎯 Performance Targets:")
         print(f"   Query Time: ≤{self.performance_targets['query_time_ms']}ms")

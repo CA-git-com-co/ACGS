@@ -78,6 +78,7 @@ class APIPerformanceTester:
             "port": port,
             "status": "unavailable",
             "errors": errors,
+            "constitutional_hash": "cdd01ef066bc6cf2",
         }
 
     async def test_load_balancer_performance(

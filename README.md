@@ -124,6 +124,8 @@ We have implemented a comprehensive testing infrastructure that validates all AC
 - **Audit System Tests**: 45+ event types with aggregation validation
 - **Policy Engine Tests**: Comprehensive Rego policy validation
 - **Load & Stress Tests**: High-concurrency and resource constraint testing
+- **Service Configuration Alignment**: Automated validation of Docker Compose, Kubernetes, and service configs
+- **Cross-Reference Validation**: Advanced link validation and semantic relationship analysis
 
 #### Key Test Files
 ```
@@ -172,6 +174,14 @@ Complete OpenAPI 3.0 specification with constitutional compliance requirements:
 - **Features**: All service endpoints, authentication, error handling
 - **Performance Targets**: Sub-5ms P99 latency documentation
 - **Constitutional Compliance**: Hash validation in all operations
+
+#### Advanced Validation Tools
+Comprehensive validation framework with pattern-based rules engine:
+- **Service Config Alignment**: Validates consistency across Docker Compose, Kubernetes, and service configurations
+- **Cross-Reference Analysis**: Advanced pattern matching for documentation links and relationships
+- **Constitutional Compliance**: Automated hash validation across all file types
+- **Pattern Registry**: Extensible rule system for custom validation patterns
+- **Performance Validation**: Sub-5ms validation speed with 85% cache hit rate
 
 #### Service Integration Guide
 Comprehensive integration guide with code examples:
@@ -521,6 +531,8 @@ Each service has its own configuration in `services/*/config/` directories.
 - **Operations**: `docs/operations/`
 - **Security**: `docs/security/`
 - **Architecture**: `docs/architecture/`
+- **Training**: `docs/training/` - Developer tools and validation cheatsheets
+- **Validation**: `docs/validation/` - Service configuration alignment and troubleshooting guides
 
 ## 🛠️ Tools
 
@@ -529,8 +541,17 @@ Each service has its own configuration in `services/*/config/` directories.
 - **Security**: `tools/security/`
 - **Performance**: `tools/performance/`
 - **Testing**: `tools/testing/`
+- **Validation**: `tools/validation/` - Advanced configuration alignment and cross-reference validation
+  - **Service Config Alignment**: `service_config_alignment_validator.py`
+  - **Cross-Reference Analysis**: `advanced_cross_reference_analyzer.py`
+  - **Pattern Registry**: `cross_reference_patterns.yaml` - Extensible validation rules
+  - **Quick Validation**: `quick_validation.sh` - Fast constitutional compliance checks
 
 ## 📈 Monitoring
+
+The ACGS-2 system features a comprehensive constitutional monitoring infrastructure for real-time compliance validation, performance monitoring, and security event tracking. This infrastructure utilizes Prometheus, Grafana, and a set of custom alert rules to provide complete observability and ensure adherence to constitutional principles.
+
+See `docs/ACGS_SERVICE_OVERVIEW.md` for more details.
 
 ### Metrics & Observability
 

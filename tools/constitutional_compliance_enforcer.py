@@ -20,19 +20,22 @@ import yaml
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
 # Constitutional compliance configuration
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-HASH_PATTERN = re.compile(r'["\']?(?:constitutional_hash|CONSTITUTIONAL_HASH)["\']?\s*[:=]\s*["\']?([a-f0-9]{16})["\']?', re.IGNORECASE)
+HASH_PATTERN = re.compile(
+    r'["\']?(?:constitutional_hash|CONSTITUTIONAL_HASH)["\']?\s*[:=]\s*["\']?([a-f0-9]{16})["\']?',
+    re.IGNORECASE,
+)
 
 
 @dataclass
 class ComplianceViolation:
     """Represents a constitutional compliance violation."""
+
     file_path: Path
     line_number: int
     violation_type: str
@@ -40,7 +43,7 @@ class ComplianceViolation:
     found_hash: Optional[str]
     severity: str  # critical, high, medium, low
     message: str
-    
+
     def to_dict(self) -> Dict:
         """Convert to dictionary."""
         return {
@@ -57,6 +60,7 @@ class ComplianceViolation:
 @dataclass
 class ComplianceReport:
     """Constitutional compliance report."""
+
     timestamp: str
     constitutional_hash: str
     files_scanned: int
@@ -64,7 +68,7 @@ class ComplianceReport:
     violations: List[ComplianceViolation]
     services_validated: List[str]
     overall_compliance_score: float
-    
+
     def to_dict(self) -> Dict:
         """Convert to dictionary."""
         return {
@@ -79,15 +83,33 @@ class ComplianceReport:
 
 
 class ConstitutionalComplianceEnforcer:
-    """Enforces constitutional compliance across ACGS-PGP."""
-    
+    """Enforces constitutional compliance across ACGS-PGP.
+
+    Enhanced Features:
+    - Scans UTF-8 text files with configurable size limits (max 1MB)
+    - Supports extended file type allow-list (Python, JS/TS, HTML, CSS, etc.)
+    - Binary file detection and automatic skipping
+    - False-positive suppression via `# constitution-ignore` pragma
+    - Multi-encoding support (UTF-8, latin-1, cp1252, iso-8859-1)
+    - Language-specific compliance checks (Python, JavaScript, HTML/XML)
+
+    Pragma Usage:
+    Add any of these comments to skip constitutional hash validation:
+    - # constitution-ignore (Python, shell, etc.)
+    - // constitution-ignore (JavaScript, C++, etc.)
+    - /* constitution-ignore */ (CSS, C, etc.)
+    - <!-- constitution-ignore --> (HTML, XML)
+    - triple-quote constitution-ignore triple-quote (Python docstrings)
+    """
+
     def __init__(self, project_root: Path):
         self.project_root = project_root
+        self.constitutional_hash = CONSTITUTIONAL_HASH
         self.violations: List[ComplianceViolation] = []
         self.files_scanned = 0
         self.files_compliant = 0
         self.services_validated: Set[str] = set()
-        
+
         # File patterns that must contain constitutional hash
         self.required_patterns = {
             "main.py": "critical",
@@ -99,12 +121,13 @@ class ConstitutionalComplianceEnforcer:
             "*_engine.py": "high",
             "middleware.py": "medium",
         }
-        
+
         # Files/directories to skip
         self.skip_patterns = {
             "__pycache__",
             ".git",
             ".pytest_cache",
+            ".mypy_cache",
             "node_modules",
             "venv",
             ".venv",
@@ -112,28 +135,67 @@ class ConstitutionalComplianceEnforcer:
             "tests",
             "test_*.py",
             "*_test.py",
+            "*.pyc",
+            "*.pyo",
+            "*.pyd",
+            "*.so",
+            "*.dll",
+            "*.exe",
+            "*.bin",
+            "*.jpg",
+            "*.jpeg",
+            "*.png",
+            "*.gif",
+            "*.svg",
+            "*.ico",
+            "*.pdf",
+            "*.zip",
+            "*.tar",
+            "*.gz",
+            "*.bz2",
+            "*.xz",
+            "*.7z",
+            "*.rar",
+            "*.mp3",
+            "*.mp4",
+            "*.avi",
+            "*.mov",
+            "*.wmv",
+            "*.flv",
+            "*.woff",
+            "*.woff2",
+            "*.ttf",
+            "*.eot",
+            "dist",
+            "build",
+            "coverage",
+            ".coverage",
+            "*.egg-info",
+            "*.lock",
+            "package-lock.json",
+            "yarn.lock",
         }
-        
+
     def scan_codebase(self) -> ComplianceReport:
         """Scan entire codebase for constitutional compliance."""
         logger.info(f"Starting constitutional compliance scan from {self.project_root}")
-        
+
         # Scan all relevant files
         for file_path in self._find_files_to_scan():
             self._scan_file(file_path)
-            
+
         # Check service configurations
         self._validate_service_configurations()
-        
+
         # Check CI/CD configurations
         self._validate_cicd_configurations()
-        
+
         # Check documentation
         self._validate_documentation()
-        
+
         # Calculate compliance score
         compliance_score = self._calculate_compliance_score()
-        
+
         # Generate report
         report = ComplianceReport(
             timestamp=datetime.utcnow().isoformat(),
@@ -144,76 +206,213 @@ class ConstitutionalComplianceEnforcer:
             services_validated=list(self.services_validated),
             overall_compliance_score=compliance_score,
         )
-        
+
         return report
-        
+
     def _find_files_to_scan(self) -> List[Path]:
         """Find all files that need scanning."""
         files_to_scan = []
-        
-        # Common file extensions to scan
-        extensions = {".py", ".yaml", ".yml", ".json", ".toml", ".md", ".rst"}
-        
+
+        # Extended file extensions to scan (UTF-8 text files)
+        extensions = {
+            ".py",
+            ".yaml",
+            ".yml",
+            ".json",
+            ".toml",
+            ".md",
+            ".rst",
+            ".txt",
+            ".sh",
+            ".sql",
+            ".js",
+            ".ts",
+            ".jsx",
+            ".tsx",
+            ".css",
+            ".scss",
+            ".sass",
+            ".html",
+            ".htm",
+            ".xml",
+            ".ini",
+            ".conf",
+            ".cfg",
+            ".env",
+            ".dockerfile",
+            ".gitignore",
+            ".c",
+            ".cpp",
+            ".h",
+            ".hpp",
+            ".java",
+            ".kt",
+            ".go",
+            ".rs",
+            ".php",
+            ".rb",
+            ".pl",
+            ".lua",
+            ".r",
+            ".scala",
+            ".swift",
+        }
+
+        # Maximum file size for scanning (1 MB)
+        max_file_size = 1024 * 1024
+
         for ext in extensions:
             for file_path in self.project_root.rglob(f"*{ext}"):
                 # Skip if in skip patterns
                 if any(pattern in str(file_path) for pattern in self.skip_patterns):
                     continue
-                    
+
                 # Skip if file name matches skip pattern
-                if any(file_path.name == pattern or 
-                      (pattern.startswith("*") and file_path.name.endswith(pattern[1:])) or
-                      (pattern.endswith("*") and file_path.name.startswith(pattern[:-1]))
-                      for pattern in self.skip_patterns):
+                if any(
+                    file_path.name == pattern
+                    or (
+                        pattern.startswith("*") and file_path.name.endswith(pattern[1:])
+                    )
+                    or (
+                        pattern.endswith("*")
+                        and file_path.name.startswith(pattern[:-1])
+                    )
+                    for pattern in self.skip_patterns
+                ):
                     continue
-                    
-                files_to_scan.append(file_path)
-                
+
+                # Check file size (skip if > 1MB)
+                try:
+                    if file_path.stat().st_size > max_file_size:
+                        logger.info(
+                            f"Skipping large file {file_path}: {file_path.stat().st_size} bytes > {max_file_size} bytes"
+                        )
+                        continue
+                except (OSError, FileNotFoundError):
+                    continue
+
+                # Check if file is UTF-8 text
+                if self._is_utf8_text_file(file_path):
+                    files_to_scan.append(file_path)
+
         return files_to_scan
-        
+
+    def _is_utf8_text_file(self, file_path: Path) -> bool:
+        """Check if file is a UTF-8 text file and not binary."""
+        try:
+            # Read first 8KB to detect binary content
+            with open(file_path, "rb") as f:
+                chunk = f.read(8192)
+
+            # Check for null bytes (common in binary files)
+            if b"\x00" in chunk:
+                return False
+
+            # Try to decode as UTF-8
+            try:
+                chunk.decode("utf-8")
+                return True
+            except UnicodeDecodeError:
+                # Try other common encodings
+                for encoding in ["latin-1", "cp1252", "iso-8859-1"]:
+                    try:
+                        chunk.decode(encoding)
+                        # If it decodes but contains mostly control chars, likely binary
+                        if (
+                            sum(1 for b in chunk if b < 32 and b not in [9, 10, 13])
+                            > len(chunk) * 0.1
+                        ):
+                            return False
+                        return True
+                    except UnicodeDecodeError:
+                        continue
+                return False
+
+        except (OSError, FileNotFoundError, PermissionError):
+            return False
+
+    def _has_constitutional_ignore_pragma(self, content: str) -> bool:
+        """Check if file contains constitution-ignore pragma to suppress false positives."""
+        pragma_patterns = [
+            r"#\s*constitution-ignore",
+            r"//\s*constitution-ignore",
+            r"/\*\s*constitution-ignore\s*\*/",
+            r"<!--\s*constitution-ignore\s*-->",
+            r'"""\s*constitution-ignore\s*"""',
+            r"'''\s*constitution-ignore\s*'''",
+        ]
+
+        for pattern in pragma_patterns:
+            if re.search(pattern, content, re.IGNORECASE):
+                return True
+        return False
+
     def _scan_file(self, file_path: Path) -> None:
         """Scan a single file for compliance."""
         self.files_scanned += 1
-        
+
         try:
-            content = file_path.read_text(encoding='utf-8')
-            
+            # Try UTF-8 first, then fallback to other encodings
+            content = None
+            for encoding in ["utf-8", "latin-1", "cp1252", "iso-8859-1"]:
+                try:
+                    content = file_path.read_text(encoding=encoding)
+                    break
+                except UnicodeDecodeError:
+                    continue
+
+            if content is None:
+                logger.warning(
+                    f"Could not decode file {file_path} with any supported encoding"
+                )
+                return
+
+            # Check for constitution-ignore pragma (skip if found)
+            if self._has_constitutional_ignore_pragma(content):
+                logger.info(f"Skipping {file_path}: constitution-ignore pragma found")
+                self.files_compliant += 1  # Count as compliant if explicitly ignored
+                return
+
             # Check if file requires constitutional hash
             severity = self._get_required_severity(file_path)
-            
+
             # Find all hash references
             hash_matches = list(HASH_PATTERN.finditer(content))
-            
+
             if severity:
                 # File requires hash
                 if not hash_matches:
-                    self.violations.append(ComplianceViolation(
-                        file_path=file_path,
-                        line_number=0,
-                        violation_type="missing_hash",
-                        expected_hash=CONSTITUTIONAL_HASH,
-                        found_hash=None,
-                        severity=severity,
-                        message=f"Required constitutional hash not found in {file_path.name}"
-                    ))
+                    self.violations.append(
+                        ComplianceViolation(
+                            file_path=file_path,
+                            line_number=0,
+                            violation_type="missing_hash",
+                            expected_hash=CONSTITUTIONAL_HASH,
+                            found_hash=None,
+                            severity=severity,
+                            message=f"Required constitutional hash not found in {file_path.name}",
+                        )
+                    )
                 else:
                     # Validate all found hashes
                     file_compliant = True
                     for match in hash_matches:
                         found_hash = match.group(1)
                         if found_hash != CONSTITUTIONAL_HASH:
-                            line_number = content[:match.start()].count('\n') + 1
-                            self.violations.append(ComplianceViolation(
-                                file_path=file_path,
-                                line_number=line_number,
-                                violation_type="incorrect_hash",
-                                expected_hash=CONSTITUTIONAL_HASH,
-                                found_hash=found_hash,
-                                severity=severity,
-                                message=f"Incorrect constitutional hash found"
-                            ))
+                            line_number = content[: match.start()].count("\n") + 1
+                            self.violations.append(
+                                ComplianceViolation(
+                                    file_path=file_path,
+                                    line_number=line_number,
+                                    violation_type="incorrect_hash",
+                                    expected_hash=CONSTITUTIONAL_HASH,
+                                    found_hash=found_hash,
+                                    severity=severity,
+                                    message=f"Incorrect constitutional hash found",
+                                )
+                            )
                             file_compliant = False
-                            
+
                     if file_compliant:
                         self.files_compliant += 1
             else:
@@ -221,32 +420,38 @@ class ConstitutionalComplianceEnforcer:
                 for match in hash_matches:
                     found_hash = match.group(1)
                     if found_hash != CONSTITUTIONAL_HASH:
-                        line_number = content[:match.start()].count('\n') + 1
-                        self.violations.append(ComplianceViolation(
-                            file_path=file_path,
-                            line_number=line_number,
-                            violation_type="incorrect_hash",
-                            expected_hash=CONSTITUTIONAL_HASH,
-                            found_hash=found_hash,
-                            severity="low",
-                            message=f"Incorrect constitutional hash found in optional file"
-                        ))
+                        line_number = content[: match.start()].count("\n") + 1
+                        self.violations.append(
+                            ComplianceViolation(
+                                file_path=file_path,
+                                line_number=line_number,
+                                violation_type="incorrect_hash",
+                                expected_hash=CONSTITUTIONAL_HASH,
+                                found_hash=found_hash,
+                                severity="low",
+                                message=f"Incorrect constitutional hash found in optional file",
+                            )
+                        )
                     else:
                         self.files_compliant += 1
-                        
+
             # Additional checks for specific file types
             if file_path.suffix == ".py":
                 self._check_python_compliance(file_path, content)
             elif file_path.suffix in [".yaml", ".yml"]:
                 self._check_yaml_compliance(file_path, content)
-                
+            elif file_path.suffix in [".js", ".ts", ".jsx", ".tsx"]:
+                self._check_javascript_compliance(file_path, content)
+            elif file_path.suffix in [".html", ".htm", ".xml"]:
+                self._check_markup_compliance(file_path, content)
+
         except Exception as e:
             logger.error(f"Error scanning {file_path}: {e}")
-            
+
     def _get_required_severity(self, file_path: Path) -> Optional[str]:
         """Determine if file requires constitutional hash and its severity."""
         file_name = file_path.name
-        
+
         for pattern, severity in self.required_patterns.items():
             if pattern.startswith("*") and file_name.endswith(pattern[1:]):
                 return severity
@@ -254,96 +459,195 @@ class ConstitutionalComplianceEnforcer:
                 return severity
             elif file_name == pattern:
                 return severity
-                
+
         # Check if it's a main service file
         if "services" in file_path.parts and file_name in ["main.py", "app.py"]:
             return "critical"
-            
+
         return None
-        
+
     def _check_python_compliance(self, file_path: Path, content: str) -> None:
         """Additional compliance checks for Python files."""
         # Check for middleware without hash validation
         if "middleware" in content and "@app.middleware" in content:
             if "constitutional" not in content.lower():
-                self.violations.append(ComplianceViolation(
-                    file_path=file_path,
-                    line_number=0,
-                    violation_type="missing_validation",
-                    expected_hash=CONSTITUTIONAL_HASH,
-                    found_hash=None,
-                    severity="medium",
-                    message="Middleware missing constitutional validation"
-                ))
-                
+                self.violations.append(
+                    ComplianceViolation(
+                        file_path=file_path,
+                        line_number=0,
+                        violation_type="missing_validation",
+                        expected_hash=CONSTITUTIONAL_HASH,
+                        found_hash=None,
+                        severity="medium",
+                        message="Middleware missing constitutional validation",
+                    )
+                )
+
         # Check for API endpoints without proper headers
-        if "@app." in content and any(method in content for method in ["get(", "post(", "put(", "delete("]):
+        if "@app." in content and any(
+            method in content for method in ["get(", "post(", "put(", "delete("]
+        ):
             if "X-Constitutional-Hash" not in content:
-                self.violations.append(ComplianceViolation(
-                    file_path=file_path,
-                    line_number=0,
-                    violation_type="missing_header",
-                    expected_hash=CONSTITUTIONAL_HASH,
-                    found_hash=None,
-                    severity="medium",
-                    message="API endpoints missing constitutional hash header"
-                ))
-                
+                self.violations.append(
+                    ComplianceViolation(
+                        file_path=file_path,
+                        line_number=0,
+                        violation_type="missing_header",
+                        expected_hash=CONSTITUTIONAL_HASH,
+                        found_hash=None,
+                        severity="medium",
+                        message="API endpoints missing constitutional hash header",
+                    )
+                )
+
     def _check_yaml_compliance(self, file_path: Path, content: str) -> None:
         """Additional compliance checks for YAML files."""
         try:
             data = yaml.safe_load(content)
-            
+
             # Check Docker Compose files
             if "docker-compose" in file_path.name and isinstance(data, dict):
                 services = data.get("services", {})
                 for service_name, service_config in services.items():
                     env_vars = service_config.get("environment", {})
-                    if isinstance(env_vars, dict) and "CONSTITUTIONAL_HASH" not in env_vars:
-                        self.violations.append(ComplianceViolation(
-                            file_path=file_path,
-                            line_number=0,
-                            violation_type="missing_env_var",
-                            expected_hash=CONSTITUTIONAL_HASH,
-                            found_hash=None,
-                            severity="high",
-                            message=f"Service '{service_name}' missing CONSTITUTIONAL_HASH env var"
-                        ))
-                        
+                    if (
+                        isinstance(env_vars, dict)
+                        and "CONSTITUTIONAL_HASH" not in env_vars
+                    ):
+                        self.violations.append(
+                            ComplianceViolation(
+                                file_path=file_path,
+                                line_number=0,
+                                violation_type="missing_env_var",
+                                expected_hash=CONSTITUTIONAL_HASH,
+                                found_hash=None,
+                                severity="high",
+                                message=f"Service '{service_name}' missing CONSTITUTIONAL_HASH env var",
+                            )
+                        )
+
         except yaml.YAMLError:
             pass  # Skip invalid YAML files
-            
+
+    def _check_javascript_compliance(self, file_path: Path, content: str) -> None:
+        """Additional compliance checks for JavaScript/TypeScript files."""
+        # Check for API endpoints without proper constitutional validation
+        if any(
+            pattern in content
+            for pattern in [
+                "app.get(",
+                "app.post(",
+                "app.put(",
+                "app.delete(",
+                "router.get(",
+                "router.post(",
+            ]
+        ):
+            if "constitutional" not in content.lower():
+                self.violations.append(
+                    ComplianceViolation(
+                        file_path=file_path,
+                        line_number=0,
+                        violation_type="missing_validation",
+                        expected_hash=CONSTITUTIONAL_HASH,
+                        found_hash=None,
+                        severity="medium",
+                        message="JavaScript API endpoints missing constitutional validation",
+                    )
+                )
+
+        # Check for fetch/axios calls without constitutional headers
+        if any(
+            pattern in content
+            for pattern in ["fetch(", "axios.", "$.ajax", "XMLHttpRequest"]
+        ):
+            if (
+                "X-Constitutional-Hash" not in content
+                and "constitutional" not in content.lower()
+            ):
+                self.violations.append(
+                    ComplianceViolation(
+                        file_path=file_path,
+                        line_number=0,
+                        violation_type="missing_header",
+                        expected_hash=CONSTITUTIONAL_HASH,
+                        found_hash=None,
+                        severity="medium",
+                        message="HTTP requests missing constitutional hash headers",
+                    )
+                )
+
+    def _check_markup_compliance(self, file_path: Path, content: str) -> None:
+        """Additional compliance checks for HTML/XML files."""
+        # Check for forms without constitutional validation
+        if "<form" in content.lower():
+            if (
+                "constitutional" not in content.lower()
+                and "data-constitutional" not in content.lower()
+            ):
+                self.violations.append(
+                    ComplianceViolation(
+                        file_path=file_path,
+                        line_number=0,
+                        violation_type="missing_validation",
+                        expected_hash=CONSTITUTIONAL_HASH,
+                        found_hash=None,
+                        severity="low",
+                        message="HTML forms missing constitutional validation attributes",
+                    )
+                )
+
+        # Check for AJAX endpoints in HTML/XML
+        if any(
+            pattern in content.lower()
+            for pattern in ["data-url=", "ajax-url=", "api-endpoint="]
+        ):
+            if "constitutional" not in content.lower():
+                self.violations.append(
+                    ComplianceViolation(
+                        file_path=file_path,
+                        line_number=0,
+                        violation_type="missing_validation",
+                        expected_hash=CONSTITUTIONAL_HASH,
+                        found_hash=None,
+                        severity="low",
+                        message="AJAX endpoints in markup missing constitutional references",
+                    )
+                )
+
     def _validate_service_configurations(self) -> None:
         """Validate service-specific configurations."""
         services_dir = self.project_root / "services"
         if not services_dir.exists():
             return
-            
+
         for service_dir in services_dir.rglob("*"):
             if service_dir.is_dir() and (service_dir / "main.py").exists():
                 service_name = service_dir.name
                 self.services_validated.add(service_name)
-                
+
                 # Check for required files
                 required_files = {
                     "requirements.txt": "medium",
                     "Dockerfile": "high",
                     "README.md": "low",
                 }
-                
+
                 for file_name, severity in required_files.items():
                     file_path = service_dir / file_name
                     if not file_path.exists():
-                        self.violations.append(ComplianceViolation(
-                            file_path=service_dir,
-                            line_number=0,
-                            violation_type="missing_required_file",
-                            expected_hash=CONSTITUTIONAL_HASH,
-                            found_hash=None,
-                            severity=severity,
-                            message=f"Service '{service_name}' missing {file_name}"
-                        ))
-                        
+                        self.violations.append(
+                            ComplianceViolation(
+                                file_path=service_dir,
+                                line_number=0,
+                                violation_type="missing_required_file",
+                                expected_hash=CONSTITUTIONAL_HASH,
+                                found_hash=None,
+                                severity=severity,
+                                message=f"Service '{service_name}' missing {file_name}",
+                            )
+                        )
+
     def _validate_cicd_configurations(self) -> None:
         """Validate CI/CD pipeline configurations."""
         workflows_dir = self.project_root / ".github" / "workflows"
@@ -352,58 +656,65 @@ class ConstitutionalComplianceEnforcer:
                 try:
                     content = workflow_file.read_text()
                     data = yaml.safe_load(content)
-                    
+
                     # Check for constitutional validation step
                     if isinstance(data, dict) and "jobs" in data:
                         has_validation = False
                         for job_name, job_config in data["jobs"].items():
                             if isinstance(job_config, dict) and "steps" in job_config:
                                 for step in job_config["steps"]:
-                                    if isinstance(step, dict) and "constitutional" in str(step).lower():
+                                    if (
+                                        isinstance(step, dict)
+                                        and "constitutional" in str(step).lower()
+                                    ):
                                         has_validation = True
                                         break
-                                        
+
                         if not has_validation:
-                            self.violations.append(ComplianceViolation(
-                                file_path=workflow_file,
-                                line_number=0,
-                                violation_type="missing_ci_validation",
-                                expected_hash=CONSTITUTIONAL_HASH,
-                                found_hash=None,
-                                severity="high",
-                                message="CI/CD workflow missing constitutional validation step"
-                            ))
-                            
+                            self.violations.append(
+                                ComplianceViolation(
+                                    file_path=workflow_file,
+                                    line_number=0,
+                                    violation_type="missing_ci_validation",
+                                    expected_hash=CONSTITUTIONAL_HASH,
+                                    found_hash=None,
+                                    severity="high",
+                                    message="CI/CD workflow missing constitutional validation step",
+                                )
+                            )
+
                 except Exception as e:
                     logger.error(f"Error validating workflow {workflow_file}: {e}")
-                    
+
     def _validate_documentation(self) -> None:
         """Validate documentation contains constitutional hash."""
         doc_files = ["README.md", "CONTRIBUTING.md", "ARCHITECTURE.md"]
-        
+
         for doc_name in doc_files:
             doc_path = self.project_root / doc_name
             if doc_path.exists():
                 content = doc_path.read_text()
                 if CONSTITUTIONAL_HASH not in content:
-                    self.violations.append(ComplianceViolation(
-                        file_path=doc_path,
-                        line_number=0,
-                        violation_type="missing_doc_reference",
-                        expected_hash=CONSTITUTIONAL_HASH,
-                        found_hash=None,
-                        severity="low",
-                        message=f"{doc_name} missing constitutional hash reference"
-                    ))
-                    
+                    self.violations.append(
+                        ComplianceViolation(
+                            file_path=doc_path,
+                            line_number=0,
+                            violation_type="missing_doc_reference",
+                            expected_hash=CONSTITUTIONAL_HASH,
+                            found_hash=None,
+                            severity="low",
+                            message=f"{doc_name} missing constitutional hash reference",
+                        )
+                    )
+
     def _calculate_compliance_score(self) -> float:
         """Calculate overall compliance score."""
         if self.files_scanned == 0:
             return 0.0
-            
+
         # Base score from file compliance
         file_score = (self.files_compliant / self.files_scanned) * 100
-        
+
         # Deduct for violations based on severity
         severity_penalties = {
             "critical": 10.0,
@@ -411,73 +722,79 @@ class ConstitutionalComplianceEnforcer:
             "medium": 2.0,
             "low": 0.5,
         }
-        
+
         total_penalty = sum(
-            severity_penalties.get(v.severity, 0) 
-            for v in self.violations
+            severity_penalties.get(v.severity, 0) for v in self.violations
         )
-        
+
         # Calculate final score
         score = max(0, file_score - total_penalty)
-        
+
         return round(score, 2)
-        
+
     def fix_violations(self, auto_fix: bool = False) -> int:
         """Attempt to fix violations automatically."""
         if not auto_fix:
             logger.info("Auto-fix not enabled. Run with --auto-fix to fix violations.")
             return 0
-            
+
         fixed_count = 0
-        
+
         for violation in self.violations:
             if violation.violation_type == "incorrect_hash":
                 try:
                     # Read file
                     content = violation.file_path.read_text()
-                    
+
                     # Replace incorrect hash
                     new_content = content.replace(
-                        violation.found_hash,
-                        CONSTITUTIONAL_HASH
+                        violation.found_hash, CONSTITUTIONAL_HASH
                     )
-                    
+
                     # Write back
                     violation.file_path.write_text(new_content)
                     fixed_count += 1
                     logger.info(f"Fixed incorrect hash in {violation.file_path}")
-                    
+
                 except Exception as e:
                     logger.error(f"Failed to fix {violation.file_path}: {e}")
-                    
-            elif violation.violation_type == "missing_hash" and violation.file_path.suffix == ".py":
+
+            elif (
+                violation.violation_type == "missing_hash"
+                and violation.file_path.suffix == ".py"
+            ):
                 try:
                     # Read file
                     content = violation.file_path.read_text()
-                    
+
                     # Add hash as constant after imports
-                    lines = content.split('\n')
+                    lines = content.split("\n")
                     insert_index = 0
-                    
+
                     # Find location after imports
                     for i, line in enumerate(lines):
-                        if line.strip() and not line.startswith(('import', 'from', '#')):
+                        if line.strip() and not line.startswith(
+                            ("import", "from", "#")
+                        ):
                             insert_index = i
                             break
-                            
+
                     # Insert constitutional hash
-                    lines.insert(insert_index, f'\n# Constitutional compliance\nCONSTITUTIONAL_HASH = "{CONSTITUTIONAL_HASH}"\n')
-                    
+                    lines.insert(
+                        insert_index,
+                        f'\n# Constitutional compliance\nCONSTITUTIONAL_HASH = "{CONSTITUTIONAL_HASH}"\n',
+                    )
+
                     # Write back
-                    violation.file_path.write_text('\n'.join(lines))
+                    violation.file_path.write_text("\n".join(lines))
                     fixed_count += 1
                     logger.info(f"Added constitutional hash to {violation.file_path}")
-                    
+
                 except Exception as e:
                     logger.error(f"Failed to fix {violation.file_path}: {e}")
-                    
+
         return fixed_count
-        
+
     def generate_report(self, report: ComplianceReport) -> str:
         """Generate human-readable compliance report."""
         lines = [
@@ -493,73 +810,85 @@ class ConstitutionalComplianceEnforcer:
             f"- **Overall Compliance Score: {report.overall_compliance_score:.1f}%**",
             "",
         ]
-        
+
         if report.violations:
             # Group violations by severity
             by_severity = {"critical": [], "high": [], "medium": [], "low": []}
             for violation in report.violations:
                 by_severity[violation.severity].append(violation)
-                
-            lines.extend([
-                "## Violations by Severity",
-                "",
-            ])
-            
+
+            lines.extend(
+                [
+                    "## Violations by Severity",
+                    "",
+                ]
+            )
+
             for severity in ["critical", "high", "medium", "low"]:
                 violations = by_severity[severity]
                 if violations:
-                    lines.extend([
-                        f"### {severity.upper()} ({len(violations)} violations)",
-                        "",
-                    ])
-                    
+                    lines.extend(
+                        [
+                            f"### {severity.upper()} ({len(violations)} violations)",
+                            "",
+                        ]
+                    )
+
                     for v in violations[:10]:  # Show first 10
-                        lines.append(
-                            f"- `{v.file_path}:{v.line_number}` - {v.message}"
-                        )
-                        
+                        lines.append(f"- `{v.file_path}:{v.line_number}` - {v.message}")
+
                     if len(violations) > 10:
                         lines.append(f"- ... and {len(violations) - 10} more")
-                        
+
                     lines.append("")
-                    
+
         else:
-            lines.extend([
-                "## Status",
-                "✅ **No violations found!** The codebase is fully compliant.",
-                "",
-            ])
-            
+            lines.extend(
+                [
+                    "## Status",
+                    "✅ **No violations found!** The codebase is fully compliant.",
+                    "",
+                ]
+            )
+
         if report.services_validated:
-            lines.extend([
-                "## Services Validated",
-                "",
-                *[f"- {service}" for service in sorted(report.services_validated)],
-                "",
-            ])
-            
+            lines.extend(
+                [
+                    "## Services Validated",
+                    "",
+                    *[f"- {service}" for service in sorted(report.services_validated)],
+                    "",
+                ]
+            )
+
         # Add recommendations
-        lines.extend([
-            "## Recommendations",
-            "",
-        ])
-        
+        lines.extend(
+            [
+                "## Recommendations",
+                "",
+            ]
+        )
+
         if report.overall_compliance_score < 100:
-            lines.extend([
-                "1. Run with `--auto-fix` to automatically fix correctable violations",
-                "2. Add constitutional hash validation to all middleware",
-                "3. Include hash in CI/CD pipeline checks",
-                "4. Document constitutional requirements in README",
-                "",
-            ])
+            lines.extend(
+                [
+                    "1. Run with `--auto-fix` to automatically fix correctable violations",
+                    "2. Add constitutional hash validation to all middleware",
+                    "3. Include hash in CI/CD pipeline checks",
+                    "4. Document constitutional requirements in README",
+                    "",
+                ]
+            )
         else:
-            lines.extend([
-                "1. Continue monitoring compliance in CI/CD",
-                "2. Add pre-commit hooks for automatic validation",
-                "3. Regular compliance audits",
-                "",
-            ])
-            
+            lines.extend(
+                [
+                    "1. Continue monitoring compliance in CI/CD",
+                    "2. Add pre-commit hooks for automatic validation",
+                    "3. Regular compliance audits",
+                    "",
+                ]
+            )
+
         return "\n".join(lines)
 
 
@@ -596,41 +925,41 @@ def main():
         default=95.0,
         help="Minimum compliance score required",
     )
-    
+
     args = parser.parse_args()
-    
+
     # Initialize enforcer
     enforcer = ConstitutionalComplianceEnforcer(args.project_root)
-    
+
     # Scan codebase
     logger.info("Starting constitutional compliance scan...")
     report = enforcer.scan_codebase()
-    
+
     # Auto-fix if requested
     if args.auto_fix and report.violations:
         logger.info("Attempting to auto-fix violations...")
         fixed_count = enforcer.fix_violations(auto_fix=True)
         logger.info(f"Fixed {fixed_count} violations")
-        
+
         # Re-scan after fixes
         enforcer = ConstitutionalComplianceEnforcer(args.project_root)
         report = enforcer.scan_codebase()
-        
+
     # Save JSON report
-    with open(args.output, 'w') as f:
+    with open(args.output, "w") as f:
         json.dump(report.to_dict(), f, indent=2)
     logger.info(f"JSON report saved to {args.output}")
-    
+
     # Generate and print markdown report
     markdown_report = enforcer.generate_report(report)
     print("\n" + markdown_report)
-    
+
     # Save markdown report
-    md_output = args.output.with_suffix('.md')
-    with open(md_output, 'w') as f:
+    md_output = args.output.with_suffix(".md")
+    with open(md_output, "w") as f:
         f.write(markdown_report)
     logger.info(f"Markdown report saved to {md_output}")
-    
+
     # Check compliance
     if report.overall_compliance_score < args.min_score:
         logger.error(
@@ -644,7 +973,7 @@ def main():
             f"✅ Compliance score {report.overall_compliance_score:.1f}% "
             f"meets requirement"
         )
-        
+
     if args.fail_on_violation and report.violations:
         logger.error(f"Found {len(report.violations)} compliance violations")
         sys.exit(1)

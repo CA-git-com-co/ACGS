@@ -18,6 +18,8 @@
 - ✅ Performance targets consistency
 - ✅ Documentation completeness
 - ✅ Service status documentation
+- ✅ Service configuration alignment (Docker Compose, Kubernetes, config files)
+- ✅ Cross-reference validation using PATTERN_REGISTRY
 
 ### Expected Output
 ```
@@ -181,12 +183,146 @@ grep -r "≥100.*RPS\|≤5ms\|≥85%.*cache\|≥80%.*coverage" docs/
 # Add missing targets to documentation
 ```
 
+## Advanced Validation Tools
+
+### Service Configuration Alignment Validator
+
+#### Command
+```bash
+python tools/validation/service_config_alignment_validator.py [--repo-root PATH] [--output REPORT] [--json]
+```
+
+#### What it validates
+- ✅ Port consistency across Docker Compose, Kubernetes, and code
+- ✅ Image tag alignment between configurations
+- ✅ Environment variable consistency
+- ✅ API documentation URL patterns
+- ✅ Constitutional compliance across all config files
+
+#### Sample Output
+```
+📊 Service Configuration Alignment Summary:
+  Total Checks: 5
+  Passed: 4
+  Failed: 1
+  Success Rate: 80.0%
+  Duration: 1.23s
+  Performance Score: 89.2/100
+```
+
+### Cross-Reference Analysis Tool
+
+#### Command
+```bash
+python tools/validation/advanced_cross_reference_analyzer.py [--output-dir REPORTS]
+```
+
+#### Capabilities
+- 🔍 **Pattern-Based Link Detection**: Uses extensible PATTERN_REGISTRY
+- 🔗 **Broken Link Detection**: Identifies and suggests fixes for broken references
+- 📋 **Semantic Relationship Analysis**: Detects related documents based on content
+- 🎯 **Confidence Scoring**: Prioritizes issues based on link quality and context
+- 📊 **Comprehensive Reporting**: Detailed analysis with actionable recommendations
+
+#### Pattern Registry (PATTERN_REGISTRY)
+
+Location: `tools/validation/cross_reference_patterns.yaml`
+
+**Supported Pattern Categories:**
+- `markdown_links`: Standard markdown link formats
+- `code_references`: Import statements and file references  
+- `configuration_references`: YAML/JSON config file references
+- `semantic_relationships`: Context-based semantic relationships
+- `image_media`: Image and media file references
+
+**Adding New Validation Rules:**
+
+1. **Edit Pattern Registry**:
+   ```yaml
+   patterns:
+     - name: "custom_pattern"
+       category: "code_references"
+       regex: "your_regex_pattern_here"
+       capture_groups:
+         text: 1
+         url: 2
+       reference_type: "custom"
+       confidence_modifiers:
+         descriptive_text: 0.2
+   ```
+
+2. **Test New Pattern**:
+   ```bash
+   python tools/validation/advanced_cross_reference_analyzer.py --test-pattern "custom_pattern"
+   ```
+
+3. **Validate Changes**:
+   ```bash
+   ./tools/validation/quick_validation.sh
+   ```
+
+### PATTERN_REGISTRY Configuration
+
+#### Core Pattern Structure
+```yaml
+patterns:
+  - name: "pattern_identifier"           # Unique pattern name
+    category: "pattern_category"          # Category for organization
+    regex: "regex_pattern"               # Pattern to match
+    capture_groups:                      # Named capture groups
+      text: 1                           # Group for link text
+      url: 2                            # Group for URL/path
+    reference_type: "type"               # Classification type
+    confidence_modifiers:                # Score adjustments
+      descriptive_text: 0.2             # Boost for descriptive text
+      generic_text: -0.3                # Penalty for generic text
+    exclusions:                         # Patterns to exclude
+      - "^https?://"                    # External URLs
+      - "^mailto:"                      # Email links
+```
+
+#### Confidence Scoring System
+- **Base Confidence**: Set per category (0.6-0.9)
+- **Text Quality Modifiers**: 
+  - Descriptive text: +0.2
+  - Generic terms ("here", "link"): -0.3
+  - Action terms ("see", "refer"): +0.1
+- **Context Modifiers**:
+  - Structured context: +0.1
+  - Code blocks: +0.2
+  - Documentation sections: +0.15
+
+#### Built-in Pattern Examples
+
+**Markdown Links:**
+```yaml
+regex: "\\[([^\\]]+)\\]\\(([^)]+)\\)"
+capture_groups:
+  text: 1
+  url: 2
+```
+
+**Code Imports:**
+```yaml
+regex: "(?:import|from)\\s+[\"']([^\"']+)[\"']"
+capture_groups:
+  module_path: 1
+```
+
+**API Endpoints:**
+```yaml
+regex: "(?:GET|POST|PUT|DELETE|PATCH)\\s+(/api/[^\\s\\n]+)"
+capture_groups:
+  endpoint: 1
+```
+
 ## Related Information
 
 For a comprehensive overview of the documentation implementation and the services validated by these tools, refer to:
 
 - [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
 - [ACGS Service Architecture Overview](../ACGS_SERVICE_OVERVIEW.md)
+- [Service Configuration Alignment Guide](../validation/SERVICE_CONFIG_ALIGNMENT.md)
 
 ## Emergency Procedures
 

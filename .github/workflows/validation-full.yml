@@ -1,0 +1,730 @@
+name: Full Documentation Validation
+# Constitutional Hash: cdd01ef066bc6cf2
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master ]
+    types: [opened, synchronize, reopened]
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      validation_scope:
+        description: 'Validation scope'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - enhanced
+          - consistency
+          - cross_reference
+          - api_sync
+          - constitutional
+          - service_config
+          - policy_synthesis
+      report_format:
+        description: 'Report format'
+        required: true
+        default: 'both'
+        type: choice
+        options:
+          - json
+          - markdown
+          - both
+      upload_artifacts:
+        description: 'Upload validation artifacts'
+        required: false
+        default: true
+        type: boolean
+
+env:
+  CONSTITUTIONAL_HASH: "cdd01ef066bc6cf2"
+  PYTHON_VERSION: "3.11"
+  NODE_VERSION: "20"
+
+jobs:
+  full-validation:
+    name: Full Documentation Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    
+    outputs:
+      validation-status: ${{ steps.validate.outputs.status }}
+      critical-issues: ${{ steps.validate.outputs.critical-issues }}
+      total-issues: ${{ steps.validate.outputs.total-issues }}
+      
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for comprehensive analysis
+          
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: Install Python dependencies with extra packages
+        run: |
+          python -m pip install --upgrade pip
+          # Core dependencies
+          pip install PyYAML requests aiohttp gitpython
+          # Enhanced validation dependencies
+          pip install pyyaml ruamel.yaml markdown beautifulsoup4 lxml
+          # Advanced analysis dependencies
+          pip install jsonschema pydantic validators
+          # Performance analysis dependencies  
+          pip install psutil memory-profiler
+          # Testing and quality dependencies
+          pip install pytest pytest-asyncio pytest-cov
+          # Documentation processing dependencies
+          pip install mistune docutils sphinx
+          # Security scanning dependencies
+          pip install safety bandit
+          # Additional YAML/JSON processing
+          pip install toml tomli tomli-w
+          
+      - name: Install Node.js dependencies
+        run: |
+          # Install documentation validation tools
+          npm install -g markdownlint-cli
+          npm install -g alex
+          npm install -g textlint
+          
+      - name: Create validation reports directory
+        run: |
+          mkdir -p validation_reports
+          mkdir -p validation_artifacts
+          
+      - name: Run unified documentation validation framework
+        id: validate
+        run: |
+          echo "Starting full documentation validation..."
+          
+          # Determine validation scope
+          VALIDATION_SCOPE="${{ github.event.inputs.validation_scope || 'all' }}"
+          
+          # Set validation arguments based on scope
+          if [[ "$VALIDATION_SCOPE" == "all" ]]; then
+            VALIDATOR_ARGS=""
+          else
+            VALIDATOR_ARGS="--validators $VALIDATION_SCOPE"
+          fi
+          
+          # Determine output format
+          REPORT_FORMAT="${{ github.event.inputs.report_format || 'both' }}"
+          
+          if [[ "$REPORT_FORMAT" == "json" ]]; then
+            OUTPUT_ARGS="--json-only"
+          elif [[ "$REPORT_FORMAT" == "markdown" ]]; then
+            OUTPUT_ARGS=""
+          else
+            OUTPUT_ARGS="--json"
+          fi
+          
+          # Run the unified validation framework
+          python3 tools/validation/unified_documentation_validation_framework.py \
+            $VALIDATOR_ARGS \
+            $OUTPUT_ARGS \
+            --output validation_reports/full_validation_report.md
+          
+          VALIDATION_EXIT_CODE=$?
+          
+          # Extract metrics from JSON report if available
+          if [[ -f validation_reports/unified_validation_*.json ]]; then
+            JSON_REPORT=$(ls validation_reports/unified_validation_*.json | head -1)
+            
+            # Extract key metrics
+            TOTAL_ISSUES=$(jq -r '.summary.total_issues // 0' "$JSON_REPORT")
+            CRITICAL_ISSUES=$(jq -r '.summary.critical_issues // 0' "$JSON_REPORT")
+            OVERALL_PASSED=$(jq -r '.summary.overall_passed // false' "$JSON_REPORT")
+            
+            echo "total-issues=$TOTAL_ISSUES" >> $GITHUB_OUTPUT
+            echo "critical-issues=$CRITICAL_ISSUES" >> $GITHUB_OUTPUT
+            
+            if [[ "$OVERALL_PASSED" == "true" ]]; then
+              echo "status=passed" >> $GITHUB_OUTPUT
+            else
+              echo "status=failed" >> $GITHUB_OUTPUT
+            fi
+            
+            # Copy JSON report to standard location
+            cp "$JSON_REPORT" validation_reports/full_validation_report.json
+          else
+            echo "total-issues=unknown" >> $GITHUB_OUTPUT
+            echo "critical-issues=unknown" >> $GITHUB_OUTPUT
+            echo "status=error" >> $GITHUB_OUTPUT
+          fi
+          
+          echo "Validation completed with exit code: $VALIDATION_EXIT_CODE"
+          
+          # Exit with validation result
+          exit $VALIDATION_EXIT_CODE
+          
+      - name: Run additional quality checks
+        if: success() || failure()
+        run: |
+          echo "Running additional quality checks..."
+          
+          # Markdown linting
+          echo "📝 Running markdown linting..."
+          find . -name "*.md" -not -path "./node_modules/*" -not -path "./.git/*" | \
+            xargs markdownlint --config .markdownlint.json --output validation_artifacts/markdownlint_report.json || true
+          
+          # Check for inclusive language
+          echo "🔍 Checking for inclusive language..."
+          find . -name "*.md" -not -path "./node_modules/*" -not -path "./.git/*" | \
+            xargs alex --output validation_artifacts/alex_report.json || true
+          
+          # Security scan of Python files
+          echo "🔒 Running security scan..."
+          bandit -r . -f json -o validation_artifacts/bandit_security_report.json \
+            --exclude "**/tests/**,**/test_**,**/.venv/**" || true
+          
+          # Safety check for Python dependencies
+          echo "🛡️ Checking Python dependencies for vulnerabilities..."
+          safety check --json --output validation_artifacts/safety_report.json || true
+          
+          echo "Additional quality checks completed"
+          
+      - name: Generate consolidated report
+        if: success() || failure()
+        run: |
+          cat > generate_consolidated_report.py << 'EOF'
+          import json
+          import sys
+          from datetime import datetime
+          from pathlib import Path
+          
+          def load_json_file(filepath):
+              """Load JSON file with error handling."""
+              try:
+                  with open(filepath, 'r') as f:
+                      return json.load(f)
+              except (FileNotFoundError, json.JSONDecodeError) as e:
+                  print(f"Warning: Could not load {filepath}: {e}")
+                  return None
+          
+          def generate_consolidated_report():
+              """Generate a consolidated validation report."""
+              
+              # Load all available reports
+              reports = {}
+              
+              # Main validation report
+              main_report = load_json_file('validation_reports/full_validation_report.json')
+              if main_report:
+                  reports['unified_validation'] = main_report
+              
+              # Additional quality reports
+              quality_reports = {
+                  'markdownlint': 'validation_artifacts/markdownlint_report.json',
+                  'alex': 'validation_artifacts/alex_report.json', 
+                  'bandit': 'validation_artifacts/bandit_security_report.json',
+                  'safety': 'validation_artifacts/safety_report.json'
+              }
+              
+              for name, filepath in quality_reports.items():
+                  report = load_json_file(filepath)
+                  if report:
+                      reports[name] = report
+              
+              # Generate consolidated summary
+              consolidated = {
+                  'timestamp': datetime.now().isoformat(),
+                  'constitutional_hash': 'cdd01ef066bc6cf2',
+                  'validation_type': 'full',
+                  'reports': reports,
+                  'summary': {
+                      'total_checks': len(reports),
+                      'available_reports': list(reports.keys())
+                  }
+              }
+              
+              # Extract main validation metrics if available
+              if main_report and 'summary' in main_report:
+                  main_summary = main_report['summary']
+                  consolidated['summary'].update({
+                      'total_issues': main_summary.get('total_issues', 0),
+                      'critical_issues': main_summary.get('critical_issues', 0),
+                      'high_issues': main_summary.get('high_issues', 0),
+                      'medium_issues': main_summary.get('medium_issues', 0),
+                      'low_issues': main_summary.get('low_issues', 0),
+                      'overall_passed': main_summary.get('overall_passed', False),
+                      'constitutional_compliance_rate': main_summary.get('constitutional_compliance_rate', 0.0),
+                      'total_files_checked': main_summary.get('total_files_checked', 0),
+                      'successful_validators': main_summary.get('successful_validators', 0),
+                      'total_validators': main_summary.get('total_validators', 0)
+                  })
+              
+              # Save consolidated report
+              with open('validation_reports/consolidated_validation_report.json', 'w') as f:
+                  json.dump(consolidated, f, indent=2)
+              
+              # Print summary
+              print("📊 Consolidated Validation Report Generated")
+              print("=" * 50)
+              if main_report and 'summary' in main_report:
+                  main_summary = main_report['summary']
+                  print(f"Overall Status: {'PASSED' if main_summary.get('overall_passed', False) else 'FAILED'}")
+                  print(f"Total Issues: {main_summary.get('total_issues', 0)}")
+                  print(f"Critical Issues: {main_summary.get('critical_issues', 0)}")
+                  print(f"Files Checked: {main_summary.get('total_files_checked', 0)}")
+                  print(f"Constitutional Compliance: {main_summary.get('constitutional_compliance_rate', 0):.1f}%")
+              else:
+                  print("Main validation report not available")
+              
+              print(f"Quality Reports: {', '.join(reports.keys())}")
+              print(f"Constitutional Hash: cdd01ef066bc6cf2")
+              
+          if __name__ == "__main__":
+              generate_consolidated_report()
+          EOF
+          
+          python generate_consolidated_report.py
+          
+      - name: Upload validation reports
+        if: github.event.inputs.upload_artifacts != 'false'
+        uses: actions/upload-artifact@v3
+        with:
+          name: full-validation-reports
+          path: |
+            validation_reports/
+            validation_artifacts/
+          retention-days: 30
+          
+      - name: Upload JSON report for API consumption
+        if: success() || failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: validation-json-report
+          path: validation_reports/consolidated_validation_report.json
+          retention-days: 90
+          
+      - name: Comment on PR with validation results
+        if: github.event_name == 'pull_request' && (success() || failure())
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            
+            // Try to load consolidated report
+            let reportData = null;
+            try {
+              const reportContent = fs.readFileSync('validation_reports/consolidated_validation_report.json', 'utf8');
+              reportData = JSON.parse(reportContent);
+            } catch (error) {
+              console.log('Could not load consolidated report:', error.message);
+            }
+            
+            let commentBody = `## 📋 Full Documentation Validation Results
+            
+            **Constitutional Hash:** \`cdd01ef066bc6cf2\`
+            **Validation Type:** Full Documentation Validation
+            **Timestamp:** ${new Date().toISOString()}
+            
+            `;
+            
+            if (reportData && reportData.summary) {
+              const summary = reportData.summary;
+              const overallStatus = summary.overall_passed ? '✅ PASSED' : '❌ FAILED';
+              
+              commentBody += `### 🎯 Summary
+              - **Overall Status:** ${overallStatus}
+              - **Total Issues:** ${summary.total_issues || 0}
+              - **Critical Issues:** ${summary.critical_issues || 0}
+              - **Files Checked:** ${summary.total_files_checked || 0}
+              - **Constitutional Compliance:** ${(summary.constitutional_compliance_rate || 0).toFixed(1)}%
+              - **Validators:** ${summary.successful_validators || 0}/${summary.total_validators || 0} successful
+              
+              ### 📊 Issue Breakdown
+              - 🚨 Critical: ${summary.critical_issues || 0}
+              - ⚠️ High: ${summary.high_issues || 0}
+              - 📋 Medium: ${summary.medium_issues || 0}
+              - ℹ️ Low: ${summary.low_issues || 0}
+              
+              ### 🔍 Quality Reports Generated
+              ${summary.available_reports ? summary.available_reports.map(report => `- ${report}`).join('\n') : 'No additional reports available'}
+              `;
+              
+              if (summary.critical_issues > 0) {
+                commentBody += `
+              ### 🚨 Action Required
+              This PR has **${summary.critical_issues} critical issue(s)** that must be addressed before merging.
+              `;
+              }
+            } else {
+              commentBody += `### ⚠️ Validation Status
+              Validation completed but detailed results are not available. Please check the workflow logs for more information.
+              `;
+            }
+            
+            commentBody += `
+            ### 📎 Artifacts
+            - [View Full Validation Reports](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            - JSON Report: Available as workflow artifact
+            
+            ---
+            *This comment was automatically generated by the Full Documentation Validation workflow.*
+            `;
+            
+            // Create or update comment
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const existingComment = comments.data.find(comment => 
+              comment.body.includes('Full Documentation Validation Results') &&
+              comment.user.type === 'Bot'
+            );
+            
+            if (existingComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body: commentBody
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: commentBody
+              });
+            }
+
+  security-and-compliance:
+    name: Security and Compliance Validation
+    runs-on: ubuntu-latest
+    needs: full-validation
+    if: success() || failure()
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          
+      - name: Install security scanning tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install safety bandit semgrep
+          # Install additional security tools
+          pip install pip-audit cyclonedx-bom
+          
+      - name: Run comprehensive security scan
+        run: |
+          echo "🔒 Running comprehensive security validation..."
+          
+          mkdir -p security_reports
+          
+          # Python dependency vulnerability scan
+          echo "📦 Scanning Python dependencies..."
+          safety check --json --output security_reports/safety_detailed.json || true
+          pip-audit --format json --output security_reports/pip_audit.json || true
+          
+          # Code security analysis
+          echo "🔍 Running static code security analysis..."
+          bandit -r . -f json -o security_reports/bandit_detailed.json \
+            --exclude "**/tests/**,**/test_**,**/.venv/**,**/node_modules/**" || true
+          
+          # Advanced security rules with Semgrep
+          echo "🛡️ Running advanced security pattern detection..."
+          semgrep --config=auto --json --output security_reports/semgrep_security.json . || true
+          
+          # Generate SBOM (Software Bill of Materials)
+          echo "📋 Generating Software Bill of Materials..."
+          cyclonedx-py --format json --output security_reports/sbom.json . || true
+          
+          echo "Security validation completed"
+          
+      - name: Upload security reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: security-validation-reports
+          path: security_reports/
+          retention-days: 30
+
+  performance-benchmarks:
+    name: Documentation Performance Benchmarks
+    runs-on: ubuntu-latest
+    needs: full-validation
+    if: github.event_name == 'schedule' || github.event.inputs.validation_scope == 'all'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          
+      - name: Install performance monitoring tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install PyYAML requests aiohttp gitpython
+          pip install psutil memory-profiler line-profiler
+          pip install pyyaml ruamel.yaml markdown beautifulsoup4 lxml
+          
+      - name: Run performance benchmarks
+        run: |
+          cat > benchmark_documentation_validation.py << 'EOF'
+          import time
+          import psutil
+          import json
+          import subprocess
+          import sys
+          from memory_profiler import memory_usage
+          from datetime import datetime
+          
+          def benchmark_validation_performance():
+              """Benchmark the documentation validation performance."""
+              
+              results = {
+                  'timestamp': datetime.now().isoformat(),
+                  'constitutional_hash': 'cdd01ef066bc6cf2',
+                  'system_info': {
+                      'cpu_count': psutil.cpu_count(),
+                      'memory_total_gb': psutil.virtual_memory().total / (1024**3),
+                      'platform': 'github-actions-ubuntu-latest'
+                  },
+                  'benchmarks': {}
+              }
+              
+              # Benchmark full validation
+              print("🚀 Benchmarking full validation performance...")
+              
+              def run_full_validation():
+                  result = subprocess.run([
+                      sys.executable, 
+                      'tools/validation/unified_documentation_validation_framework.py',
+                      '--json-only'
+                  ], capture_output=True, text=True)
+                  return result.returncode == 0
+              
+              # Measure memory usage and execution time
+              start_time = time.time()
+              mem_usage = memory_usage(run_full_validation, interval=0.1)
+              end_time = time.time()
+              
+              execution_time = end_time - start_time
+              max_memory = max(mem_usage) if mem_usage else 0
+              avg_memory = sum(mem_usage) / len(mem_usage) if mem_usage else 0
+              
+              results['benchmarks']['full_validation'] = {
+                  'execution_time_seconds': execution_time,
+                  'max_memory_mb': max_memory,
+                  'avg_memory_mb': avg_memory,
+                  'memory_samples': len(mem_usage)
+              }
+              
+              # Benchmark individual validators
+              validators = ['enhanced', 'consistency', 'cross_reference', 'constitutional']
+              
+              for validator in validators:
+                  print(f"📊 Benchmarking {validator} validator...")
+                  
+                  def run_single_validator():
+                      result = subprocess.run([
+                          sys.executable,
+                          'tools/validation/unified_documentation_validation_framework.py',
+                          '--validators', validator,
+                          '--json-only'
+                      ], capture_output=True, text=True)
+                      return result.returncode == 0
+                  
+                  start_time = time.time()
+                  success = run_single_validator()
+                  end_time = time.time()
+                  
+                  results['benchmarks'][f'{validator}_validator'] = {
+                      'execution_time_seconds': end_time - start_time,
+                      'success': success
+                  }
+              
+              # Save benchmark results
+              with open('performance_benchmarks.json', 'w') as f:
+                  json.dump(results, f, indent=2)
+              
+              # Print performance summary
+              print("\n📈 Performance Benchmark Summary")
+              print("=" * 50)
+              full_perf = results['benchmarks']['full_validation']
+              print(f"Full Validation Time: {full_perf['execution_time_seconds']:.2f} seconds")
+              print(f"Max Memory Usage: {full_perf['max_memory_mb']:.1f} MB")
+              print(f"Avg Memory Usage: {full_perf['avg_memory_mb']:.1f} MB")
+              
+              # Performance targets validation
+              warnings = []
+              if full_perf['execution_time_seconds'] > 300:  # 5 minutes
+                  warnings.append("⚠️ Full validation exceeds 5-minute target")
+              if full_perf['max_memory_mb'] > 2000:  # 2GB
+                  warnings.append("⚠️ Memory usage exceeds 2GB target")
+              
+              if warnings:
+                  print("\nPerformance Warnings:")
+                  for warning in warnings:
+                      print(warning)
+              else:
+                  print("\n✅ All performance targets met")
+              
+              return len(warnings) == 0
+          
+          if __name__ == "__main__":
+              success = benchmark_validation_performance()
+              sys.exit(0 if success else 1)
+          EOF
+          
+          python benchmark_documentation_validation.py
+          
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v3
+        with:
+          name: performance-benchmarks
+          path: performance_benchmarks.json
+          retention-days: 90
+
+  create-summary-issue:
+    name: Create Validation Summary Issue
+    runs-on: ubuntu-latest
+    needs: [full-validation, security-and-compliance]
+    if: >
+      always() && 
+      (needs.full-validation.outputs.critical-issues > 0 || 
+       needs.full-validation.outputs.validation-status == 'failed') &&
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main'
+    
+    permissions:
+      issues: write
+      
+    steps:
+      - name: Download validation reports
+        uses: actions/download-artifact@v3
+        with:
+          name: full-validation-reports
+          
+      - name: Create or update validation issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            
+            // Load consolidated report
+            let reportData = null;
+            try {
+              const reportContent = fs.readFileSync('validation_reports/consolidated_validation_report.json', 'utf8');
+              reportData = JSON.parse(reportContent);
+            } catch (error) {
+              console.log('Could not load report:', error.message);
+              return;
+            }
+            
+            const summary = reportData.summary || {};
+            const totalIssues = summary.total_issues || 0;
+            const criticalIssues = summary.critical_issues || 0;
+            
+            if (totalIssues === 0) {
+              console.log('No issues to report');
+              return;
+            }
+            
+            // Check for existing issue
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['documentation', 'validation', 'automated', 'full-validation'],
+              state: 'open'
+            });
+            
+            const existingIssue = issues.data.find(issue => 
+              issue.title.includes('Documentation Validation Issues Detected')
+            );
+            
+            const issueBody = `# 📋 Documentation Validation Issues Detected
+            
+            **Constitutional Hash:** \`cdd01ef066bc6cf2\`
+            **Detection Date:** ${new Date().toISOString()}
+            **Validation Type:** Full Documentation Validation
+            **Total Issues:** ${totalIssues}
+            **Critical Issues:** ${criticalIssues}
+            
+            ## 📊 Issue Summary
+            
+            - 🚨 **Critical:** ${summary.critical_issues || 0} (requires immediate attention)
+            - ⚠️ **High:** ${summary.high_issues || 0}
+            - 📋 **Medium:** ${summary.medium_issues || 0}
+            - ℹ️ **Low:** ${summary.low_issues || 0}
+            
+            ## 🎯 Validation Results
+            
+            - **Files Checked:** ${summary.total_files_checked || 0}
+            - **Constitutional Compliance:** ${(summary.constitutional_compliance_rate || 0).toFixed(1)}%
+            - **Successful Validators:** ${summary.successful_validators || 0}/${summary.total_validators || 0}
+            - **Overall Status:** ${summary.overall_passed ? '✅ PASSED' : '❌ FAILED'}
+            
+            ## 🔍 Quality Reports Generated
+            
+            ${summary.available_reports ? summary.available_reports.map(report => `- **${report}**`).join('\n') : 'No additional reports available'}
+            
+            ## 📎 Resources
+            
+            - [View Full Validation Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            - [Download Validation Reports](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            
+            ## 🛠️ Recommended Actions
+            
+            1. **Review Critical Issues:** Address all ${criticalIssues} critical issues immediately
+            2. **Run Local Validation:** Use the unified validation framework locally:
+               \`\`\`bash
+               python3 tools/validation/unified_documentation_validation_framework.py --json
+               \`\`\`
+            3. **Constitutional Compliance:** Ensure all documentation includes constitutional hash \`cdd01ef066bc6cf2\`
+            4. **Quality Improvements:** Review medium and low priority issues for documentation quality
+            
+            ## 🔄 Auto-Validation
+            
+            This issue will be automatically updated when new validation runs detect changes in issue counts.
+            
+            ---
+            
+            *This issue was automatically created by the Full Documentation Validation workflow.*
+            *Constitutional Hash: cdd01ef066bc6cf2*`;
+            
+            if (existingIssue) {
+              // Update existing issue
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existingIssue.number,
+                body: issueBody
+              });
+              console.log(`Updated existing issue #${existingIssue.number}`);
+            } else {
+              // Create new issue
+              const newIssue = await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `📋 Documentation Validation Issues Detected (${totalIssues} issues, ${criticalIssues} critical)`,
+                body: issueBody,
+                labels: ['documentation', 'validation', 'automated', 'full-validation', 'high-priority']
+              });
+              console.log(`Created new issue #${newIssue.data.number}`);
+            }

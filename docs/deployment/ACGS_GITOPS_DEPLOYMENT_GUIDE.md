@@ -393,6 +393,8 @@ kubectl delete namespace crossplane-system
 
 For issues and questions:
 
+- **Unified Architecture Guide**: For a comprehensive overview of the ACGS architecture, see the [ACGS Unified Architecture Guide](../architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md).
+- **GEMINI.md**: For a comprehensive overview of the entire ACGS project, including development environment setup, testing commands, and service architecture, see the [GEMINI.md](../../GEMINI.md) file.
 - Check the troubleshooting section
 - Review Crossplane documentation: https://docs.crossplane.io/
 - Review ArgoCD documentation: https://argo-cd.readthedocs.io/

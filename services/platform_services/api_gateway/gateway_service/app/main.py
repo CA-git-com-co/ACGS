@@ -12,11 +12,20 @@ from datetime import datetime, timezone
 from typing import Any
 
 import uvicorn
-from fastapi import FastAPI, HTTPException, Request, Response, status, Depends
+from fastapi import Depends, FastAPI, HTTPException, Request, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.security import HTTPBearer
+
+# Integrated authentication
+from .auth.integrated_auth import (
+    AuthenticationResult,
+    IntegratedAuthManager,
+    TokenData,
+    UserCredentials,
+    get_auth_manager,
+)
 
 # ACGS imports
 from .core.gateway_config import GatewayConfig
@@ -28,15 +37,6 @@ from .middleware.security_headers import SecurityHeadersMiddleware
 from .monitoring.metrics_collector import MetricsCollector
 from .routing.service_router import ServiceRouter
 from .security.policy_engine import SecurityPolicyEngine
-
-# Integrated authentication
-from .auth.integrated_auth import (
-    IntegratedAuthManager,
-    get_auth_manager,
-    UserCredentials,
-    AuthenticationResult,
-    TokenData
-)
 
 # Constitutional compliance hash
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -68,7 +68,7 @@ security = HTTPBearer(auto_error=False)
 
 
 @app.on_event("startup")
-async def startup_event():
+async def startup_event() -> None:
     """Initialize gateway components on startup."""
 
     logger.info(
@@ -85,7 +85,10 @@ async def startup_event():
     await metrics_collector.initialize()
 
     # Setup service discovery
-    from services.shared.middleware.service_discovery_middleware import setup_service_discovery
+    from services.shared.middleware.service_discovery_middleware import (
+        setup_service_discovery,
+    )
+
     setup_service_discovery(
         app=app,
         service_name="api-gateway",
@@ -98,15 +101,15 @@ async def startup_event():
             "constitutional_compliance",
             "service_discovery",
             "load_balancing",
-            "security_policies"
+            "security_policies",
         ],
         heartbeat_interval=15,
         metadata={
             "constitutional_hash": CONSTITUTIONAL_HASH,
             "service_type": "platform",
             "compliance_level": "constitutional",
-            "gateway_version": "4.0.0"
-        }
+            "gateway_version": "4.0.0",
+        },
     )
 
     # Verify constitutional compliance
@@ -119,7 +122,7 @@ async def startup_event():
 
 
 @app.on_event("shutdown")
-async def shutdown_event():
+async def shutdown_event() -> None:
     """Cleanup resources on shutdown."""
 
     logger.info("Shutting down ACGS API Gateway")
@@ -203,7 +206,7 @@ async def verify_constitutional_compliance() -> dict[str, Any]:
 
 # Health check endpoints
 @app.get("/gateway/health")
-async def health_check():
+async def health_check() -> None:
     """Gateway health check endpoint."""
 
     return {
@@ -215,7 +218,7 @@ async def health_check():
 
 
 @app.get("/gateway/health/detailed")
-async def detailed_health_check():
+async def detailed_health_check() -> None:
     """Detailed health check with component status."""
 
     # Check component health
@@ -243,7 +246,7 @@ async def detailed_health_check():
 
 # Gateway configuration endpoint
 @app.get("/gateway/config")
-async def get_gateway_config():
+async def get_gateway_config() -> None:
     """Get gateway configuration (filtered for security)."""
 
     return {
@@ -264,7 +267,7 @@ async def get_gateway_config():
 
 # Metrics endpoint
 @app.get("/gateway/metrics")
-async def get_gateway_metrics():
+async def get_gateway_metrics() -> None:
     """Get gateway metrics."""
 
     return await metrics_collector.get_metrics()
@@ -274,26 +277,27 @@ async def get_gateway_metrics():
 # Integrated Authentication Endpoints
 # =============================================================================
 
+
 @app.post("/auth/login", response_model=AuthenticationResult)
-async def login(credentials: UserCredentials):
+async def login(credentials: UserCredentials) -> None:
     """Authenticate user and return access token."""
     try:
         result = await auth_manager.authenticate_user(credentials)
-        
+
         if not result.success:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail=result.error or "Authentication failed"
+                detail=result.error or "Authentication failed",
             )
-        
+
         return result
-        
+
     except HTTPException:
         raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Authentication service error: {str(e)}"
+            detail=f"Authentication service error: {str(e)}",
         )
 
 
@@ -303,76 +307,73 @@ async def logout(request: Request, token: str = Depends(security)):
     try:
         if not token:
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="No token provided"
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="No token provided"
             )
-        
+
         success = await auth_manager.logout_user(token.credentials)
-        
+
         if not success:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Failed to logout"
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Failed to logout"
             )
-        
+
         return {
             "message": "Successfully logged out",
             "constitutional_hash": CONSTITUTIONAL_HASH,
-            "timestamp": datetime.now(timezone.utc).isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
-        
+
     except HTTPException:
         raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Logout error: {str(e)}"
+            detail=f"Logout error: {str(e)}",
         )
 
 
 @app.get("/auth/me")
-async def get_current_user(request: Request):
+async def get_current_user(request: Request) -> None:
     """Get current user information from token."""
     try:
         token_data = await auth_manager.validate_request_auth(request)
-        
+
         if not token_data:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid or expired token"
+                detail="Invalid or expired token",
             )
-        
+
         user_info = await auth_manager.get_user_info(token_data.user_id)
-        
+
         if not user_info:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="User not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
             )
-        
+
         return user_info
-        
+
     except HTTPException:
         raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"User info error: {str(e)}"
+            detail=f"User info error: {str(e)}",
         )
 
 
 @app.post("/auth/validate")
-async def validate_token(request: Request):
+async def validate_token(request: Request) -> None:
     """Validate token and return user information."""
     try:
         token_data = await auth_manager.validate_request_auth(request)
-        
+
         if not token_data:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid or expired token"
+                detail="Invalid or expired token",
             )
-        
+
         return {
             "valid": True,
             "user_id": token_data.user_id,
@@ -381,9 +382,9 @@ async def validate_token(request: Request):
             "roles": token_data.roles,
             "permissions": token_data.permissions,
             "constitutional_hash": CONSTITUTIONAL_HASH,
-            "timestamp": datetime.now(timezone.utc).isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -391,12 +392,12 @@ async def validate_token(request: Request):
             "valid": False,
             "error": str(e),
             "constitutional_hash": CONSTITUTIONAL_HASH,
-            "timestamp": datetime.now(timezone.utc).isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
 
 @app.get("/auth/health")
-async def auth_health_check():
+async def auth_health_check() -> None:
     """Health check for authentication module."""
     return await auth_manager.health_check()
 
@@ -405,51 +406,48 @@ async def auth_health_check():
 async def get_current_token_data(request: Request) -> TokenData:
     """Dependency to get current user token data."""
     token_data = await auth_manager.validate_request_auth(request)
-    
+
     if not token_data:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Authentication required",
-            headers={"WWW-Authenticate": "Bearer"}
+            headers={"WWW-Authenticate": "Bearer"},
         )
-    
+
     return token_data
 
 
 # Admin-only authentication endpoints
 @app.post("/auth/admin/users")
 async def create_user(
-    user_data: dict,
-    current_user: TokenData = Depends(get_current_token_data)
+    user_data: Dict[str, Any], current_user: TokenData = Depends(get_current_token_data)
 ):
     """Create a new user (admin only)."""
     if not auth_manager.check_role(current_user, "admin"):
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Admin access required"
+            status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required"
         )
-    
+
     try:
         success = await auth_manager.create_user(user_data)
-        
+
         if not success:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Failed to create user"
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Failed to create user"
             )
-        
+
         return {
             "message": "User created successfully",
             "constitutional_hash": CONSTITUTIONAL_HASH,
-            "timestamp": datetime.now(timezone.utc).isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
-        
+
     except HTTPException:
         raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"User creation error: {str(e)}"
+            detail=f"User creation error: {str(e)}",
         )
 
 
@@ -458,7 +456,9 @@ async def create_user(
     "/api/{service_name:path}",
     methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
 )
-async def proxy_to_service(service_name: str, request: Request, response: Response):
+async def proxy_to_service(
+    service_name: str, request: Request, response: Response
+) -> None:
     """Proxy requests to backend services with constitutional compliance."""
 
     try:
@@ -537,7 +537,7 @@ async def proxy_to_service(service_name: str, request: Request, response: Respon
 
 # Error handlers
 @app.exception_handler(HTTPException)
-async def http_exception_handler(request: Request, exc: HTTPException):
+async def http_exception_handler(request: Request, exc: HTTPException) -> None:
     """Handle HTTP exceptions with constitutional compliance."""
 
     return JSONResponse(
@@ -552,7 +552,7 @@ async def http_exception_handler(request: Request, exc: HTTPException):
 
 
 @app.exception_handler(Exception)
-async def general_exception_handler(request: Request, exc: Exception):
+async def general_exception_handler(request: Request, exc: Exception) -> None:
     """Handle general exceptions with constitutional compliance."""
 
     logger.error(f"Unhandled exception: {exc}")
@@ -570,7 +570,7 @@ async def general_exception_handler(request: Request, exc: Exception):
 
 # Administrative endpoints
 @app.post("/gateway/admin/reload-policies")
-async def reload_security_policies():
+async def reload_security_policies() -> None:
     """Reload security policies (admin only)."""
 
     try:
@@ -592,7 +592,7 @@ async def reload_security_policies():
 
 
 @app.post("/gateway/admin/refresh-services")
-async def refresh_service_registry():
+async def refresh_service_registry() -> None:
     """Refresh service registry (admin only)."""
 
     try:

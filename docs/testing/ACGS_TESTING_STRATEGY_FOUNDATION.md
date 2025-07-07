@@ -406,3 +406,10 @@ def test_coverage_targets():
 **Constitutional Hash**: `cdd01ef066bc6cf2`  
 **Testing Foundation**: Complete and ready for implementation  
 **Next Phase**: Testing Strategy Implementation (Task 10/10)
+
+## Related Information
+
+For a broader understanding of the ACGS platform and its components, refer to:
+
+- **Unified Architecture Guide**: For a comprehensive overview of the ACGS architecture, see the [ACGS Unified Architecture Guide](../architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md).
+- **GEMINI.md**: For a comprehensive overview of the entire ACGS project, including development environment setup, testing commands, and service architecture, see the [GEMINI.md](../../GEMINI.md) file.

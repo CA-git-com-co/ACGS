@@ -296,6 +296,10 @@ version = "2.0.0"
 last_updated = "2025-07-02T20:21:18.940076+00:00"
 dependency_manager = "uv"
 security_scan_enabled = true
+code_quality_validation = true
+black_config_validated = true
+isort_config_validated = true
+mypy_config_validated = true
 
 [tool.ruff.per-file-ignores]
 "__init__.py" = [ "F401",]

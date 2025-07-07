@@ -217,6 +217,8 @@ grep -r "cdd01ef066bc6cf2" config/
 
 ## 📚 Additional Resources
 
+- **Unified Architecture Guide**: For a comprehensive overview of the ACGS architecture, see the [ACGS Unified Architecture Guide](../architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md).
+- **GEMINI.md**: For a comprehensive overview of the entire ACGS project, including development environment setup, testing commands, and service architecture, see the [GEMINI.md](../../GEMINI.md) file.
 - [API Documentation](../api/README.md)
 - [Deployment Guide](../deployment/ACGS_PGP_SETUP_GUIDE.md)
 - [Architecture Overview](../architecture/)

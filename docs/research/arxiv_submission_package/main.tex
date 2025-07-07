@@ -417,16 +417,10 @@ Our research prototype demonstrates practical constitutional AI governance imple
 Kubernetes-ready deployment configurations with containerized microservices, PostgreSQL database with connection pooling (pool size: 10--20 connections), Redis caching infrastructure, event streaming capabilities, Prometheus monitoring with Grafana visualization, and AlertManager for operational alerting - deployed in development environment with comprehensive monitoring and constitutional hash verification across all services. Resource limits standardized at CPU: 200m--500m, Memory: 512Mi--1Gi per service.
 \begin{figure*}[!htb]
 \centering
-\fbox{\parbox{0.9\linewidth}{\centering
-\textbf{ACGS Production Architecture Diagram}\\[1ex]
-\textit{[Figure placeholder - Production architecture showing 9-service microservices architecture]}\\[1ex]
-\textbf{Operational Services:} Authentication (8016), Constitutional AI (8001), Integrity (8002), Formal Verification (8003), Governance Synthesis (8004), Policy Governance (8005), Evolutionary Computation (8006), Code Analysis (8007), Context Service (8012)\\
-\textbf{Infrastructure:} PostgreSQL (5439), Redis (6389), Kubernetes, Monitoring Stack\\
-\textbf{Constitutional Hash:} cdd01ef066bc6cf2\cite{perf-report}\cite{perf-report} validation across all services
-}}
-\caption[ACGS Production Architecture]{ACGS Production Architecture showing all operational services. The diagram shows nine fully operational services: Authentication (8016), Constitutional AI (8001), Integrity (8002), Formal Verification (8003), Governance Synthesis (8004), Policy Governance (8005), Evolutionary Computation (8006), Code Analysis (8007), and Context Service (8012). Infrastructure components include fully operational PostgreSQL (5439), Redis (6389), and comprehensive monitoring stack with constitutional hash verification across all services.}
+\includegraphics[width=0.95\textwidth,keepaspectratio]{figures/production_architecture.pdf}
+\caption[ACGS Production Architecture]{ACGS Production Architecture: Constitutional AI Service (8001), Integrity Service (8002), Multi-Agent Coordinator (8008), Worker Agents (8009), and Blackboard Service (8010) with Constitutional Hash Validation. The diagram illustrates the complete production environment data flows, including compliance hash checks (\texttt{cdd01ef066bc6cf2}) across all services. The architecture demonstrates multi-agent coordination with constitutional compliance validation, knowledge sharing through the blackboard pattern, and comprehensive audit trail generation. External integration includes MCP Aggregator (3000) connecting to Context7, Sequential, and other external tools. Each component implements pre-execution, runtime, and post-execution compliance checks ensuring constitutional governance throughout the system.}
 \label{fig:architecture}
-\Description{Production architecture diagram showing ACGS-2 operational services and prototype components. The diagram clearly distinguishes between production-ready services (Authentication, Constitutional AI, Integrity, Policy Governance Compiler) marked as [PROD] and prototype services (Formal Verification, Governance Synthesis, Evolution Control) marked as [PROTO]. Infrastructure components include fully operational PostgreSQL, Redis, and comprehensive monitoring stack with constitutional hash verification across all services. The design provides transparent representation of current production capabilities while indicating areas under active development for constitutional AI governance.}
+\Description{Production architecture diagram showing the operational ACGS system with Constitutional AI Service (port 8001), Integrity Service (port 8002), Multi-Agent Coordinator (port 8008), Worker Agents (port 8009), and Blackboard Service (port 8010). The diagram shows data flows with constitutional hash validation, compliance checking at multiple stages, and integration with external tools through MCP Aggregator. All services implement constitutional compliance verification with the hash cdd01ef066bc6cf2, demonstrating practical constitutional AI governance in a production environment.}
 \end{figure*}
 
 % Implementation Status Summary Table
@@ -2078,6 +2072,9 @@ ACGS-PGP demonstrates superior scalability compared to alternative approaches:
 ACGS-PGP targets the emerging constitutional AI governance market, positioned as the bridge between theoretical constitutional AI research and enterprise production requirements. The platform's open-core architecture enables community adoption while providing enterprise features for commercial deployment.
 
 Key market differentiators include first-mover advantage in production constitutional AI, established enterprise partnerships, and proven democratic governance mechanisms. The platform's microservices architecture and API-first design facilitate integration with existing enterprise AI infrastructure.
+
+% Include Production Certification and Deployment Validation section
+\input{production_certification}
 
 \section{Discussion}
 \label{sec:discussion}

@@ -120,9 +120,13 @@ async def generate_training_data(service, num_samples: int = 100):
 
 
 async def test_ml_optimization():
-    """Test ML-based routing optimization."""
+    """Test ML-based routing optimization.
 
+    Constitutional Hash: cdd01ef066bc6cf2
+    """
     logger.info("🤖 Comprehensive ML Routing Optimization Test")
+    logger.info("Constitutional Hash: cdd01ef066bc6cf2")
+    logger.info("=" * 60)
     logger.info("=" * 60)
 
     try:

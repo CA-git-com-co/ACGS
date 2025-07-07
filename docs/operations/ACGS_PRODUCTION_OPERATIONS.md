@@ -214,6 +214,21 @@ redis-cli -h localhost -p 6390 -a redis_production_password_2025 FLUSHALL
 
 ## Monitoring and Alerting
 
+The ACGS production environment employs a comprehensive monitoring and alerting system leveraging Prometheus and Grafana, designed to ensure constitutional compliance and optimal system performance.
+
+### Key Features
+- **Prometheus**: Captures detailed operational metrics and provides real-time monitoring.
+- **Grafana Dashboards**: Visualize service health, compliance status, and performance metrics.
+- **Custom Alerting**: Configured to trigger alerts based on constitutional compliance and performance thresholds.
+
+### Configuration Details
+- **Prometheus Config**: Found in `config/monitoring/prometheus-constitutional.yml`, this configuration collects and aggregates service metrics.
+- **Grafana Dashboard**: Accessible via `config/monitoring/grafana-constitutional-dashboard.json`, providing a visual overview of health and compliance metrics.
+
+### Setup Instructions
+- **Prometheus**: Ensure all services expose `/metrics` endpoints. Import `prometheus-constitutional.yml` into your Prometheus setup.
+- **Grafana**: Import the constitutional dashboard JSON to configure visualizations and alerting rules.
+
 ### Prometheus Queries
 
 #### Performance Monitoring
@@ -506,9 +521,16 @@ gunzip -c acgs_db_20250107.sql.gz | psql -h localhost -p 5440 -U acgs_user acgs
 tar -xzf acgs_config_20250107.tar.gz
 ```
 
----
+--- 
 
 **Constitutional Hash**: cdd01ef066bc6cf2  
 **Document Version**: 1.0  
 **Last Updated**: 2025-07-07  
 **Next Review**: 2025-10-07
+
+## Related Information
+
+For a broader understanding of the ACGS platform and its components, refer to:
+
+- **Unified Architecture Guide**: For a comprehensive overview of the ACGS architecture, see the [ACGS Unified Architecture Guide](../architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md).
+- **GEMINI.md**: For a comprehensive overview of the entire ACGS project, including development environment setup, testing commands, and service architecture, see the [GEMINI.md](../../GEMINI.md) file.

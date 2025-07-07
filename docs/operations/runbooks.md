@@ -9,8 +9,9 @@ This document provides step-by-step procedures for common operational scenarios 
 2. [Performance Issue Investigation](#performance-issue-investigation)
 3. [Constitutional Compliance Restoration](#constitutional-compliance-restoration)
 4. [Monitoring System Recovery](#monitoring-system-recovery)
-5. [Database Maintenance](#database-maintenance)
-6. [Alert Investigation and Resolution](#alert-investigation-and-resolution)
+5. [Constitutional Monitoring Dashboard Recovery](#constitutional-monitoring-dashboard-recovery)
+6. [Database Maintenance](#database-maintenance)
+7. [Alert Investigation and Resolution](#alert-investigation-and-resolution)
 
 ---
 
@@ -174,6 +175,33 @@ If restart fails:
    - Record violation details
    - Document remediation steps
    - Update compliance procedures if needed
+
+---
+
+## Constitutional Monitoring Dashboard Recovery
+
+### Grafana Dashboard Restoration
+**Estimated Time:** 10 minutes  
+**Constitutional Hash:** `cdd01ef066bc6cf2`
+
+#### Recovery Steps
+1. **Verify Grafana Health**
+   ```bash
+   curl -s http://localhost:3001/api/health
+   ```
+
+2. **Restore Grafana Configuration**
+   ```bash
+   docker compose -f docker-compose.production-simple.yml restart grafana
+   ```
+
+3. **Re-import Dashboards**
+   - Access the Grafana UI at http://localhost:3001
+   - Import the constitutional dashboard JSON (`config/monitoring/grafana-constitutional-dashboard.json`)
+
+4. **Validate Data Source Connection**
+   - Confirm Prometheus data source connection in Grafana.
+   - Verify dashboard functionality and data visualization.
 
 ---
 

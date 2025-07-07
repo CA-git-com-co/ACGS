@@ -1,0 +1,197 @@
+groups:
+  - name: acgs_performance_alerts
+    rules:
+      # P99 Latency Alerts
+      - alert: ACGSP99LatencyExceeded
+        expr: histogram_quantile(0.99, sum(rate(acgs_request_duration_seconds_bucket[5m])) by (service, endpoint, le)) > 0.005
+        for: 1m
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "P99 latency exceeded for {{ $labels.service }}.{{ $labels.endpoint }}"
+          description: "P99 latency is {{ $value | humanizeDuration }} (target: 5ms)"
+          constitutional_hash: cdd01ef066bc6cf2
+
+      # Critical P99 Latency Alerts
+      - alert: ACGSP99LatencyCritical
+        expr: histogram_quantile(0.99, sum(rate(acgs_request_duration_seconds_bucket[5m])) by (service, endpoint, le)) > 0.010
+        for: 30s
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "CRITICAL: P99 latency severely exceeded for {{ $labels.service }}.{{ $labels.endpoint }}"
+          description: "P99 latency is {{ $value | humanizeDuration }} (critical threshold: 10ms)"
+          constitutional_hash: cdd01ef066bc6cf2
+
+      # Throughput Alerts
+      - alert: ACGSThroughputBelowTarget
+        expr: avg_over_time(acgs_throughput_requests_per_second[5m]) < 100
+        for: 5m
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Throughput below target for {{ $labels.service }}.{{ $labels.endpoint }}"
+          description: "Throughput is {{ $value }} RPS (target: 100 RPS)"
+          constitutional_hash: cdd01ef066bc6cf2
+
+      # Critical Throughput Alerts
+      - alert: ACGSThroughputCritical
+        expr: avg_over_time(acgs_throughput_requests_per_second[5m]) < 50
+        for: 2m
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "CRITICAL: Throughput severely below target for {{ $labels.service }}.{{ $labels.endpoint }}"
+          description: "Throughput is {{ $value }} RPS (critical threshold: 50 RPS)"
+          constitutional_hash: cdd01ef066bc6cf2
+
+      # Cache Hit Rate Alerts
+      - alert: ACGSCacheHitRateBelowTarget
+        expr: acgs_cache_hit_rate_percent < 85
+        for: 5m
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Cache hit rate below target for {{ $labels.service }}"
+          description: "Cache hit rate is {{ $value }}% (target: 85%)"
+          constitutional_hash: cdd01ef066bc6cf2
+
+      # Critical Cache Hit Rate Alerts
+      - alert: ACGSCacheHitRateCritical
+        expr: acgs_cache_hit_rate_percent < 70
+        for: 2m
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "CRITICAL: Cache hit rate severely below target for {{ $labels.service }}"
+          description: "Cache hit rate is {{ $value }}% (critical threshold: 70%)"
+          constitutional_hash: cdd01ef066bc6cf2
+
+      # Constitutional Compliance Alerts
+      - alert: ACGSConstitutionalComplianceFailure
+        expr: increase(acgs_constitutional_compliance_failures_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Constitutional compliance failures detected"
+          description: "{{ $value }} constitutional compliance failures in the last 5 minutes"
+          constitutional_hash: cdd01ef066bc6cf2
+
+      # HTTP Error Rate Alerts
+      - alert: ACGSHighErrorRate
+        expr: sum(rate(acgs_http_request_count_total{status_code=~"5.."}[5m])) by (service) / sum(rate(acgs_http_request_count_total[5m])) by (service) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "High error rate for {{ $labels.service }}"
+          description: "Error rate is {{ $value | humanizePercentage }} (threshold: 5%)"
+          constitutional_hash: cdd01ef066bc6cf2
+
+      # Critical HTTP Error Rate
+      - alert: ACGSCriticalErrorRate
+        expr: sum(rate(acgs_http_request_count_total{status_code=~"5.."}[5m])) by (service) / sum(rate(acgs_http_request_count_total[5m])) by (service) > 0.10
+        for: 1m
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "CRITICAL: Very high error rate for {{ $labels.service }}"
+          description: "Error rate is {{ $value | humanizePercentage }} (critical threshold: 10%)"
+          constitutional_hash: cdd01ef066bc6cf2
+
+      # Active Requests Alerts
+      - alert: ACGSHighActiveRequests
+        expr: acgs_http_active_requests > 1000
+        for: 5m
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "High number of active requests for {{ $labels.service }}"
+          description: "{{ $value }} active requests (threshold: 1000)"
+          constitutional_hash: cdd01ef066bc6cf2
+
+      # Memory and CPU alerts (if available)
+      - alert: ACGSHighMemoryUsage
+        expr: (process_resident_memory_bytes / 1024 / 1024) > 512
+        for: 5m
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "High memory usage for {{ $labels.service }}"
+          description: "Memory usage is {{ $value }}MB (threshold: 512MB)"
+          constitutional_hash: cdd01ef066bc6cf2
+
+      - alert: ACGSHighCPUUsage
+        expr: rate(process_cpu_seconds_total[5m]) * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "High CPU usage for {{ $labels.service }}"
+          description: "CPU usage is {{ $value }}% (threshold: 80%)"
+          constitutional_hash: cdd01ef066bc6cf2
+
+  - name: acgs_service_health_alerts
+    rules:
+      # Service Down Alerts
+      - alert: ACGSServiceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "ACGS service {{ $labels.instance }} is down"
+          description: "Service {{ $labels.instance }} has been down for more than 1 minute"
+          constitutional_hash: cdd01ef066bc6cf2
+
+      # Service Restart Detection
+      - alert: ACGSServiceRestart
+        expr: changes(process_start_time_seconds[10m]) > 0
+        for: 0m
+        labels:
+          severity: info
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "ACGS service {{ $labels.instance }} restarted"
+          description: "Service {{ $labels.instance }} has restarted"
+          constitutional_hash: cdd01ef066bc6cf2
+
+  - name: acgs_constitutional_compliance
+    rules:
+      # Constitutional Hash Validation
+      - alert: ACGSInvalidConstitutionalHash
+        expr: acgs_constitutional_hash_violations_total > 0
+        for: 0m
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Invalid constitutional hash detected"
+          description: "{{ $value }} requests with invalid constitutional hash detected"
+          constitutional_hash: cdd01ef066bc6cf2
+
+      # Performance Compliance
+      - alert: ACGSPerformanceComplianceViolation
+        expr: acgs_p99_latency_violations_total > 0
+        for: 1m
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Performance compliance violation for {{ $labels.service }}.{{ $labels.endpoint }}"
+          description: "{{ $value }} P99 latency violations detected in the last minute"
+          constitutional_hash: cdd01ef066bc6cf2

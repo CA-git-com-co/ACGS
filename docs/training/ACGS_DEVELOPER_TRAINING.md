@@ -624,3 +624,25 @@ class AdvancedAIService:
 **Training Version**: 1.0  
 **Last Updated**: 2025-07-07  
 **Next Review**: 2025-10-07
+
+## Resources and References
+
+### Documentation
+- **Unified Architecture Guide**: For a comprehensive overview of the ACGS architecture, see the [ACGS Unified Architecture Guide](../architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md).
+- **GEMINI.md**: For a comprehensive overview of the entire ACGS project, including development environment setup, testing commands, and service architecture, see the [GEMINI.md](../../GEMINI.md) file.
+- [ACGS Production User Guide](../production/ACGS_PRODUCTION_USER_GUIDE.md)
+- [ACGS Technical Specifications](../TECHNICAL_SPECIFICATIONS_2025.md)
+- [Security Best Practices](../security/README.md)
+- [API Documentation](../api/README.md)
+
+### Tools and Scripts
+- Production deployment scripts: `scripts/deploy_production.sh`
+- Monitoring setup: `scripts/setup_monitoring.py`
+- Health checks: `scripts/health_check.py`
+- Security audit: `scripts/security_audit.py`
+
+### Support Channels
+- **Technical Support**: support@acgs.ai
+- **Training Support**: training@acgs.ai
+- **Emergency Hotline**: +1-555-ACGS-911
+- **Community Forum**: https://forum.acgs.ai

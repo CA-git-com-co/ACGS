@@ -55,18 +55,27 @@ except ImportError as e:
     print(f"⚠️ Production security middleware not available: {e}")
     SECURITY_MIDDLEWARE_AVAILABLE = False
 
+from config.infrastructure_config import (
+    cleanup_infrastructure,
+    get_acgs_config,
+    initialize_infrastructure,
+)
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
+from prometheus_metrics import (
+    PrometheusMiddleware,
+    add_prometheus_metrics_endpoint,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.responses import PlainTextResponse
 
-# Service configuration
+# Service configuration with shared ACGS config
+config = get_acgs_config()
 SERVICE_NAME = "auth_service"
 SERVICE_VERSION = "4.0.0"  # Upgraded for multi-tenant support
-SERVICE_PORT = 8000
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+SERVICE_PORT = config.AUTH_PORT  # Use standardized port from ACGSConfig
+CONSTITUTIONAL_HASH = config.CONSTITUTIONAL_HASH
 
 # JWT configuration for multi-tenant tokens
 JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key-here")
@@ -78,20 +87,22 @@ logging.basicConfig(
 )
 logger = logging.getLogger(SERVICE_NAME)
 
-# Prometheus metrics
-REQUEST_COUNT = Counter(
-    "auth_service_requests_total", "Total requests", ["method", "endpoint", "status"]
-)
-REQUEST_DURATION = Histogram(
-    "auth_service_request_duration_seconds", "Request duration"
-)
+# Metrics will be handled by PrometheusMiddleware
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Application lifespan management"""
-    logger.info(f"🚀 Starting {SERVICE_NAME} v{SERVICE_VERSION}")
+    """Application lifespan management with infrastructure initialization"""
+    logger.info(f"🚀 Starting {SERVICE_NAME} v{SERVICE_VERSION} on port {SERVICE_PORT}")
+
+    # Initialize shared infrastructure (database pools, Redis, etc.)
+    await initialize_infrastructure()
+    logger.info("✅ ACGS infrastructure initialized")
+
     yield
+
+    # Cleanup infrastructure on shutdown
+    await cleanup_infrastructure()
     logger.info(f"🔄 Shutting down {SERVICE_NAME}")
 
 
@@ -107,6 +118,9 @@ app = FastAPI(
     redoc_url="/redoc",
     lifespan=lifespan,
 )
+
+# Add Prometheus Middleware for Monitoring
+app.add_middleware(PrometheusMiddleware, service_name=SERVICE_NAME)
 
 # Add multi-tenant middleware
 if MULTI_TENANT_AVAILABLE:
@@ -227,20 +241,7 @@ async def add_comprehensive_security_headers(request: Request, call_next):
     return response
 
 
-@app.middleware("http")
-async def metrics_middleware(request: Request, call_next):
-    """Prometheus metrics middleware"""
-    start_time = time.time()
-
-    response = await call_next(request)
-
-    duration = time.time() - start_time
-    REQUEST_DURATION.observe(duration)
-    REQUEST_COUNT.labels(
-        method=request.method, endpoint=request.url.path, status=response.status_code
-    ).inc()
-
-    return response
+# Prometheus metrics middleware is now handled by PrometheusMiddleware class
 
 
 # Health check endpoint
@@ -256,11 +257,8 @@ async def health_check():
     }
 
 
-# Metrics endpoint
-@app.get("/metrics")
-async def metrics():
-    """Prometheus metrics endpoint"""
-    return PlainTextResponse(generate_latest(), media_type=CONTENT_TYPE_LATEST)
+# Add Prometheus metrics endpoint with infrastructure integration
+add_prometheus_metrics_endpoint(app, SERVICE_NAME)
 
 
 # Simple JWT validation endpoint
@@ -478,13 +476,15 @@ async def service_info():
     ]
 
     if MULTI_TENANT_AVAILABLE:
-        endpoints.extend([
-            "/api/v1/auth/tenant-login",
-            "/api/v1/auth/tenant-refresh",
-            "/api/v1/auth/switch-tenant",
-            "/api/v1/auth/user-tenants",
-            "/api/v1/tenants",
-        ])
+        endpoints.extend(
+            [
+                "/api/v1/auth/tenant-login",
+                "/api/v1/auth/tenant-refresh",
+                "/api/v1/auth/switch-tenant",
+                "/api/v1/auth/user-tenants",
+                "/api/v1/tenants",
+            ]
+        )
 
     return {
         "service": SERVICE_NAME,

@@ -1,3 +1,63 @@
+from fastapi import FastAPI
+from shared.middleware.constitutional_validation import (
+    ConstitutionalValidationMiddleware,
+)
+from shared.middleware.enhanced_auth_middleware import EnhancedAuthMiddleware
+from shared.middleware.prometheus_metrics_middleware import setup_prometheus_middleware
+from shared.performance.performance_monitoring import track_performance_metrics
+from shared.validation.constitutional_validator import CONSTITUTIONAL_HASH
+
+app = FastAPI(
+    title="Policy Governance Service",
+    description="ACGS Policy Governance Service with constitutional compliance",
+    version="1.0.0",
+)
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.CORS_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Add constitutional validation middleware
+app.add_middleware(
+    EnhancedAuthMiddleware,
+    service_name="policy-governance",
+    service_secret=settings.SERVICE_SECRET,
+    public_paths=["/health", "/metrics", "/docs", "/openapi.json"],
+    service_only_paths=["/api/v1/internal"],
+)
+
+# Set up Prometheus metrics middleware
+setup_prometheus_middleware(app, "policy-governance")
+
+
+# Health check endpoint
+@app.get("/health", tags=["health"])
+@track_performance_metrics("policy-governance", "health", "GET")
+async def health_check():
+    """Health check endpoint with constitutional compliance."""
+    return {
+        "status": "healthy",
+        "service": "policy-governance",
+        "constitutional_hash": CONSTITUTIONAL_HASH,
+    }
+
+
+# Root endpoint
+@app.get("/")
+@track_performance_metrics("policy-governance", "root", "GET")
+async def root():
+    """Root endpoint with constitutional compliance."""
+    return {
+        "message": "Welcome to ACGS Policy Governance Service",
+        "constitutional_hash": CONSTITUTIONAL_HASH,
+    }
+
+
 """
 Simplified Policy Governance & Compliance Service - Production Fix
 Streamlined configuration to resolve import and dependency issues
@@ -147,6 +207,16 @@ if SECURITY_MIDDLEWARE_AVAILABLE:
     print("✅ Standardized security middleware applied to pgc service")
 else:
     print("⚠️ Security middleware not available for pgc service")
+
+# Add constitutional validation middleware
+app.add_middleware(
+    ConstitutionalValidationMiddleware,
+    constitutional_hash="cdd01ef066bc6cf2",
+    performance_target_ms=5.0,
+    enable_strict_validation=True,
+    exempt_paths=["/health", "/metrics", "/docs", "/redoc", "/openapi.json"],
+)
+print("✅ Constitutional validation middleware applied to pgc service")
 
 
 # Add secure CORS middleware with environment-based configuration

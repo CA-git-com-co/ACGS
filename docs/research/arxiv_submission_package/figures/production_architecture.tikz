@@ -1,0 +1,83 @@
+\begin{tikzpicture}[
+    node distance=2cm,
+    constitutional/.style={rectangle, draw=blue!60, fill=blue!10, thick, minimum width=2.5cm, minimum height=1cm, text centered},
+    multiagent/.style={rectangle, draw=purple!60, fill=purple!10, thick, minimum width=2.5cm, minimum height=1cm, text centered},
+    knowledge/.style={rectangle, draw=green!60, fill=green!10, thick, minimum width=2.5cm, minimum height=1cm, text centered},
+    external/.style={rectangle, draw=orange!60, fill=orange!10, thick, minimum width=2.5cm, minimum height=1cm, text centered},
+    compliance/.style={rectangle, draw=red!80, fill=red!20, very thick, minimum width=2.5cm, minimum height=1cm, text centered},
+    database/.style={cylinder, draw=green!60, fill=green!10, thick, minimum width=2cm, minimum height=1.5cm, text centered},
+    arrow/.style={->, thick},
+    dotted_arrow/.style={->, thick, dashed}
+]
+
+% External Layer
+\node[external] (client) at (0,8) {Client\\Request};
+\node[external] (gateway) at (0,6) {API\\Gateway};
+\node[external] (tools) at (-4,2) {External Tools\\Context7, Sequential};
+\node[external] (mcp) at (-2,4) {MCP Aggregator\\:3000};
+
+% Constitutional Compliance Layer
+\node[constitutional] (cai) at (0,4) {Constitutional AI\\Service :8001};
+\node[constitutional] (is) at (4,4) {Integrity\\Service :8002};
+\node[compliance] (hash) at (6,6) {Constitutional Hash\\cdd01ef066bc6cf2};
+
+% Multi-Agent Layer
+\node[multiagent] (mac) at (0,2) {Multi-Agent\\Coordinator :8008};
+\node[multiagent] (wa1) at (-2,0) {Worker\\Agent 1 :8009};
+\node[multiagent] (wa2) at (0,0) {Worker\\Agent 2 :8009};
+\node[multiagent] (wa3) at (2,0) {Worker\\Agent N :8009};
+
+% Knowledge Layer
+\node[knowledge] (bb) at (0,-2) {Blackboard\\Service :8010};
+\node[database] (auditdb) at (4,-2) {Audit\\Database};
+
+% Main Flow Arrows
+\draw[arrow] (client) -- (gateway);
+\draw[arrow] (gateway) -- (cai);
+\draw[arrow] (cai) -- node[right] {Constitutional Hash\\cdd01ef066bc6cf2} (mac);
+\draw[arrow] (cai) -- node[above] {Compliance\\Validation} (is);
+
+% Multi-Agent Coordination
+\draw[arrow] (mac) -- node[left] {Task Assignment\\+ Hash Validation} (wa1);
+\draw[arrow] (mac) -- node[right] {Task Assignment\\+ Hash Validation} (wa2);
+\draw[arrow] (mac) -- node[right] {Task Assignment\\+ Hash Validation} (wa3);
+
+% Worker Agent Communication
+\draw[arrow] (wa1) -- node[left] {Knowledge Sharing\\+ Compliance Check} (bb);
+\draw[arrow] (wa2) -- (bb);
+\draw[arrow] (wa3) -- node[right] {Knowledge Sharing\\+ Compliance Check} (bb);
+
+% Bidirectional arrows
+\draw[arrow] (bb) -- (wa1);
+\draw[arrow] (bb) -- (wa2);
+\draw[arrow] (bb) -- (wa3);
+\draw[arrow] (mac) -- node[left] {State Management\\+ Hash Validation} (bb);
+\draw[arrow] (bb) -- (mac);
+
+% Compliance Reporting
+\draw[arrow] (wa1) -- node[above left] {Compliance\\Report} (is);
+\draw[arrow] (wa2) -- (is);
+\draw[arrow] (wa3) -- node[above right] {Compliance\\Report} (is);
+
+% Audit Trail
+\draw[arrow] (is) -- node[above] {Audit Log} (auditdb);
+\draw[arrow] (bb) -- node[below] {Knowledge Log} (auditdb);
+
+% MCP Integration
+\draw[arrow] (tools) -- (mcp);
+\draw[arrow] (mcp) -- (cai);
+\draw[arrow] (mcp) -- (mac);
+
+% Response Path
+\draw[arrow] (mac) -- node[left] {Aggregated Response\\+ Hash Validation} (cai);
+\draw[arrow] (cai) -- node[left] {Constitutional\\Response} (gateway);
+\draw[arrow] (gateway) -- (client);
+
+% Compliance Flow (dotted)
+\draw[dotted_arrow] (cai) -- node[above] {Pre-execution\\Compliance Check} (is);
+\draw[dotted_arrow] (mac) -- node[left] {Runtime\\Compliance Check} (is);
+\draw[dotted_arrow] (wa1) -- (is);
+\draw[dotted_arrow] (wa2) -- (is);
+\draw[dotted_arrow] (wa3) -- (is);
+
+\end{tikzpicture}

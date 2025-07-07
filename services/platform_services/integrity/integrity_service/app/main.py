@@ -21,24 +21,55 @@ from contextlib import asynccontextmanager
 
 import asyncpg
 
+# Add shared config path
+sys.path.insert(
+    0,
+    os.path.join(
+        os.path.dirname(__file__), "..", "..", "..", "..", "..", "services", "shared"
+    ),
+)
+
+# Import shared infrastructure config
+from config.infrastructure_config import (
+    CONSTITUTIONAL_HASH as SHARED_CONSTITUTIONAL_HASH,
+)
+from config.infrastructure_config import (
+    cleanup_infrastructure,
+    get_acgs_config,
+    get_database_manager,
+    get_redis_manager,
+    initialize_infrastructure,
+)
+
+# Import Prometheus middleware
+from middleware.prometheus_metrics import (
+    PrometheusMiddleware,
+    add_prometheus_metrics_endpoint,
+    instrument_database_queries,
+)
+
 # ACGS Standardized Error Handling
 try:
     import sys
     from pathlib import Path
-    shared_middleware_path = Path(__file__).parent.parent.parent.parent.parent / "shared" / "middleware"
+
+    shared_middleware_path = (
+        Path(__file__).parent.parent.parent.parent.parent / "shared" / "middleware"
+    )
     sys.path.insert(0, str(shared_middleware_path))
-    
+
     from error_handling import (
-        setup_error_handlers,
-        ErrorHandlingMiddleware,
         ACGSException,
-        ConstitutionalComplianceError,
-        SecurityValidationError,
         AuthenticationError,
+        ConstitutionalComplianceError,
+        ErrorContext,
+        ErrorHandlingMiddleware,
+        SecurityValidationError,
         ValidationError,
         log_error_with_context,
-        ErrorContext
+        setup_error_handlers,
     )
+
     ACGS_ERROR_HANDLING_AVAILABLE = True
     print(f"✅ ACGS Error handling loaded for {service_name}")
 except ImportError as e:
@@ -50,17 +81,21 @@ except ImportError as e:
 try:
     import sys
     from pathlib import Path
-    shared_security_path = Path(__file__).parent.parent.parent.parent.parent / "shared" / "security"
-    sys.path.insert(0, str(shared_security_path))
-    
-    from middleware_integration import (
-        apply_acgs_security_middleware,
-        setup_security_monitoring,
-        get_security_headers,
-        SecurityLevel,
-        validate_request_body,
-        create_secure_endpoint_decorator
+
+    shared_security_path = (
+        Path(__file__).parent.parent.parent.parent.parent / "shared" / "security"
     )
+    sys.path.insert(0, str(shared_security_path))
+
+    from middleware_integration import (
+        SecurityLevel,
+        apply_acgs_security_middleware,
+        create_secure_endpoint_decorator,
+        get_security_headers,
+        setup_security_monitoring,
+        validate_request_body,
+    )
+
     ACGS_SECURITY_AVAILABLE = True
     print(f"✅ ACGS Security middleware loaded for {service_name}")
 except ImportError as e:
@@ -183,11 +218,13 @@ logging.basicConfig(
 )
 logger = logging.getLogger("integrity_service")
 
-# Service configuration
+# Service configuration with shared ACGS config
+config = get_acgs_config()
 SERVICE_NAME = "integrity_service"
 SERVICE_VERSION = "4.0.0"  # Upgraded for multi-tenant support
-SERVICE_PORT = 8002
+SERVICE_PORT = config.INTEGRITY_SERVICE_PORT  # Use standardized port from ACGSConfig
 SERVICE_PHASE = "Phase A3 - Production Implementation"
+CONSTITUTIONAL_HASH = SHARED_CONSTITUTIONAL_HASH
 
 # JWT configuration for multi-tenant tokens
 JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key-here")
@@ -196,10 +233,8 @@ JWT_ALGORITHM = "HS256"
 # Global service state
 service_start_time = time.time()
 
-# Database configuration
-DATABASE_URL = os.getenv(
-    "DATABASE_URL", "postgresql://acgs_user:acgs_password@localhost:5439/acgs_integrity"
-)
+# Database configuration - using shared infrastructure
+# Database will be managed by shared DatabaseManager
 db_pool = None
 
 
@@ -208,27 +243,23 @@ async def lifespan(app: FastAPI):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash
-    """Application lifespan management with service initialization."""
-    logger.info(f"🚀 Starting ACGS-1 {SERVICE_PHASE} Integrity Service")
+    """Application lifespan management with shared infrastructure initialization."""
+    logger.info(
+        f"🚀 Starting ACGS-1 {SERVICE_PHASE} Integrity Service on port {SERVICE_PORT}"
+    )
+    logger.info(f"🔐 Constitutional Hash: {CONSTITUTIONAL_HASH}")
 
     global db_pool
 
     try:
-        # Initialize database connection pool
-        logger.info("🔌 Initializing database connection pool...")
-        db_pool = await asyncpg.create_pool(
-            DATABASE_URL,
-            min_size=5,
-            max_size=20,
-            command_timeout=30,
-            server_settings={
-                "application_name": "acgs_integrity_service",
-                "tcp_keepalives_idle": "600",
-                "tcp_keepalives_interval": "30",
-                "tcp_keepalives_count": "3",
-            },
-        )
-        logger.info("✅ Database connection pool initialized")
+        # Initialize shared infrastructure (database pools, Redis, etc.)
+        await initialize_infrastructure()
+        logger.info("✅ ACGS shared infrastructure initialized")
+
+        # Get database pool from shared manager
+        db_manager = get_database_manager()
+        db_pool = db_manager.pool
+        logger.info("✅ Database connection pool from shared manager")
 
         # Initialize audit trail database schema
         from .core.persistent_audit_trail import (
@@ -254,9 +285,9 @@ async def lifespan(app: FastAPI):
         yield
     finally:
         logger.info("🔄 Shutting down Integrity Service")
-        if db_pool:
-            await db_pool.close()
-            logger.info("✅ Database connection pool closed")
+        # Cleanup shared infrastructure
+        await cleanup_infrastructure()
+        logger.info("✅ ACGS shared infrastructure cleaned up")
 
 
 # Create FastAPI application with enhanced configuration
@@ -265,12 +296,17 @@ app = FastAPI(
     description="Constitutional compliance and integrity validation service",
     version="1.0.0",
     docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url="/redoc",
+    lifespan=lifespan,
 )
+
+# Add Prometheus Middleware for standardized monitoring
+app.add_middleware(PrometheusMiddleware, service_name=SERVICE_NAME)
 
 # Apply ACGS Error Handling
 if ACGS_ERROR_HANDLING_AVAILABLE:
     import os
+
     development_mode = os.getenv("ENVIRONMENT", "development") != "production"
     setup_error_handlers(app, "integrity", include_traceback=development_mode)
 
@@ -433,40 +469,9 @@ allowed_hosts = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1,acgs.local").spl
 allowed_hosts = [host.strip() for host in allowed_hosts if host.strip()]
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=allowed_hosts)
 
-# Add enhanced Prometheus metrics middleware
-try:
-    from services.shared.prometheus_middleware import (
-        add_prometheus_middleware,
-        create_enhanced_metrics_endpoint,
-    )
-
-    add_prometheus_middleware(app, SERVICE_NAME)
-    logger.info("✅ Enhanced Prometheus metrics enabled for Integrity Service")
-    PROMETHEUS_AVAILABLE = True
-except ImportError as e:
-    logger.warning(f"⚠️ Prometheus metrics not available: {e}")
-    PROMETHEUS_AVAILABLE = False
-
-
-# Add metrics endpoint
-@app.get("/metrics")
-async def metrics():
-    """Prometheus metrics endpoint for Integrity service."""
-    if PROMETHEUS_AVAILABLE:
-        try:
-            endpoint_func = create_enhanced_metrics_endpoint(SERVICE_NAME)
-            return await endpoint_func()
-        except Exception as e:
-        # TODO: Consider using ACGS error handling: log_error_with_context()
-            logger.warning(f"Metrics endpoint error: {e}")
-            return {"status": "metrics_error", "service": SERVICE_NAME}
-    else:
-        from fastapi.responses import PlainTextResponse
-        from prometheus_client import CONTENT_TYPE_LATEST, REGISTRY, generate_latest
-
-        return PlainTextResponse(
-            generate_latest(REGISTRY), media_type=CONTENT_TYPE_LATEST
-        )
+# Add standardized Prometheus metrics endpoint
+add_prometheus_metrics_endpoint(app, SERVICE_NAME)
+logger.info("✅ Standardized Prometheus metrics endpoint added")
 
 
 # Add production middleware

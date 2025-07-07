@@ -4,7 +4,7 @@
 
 ## 1. Overview
 
-This document provides comprehensive documentation for the **Integrity Service (Port 8002)** API. This service is responsible for cryptographic verification, data integrity validation, and secure hash operations.
+This document provides comprehensive documentation for the **Integrity Service (Port 8002)** API. This service is responsible for cryptographic verification, data integrity validation, and secure hash operations, ensuring the immutability and trustworthiness of data within the ACGS system.
 
 - **Service Name**: Integrity Service
 - **Port**: 8002
@@ -21,19 +21,78 @@ This document provides comprehensive documentation for the **Integrity Service (
 
 #### POST /verify/signature
 
-(Documentation pending)
+Verifies the cryptographic signature of a piece of data.
+
+**Request Body**:
+
+```json
+{
+  "data": "string",
+  "signature": "string",
+  "public_key": "string",
+  "constitutional_hash": "cdd01ef066bc6cf2"
+}
+```
+
+**Response (200 OK)**:
+
+```json
+{
+  "is_valid": boolean,
+  "constitutional_hash": "cdd01ef066bc6cf2"
+}
+```
 
 ### 2.3. Data Integrity
 
 #### POST /data/validate
 
-(Documentation pending)
+Validates the integrity of a piece of data using a checksum or hash.
+
+**Request Body**:
+
+```json
+{
+  "data": "string",
+  "hash": "string",
+  "algorithm": "string",
+  "constitutional_hash": "cdd01ef066bc6cf2"
+}
+```
+
+**Response (200 OK)**:
+
+```json
+{
+  "is_valid": boolean,
+  "constitutional_hash": "cdd01ef066bc6cf2"
+}
+```
 
 ### 2.4. Secure Hashing
 
 #### POST /hash/generate
 
-(Documentation pending)
+Generates a secure hash of a piece of data.
+
+**Request Body**:
+
+```json
+{
+  "data": "string",
+  "algorithm": "string",
+  "constitutional_hash": "cdd01ef066bc6cf2"
+}
+```
+
+**Response (200 OK)**:
+
+```json
+{
+  "hash": "string",
+  "constitutional_hash": "cdd01ef066bc6cf2"
+}
+```
 
 ## 3. Performance Targets
 
@@ -56,3 +115,4 @@ Standard HTTP status codes are used. All error responses include a constitutiona
 
 - [ACGS Service Architecture Overview](../ACGS_SERVICE_OVERVIEW.md)
 - [ACGS System Overview](../../SYSTEM_OVERVIEW.md)
+- [Constitutional AI Service API](constitutional-ai.md)

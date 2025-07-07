@@ -14,6 +14,7 @@ Architecture:
 """
 
 import logging
+
 from fastapi import FastAPI
 
 # Constitutional compliance
@@ -29,59 +30,63 @@ app = create_constitutional_ai_app()
 
 # Setup API endpoints
 from .api.endpoints import setup_api_endpoints
+
 api_endpoints = setup_api_endpoints(app)
 
 # Setup service discovery
-from services.shared.middleware.service_discovery_middleware import setup_service_discovery
+from services.shared.middleware.service_discovery_middleware import (
+    setup_service_discovery,
+)
+
 setup_service_discovery(
     app=app,
     service_name="constitutional-ai",
     service_version="1.0.0",
     capabilities=[
         "constitutional_validation",
-        "hash_verification", 
+        "hash_verification",
         "compliance_scoring",
         "policy_enforcement",
-        "audit_logging"
+        "audit_logging",
     ],
     heartbeat_interval=15,
     metadata={
         "constitutional_hash": CONSTITUTIONAL_HASH,
         "service_type": "core",
-        "compliance_level": "constitutional"
-    }
+        "compliance_level": "constitutional",
+    },
 )
 
 # Setup cache optimization
-from services.shared.middleware.cache_optimization_middleware import setup_cache_optimization
+from services.shared.middleware.cache_optimization_middleware import (
+    setup_cache_optimization,
+)
+
 setup_cache_optimization(
     app=app,
     service_name="constitutional-ai",
     cache_enabled=True,
     cache_paths={
-        "/health": {
-            "ttl": 60,
-            "data_type": "health_check",
-            "cache_method": ["GET"]
-        },
+        "/health": {"ttl": 60, "data_type": "health_check", "cache_method": ["GET"]},
         "/constitutional/compliance": {
             "ttl": 1800,  # 30 minutes - constitutional data is stable
             "data_type": "constitutional_hash",
-            "cache_method": ["GET"]
+            "cache_method": ["GET"],
         },
         "/validation": {
             "ttl": 900,  # 15 minutes - validation results
-            "data_type": "validation_results", 
-            "cache_method": ["GET", "POST"]
+            "data_type": "validation_results",
+            "cache_method": ["GET", "POST"],
         },
         "/compliance/score": {
             "ttl": 600,  # 10 minutes - compliance scoring
             "data_type": "compliance_checks",
-            "cache_method": ["GET", "POST"]
-        }
+            "cache_method": ["GET", "POST"],
+        },
     },
-    default_ttl=300
+    default_ttl=300,
 )
+
 
 # Add constitutional compliance validation to startup
 @app.on_event("startup")
@@ -89,27 +94,44 @@ async def validate_constitutional_integrity():
     """Validate constitutional integrity on startup."""
     logger.info("Validating constitutional integrity...")
     logger.info(f"Constitutional Hash: {CONSTITUTIONAL_HASH}")
-    
+
     # Validate that all modules maintain constitutional compliance
     from .validation.core import ConstitutionalValidator
-    
+
     validator = ConstitutionalValidator()
     hash_validation = validator.validate_constitutional_hash()
-    
+
     if not hash_validation["is_valid"]:
         raise Exception(f"Constitutional hash validation failed: {hash_validation}")
-    
+
     logger.info("✅ Constitutional integrity validated successfully")
+
 
 # Export app for uvicorn
 __all__ = ["app"]
 
 if __name__ == "__main__":
+    import os
+    import sys
+    from pathlib import Path
+
     import uvicorn
+
+    # Add shared config path
+    shared_path = (
+        Path(__file__).parent.parent.parent.parent.parent / "services" / "shared"
+    )
+    sys.path.insert(0, str(shared_path))
+
+    from config.infrastructure_config import get_acgs_config
+
+    # Use standardized port from ACGS config
+    config = get_acgs_config()
+
     uvicorn.run(
         "main_refactored:app",
         host="0.0.0.0",
-        port=8001,
+        port=config.CONSTITUTIONAL_AI_PORT,
         reload=True,
-        log_level="info"
+        log_level="info",
     )

@@ -403,12 +403,19 @@ class ConstitutionalSecurityValidator:
 - **Monthly**: Comprehensive security assessment and red team exercises
 - **Quarterly**: Security strategy review and post-quantum readiness assessment
 
----
+--- 
 
 **Constitutional Hash**: `cdd01ef066bc6cf2`  
 **Document Classification**: Security Sensitive  
 **Review Frequency**: Monthly  
 **Next Review Date**: 2025-02-07  
+
+## Related Information
+
+For a broader understanding of the ACGS platform and its components, refer to:
+
+- **Unified Architecture Guide**: For a comprehensive overview of the ACGS architecture, see the [ACGS Unified Architecture Guide](../architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md).
+- **GEMINI.md**: For a comprehensive overview of the entire ACGS project, including development environment setup, testing commands, and service architecture, see the [GEMINI.md](../../GEMINI.md) file.  
 
 ---
 

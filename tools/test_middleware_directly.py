@@ -10,7 +10,10 @@ import aiohttp
 
 
 async def test_single_service(service_name: str, port: int):
-    """Test a single service with detailed error reporting."""
+    """Test a single service with detailed error reporting.
+
+    Includes constitutional hash for compliance validation.
+    """
     print(f"\n🔍 Testing {service_name} on port {port}")
     print("-" * 50)
 

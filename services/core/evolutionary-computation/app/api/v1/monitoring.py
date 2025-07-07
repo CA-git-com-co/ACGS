@@ -321,6 +321,7 @@ async def get_active_alerts():
                 1 for alert in active_alerts if alert.severity == "warning"
             ),
             "last_checked": datetime.utcnow().isoformat(),
+            "constitutional_hash": CONSTITUTIONAL_HASH,
         }
 
     except Exception as e:
@@ -348,6 +349,7 @@ async def monitoring_health_check():
             "service_dependencies": service_health,
             "monitoring_active": True,
             "timestamp": datetime.utcnow().isoformat(),
+            "constitutional_hash": CONSTITUTIONAL_HASH,
         }
 
     except Exception as e:

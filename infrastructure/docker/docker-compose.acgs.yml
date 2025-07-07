@@ -242,6 +242,13 @@ services:
       timeout: 10s
       retries: 3
       start_period: 60s
+
+      # Constitutional compliance healthcheck
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health/constitutional", "||", "exit", "1"]
+      interval: 1m
+      timeout: 20s
+      retries: 3
+      start_period: 60s
     restart: unless-stopped
     deploy:
       resources:
@@ -343,6 +350,13 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:8001/health", "||", "exit", "1"]
       interval: 30s
       timeout: 10s
+      retries: 3
+      start_period: 60s
+
+      # Constitutional compliance healthcheck
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health/constitutional", "||", "exit", "1"]
+      interval: 1m
+      timeout: 20s
       retries: 3
       start_period: 60s
     restart: unless-stopped
@@ -450,6 +464,13 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:8004/health", "||", "exit", "1"]
       interval: 30s
       timeout: 10s
+      retries: 3
+      start_period: 60s
+
+      # Constitutional compliance healthcheck
+      test: ["CMD", "curl", "-f", "http://localhost:8004/health/constitutional", "||", "exit", "1"]
+      interval: 1m
+      timeout: 20s
       retries: 3
       start_period: 60s
     restart: unless-stopped

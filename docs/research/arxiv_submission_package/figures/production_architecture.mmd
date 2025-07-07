@@ -1,0 +1,81 @@
+graph TB
+    %% External Interface
+    Client[Client Request] --> Gateway[API Gateway]
+    Gateway --> CAI[Constitutional AI Service<br/>:8001]
+    
+    %% Core Services
+    CAI --> |"Constitutional Hash<br/>cdd01ef066bc6cf2"| MAC[Multi-Agent Coordinator<br/>:8008]
+    CAI <--> |"Compliance Validation"| IS[Integrity Service<br/>:8002]
+    
+    %% Multi-Agent Coordination
+    MAC --> |"Task Assignment<br/>+ Hash Validation"| WA1[Worker Agent 1<br/>:8009]
+    MAC --> |"Task Assignment<br/>+ Hash Validation"| WA2[Worker Agent 2<br/>:8009]
+    MAC --> |"Task Assignment<br/>+ Hash Validation"| WA3[Worker Agent N<br/>:8009]
+    
+    %% Worker Agents Communication
+    WA1 <--> |"Knowledge Sharing<br/>+ Compliance Check"| BB[Blackboard Service<br/>:8010]
+    WA2 <--> |"Knowledge Sharing<br/>+ Compliance Check"| BB
+    WA3 <--> |"Knowledge Sharing<br/>+ Compliance Check"| BB
+    
+    %% Cross-Service Communication
+    MAC <--> |"State Management<br/>+ Hash Validation"| BB
+    WA1 --> |"Compliance Report"| IS
+    WA2 --> |"Compliance Report"| IS
+    WA3 --> |"Compliance Report"| IS
+    
+    %% Audit Trail
+    IS --> |"Audit Log"| AuditDB[(Audit Database)]
+    BB --> |"Knowledge Log"| AuditDB
+    
+    %% MCP Integration
+    MCP[MCP Aggregator<br/>:3000] --> CAI
+    MCP --> MAC
+    
+    %% External Tools
+    Tools[External Tools<br/>Context7, Sequential, etc.] --> MCP
+    
+    %% Response Path
+    MAC --> |"Aggregated Response<br/>+ Hash Validation"| CAI
+    CAI --> |"Constitutional Response"| Gateway
+    Gateway --> Client
+    
+    %% Constitutional Compliance Flow
+    subgraph "Constitutional Compliance Layer"
+        CAI
+        IS
+        Hash[Constitutional Hash<br/>cdd01ef066bc6cf2]
+    end
+    
+    %% Multi-Agent Coordination Layer
+    subgraph "Multi-Agent Layer"
+        MAC
+        WA1
+        WA2
+        WA3
+    end
+    
+    %% Knowledge Management Layer
+    subgraph "Knowledge Layer"
+        BB
+        AuditDB
+    end
+    
+    %% Styling
+    classDef constitutional fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
+    classDef multiagent fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef knowledge fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    classDef external fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
+    classDef compliance fill:#ffebee,stroke:#c62828,stroke-width:3px
+    
+    class CAI,IS,Hash constitutional
+    class MAC,WA1,WA2,WA3 multiagent
+    class BB,AuditDB knowledge
+    class Client,Gateway,MCP,Tools external
+    class Hash compliance
+    
+    %% Data Flow Annotations
+    CAI -.-> |"Pre-execution<br/>Compliance Check"| IS
+    MAC -.-> |"Runtime<br/>Compliance Check"| IS
+    WA1 -.-> |"Post-execution<br/>Compliance Check"| IS
+    WA2 -.-> |"Post-execution<br/>Compliance Check"| IS
+    WA3 -.-> |"Post-execution<br/>Compliance Check"| IS

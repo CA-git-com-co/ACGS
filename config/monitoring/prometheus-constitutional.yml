@@ -1,0 +1,181 @@
+# ACGS-2 Constitutional Prometheus Configuration
+# Constitutional Hash: cdd01ef066bc6cf2
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    constitutional_hash: "cdd01ef066bc6cf2"
+    cluster: "acgs-constitutional"
+    environment: "development"
+
+rule_files:
+  - "constitutional_rules.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  # Prometheus self-monitoring with constitutional context
+  - job_name: 'prometheus-constitutional'
+    static_configs:
+      - targets: ['localhost:9090']
+    labels:
+      constitutional_hash: "cdd01ef066bc6cf2"
+      infrastructure_port: "9090"
+      service_type: "monitoring"
+
+  # API Gateway Constitutional Metrics (Port 8080)
+  - job_name: 'api-gateway-constitutional'
+    static_configs:
+      - targets: ['api_gateway_constitutional:8080']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    labels:
+      constitutional_hash: "cdd01ef066bc6cf2"
+      infrastructure_port: "8080"
+      service_type: "gateway"
+      compliance_level: "critical"
+    params:
+      constitutional_hash: ['cdd01ef066bc6cf2']
+
+  # Constitutional Core Service Metrics (Port 8001)
+  - job_name: 'constitutional-core'
+    static_configs:
+      - targets: ['constitutional_core:8001']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    labels:
+      constitutional_hash: "cdd01ef066bc6cf2"
+      infrastructure_port: "8001"
+      service_type: "constitutional_ai"
+      compliance_level: "critical"
+    params:
+      constitutional_hash: ['cdd01ef066bc6cf2']
+
+  # Integrity Service Constitutional Metrics (Port 8002)
+  - job_name: 'integrity-constitutional'
+    static_configs:
+      - targets: ['integrity_constitutional:8002']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    labels:
+      constitutional_hash: "cdd01ef066bc6cf2"
+      infrastructure_port: "8002"
+      service_type: "integrity"
+      compliance_level: "high"
+    params:
+      constitutional_hash: ['cdd01ef066bc6cf2']
+
+  # Governance Engine Constitutional Metrics (Port 8004)
+  - job_name: 'governance-constitutional'
+    static_configs:
+      - targets: ['governance_constitutional:8004']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    labels:
+      constitutional_hash: "cdd01ef066bc6cf2"
+      infrastructure_port: "8004"
+      service_type: "governance"
+      compliance_level: "critical"
+    params:
+      constitutional_hash: ['cdd01ef066bc6cf2']
+
+  # PostgreSQL Constitutional Metrics
+  - job_name: 'postgres-constitutional'
+    static_configs:
+      - targets: ['postgres_constitutional:5432']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+    scrape_timeout: 10s
+    labels:
+      constitutional_hash: "cdd01ef066bc6cf2"
+      infrastructure_port: "5432"
+      service_type: "database"
+      compliance_level: "critical"
+
+  # Redis Constitutional Metrics
+  - job_name: 'redis-constitutional'
+    static_configs:
+      - targets: ['redis_constitutional:6379']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+    scrape_timeout: 10s
+    labels:
+      constitutional_hash: "cdd01ef066bc6cf2"
+      infrastructure_port: "6379"
+      service_type: "cache"
+      compliance_level: "high"
+
+  # Constitutional Health Validator Metrics
+  - job_name: 'constitutional-health-validator'
+    static_configs:
+      - targets: ['constitutional_health_validator:8090']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+    scrape_timeout: 10s
+    labels:
+      constitutional_hash: "cdd01ef066bc6cf2"
+      service_type: "health_validator"
+      compliance_level: "critical"
+
+  # Node Exporter for Host Metrics
+  - job_name: 'node-exporter-constitutional'
+    static_configs:
+      - targets: ['node_exporter:9100']
+    labels:
+      constitutional_hash: "cdd01ef066bc6cf2"
+      service_type: "system_monitoring"
+
+  # cAdvisor for Container Metrics
+  - job_name: 'cadvisor-constitutional'
+    static_configs:
+      - targets: ['cadvisor:8080']
+    labels:
+      constitutional_hash: "cdd01ef066bc6cf2"
+      service_type: "container_monitoring"
+
+# Constitutional compliance recording rules
+recording_rules:
+  - name: constitutional_compliance_rules
+    interval: 30s
+    rules:
+      - record: acgs:constitutional_compliance_rate
+        expr: sum(rate(constitutional_validations_total{constitutional_hash="cdd01ef066bc6cf2",status="success"}[5m])) / sum(rate(constitutional_validations_total{constitutional_hash="cdd01ef066bc6cf2"}[5m]))
+        labels:
+          constitutional_hash: "cdd01ef066bc6cf2"
+          metric_type: "compliance_rate"
+      
+      - record: acgs:constitutional_validation_latency_p95
+        expr: histogram_quantile(0.95, sum(rate(constitutional_validation_duration_seconds_bucket{constitutional_hash="cdd01ef066bc6cf2"}[5m])) by (le, service))
+        labels:
+          constitutional_hash: "cdd01ef066bc6cf2"
+          metric_type: "latency_p95"
+      
+      - record: acgs:infrastructure_port_availability
+        expr: up{constitutional_hash="cdd01ef066bc6cf2",infrastructure_port!=""}
+        labels:
+          constitutional_hash: "cdd01ef066bc6cf2"
+          metric_type: "port_availability"
+
+  - name: service_health_rules
+    interval: 15s
+    rules:
+      - record: acgs:service_health_status
+        expr: up{constitutional_hash="cdd01ef066bc6cf2"}
+        labels:
+          constitutional_hash: "cdd01ef066bc6cf2"
+          metric_type: "service_health"
+      
+      - record: acgs:constitutional_service_count
+        expr: count(up{constitutional_hash="cdd01ef066bc6cf2"} == 1)
+        labels:
+          constitutional_hash: "cdd01ef066bc6cf2"
+          metric_type: "service_count"
