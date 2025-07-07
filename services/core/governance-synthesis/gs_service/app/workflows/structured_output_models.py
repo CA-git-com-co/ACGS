@@ -16,11 +16,10 @@ from datetime import datetime
 from enum import Enum
 from typing import Any
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
 
 
 class PolicyType(str, Enum):
@@ -83,20 +82,30 @@ class ConstitutionalFidelityScore(BaseModel):
     evaluator_model: str
     evaluation_duration_ms: float
 
-    @validator("compliance_level", always=True)
-    def determine_compliance_level(cls, v, values):
+    @model_validator(mode="before")
+    @classmethod
+    def determine_compliance_level(cls, values):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
         """Automatically determine compliance level based on overall score."""
-        score = values.get("overall_score", 0.0)
-        if score >= 0.95:
-            return ConstitutionalComplianceLevel.FULLY_COMPLIANT
-        if score >= 0.85:
-            return ConstitutionalComplianceLevel.MOSTLY_COMPLIANT
-        if score >= 0.70:
-            return ConstitutionalComplianceLevel.PARTIALLY_COMPLIANT
-        return ConstitutionalComplianceLevel.NON_COMPLIANT
+        if isinstance(values, dict) and "compliance_level" not in values:
+            score = values.get("overall_score", 0.0)
+            if score >= 0.95:
+                values["compliance_level"] = (
+                    ConstitutionalComplianceLevel.FULLY_COMPLIANT
+                )
+            elif score >= 0.85:
+                values["compliance_level"] = (
+                    ConstitutionalComplianceLevel.MOSTLY_COMPLIANT
+                )
+            elif score >= 0.70:
+                values["compliance_level"] = (
+                    ConstitutionalComplianceLevel.PARTIALLY_COMPLIANT
+                )
+            else:
+                values["compliance_level"] = ConstitutionalComplianceLevel.NON_COMPLIANT
+        return values
 
     @property
     def meets_target_fidelity(self) -> bool:
@@ -119,7 +128,8 @@ class RegoPolicy(BaseModel):
         default_factory=list, description="Source principle IDs"
     )
 
-    @validator("package_name")
+    @field_validator("package_name")
+    @classmethod
     def validate_package_name(cls, v):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -129,7 +139,8 @@ class RegoPolicy(BaseModel):
             raise ValueError("Invalid Rego package name format")
         return v
 
-    @validator("rules")
+    @field_validator("rules")
+    @classmethod
     def validate_rules(cls, v):
         # requires: Valid input parameters
         # ensures: Correct function execution

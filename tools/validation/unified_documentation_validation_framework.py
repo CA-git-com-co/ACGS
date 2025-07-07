@@ -87,6 +87,36 @@ def import_validation_tools():
             tools["api_sync_validator"] = api_sync_module.APICodeSyncValidator
             print("✅ API Sync Validator imported")
 
+        # Import service config alignment validator
+        service_config_path = (
+            Path(__file__).parent / "service_config_alignment_validator.py"
+        )
+        if service_config_path.exists():
+            spec = importlib.util.spec_from_file_location(
+                "service_config_alignment_validator", service_config_path
+            )
+            service_config_module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(service_config_module)
+            tools["service_config_validator"] = (
+                service_config_module.ServiceConfigurationAlignmentValidator
+            )
+            print("✅ Service Config Alignment Validator imported")
+
+        # Import advanced policy synthesis validator
+        policy_synthesis_path = (
+            Path(__file__).parent / "advanced_policy_synthesis_validation.py"
+        )
+        if policy_synthesis_path.exists():
+            spec = importlib.util.spec_from_file_location(
+                "advanced_policy_synthesis_validation", policy_synthesis_path
+            )
+            policy_synthesis_module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(policy_synthesis_module)
+            tools["policy_synthesis_validator"] = (
+                policy_synthesis_module.AdvancedPolicySynthesisValidator
+            )
+            print("✅ Advanced Policy Synthesis Validator imported")
+
     except Exception as e:
         print(f"⚠️ Error importing validation tools: {e}")
 
@@ -200,12 +230,14 @@ class UnifiedDocumentationValidationFramework:
                 for val_result in validation_results:
                     if not val_result.passed:
                         for issue in val_result.issues_found:
-                            result.issues.append({
-                                "severity": "HIGH",
-                                "category": "consistency",
-                                "message": issue,
-                                "validator": val_result.check_name,
-                            })
+                            result.issues.append(
+                                {
+                                    "severity": "HIGH",
+                                    "category": "consistency",
+                                    "message": issue,
+                                    "validator": val_result.check_name,
+                                }
+                            )
 
                 result.metrics = {
                     "consistency_rate": f"{(passed_count / total_count * 100):.1f}%",
@@ -360,24 +392,28 @@ class UnifiedDocumentationValidationFramework:
                         compliant_files += 1
                     else:
                         non_compliant_files.append(str(md_file.relative_to(REPO_ROOT)))
-                        result.issues.append({
-                            "severity": "HIGH",
-                            "category": "constitutional_compliance",
+                        result.issues.append(
+                            {
+                                "severity": "HIGH",
+                                "category": "constitutional_compliance",
+                                "message": (
+                                    "Missing constitutional hash:"
+                                    f" {md_file.relative_to(REPO_ROOT)}"
+                                ),
+                                "file": str(md_file.relative_to(REPO_ROOT)),
+                            }
+                        )
+                except Exception as e:
+                    result.issues.append(
+                        {
+                            "severity": "ERROR",
+                            "category": "file_access",
                             "message": (
-                                "Missing constitutional hash:"
-                                f" {md_file.relative_to(REPO_ROOT)}"
+                                f"Could not read file {md_file.relative_to(REPO_ROOT)}: {e}"
                             ),
                             "file": str(md_file.relative_to(REPO_ROOT)),
-                        })
-                except Exception as e:
-                    result.issues.append({
-                        "severity": "ERROR",
-                        "category": "file_access",
-                        "message": (
-                            f"Could not read file {md_file.relative_to(REPO_ROOT)}: {e}"
-                        ),
-                        "file": str(md_file.relative_to(REPO_ROOT)),
-                    })
+                        }
+                    )
 
             result.total_files = total_files
             result.passed_files = compliant_files
@@ -401,7 +437,118 @@ class UnifiedDocumentationValidationFramework:
         result.execution_time = time.time() - start_time
         return result
 
-    def run_comprehensive_validation(self) -> ValidationSummary:
+    def run_service_config_validation(self) -> ValidationResult:
+        """Run service configuration alignment validation."""
+        print("🔍 Running service configuration alignment validation...")
+        start_time = time.time()
+
+        result = ValidationResult(
+            validator_name="Service Config Alignment", passed=False
+        )
+
+        try:
+            if "service_config_validator" in self.validation_tools:
+                validator = self.validation_tools["service_config_validator"](REPO_ROOT)
+                validation_result = validator.run_validation()
+
+                result.total_files = validation_result.total_checks
+                result.passed_files = validation_result.passed_checks
+                result.failed_files = validation_result.failed_checks
+                result.passed = validation_result.failed_checks == 0
+                result.issues = validation_result.issues
+                result.metrics = {
+                    "performance_score": validation_result.performance_score,
+                    "success_rate": f"{validation_result.get_success_rate():.1f}%",
+                    "constitutional_hash": validation_result.constitutional_hash,
+                }
+
+                print(
+                    "  ✅ Service config alignment:"
+                    f" {result.passed_files}/{result.total_files} checks passed"
+                )
+            else:
+                result.error_message = "Service config validator not available"
+                print("  ⚠️ Service config validator not available")
+
+        except Exception as e:
+            result.error_message = str(e)
+            print(f"  ❌ Service config validation failed: {e}")
+
+        result.execution_time = time.time() - start_time
+        return result
+
+    def run_policy_synthesis_validation(self) -> ValidationResult:
+        """Run advanced policy synthesis validation."""
+        print("🔍 Running advanced policy synthesis validation...")
+        start_time = time.time()
+
+        result = ValidationResult(
+            validator_name="Policy Synthesis Validation", passed=False
+        )
+
+        try:
+            if "policy_synthesis_validator" in self.validation_tools:
+                validator = self.validation_tools["policy_synthesis_validator"]()
+
+                # Run async validation - convert to sync for this integration
+                import asyncio
+
+                validation_result = asyncio.run(validator.validate_policy_synthesis())
+
+                # Extract metrics from the comprehensive result
+                overall_assessment = validation_result.get("overall_assessment", {})
+                reliability = validation_result.get("reliability_validation", {})
+                stress_testing = validation_result.get("stress_testing", {})
+
+                result.passed = overall_assessment.get("production_readiness") in [
+                    "Excellent",
+                    "Good",
+                ]
+                result.metrics = {
+                    "overall_score": overall_assessment.get("overall_score", 0.0),
+                    "reliability_score": reliability.get("actual_reliability", 0.0),
+                    "stress_tolerance": stress_testing.get(
+                        "overall_stress_tolerance", "Unknown"
+                    ),
+                    "constitutional_compliance": overall_assessment.get(
+                        "constitutional_compliance", True
+                    ),
+                }
+
+                # Convert recommendations to issues
+                for recommendation in overall_assessment.get("recommendations", []):
+                    result.issues.append(
+                        {
+                            "severity": "MEDIUM",
+                            "category": "policy_synthesis",
+                            "message": recommendation,
+                            "component": "Policy Synthesis Pipeline",
+                        }
+                    )
+
+                # Set file counts based on testing performed
+                result.total_files = reliability.get("total_tests", 0)
+                result.passed_files = reliability.get("success_count", 0)
+                result.failed_files = reliability.get("failure_count", 0)
+
+                print(
+                    "  ✅ Policy synthesis validation:"
+                    f" {overall_assessment.get('overall_score', 0):.1f}% overall score"
+                )
+            else:
+                result.error_message = "Policy synthesis validator not available"
+                print("  ⚠️ Policy synthesis validator not available")
+
+        except Exception as e:
+            result.error_message = str(e)
+            print(f"  ❌ Policy synthesis validation failed: {e}")
+
+        result.execution_time = time.time() - start_time
+        return result
+
+    def run_comprehensive_validation(
+        self, selected_validators: Optional[list[str]] = None
+    ) -> ValidationSummary:
         """Run all validation checks comprehensively."""
         print("🚀 ACGS Unified Documentation Validation Framework")
         print("=" * 70)
@@ -412,14 +559,31 @@ class UnifiedDocumentationValidationFramework:
 
         start_time = time.time()
 
-        # Run all validation checks
-        validators = [
-            self.run_enhanced_validation,
-            self.run_consistency_validation,
-            self.run_cross_reference_validation,
-            self.run_api_sync_validation,
-            self.run_constitutional_compliance_check,
-        ]
+        # Define all available validators
+        all_validators = {
+            "enhanced": self.run_enhanced_validation,
+            "consistency": self.run_consistency_validation,
+            "cross_reference": self.run_cross_reference_validation,
+            "api_sync": self.run_api_sync_validation,
+            "constitutional": self.run_constitutional_compliance_check,
+            "service_config": self.run_service_config_validation,
+            "policy_synthesis": self.run_policy_synthesis_validation,
+        }
+
+        # Select validators to run
+        if selected_validators:
+            validators = []
+            for validator_name in selected_validators:
+                if validator_name in all_validators:
+                    validators.append(all_validators[validator_name])
+                    print(f"📝 Selected validator: {validator_name}")
+                else:
+                    print(f"⚠️ Unknown validator: {validator_name}")
+            if not validators:
+                print("❌ No valid validators selected, running all validators")
+                validators = list(all_validators.values())
+        else:
+            validators = list(all_validators.values())
 
         # Execute validators in parallel where possible
         with ThreadPoolExecutor(max_workers=3) as executor:
@@ -445,12 +609,12 @@ class UnifiedDocumentationValidationFramework:
         total_execution_time = time.time() - start_time
 
         # Calculate summary
-        successful_validators = len([
-            r for r in self.results if r.error_message is None
-        ])
-        failed_validators = len([
-            r for r in self.results if r.error_message is not None
-        ])
+        successful_validators = len(
+            [r for r in self.results if r.error_message is None]
+        )
+        failed_validators = len(
+            [r for r in self.results if r.error_message is not None]
+        )
         overall_passed = all(r.passed for r in self.results if r.error_message is None)
 
         # Count issues by severity
@@ -505,6 +669,16 @@ class UnifiedDocumentationValidationFramework:
 
         summary = self.summary
 
+        # Calculate additional metrics for new validators
+        service_config_score = 0.0
+        policy_synthesis_score = 0.0
+
+        for result in summary.results:
+            if result.validator_name == "Service Config Alignment":
+                service_config_score = result.metrics.get("performance_score", 0.0)
+            elif result.validator_name == "Policy Synthesis Validation":
+                policy_synthesis_score = result.metrics.get("overall_score", 0.0)
+
         report = f"""# ACGS Unified Documentation Validation Report
 
 <!-- Constitutional Hash: {CONSTITUTIONAL_HASH} -->
@@ -526,6 +700,8 @@ class UnifiedDocumentationValidationFramework:
 | Medium Priority Issues | {summary.medium_issues} |
 | Low Priority Issues | {summary.low_issues} |
 | Constitutional Compliance | {summary.constitutional_compliance_rate:.1f}% |
+| Service Config Score | {service_config_score:.1f}/100 |
+| Policy Synthesis Score | {policy_synthesis_score:.1f}/100 |
 
 ## Validation Results
 
@@ -760,12 +936,28 @@ def main():
     parser.add_argument(
         "--json-only", action="store_true", help="Save only JSON results"
     )
+    parser.add_argument(
+        "--validators",
+        nargs="+",
+        choices=[
+            "enhanced",
+            "consistency",
+            "cross_reference",
+            "api_sync",
+            "constitutional",
+            "service_config",
+            "policy_synthesis",
+        ],
+        help="Select specific validators to run. Available: enhanced, consistency, cross_reference, api_sync, constitutional, service_config, policy_synthesis",
+    )
 
     args = parser.parse_args()
 
     # Run comprehensive validation
     framework = UnifiedDocumentationValidationFramework()
-    summary = framework.run_comprehensive_validation()
+    summary = framework.run_comprehensive_validation(
+        selected_validators=args.validators
+    )
 
     # Print summary
     print("\n" + "=" * 70)

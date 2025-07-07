@@ -12,7 +12,6 @@ import redis
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 async def get_redis_info():
     """Get Redis server information."""
     r = redis.Redis(host="localhost", port=6379, decode_responses=True)

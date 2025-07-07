@@ -7,22 +7,29 @@ from services.shared.database import get_async_db
 # Import schemas and CRUD functions using relative paths
 from ... import schemas as gs_schemas  # Goes up 3 levels from v1 to app
 from ...crud_gs import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+    CONSTITUTIONAL_HASH,
+    "cdd01ef066bc6cf2",
+    =,
     count_policies,
     count_policy_templates,
     create_direct_policy,
     create_policy_from_template_logic,
     create_policy_template,
-    delete_policy as delete_policy_crud,
+)
+from ...crud_gs import (
+    delete_policy as delete_policy_crud,  # Constitutional compliance hash for ACGS
+)
+from ...crud_gs import (
     delete_policy_template,
     get_policies,
     get_policy,
     get_policy_template,
     get_policy_templates,
+)
+from ...crud_gs import (
     update_policy as update_policy_crud,  # Goes up 3 levels from v1 to app for crud_gs
+)
+from ...crud_gs import (
     update_policy_template,
 )
 

@@ -1,81 +1,59 @@
-# Constitutional Trainer Helm Values - Staging Environment
-#
-# This file contains staging-specific configuration for the Constitutional Trainer Service
-# and all its dependencies in the ACGS-1 Lite stack.
-
-# Global configuration
 global:
   environment: staging
   registry: ghcr.io
   repository: ca-git-com-co/acgs
   imageTag: staging
   namespace: acgs-staging
-
-  # Staging-specific settings
   resources:
     requests:
-      memory: '256Mi'
-      cpu: '100m'
+      memory: 256Mi
+      cpu: 100m
     limits:
-      memory: '512Mi'
-      cpu: '200m'
-
-  # Security context for staging
+      memory: 512Mi
+      cpu: 200m
   securityContext:
     runAsNonRoot: true
     runAsUser: 1000
     runAsGroup: 1000
     fsGroup: 1000
-
-  # Network policies
   networkPolicy:
     enabled: true
     ingress:
-      - from:
-          - namespaceSelector:
-              matchLabels:
-                name: acgs-staging
-        ports:
-          - protocol: TCP
-            port: 8000
-
-# Constitutional Trainer Service
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            name: acgs-staging
+      ports:
+      - protocol: TCP
+        port: 8000
 constitutionalTrainer:
   enabled: true
-
   image:
     repository: ghcr.io/ca-git-com-co/acgs/constitutional-trainer
     tag: staging
     pullPolicy: Always
-
-  replicaCount: 2 # Multiple replicas for staging testing
-
+  replicaCount: 2
   service:
     type: ClusterIP
     port: 8000
     targetPort: 8000
-
   resources:
     requests:
-      memory: '2Gi'
-      cpu: '500m'
+      memory: 2Gi
+      cpu: 500m
       nvidia.com/gpu: 1
     limits:
-      memory: '8Gi'
-      cpu: '2000m'
+      memory: 8Gi
+      cpu: 2000m
       nvidia.com/gpu: 1
-
-  # Environment-specific configuration
   config:
-    constitutionalHash: 'cdd01ef066bc6cf2'
+    constitutionalHash: cdd01ef066bc6cf2
     complianceThreshold: '0.95'
     maxCritiqueIterations: '3'
-    maxConcurrentSessions: '10' # Higher for staging testing
+    maxConcurrentSessions: '10'
     enableDifferentialPrivacy: 'true'
     privacyEpsilon: '8.0'
-    privacyDelta: '1e-5'
-
-  # Health checks
+    privacyDelta: 1e-5
   livenessProbe:
     httpGet:
       path: /health
@@ -84,7 +62,6 @@ constitutionalTrainer:
     periodSeconds: 10
     timeoutSeconds: 5
     failureThreshold: 3
-
   readinessProbe:
     httpGet:
       path: /health
@@ -93,40 +70,30 @@ constitutionalTrainer:
     periodSeconds: 5
     timeoutSeconds: 3
     failureThreshold: 3
-
-  # HPA configuration for staging
   autoscaling:
     enabled: true
     minReplicas: 2
     maxReplicas: 5
     targetCPUUtilizationPercentage: 70
     targetMemoryUtilizationPercentage: 80
-
-# Policy Engine
 policyEngine:
   enabled: true
-
   image:
     repository: ghcr.io/ca-git-com-co/acgs/policy-engine
     tag: staging
     pullPolicy: Always
-
   replicaCount: 2
-
   service:
     type: ClusterIP
     port: 8001
     targetPort: 8001
-
   resources:
     requests:
-      memory: '256Mi'
-      cpu: '100m'
+      memory: 256Mi
+      cpu: 100m
     limits:
-      memory: '512Mi'
-      cpu: '300m'
-
-  # OPA configuration
+      memory: 512Mi
+      cpu: 300m
   opa:
     enabled: true
     image:
@@ -134,81 +101,61 @@ policyEngine:
       tag: 0.58.0-envoy
     resources:
       requests:
-        memory: '128Mi'
-        cpu: '50m'
+        memory: 128Mi
+        cpu: 50m
       limits:
-        memory: '256Mi'
-        cpu: '100m'
-
-# Audit Engine
+        memory: 256Mi
+        cpu: 100m
 auditEngine:
   enabled: true
-
   image:
     repository: ghcr.io/ca-git-com-co/acgs/audit-engine
     tag: staging
     pullPolicy: Always
-
-  replicaCount: 1 # Single replica for staging
-
+  replicaCount: 1
   service:
     type: ClusterIP
     port: 8003
     targetPort: 8003
-
   resources:
     requests:
-      memory: '256Mi'
-      cpu: '100m'
+      memory: 256Mi
+      cpu: 100m
     limits:
-      memory: '512Mi'
-      cpu: '200m'
-
-  # Persistence for audit logs
+      memory: 512Mi
+      cpu: 200m
   persistence:
     enabled: true
-    storageClass: 'standard'
-    size: '10Gi'
+    storageClass: standard
+    size: 10Gi
     accessMode: ReadWriteOnce
-
-# Redis Cache
 redis:
   enabled: true
-
   image:
     repository: redis
     tag: 7-alpine
     pullPolicy: IfNotPresent
-
   service:
     type: ClusterIP
     port: 6379
     targetPort: 6379
-
   resources:
     requests:
-      memory: '128Mi'
-      cpu: '50m'
+      memory: 128Mi
+      cpu: 50m
     limits:
-      memory: '256Mi'
-      cpu: '100m'
-
-  # Redis configuration
+      memory: 256Mi
+      cpu: 100m
   config:
-    maxmemory: '200mb'
-    maxmemoryPolicy: 'allkeys-lru'
-
-  # Persistence for staging
+    maxmemory: 200mb
+    maxmemoryPolicy: allkeys-lru
   persistence:
     enabled: true
-    storageClass: 'standard'
-    size: '5Gi'
+    storageClass: standard
+    size: 5Gi
     accessMode: ReadWriteOnce
-
-# Monitoring Stack
 monitoring:
   enabled: true
-
   prometheus:
     enabled: true
     image:
@@ -216,15 +163,14 @@ monitoring:
       tag: v2.47.0
     resources:
       requests:
-        memory: '256Mi'
-        cpu: '100m'
+        memory: 256Mi
+        cpu: 100m
       limits:
-        memory: '512Mi'
-        cpu: '200m'
+        memory: 512Mi
+        cpu: 200m
     persistence:
       enabled: true
-      size: '10Gi'
-
+      size: 10Gi
   grafana:
     enabled: true
     image:
@@ -232,188 +178,134 @@ monitoring:
       tag: 10.1.0
     resources:
       requests:
-        memory: '128Mi'
-        cpu: '50m'
+        memory: 128Mi
+        cpu: 50m
       limits:
-        memory: '256Mi'
-        cpu: '100m'
+        memory: 256Mi
+        cpu: 100m
     persistence:
       enabled: true
-      size: '5Gi'
-
-    # Grafana admin credentials for staging
+      size: 5Gi
     adminUser: admin
-    adminPassword: staging-admin-password # Change in production!
-
-    # Pre-configured dashboards
+    adminPassword: staging-admin-password
     dashboards:
-      - name: constitutional-trainer-overview
-        file: constitutional-trainer-overview.json
-      - name: load-testing-dashboard
-        file: constitutional-trainer-load-testing.json
-
-# Ingress configuration
+    - name: constitutional-trainer-overview
+      file: constitutional-trainer-overview.json
+    - name: load-testing-dashboard
+      file: constitutional-trainer-load-testing.json
 ingress:
   enabled: true
   className: nginx
-
   hosts:
-    - host: constitutional-trainer-staging.acgs.local
-      paths:
-        - path: /
-          pathType: Prefix
-          service:
-            name: constitutional-trainer
-            port: 8000
-    - host: policy-engine-staging.acgs.local
-      paths:
-        - path: /
-          pathType: Prefix
-          service:
-            name: policy-engine
-            port: 8001
-    - host: audit-engine-staging.acgs.local
-      paths:
-        - path: /
-          pathType: Prefix
-          service:
-            name: audit-engine
-            port: 8003
-
+  - host: constitutional-trainer-staging.acgs.local
+    paths:
+    - path: /
+      pathType: Prefix
+      service:
+        name: constitutional-trainer
+        port: 8000
+  - host: policy-engine-staging.acgs.local
+    paths:
+    - path: /
+      pathType: Prefix
+      service:
+        name: policy-engine
+        port: 8001
+  - host: audit-engine-staging.acgs.local
+    paths:
+    - path: /
+      pathType: Prefix
+      service:
+        name: audit-engine
+        port: 8003
   tls:
-    - secretName: acgs-staging-tls
-      hosts:
-        - constitutional-trainer-staging.acgs.local
-        - policy-engine-staging.acgs.local
-        - audit-engine-staging.acgs.local
-
-# Service Mesh (Istio) configuration
+  - secretName: acgs-staging-tls
+    hosts:
+    - constitutional-trainer-staging.acgs.local
+    - policy-engine-staging.acgs.local
+    - audit-engine-staging.acgs.local
 serviceMesh:
-  enabled: false # Disabled for staging simplicity
-
+  enabled: false
   virtualService:
     enabled: false
-
   destinationRule:
     enabled: false
-
   peerAuthentication:
     enabled: false
-
-# Security policies
 security:
   podSecurityPolicy:
     enabled: true
-
   networkPolicy:
     enabled: true
-
-  # RBAC configuration
   rbac:
     enabled: true
     serviceAccount:
       create: true
       name: constitutional-trainer-staging
-
-  # Security scanning
   scanning:
     enabled: true
-    schedule: '0 2 * * 1' # Weekly on Monday at 2 AM
-
-# Testing configuration
+    schedule: 0 2 * * 1
 testing:
   enabled: true
-
-  # Integration tests
   integration:
     enabled: true
-    schedule: '0 */6 * * *' # Every 6 hours
-
-  # Load testing
+    schedule: 0 */6 * * *
   loadTesting:
     enabled: true
-    schedule: '0 1 * * 1' # Weekly on Monday at 1 AM
-
-  # Smoke tests
+    schedule: 0 1 * * 1
   smokeTests:
     enabled: true
-    schedule: '*/15 * * * *' # Every 15 minutes
-
-# Backup and disaster recovery
+    schedule: '*/15 * * * *'
 backup:
   enabled: true
-
-  # Database backups
   database:
     enabled: true
-    schedule: '0 3 * * *' # Daily at 3 AM
-    retention: '7d'
-
-  # Configuration backups
+    schedule: 0 3 * * *
+    retention: 7d
   config:
     enabled: true
-    schedule: '0 4 * * *' # Daily at 4 AM
-    retention: '30d'
-
-# Logging configuration
+    schedule: 0 4 * * *
+    retention: 30d
 logging:
   enabled: true
-
-  # Log level for staging
   level: DEBUG
-
-  # Log aggregation
   aggregation:
     enabled: true
-    endpoint: 'http://elasticsearch:9200'
-
-  # Log retention
+    endpoint: http://elasticsearch:9200
   retention:
     days: 30
-
-# Alerting configuration
 alerting:
   enabled: true
-
-  # Alert manager configuration
   alertmanager:
     enabled: true
-
-  # Notification channels
   notifications:
     slack:
       enabled: true
-      webhook: 'https://hooks.slack.com/services/staging-webhook'
+      webhook: https://hooks.slack.com/services/staging-webhook
       channel: '#acgs-staging-alerts'
-
     email:
       enabled: true
       smtp:
-        host: 'smtp.company.com'
+        host: smtp.company.com
         port: 587
-        username: 'alerts@company.com'
+        username: alerts@company.com
       recipients:
-        - 'staging-team@company.com'
-
-# Feature flags for staging
+      - staging-team@company.com
 featureFlags:
   enableExperimentalFeatures: true
   enableDebugEndpoints: true
   enableMetricsCollection: true
   enableTracing: true
-  enableChaosEngineering: false # Disabled for stability
-
-# Environment-specific annotations
+  enableChaosEngineering: false
 annotations:
   deployment.kubernetes.io/revision: '1'
-  acgs.io/environment: 'staging'
-  acgs.io/version: 'staging'
-  acgs.io/managed-by: 'helm'
-
-# Labels for staging environment
+  acgs.io/environment: staging
+  acgs.io/version: staging
+  acgs.io/managed-by: helm
 labels:
   environment: staging
   tier: application
   component: constitutional-trainer
   version: staging
   managed-by: helm
+constitutional_hash: cdd01ef066bc6cf2

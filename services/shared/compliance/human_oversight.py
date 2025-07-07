@@ -13,6 +13,7 @@ Key Features:
 - Oversight effectiveness monitoring
 - Integration with constitutional AI decision pipeline
 """
+
 # Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
@@ -430,16 +431,18 @@ class HumanOversightManager:
             self.oversight_metrics["requests_pending"] += 1
 
             # Log escalation
-            await self.audit_logger.log_oversight_event({
-                "event_type": "oversight_request_created",
-                "request_id": request.request_id,
-                "ai_decision_id": request.ai_decision_id,
-                "escalation_reason": request.escalation_reason.value,
-                "oversight_level": request.required_oversight_level.value,
-                "assigned_reviewers": request.assigned_reviewers,
-                "deadline": request.deadline.isoformat(),
-                "timestamp": request.created_at.isoformat(),
-            })
+            await self.audit_logger.log_oversight_event(
+                {
+                    "event_type": "oversight_request_created",
+                    "request_id": request.request_id,
+                    "ai_decision_id": request.ai_decision_id,
+                    "escalation_reason": request.escalation_reason.value,
+                    "oversight_level": request.required_oversight_level.value,
+                    "assigned_reviewers": request.assigned_reviewers,
+                    "deadline": request.deadline.isoformat(),
+                    "timestamp": request.created_at.isoformat(),
+                }
+            )
 
             # Send alerts
             await self._send_oversight_alerts(request)
@@ -656,13 +659,15 @@ class HumanOversightManager:
                 request.status = "emergency_assigned"
                 emergency_reviewer.current_review_count += 1
 
-                await self.audit_logger.log_oversight_event({
-                    "event_type": "emergency_reviewer_assigned",
-                    "request_id": request.request_id,
-                    "reviewer_id": emergency_reviewer.reviewer_id,
-                    "reason": "no_regular_reviewers_available",
-                    "timestamp": datetime.utcnow().isoformat(),
-                })
+                await self.audit_logger.log_oversight_event(
+                    {
+                        "event_type": "emergency_reviewer_assigned",
+                        "request_id": request.request_id,
+                        "reviewer_id": emergency_reviewer.reviewer_id,
+                        "reason": "no_regular_reviewers_available",
+                        "timestamp": datetime.utcnow().isoformat(),
+                    }
+                )
 
         except Exception as e:
             logger.error(f"Assignment failure escalation failed: {e}")
@@ -712,13 +717,15 @@ class HumanOversightManager:
             )
 
             # Log notification
-            await self.audit_logger.log_oversight_event({
-                "event_type": "reviewer_notification_sent",
-                "reviewer_id": reviewer.reviewer_id,
-                "request_id": request.request_id,
-                "notification_method": "email",
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_oversight_event(
+                {
+                    "event_type": "reviewer_notification_sent",
+                    "reviewer_id": reviewer.reviewer_id,
+                    "request_id": request.request_id,
+                    "notification_method": "email",
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
         except Exception as e:
             logger.error(f"Reviewer notification failed: {e}")
@@ -824,17 +831,19 @@ class HumanOversightManager:
                 await self.intervention_callbacks[intervention_type](decision)
 
             # Log decision
-            await self.audit_logger.log_oversight_event({
-                "event_type": "oversight_decision_submitted",
-                "decision_id": decision_id,
-                "request_id": request_id,
-                "reviewer_id": reviewer_id,
-                "intervention_type": intervention_type.value,
-                "review_time_minutes": review_time,
-                "confidence": confidence,
-                "citizen_notification_required": decision.citizen_notification_required,
-                "timestamp": decision.decided_at.isoformat(),
-            })
+            await self.audit_logger.log_oversight_event(
+                {
+                    "event_type": "oversight_decision_submitted",
+                    "decision_id": decision_id,
+                    "request_id": request_id,
+                    "reviewer_id": reviewer_id,
+                    "intervention_type": intervention_type.value,
+                    "review_time_minutes": review_time,
+                    "confidence": confidence,
+                    "citizen_notification_required": decision.citizen_notification_required,
+                    "timestamp": decision.decided_at.isoformat(),
+                }
+            )
 
             # Send completion alerts
             await self._send_decision_alerts(decision, request)
@@ -858,11 +867,13 @@ class HumanOversightManager:
             safeguards.append("Citizen notification and appeal process available")
 
         if intervention_type == InterventionType.OVERRIDE:
-            safeguards.extend([
-                "Senior supervisor approval required",
-                "Detailed justification documentation required",
-                "Follow-up review scheduled",
-            ])
+            safeguards.extend(
+                [
+                    "Senior supervisor approval required",
+                    "Detailed justification documentation required",
+                    "Follow-up review scheduled",
+                ]
+            )
 
         if request.escalation_reason == EscalationTrigger.BIAS_DETECTED:
             safeguards.append("Bias monitoring and additional fairness checks required")
@@ -955,19 +966,22 @@ class HumanOversightManager:
                 await self._escalate_overdue_request(request)
 
             # Log timeout handling
-            await self.audit_logger.log_oversight_event({
-                "event_type": "overdue_request_handled",
-                "request_id": request.request_id,
-                "action_taken": (
-                    "auto_approved"
-                    if rule and rule.auto_approve_timeout
-                    else "escalated"
-                ),
-                "overdue_minutes": (
-                    datetime.utcnow() - request.deadline
-                ).total_seconds() / 60,
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_oversight_event(
+                {
+                    "event_type": "overdue_request_handled",
+                    "request_id": request.request_id,
+                    "action_taken": (
+                        "auto_approved"
+                        if rule and rule.auto_approve_timeout
+                        else "escalated"
+                    ),
+                    "overdue_minutes": (
+                        datetime.utcnow() - request.deadline
+                    ).total_seconds()
+                    / 60,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
         except Exception as e:
             logger.error(f"Overdue request handling failed: {e}")
@@ -1111,12 +1125,14 @@ class HumanOversightManager:
                 reviewer.max_concurrent_reviews = updates["max_concurrent_reviews"]
 
             # Log update
-            await self.audit_logger.log_oversight_event({
-                "event_type": "reviewer_status_updated",
-                "reviewer_id": reviewer_id,
-                "updates": list(updates.keys()),
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_oversight_event(
+                {
+                    "event_type": "reviewer_status_updated",
+                    "reviewer_id": reviewer_id,
+                    "updates": list(updates.keys()),
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
         except Exception as e:
             logger.error(f"Reviewer status update failed: {e}")
@@ -1127,11 +1143,13 @@ class HumanOversightManager:
 async def example_usage():
     """Example of using the human oversight manager"""
     # Initialize oversight manager
-    oversight_manager = HumanOversightManager({
-        "system_name": "ACGS",
-        "oversight_enabled": True,
-        "default_timeout_minutes": 240,
-    })
+    oversight_manager = HumanOversightManager(
+        {
+            "system_name": "ACGS",
+            "oversight_enabled": True,
+            "default_timeout_minutes": 240,
+        }
+    )
 
     # Mock AI decision that requires oversight
     ai_decision = {

@@ -21,13 +21,13 @@ import json
 import logging
 import subprocess
 import time
+from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
-from dataclasses import dataclass, asdict
 
-import aiohttp
 import aiofiles
+import aiohttp
 from pydantic import BaseModel
 
 # Constitutional compliance
@@ -56,8 +56,7 @@ SECURITY_CONFIG = {
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -65,6 +64,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class SecurityVulnerability:
     """Security vulnerability data structure."""
+
     id: str
     title: str
     severity: str
@@ -80,6 +80,7 @@ class SecurityVulnerability:
 @dataclass
 class SecurityScanResult:
     """Security scan result aggregation."""
+
     scan_type: str
     tool_name: str
     scan_duration_seconds: float
@@ -95,6 +96,7 @@ class SecurityScanResult:
 
 class SecurityComplianceReport(BaseModel):
     """Security compliance report model."""
+
     framework: str
     compliance_percentage: float
     compliant_controls: int
@@ -106,46 +108,46 @@ class SecurityComplianceReport(BaseModel):
 
 class ACGSSecurityOrchestrator:
     """Unified security orchestrator for ACGS."""
-    
+
     def __init__(self):
         self.session: Optional[aiohttp.ClientSession] = None
         self.scan_results: List[SecurityScanResult] = []
         self.compliance_reports: List[SecurityComplianceReport] = []
         self.start_time = time.time()
-        
+
     async def __aenter__(self):
         """Async context manager entry."""
         await self.initialize()
         return self
-        
+
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         """Async context manager exit."""
         await self.cleanup()
-        
+
     async def initialize(self):
         """Initialize security orchestrator."""
         logger.info("🔒 Initializing ACGS Security Orchestrator...")
-        
+
         # Validate constitutional hash
         if not self._validate_constitutional_hash():
             raise ValueError(f"Invalid constitutional hash: {CONSTITUTIONAL_HASH}")
-        
+
         # Initialize HTTP session
         timeout = aiohttp.ClientTimeout(total=30)
         self.session = aiohttp.ClientSession(timeout=timeout)
-        
+
         # Create security directories
         self._create_security_directories()
-        
+
         logger.info("✅ Security orchestrator initialized")
-        
+
     async def cleanup(self):
         """Cleanup resources."""
         logger.info("🧹 Cleaning up security orchestrator...")
-        
+
         if self.session:
             await self.session.close()
-            
+
         logger.info("✅ Cleanup completed")
 
     def _validate_constitutional_hash(self) -> bool:
@@ -162,14 +164,14 @@ class ACGSSecurityOrchestrator:
             "security/policies",
             "security/configurations",
         ]
-        
+
         for security_dir in security_dirs:
             Path(security_dir).mkdir(parents=True, exist_ok=True)
 
     async def run_comprehensive_security_assessment(self) -> Dict[str, Any]:
         """Run comprehensive security assessment."""
         logger.info("🛡️ Starting comprehensive security assessment...")
-        
+
         assessment_results = {
             "assessment_start": datetime.now(timezone.utc).isoformat(),
             "constitutional_hash": CONSTITUTIONAL_HASH,
@@ -182,38 +184,54 @@ class ACGSSecurityOrchestrator:
             "critical_findings": [],
             "recommendations": [],
         }
-        
+
         try:
             # Check service security status
-            assessment_results["service_security_status"] = await self._assess_service_security()
-            
+            assessment_results["service_security_status"] = (
+                await self._assess_service_security()
+            )
+
             # Run vulnerability scans
-            assessment_results["vulnerability_scan_results"] = await self._run_vulnerability_scans()
-            
+            assessment_results["vulnerability_scan_results"] = (
+                await self._run_vulnerability_scans()
+            )
+
             # Assess compliance
-            assessment_results["compliance_assessment"] = await self._assess_compliance_frameworks()
-            
+            assessment_results["compliance_assessment"] = (
+                await self._assess_compliance_frameworks()
+            )
+
             # Run penetration tests
-            assessment_results["penetration_test_results"] = await self._run_penetration_tests()
-            
+            assessment_results["penetration_test_results"] = (
+                await self._run_penetration_tests()
+            )
+
             # Check security hardening
-            assessment_results["security_hardening_status"] = await self._assess_security_hardening()
-            
+            assessment_results["security_hardening_status"] = (
+                await self._assess_security_hardening()
+            )
+
             # Calculate overall security score
-            assessment_results["overall_security_score"] = self._calculate_security_score(assessment_results)
-            
+            assessment_results["overall_security_score"] = (
+                self._calculate_security_score(assessment_results)
+            )
+
             # Identify critical findings
-            assessment_results["critical_findings"] = self._identify_critical_findings(assessment_results)
-            
+            assessment_results["critical_findings"] = self._identify_critical_findings(
+                assessment_results
+            )
+
             # Generate recommendations
-            assessment_results["recommendations"] = self._generate_security_recommendations(assessment_results)
-            
+            assessment_results["recommendations"] = (
+                self._generate_security_recommendations(assessment_results)
+            )
+
             # Save assessment results
             await self._save_security_assessment(assessment_results)
-            
+
             logger.info("✅ Comprehensive security assessment completed")
             return assessment_results
-            
+
         except Exception as e:
             logger.error(f"❌ Security assessment failed: {e}")
             assessment_results["error"] = str(e)
@@ -222,24 +240,28 @@ class ACGSSecurityOrchestrator:
     async def _assess_service_security(self) -> Dict[str, Any]:
         """Assess security status of ACGS services."""
         logger.info("🔍 Assessing ACGS service security...")
-        
-        async def check_service_security(service_name: str, config: Dict[str, Any]) -> Dict[str, Any]:
+
+        async def check_service_security(
+            service_name: str, config: Dict[str, Any]
+        ) -> Dict[str, Any]:
             """Check security of individual service."""
             try:
                 # Check basic health
                 health_url = f"http://localhost:{config['port']}/health"
                 async with self.session.get(health_url) as response:
                     health_status = response.status == 200
-                
+
                 # Check security headers
                 security_headers = self._check_security_headers(response.headers)
-                
+
                 # Check for HTTPS enforcement
-                https_enforced = self._check_https_enforcement(config['port'])
-                
+                https_enforced = self._check_https_enforcement(config["port"])
+
                 # Check authentication requirements
-                auth_required = await self._check_authentication_required(config['port'])
-                
+                auth_required = await self._check_authentication_required(
+                    config["port"]
+                )
+
                 return {
                     "service": service_name,
                     "health_status": health_status,
@@ -250,7 +272,7 @@ class ACGSSecurityOrchestrator:
                         health_status, security_headers, https_enforced, auth_required
                     ),
                 }
-                
+
             except Exception as e:
                 return {
                     "service": service_name,
@@ -258,23 +280,25 @@ class ACGSSecurityOrchestrator:
                     "error": str(e),
                     "security_score": 0.0,
                 }
-        
+
         # Check all services concurrently
         tasks = [
-            check_service_security(name, config) 
+            check_service_security(name, config)
             for name, config in ACGS_SERVICES.items()
         ]
-        
+
         service_results = await asyncio.gather(*tasks, return_exceptions=True)
-        
+
         # Calculate overall service security
         total_score = sum(r.get("security_score", 0) for r in service_results)
         avg_score = total_score / len(service_results) if service_results else 0.0
-        
+
         return {
             "services": service_results,
             "average_security_score": round(avg_score, 2),
-            "secure_services": sum(1 for r in service_results if r.get("security_score", 0) >= 80),
+            "secure_services": sum(
+                1 for r in service_results if r.get("security_score", 0) >= 80
+            ),
             "total_services": len(service_results),
             "constitutional_hash": CONSTITUTIONAL_HASH,
         }
@@ -310,39 +334,39 @@ class ACGSSecurityOrchestrator:
             return True
 
     def _calculate_service_security_score(
-        self, 
-        health_status: bool, 
-        security_headers: Dict[str, bool], 
-        https_enforced: bool, 
-        auth_required: bool
+        self,
+        health_status: bool,
+        security_headers: Dict[str, bool],
+        https_enforced: bool,
+        auth_required: bool,
     ) -> float:
         """Calculate security score for a service."""
         score = 0.0
-        
+
         # Health status (20 points)
         if health_status:
             score += 20.0
-        
+
         # Security headers (40 points total)
         header_score = sum(security_headers.values()) / len(security_headers) * 40
         score += header_score
-        
+
         # HTTPS enforcement (20 points)
         if https_enforced:
             score += 20.0
-        
+
         # Authentication required (20 points)
         if auth_required:
             score += 20.0
-        
+
         return round(score, 2)
 
     async def _run_vulnerability_scans(self) -> Dict[str, Any]:
         """Run comprehensive vulnerability scans."""
         logger.info("🔍 Running vulnerability scans...")
-        
+
         scan_results = {}
-        
+
         # Run different types of scans
         scan_tasks = [
             self._run_bandit_scan(),
@@ -350,12 +374,12 @@ class ACGSSecurityOrchestrator:
             self._run_trivy_scan(),
             self._run_semgrep_scan(),
         ]
-        
+
         scan_names = ["bandit", "safety", "trivy", "semgrep"]
-        
+
         # Execute scans concurrently
         results = await asyncio.gather(*scan_tasks, return_exceptions=True)
-        
+
         for i, result in enumerate(results):
             scan_name = scan_names[i]
             if isinstance(result, Exception):
@@ -367,28 +391,29 @@ class ACGSSecurityOrchestrator:
                 }
             else:
                 scan_results[scan_name] = result
-        
+
         # Aggregate results
         total_vulnerabilities = sum(
             r.get("vulnerabilities_found", 0) for r in scan_results.values()
         )
-        
+
         critical_vulnerabilities = sum(
             r.get("critical_count", 0) for r in scan_results.values()
         )
-        
+
         high_vulnerabilities = sum(
             r.get("high_count", 0) for r in scan_results.values()
         )
-        
+
         return {
             "scan_results": scan_results,
             "total_vulnerabilities": total_vulnerabilities,
             "critical_vulnerabilities": critical_vulnerabilities,
             "high_vulnerabilities": high_vulnerabilities,
             "meets_security_targets": (
-                critical_vulnerabilities <= SECURITY_CONFIG["max_critical_vulnerabilities"] and
-                high_vulnerabilities <= SECURITY_CONFIG["max_high_vulnerabilities"]
+                critical_vulnerabilities
+                <= SECURITY_CONFIG["max_critical_vulnerabilities"]
+                and high_vulnerabilities <= SECURITY_CONFIG["max_high_vulnerabilities"]
             ),
             "constitutional_hash": CONSTITUTIONAL_HASH,
         }
@@ -399,8 +424,13 @@ class ACGSSecurityOrchestrator:
 
         try:
             cmd = [
-                "bandit", "-r", ".", "-f", "json",
-                "--exclude", "*/tests/*,*/venv/*,*/.venv/*"
+                "bandit",
+                "-r",
+                ".",
+                "-f",
+                "json",
+                "--exclude",
+                "*/tests/*,*/venv/*,*/.venv/*",
             ]
 
             result = await self._execute_security_command(cmd, "bandit")
@@ -522,8 +552,13 @@ class ACGSSecurityOrchestrator:
 
         try:
             cmd = [
-                "trivy", "fs", ".", "--format", "json",
-                "--severity", "CRITICAL,HIGH,MEDIUM,LOW"
+                "trivy",
+                "fs",
+                ".",
+                "--format",
+                "json",
+                "--severity",
+                "CRITICAL,HIGH,MEDIUM,LOW",
             ]
 
             result = await self._execute_security_command(cmd, "trivy")
@@ -541,8 +576,12 @@ class ACGSSecurityOrchestrator:
                             severity=vuln_data.get("Severity", "UNKNOWN").upper(),
                             description=vuln_data.get("Description", ""),
                             file_path=target.get("Target"),
-                            remediation=vuln_data.get("FixedVersion", "Update to latest version"),
-                            cvss_score=vuln_data.get("CVSS", {}).get("nvd", {}).get("V3Score"),
+                            remediation=vuln_data.get(
+                                "FixedVersion", "Update to latest version"
+                            ),
+                            cvss_score=vuln_data.get("CVSS", {})
+                            .get("nvd", {})
+                            .get("V3Score"),
                         )
                         vulnerabilities.append(vuln)
 
@@ -586,8 +625,14 @@ class ACGSSecurityOrchestrator:
 
         try:
             cmd = [
-                "semgrep", "--config=auto", "--json", ".",
-                "--exclude", "*/tests/*", "--exclude", "*/venv/*"
+                "semgrep",
+                "--config=auto",
+                "--json",
+                ".",
+                "--exclude",
+                "*/tests/*",
+                "--exclude",
+                "*/venv/*",
             ]
 
             result = await self._execute_security_command(cmd, "semgrep")
@@ -599,16 +644,14 @@ class ACGSSecurityOrchestrator:
                 vulnerabilities = []
                 for finding in semgrep_data.get("results", []):
                     # Map Semgrep severity to our scale
-                    severity_map = {
-                        "ERROR": "HIGH",
-                        "WARNING": "MEDIUM",
-                        "INFO": "LOW"
-                    }
+                    severity_map = {"ERROR": "HIGH", "WARNING": "MEDIUM", "INFO": "LOW"}
 
                     vuln = SecurityVulnerability(
                         id=f"semgrep-{finding.get('check_id', 'unknown')}",
                         title=finding.get("message", "Unknown issue"),
-                        severity=severity_map.get(finding.get("extra", {}).get("severity", "INFO"), "LOW"),
+                        severity=severity_map.get(
+                            finding.get("extra", {}).get("severity", "INFO"), "LOW"
+                        ),
                         description=finding.get("message", ""),
                         file_path=finding.get("path"),
                         line_number=finding.get("start", {}).get("line"),
@@ -650,7 +693,9 @@ class ACGSSecurityOrchestrator:
                 "vulnerabilities_found": 0,
             }
 
-    async def _execute_security_command(self, cmd: List[str], tool_name: str) -> Dict[str, Any]:
+    async def _execute_security_command(
+        self, cmd: List[str], tool_name: str
+    ) -> Dict[str, Any]:
         """Execute security command with timeout and error handling."""
         start_time = time.time()
 
@@ -661,13 +706,13 @@ class ACGSSecurityOrchestrator:
                 *cmd,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
-                cwd=str(Path.cwd())
+                cwd=str(Path.cwd()),
             )
 
             try:
                 stdout, stderr = await asyncio.wait_for(
                     process.communicate(),
-                    timeout=SECURITY_CONFIG["scan_timeout_seconds"]
+                    timeout=SECURITY_CONFIG["scan_timeout_seconds"],
                 )
             except asyncio.TimeoutError:
                 process.kill()
@@ -706,17 +751,22 @@ class ACGSSecurityOrchestrator:
         frameworks = ["SOC2", "ISO27001", "NIST", "OWASP"]
 
         for framework in frameworks:
-            compliance_results[framework] = await self._assess_framework_compliance(framework)
+            compliance_results[framework] = await self._assess_framework_compliance(
+                framework
+            )
 
         # Calculate overall compliance
-        total_compliance = sum(r.get("compliance_percentage", 0) for r in compliance_results.values())
+        total_compliance = sum(
+            r.get("compliance_percentage", 0) for r in compliance_results.values()
+        )
         avg_compliance = total_compliance / len(frameworks) if frameworks else 0.0
 
         return {
             "framework_results": compliance_results,
             "overall_compliance_percentage": round(avg_compliance, 2),
             "fully_compliant_frameworks": sum(
-                1 for r in compliance_results.values()
+                1
+                for r in compliance_results.values()
                 if r.get("compliance_percentage", 0) >= 90
             ),
             "total_frameworks": len(frameworks),
@@ -762,7 +812,9 @@ class ACGSSecurityOrchestrator:
         checks = compliance_checks.get(framework, {})
         compliant_controls = sum(checks.values())
         total_controls = len(checks)
-        compliance_percentage = (compliant_controls / total_controls) * 100 if total_controls > 0 else 0
+        compliance_percentage = (
+            (compliant_controls / total_controls) * 100 if total_controls > 0 else 0
+        )
 
         non_compliant = [control for control, status in checks.items() if not status]
 
@@ -791,7 +843,9 @@ class ACGSSecurityOrchestrator:
 
         # Calculate overall penetration test score
         total_tests = len(test_results)
-        passed_tests = sum(1 for r in test_results.values() if r.get("status") == "passed")
+        passed_tests = sum(
+            1 for r in test_results.values() if r.get("status") == "passed"
+        )
         success_rate = (passed_tests / total_tests) * 100 if total_tests > 0 else 0
 
         return {
@@ -847,8 +901,7 @@ class ACGSSecurityOrchestrator:
                 test_url = f"http://localhost:{config['port']}/api/test"
                 for payload in injection_payloads:
                     async with self.session.post(
-                        test_url,
-                        json={"test_input": payload}
+                        test_url, json={"test_input": payload}
                     ) as response:
                         # Check if payload is reflected or causes errors
                         response_text = await response.text()
@@ -912,14 +965,18 @@ class ACGSSecurityOrchestrator:
 
         passed_checks = sum(hardening_checks.values())
         total_checks = len(hardening_checks)
-        hardening_score = (passed_checks / total_checks) * 100 if total_checks > 0 else 0
+        hardening_score = (
+            (passed_checks / total_checks) * 100 if total_checks > 0 else 0
+        )
 
         return {
             "hardening_checks": hardening_checks,
             "passed_checks": passed_checks,
             "total_checks": total_checks,
             "hardening_score": round(hardening_score, 2),
-            "hardening_status": "GOOD" if hardening_score >= 80 else "NEEDS_IMPROVEMENT",
+            "hardening_status": (
+                "GOOD" if hardening_score >= 80 else "NEEDS_IMPROVEMENT"
+            ),
             "constitutional_hash": CONSTITUTIONAL_HASH,
         }
 
@@ -965,7 +1022,7 @@ class ACGSSecurityOrchestrator:
         # Deduct points for vulnerabilities
         vuln_score = 100.0
         vuln_score -= critical_vulns * 20  # 20 points per critical
-        vuln_score -= high_vulns * 10      # 10 points per high
+        vuln_score -= high_vulns * 10  # 10 points per high
         vuln_score = max(0, vuln_score)
         scores.append(vuln_score * 0.30)
 
@@ -981,7 +1038,9 @@ class ACGSSecurityOrchestrator:
 
         return round(sum(scores), 2)
 
-    def _identify_critical_findings(self, assessment_results: Dict[str, Any]) -> List[str]:
+    def _identify_critical_findings(
+        self, assessment_results: Dict[str, Any]
+    ) -> List[str]:
         """Identify critical security findings."""
         critical_findings = []
 
@@ -1009,7 +1068,9 @@ class ACGSSecurityOrchestrator:
         compliance_score = compliance_results.get("overall_compliance_percentage", 0)
 
         if compliance_score < 80:
-            critical_findings.append(f"Compliance score {compliance_score:.1f}% below 80% target")
+            critical_findings.append(
+                f"Compliance score {compliance_score:.1f}% below 80% target"
+            )
 
         # Check penetration test failures
         pentest_results = assessment_results.get("penetration_test_results", {})
@@ -1020,14 +1081,18 @@ class ACGSSecurityOrchestrator:
 
         return critical_findings
 
-    def _generate_security_recommendations(self, assessment_results: Dict[str, Any]) -> List[str]:
+    def _generate_security_recommendations(
+        self, assessment_results: Dict[str, Any]
+    ) -> List[str]:
         """Generate security recommendations."""
         recommendations = []
 
         # Vulnerability recommendations
         vuln_results = assessment_results.get("vulnerability_scan_results", {})
         if vuln_results.get("critical_vulnerabilities", 0) > 0:
-            recommendations.append("URGENT: Fix all critical vulnerabilities immediately")
+            recommendations.append(
+                "URGENT: Fix all critical vulnerabilities immediately"
+            )
         if vuln_results.get("high_vulnerabilities", 0) > 0:
             recommendations.append("Fix high severity vulnerabilities within 7 days")
 
@@ -1051,13 +1116,15 @@ class ACGSSecurityOrchestrator:
             recommendations.append("Strengthen authentication and authorization")
 
         # General recommendations
-        recommendations.extend([
-            "Implement automated security monitoring",
-            "Set up security incident response procedures",
-            "Schedule regular security assessments",
-            f"Maintain constitutional compliance: {CONSTITUTIONAL_HASH}",
-            "Enable comprehensive security logging and alerting",
-        ])
+        recommendations.extend(
+            [
+                "Implement automated security monitoring",
+                "Set up security incident response procedures",
+                "Schedule regular security assessments",
+                f"Maintain constitutional compliance: {CONSTITUTIONAL_HASH}",
+                "Enable comprehensive security logging and alerting",
+            ]
+        )
 
         return recommendations
 
@@ -1104,23 +1171,31 @@ async def main():
             critical_findings = results.get("critical_findings", [])
             recommendations = results.get("recommendations", [])
 
-            print("\n" + "="*60)
+            print("\n" + "=" * 60)
             print("🛡️ ACGS SECURITY ASSESSMENT SUMMARY")
-            print("="*60)
+            print("=" * 60)
             print(f"Overall Security Score: {overall_score:.1f}/100")
 
             # Print service status
             service_status = results.get("service_security_status", {})
-            print(f"Secure Services: {service_status.get('secure_services', 0)}/{service_status.get('total_services', 0)}")
+            print(
+                f"Secure Services: {service_status.get('secure_services', 0)}/{service_status.get('total_services', 0)}"
+            )
 
             # Print vulnerability status
             vuln_results = results.get("vulnerability_scan_results", {})
-            print(f"Critical Vulnerabilities: {vuln_results.get('critical_vulnerabilities', 0)}")
-            print(f"High Vulnerabilities: {vuln_results.get('high_vulnerabilities', 0)}")
+            print(
+                f"Critical Vulnerabilities: {vuln_results.get('critical_vulnerabilities', 0)}"
+            )
+            print(
+                f"High Vulnerabilities: {vuln_results.get('high_vulnerabilities', 0)}"
+            )
 
             # Print compliance status
             compliance_results = results.get("compliance_assessment", {})
-            print(f"Compliance Score: {compliance_results.get('overall_compliance_percentage', 0):.1f}%")
+            print(
+                f"Compliance Score: {compliance_results.get('overall_compliance_percentage', 0):.1f}%"
+            )
 
             # Print critical findings
             if critical_findings:
@@ -1139,7 +1214,7 @@ async def main():
                     print(f"  ... and {len(recommendations) - 5} more recommendations")
 
             print(f"\n🏛️ Constitutional Hash: {CONSTITUTIONAL_HASH}")
-            print("="*60)
+            print("=" * 60)
 
         except Exception as e:
             logger.error(f"❌ Security assessment failed: {e}")

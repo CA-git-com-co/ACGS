@@ -1,6 +1,7 @@
 """
 Gemini CLI Tools Manager
 """
+
 # Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio

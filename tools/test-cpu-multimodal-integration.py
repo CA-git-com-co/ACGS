@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Constitutional Hash: cdd01ef066bc6cf2
 """
 ACGS-1 CPU-Only Multimodal Integration Test
 Tests NVIDIA Llama-3.1-Nemotron-Nano-VL-8B-V1 model in CPU mode

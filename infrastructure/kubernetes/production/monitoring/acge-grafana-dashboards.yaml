@@ -1,6 +1,3 @@
-# ACGE Phase 2 Grafana Dashboards
-# Constitutional compliance and blue-green deployment monitoring
-
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -11,326 +8,130 @@ metadata:
     component: dashboards
     phase: phase-2
 data:
-  acge-constitutional-compliance.json: |
-    {
-      "dashboard": {
-        "id": null,
-        "title": "ACGE Constitutional Compliance Dashboard",
-        "tags": ["acge", "constitutional", "compliance", "phase-2"],
-        "timezone": "UTC",
-        "refresh": "30s",
-        "time": {
-          "from": "now-1h",
-          "to": "now"
-        },
-        "panels": [
-          {
-            "id": 1,
-            "title": "Constitutional Compliance Score",
-            "type": "stat",
-            "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0},
-            "targets": [
-              {
-                "expr": "constitutional_compliance_score",
-                "legendFormat": "{{service}} ({{environment}})"
-              }
-            ],
-            "fieldConfig": {
-              "defaults": {
-                "unit": "percentunit",
-                "min": 0,
-                "max": 1,
-                "thresholds": {
-                  "steps": [
-                    {"color": "red", "value": 0},
-                    {"color": "yellow", "value": 0.9},
-                    {"color": "green", "value": 0.95}
-                  ]
-                }
-              }
-            }
-          },
-          {
-            "id": 2,
-            "title": "Constitutional Hash Validation",
-            "type": "stat",
-            "gridPos": {"h": 8, "w": 6, "x": 6, "y": 0},
-            "targets": [
-              {
-                "expr": "constitutional_hash_valid",
-                "legendFormat": "{{service}}"
-              }
-            ],
-            "fieldConfig": {
-              "defaults": {
-                "unit": "short",
-                "min": 0,
-                "max": 1,
-                "thresholds": {
-                  "steps": [
-                    {"color": "red", "value": 0},
-                    {"color": "green", "value": 1}
-                  ]
-                }
-              }
-            }
-          },
-          {
-            "id": 3,
-            "title": "ACGE Model Performance",
-            "type": "graph",
-            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
-            "targets": [
-              {
-                "expr": "histogram_quantile(0.95, rate(acge_model_inference_duration_seconds_bucket[5m]))",
-                "legendFormat": "95th percentile latency"
-              },
-              {
-                "expr": "rate(acge_model_requests_total[5m])",
-                "legendFormat": "Request rate"
-              }
-            ],
-            "yAxes": [
-              {"label": "Latency (seconds)", "min": 0},
-              {"label": "Requests/sec", "min": 0}
-            ]
-          },
-          {
-            "id": 4,
-            "title": "Blue-Green Traffic Distribution",
-            "type": "piechart",
-            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
-            "targets": [
-              {
-                "expr": "blue_traffic_percentage",
-                "legendFormat": "Blue Environment"
-              },
-              {
-                "expr": "green_traffic_percentage",
-                "legendFormat": "Green Environment"
-              }
-            ]
-          },
-          {
-            "id": 5,
-            "title": "Service Health Status",
-            "type": "table",
-            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
-            "targets": [
-              {
-                "expr": "up",
-                "format": "table",
-                "instant": true
-              }
-            ],
-            "transformations": [
-              {
-                "id": "organize",
-                "options": {
-                  "excludeByName": {},
-                  "indexByName": {},
-                  "renameByName": {
-                    "service": "Service",
-                    "environment": "Environment",
-                    "Value": "Status"
-                  }
-                }
-              }
-            ]
-          },
-          {
-            "id": 6,
-            "title": "Constitutional Violations Over Time",
-            "type": "graph",
-            "gridPos": {"h": 8, "w": 24, "x": 0, "y": 16},
-            "targets": [
-              {
-                "expr": "rate(constitutional_violations_total[5m])",
-                "legendFormat": "{{service}} - {{violation_type}}"
-              }
-            ],
-            "yAxes": [
-              {"label": "Violations/sec", "min": 0}
-            ]
-          }
-        ]
-      }
-    }
-
-  acge-performance-dashboard.json: |
-    {
-      "dashboard": {
-        "id": null,
-        "title": "ACGE Performance Dashboard",
-        "tags": ["acge", "performance", "phase-2"],
-        "timezone": "UTC",
-        "refresh": "15s",
-        "time": {
-          "from": "now-30m",
-          "to": "now"
-        },
-        "panels": [
-          {
-            "id": 1,
-            "title": "Response Time (95th percentile)",
-            "type": "graph",
-            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
-            "targets": [
-              {
-                "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{environment=\"blue\"}[5m]))",
-                "legendFormat": "Blue - {{service}}"
-              },
-              {
-                "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{environment=\"green\"}[5m]))",
-                "legendFormat": "Green - {{service}}"
-              }
-            ],
-            "yAxes": [
-              {"label": "Response Time (seconds)", "min": 0, "max": 3}
-            ],
-            "thresholds": [
-              {"value": 2.0, "colorMode": "critical", "op": "gt"}
-            ]
-          },
-          {
-            "id": 2,
-            "title": "Request Rate",
-            "type": "graph",
-            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
-            "targets": [
-              {
-                "expr": "sum(rate(http_requests_total{environment=\"blue\"}[5m])) by (service)",
-                "legendFormat": "Blue - {{service}}"
-              },
-              {
-                "expr": "sum(rate(http_requests_total{environment=\"green\"}[5m])) by (service)",
-                "legendFormat": "Green - {{service}}"
-              }
-            ],
-            "yAxes": [
-              {"label": "Requests/sec", "min": 0}
-            ],
-            "thresholds": [
-              {"value": 1000, "colorMode": "critical", "op": "lt"}
-            ]
-          },
-          {
-            "id": 3,
-            "title": "Error Rate",
-            "type": "graph",
-            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
-            "targets": [
-              {
-                "expr": "rate(http_requests_total{status=~\"5..\",environment=\"blue\"}[5m]) / rate(http_requests_total{environment=\"blue\"}[5m])",
-                "legendFormat": "Blue - {{service}}"
-              },
-              {
-                "expr": "rate(http_requests_total{status=~\"5..\",environment=\"green\"}[5m]) / rate(http_requests_total{environment=\"green\"}[5m])",
-                "legendFormat": "Green - {{service}}"
-              }
-            ],
-            "yAxes": [
-              {"label": "Error Rate", "min": 0, "max": 0.1}
-            ],
-            "thresholds": [
-              {"value": 0.01, "colorMode": "critical", "op": "gt"}
-            ]
-          },
-          {
-            "id": 4,
-            "title": "Resource Utilization",
-            "type": "graph",
-            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
-            "targets": [
-              {
-                "expr": "rate(container_cpu_usage_seconds_total[5m])",
-                "legendFormat": "CPU - {{pod}}"
-              },
-              {
-                "expr": "container_memory_usage_bytes / container_spec_memory_limit_bytes",
-                "legendFormat": "Memory - {{pod}}"
-              }
-            ],
-            "yAxes": [
-              {"label": "Utilization", "min": 0, "max": 1}
-            ]
-          }
-        ]
-      }
-    }
-
-  acge-migration-dashboard.json: |
-    {
-      "dashboard": {
-        "id": null,
-        "title": "ACGE Migration Dashboard",
-        "tags": ["acge", "migration", "blue-green", "phase-2"],
-        "timezone": "UTC",
-        "refresh": "30s",
-        "time": {
-          "from": "now-2h",
-          "to": "now"
-        },
-        "panels": [
-          {
-            "id": 1,
-            "title": "Migration Progress",
-            "type": "bargauge",
-            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
-            "targets": [
-              {
-                "expr": "migration_progress_percentage",
-                "legendFormat": "{{service}}"
-              }
-            ],
-            "fieldConfig": {
-              "defaults": {
-                "unit": "percent",
-                "min": 0,
-                "max": 100,
-                "thresholds": {
-                  "steps": [
-                    {"color": "red", "value": 0},
-                    {"color": "yellow", "value": 50},
-                    {"color": "green", "value": 100}
-                  ]
-                }
-              }
-            }
-          },
-          {
-            "id": 2,
-            "title": "Traffic Distribution by Service",
-            "type": "table",
-            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
-            "targets": [
-              {
-                "expr": "blue_traffic_percentage",
-                "format": "table",
-                "instant": true
-              },
-              {
-                "expr": "green_traffic_percentage",
-                "format": "table",
-                "instant": true
-              }
-            ]
-          },
-          {
-            "id": 3,
-            "title": "Migration Timeline",
-            "type": "graph",
-            "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8},
-            "targets": [
-              {
-                "expr": "migration_events_total",
-                "legendFormat": "{{service}} - {{event_type}}"
-              }
-            ],
-            "yAxes": [
-              {"label": "Events", "min": 0}
-            ]
-          }
-        ]
-      }
-    }
+  acge-constitutional-compliance.json: "{\n  \"dashboard\": {\n    \"id\": null,\n\
+    \    \"title\": \"ACGE Constitutional Compliance Dashboard\",\n    \"tags\": [\"\
+    acge\", \"constitutional\", \"compliance\", \"phase-2\"],\n    \"timezone\": \"\
+    UTC\",\n    \"refresh\": \"30s\",\n    \"time\": {\n      \"from\": \"now-1h\"\
+    ,\n      \"to\": \"now\"\n    },\n    \"panels\": [\n      {\n        \"id\":\
+    \ 1,\n        \"title\": \"Constitutional Compliance Score\",\n        \"type\"\
+    : \"stat\",\n        \"gridPos\": {\"h\": 8, \"w\": 6, \"x\": 0, \"y\": 0},\n\
+    \        \"targets\": [\n          {\n            \"expr\": \"constitutional_compliance_score\"\
+    ,\n            \"legendFormat\": \"{{service}} ({{environment}})\"\n         \
+    \ }\n        ],\n        \"fieldConfig\": {\n          \"defaults\": {\n     \
+    \       \"unit\": \"percentunit\",\n            \"min\": 0,\n            \"max\"\
+    : 1,\n            \"thresholds\": {\n              \"steps\": [\n            \
+    \    {\"color\": \"red\", \"value\": 0},\n                {\"color\": \"yellow\"\
+    , \"value\": 0.9},\n                {\"color\": \"green\", \"value\": 0.95}\n\
+    \              ]\n            }\n          }\n        }\n      },\n      {\n \
+    \       \"id\": 2,\n        \"title\": \"Constitutional Hash Validation\",\n \
+    \       \"type\": \"stat\",\n        \"gridPos\": {\"h\": 8, \"w\": 6, \"x\":\
+    \ 6, \"y\": 0},\n        \"targets\": [\n          {\n            \"expr\": \"\
+    constitutional_hash_valid\",\n            \"legendFormat\": \"{{service}}\"\n\
+    \          }\n        ],\n        \"fieldConfig\": {\n          \"defaults\":\
+    \ {\n            \"unit\": \"short\",\n            \"min\": 0,\n            \"\
+    max\": 1,\n            \"thresholds\": {\n              \"steps\": [\n       \
+    \         {\"color\": \"red\", \"value\": 0},\n                {\"color\": \"\
+    green\", \"value\": 1}\n              ]\n            }\n          }\n        }\n\
+    \      },\n      {\n        \"id\": 3,\n        \"title\": \"ACGE Model Performance\"\
+    ,\n        \"type\": \"graph\",\n        \"gridPos\": {\"h\": 8, \"w\": 12, \"\
+    x\": 12, \"y\": 0},\n        \"targets\": [\n          {\n            \"expr\"\
+    : \"histogram_quantile(0.95, rate(acge_model_inference_duration_seconds_bucket[5m]))\"\
+    ,\n            \"legendFormat\": \"95th percentile latency\"\n          },\n \
+    \         {\n            \"expr\": \"rate(acge_model_requests_total[5m])\",\n\
+    \            \"legendFormat\": \"Request rate\"\n          }\n        ],\n   \
+    \     \"yAxes\": [\n          {\"label\": \"Latency (seconds)\", \"min\": 0},\n\
+    \          {\"label\": \"Requests/sec\", \"min\": 0}\n        ]\n      },\n  \
+    \    {\n        \"id\": 4,\n        \"title\": \"Blue-Green Traffic Distribution\"\
+    ,\n        \"type\": \"piechart\",\n        \"gridPos\": {\"h\": 8, \"w\": 12,\
+    \ \"x\": 0, \"y\": 8},\n        \"targets\": [\n          {\n            \"expr\"\
+    : \"blue_traffic_percentage\",\n            \"legendFormat\": \"Blue Environment\"\
+    \n          },\n          {\n            \"expr\": \"green_traffic_percentage\"\
+    ,\n            \"legendFormat\": \"Green Environment\"\n          }\n        ]\n\
+    \      },\n      {\n        \"id\": 5,\n        \"title\": \"Service Health Status\"\
+    ,\n        \"type\": \"table\",\n        \"gridPos\": {\"h\": 8, \"w\": 12, \"\
+    x\": 12, \"y\": 8},\n        \"targets\": [\n          {\n            \"expr\"\
+    : \"up\",\n            \"format\": \"table\",\n            \"instant\": true\n\
+    \          }\n        ],\n        \"transformations\": [\n          {\n      \
+    \      \"id\": \"organize\",\n            \"options\": {\n              \"excludeByName\"\
+    : {},\n              \"indexByName\": {},\n              \"renameByName\": {\n\
+    \                \"service\": \"Service\",\n                \"environment\": \"\
+    Environment\",\n                \"Value\": \"Status\"\n              }\n     \
+    \       }\n          }\n        ]\n      },\n      {\n        \"id\": 6,\n   \
+    \     \"title\": \"Constitutional Violations Over Time\",\n        \"type\": \"\
+    graph\",\n        \"gridPos\": {\"h\": 8, \"w\": 24, \"x\": 0, \"y\": 16},\n \
+    \       \"targets\": [\n          {\n            \"expr\": \"rate(constitutional_violations_total[5m])\"\
+    ,\n            \"legendFormat\": \"{{service}} - {{violation_type}}\"\n      \
+    \    }\n        ],\n        \"yAxes\": [\n          {\"label\": \"Violations/sec\"\
+    , \"min\": 0}\n        ]\n      }\n    ]\n  }\n}\n"
+  acge-performance-dashboard.json: "{\n  \"dashboard\": {\n    \"id\": null,\n   \
+    \ \"title\": \"ACGE Performance Dashboard\",\n    \"tags\": [\"acge\", \"performance\"\
+    , \"phase-2\"],\n    \"timezone\": \"UTC\",\n    \"refresh\": \"15s\",\n    \"\
+    time\": {\n      \"from\": \"now-30m\",\n      \"to\": \"now\"\n    },\n    \"\
+    panels\": [\n      {\n        \"id\": 1,\n        \"title\": \"Response Time (95th\
+    \ percentile)\",\n        \"type\": \"graph\",\n        \"gridPos\": {\"h\": 8,\
+    \ \"w\": 12, \"x\": 0, \"y\": 0},\n        \"targets\": [\n          {\n     \
+    \       \"expr\": \"histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{environment=\\\
+    \"blue\\\"}[5m]))\",\n            \"legendFormat\": \"Blue - {{service}}\"\n \
+    \         },\n          {\n            \"expr\": \"histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{environment=\\\
+    \"green\\\"}[5m]))\",\n            \"legendFormat\": \"Green - {{service}}\"\n\
+    \          }\n        ],\n        \"yAxes\": [\n          {\"label\": \"Response\
+    \ Time (seconds)\", \"min\": 0, \"max\": 3}\n        ],\n        \"thresholds\"\
+    : [\n          {\"value\": 2.0, \"colorMode\": \"critical\", \"op\": \"gt\"}\n\
+    \        ]\n      },\n      {\n        \"id\": 2,\n        \"title\": \"Request\
+    \ Rate\",\n        \"type\": \"graph\",\n        \"gridPos\": {\"h\": 8, \"w\"\
+    : 12, \"x\": 12, \"y\": 0},\n        \"targets\": [\n          {\n           \
+    \ \"expr\": \"sum(rate(http_requests_total{environment=\\\"blue\\\"}[5m])) by\
+    \ (service)\",\n            \"legendFormat\": \"Blue - {{service}}\"\n       \
+    \   },\n          {\n            \"expr\": \"sum(rate(http_requests_total{environment=\\\
+    \"green\\\"}[5m])) by (service)\",\n            \"legendFormat\": \"Green - {{service}}\"\
+    \n          }\n        ],\n        \"yAxes\": [\n          {\"label\": \"Requests/sec\"\
+    , \"min\": 0}\n        ],\n        \"thresholds\": [\n          {\"value\": 1000,\
+    \ \"colorMode\": \"critical\", \"op\": \"lt\"}\n        ]\n      },\n      {\n\
+    \        \"id\": 3,\n        \"title\": \"Error Rate\",\n        \"type\": \"\
+    graph\",\n        \"gridPos\": {\"h\": 8, \"w\": 12, \"x\": 0, \"y\": 8},\n  \
+    \      \"targets\": [\n          {\n            \"expr\": \"rate(http_requests_total{status=~\\\
+    \"5..\\\",environment=\\\"blue\\\"}[5m]) / rate(http_requests_total{environment=\\\
+    \"blue\\\"}[5m])\",\n            \"legendFormat\": \"Blue - {{service}}\"\n  \
+    \        },\n          {\n            \"expr\": \"rate(http_requests_total{status=~\\\
+    \"5..\\\",environment=\\\"green\\\"}[5m]) / rate(http_requests_total{environment=\\\
+    \"green\\\"}[5m])\",\n            \"legendFormat\": \"Green - {{service}}\"\n\
+    \          }\n        ],\n        \"yAxes\": [\n          {\"label\": \"Error\
+    \ Rate\", \"min\": 0, \"max\": 0.1}\n        ],\n        \"thresholds\": [\n \
+    \         {\"value\": 0.01, \"colorMode\": \"critical\", \"op\": \"gt\"}\n   \
+    \     ]\n      },\n      {\n        \"id\": 4,\n        \"title\": \"Resource\
+    \ Utilization\",\n        \"type\": \"graph\",\n        \"gridPos\": {\"h\": 8,\
+    \ \"w\": 12, \"x\": 12, \"y\": 8},\n        \"targets\": [\n          {\n    \
+    \        \"expr\": \"rate(container_cpu_usage_seconds_total[5m])\",\n        \
+    \    \"legendFormat\": \"CPU - {{pod}}\"\n          },\n          {\n        \
+    \    \"expr\": \"container_memory_usage_bytes / container_spec_memory_limit_bytes\"\
+    ,\n            \"legendFormat\": \"Memory - {{pod}}\"\n          }\n        ],\n\
+    \        \"yAxes\": [\n          {\"label\": \"Utilization\", \"min\": 0, \"max\"\
+    : 1}\n        ]\n      }\n    ]\n  }\n}\n"
+  acge-migration-dashboard.json: "{\n  \"dashboard\": {\n    \"id\": null,\n    \"\
+    title\": \"ACGE Migration Dashboard\",\n    \"tags\": [\"acge\", \"migration\"\
+    , \"blue-green\", \"phase-2\"],\n    \"timezone\": \"UTC\",\n    \"refresh\":\
+    \ \"30s\",\n    \"time\": {\n      \"from\": \"now-2h\",\n      \"to\": \"now\"\
+    \n    },\n    \"panels\": [\n      {\n        \"id\": 1,\n        \"title\": \"\
+    Migration Progress\",\n        \"type\": \"bargauge\",\n        \"gridPos\": {\"\
+    h\": 8, \"w\": 12, \"x\": 0, \"y\": 0},\n        \"targets\": [\n          {\n\
+    \            \"expr\": \"migration_progress_percentage\",\n            \"legendFormat\"\
+    : \"{{service}}\"\n          }\n        ],\n        \"fieldConfig\": {\n     \
+    \     \"defaults\": {\n            \"unit\": \"percent\",\n            \"min\"\
+    : 0,\n            \"max\": 100,\n            \"thresholds\": {\n             \
+    \ \"steps\": [\n                {\"color\": \"red\", \"value\": 0},\n        \
+    \        {\"color\": \"yellow\", \"value\": 50},\n                {\"color\":\
+    \ \"green\", \"value\": 100}\n              ]\n            }\n          }\n  \
+    \      }\n      },\n      {\n        \"id\": 2,\n        \"title\": \"Traffic\
+    \ Distribution by Service\",\n        \"type\": \"table\",\n        \"gridPos\"\
+    : {\"h\": 8, \"w\": 12, \"x\": 12, \"y\": 0},\n        \"targets\": [\n      \
+    \    {\n            \"expr\": \"blue_traffic_percentage\",\n            \"format\"\
+    : \"table\",\n            \"instant\": true\n          },\n          {\n     \
+    \       \"expr\": \"green_traffic_percentage\",\n            \"format\": \"table\"\
+    ,\n            \"instant\": true\n          }\n        ]\n      },\n      {\n\
+    \        \"id\": 3,\n        \"title\": \"Migration Timeline\",\n        \"type\"\
+    : \"graph\",\n        \"gridPos\": {\"h\": 8, \"w\": 24, \"x\": 0, \"y\": 8},\n\
+    \        \"targets\": [\n          {\n            \"expr\": \"migration_events_total\"\
+    ,\n            \"legendFormat\": \"{{service}} - {{event_type}}\"\n          }\n\
+    \        ],\n        \"yAxes\": [\n          {\"label\": \"Events\", \"min\":\
+    \ 0}\n        ]\n      }\n    ]\n  }\n}\n"
+constitutional_hash: cdd01ef066bc6cf2

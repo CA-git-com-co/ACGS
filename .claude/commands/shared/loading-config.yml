@@ -1,6 +1,8 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 # Loading Config for Token Optimization & Perf
 
 ## Core Config (Always Load)
+# Constitutional Hash: cdd01ef066bc6cf2
 ```yaml
 Core:
   Always: [CLAUDE.md, RULES.md, PERSONAS.md, MCP.md]

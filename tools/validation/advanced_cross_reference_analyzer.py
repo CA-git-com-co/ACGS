@@ -123,6 +123,8 @@ class AdvancedCrossReferenceAnalyzer:
         self.api_implementations: dict[str, list[str]] = {}
         self.topic_index: dict[str, set[str]] = defaultdict(set)
         self.cross_references: list[CrossReference] = []
+        self.pattern_registry = self._load_pattern_registry()
+        self.compiled_patterns = self._compile_patterns()
 
     def analyze_document_structure(self, file_path: Path) -> DocumentNode:
         """Analyze document structure and extract metadata."""
@@ -244,42 +246,180 @@ class AdvancedCrossReferenceAnalyzer:
         references = []
         relative_path = str(file_path.relative_to(REPO_ROOT))
 
-        # Extract markdown links
-        link_pattern = r"\[([^\]]+)\]\(([^)]+)\)"
+        for pattern_info in self.compiled_patterns:
+            pattern = pattern_info["pattern"]
+            reference_type = pattern_info["type"]
+            base_confidence = pattern_info["base_confidence"]
 
-        for line_num, line in enumerate(lines, 1):
-            matches = re.finditer(link_pattern, line)
-            for match in matches:
-                link_text = match.group(1)
-                link_url = match.group(2)
+            for line_num, line in enumerate(lines, 1):
+                try:
+                    matches = re.finditer(pattern, line)
 
-                # Skip external links
-                if link_url.startswith(("http://", "https://", "mailto:")):
-                    continue
+                    for match in matches:
+                        # Handle different group name patterns
+                        groups = pattern_info["groups"]
 
-                # Determine reference type
-                ref_type = self._classify_reference_type(link_url, link_text, line)
+                        # Extract link text and URL based on available groups
+                        link_text = ""
+                        link_url = ""
 
-                # Calculate confidence based on context
-                confidence = self._calculate_reference_confidence(
-                    link_text, line, content
-                )
+                        if "text" in groups:
+                            link_text = match.group(groups["text"])
+                        if "url" in groups:
+                            link_url = match.group(groups["url"])
+                        elif "path" in groups:
+                            link_url = match.group(groups["path"])
+                        elif "endpoint" in groups:
+                            link_url = match.group(groups["endpoint"])
+                        elif "module_path" in groups:
+                            link_url = match.group(groups["module_path"])
+                        elif "anchor" in groups:
+                            link_url = "#" + match.group(groups["anchor"])
+                        else:
+                            # Fallback to the entire match
+                            link_url = match.group(0)
 
-                ref = CrossReference(
-                    source_file=relative_path,
-                    target_file=link_url,
-                    link_text=link_text,
-                    link_url=link_url,
-                    line_number=line_num,
-                    reference_type=ref_type,
-                    confidence=confidence,
-                    context=line.strip(),
-                )
+                        # Skip if exclusion patterns match
+                        if any(
+                            re.match(ex, link_url)
+                            for ex in pattern_info.get("exclusions", [])
+                        ):
+                            continue
 
-                references.append(ref)
-                self.cross_references.append(ref)
+                        confidence = self._calculate_confidence(
+                            link_text, line, content, pattern_info
+                        )
+
+                        ref = CrossReference(
+                            source_file=relative_path,
+                            target_file=link_url,
+                            link_text=link_text or link_url,
+                            link_url=link_url,
+                            line_number=line_num,
+                            reference_type=reference_type,
+                            confidence=confidence,
+                            context=line.strip(),
+                        )
+
+                        references.append(ref)
+                        self.cross_references.append(ref)
+
+                except Exception as e:
+                    # Log pattern matching errors but continue processing
+                    self.validation_issues.append(
+                        ValidationIssue(
+                            severity="LOW",
+                            category="pattern_error",
+                            file_path=relative_path,
+                            message=f"Pattern matching error: {e}",
+                            line_number=line_num,
+                        )
+                    )
 
         return references
+
+    def _load_pattern_registry(self):
+        """Load pattern registry from YAML configuration."""
+        import yaml
+
+        pattern_file = (
+            Path(str(REPO_ROOT))
+            / "tools"
+            / "validation"
+            / "cross_reference_patterns.yaml"
+        )
+        try:
+            with open(pattern_file, "r") as f:
+                return yaml.safe_load(f)
+        except FileNotFoundError:
+            # Return minimal fallback registry if file not found
+            return {
+                "version": "1.0",
+                "constitutional_hash": CONSTITUTIONAL_HASH,
+                "categories": {"markdown_links": {"base_confidence": 0.8}},
+                "patterns": [
+                    {
+                        "name": "basic_markdown_link",
+                        "category": "markdown_links",
+                        "regex": r"\[([^\]]+)\]\(([^)]+)\)",
+                        "capture_groups": {"text": 1, "url": 2},
+                        "reference_type": "direct",
+                        "exclusions": [r"^https?://", r"^mailto:"],
+                    }
+                ],
+                "confidence_scoring": {
+                    "base_confidence": 1.0,
+                    "max_confidence": 1.0,
+                    "min_confidence": 0.1,
+                    "text_quality": {
+                        "generic_terms": ["here", "link"],
+                        "descriptive_terms": {"min_length": 5, "modifier": 0.2},
+                        "action_terms": {"terms": ["see", "refer"], "modifier": 0.1},
+                    },
+                },
+            }
+
+    def _compile_patterns(self):
+        """Compile patterns from the loaded pattern registry."""
+        compiled = []
+        for pattern in self.pattern_registry["patterns"]:
+            try:
+                compiled_pattern = re.compile(pattern["regex"])
+                compiled.append(
+                    {
+                        "pattern": compiled_pattern,
+                        "type": pattern["reference_type"],
+                        "groups": pattern["capture_groups"],
+                        "base_confidence": self.pattern_registry["categories"][
+                            pattern["category"]
+                        ]["base_confidence"],
+                        "exclusions": pattern.get("exclusions", []),
+                    }
+                )
+            except re.error as e:
+                # Log pattern compilation error but continue with other patterns
+                self.validation_issues.append(
+                    ValidationIssue(
+                        severity="ERROR",
+                        category="pattern_compilation",
+                        file_path="pattern_registry",
+                        message=f"Failed to compile pattern '{pattern['name']}': {e}",
+                    )
+                )
+        return compiled
+
+    def _calculate_confidence(self, link_text, line, content, pattern_info):
+        """Calculate confidence score for a reference using pattern modifiers."""
+        confidence = pattern_info["base_confidence"]
+
+        if (
+            len(link_text) > 5
+            and link_text.lower()
+            not in self.pattern_registry["confidence_scoring"]["text_quality"][
+                "generic_terms"
+            ]
+        ):
+            confidence += self.pattern_registry["confidence_scoring"]["text_quality"][
+                "descriptive_terms"
+            ]["modifier"]
+
+        if any(
+            word in line.lower()
+            for word in self.pattern_registry["confidence_scoring"]["text_quality"][
+                "action_terms"
+            ]["terms"]
+        ):
+            confidence += self.pattern_registry["confidence_scoring"]["text_quality"][
+                "action_terms"
+            ]["modifier"]
+
+        return max(
+            self.pattern_registry["confidence_scoring"]["min_confidence"],
+            min(
+                self.pattern_registry["confidence_scoring"]["max_confidence"],
+                confidence,
+            ),
+        )
 
     def _classify_reference_type(
         self, link_url: str, link_text: str, context: str
@@ -724,18 +864,18 @@ class AdvancedCrossReferenceAnalyzer:
                 "total_cross_references": len(self.cross_references),
                 "total_issues": len(self.validation_issues),
                 "semantic_relationships": len(self.semantic_relationships),
-                "critical_issues": len([
-                    i for i in self.validation_issues if i.severity == "CRITICAL"
-                ]),
-                "high_issues": len([
-                    i for i in self.validation_issues if i.severity == "HIGH"
-                ]),
-                "medium_issues": len([
-                    i for i in self.validation_issues if i.severity == "MEDIUM"
-                ]),
-                "low_issues": len([
-                    i for i in self.validation_issues if i.severity == "LOW"
-                ]),
+                "critical_issues": len(
+                    [i for i in self.validation_issues if i.severity == "CRITICAL"]
+                ),
+                "high_issues": len(
+                    [i for i in self.validation_issues if i.severity == "HIGH"]
+                ),
+                "medium_issues": len(
+                    [i for i in self.validation_issues if i.severity == "MEDIUM"]
+                ),
+                "low_issues": len(
+                    [i for i in self.validation_issues if i.severity == "LOW"]
+                ),
             },
             "validation_issues": [
                 {

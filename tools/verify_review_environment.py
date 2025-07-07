@@ -12,7 +12,6 @@ from pathlib import Path
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 def run_command(cmd, capture_output=True):
     """Run a shell command and return the result"""
     try:

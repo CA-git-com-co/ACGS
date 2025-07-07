@@ -4,7 +4,6 @@ import json
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 def read_file(file_path):
     """
     Read a file and return its contents as a string.

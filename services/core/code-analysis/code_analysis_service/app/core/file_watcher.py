@@ -411,11 +411,13 @@ class FileWatcherService:
 
     def get_status(self) -> dict[str, Any]:
         """Get file watcher service status."""
-        return ensure_constitutional_compliance({
-            "is_running": self.is_running,
-            "watch_paths": self.watch_paths,
-            "handlers_count": len(self.handlers),
-            "files_processed": self.files_processed,
-            "events_received": self.events_received,
-            "supported_extensions": self.supported_extensions,
-        })
+        return ensure_constitutional_compliance(
+            {
+                "is_running": self.is_running,
+                "watch_paths": self.watch_paths,
+                "handlers_count": len(self.handlers),
+                "files_processed": self.files_processed,
+                "events_received": self.events_received,
+                "supported_extensions": self.supported_extensions,
+            }
+        )

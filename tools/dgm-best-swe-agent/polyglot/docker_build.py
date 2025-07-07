@@ -9,19 +9,16 @@ import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
-from tqdm import tqdm
-
 import docker
 import docker.errors
-from polyglot.constants import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from polyglot.constants import (  # Constitutional compliance hash for ACGS
     BASE_IMAGE_BUILD_DIR,
+    CONSTITUTIONAL_HASH,
     ENV_IMAGE_BUILD_DIR,
     INSTANCE_IMAGE_BUILD_DIR,
     MAP_REPO_VERSION_TO_SPECS,
+    "cdd01ef066bc6cf2",
+    =,
 )
 from polyglot.docker_utils import (
     cleanup_container,
@@ -29,6 +26,7 @@ from polyglot.docker_utils import (
     remove_image,
 )
 from polyglot.test_spec import TestSpec, get_test_specs_from_dataset, make_test_spec
+from tqdm import tqdm
 
 ansi_escape = re.compile(r"\x1B\[[0-?]*[ -/]*[@-~]")
 

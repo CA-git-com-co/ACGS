@@ -9,7 +9,6 @@ within the ACGS-PGP framework.
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class WINAError(Exception):
     """Base exception for all WINA-related errors."""
 

@@ -112,14 +112,16 @@ class ACGSDocumentationValidator:
 
         issues = []
         if missing_critical:
-            issues.extend([
-                f"Critical file missing hash: {f}" for f in missing_critical
-            ])
+            issues.extend(
+                [f"Critical file missing hash: {f}" for f in missing_critical]
+            )
         if files_missing_hash:
-            issues.extend([
-                f"File mentions constitutional hash but missing value: {f}"
-                for f in files_missing_hash
-            ])
+            issues.extend(
+                [
+                    f"File mentions constitutional hash but missing value: {f}"
+                    for f in files_missing_hash
+                ]
+            )
 
         return ValidationResult(
             check_name="Constitutional Hash Consistency",

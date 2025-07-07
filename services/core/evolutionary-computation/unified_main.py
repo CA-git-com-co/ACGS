@@ -25,9 +25,9 @@ from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Optional
 
-import redis.asyncio as aioredis
 import asyncpg
 import httpx
+import redis.asyncio as aioredis
 import uvicorn
 
 # Import real evolutionary algorithms
@@ -642,9 +642,7 @@ __constitutional_runtime_check__()
             "optimization": request.optimization_level,
             "constitutional_hash": CONSTITUTIONAL_HASH,
         }
-        return (
-            f"compilation:{hashlib.sha256(json.dumps(key_data, sort_keys=True).encode()).hexdigest()}"
-        )
+        return f"compilation:{hashlib.sha256(json.dumps(key_data, sort_keys=True).encode()).hexdigest()}"
 
 
 # Evolution Engine
@@ -1003,7 +1001,8 @@ async def create_database_tables():
     try:
         async with db_pool.acquire() as conn:
             # Compilations table
-            await conn.execute("""
+            await conn.execute(
+                """
                 CREATE TABLE IF NOT EXISTS compilations (
                     compilation_id UUID PRIMARY KEY,
                     source_hash VARCHAR(64) NOT NULL,
@@ -1015,10 +1014,12 @@ async def create_database_tables():
                     created_at TIMESTAMPTZ DEFAULT NOW(),
                     metadata JSONB DEFAULT '{}'
                 );
-            """)
+            """
+            )
 
             # Agent evolutions table
-            await conn.execute("""
+            await conn.execute(
+                """
                 CREATE TABLE IF NOT EXISTS agent_evolutions (
                     evolution_id UUID PRIMARY KEY,
                     agent_id VARCHAR(255) NOT NULL,
@@ -1031,10 +1032,12 @@ async def create_database_tables():
                     approved_at TIMESTAMPTZ,
                     approved_by VARCHAR(255)
                 );
-            """)
+            """
+            )
 
             # Evolutionary optimizations table
-            await conn.execute("""
+            await conn.execute(
+                """
                 CREATE TABLE IF NOT EXISTS evolutionary_optimizations (
                     optimization_id UUID PRIMARY KEY,
                     agent_config JSONB NOT NULL,
@@ -1043,7 +1046,8 @@ async def create_database_tables():
                     results JSONB NOT NULL,
                     created_at TIMESTAMPTZ DEFAULT NOW()
                 );
-            """)
+            """
+            )
 
             # Create indexes
             await conn.execute(
@@ -1278,7 +1282,8 @@ async def get_service_metrics():
     try:
         async with db_pool.acquire() as conn:
             # Compilation metrics
-            compilation_stats = await conn.fetchrow("""
+            compilation_stats = await conn.fetchrow(
+                """
                 SELECT
                     COUNT(*) as total_compilations,
                     COUNT(*) FILTER (WHERE status = 'completed') as successful_compilations,
@@ -1286,10 +1291,12 @@ async def get_service_metrics():
                     AVG(constitutional_compliance_score) as avg_compliance_score
                 FROM compilations
                 WHERE created_at > NOW() - INTERVAL '24 hours'
-            """)
+            """
+            )
 
             # Evolution metrics
-            evolution_stats = await conn.fetchrow("""
+            evolution_stats = await conn.fetchrow(
+                """
                 SELECT
                     COUNT(*) as total_evolutions,
                     COUNT(*) FILTER (WHERE status = 'auto_approved') as auto_approved,
@@ -1297,7 +1304,8 @@ async def get_service_metrics():
                     AVG(constitutional_compliance_score) as avg_compliance_score
                 FROM agent_evolutions
                 WHERE created_at > NOW() - INTERVAL '24 hours'
-            """)
+            """
+            )
 
         return {
             "service": SERVICE_NAME,
@@ -1497,20 +1505,22 @@ async def get_optimization_history(limit: int = 20):
 
             history = []
             for row in rows:
-                history.append({
-                    "optimization_id": row["optimization_id"],
-                    "algorithm_type": row["algorithm_type"],
-                    "objectives": json.loads(row["objectives"]),
-                    "best_fitness": (
-                        float(row["best_fitness"]) if row["best_fitness"] else 0.0
-                    ),
-                    "constitutional_compliance": (
-                        float(row["constitutional_compliance"])
-                        if row["constitutional_compliance"]
-                        else 0.0
-                    ),
-                    "created_at": row["created_at"].isoformat(),
-                })
+                history.append(
+                    {
+                        "optimization_id": row["optimization_id"],
+                        "algorithm_type": row["algorithm_type"],
+                        "objectives": json.loads(row["objectives"]),
+                        "best_fitness": (
+                            float(row["best_fitness"]) if row["best_fitness"] else 0.0
+                        ),
+                        "constitutional_compliance": (
+                            float(row["constitutional_compliance"])
+                            if row["constitutional_compliance"]
+                            else 0.0
+                        ),
+                        "created_at": row["created_at"].isoformat(),
+                    }
+                )
 
             return {"optimization_history": history, "total_count": len(history)}
 

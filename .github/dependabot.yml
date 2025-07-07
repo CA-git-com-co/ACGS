@@ -2,6 +2,7 @@
 # Automated dependency management for constitutional governance system
 # Enhanced configuration for comprehensive security and maintenance
 
+# Constitutional Hash: cdd01ef066bc6cf2
 version: 2
 updates:
   # Python dependencies - Root level

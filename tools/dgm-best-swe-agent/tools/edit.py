@@ -5,7 +5,6 @@ from pathlib import Path
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 def tool_info():
     return {
         "name": "editor",

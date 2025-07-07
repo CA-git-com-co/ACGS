@@ -1,5 +1,6 @@
 # ACGS-1 Authentication Service Dockerfile
 # Optimized for the Authentication Service specifically
+# Constitutional Hash: cdd01ef066bc6cf2
 
 FROM python:3.11-slim as base
 

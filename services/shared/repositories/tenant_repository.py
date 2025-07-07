@@ -390,13 +390,15 @@ class TenantRepository(BaseTenantRepository[Tenant]):
 
         tenants = []
         for tenant, tenant_user in result.all():
-            tenants.append({
-                "tenant": tenant,
-                "role": tenant_user.role,
-                "permissions": tenant_user.permissions or [],
-                "access_level": tenant_user.access_level,
-                "last_accessed_at": tenant_user.last_accessed_at,
-            })
+            tenants.append(
+                {
+                    "tenant": tenant,
+                    "role": tenant_user.role,
+                    "permissions": tenant_user.permissions or [],
+                    "access_level": tenant_user.access_level,
+                    "last_accessed_at": tenant_user.last_accessed_at,
+                }
+            )
 
         return tenants
 
@@ -435,7 +437,8 @@ class CrossTenantRepository:
         """Get statistics across all tenants in an organization."""
         from sqlalchemy import text
 
-        query = text("""
+        query = text(
+            """
             SELECT
                 COUNT(*) as total_tenants,
                 COUNT(CASE WHEN status = 'active' THEN 1 END) as active_tenants,
@@ -446,7 +449,8 @@ class CrossTenantRepository:
             FROM tenants
             WHERE organization_id = :org_id
             AND deleted_at IS NULL
-        """)
+        """
+        )
 
         result = await self.session.execute(query, {"org_id": org_id})
         row = result.fetchone()
@@ -481,14 +485,16 @@ class CrossTenantRepository:
 
         violations = []
         for tenant in tenants:
-            violations.append({
-                "tenant_id": tenant.id,
-                "tenant_name": tenant.name,
-                "organization_id": tenant.organization_id,
-                "compliance_score": tenant.constitutional_compliance_score,
-                "security_level": tenant.security_level,
-                "status": tenant.status,
-            })
+            violations.append(
+                {
+                    "tenant_id": tenant.id,
+                    "tenant_name": tenant.name,
+                    "organization_id": tenant.organization_id,
+                    "compliance_score": tenant.constitutional_compliance_score,
+                    "security_level": tenant.security_level,
+                    "status": tenant.status,
+                }
+            )
 
         return violations
 

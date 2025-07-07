@@ -9,7 +9,6 @@ from pathlib import Path
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 def check_workflow_triggers():
     """Manually check workflow trigger configurations."""
     workflows_dir = Path("/home/dislove/ACGS-1/.github/workflows")

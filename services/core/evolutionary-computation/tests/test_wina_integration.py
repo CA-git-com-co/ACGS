@@ -112,8 +112,12 @@ class TestWINAIntegration:
 
     async def test_constitutional_integration(self, wina_config, integration_config):
         """Test constitutional compliance integration."""
-        from services.core.evolutionary_computation.app.wina.constitutional_integration import ConstitutionalWINASupport
-        from services.core.evolutionary_computation.app.wina.core import WINAOptimizationResult
+        from services.core.evolutionary_computation.app.wina.constitutional_integration import (
+            ConstitutionalWINASupport,
+        )
+        from services.core.evolutionary_computation.app.wina.core import (
+            WINAOptimizationResult,
+        )
 
         try:
             constitutional_wina = ConstitutionalWINASupport(
@@ -174,7 +178,9 @@ class TestWINAIntegration:
 
     async def test_ec_service_integration(self):
         """Test integration with EC service main coordinator."""
-        from services.core.evolutionary_computation.app.core.wina_oversight_coordinator import WINAECOversightCoordinator
+        from services.core.evolutionary_computation.app.core.wina_oversight_coordinator import (
+            WINAECOversightCoordinator,
+        )
 
         try:
             # Test coordinator initialization
@@ -209,7 +215,9 @@ class TestWINAIntegration:
 
     async def test_service_communication(self):
         """Test communication with other ACGS services."""
-        from services.core.evolutionary_computation.app.wina.config import load_wina_config_from_env
+        from services.core.evolutionary_computation.app.wina.config import (
+            load_wina_config_from_env,
+        )
 
         try:
             wina_config, integration_config = load_wina_config_from_env()
@@ -233,7 +241,9 @@ class TestWINAIntegration:
 
     async def test_performance_targets(self):
         """Test that WINA integration meets performance targets."""
-        from services.core.evolutionary_computation.app.wina.config import load_wina_config_from_env
+        from services.core.evolutionary_computation.app.wina.config import (
+            load_wina_config_from_env,
+        )
         from services.core.evolutionary_computation.app.wina.core import WINACore
 
         try:

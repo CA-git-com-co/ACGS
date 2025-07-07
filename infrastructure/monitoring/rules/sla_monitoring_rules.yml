@@ -1,152 +1,124 @@
-# ACGS-1 SLA Monitoring Rules
-# Production SLA targets: >99.5% uptime, <500ms response times, >1000 concurrent actions
-
 groups:
-  - name: acgs_sla_monitoring
-    rules:
-      # Uptime SLA Violation
-      - alert: ACGSUptimeSLAViolation
-        expr: acgs_sla_uptime_compliance == 0
-        for: 5m
-        labels:
-          severity: critical
-          component: sla_monitoring
-          sla_type: uptime
-        annotations:
-          summary: 'ACGS uptime SLA violation'
-          description: 'System uptime is below 99.5% target for more than 5 minutes'
-          runbook_url: 'https://docs.acgs.ai/runbooks/sla-uptime-violation'
-
-      # Response Time SLA Violation
-      - alert: ACGSResponseTimeSLAViolation
-        expr: acgs_sla_response_time_compliance == 0
-        for: 3m
-        labels:
-          severity: warning
-          component: sla_monitoring
-          sla_type: response_time
-        annotations:
-          summary: 'ACGS response time SLA violation'
-          description: 'Service response times exceed 500ms target for more than 3 minutes'
-          runbook_url: 'https://docs.acgs.ai/runbooks/sla-response-time-violation'
-
-      # Average Response Time Degradation
-      - alert: ACGSAverageResponseTimeDegraded
-        expr: acgs_avg_response_time_seconds > 0.1
-        for: 5m
-        labels:
-          severity: warning
-          component: performance
-        annotations:
-          summary: 'ACGS average response time degraded'
-          description: 'Average response time is {{ $value }}s, above 100ms threshold'
-
-      # Maximum Response Time Alert
-      - alert: ACGSMaxResponseTimeHigh
-        expr: acgs_max_response_time_seconds > 0.5
-        for: 2m
-        labels:
-          severity: critical
-          component: performance
-        annotations:
-          summary: 'ACGS maximum response time critical'
-          description: 'Maximum response time is {{ $value }}s, exceeding 500ms SLA'
-
-      # System Health Below SLA
-      - alert: ACGSSystemHealthBelowSLA
-        expr: acgs_system_health_ratio < 0.995
-        for: 2m
-        labels:
-          severity: warning
-          component: sla_monitoring
-        annotations:
-          summary: 'ACGS system health below SLA'
-          description: 'System health is {{ $value | humanizePercentage }}, below 99.5% SLA target'
-
-  - name: acgs_governance_sla
-    rules:
-      # Constitutional Compliance SLA (placeholder for future implementation)
-      - alert: ACGSConstitutionalComplianceBelowSLA
-        expr: acgs_constitutional_compliance_ratio < 0.95
-        for: 10m
-        labels:
-          severity: warning
-          component: constitutional_governance
-        annotations:
-          summary: 'Constitutional compliance below 95% SLA'
-          description: 'Constitutional compliance is {{ $value | humanizePercentage }}, below 95% target'
-
-      # Transaction Cost SLA (Solana/Quantumagi)
-      - alert: ACGSTransactionCostAboveSLA
-        expr: quantumagi_avg_transaction_cost > 0.01
-        for: 15m
-        labels:
-          severity: warning
-          component: blockchain
-        annotations:
-          summary: 'Solana transaction costs above SLA'
-          description: 'Average transaction cost is {{ $value }} SOL, above 0.01 SOL target'
-
-  - name: acgs_performance_sla
-    rules:
-      # Concurrent Actions Capacity (placeholder for load testing)
-      - alert: ACGSConcurrentActionsCapacityLow
-        expr: acgs_max_concurrent_actions < 1000
-        for: 5m
-        labels:
-          severity: warning
-          component: scalability
-        annotations:
-          summary: 'Concurrent actions capacity below SLA'
-          description: 'Maximum concurrent actions capacity is {{ $value }}, below 1000 target'
-
-      # Service Availability Trend
-      - alert: ACGSServiceAvailabilityTrend
-        expr: avg_over_time(acgs_system_health_ratio[1h]) < 0.99
-        for: 10m
-        labels:
-          severity: warning
-          component: availability
-        annotations:
-          summary: 'Service availability trend concerning'
-          description: 'Average availability over last hour is {{ $value | humanizePercentage }}'
-
-      # Response Time Trend
-      - alert: ACGSResponseTimeTrend
-        expr: avg_over_time(acgs_avg_response_time_seconds[1h]) > 0.05
-        for: 15m
-        labels:
-          severity: warning
-          component: performance
-        annotations:
-          summary: 'Response time trend degrading'
-          description: 'Average response time over last hour is {{ $value }}s'
-
-  - name: acgs_sla_reporting
-    rules:
-      # Daily SLA Compliance Recording Rules
-      - record: acgs:sla_uptime_daily
-        expr: avg_over_time(acgs_sla_uptime_compliance[24h])
-
-      - record: acgs:sla_response_time_daily
-        expr: avg_over_time(acgs_sla_response_time_compliance[24h])
-
-      - record: acgs:avg_response_time_daily
-        expr: avg_over_time(acgs_avg_response_time_seconds[24h])
-
-      - record: acgs:system_health_daily
-        expr: avg_over_time(acgs_system_health_ratio[24h])
-
-      # Weekly SLA Compliance Recording Rules
-      - record: acgs:sla_uptime_weekly
-        expr: avg_over_time(acgs_sla_uptime_compliance[7d])
-
-      - record: acgs:sla_response_time_weekly
-        expr: avg_over_time(acgs_sla_response_time_compliance[7d])
-
-      # Monthly SLA Compliance Recording Rules
-      - record: acgs:sla_uptime_monthly
-        expr: avg_over_time(acgs_sla_uptime_compliance[30d])
-
-      - record: acgs:sla_response_time_monthly
-        expr: avg_over_time(acgs_sla_response_time_compliance[30d])
+- name: acgs_sla_monitoring
+  rules:
+  - alert: ACGSUptimeSLAViolation
+    expr: acgs_sla_uptime_compliance == 0
+    for: 5m
+    labels:
+      severity: critical
+      component: sla_monitoring
+      sla_type: uptime
+    annotations:
+      summary: ACGS uptime SLA violation
+      description: System uptime is below 99.5% target for more than 5 minutes
+      runbook_url: https://docs.acgs.ai/runbooks/sla-uptime-violation
+  - alert: ACGSResponseTimeSLAViolation
+    expr: acgs_sla_response_time_compliance == 0
+    for: 3m
+    labels:
+      severity: warning
+      component: sla_monitoring
+      sla_type: response_time
+    annotations:
+      summary: ACGS response time SLA violation
+      description: Service response times exceed 500ms target for more than 3 minutes
+      runbook_url: https://docs.acgs.ai/runbooks/sla-response-time-violation
+  - alert: ACGSAverageResponseTimeDegraded
+    expr: acgs_avg_response_time_seconds > 0.1
+    for: 5m
+    labels:
+      severity: warning
+      component: performance
+    annotations:
+      summary: ACGS average response time degraded
+      description: Average response time is {{ $value }}s, above 100ms threshold
+  - alert: ACGSMaxResponseTimeHigh
+    expr: acgs_max_response_time_seconds > 0.5
+    for: 2m
+    labels:
+      severity: critical
+      component: performance
+    annotations:
+      summary: ACGS maximum response time critical
+      description: Maximum response time is {{ $value }}s, exceeding 500ms SLA
+  - alert: ACGSSystemHealthBelowSLA
+    expr: acgs_system_health_ratio < 0.995
+    for: 2m
+    labels:
+      severity: warning
+      component: sla_monitoring
+    annotations:
+      summary: ACGS system health below SLA
+      description: System health is {{ $value | humanizePercentage }}, below 99.5%
+        SLA target
+- name: acgs_governance_sla
+  rules:
+  - alert: ACGSConstitutionalComplianceBelowSLA
+    expr: acgs_constitutional_compliance_ratio < 0.95
+    for: 10m
+    labels:
+      severity: warning
+      component: constitutional_governance
+    annotations:
+      summary: Constitutional compliance below 95% SLA
+      description: Constitutional compliance is {{ $value | humanizePercentage }},
+        below 95% target
+  - alert: ACGSTransactionCostAboveSLA
+    expr: quantumagi_avg_transaction_cost > 0.01
+    for: 15m
+    labels:
+      severity: warning
+      component: blockchain
+    annotations:
+      summary: Solana transaction costs above SLA
+      description: Average transaction cost is {{ $value }} SOL, above 0.01 SOL target
+- name: acgs_performance_sla
+  rules:
+  - alert: ACGSConcurrentActionsCapacityLow
+    expr: acgs_max_concurrent_actions < 1000
+    for: 5m
+    labels:
+      severity: warning
+      component: scalability
+    annotations:
+      summary: Concurrent actions capacity below SLA
+      description: Maximum concurrent actions capacity is {{ $value }}, below 1000
+        target
+  - alert: ACGSServiceAvailabilityTrend
+    expr: avg_over_time(acgs_system_health_ratio[1h]) < 0.99
+    for: 10m
+    labels:
+      severity: warning
+      component: availability
+    annotations:
+      summary: Service availability trend concerning
+      description: Average availability over last hour is {{ $value | humanizePercentage
+        }}
+  - alert: ACGSResponseTimeTrend
+    expr: avg_over_time(acgs_avg_response_time_seconds[1h]) > 0.05
+    for: 15m
+    labels:
+      severity: warning
+      component: performance
+    annotations:
+      summary: Response time trend degrading
+      description: Average response time over last hour is {{ $value }}s
+- name: acgs_sla_reporting
+  rules:
+  - record: acgs:sla_uptime_daily
+    expr: avg_over_time(acgs_sla_uptime_compliance[24h])
+  - record: acgs:sla_response_time_daily
+    expr: avg_over_time(acgs_sla_response_time_compliance[24h])
+  - record: acgs:avg_response_time_daily
+    expr: avg_over_time(acgs_avg_response_time_seconds[24h])
+  - record: acgs:system_health_daily
+    expr: avg_over_time(acgs_system_health_ratio[24h])
+  - record: acgs:sla_uptime_weekly
+    expr: avg_over_time(acgs_sla_uptime_compliance[7d])
+  - record: acgs:sla_response_time_weekly
+    expr: avg_over_time(acgs_sla_response_time_compliance[7d])
+  - record: acgs:sla_uptime_monthly
+    expr: avg_over_time(acgs_sla_uptime_compliance[30d])
+  - record: acgs:sla_response_time_monthly
+    expr: avg_over_time(acgs_sla_response_time_compliance[30d])
+constitutional_hash: cdd01ef066bc6cf2

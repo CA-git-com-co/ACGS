@@ -18,7 +18,6 @@ import httpx
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class Priority1ServiceRestoration:
     """Optimized service restoration with correct configurations."""
 

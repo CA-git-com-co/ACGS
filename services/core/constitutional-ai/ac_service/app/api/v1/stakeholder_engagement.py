@@ -332,9 +332,9 @@ async def websocket_engagement_updates(websocket: WebSocket, amendment_id: int):
 
 # Security validation imports
 from services.shared.security_validation import (
-    validate_user_input,
+    validate_governance_input,
     validate_policy_input,
-    validate_governance_input
+    validate_user_input,
 )
 
         async for db in get_async_db():

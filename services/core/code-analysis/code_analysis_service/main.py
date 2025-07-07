@@ -375,10 +375,12 @@ def main():
 
     # Add SSL configuration for production
     if settings.environment == "production" and settings.ssl_cert_file:
-        uvicorn_config.update({
-            "ssl_certfile": settings.ssl_cert_file,
-            "ssl_keyfile": settings.ssl_key_file,
-        })
+        uvicorn_config.update(
+            {
+                "ssl_certfile": settings.ssl_cert_file,
+                "ssl_keyfile": settings.ssl_key_file,
+            }
+        )
 
     logger.info(
         f"Starting ACGS Code Analysis Engine on {settings.host}:{settings.port}"

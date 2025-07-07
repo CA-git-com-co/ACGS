@@ -2,7 +2,7 @@
 Worker Agents for Multi-Agent Governance System
 """
 
-from .ethics_agent import EthicsAgent, EthicalAnalysisResult
+from .ethics_agent import EthicalAnalysisResult, EthicsAgent
 from .legal_agent import LegalAgent, LegalAnalysisResult
 from .operational_agent import OperationalAgent, OperationalAnalysisResult
 
@@ -11,10 +11,10 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
 __all__ = [
-    'EthicsAgent',
-    'EthicalAnalysisResult',
-    'LegalAgent', 
-    'LegalAnalysisResult',
-    'OperationalAgent',
-    'OperationalAnalysisResult'
+    "EthicsAgent",
+    "EthicalAnalysisResult",
+    "LegalAgent",
+    "LegalAnalysisResult",
+    "OperationalAgent",
+    "OperationalAnalysisResult",
 ]

@@ -13,7 +13,6 @@ import yaml
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class MonitoringSetup:
     def __init__(self):
         self.services = [

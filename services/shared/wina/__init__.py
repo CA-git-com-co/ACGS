@@ -27,6 +27,7 @@ from .config import WINAConfig, WINAIntegrationConfig
 from .constitutional_integration import ConstitutionalWINASupport
 from .core import WINACore, WINAOptimizer
 from .exceptions import WINAConfigurationError, WINAError, WINAOptimizationError
+
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 

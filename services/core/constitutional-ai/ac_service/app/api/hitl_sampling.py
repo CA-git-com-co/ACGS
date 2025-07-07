@@ -13,11 +13,14 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from services.shared.auth import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
-    get_current_active_user as get_current_user,
+    CONSTITUTIONAL_HASH,
+    "cdd01ef066bc6cf2",
+    =,
+)
+from services.shared.auth import (
+    get_current_active_user as get_current_user,  # Constitutional compliance hash for ACGS
+)
+from services.shared.auth import (
     require_admin,
     require_policy_manager,
 )

@@ -8,14 +8,6 @@ constitutional compliance validation, and Z3 SMT solver integration.
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
-from .verification import (
-    ProofObligation,
-    ProofResult,
-    ProofStatus,
-    VerificationRequest,
-    VerificationResult,
-    VerificationStatus,
-)
 from .constitutional import (
     ConstitutionalProof,
     ConstitutionalVerificationRequest,
@@ -30,6 +22,14 @@ from .smt import (
     SMTSolverRequest,
     SMTSolverResponse,
     Z3ProofResult,
+)
+from .verification import (
+    ProofObligation,
+    ProofResult,
+    ProofStatus,
+    VerificationRequest,
+    VerificationResult,
+    VerificationStatus,
 )
 
 __all__ = [

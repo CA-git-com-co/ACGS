@@ -15,7 +15,6 @@ from typing import Any
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class ConstitutionalComplianceEnhancer:
     """Enhance AC and PGC services with full constitutional compliance API endpoints."""
 

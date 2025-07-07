@@ -23,7 +23,6 @@ from pathlib import Path
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class CodeHygieneManager:
     """Manages code hygiene and style corrections."""
 

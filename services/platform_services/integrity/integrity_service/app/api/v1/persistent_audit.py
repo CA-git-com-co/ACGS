@@ -4,6 +4,7 @@ Persistent Audit Trail API endpoints with cryptographic hash chaining.
 This module provides REST API endpoints for the persistent audit trail system
 including event logging, integrity verification, and audit trail management.
 """
+
 # Constitutional Hash: cdd01ef066bc6cf2
 
 import logging

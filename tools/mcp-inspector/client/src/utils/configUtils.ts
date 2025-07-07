@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 import { InspectorConfig } from "@/lib/configurationTypes";
 import {
   DEFAULT_MCP_PROXY_LISTEN_PORT,

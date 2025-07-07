@@ -375,7 +375,8 @@ def upgrade():
     # the database will enforce tenant boundaries
 
     # Tenant access policy (users can only see tenants they belong to)
-    op.execute("""
+    op.execute(
+        """
         CREATE POLICY tenant_isolation_policy ON tenants
         USING (
             id IN (
@@ -385,10 +386,12 @@ def upgrade():
             )
             OR current_setting('app.bypass_rls', true) = 'true'
         )
-    """)
+    """
+    )
 
     # Tenant users access policy
-    op.execute("""
+    op.execute(
+        """
         CREATE POLICY tenant_users_isolation_policy ON tenant_users
         USING (
             tenant_id IN (
@@ -398,10 +401,12 @@ def upgrade():
             )
             OR current_setting('app.bypass_rls', true) = 'true'
         )
-    """)
+    """
+    )
 
     # Tenant settings access policy
-    op.execute("""
+    op.execute(
+        """
         CREATE POLICY tenant_settings_isolation_policy ON tenant_settings
         USING (
             tenant_id IN (
@@ -411,10 +416,12 @@ def upgrade():
             )
             OR current_setting('app.bypass_rls', true) = 'true'
         )
-    """)
+    """
+    )
 
     # Tenant invitations access policy
-    op.execute("""
+    op.execute(
+        """
         CREATE POLICY tenant_invitations_isolation_policy ON tenant_invitations
         USING (
             tenant_id IN (
@@ -424,10 +431,12 @@ def upgrade():
             )
             OR current_setting('app.bypass_rls', true) = 'true'
         )
-    """)
+    """
+    )
 
     # Create a default organization for existing data migration
-    op.execute(f"""
+    op.execute(
+        f"""
         INSERT INTO organizations (
             id, name, slug, contact_email, status, tier,
             constitutional_hash, constitutional_compliance_required,
@@ -446,10 +455,12 @@ def upgrade():
             1000000
         )
         ON CONFLICT DO NOTHING
-    """)
+    """
+    )
 
     # Create a default tenant for existing data migration
-    op.execute(f"""
+    op.execute(
+        f"""
         INSERT INTO tenants (
             id, organization_id, name, slug, description,
             status, tier, security_level, constitutional_hash,
@@ -469,10 +480,12 @@ def upgrade():
         FROM organizations o
         WHERE o.slug = 'default-org'
         AND NOT EXISTS (SELECT 1 FROM tenants WHERE slug = 'default-tenant')
-    """)
+    """
+    )
 
     # Create stored procedure for tenant context management
-    op.execute("""
+    op.execute(
+        """
         CREATE OR REPLACE FUNCTION set_tenant_context(user_id integer, tenant_id uuid DEFAULT NULL, bypass_rls boolean DEFAULT false)
         RETURNS void AS $$
         BEGIN
@@ -483,10 +496,12 @@ def upgrade():
             PERFORM set_config('app.bypass_rls', bypass_rls::text, true);
         END;
         $$ LANGUAGE plpgsql;
-    """)
+    """
+    )
 
     # Create function to validate constitutional compliance
-    op.execute(f"""
+    op.execute(
+        f"""
         CREATE OR REPLACE FUNCTION validate_constitutional_compliance()
         RETURNS TRIGGER AS $$
         BEGIN
@@ -496,25 +511,31 @@ def upgrade():
             RETURN NEW;
         END;
         $$ LANGUAGE plpgsql;
-    """)
+    """
+    )
 
     # Create triggers for constitutional compliance validation
-    op.execute("""
+    op.execute(
+        """
         CREATE TRIGGER trigger_validate_org_constitutional_compliance
             BEFORE INSERT OR UPDATE ON organizations
             FOR EACH ROW
             EXECUTE FUNCTION validate_constitutional_compliance();
-    """)
+    """
+    )
 
-    op.execute("""
+    op.execute(
+        """
         CREATE TRIGGER trigger_validate_tenant_constitutional_compliance
             BEFORE INSERT OR UPDATE ON tenants
             FOR EACH ROW
             EXECUTE FUNCTION validate_constitutional_compliance();
-    """)
+    """
+    )
 
     # Create trigger to update timestamps
-    op.execute("""
+    op.execute(
+        """
         CREATE OR REPLACE FUNCTION update_updated_at_column()
         RETURNS TRIGGER AS $$
         BEGIN
@@ -522,7 +543,8 @@ def upgrade():
             RETURN NEW;
         END;
         $$ LANGUAGE plpgsql;
-    """)
+    """
+    )
 
     # Add update triggers to all tables with updated_at
     for table in [
@@ -532,12 +554,14 @@ def upgrade():
         "tenant_settings",
         "tenant_invitations",
     ]:
-        op.execute(f"""
+        op.execute(
+            f"""
             CREATE TRIGGER trigger_update_{table}_updated_at
                 BEFORE UPDATE ON {table}
                 FOR EACH ROW
                 EXECUTE FUNCTION update_updated_at_column();
-        """)
+        """
+        )
 
 
 def downgrade():

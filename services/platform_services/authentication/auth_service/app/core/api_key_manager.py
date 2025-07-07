@@ -14,7 +14,6 @@ from .password import get_password_hash, verify_password
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class ApiKeyManager:
     """Enterprise API Key Management Service"""
 

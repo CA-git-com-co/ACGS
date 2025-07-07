@@ -4,7 +4,14 @@
     "uid": "acgs-stakeholder-technical",
     "title": "ACGS-1 Technical Stakeholder Dashboard",
     "description": "Technical stakeholder dashboard with detailed service metrics, performance analysis, and operational insights for development and operations teams",
-    "tags": ["acgs", "technical", "stakeholder", "operations", "development", "detailed"],
+    "tags": [
+      "acgs",
+      "technical",
+      "stakeholder",
+      "operations",
+      "development",
+      "detailed"
+    ],
     "timezone": "browser",
     "refresh": "15s",
     "time": {
@@ -56,17 +63,42 @@
             },
             "thresholds": {
               "steps": [
-                { "color": "red", "value": 0 },
-                { "color": "green", "value": 1 }
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "green",
+                  "value": 1
+                }
               ]
             },
             "mappings": [
-              { "options": { "0": { "text": "DOWN" } }, "type": "value" },
-              { "options": { "1": { "text": "UP" } }, "type": "value" }
+              {
+                "options": {
+                  "0": {
+                    "text": "DOWN"
+                  }
+                },
+                "type": "value"
+              },
+              {
+                "options": {
+                  "1": {
+                    "text": "UP"
+                  }
+                },
+                "type": "value"
+              }
             ]
           }
         },
-        "gridPos": { "h": 6, "w": 24, "x": 0, "y": 0 }
+        "gridPos": {
+          "h": 6,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        }
       },
       {
         "id": 2,
@@ -101,7 +133,12 @@
             }
           }
         },
-        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 6
+        }
       },
       {
         "id": 3,
@@ -140,7 +177,12 @@
             }
           }
         },
-        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 6
+        }
       },
       {
         "id": 4,
@@ -162,14 +204,28 @@
             "unit": "eps",
             "thresholds": {
               "steps": [
-                { "color": "green", "value": 0 },
-                { "color": "yellow", "value": 0.01 },
-                { "color": "red", "value": 0.1 }
+                {
+                  "color": "green",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 0.01
+                },
+                {
+                  "color": "red",
+                  "value": 0.1
+                }
               ]
             }
           }
         },
-        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 14 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 14
+        }
       },
       {
         "id": 5,
@@ -201,23 +257,53 @@
           },
           "overrides": [
             {
-              "matcher": { "id": "byName", "options": "Connection Pool Utilization %" },
+              "matcher": {
+                "id": "byName",
+                "options": "Connection Pool Utilization %"
+              },
               "properties": [
-                { "id": "unit", "value": "percent" },
-                { "id": "max", "value": 100 }
+                {
+                  "id": "unit",
+                  "value": "percent"
+                },
+                {
+                  "id": "max",
+                  "value": 100
+                }
               ]
             },
             {
-              "matcher": { "id": "byName", "options": "Query Rate (qps)" },
-              "properties": [{ "id": "unit", "value": "qps" }]
+              "matcher": {
+                "id": "byName",
+                "options": "Query Rate (qps)"
+              },
+              "properties": [
+                {
+                  "id": "unit",
+                  "value": "qps"
+                }
+              ]
             },
             {
-              "matcher": { "id": "byName", "options": "P95 Query Duration" },
-              "properties": [{ "id": "unit", "value": "ms" }]
+              "matcher": {
+                "id": "byName",
+                "options": "P95 Query Duration"
+              },
+              "properties": [
+                {
+                  "id": "unit",
+                  "value": "ms"
+                }
+              ]
             }
           ]
         },
-        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 14 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 14
+        }
       },
       {
         "id": 6,
@@ -248,28 +334,66 @@
             },
             "thresholds": {
               "steps": [
-                { "color": "red", "value": 0 },
-                { "color": "yellow", "value": 80 },
-                { "color": "green", "value": 95 }
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 80
+                },
+                {
+                  "color": "green",
+                  "value": 95
+                }
               ]
             }
           },
           "overrides": [
             {
-              "matcher": { "id": "byName", "options": "Cache Hit Rate" },
-              "properties": [{ "id": "unit", "value": "percent" }]
+              "matcher": {
+                "id": "byName",
+                "options": "Cache Hit Rate"
+              },
+              "properties": [
+                {
+                  "id": "unit",
+                  "value": "percent"
+                }
+              ]
             },
             {
-              "matcher": { "id": "byName", "options": "Memory Utilization" },
-              "properties": [{ "id": "unit", "value": "percent" }]
+              "matcher": {
+                "id": "byName",
+                "options": "Memory Utilization"
+              },
+              "properties": [
+                {
+                  "id": "unit",
+                  "value": "percent"
+                }
+              ]
             },
             {
-              "matcher": { "id": "byName", "options": "Operations/sec" },
-              "properties": [{ "id": "unit", "value": "ops" }]
+              "matcher": {
+                "id": "byName",
+                "options": "Operations/sec"
+              },
+              "properties": [
+                {
+                  "id": "unit",
+                  "value": "ops"
+                }
+              ]
             }
           ]
         },
-        "gridPos": { "h": 6, "w": 12, "x": 0, "y": 22 }
+        "gridPos": {
+          "h": 6,
+          "w": 12,
+          "x": 0,
+          "y": 22
+        }
       },
       {
         "id": 7,
@@ -296,19 +420,41 @@
           },
           "overrides": [
             {
-              "matcher": { "id": "byRegexp", "options": ".*Utilization" },
+              "matcher": {
+                "id": "byRegexp",
+                "options": ".*Utilization"
+              },
               "properties": [
-                { "id": "unit", "value": "percent" },
-                { "id": "max", "value": 100 }
+                {
+                  "id": "unit",
+                  "value": "percent"
+                },
+                {
+                  "id": "max",
+                  "value": 100
+                }
               ]
             },
             {
-              "matcher": { "id": "byRegexp", "options": ".*Sessions" },
-              "properties": [{ "id": "unit", "value": "short" }]
+              "matcher": {
+                "id": "byRegexp",
+                "options": ".*Sessions"
+              },
+              "properties": [
+                {
+                  "id": "unit",
+                  "value": "short"
+                }
+              ]
             }
           ]
         },
-        "gridPos": { "h": 6, "w": 12, "x": 12, "y": 22 }
+        "gridPos": {
+          "h": 6,
+          "w": 12,
+          "x": 12,
+          "y": 22
+        }
       },
       {
         "id": 8,
@@ -334,14 +480,28 @@
             "unit": "percent",
             "thresholds": {
               "steps": [
-                { "color": "green", "value": 0 },
-                { "color": "yellow", "value": 70 },
-                { "color": "red", "value": 85 }
+                {
+                  "color": "green",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 70
+                },
+                {
+                  "color": "red",
+                  "value": 85
+                }
               ]
             }
           }
         },
-        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 28 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 28
+        }
       },
       {
         "id": 9,
@@ -372,32 +532,72 @@
             },
             "thresholds": {
               "steps": [
-                { "color": "red", "value": 0 },
-                { "color": "yellow", "value": 95 },
-                { "color": "green", "value": 99 }
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 95
+                },
+                {
+                  "color": "green",
+                  "value": 99
+                }
               ]
             }
           },
           "overrides": [
             {
-              "matcher": { "id": "byName", "options": "Hash Integrity" },
-              "properties": [{ "id": "unit", "value": "percent" }]
-            },
-            {
-              "matcher": { "id": "byName", "options": "Consensus Rate" },
-              "properties": [{ "id": "unit", "value": "percent" }]
-            },
-            {
-              "matcher": { "id": "byName", "options": "PGC Latency (ms)" },
+              "matcher": {
+                "id": "byName",
+                "options": "Hash Integrity"
+              },
               "properties": [
-                { "id": "unit", "value": "ms" },
+                {
+                  "id": "unit",
+                  "value": "percent"
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Consensus Rate"
+              },
+              "properties": [
+                {
+                  "id": "unit",
+                  "value": "percent"
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "PGC Latency (ms)"
+              },
+              "properties": [
+                {
+                  "id": "unit",
+                  "value": "ms"
+                },
                 {
                   "id": "thresholds",
                   "value": {
                     "steps": [
-                      { "color": "green", "value": 0 },
-                      { "color": "yellow", "value": 25 },
-                      { "color": "red", "value": 50 }
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "yellow",
+                        "value": 25
+                      },
+                      {
+                        "color": "red",
+                        "value": 50
+                      }
                     ]
                   }
                 }
@@ -405,7 +605,12 @@
             }
           ]
         },
-        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 28 }
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 28
+        }
       },
       {
         "id": 10,
@@ -426,14 +631,28 @@
             },
             "thresholds": {
               "steps": [
-                { "color": "green", "value": 0 },
-                { "color": "yellow", "value": 1 },
-                { "color": "red", "value": 5 }
+                {
+                  "color": "green",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 1
+                },
+                {
+                  "color": "red",
+                  "value": 5
+                }
               ]
             }
           }
         },
-        "gridPos": { "h": 8, "w": 24, "x": 0, "y": 36 }
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 36
+        }
       }
     ],
     "links": [
@@ -456,5 +675,7 @@
   },
   "overwrite": true,
   "folderId": 1,
-  "folderTitle": "Executive Dashboard"
+  "folderTitle": "Executive Dashboard",
+  "_constitutional_hash": "cdd01ef066bc6cf2",
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }

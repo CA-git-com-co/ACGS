@@ -1,6 +1,8 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 # Cleanup Patterns & Safety Rules
 
 ## Safe→Remove (Auto)
+# Constitutional Hash: cdd01ef066bc6cf2
 ```yaml
 Files: 
   - node_modules (if package-lock exists)

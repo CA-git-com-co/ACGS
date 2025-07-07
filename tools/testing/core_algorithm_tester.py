@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Constitutional Hash: cdd01ef066bc6cf2
 """
 Core Algorithm Testing Framework for ACGS-2
 Tests constitutional AI processing, policy governance, and Darwin Gödel Machine mechanisms.

@@ -8,15 +8,14 @@ import openai  # Placeholder for actual OpenAI client library
 # Third-party libraries for retry logic and LLM interaction
 from tenacity import RetryError, retry, stop_after_attempt, wait_exponential
 
-from ..schemas import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from ..schemas import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     LLMInterpretationInput,
     LLMStructuredOutput,
     LLMSuggestedAtom,
     LLMSuggestedRule,
+    "cdd01ef066bc6cf2",
+    =,
 )
 from .constitutional_prompting import constitutional_prompt_builder
 

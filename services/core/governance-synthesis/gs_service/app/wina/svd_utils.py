@@ -4,7 +4,6 @@ import numpy as np
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 def perform_svd(matrix: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Performs Singular Value Decomposition (SVD) on a given matrix.

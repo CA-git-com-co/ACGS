@@ -1,8 +1,7 @@
-from prompts.self_improvement_prompt import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from prompts.self_improvement_prompt import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
+    "cdd01ef066bc6cf2",
+    =,
     find_selfimprove_eval_logs,
     get_current_code,
     process_selfimprove_eval_logs,

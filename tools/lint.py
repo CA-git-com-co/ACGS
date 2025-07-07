@@ -26,7 +26,6 @@ from pathlib import Path
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 def run_command(cmd: list[str], description: str, fix_mode: bool = False) -> bool:
     """Run a command and return success status."""
     print(f"\n🔍 {description}")

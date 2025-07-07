@@ -7,7 +7,6 @@ from ..core.security import get_user_id_from_request_optional
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 # Mock classes for testing
 class MockLimiter:
     def __init__(self, key_func=None, default_limits=None):

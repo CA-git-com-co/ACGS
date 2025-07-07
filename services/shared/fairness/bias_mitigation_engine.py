@@ -14,6 +14,7 @@ Key Features:
 - Mitigation effectiveness tracking and optimization
 - Integration with bias drift monitoring systems
 """
+
 # Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
@@ -552,18 +553,20 @@ class BiasMitigationEngine:
             self.mitigation_plans[plan_id] = plan
 
             # Log plan creation
-            await self.audit_logger.log_compliance_event({
-                "event_type": "mitigation_plan_created",
-                "plan_id": plan_id,
-                "target_context": context.value,
-                "target_bias_type": bias_type.value,
-                "target_attribute": protected_attr.value,
-                "severity": severity.value,
-                "strategies_count": len(mitigation_actions),
-                "expected_improvement": overall_improvement,
-                "estimated_duration": estimated_duration,
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_compliance_event(
+                {
+                    "event_type": "mitigation_plan_created",
+                    "plan_id": plan_id,
+                    "target_context": context.value,
+                    "target_bias_type": bias_type.value,
+                    "target_attribute": protected_attr.value,
+                    "severity": severity.value,
+                    "strategies_count": len(mitigation_actions),
+                    "expected_improvement": overall_improvement,
+                    "estimated_duration": estimated_duration,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
             return plan
 
@@ -584,24 +587,30 @@ class BiasMitigationEngine:
 
             # Strategy selection based on bias type
             if bias_type == BiasType.DEMOGRAPHIC_PARITY:
-                strategies.extend([
-                    MitigationStrategy.PREPROCESSING_RESAMPLING,
-                    MitigationStrategy.POSTPROCESSING_THRESHOLD_OPTIMIZATION,
-                    MitigationStrategy.POSTPROCESSING_OUTCOME_REDISTRIBUTION,
-                ])
+                strategies.extend(
+                    [
+                        MitigationStrategy.PREPROCESSING_RESAMPLING,
+                        MitigationStrategy.POSTPROCESSING_THRESHOLD_OPTIMIZATION,
+                        MitigationStrategy.POSTPROCESSING_OUTCOME_REDISTRIBUTION,
+                    ]
+                )
 
             elif bias_type == BiasType.EQUALIZED_ODDS:
-                strategies.extend([
-                    MitigationStrategy.INPROCESSING_FAIRNESS_CONSTRAINTS,
-                    MitigationStrategy.POSTPROCESSING_THRESHOLD_OPTIMIZATION,
-                    MitigationStrategy.POSTPROCESSING_CALIBRATION,
-                ])
+                strategies.extend(
+                    [
+                        MitigationStrategy.INPROCESSING_FAIRNESS_CONSTRAINTS,
+                        MitigationStrategy.POSTPROCESSING_THRESHOLD_OPTIMIZATION,
+                        MitigationStrategy.POSTPROCESSING_CALIBRATION,
+                    ]
+                )
 
             elif bias_type == BiasType.CALIBRATION:
-                strategies.extend([
-                    MitigationStrategy.POSTPROCESSING_CALIBRATION,
-                    MitigationStrategy.INPROCESSING_MULTI_OBJECTIVE,
-                ])
+                strategies.extend(
+                    [
+                        MitigationStrategy.POSTPROCESSING_CALIBRATION,
+                        MitigationStrategy.INPROCESSING_MULTI_OBJECTIVE,
+                    ]
+                )
 
             # Add constitutional strategies for constitutional contexts
             if context in [
@@ -981,9 +990,9 @@ class BiasMitigationEngine:
         fallbacks = []
         for strategy in primary_strategies:
             strategy_fallbacks = fallback_map.get(strategy, [])
-            fallbacks.extend([
-                f for f in strategy_fallbacks if f not in primary_strategies
-            ])
+            fallbacks.extend(
+                [f for f in strategy_fallbacks if f not in primary_strategies]
+            )
 
         # Always include human intervention as ultimate fallback
         if MitigationStrategy.HUMAN_IN_THE_LOOP_CORRECTION not in fallbacks:
@@ -1041,16 +1050,18 @@ class BiasMitigationEngine:
                         # Could implement fallback logic here
 
                 # Log action result
-                await self.audit_logger.log_compliance_event({
-                    "event_type": "mitigation_action_executed",
-                    "plan_id": plan.plan_id,
-                    "action_id": action_id,
-                    "strategy": action.strategy.value,
-                    "execution_status": result.execution_status,
-                    "effectiveness_score": result.effectiveness_score,
-                    "bias_reduction": result.bias_reduction_achieved,
-                    "timestamp": result.end_time.isoformat(),
-                })
+                await self.audit_logger.log_compliance_event(
+                    {
+                        "event_type": "mitigation_action_executed",
+                        "plan_id": plan.plan_id,
+                        "action_id": action_id,
+                        "strategy": action.strategy.value,
+                        "execution_status": result.execution_status,
+                        "effectiveness_score": result.effectiveness_score,
+                        "bias_reduction": result.bias_reduction_achieved,
+                        "timestamp": result.end_time.isoformat(),
+                    }
+                )
 
             # Complete mitigation
             self.active_mitigations[plan.plan_id]["status"] = (
@@ -1060,24 +1071,27 @@ class BiasMitigationEngine:
 
             # Calculate overall results
             overall_bias_reduction = sum(r.bias_reduction_achieved for r in results)
-            overall_effectiveness = statistics.mean([
-                r.effectiveness_score for r in results
-            ])
+            overall_effectiveness = statistics.mean(
+                [r.effectiveness_score for r in results]
+            )
 
             # Log plan completion
-            await self.audit_logger.log_compliance_event({
-                "event_type": "automatic_mitigation_completed",
-                "plan_id": plan.plan_id,
-                "overall_success": overall_success,
-                "actions_executed": len(results),
-                "overall_bias_reduction": overall_bias_reduction,
-                "overall_effectiveness": overall_effectiveness,
-                "execution_time_minutes": (
-                    datetime.utcnow()
-                    - self.active_mitigations[plan.plan_id]["start_time"]
-                ).total_seconds() / 60,
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_compliance_event(
+                {
+                    "event_type": "automatic_mitigation_completed",
+                    "plan_id": plan.plan_id,
+                    "overall_success": overall_success,
+                    "actions_executed": len(results),
+                    "overall_bias_reduction": overall_bias_reduction,
+                    "overall_effectiveness": overall_effectiveness,
+                    "execution_time_minutes": (
+                        datetime.utcnow()
+                        - self.active_mitigations[plan.plan_id]["start_time"]
+                    ).total_seconds()
+                    / 60,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
             # Send completion alert
             await self.alerting.send_alert(
@@ -1253,18 +1267,22 @@ class BiasMitigationEngine:
         recommendations = []
 
         if effectiveness < 0.5:
-            recommendations.extend([
-                f"Consider alternative strategies to {action.strategy.value}",
-                "Investigate root causes of poor effectiveness",
-                "Review action parameters for optimization",
-            ])
+            recommendations.extend(
+                [
+                    f"Consider alternative strategies to {action.strategy.value}",
+                    "Investigate root causes of poor effectiveness",
+                    "Review action parameters for optimization",
+                ]
+            )
 
         if effectiveness > 0.8:
-            recommendations.extend([
-                f"Document successful parameters for {action.strategy.value}",
-                "Consider this strategy for similar future cases",
-                "Share lessons learned with team",
-            ])
+            recommendations.extend(
+                [
+                    f"Document successful parameters for {action.strategy.value}",
+                    "Consider this strategy for similar future cases",
+                    "Share lessons learned with team",
+                ]
+            )
 
         # Strategy-specific recommendations
         if action.strategy == MitigationStrategy.HUMAN_IN_THE_LOOP_CORRECTION:
@@ -1297,14 +1315,16 @@ class BiasMitigationEngine:
             ] + alpha * bias_reduction
 
             # Log effectiveness update
-            await self.audit_logger.log_compliance_event({
-                "event_type": "strategy_effectiveness_updated",
-                "strategy": strategy.value,
-                "new_success_rate": strategy_data["success_rate"],
-                "new_avg_improvement": strategy_data["avg_improvement"],
-                "usage_count": strategy_data["usage_count"],
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_compliance_event(
+                {
+                    "event_type": "strategy_effectiveness_updated",
+                    "strategy": strategy.value,
+                    "new_success_rate": strategy_data["success_rate"],
+                    "new_avg_improvement": strategy_data["avg_improvement"],
+                    "usage_count": strategy_data["usage_count"],
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
         except Exception as e:
             logger.error(f"Strategy effectiveness update failed: {e}")
@@ -1332,14 +1352,16 @@ class BiasMitigationEngine:
                 result = await self._execute_mitigation_action(action)
 
                 # Log emergency action
-                await self.audit_logger.log_compliance_event({
-                    "event_type": "emergency_mitigation_action",
-                    "plan_id": plan.plan_id,
-                    "action_id": action.action_id,
-                    "strategy": action.strategy.value,
-                    "bias_reduction": result.bias_reduction_achieved,
-                    "timestamp": datetime.utcnow().isoformat(),
-                })
+                await self.audit_logger.log_compliance_event(
+                    {
+                        "event_type": "emergency_mitigation_action",
+                        "plan_id": plan.plan_id,
+                        "action_id": action.action_id,
+                        "strategy": action.strategy.value,
+                        "bias_reduction": result.bias_reduction_achieved,
+                        "timestamp": datetime.utcnow().isoformat(),
+                    }
+                )
 
             # Send emergency alert
             await self.alerting.send_alert(
@@ -1371,14 +1393,16 @@ class BiasMitigationEngine:
             }
 
             # Log approval request
-            await self.audit_logger.log_compliance_event({
-                "event_type": "mitigation_approval_requested",
-                "request_id": approval_request["request_id"],
-                "plan_id": plan.plan_id,
-                "urgency": approval_request["urgency"],
-                "timeout_minutes": approval_request["timeout_minutes"],
-                "timestamp": approval_request["requested_at"].isoformat(),
-            })
+            await self.audit_logger.log_compliance_event(
+                {
+                    "event_type": "mitigation_approval_requested",
+                    "request_id": approval_request["request_id"],
+                    "plan_id": plan.plan_id,
+                    "urgency": approval_request["urgency"],
+                    "timeout_minutes": approval_request["timeout_minutes"],
+                    "timestamp": approval_request["requested_at"].isoformat(),
+                }
+            )
 
             # Send alert to request approval
             await self.alerting.send_alert(
@@ -1484,16 +1508,18 @@ class BiasMitigationEngine:
             self.correction_history.append(correction)
 
             # Log correction
-            await self.audit_logger.log_compliance_event({
-                "event_type": "real_time_bias_correction",
-                "correction_id": correction.correction_id,
-                "decision_id": decision_data.get("decision_id", "unknown"),
-                "correction_method": correction_method,
-                "bias_detected": bias_detected,
-                "correction_strength": correction_strength,
-                "human_review_required": correction.human_review_required,
-                "timestamp": correction.timestamp.isoformat(),
-            })
+            await self.audit_logger.log_compliance_event(
+                {
+                    "event_type": "real_time_bias_correction",
+                    "correction_id": correction.correction_id,
+                    "decision_id": decision_data.get("decision_id", "unknown"),
+                    "correction_method": correction_method,
+                    "bias_detected": bias_detected,
+                    "correction_strength": correction_strength,
+                    "human_review_required": correction.human_review_required,
+                    "timestamp": correction.timestamp.isoformat(),
+                }
+            )
 
             # Alert on high-strength corrections
             if correction_strength > 0.5:
@@ -1706,12 +1732,12 @@ class BiasMitigationEngine:
             effectiveness_summary = {}
 
             for strategy, results in strategy_analysis.items():
-                avg_effectiveness = statistics.mean([
-                    r.effectiveness_score for r in results
-                ])
-                avg_bias_reduction = statistics.mean([
-                    r.bias_reduction_achieved for r in results
-                ])
+                avg_effectiveness = statistics.mean(
+                    [r.effectiveness_score for r in results]
+                )
+                avg_bias_reduction = statistics.mean(
+                    [r.bias_reduction_achieved for r in results]
+                )
                 success_rate = sum(
                     1 for r in results if r.execution_status == "success"
                 ) / len(results)
@@ -1724,14 +1750,16 @@ class BiasMitigationEngine:
                 }
 
             # Log effectiveness analysis
-            await self.audit_logger.log_compliance_event({
-                "event_type": "mitigation_effectiveness_analysis",
-                "analysis_period_hours": 24,
-                "strategies_analyzed": len(effectiveness_summary),
-                "total_mitigations": len(recent_results),
-                "effectiveness_summary": effectiveness_summary,
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_compliance_event(
+                {
+                    "event_type": "mitigation_effectiveness_analysis",
+                    "analysis_period_hours": 24,
+                    "strategies_analyzed": len(effectiveness_summary),
+                    "total_mitigations": len(recent_results),
+                    "effectiveness_summary": effectiveness_summary,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
         except Exception as e:
             logger.error(f"Effectiveness analysis failed: {e}")
@@ -1776,11 +1804,13 @@ class BiasMitigationEngine:
                     )
 
             if optimization_recommendations:
-                await self.audit_logger.log_compliance_event({
-                    "event_type": "strategy_optimization_recommendations",
-                    "recommendations": optimization_recommendations,
-                    "timestamp": datetime.utcnow().isoformat(),
-                })
+                await self.audit_logger.log_compliance_event(
+                    {
+                        "event_type": "strategy_optimization_recommendations",
+                        "recommendations": optimization_recommendations,
+                        "timestamp": datetime.utcnow().isoformat(),
+                    }
+                )
 
         except Exception as e:
             logger.error(f"Strategy optimization failed: {e}")
@@ -1794,26 +1824,32 @@ class BiasMitigationEngine:
 
             # Recent activity summary
             recent_cutoff = current_time - timedelta(hours=24)
-            recent_plans = len([
-                p
-                for p in self.mitigation_plans.values()
-                if p.created_at >= recent_cutoff
-            ])
-            recent_results = len([
-                r
-                for r in self.mitigation_results.values()
-                if r.end_time >= recent_cutoff
-            ])
-            recent_corrections = len([
-                c for c in self.correction_history if c.timestamp >= recent_cutoff
-            ])
+            recent_plans = len(
+                [
+                    p
+                    for p in self.mitigation_plans.values()
+                    if p.created_at >= recent_cutoff
+                ]
+            )
+            recent_results = len(
+                [
+                    r
+                    for r in self.mitigation_results.values()
+                    if r.end_time >= recent_cutoff
+                ]
+            )
+            recent_corrections = len(
+                [c for c in self.correction_history if c.timestamp >= recent_cutoff]
+            )
 
             # Active mitigations
-            active_count = len([
-                m
-                for m in self.active_mitigations.values()
-                if m["status"] == "executing"
-            ])
+            active_count = len(
+                [
+                    m
+                    for m in self.active_mitigations.values()
+                    if m["status"] == "executing"
+                ]
+            )
 
             return {
                 "engine_status": {
@@ -1870,16 +1906,18 @@ class BiasMitigationEngine:
                 raise ValueError("Failed to create mitigation plan")
 
             # Log manual request
-            await self.audit_logger.log_compliance_event({
-                "event_type": "manual_mitigation_requested",
-                "plan_id": plan.plan_id,
-                "context": context.value,
-                "bias_type": bias_type.value,
-                "protected_attribute": protected_attr.value,
-                "severity": severity.value,
-                "requester": requester,
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_compliance_event(
+                {
+                    "event_type": "manual_mitigation_requested",
+                    "plan_id": plan.plan_id,
+                    "context": context.value,
+                    "bias_type": bias_type.value,
+                    "protected_attribute": protected_attr.value,
+                    "severity": severity.value,
+                    "requester": requester,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
             # Execute based on severity
             if severity == BiasSeverity.CRITICAL:
@@ -1914,12 +1952,12 @@ class BiasMitigationEngine:
 
             # Summary statistics
             if window_results:
-                avg_effectiveness = statistics.mean([
-                    r.effectiveness_score for r in window_results
-                ])
-                avg_bias_reduction = statistics.mean([
-                    r.bias_reduction_achieved for r in window_results
-                ])
+                avg_effectiveness = statistics.mean(
+                    [r.effectiveness_score for r in window_results]
+                )
+                avg_bias_reduction = statistics.mean(
+                    [r.bias_reduction_achieved for r in window_results]
+                )
                 success_rate = sum(
                     1 for r in window_results if r.execution_status == "success"
                 ) / len(window_results)
@@ -1941,18 +1979,20 @@ class BiasMitigationEngine:
                     "success_rate": success_rate,
                 },
                 "strategy_usage": {
-                    strategy.value: len([
-                        r for r in window_results if r.strategy_used == strategy
-                    ])
+                    strategy.value: len(
+                        [r for r in window_results if r.strategy_used == strategy]
+                    )
                     for strategy in MitigationStrategy
                 },
                 "correction_methods": (
                     {
-                        method: len([
-                            c
-                            for c in window_corrections
-                            if c.correction_method == method
-                        ])
+                        method: len(
+                            [
+                                c
+                                for c in window_corrections
+                                if c.correction_method == method
+                            ]
+                        )
                         for method in set(
                             c.correction_method for c in window_corrections
                         )
@@ -1971,11 +2011,13 @@ class BiasMitigationEngine:
 async def example_usage():
     """Example of using the bias mitigation engine"""
     # Initialize mitigation engine
-    engine = BiasMitigationEngine({
-        "mitigation_enabled": True,
-        "automatic_mitigation": True,
-        "real_time_correction": True,
-    })
+    engine = BiasMitigationEngine(
+        {
+            "mitigation_enabled": True,
+            "automatic_mitigation": True,
+            "real_time_correction": True,
+        }
+    )
 
     # Start engine (would run continuously in production)
     logger.info("Starting bias mitigation engine demo")

@@ -14,13 +14,12 @@ from pathlib import Path
 
 from .core.crypto_benchmarking import CryptoBenchmarkConfig, CryptoBenchmarker
 from .core.verification_completeness_tester import VerificationCompletenessTester
-from .services.fairness_evaluation_framework import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from .services.fairness_evaluation_framework import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     DomainType,
     FairnessEvaluationFramework,
+    "cdd01ef066bc6cf2",
+    =,
 )
 from .services.lipschitz_estimator import LipschitzEstimator
 

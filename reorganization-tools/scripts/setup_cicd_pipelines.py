@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Constitutional Hash: cdd01ef066bc6cf2
 """
 Setup CI/CD Pipelines for ACGS Repositories
 
@@ -6,26 +7,29 @@ This script creates GitHub Actions workflows for each ACGS repository.
 """
 
 import json
+import logging
 import os
 from pathlib import Path
-import logging
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
+
 
 class CICDPipelineSetup:
     def __init__(self, workspace_path: Path):
         self.workspace_path = Path(workspace_path)
         self.repositories = self._load_workspace_config()
-    
+
     def _load_workspace_config(self) -> dict:
         """Load workspace configuration"""
         config_file = self.workspace_path / "acgs-workspace.json"
-        with open(config_file, 'r') as f:
+        with open(config_file, "r") as f:
             config = json.load(f)
         return config["repositories"]
-    
+
     def create_python_workflow(self, repo_path: Path, repo_name: str) -> str:
         """Create GitHub Actions workflow for Python repositories"""
         return f"""name: CI/CD Pipeline
@@ -147,7 +151,7 @@ jobs:
         echo "Deploying {repo_name} to production..."
         # Add your deployment commands here
 """
-    
+
     def create_nodejs_workflow(self, repo_path: Path, repo_name: str) -> str:
         """Create GitHub Actions workflow for Node.js repositories"""
         return f"""name: CI/CD Pipeline
@@ -262,7 +266,7 @@ jobs:
         echo "Deploying {repo_name} to production..."
         # Add your deployment commands here
 """
-    
+
     def create_rust_workflow(self, repo_path: Path, repo_name: str) -> str:
         """Create GitHub Actions workflow for Rust repositories"""
         return f"""name: CI/CD Pipeline
@@ -376,7 +380,7 @@ jobs:
         echo "Deploying {repo_name} to production..."
         # Add your deployment commands here
 """
-    
+
     def create_infrastructure_workflow(self, repo_path: Path, repo_name: str) -> str:
         """Create GitHub Actions workflow for infrastructure repositories"""
         return f"""name: Infrastructure CI/CD
@@ -483,16 +487,16 @@ jobs:
             return "infrastructure"
         else:
             return "python"  # Default to Python
-    
+
     def create_workflow_file(self, repo_path: Path, repo_name: str) -> bool:
         """Create GitHub Actions workflow file for a repository"""
         try:
             workflow_type = self.determine_workflow_type(repo_path)
-            
+
             # Create .github/workflows directory
             workflows_dir = repo_path / ".github" / "workflows"
             workflows_dir.mkdir(parents=True, exist_ok=True)
-            
+
             # Generate workflow content based on type
             if workflow_type == "python":
                 workflow_content = self.create_python_workflow(repo_path, repo_name)
@@ -501,30 +505,32 @@ jobs:
             elif workflow_type == "rust":
                 workflow_content = self.create_rust_workflow(repo_path, repo_name)
             elif workflow_type == "infrastructure":
-                workflow_content = self.create_infrastructure_workflow(repo_path, repo_name)
+                workflow_content = self.create_infrastructure_workflow(
+                    repo_path, repo_name
+                )
             else:
                 workflow_content = self.create_python_workflow(repo_path, repo_name)
-            
+
             # Write workflow file
             workflow_file = workflows_dir / "ci-cd.yml"
-            with open(workflow_file, 'w') as f:
+            with open(workflow_file, "w") as f:
                 f.write(workflow_content)
-            
+
             logger.info(f"Created {workflow_type} workflow for {repo_name}")
             return True
-            
+
         except Exception as e:
             logger.error(f"Failed to create workflow for {repo_name}: {e}")
             return False
-    
+
     def create_dependabot_config(self, repo_path: Path) -> bool:
         """Create Dependabot configuration for dependency updates"""
         try:
             github_dir = repo_path / ".github"
             github_dir.mkdir(exist_ok=True)
-            
+
             workflow_type = self.determine_workflow_type(repo_path)
-            
+
             if workflow_type == "python":
                 ecosystem = "pip"
                 directory = "/"
@@ -537,7 +543,7 @@ jobs:
             else:
                 ecosystem = "pip"
                 directory = "/"
-            
+
             dependabot_config = f"""version: 2
 updates:
   - package-ecosystem: "{ecosystem}"
@@ -555,50 +561,50 @@ updates:
       prefix: "deps"
       include: "scope"
 """
-            
+
             dependabot_file = github_dir / "dependabot.yml"
-            with open(dependabot_file, 'w') as f:
+            with open(dependabot_file, "w") as f:
                 f.write(dependabot_config)
-            
+
             return True
-            
+
         except Exception as e:
             logger.error(f"Failed to create Dependabot config for {repo_path}: {e}")
             return False
-    
+
     def setup_all_pipelines(self) -> dict:
         """Setup CI/CD pipelines for all repositories"""
         results = {}
-        
+
         for repo_name, config in self.repositories.items():
             logger.info(f"\n=== Setting up CI/CD for {repo_name} ===")
-            
+
             repo_path = self.workspace_path / repo_name
             if not repo_path.exists():
                 logger.error(f"Repository path does not exist: {repo_path}")
                 results[repo_name] = "missing_repo"
                 continue
-            
+
             # Create workflow file
             workflow_success = self.create_workflow_file(repo_path, repo_name)
-            
+
             # Create Dependabot config
             dependabot_success = self.create_dependabot_config(repo_path)
-            
+
             if workflow_success and dependabot_success:
                 results[repo_name] = "success"
                 logger.info(f"✅ CI/CD setup complete for {repo_name}")
             else:
                 results[repo_name] = "partial_failure"
                 logger.warning(f"⚠️ Partial setup for {repo_name}")
-        
+
         return results
-    
+
     def generate_pipeline_summary(self, results: dict) -> str:
         """Generate summary of pipeline setup"""
         successful = [repo for repo, status in results.items() if status == "success"]
         failed = [repo for repo, status in results.items() if status != "success"]
-        
+
         summary = f"""# CI/CD Pipeline Setup Summary
 
 ## Overview
@@ -609,13 +615,13 @@ Created GitHub Actions workflows and Dependabot configurations for all ACGS repo
         for repo in successful:
             workflow_type = self.determine_workflow_type(self.workspace_path / repo)
             summary += f"- ✅ **{repo}**: {workflow_type.title()} pipeline with security scanning\n"
-        
+
         if failed:
             summary += f"\n## Issues ({len(failed)})\n"
             for repo in failed:
                 status = results[repo]
                 summary += f"- ❌ **{repo}**: {status}\n"
-        
+
         summary += f"""
 ## Pipeline Features
 
@@ -673,39 +679,49 @@ Each CI/CD pipeline includes:
 4. **Configure Environments**: Set up staging and production environments
 5. **Test Pipelines**: Make a test commit to verify pipeline execution
 """
-        
+
         return summary
+
 
 def main():
     import argparse
-    
-    parser = argparse.ArgumentParser(description="Setup CI/CD pipelines for ACGS repositories")
+
+    parser = argparse.ArgumentParser(
+        description="Setup CI/CD pipelines for ACGS repositories"
+    )
     parser.add_argument("workspace_path", help="Path to ACGS workspace")
-    parser.add_argument("--dry-run", action="store_true", help="Show what would be done")
-    
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Show what would be done"
+    )
+
     args = parser.parse_args()
-    
+
     setup = CICDPipelineSetup(args.workspace_path)
-    
+
     if args.dry_run:
         logger.info("DRY RUN MODE - Would create CI/CD pipelines for:")
         for repo_name, config in setup.repositories.items():
             repo_path = Path(args.workspace_path) / repo_name
-            workflow_type = setup.determine_workflow_type(repo_path) if repo_path.exists() else "unknown"
+            workflow_type = (
+                setup.determine_workflow_type(repo_path)
+                if repo_path.exists()
+                else "unknown"
+            )
             logger.info(f"  {repo_name}: {workflow_type} pipeline")
         return
-    
+
     # Execute setup
     results = setup.setup_all_pipelines()
-    
+
     # Generate and save summary
     summary = setup.generate_pipeline_summary(results)
     summary_file = Path(args.workspace_path) / "CICD_SETUP_SUMMARY.md"
-    with open(summary_file, 'w') as f:
+    with open(summary_file, "w") as f:
         f.write(summary)
-    
+
     logger.info(f"\nCI/CD setup complete! Summary saved to: {summary_file}")
     print(summary)
+
 
 if __name__ == "__main__":
     main()

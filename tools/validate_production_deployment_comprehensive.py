@@ -19,7 +19,6 @@ import aiohttp
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class ProductionValidator:
     def __init__(self):
         self.results = {

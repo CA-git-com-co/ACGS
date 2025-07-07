@@ -17,15 +17,14 @@ from dataclasses import dataclass
 import aiohttp
 from tenacity import retry, stop_after_attempt, wait_exponential
 
-from ..schemas import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from ..schemas import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     LLMInterpretationInput,
     LLMStructuredOutput,
     LLMSuggestedAtom,
     LLMSuggestedRule,
+    "cdd01ef066bc6cf2",
+    =,
 )
 
 logger = logging.getLogger(__name__)

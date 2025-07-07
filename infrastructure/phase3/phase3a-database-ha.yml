@@ -1,28 +1,21 @@
-# ACGS Phase 3A Database High Availability Setup
-# Constitutional Hash: cdd01ef066bc6cf2
-# Focus: PostgreSQL Primary-Replica setup for 99.9% uptime
-
 networks:
   acgs-db-ha:
     driver: bridge
     name: acgs-db-ha-network
     ipam:
       config:
-        - subnet: 172.33.0.0/24
-
+      - subnet: 172.33.0.0/24
 volumes:
-  postgres_primary_data:
-  postgres_replica_a_data:
-  postgres_replica_b_data:
-  redis_data:
-
+  postgres_primary_data: null
+  postgres_replica_a_data: null
+  postgres_replica_b_data: null
+  redis_data: null
 services:
-  # PostgreSQL Primary
   postgres-primary-ha:
     image: postgres:15-alpine
     container_name: acgs-postgres-primary-ha
     ports:
-      - "5450:5432"
+    - 5450:5432
     environment:
       POSTGRES_DB: acgs_production
       POSTGRES_USER: acgs_admin
@@ -31,41 +24,32 @@ services:
       POSTGRES_REPLICATION_PASSWORD: ${REPLICATION_PASSWORD}
       CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
     volumes:
-      - postgres_primary_data:/var/lib/postgresql/data
-      - ./init-scripts:/docker-entrypoint-initdb.d:ro
-      - ./config/postgresql:/etc/postgresql-config:ro
+    - postgres_primary_data:/var/lib/postgresql/data
+    - ./init-scripts:/docker-entrypoint-initdb.d:ro
+    - ./config/postgresql:/etc/postgresql-config:ro
     networks:
-      - acgs-db-ha
-    command: >
-      postgres
-      -c wal_level=replica
-      -c max_wal_senders=10
-      -c max_replication_slots=10
-      -c wal_keep_size=1GB
-      -c archive_mode=on
-      -c archive_command='cp %p /var/lib/postgresql/archive/%f'
-      -c listen_addresses='*'
-      -c shared_buffers=256MB
-      -c effective_cache_size=1GB
-      -c log_min_messages=warning
-      -c log_connections=on
-      -c log_disconnections=on
-      -c hot_standby=on
-      -c hot_standby_feedback=on
+    - acgs-db-ha
+    command: 'postgres -c wal_level=replica -c max_wal_senders=10 -c max_replication_slots=10
+      -c wal_keep_size=1GB -c archive_mode=on -c archive_command=''cp %p /var/lib/postgresql/archive/%f''
+      -c listen_addresses=''*'' -c shared_buffers=256MB -c effective_cache_size=1GB
+      -c log_min_messages=warning -c log_connections=on -c log_disconnections=on -c
+      hot_standby=on -c hot_standby_feedback=on
+
+      '
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U acgs_admin -d acgs_production"]
+      test:
+      - CMD-SHELL
+      - pg_isready -U acgs_admin -d acgs_production
       interval: 30s
       timeout: 10s
       retries: 5
     restart: unless-stopped
-
-  # PostgreSQL Replica A
   postgres-replica-a-ha:
     image: postgres:15-alpine
     container_name: acgs-postgres-replica-a-ha
     user: postgres
     ports:
-      - "5451:5432"
+    - 5451:5432
     environment:
       POSTGRES_DB: acgs_production
       POSTGRES_USER: acgs_admin
@@ -75,40 +59,35 @@ services:
       POSTGRES_PRIMARY_HOST: postgres-primary-ha
       CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
     volumes:
-      - postgres_replica_a_data:/var/lib/postgresql/data
+    - postgres_replica_a_data:/var/lib/postgresql/data
     networks:
-      - acgs-db-ha
+    - acgs-db-ha
     depends_on:
       postgres-primary-ha:
         condition: service_healthy
-    command: >
-      bash -c "
-      echo 'Waiting for primary to be ready...' &&
-      until pg_isready -h postgres-primary-ha -p 5432 -U postgres; do
-        echo 'Waiting for primary PostgreSQL...'
-        sleep 5
-      done &&
-      echo 'Setting up replica...' &&
-      rm -rf /var/lib/postgresql/data/* &&
-      PGPASSWORD=${REPLICATION_PASSWORD} pg_basebackup -h postgres-primary-ha -D /var/lib/postgresql/data -U replicator -v -P -W -R &&
-      echo 'primary_conninfo = ''host=postgres-primary-ha port=5432 user=replicator password=${REPLICATION_PASSWORD} application_name=replica_a''' >> /var/lib/postgresql/data/postgresql.auto.conf &&
-      touch /var/lib/postgresql/data/standby.signal &&
-      exec postgres -c hot_standby=on -c wal_level=replica -c max_wal_senders=5
-      "
+    command: "bash -c \" echo 'Waiting for primary to be ready...' && until pg_isready\
+      \ -h postgres-primary-ha -p 5432 -U postgres; do\n  echo 'Waiting for primary\
+      \ PostgreSQL...'\n  sleep 5\ndone && echo 'Setting up replica...' && rm -rf\
+      \ /var/lib/postgresql/data/* && PGPASSWORD=${REPLICATION_PASSWORD} pg_basebackup\
+      \ -h postgres-primary-ha -D /var/lib/postgresql/data -U replicator -v -P -W\
+      \ -R && echo 'primary_conninfo = ''host=postgres-primary-ha port=5432 user=replicator\
+      \ password=${REPLICATION_PASSWORD} application_name=replica_a''' >> /var/lib/postgresql/data/postgresql.auto.conf\
+      \ && touch /var/lib/postgresql/data/standby.signal && exec postgres -c hot_standby=on\
+      \ -c wal_level=replica -c max_wal_senders=5 \"\n"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U acgs_admin -d acgs_production"]
+      test:
+      - CMD-SHELL
+      - pg_isready -U acgs_admin -d acgs_production
       interval: 30s
       timeout: 10s
       retries: 5
     restart: unless-stopped
-
-  # PostgreSQL Replica B
   postgres-replica-b-ha:
     image: postgres:15-alpine
     container_name: acgs-postgres-replica-b-ha
     user: postgres
     ports:
-      - "5452:5432"
+    - 5452:5432
     environment:
       POSTGRES_DB: acgs_production
       POSTGRES_USER: acgs_admin
@@ -118,39 +97,34 @@ services:
       POSTGRES_PRIMARY_HOST: postgres-primary-ha
       CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
     volumes:
-      - postgres_replica_b_data:/var/lib/postgresql/data
+    - postgres_replica_b_data:/var/lib/postgresql/data
     networks:
-      - acgs-db-ha
+    - acgs-db-ha
     depends_on:
       postgres-primary-ha:
         condition: service_healthy
-    command: >
-      bash -c "
-      echo 'Waiting for primary to be ready...' &&
-      until pg_isready -h postgres-primary-ha -p 5432 -U postgres; do
-        echo 'Waiting for primary PostgreSQL...'
-        sleep 5
-      done &&
-      echo 'Setting up replica...' &&
-      rm -rf /var/lib/postgresql/data/* &&
-      PGPASSWORD=${REPLICATION_PASSWORD} pg_basebackup -h postgres-primary-ha -D /var/lib/postgresql/data -U replicator -v -P -W -R &&
-      echo 'primary_conninfo = ''host=postgres-primary-ha port=5432 user=replicator password=${REPLICATION_PASSWORD} application_name=replica_b''' >> /var/lib/postgresql/data/postgresql.auto.conf &&
-      touch /var/lib/postgresql/data/standby.signal &&
-      exec postgres -c hot_standby=on -c wal_level=replica -c max_wal_senders=5
-      "
+    command: "bash -c \" echo 'Waiting for primary to be ready...' && until pg_isready\
+      \ -h postgres-primary-ha -p 5432 -U postgres; do\n  echo 'Waiting for primary\
+      \ PostgreSQL...'\n  sleep 5\ndone && echo 'Setting up replica...' && rm -rf\
+      \ /var/lib/postgresql/data/* && PGPASSWORD=${REPLICATION_PASSWORD} pg_basebackup\
+      \ -h postgres-primary-ha -D /var/lib/postgresql/data -U replicator -v -P -W\
+      \ -R && echo 'primary_conninfo = ''host=postgres-primary-ha port=5432 user=replicator\
+      \ password=${REPLICATION_PASSWORD} application_name=replica_b''' >> /var/lib/postgresql/data/postgresql.auto.conf\
+      \ && touch /var/lib/postgresql/data/standby.signal && exec postgres -c hot_standby=on\
+      \ -c wal_level=replica -c max_wal_senders=5 \"\n"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U acgs_admin -d acgs_production"]
+      test:
+      - CMD-SHELL
+      - pg_isready -U acgs_admin -d acgs_production
       interval: 30s
       timeout: 10s
       retries: 5
     restart: unless-stopped
-
-  # PgBouncer for connection pooling
   pgbouncer-ha:
     image: pgbouncer/pgbouncer:latest
     container_name: acgs-pgbouncer-ha
     ports:
-      - "6435:6432"
+    - 6435:6432
     environment:
       DATABASES_HOST: postgres-primary-ha
       DATABASES_PORT: 5432
@@ -165,66 +139,77 @@ services:
       RESERVE_POOL_SIZE: 5
       CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
     networks:
-      - acgs-db-ha
+    - acgs-db-ha
     depends_on:
       postgres-primary-ha:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "psql", "-h", "localhost", "-p", "6432", "-U", "acgs_admin", "-d", "acgs_production", "-c", "SELECT 1"]
+      test:
+      - CMD
+      - psql
+      - -h
+      - localhost
+      - -p
+      - '6432'
+      - -U
+      - acgs_admin
+      - -d
+      - acgs_production
+      - -c
+      - SELECT 1
       interval: 30s
       timeout: 10s
       retries: 3
     restart: unless-stopped
-
-  # Redis for caching (single instance for now)
   redis-ha:
     image: redis:7-alpine
     container_name: acgs-redis-ha
     ports:
-      - "6380:6379"
-    command: >
-      redis-server
-      --appendonly yes
-      --appendfsync everysec
-      --save 900 1
-      --save 300 10
-      --save 60 10000
-      --maxmemory 512mb
-      --maxmemory-policy allkeys-lru
+    - 6380:6379
+    command: 'redis-server --appendonly yes --appendfsync everysec --save 900 1 --save
+      300 10 --save 60 10000 --maxmemory 512mb --maxmemory-policy allkeys-lru
+
+      '
     volumes:
-      - redis_data:/data
+    - redis_data:/data
     networks:
-      - acgs-db-ha
+    - acgs-db-ha
     environment:
-      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test:
+      - CMD
+      - redis-cli
+      - ping
       interval: 30s
       timeout: 10s
       retries: 3
     restart: unless-stopped
-
-  # HAProxy for database load balancing
   haproxy-db:
     image: haproxy:2.8-alpine
     container_name: acgs-haproxy-db
     ports:
-      - "5460:5432"  # Read/Write
-      - "5461:5433"  # Read-only
-      - "8082:8080"  # Stats
+    - 5460:5432
+    - 5461:5433
+    - 8082:8080
     volumes:
-      - ./config/haproxy-db.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    - ./config/haproxy-db.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
     networks:
-      - acgs-db-ha
+    - acgs-db-ha
     depends_on:
-      - postgres-primary-ha
-      - postgres-replica-a-ha
-      - postgres-replica-b-ha
+    - postgres-primary-ha
+    - postgres-replica-a-ha
+    - postgres-replica-b-ha
     environment:
-      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/stats"]
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:8080/stats
       interval: 30s
       timeout: 10s
       retries: 3
     restart: unless-stopped
+constitutional_hash: cdd01ef066bc6cf2

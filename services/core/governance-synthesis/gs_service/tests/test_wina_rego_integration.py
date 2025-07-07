@@ -4,6 +4,7 @@ Integration Tests for WINA Rego Synthesis
 This module contains integration tests to validate the WINA Rego synthesis
 functionality works correctly with the existing ACGS-PGP infrastructure.
 """
+
 # Constitutional Hash: cdd01ef066bc6cf2
 
 from unittest.mock import AsyncMock, Mock, patch

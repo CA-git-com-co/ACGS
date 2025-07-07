@@ -14,7 +14,6 @@ from .models import BiasAssessment
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class BiasDetector:
     """
     Bias detection algorithms and metrics.
@@ -291,7 +290,9 @@ class FairnessAnalyzer:
             if group in predictions:
                 true_pos = sum(
                     1
-                    for t, p in zip(true_labels[group], predictions[group], strict=False)
+                    for t, p in zip(
+                        true_labels[group], predictions[group], strict=False
+                    )
                     if t == 1 and p > 0.5
                 )
                 actual_pos = sum(1 for t in true_labels[group] if t == 1)

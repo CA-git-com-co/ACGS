@@ -5,13 +5,13 @@ import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
+import docker
 from datasets import load_dataset
 from prompts.testrepo_prompt import get_test_description
-from swe_bench.utils import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from swe_bench.utils import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
+    "cdd01ef066bc6cf2",
+    =,
     copy_from_container,
     copy_to_container,
     log_container_output,
@@ -26,8 +26,6 @@ from swebench.harness.docker_build import (
 )
 from swebench.harness.test_spec import make_test_spec
 from utils.common_utils import load_json_file
-
-import docker
 
 
 def process_entry(entry, out_dname, model_name_or_path, model_patch_paths):

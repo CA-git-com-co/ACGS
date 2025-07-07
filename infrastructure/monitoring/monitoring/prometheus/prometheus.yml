@@ -1,78 +1,79 @@
 alerting:
   alertmanagers:
-    - static_configs:
-        - targets:
-            - localhost:9093
+  - static_configs:
+    - targets:
+      - localhost:9093
 global:
   evaluation_interval: 15s
   scrape_interval: 15s
 rule_files:
-  - alert_rules.yml
+- alert_rules.yml
 scrape_configs:
-  - job_name: acgs-auth
-    metrics_path: /metrics
-    scrape_interval: 10s
-    static_configs:
-      - labels:
-          component: acgs-core
-          service: auth
-        targets:
-          - localhost:8000
-  - job_name: acgs-ac
-    metrics_path: /metrics
-    scrape_interval: 10s
-    static_configs:
-      - labels:
-          component: acgs-core
-          service: ac
-        targets:
-          - localhost:8001
-  - job_name: acgs-integrity
-    metrics_path: /metrics
-    scrape_interval: 10s
-    static_configs:
-      - labels:
-          component: acgs-core
-          service: integrity
-        targets:
-          - localhost:8002
-  - job_name: acgs-fv
-    metrics_path: /metrics
-    scrape_interval: 10s
-    static_configs:
-      - labels:
-          component: acgs-core
-          service: fv
-        targets:
-          - localhost:8003
-  - job_name: acgs-gs
-    metrics_path: /metrics
-    scrape_interval: 10s
-    static_configs:
-      - labels:
-          component: acgs-core
-          service: gs
-        targets:
-          - localhost:8004
-  - job_name: acgs-pgc
-    metrics_path: /metrics
-    scrape_interval: 10s
-    static_configs:
-      - labels:
-          component: acgs-core
-          service: pgc
-        targets:
-          - localhost:8005
-  - job_name: acgs-ec
-    metrics_path: /metrics
-    scrape_interval: 10s
-    static_configs:
-      - labels:
-          component: acgs-core
-          service: ec
-        targets:
-          - localhost:8006
-  - job_name: prometheus
-    static_configs:
-      - targets:
-          - localhost:9090
+- job_name: acgs-auth
+  metrics_path: /metrics
+  scrape_interval: 10s
+  static_configs:
+  - labels:
+      component: acgs-core
+      service: auth
+    targets:
+    - localhost:8000
+- job_name: acgs-ac
+  metrics_path: /metrics
+  scrape_interval: 10s
+  static_configs:
+  - labels:
+      component: acgs-core
+      service: ac
+    targets:
+    - localhost:8001
+- job_name: acgs-integrity
+  metrics_path: /metrics
+  scrape_interval: 10s
+  static_configs:
+  - labels:
+      component: acgs-core
+      service: integrity
+    targets:
+    - localhost:8002
+- job_name: acgs-fv
+  metrics_path: /metrics
+  scrape_interval: 10s
+  static_configs:
+  - labels:
+      component: acgs-core
+      service: fv
+    targets:
+    - localhost:8003
+- job_name: acgs-gs
+  metrics_path: /metrics
+  scrape_interval: 10s
+  static_configs:
+  - labels:
+      component: acgs-core
+      service: gs
+    targets:
+    - localhost:8004
+- job_name: acgs-pgc
+  metrics_path: /metrics
+  scrape_interval: 10s
+  static_configs:
+  - labels:
+      component: acgs-core
+      service: pgc
+    targets:
+    - localhost:8005
+- job_name: acgs-ec
+  metrics_path: /metrics
+  scrape_interval: 10s
+  static_configs:
+  - labels:
+      component: acgs-core
+      service: ec
+    targets:
+    - localhost:8006
+- job_name: prometheus
+  static_configs:
+  - targets:
+    - localhost:9090
+constitutional_hash: cdd01ef066bc6cf2

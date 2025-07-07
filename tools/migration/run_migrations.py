@@ -14,7 +14,6 @@ from pathlib import Path
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 def wait_for_postgres(
     host="localhost",
     port="5433",

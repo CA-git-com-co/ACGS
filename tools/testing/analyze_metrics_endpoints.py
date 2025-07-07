@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Constitutional Hash: cdd01ef066bc6cf2
 """
 ACGS-PGP Metrics Endpoint Analysis Script
 Analyzes all 7 core services to identify metrics endpoints returning JSON fallback format

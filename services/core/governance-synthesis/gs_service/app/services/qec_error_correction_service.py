@@ -25,14 +25,11 @@ from datetime import datetime, timezone
 from enum import Enum
 from typing import Any
 
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from integrations.alphaevolve_engine.services.qec_enhancement.constitutional_distance_calculator import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from integrations.alphaevolve_engine.services.qec_enhancement.constitutional_distance_calculator import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     ConstitutionalDistanceCalculator,
+    "cdd01ef066bc6cf2",
+    =,
 )
 
 # Import QEC enhancement services
@@ -45,6 +42,8 @@ from integrations.alphaevolve_engine.services.qec_enhancement.error_prediction_m
 from integrations.alphaevolve_engine.services.qec_enhancement.recovery_strategy_dispatcher import (
     RecoveryStrategyDispatcher,
 )
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from services.shared.database import get_async_db
 from services.shared.models import (
     ConstitutionalViolation,

@@ -18,6 +18,7 @@ Key Features:
 - Document-based structured communication channels
 - MetaGPT assembly line paradigm implementation
 """
+
 # Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
@@ -32,6 +33,7 @@ from typing import Any, Optional, Union
 
 # Import for document-based communication
 from pydantic import BaseModel, Field
+
 from services.shared.constitutional_safety_framework import (
     ConstitutionalSafetyFramework,
 )
@@ -180,12 +182,14 @@ class DocumentChannel:
         self.documents[document_id] = document
 
         # Add to history
-        self.document_history.append({
-            "document_id": document_id,
-            "publisher_id": publisher_id,
-            "timestamp": datetime.now(timezone.utc),
-            "action": "published",
-        })
+        self.document_history.append(
+            {
+                "document_id": document_id,
+                "publisher_id": publisher_id,
+                "timestamp": datetime.now(timezone.utc),
+                "action": "published",
+            }
+        )
 
         # Notify subscribers (in production, this would use event bus)
         logger.info(f"Document {document_id} published to channel {self.channel_name}")
@@ -407,24 +411,28 @@ class APGFOrchestrator:
             )
 
             # Log workflow initiation
-            await self.audit_logger.log_security_event({
-                "event_type": "apgf_workflow_initiated",
-                "workflow_id": workflow_id,
-                "policy_requirements": workflow.policy_requirements,
-                "coordination_strategy": workflow.coordination_strategy.value,
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_security_event(
+                {
+                    "event_type": "apgf_workflow_initiated",
+                    "workflow_id": workflow_id,
+                    "policy_requirements": workflow.policy_requirements,
+                    "coordination_strategy": workflow.coordination_strategy.value,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
             logger.info(f"Policy generation workflow {workflow_id} initiated")
             return workflow_id
 
         except Exception as e:
             logger.error(f"Failed to initiate workflow: {e!s}")
-            await self.alerting_system.send_alert({
-                "severity": "high",
-                "component": "APGFOrchestrator",
-                "message": f"Workflow initiation failed: {e!s}",
-            })
+            await self.alerting_system.send_alert(
+                {
+                    "severity": "high",
+                    "component": "APGFOrchestrator",
+                    "message": f"Workflow initiation failed: {e!s}",
+                }
+            )
             raise
 
     async def create_structured_workflow(
@@ -534,13 +542,15 @@ class APGFOrchestrator:
             )
 
             # Log agent creation
-            await self.audit_logger.log_security_event({
-                "event_type": "dynamic_agent_created",
-                "agent_id": agent_config.agent_id,
-                "role": agent_config.role,
-                "capabilities": agent_config.capabilities,
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_security_event(
+                {
+                    "event_type": "dynamic_agent_created",
+                    "agent_id": agent_config.agent_id,
+                    "role": agent_config.role,
+                    "capabilities": agent_config.capabilities,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
             logger.info(f"Dynamic agent {agent_config.agent_id} created successfully")
             return agent_config.agent_id
@@ -682,7 +692,8 @@ class APGFOrchestrator:
                         "name": workflow.name,
                         "execution_time_minutes": (
                             datetime.utcnow() - workflow.start_time
-                        ).total_seconds() / 60,
+                        ).total_seconds()
+                        / 60,
                         "policies_generated": len(workflow.generated_policies),
                         "agents_used": len(workflow.assigned_agents),
                         "success_metrics": workflow.success_metrics,
@@ -711,32 +722,39 @@ class APGFOrchestrator:
                 del self.active_workflows[workflow.workflow_id]
 
             # Log completion
-            await self.audit_logger.log_security_event({
-                "event_type": "apgf_workflow_completed",
-                "workflow_id": workflow.workflow_id,
-                "final_state": workflow.state.value,
-                "execution_time_minutes": (
-                    workflow.actual_completion - workflow.start_time
-                ).total_seconds() / 60,
-                "policies_generated": len(workflow.generated_policies),
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_security_event(
+                {
+                    "event_type": "apgf_workflow_completed",
+                    "workflow_id": workflow.workflow_id,
+                    "final_state": workflow.state.value,
+                    "execution_time_minutes": (
+                        workflow.actual_completion - workflow.start_time
+                    ).total_seconds()
+                    / 60,
+                    "policies_generated": len(workflow.generated_policies),
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
         except Exception as e:
             workflow.state = WorkflowState.FAILED
-            workflow.error_log.append({
-                "error": str(e),
-                "timestamp": datetime.utcnow().isoformat(),
-                "step": workflow.current_step,
-            })
+            workflow.error_log.append(
+                {
+                    "error": str(e),
+                    "timestamp": datetime.utcnow().isoformat(),
+                    "step": workflow.current_step,
+                }
+            )
 
             logger.error(f"Workflow {workflow.workflow_id} execution failed: {e!s}")
-            await self.alerting_system.send_alert({
-                "severity": "high",
-                "component": "APGFOrchestrator",
-                "message": f"Workflow execution failed: {e!s}",
-                "workflow_id": workflow.workflow_id,
-            })
+            await self.alerting_system.send_alert(
+                {
+                    "severity": "high",
+                    "component": "APGFOrchestrator",
+                    "message": f"Workflow execution failed: {e!s}",
+                    "workflow_id": workflow.workflow_id,
+                }
+            )
 
     async def _plan_workflow_steps(
         self, workflow: PolicyGenerationWorkflow
@@ -745,44 +763,54 @@ class APGFOrchestrator:
         steps = []
 
         # Step 1: Analyze requirements
-        steps.append({
-            "name": "requirement_analysis",
-            "description": "Analyze policy requirements and constraints",
-            "type": "analysis",
-            "estimated_minutes": 10,
-        })
+        steps.append(
+            {
+                "name": "requirement_analysis",
+                "description": "Analyze policy requirements and constraints",
+                "type": "analysis",
+                "estimated_minutes": 10,
+            }
+        )
 
         # Step 2: Create agents
-        steps.append({
-            "name": "agent_creation",
-            "description": "Create specialized agents for policy generation",
-            "type": "agent_creation",
-            "estimated_minutes": 5,
-        })
+        steps.append(
+            {
+                "name": "agent_creation",
+                "description": "Create specialized agents for policy generation",
+                "type": "agent_creation",
+                "estimated_minutes": 5,
+            }
+        )
 
         # Step 3: Generate policies
-        steps.append({
-            "name": "policy_generation",
-            "description": "Generate policies using created agents",
-            "type": "generation",
-            "estimated_minutes": 20,
-        })
+        steps.append(
+            {
+                "name": "policy_generation",
+                "description": "Generate policies using created agents",
+                "type": "generation",
+                "estimated_minutes": 20,
+            }
+        )
 
         # Step 4: Validate policies
-        steps.append({
-            "name": "policy_validation",
-            "description": "Validate generated policies for compliance",
-            "type": "validation",
-            "estimated_minutes": 15,
-        })
+        steps.append(
+            {
+                "name": "policy_validation",
+                "description": "Validate generated policies for compliance",
+                "type": "validation",
+                "estimated_minutes": 15,
+            }
+        )
 
         # Step 5: Final review
-        steps.append({
-            "name": "final_review",
-            "description": "Final review and approval process",
-            "type": "review",
-            "estimated_minutes": 10,
-        })
+        steps.append(
+            {
+                "name": "final_review",
+                "description": "Final review and approval process",
+                "type": "review",
+                "estimated_minutes": 10,
+            }
+        )
 
         return steps
 
@@ -807,11 +835,13 @@ class APGFOrchestrator:
                 raise ValueError(f"Unknown step type: {step_type}")
 
         except Exception as e:
-            workflow.error_log.append({
-                "step": step["name"],
-                "error": str(e),
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            workflow.error_log.append(
+                {
+                    "step": step["name"],
+                    "error": str(e),
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
             raise
 
     async def _execute_requirement_analysis(
@@ -935,13 +965,16 @@ class APGFOrchestrator:
         workflow.state = WorkflowState.APPROVAL
 
         # Calculate final success metrics
-        workflow.success_metrics.update({
-            "policies_generated": len(workflow.generated_policies),
-            "agents_utilized": len(workflow.assigned_agents),
-            "execution_time_minutes": (
-                datetime.utcnow() - workflow.start_time
-            ).total_seconds() / 60,
-        })
+        workflow.success_metrics.update(
+            {
+                "policies_generated": len(workflow.generated_policies),
+                "agents_utilized": len(workflow.assigned_agents),
+                "execution_time_minutes": (
+                    datetime.utcnow() - workflow.start_time
+                ).total_seconds()
+                / 60,
+            }
+        )
 
         logger.info(f"Final review completed for workflow {workflow.workflow_id}")
 

@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 # backend/auth_service/Dockerfile
 FROM python:3.10-slim
 

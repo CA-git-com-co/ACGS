@@ -160,15 +160,23 @@ class ComplianceTestRunner:
                     with open(json_output) as f:
                         json_report = json.load(f)
 
-                    test_result.update({
-                        "tests_passed": json_report.get("summary", {}).get("passed", 0),
-                        "tests_failed": json_report.get("summary", {}).get("failed", 0),
-                        "tests_skipped": json_report.get("summary", {}).get(
-                            "skipped", 0
-                        ),
-                        "tests_total": json_report.get("summary", {}).get("total", 0),
-                        "test_details": json_report.get("tests", []),
-                    })
+                    test_result.update(
+                        {
+                            "tests_passed": json_report.get("summary", {}).get(
+                                "passed", 0
+                            ),
+                            "tests_failed": json_report.get("summary", {}).get(
+                                "failed", 0
+                            ),
+                            "tests_skipped": json_report.get("summary", {}).get(
+                                "skipped", 0
+                            ),
+                            "tests_total": json_report.get("summary", {}).get(
+                                "total", 0
+                            ),
+                            "test_details": json_report.get("tests", []),
+                        }
+                    )
                 except Exception as e:
                     logger.warning(f"Failed to parse JSON report: {e}")
 
@@ -267,9 +275,8 @@ class ComplianceTestRunner:
                 "tests_passed": total_tests_passed,
                 "tests_failed": total_tests_failed,
                 "tests_skipped": total_tests_skipped,
-                "pass_rate_percentage": (
-                    total_tests_passed / max(total_tests, 1)
-                ) * 100,
+                "pass_rate_percentage": (total_tests_passed / max(total_tests, 1))
+                * 100,
                 "suites_total": len(TEST_SUITES),
                 "suites_passed": sum(
                     1
@@ -355,12 +362,14 @@ class ComplianceTestRunner:
                     )
 
         if overall_status == "all_passed":
-            recommendations.extend([
-                "✅ All compliance tests passed successfully",
-                "🚀 System is ready for production deployment",
-                "📈 Consider running performance tests under load",
-                "🔄 Schedule regular compliance validation",
-            ])
+            recommendations.extend(
+                [
+                    "✅ All compliance tests passed successfully",
+                    "🚀 System is ready for production deployment",
+                    "📈 Consider running performance tests under load",
+                    "🔄 Schedule regular compliance validation",
+                ]
+            )
 
         return recommendations
 

@@ -1,4 +1,12 @@
-# MCP Inspector Development Guide
+# MCP Inspector Development Guide - ACGS-2 Constitutional Compliance (Gemini)
+
+## Constitutional Compliance for MCP Inspector with Gemini
+
+### Core Requirements
+- **Constitutional Hash**: `cdd01ef066bc6cf2` - REQUIRED for all MCP operations
+- **Gemini-MCP Integration**: All MCP tools must validate constitutional compliance for Gemini agents
+- **Audit Trail**: Gemini MCP operations logged through ACGS Integrity Service
+- **Performance**: Gemini MCP operations must meet P99 <5ms requirement
 
 ## Build Commands
 
@@ -8,6 +16,19 @@
 - Development mode: `npm run dev` (use `npm run dev:windows` on Windows)
 - Format code: `npm run prettier-fix`
 - Client lint: `cd client && npm run lint`
+
+## Gemini-Specific MCP Usage
+
+```bash
+# Start MCP Inspector with constitutional compliance for Gemini agents
+npm run dev -- --agent-type gemini --constitutional-hash cdd01ef066bc6cf2
+
+# Inspect Gemini-MCP integration with constitutional validation
+npm run inspect -- --gemini-integration --validate-constitutional
+
+# Generate constitutional compliance report for Gemini MCP usage
+npm run report -- --gemini-report --constitutional-compliance
+```
 
 ## Code Style Guidelines
 

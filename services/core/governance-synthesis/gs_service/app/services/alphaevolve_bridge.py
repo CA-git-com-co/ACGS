@@ -17,7 +17,6 @@ from typing import Any
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 # Mock AlphaEvolve classes for development (defined early for type annotations)
 class ConstitutionalPrinciple:
     def __init__(

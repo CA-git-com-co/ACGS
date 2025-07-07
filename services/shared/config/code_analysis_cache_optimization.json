@@ -1,0 +1,48 @@
+{
+  "service_name": "code_analysis",
+  "cache_type": "performance_metrics",
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "optimization": {
+    "ttl_seconds": 300,
+    "max_size": 10000,
+    "warming_enabled": true,
+    "warming_keys": [
+      "metrics_cache",
+      "performance_data",
+      "monitoring_stats"
+    ]
+  },
+  "deployment_timestamp": 1751898091.8137515,
+  "cache_strategies": {
+    "multi_tier_enabled": true,
+    "l1_memory_cache": {
+      "enabled": true,
+      "max_size": 1000,
+      "ttl_seconds": 300
+    },
+    "l2_redis_cache": {
+      "enabled": true,
+      "max_size": 10000,
+      "ttl_seconds": 300
+    },
+    "cache_warming": {
+      "enabled": true,
+      "warming_keys": [
+        "metrics_cache",
+        "performance_data",
+        "monitoring_stats"
+      ],
+      "warming_frequency_minutes": 30
+    }
+  },
+  "performance_targets": {
+    "hit_rate_target": 0.85,
+    "latency_target_ms": 2.0,
+    "throughput_target_rps": 100
+  },
+  "monitoring": {
+    "metrics_enabled": true,
+    "hit_rate_alerts": true,
+    "latency_alerts": true
+  }
+}

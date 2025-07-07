@@ -411,18 +411,20 @@ SECURITY ENHANCEMENTS RECOMMENDED to improve overall security posture."""
             )
 
         # General recommendations
-        recommendations.extend([
-            "Implement comprehensive security monitoring and alerting",
-            "Conduct regular security assessments and penetration testing",
-            "Establish incident response procedures",
-            "Implement security awareness training for development team",
-            "Enable comprehensive audit logging with tamper protection",
-            "Implement defense-in-depth security architecture",
-            "Regular security patch management and vulnerability scanning",
-            "Implement least privilege access controls",
-            "Enable multi-factor authentication for administrative access",
-            "Conduct regular backup and disaster recovery testing",
-        ])
+        recommendations.extend(
+            [
+                "Implement comprehensive security monitoring and alerting",
+                "Conduct regular security assessments and penetration testing",
+                "Establish incident response procedures",
+                "Implement security awareness training for development team",
+                "Enable comprehensive audit logging with tamper protection",
+                "Implement defense-in-depth security architecture",
+                "Regular security patch management and vulnerability scanning",
+                "Implement least privilege access controls",
+                "Enable multi-factor authentication for administrative access",
+                "Conduct regular backup and disaster recovery testing",
+            ]
+        )
 
         return recommendations
 
@@ -504,27 +506,33 @@ SECURITY ENHANCEMENTS RECOMMENDED to improve overall security posture."""
         next_steps = []
 
         if security_score < 60:
-            next_steps.extend([
-                "1. IMMEDIATE: Address all critical and high-severity vulnerabilities",
-                "2. IMMEDIATE: Implement emergency security patches",
-                "3. URGENT: Conduct security code review",
-                "4. URGENT: Implement additional security controls",
-                "5. URGENT: Re-run security assessment after fixes",
-            ])
+            next_steps.extend(
+                [
+                    "1. IMMEDIATE: Address all critical and high-severity vulnerabilities",
+                    "2. IMMEDIATE: Implement emergency security patches",
+                    "3. URGENT: Conduct security code review",
+                    "4. URGENT: Implement additional security controls",
+                    "5. URGENT: Re-run security assessment after fixes",
+                ]
+            )
         elif security_score < 80:
-            next_steps.extend([
-                "1. HIGH PRIORITY: Address high-severity vulnerabilities",
-                "2. MEDIUM PRIORITY: Implement additional security controls",
-                "3. MEDIUM PRIORITY: Conduct security training",
-                "4. LOW PRIORITY: Re-run security assessment in 30 days",
-            ])
+            next_steps.extend(
+                [
+                    "1. HIGH PRIORITY: Address high-severity vulnerabilities",
+                    "2. MEDIUM PRIORITY: Implement additional security controls",
+                    "3. MEDIUM PRIORITY: Conduct security training",
+                    "4. LOW PRIORITY: Re-run security assessment in 30 days",
+                ]
+            )
         else:
-            next_steps.extend([
-                "1. MEDIUM PRIORITY: Address remaining medium-severity issues",
-                "2. LOW PRIORITY: Continue security monitoring",
-                "3. LOW PRIORITY: Schedule regular security assessments",
-                "4. LOW PRIORITY: Consider security maturity improvements",
-            ])
+            next_steps.extend(
+                [
+                    "1. MEDIUM PRIORITY: Address remaining medium-severity issues",
+                    "2. LOW PRIORITY: Continue security monitoring",
+                    "3. LOW PRIORITY: Schedule regular security assessments",
+                    "4. LOW PRIORITY: Consider security maturity improvements",
+                ]
+            )
 
         # Always include constitutional compliance verification
         next_steps.append("ONGOING: Maintain constitutional compliance verification")

@@ -1,223 +1,203 @@
-# ACGS-1 PgBouncer Alerting Rules
-# Phase 2 - Enterprise Scalability & Performance
-# Prometheus alerting rules for PgBouncer monitoring
-
 groups:
-  - name: pgbouncer.rules
-    interval: 30s
-    rules:
-      # Service availability alerts
-      - alert: PgBouncerDown
-        expr: pgbouncer_up == 0
-        for: 1m
-        labels:
-          severity: critical
-          service: pgbouncer
-          component: database
-        annotations:
-          summary: 'PgBouncer is down'
-          description: 'PgBouncer service is not responding on {{ $labels.instance }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/pgbouncer-down'
-
-      - alert: PgBouncerHighScrapeTime
-        expr: pgbouncer_scrape_duration_seconds > 10
-        for: 2m
-        labels:
-          severity: warning
-          service: pgbouncer
-          component: monitoring
-        annotations:
-          summary: 'PgBouncer metrics scraping is slow'
-          description: 'PgBouncer metrics collection taking {{ $value }}s on {{ $labels.instance }}'
-
-      # Connection pool alerts
-      - alert: PgBouncerHighConnectionUsage
-        expr: (pgbouncer_pool_used / pgbouncer_pool_size) * 100 > 80
-        for: 5m
-        labels:
-          severity: warning
-          service: pgbouncer
-          component: connection_pool
-        annotations:
-          summary: 'High PgBouncer connection pool usage'
-          description: 'Database {{ $labels.database }} pool usage is {{ $value }}% on {{ $labels.instance }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/pgbouncer-high-usage'
-
-      - alert: PgBouncerPoolExhausted
-        expr: (pgbouncer_pool_used / pgbouncer_pool_size) * 100 > 95
-        for: 2m
-        labels:
-          severity: critical
-          service: pgbouncer
-          component: connection_pool
-        annotations:
-          summary: 'PgBouncer connection pool nearly exhausted'
-          description: 'Database {{ $labels.database }} pool usage is {{ $value }}% on {{ $labels.instance }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/pgbouncer-pool-exhausted'
-
-      - alert: PgBouncerHighWaitingConnections
-        expr: sum(pgbouncer_waiting_connections) > 50
-        for: 3m
-        labels:
-          severity: warning
-          service: pgbouncer
-          component: connection_pool
-        annotations:
-          summary: 'High number of waiting connections'
-          description: '{{ $value }} connections are waiting for database access on {{ $labels.instance }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/pgbouncer-waiting-connections'
-
-      - alert: PgBouncerCriticalWaitingConnections
-        expr: sum(pgbouncer_waiting_connections) > 100
-        for: 1m
-        labels:
-          severity: critical
-          service: pgbouncer
-          component: connection_pool
-        annotations:
-          summary: 'Critical number of waiting connections'
-          description: '{{ $value }} connections are waiting for database access on {{ $labels.instance }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/pgbouncer-waiting-connections'
-
-      # Performance alerts
-      - alert: PgBouncerHighRequestTime
-        expr: pgbouncer_avg_request_time_seconds * 1000 > 500
-        for: 5m
-        labels:
-          severity: warning
-          service: pgbouncer
-          component: performance
-        annotations:
-          summary: 'High PgBouncer request time'
-          description: 'Average request time is {{ $value }}ms for database {{ $labels.database }} on {{ $labels.instance }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/pgbouncer-slow-requests'
-
-      - alert: PgBouncerCriticalRequestTime
-        expr: pgbouncer_avg_request_time_seconds * 1000 > 1000
-        for: 2m
-        labels:
-          severity: critical
-          service: pgbouncer
-          component: performance
-        annotations:
-          summary: 'Critical PgBouncer request time'
-          description: 'Average request time is {{ $value }}ms for database {{ $labels.database }} on {{ $labels.instance }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/pgbouncer-slow-requests'
-
-      - alert: PgBouncerHighWaitTime
-        expr: pgbouncer_avg_wait_time_seconds * 1000 > 200
-        for: 5m
-        labels:
-          severity: warning
-          service: pgbouncer
-          component: performance
-        annotations:
-          summary: 'High PgBouncer wait time'
-          description: 'Average wait time is {{ $value }}ms for database {{ $labels.database }} on {{ $labels.instance }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/pgbouncer-high-wait-time'
-
-      # Traffic and load alerts
-      - alert: PgBouncerHighRequestRate
-        expr: rate(pgbouncer_total_requests_total[5m]) > 1000
-        for: 10m
-        labels:
-          severity: warning
-          service: pgbouncer
-          component: load
-        annotations:
-          summary: 'High PgBouncer request rate'
-          description: 'Request rate is {{ $value }} req/s for database {{ $labels.database }} on {{ $labels.instance }}'
-
-      - alert: PgBouncerLowRequestRate
-        expr: rate(pgbouncer_total_requests_total[5m]) < 1
-        for: 15m
-        labels:
-          severity: warning
-          service: pgbouncer
-          component: load
-        annotations:
-          summary: 'Low PgBouncer request rate'
-          description: 'Request rate is {{ $value }} req/s for database {{ $labels.database }} on {{ $labels.instance }} - possible service issue'
-
-      # Connection stability alerts
-      - alert: PgBouncerConnectionFlapping
-        expr: changes(pgbouncer_total_connections[10m]) > 100
-        for: 5m
-        labels:
-          severity: warning
-          service: pgbouncer
-          component: stability
-        annotations:
-          summary: 'PgBouncer connection count fluctuating'
-          description: 'Connection count changed {{ $value }} times in 10 minutes for database {{ $labels.database }} on {{ $labels.instance }}'
-
-      # Capacity planning alerts
-      - alert: PgBouncerApproachingMaxConnections
-        expr: sum(pgbouncer_total_connections) > 800
-        for: 10m
-        labels:
-          severity: warning
-          service: pgbouncer
-          component: capacity
-        annotations:
-          summary: 'PgBouncer approaching maximum connections'
-          description: 'Total connections ({{ $value }}) approaching configured maximum on {{ $labels.instance }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/pgbouncer-capacity-planning'
-
-      # Network traffic alerts
-      - alert: PgBouncerHighNetworkTraffic
-        expr: rate(pgbouncer_total_received_bytes_total[5m]) + rate(pgbouncer_total_sent_bytes_total[5m]) > 100000000
-        for: 10m
-        labels:
-          severity: warning
-          service: pgbouncer
-          component: network
-        annotations:
-          summary: 'High PgBouncer network traffic'
-          description: 'Network traffic is {{ $value | humanize1024 }}B/s for database {{ $labels.database }} on {{ $labels.instance }}'
-
-  - name: pgbouncer.recording
-    interval: 30s
-    rules:
-      # Recording rules for better performance and aggregations
-      - record: pgbouncer:connection_utilization_percent
-        expr: (pgbouncer_pool_used / pgbouncer_pool_size) * 100
-        labels:
-          metric_type: utilization
-
-      - record: pgbouncer:total_connections_by_instance
-        expr: sum by (instance) (pgbouncer_total_connections)
-        labels:
-          metric_type: aggregation
-
-      - record: pgbouncer:request_rate_5m
-        expr: rate(pgbouncer_total_requests_total[5m])
-        labels:
-          metric_type: rate
-
-      - record: pgbouncer:network_traffic_rate_5m
-        expr: rate(pgbouncer_total_received_bytes_total[5m]) + rate(pgbouncer_total_sent_bytes_total[5m])
-        labels:
-          metric_type: rate
-
-      - record: pgbouncer:avg_request_time_ms
-        expr: pgbouncer_avg_request_time_seconds * 1000
-        labels:
-          metric_type: latency
-
-      - record: pgbouncer:avg_wait_time_ms
-        expr: pgbouncer_avg_wait_time_seconds * 1000
-        labels:
-          metric_type: latency
-
-      # SLA metrics for >99.9% availability target
-      - record: pgbouncer:availability_sla
-        expr: avg_over_time(pgbouncer_up[5m]) * 100
-        labels:
-          metric_type: sla
-
-      # Performance SLA for <500ms response time target
-      - record: pgbouncer:performance_sla
-        expr: (pgbouncer_avg_request_time_seconds * 1000 < 500) * 100
-        labels:
-          metric_type: sla
+- name: pgbouncer.rules
+  interval: 30s
+  rules:
+  - alert: PgBouncerDown
+    expr: pgbouncer_up == 0
+    for: 1m
+    labels:
+      severity: critical
+      service: pgbouncer
+      component: database
+    annotations:
+      summary: PgBouncer is down
+      description: PgBouncer service is not responding on {{ $labels.instance }}
+      runbook_url: https://docs.acgs.ai/runbooks/pgbouncer-down
+  - alert: PgBouncerHighScrapeTime
+    expr: pgbouncer_scrape_duration_seconds > 10
+    for: 2m
+    labels:
+      severity: warning
+      service: pgbouncer
+      component: monitoring
+    annotations:
+      summary: PgBouncer metrics scraping is slow
+      description: PgBouncer metrics collection taking {{ $value }}s on {{ $labels.instance
+        }}
+  - alert: PgBouncerHighConnectionUsage
+    expr: (pgbouncer_pool_used / pgbouncer_pool_size) * 100 > 80
+    for: 5m
+    labels:
+      severity: warning
+      service: pgbouncer
+      component: connection_pool
+    annotations:
+      summary: High PgBouncer connection pool usage
+      description: Database {{ $labels.database }} pool usage is {{ $value }}% on
+        {{ $labels.instance }}
+      runbook_url: https://docs.acgs.ai/runbooks/pgbouncer-high-usage
+  - alert: PgBouncerPoolExhausted
+    expr: (pgbouncer_pool_used / pgbouncer_pool_size) * 100 > 95
+    for: 2m
+    labels:
+      severity: critical
+      service: pgbouncer
+      component: connection_pool
+    annotations:
+      summary: PgBouncer connection pool nearly exhausted
+      description: Database {{ $labels.database }} pool usage is {{ $value }}% on
+        {{ $labels.instance }}
+      runbook_url: https://docs.acgs.ai/runbooks/pgbouncer-pool-exhausted
+  - alert: PgBouncerHighWaitingConnections
+    expr: sum(pgbouncer_waiting_connections) > 50
+    for: 3m
+    labels:
+      severity: warning
+      service: pgbouncer
+      component: connection_pool
+    annotations:
+      summary: High number of waiting connections
+      description: '{{ $value }} connections are waiting for database access on {{
+        $labels.instance }}'
+      runbook_url: https://docs.acgs.ai/runbooks/pgbouncer-waiting-connections
+  - alert: PgBouncerCriticalWaitingConnections
+    expr: sum(pgbouncer_waiting_connections) > 100
+    for: 1m
+    labels:
+      severity: critical
+      service: pgbouncer
+      component: connection_pool
+    annotations:
+      summary: Critical number of waiting connections
+      description: '{{ $value }} connections are waiting for database access on {{
+        $labels.instance }}'
+      runbook_url: https://docs.acgs.ai/runbooks/pgbouncer-waiting-connections
+  - alert: PgBouncerHighRequestTime
+    expr: pgbouncer_avg_request_time_seconds * 1000 > 500
+    for: 5m
+    labels:
+      severity: warning
+      service: pgbouncer
+      component: performance
+    annotations:
+      summary: High PgBouncer request time
+      description: Average request time is {{ $value }}ms for database {{ $labels.database
+        }} on {{ $labels.instance }}
+      runbook_url: https://docs.acgs.ai/runbooks/pgbouncer-slow-requests
+  - alert: PgBouncerCriticalRequestTime
+    expr: pgbouncer_avg_request_time_seconds * 1000 > 1000
+    for: 2m
+    labels:
+      severity: critical
+      service: pgbouncer
+      component: performance
+    annotations:
+      summary: Critical PgBouncer request time
+      description: Average request time is {{ $value }}ms for database {{ $labels.database
+        }} on {{ $labels.instance }}
+      runbook_url: https://docs.acgs.ai/runbooks/pgbouncer-slow-requests
+  - alert: PgBouncerHighWaitTime
+    expr: pgbouncer_avg_wait_time_seconds * 1000 > 200
+    for: 5m
+    labels:
+      severity: warning
+      service: pgbouncer
+      component: performance
+    annotations:
+      summary: High PgBouncer wait time
+      description: Average wait time is {{ $value }}ms for database {{ $labels.database
+        }} on {{ $labels.instance }}
+      runbook_url: https://docs.acgs.ai/runbooks/pgbouncer-high-wait-time
+  - alert: PgBouncerHighRequestRate
+    expr: rate(pgbouncer_total_requests_total[5m]) > 1000
+    for: 10m
+    labels:
+      severity: warning
+      service: pgbouncer
+      component: load
+    annotations:
+      summary: High PgBouncer request rate
+      description: Request rate is {{ $value }} req/s for database {{ $labels.database
+        }} on {{ $labels.instance }}
+  - alert: PgBouncerLowRequestRate
+    expr: rate(pgbouncer_total_requests_total[5m]) < 1
+    for: 15m
+    labels:
+      severity: warning
+      service: pgbouncer
+      component: load
+    annotations:
+      summary: Low PgBouncer request rate
+      description: Request rate is {{ $value }} req/s for database {{ $labels.database
+        }} on {{ $labels.instance }} - possible service issue
+  - alert: PgBouncerConnectionFlapping
+    expr: changes(pgbouncer_total_connections[10m]) > 100
+    for: 5m
+    labels:
+      severity: warning
+      service: pgbouncer
+      component: stability
+    annotations:
+      summary: PgBouncer connection count fluctuating
+      description: Connection count changed {{ $value }} times in 10 minutes for database
+        {{ $labels.database }} on {{ $labels.instance }}
+  - alert: PgBouncerApproachingMaxConnections
+    expr: sum(pgbouncer_total_connections) > 800
+    for: 10m
+    labels:
+      severity: warning
+      service: pgbouncer
+      component: capacity
+    annotations:
+      summary: PgBouncer approaching maximum connections
+      description: Total connections ({{ $value }}) approaching configured maximum
+        on {{ $labels.instance }}
+      runbook_url: https://docs.acgs.ai/runbooks/pgbouncer-capacity-planning
+  - alert: PgBouncerHighNetworkTraffic
+    expr: rate(pgbouncer_total_received_bytes_total[5m]) + rate(pgbouncer_total_sent_bytes_total[5m])
+      > 100000000
+    for: 10m
+    labels:
+      severity: warning
+      service: pgbouncer
+      component: network
+    annotations:
+      summary: High PgBouncer network traffic
+      description: Network traffic is {{ $value | humanize1024 }}B/s for database
+        {{ $labels.database }} on {{ $labels.instance }}
+- name: pgbouncer.recording
+  interval: 30s
+  rules:
+  - record: pgbouncer:connection_utilization_percent
+    expr: (pgbouncer_pool_used / pgbouncer_pool_size) * 100
+    labels:
+      metric_type: utilization
+  - record: pgbouncer:total_connections_by_instance
+    expr: sum by (instance) (pgbouncer_total_connections)
+    labels:
+      metric_type: aggregation
+  - record: pgbouncer:request_rate_5m
+    expr: rate(pgbouncer_total_requests_total[5m])
+    labels:
+      metric_type: rate
+  - record: pgbouncer:network_traffic_rate_5m
+    expr: rate(pgbouncer_total_received_bytes_total[5m]) + rate(pgbouncer_total_sent_bytes_total[5m])
+    labels:
+      metric_type: rate
+  - record: pgbouncer:avg_request_time_ms
+    expr: pgbouncer_avg_request_time_seconds * 1000
+    labels:
+      metric_type: latency
+  - record: pgbouncer:avg_wait_time_ms
+    expr: pgbouncer_avg_wait_time_seconds * 1000
+    labels:
+      metric_type: latency
+  - record: pgbouncer:availability_sla
+    expr: avg_over_time(pgbouncer_up[5m]) * 100
+    labels:
+      metric_type: sla
+  - record: pgbouncer:performance_sla
+    expr: (pgbouncer_avg_request_time_seconds * 1000 < 500) * 100
+    labels:
+      metric_type: sla
+constitutional_hash: cdd01ef066bc6cf2

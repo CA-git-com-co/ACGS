@@ -595,12 +595,10 @@ class EmbeddingService:
             "cache_misses": self.metrics["cache_misses"],
             "model_switches": self.metrics["model_switches"],
             "average_latency_ms": self.metrics["average_latency_ms"],
-            "average_preprocessing_time_ms": self.metrics[
-                "preprocessing_time_ms"
-            ] / max(1, self.metrics["embeddings_generated"]),
-            "average_inference_time_ms": self.metrics["inference_time_ms"] / max(
-                1, self.metrics["embeddings_generated"]
-            ),
+            "average_preprocessing_time_ms": self.metrics["preprocessing_time_ms"]
+            / max(1, self.metrics["embeddings_generated"]),
+            "average_inference_time_ms": self.metrics["inference_time_ms"]
+            / max(1, self.metrics["embeddings_generated"]),
             "wina_optimizations": self.metrics["wina_optimizations"],
             "models_loaded": self.models_loaded,
             "primary_model": self.primary_model_name,

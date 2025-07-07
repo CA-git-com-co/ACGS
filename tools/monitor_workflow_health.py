@@ -13,7 +13,6 @@ from datetime import datetime
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 def run_command(cmd):
     """Run a command and return output."""
     try:

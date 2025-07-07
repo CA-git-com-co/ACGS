@@ -7,6 +7,7 @@ with OPA/Rego integration, targeting <50ms policy decision latency.
 Phase 3: Performance Optimization and Security Compliance
 Enhanced with advanced caching, performance monitoring, and security testing.
 """
+
 # Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
@@ -15,7 +16,6 @@ import time
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-
 from services.core.governance_synthesis.app.core.opa_integration import (
     PolicyDecisionRequest,
     PolicyDecisionResponse,

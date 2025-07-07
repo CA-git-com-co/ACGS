@@ -955,7 +955,8 @@ class DocumentationRelationshipGraphGenerator:
                     "strength": len(docs) / len(nodes),  # Relative strength
                     "constitutional_compliance": sum(
                         1 for doc in docs if doc["constitutional_hash"]
-                    ) / len(docs),
+                    )
+                    / len(docs),
                 }
                 clusters.append(cluster)
 

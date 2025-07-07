@@ -1,10 +1,8 @@
-# ACGS Constitutional Compliance API Specification
-# Constitutional Hash: cdd01ef066bc6cf2
-
 openapi: 3.0.3
 info:
   title: ACGS Constitutional Compliance API
-  description: API for validating and monitoring constitutional compliance across ACGS services
+  description: API for validating and monitoring constitutional compliance across
+    ACGS services
   version: 1.0.0
   contact:
     name: ACGS Team
@@ -12,18 +10,17 @@ info:
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
-
 servers:
-  - url: http://localhost:8016
-    description: Development server
-  - url: https://api.acgs.soln.ai
-    description: Production server
-
+- url: http://localhost:8016
+  description: Development server
+- url: https://api.acgs.soln.ai
+  description: Production server
 paths:
   /constitutional/validate:
     post:
       summary: Validate constitutional compliance
-      description: Validate that a request or action complies with constitutional principles
+      description: Validate that a request or action complies with constitutional
+        principles
       operationId: validateConstitutionalCompliance
       requestBody:
         required: true
@@ -42,7 +39,6 @@ paths:
           description: Invalid request
         '500':
           description: Internal server error
-
   /constitutional/hash/verify:
     get:
       summary: Verify constitutional hash
@@ -55,14 +51,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HashVerificationResponse'
-
 components:
   schemas:
     ComplianceRequest:
       type: object
       required:
-        - action_data
-        - constitutional_hash
+      - action_data
+      - constitutional_hash
       properties:
         action_data:
           type: object
@@ -72,14 +67,13 @@ components:
           description: Additional context for validation
         constitutional_hash:
           type: string
-          example: "cdd01ef066bc6cf2"
+          example: cdd01ef066bc6cf2
           description: Constitutional compliance hash
-
     ComplianceResponse:
       type: object
       required:
-        - is_compliant
-        - constitutional_hash
+      - is_compliant
+      - constitutional_hash
       properties:
         is_compliant:
           type: boolean
@@ -102,23 +96,23 @@ components:
           description: Confidence score of the compliance assessment
         constitutional_hash:
           type: string
-          example: "cdd01ef066bc6cf2"
+          example: cdd01ef066bc6cf2
           description: Constitutional compliance hash
-
     HashVerificationResponse:
       type: object
       required:
-        - hash_valid
-        - constitutional_hash
+      - hash_valid
+      - constitutional_hash
       properties:
         hash_valid:
           type: boolean
           description: Whether the constitutional hash is valid
         hash_value:
           type: string
-          example: "cdd01ef066bc6cf2"
+          example: cdd01ef066bc6cf2
           description: The current constitutional hash
         constitutional_hash:
           type: string
-          example: "cdd01ef066bc6cf2"
+          example: cdd01ef066bc6cf2
           description: Constitutional compliance hash
+constitutional_hash: cdd01ef066bc6cf2

@@ -1,4 +1,6 @@
 # Final Polishing Report - ACGS-PGP LaTeX Document
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 
 **Date**: June 24, 2025
 **Document**: AlphaEvolve-ACGS: A Co-Evolutionary Framework for LLM-Driven Constitutional Governance in Evolutionary Computation

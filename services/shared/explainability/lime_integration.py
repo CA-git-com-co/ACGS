@@ -12,6 +12,7 @@ Key Features:
 - Integration with existing ACGS monitoring systems
 - Batch processing for production efficiency
 """
+
 # Constitutional Hash: cdd01ef066bc6cf2
 
 import hashlib
@@ -169,13 +170,15 @@ class LIMEExplainer:
             logger.info("LIME tabular explainer initialized successfully")
 
             # Log explainer initialization
-            await self.audit_logger.log_explainer_event({
-                "event_type": "lime_explainer_initialized",
-                "data_type": "tabular",
-                "num_features": len(feature_names),
-                "num_classes": len(class_names) if class_names else 0,
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_explainer_event(
+                {
+                    "event_type": "lime_explainer_initialized",
+                    "data_type": "tabular",
+                    "num_features": len(feature_names),
+                    "num_classes": len(class_names) if class_names else 0,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
             return True
 
@@ -223,12 +226,14 @@ class LIMEExplainer:
             logger.info("LIME text explainer initialized successfully")
 
             # Log explainer initialization
-            await self.audit_logger.log_explainer_event({
-                "event_type": "lime_explainer_initialized",
-                "data_type": "text",
-                "num_classes": len(class_names) if class_names else 0,
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_explainer_event(
+                {
+                    "event_type": "lime_explainer_initialized",
+                    "data_type": "text",
+                    "num_classes": len(class_names) if class_names else 0,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
             return True
 
@@ -360,14 +365,16 @@ class LIMEExplainer:
             self._update_metrics(computation_time, r_squared, quality.overall_quality)
 
             # Log explanation generation
-            await self.audit_logger.log_explainer_event({
-                "event_type": "lime_explanation_generated",
-                "data_type": "tabular",
-                "computation_time": computation_time,
-                "r_squared": r_squared,
-                "num_features": len(feature_importance),
-                "timestamp": result.timestamp.isoformat(),
-            })
+            await self.audit_logger.log_explainer_event(
+                {
+                    "event_type": "lime_explanation_generated",
+                    "data_type": "tabular",
+                    "computation_time": computation_time,
+                    "r_squared": r_squared,
+                    "num_features": len(feature_importance),
+                    "timestamp": result.timestamp.isoformat(),
+                }
+            )
 
             # Send alert for low quality explanations
             if quality.overall_quality < 0.6:
@@ -533,14 +540,16 @@ class LIMEExplainer:
             self._update_metrics(computation_time, r_squared, r_squared)
 
             # Log explanation generation
-            await self.audit_logger.log_explainer_event({
-                "event_type": "lime_explanation_generated",
-                "data_type": "text",
-                "computation_time": computation_time,
-                "r_squared": r_squared,
-                "num_features": len(feature_importance),
-                "timestamp": result.timestamp.isoformat(),
-            })
+            await self.audit_logger.log_explainer_event(
+                {
+                    "event_type": "lime_explanation_generated",
+                    "data_type": "text",
+                    "computation_time": computation_time,
+                    "r_squared": r_squared,
+                    "num_features": len(feature_importance),
+                    "timestamp": result.timestamp.isoformat(),
+                }
+            )
 
             return result
 

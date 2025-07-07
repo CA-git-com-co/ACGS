@@ -13,6 +13,7 @@ Key Features:
 - Escalation tracking and management
 - Constitutional compliance correlation
 """
+
 # Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
@@ -317,19 +318,21 @@ class HumanInterventionTracker:
             await self._update_reviewer_performance(event)
 
             # Log intervention
-            await self.audit_logger.log_compliance_event({
-                "event_type": "human_intervention_recorded",
-                "event_id": event_id,
-                "decision_id": event.decision_id,
-                "intervention_type": event.intervention_type.value,
-                "reason": event.reason.value,
-                "reviewer_id": event.reviewer_id,
-                "reviewer_role": event.reviewer_role.value,
-                "outcome": event.outcome.value,
-                "duration_seconds": event.duration_seconds,
-                "escalation_level": event.escalation_level,
-                "timestamp": event.timestamp.isoformat(),
-            })
+            await self.audit_logger.log_compliance_event(
+                {
+                    "event_type": "human_intervention_recorded",
+                    "event_id": event_id,
+                    "decision_id": event.decision_id,
+                    "intervention_type": event.intervention_type.value,
+                    "reason": event.reason.value,
+                    "reviewer_id": event.reviewer_id,
+                    "reviewer_role": event.reviewer_role.value,
+                    "outcome": event.outcome.value,
+                    "duration_seconds": event.duration_seconds,
+                    "escalation_level": event.escalation_level,
+                    "timestamp": event.timestamp.isoformat(),
+                }
+            )
 
             # Immediate analysis for critical interventions
             if event.reason in [
@@ -472,9 +475,9 @@ class HumanInterventionTracker:
 
                 # Calculate other metrics
                 avg_duration = (
-                    statistics.mean([
-                        event.duration_seconds for event in window_interventions
-                    ])
+                    statistics.mean(
+                        [event.duration_seconds for event in window_interventions]
+                    )
                     if window_interventions
                     else 0
                 )
@@ -520,22 +523,24 @@ class HumanInterventionTracker:
                 rates[window_name] = metrics
 
             # Store current rates for history
-            self.rate_history.append({
-                "timestamp": current_time,
-                "hourly_rate": rates.get("last_hour", {}).intervention_rate,
-                "daily_rate": rates.get("last_day", {}).intervention_rate,
-                "weekly_rate": rates.get("last_week", {}).intervention_rate,
-            })
+            self.rate_history.append(
+                {
+                    "timestamp": current_time,
+                    "hourly_rate": rates.get("last_hour", {}).intervention_rate,
+                    "daily_rate": rates.get("last_day", {}).intervention_rate,
+                    "weekly_rate": rates.get("last_week", {}).intervention_rate,
+                }
+            )
 
             # Update historical rate collections
             if len(self.rate_history) >= 60:  # Every hour
                 hourly_data = list(self.rate_history)[-60:]  # Last hour
-                avg_hourly_rate = statistics.mean([
-                    r["hourly_rate"] for r in hourly_data
-                ])
-                self.hourly_rates.append({
-                    "timestamp": current_time, "rate": avg_hourly_rate
-                })
+                avg_hourly_rate = statistics.mean(
+                    [r["hourly_rate"] for r in hourly_data]
+                )
+                self.hourly_rates.append(
+                    {"timestamp": current_time, "rate": avg_hourly_rate}
+                )
 
             self.last_analysis_time = current_time
 
@@ -617,16 +622,18 @@ class HumanInterventionTracker:
                     alert.alert_type, alert.description, severity=alert.severity
                 )
 
-                await self.audit_logger.log_compliance_event({
-                    "event_type": "intervention_rate_alert",
-                    "alert_id": alert.alert_id,
-                    "alert_type": alert.alert_type,
-                    "severity": alert.severity,
-                    "current_rate": alert.current_rate,
-                    "expected_rate": alert.expected_rate,
-                    "deviation": alert.deviation,
-                    "timestamp": alert.timestamp.isoformat(),
-                })
+                await self.audit_logger.log_compliance_event(
+                    {
+                        "event_type": "intervention_rate_alert",
+                        "alert_id": alert.alert_id,
+                        "alert_type": alert.alert_type,
+                        "severity": alert.severity,
+                        "current_rate": alert.current_rate,
+                        "expected_rate": alert.expected_rate,
+                        "deviation": alert.deviation,
+                        "timestamp": alert.timestamp.isoformat(),
+                    }
+                )
 
         except Exception as e:
             logger.error(f"Rate anomaly check failed: {e}")
@@ -665,32 +672,40 @@ class HumanInterventionTracker:
         recommendations = []
 
         if "critical" in alert_type:
-            recommendations.extend([
-                "URGENT: Investigate system performance immediately",
-                "Consider emergency escalation to senior staff",
-                "Review recent system changes or deployments",
-                "Implement immediate monitoring of all decisions",
-            ])
+            recommendations.extend(
+                [
+                    "URGENT: Investigate system performance immediately",
+                    "Consider emergency escalation to senior staff",
+                    "Review recent system changes or deployments",
+                    "Implement immediate monitoring of all decisions",
+                ]
+            )
         elif "high" in alert_type:
-            recommendations.extend([
-                "Investigate root causes of increased intervention",
-                "Review model performance metrics",
-                "Check for data quality issues",
-                "Consider adjusting confidence thresholds",
-            ])
+            recommendations.extend(
+                [
+                    "Investigate root causes of increased intervention",
+                    "Review model performance metrics",
+                    "Check for data quality issues",
+                    "Consider adjusting confidence thresholds",
+                ]
+            )
         elif "sudden" in alert_type:
-            recommendations.extend([
-                "Analyze recent system changes",
-                "Check for environmental factors",
-                "Review input data for anomalies",
-                "Monitor for continued trend",
-            ])
+            recommendations.extend(
+                [
+                    "Analyze recent system changes",
+                    "Check for environmental factors",
+                    "Review input data for anomalies",
+                    "Monitor for continued trend",
+                ]
+            )
         else:
-            recommendations.extend([
-                "Monitor intervention patterns",
-                "Review recent decisions requiring intervention",
-                "Consider model retraining if trend continues",
-            ])
+            recommendations.extend(
+                [
+                    "Monitor intervention patterns",
+                    "Review recent decisions requiring intervention",
+                    "Consider model retraining if trend continues",
+                ]
+            )
 
         return recommendations
 
@@ -1021,17 +1036,19 @@ class HumanInterventionTracker:
         """Analyze and respond to detected patterns"""
         try:
             # Log pattern detection
-            await self.audit_logger.log_compliance_event({
-                "event_type": "intervention_pattern_detected",
-                "pattern_id": pattern.pattern_id,
-                "pattern_type": pattern.pattern_type,
-                "description": pattern.description,
-                "frequency": pattern.frequency,
-                "confidence": pattern.confidence,
-                "severity": pattern.severity,
-                "affected_decisions_count": len(pattern.affected_decisions),
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_compliance_event(
+                {
+                    "event_type": "intervention_pattern_detected",
+                    "pattern_id": pattern.pattern_id,
+                    "pattern_type": pattern.pattern_type,
+                    "description": pattern.description,
+                    "frequency": pattern.frequency,
+                    "confidence": pattern.confidence,
+                    "severity": pattern.severity,
+                    "affected_decisions_count": len(pattern.affected_decisions),
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
             # Send alert for significant patterns
             if pattern.severity in ["high", "critical"] and pattern.confidence > 0.7:
@@ -1303,13 +1320,15 @@ class HumanInterventionTracker:
                     severity="medium",
                 )
 
-                await self.audit_logger.log_compliance_event({
-                    "event_type": "reviewer_performance_issues",
-                    "reviewer_id": performance.reviewer_id,
-                    "issues": issues,
-                    "performance_metrics": asdict(performance),
-                    "timestamp": datetime.utcnow().isoformat(),
-                })
+                await self.audit_logger.log_compliance_event(
+                    {
+                        "event_type": "reviewer_performance_issues",
+                        "reviewer_id": performance.reviewer_id,
+                        "issues": issues,
+                        "performance_metrics": asdict(performance),
+                        "timestamp": datetime.utcnow().isoformat(),
+                    }
+                )
 
         except Exception as e:
             logger.error(f"Performance issue check failed: {e}")
@@ -1340,15 +1359,17 @@ class HumanInterventionTracker:
         """Immediate analysis for critical interventions"""
         try:
             # Log critical intervention
-            await self.audit_logger.log_compliance_event({
-                "event_type": "critical_intervention_detected",
-                "event_id": event.event_id,
-                "reason": event.reason.value,
-                "decision_id": event.decision_id,
-                "reviewer_id": event.reviewer_id,
-                "escalation_level": event.escalation_level,
-                "timestamp": event.timestamp.isoformat(),
-            })
+            await self.audit_logger.log_compliance_event(
+                {
+                    "event_type": "critical_intervention_detected",
+                    "event_id": event.event_id,
+                    "reason": event.reason.value,
+                    "decision_id": event.decision_id,
+                    "reviewer_id": event.reviewer_id,
+                    "escalation_level": event.escalation_level,
+                    "timestamp": event.timestamp.isoformat(),
+                }
+            )
 
             # Send immediate alert
             await self.alerting.send_alert(
@@ -1476,9 +1497,9 @@ class HumanInterventionTracker:
 
             # Calculate summary metrics
             total_interventions = len(hourly_interventions)
-            avg_duration = statistics.mean([
-                e.duration_seconds for e in hourly_interventions
-            ])
+            avg_duration = statistics.mean(
+                [e.duration_seconds for e in hourly_interventions]
+            )
 
             # Count by reason
             reason_counts = defaultdict(int)
@@ -1516,11 +1537,13 @@ class HumanInterventionTracker:
             }
 
             # Log report
-            await self.audit_logger.log_compliance_event({
-                "event_type": "hourly_intervention_report",
-                "report": report,
-                "timestamp": current_time.isoformat(),
-            })
+            await self.audit_logger.log_compliance_event(
+                {
+                    "event_type": "hourly_intervention_report",
+                    "report": report,
+                    "timestamp": current_time.isoformat(),
+                }
+            )
 
         except Exception as e:
             logger.error(f"Hourly report generation failed: {e}")
@@ -1552,9 +1575,9 @@ class HumanInterventionTracker:
 
             # Calculate summary metrics
             total_interventions = len(window_interventions)
-            avg_duration = statistics.mean([
-                e.duration_seconds for e in window_interventions
-            ])
+            avg_duration = statistics.mean(
+                [e.duration_seconds for e in window_interventions]
+            )
 
             # Reason breakdown
             reason_counts = defaultdict(int)
@@ -1619,12 +1642,12 @@ class HumanInterventionTracker:
             all_performances = list(self.reviewer_performance.values())
 
             avg_accuracy = statistics.mean([p.accuracy_score for p in all_performances])
-            avg_timeliness = statistics.mean([
-                p.timeliness_score for p in all_performances
-            ])
-            avg_consistency = statistics.mean([
-                p.consistency_score for p in all_performances
-            ])
+            avg_timeliness = statistics.mean(
+                [p.timeliness_score for p in all_performances]
+            )
+            avg_consistency = statistics.mean(
+                [p.consistency_score for p in all_performances]
+            )
             total_interventions = sum([p.total_interventions for p in all_performances])
 
             # Top performers
@@ -1692,12 +1715,14 @@ class HumanInterventionTracker:
 async def example_usage():
     """Example of using the human intervention tracker"""
     # Initialize tracker
-    tracker = HumanInterventionTracker({
-        "tracking_enabled": True,
-        "target_intervention_rate": 0.12,
-        "pattern_detection_enabled": True,
-        "performance_tracking_enabled": True,
-    })
+    tracker = HumanInterventionTracker(
+        {
+            "tracking_enabled": True,
+            "target_intervention_rate": 0.12,
+            "pattern_detection_enabled": True,
+            "performance_tracking_enabled": True,
+        }
+    )
 
     # Start tracking (would run continuously in production)
     logger.info("Starting intervention tracking demo")
@@ -1716,17 +1741,19 @@ async def example_usage():
 
         # Sometimes record an intervention
         if np.random.random() < 0.3:  # 30% intervention rate
-            await tracker.record_intervention({
-                "decision_id": f"decision_{i}",
-                "intervention_type": "corrective",
-                "reason": np.random.choice(list(InterventionReason)).value,
-                "reviewer_id": f"reviewer_{np.random.randint(1, 4)}",
-                "reviewer_role": np.random.choice(list(ReviewerRole)).value,
-                "outcome": np.random.choice(list(InterventionOutcome)).value,
-                "duration_seconds": np.random.uniform(60, 300),
-                "confidence_before": np.random.uniform(0.5, 0.8),
-                "confidence_after": np.random.uniform(0.8, 0.95),
-            })
+            await tracker.record_intervention(
+                {
+                    "decision_id": f"decision_{i}",
+                    "intervention_type": "corrective",
+                    "reason": np.random.choice(list(InterventionReason)).value,
+                    "reviewer_id": f"reviewer_{np.random.randint(1, 4)}",
+                    "reviewer_role": np.random.choice(list(ReviewerRole)).value,
+                    "outcome": np.random.choice(list(InterventionOutcome)).value,
+                    "duration_seconds": np.random.uniform(60, 300),
+                    "confidence_before": np.random.uniform(0.5, 0.8),
+                    "confidence_after": np.random.uniform(0.8, 0.95),
+                }
+            )
 
         await asyncio.sleep(0.1)
 

@@ -155,12 +155,16 @@ class PenetrationTestSuite:
                     )
 
                     if response.status_code < 400:
-                        results["endpoints_discovered"].append({
-                            "endpoint": endpoint,
-                            "status_code": response.status_code,
-                            "content_length": len(response.content),
-                            "content_type": response.headers.get("content-type", ""),
-                        })
+                        results["endpoints_discovered"].append(
+                            {
+                                "endpoint": endpoint,
+                                "status_code": response.status_code,
+                                "content_length": len(response.content),
+                                "content_type": response.headers.get(
+                                    "content-type", ""
+                                ),
+                            }
+                        )
 
                         # Analyze headers
                         for header, value in response.headers.items():
@@ -192,15 +196,17 @@ class PenetrationTestSuite:
                         response_text = response.text.lower()
                         for pattern in sensitive_patterns:
                             if pattern in response_text:
-                                results["information_leakage"].append({
-                                    "endpoint": endpoint,
-                                    "pattern": pattern,
-                                    "severity": (
-                                        "high"
-                                        if pattern in ["password", "secret", "key"]
-                                        else "medium"
-                                    ),
-                                })
+                                results["information_leakage"].append(
+                                    {
+                                        "endpoint": endpoint,
+                                        "pattern": pattern,
+                                        "severity": (
+                                            "high"
+                                            if pattern in ["password", "secret", "key"]
+                                            else "medium"
+                                        ),
+                                    }
+                                )
 
                 except Exception as e:
                     logger.debug(f"Error accessing {endpoint}: {e}")
@@ -239,11 +245,13 @@ class PenetrationTestSuite:
                     if response.status_code == 200 and (
                         "root:" in response.text or "[fonts]" in response.text
                     ):
-                        results["vulnerability_indicators"].append({
-                            "type": "directory_traversal",
-                            "severity": "critical",
-                            "payload": payload,
-                        })
+                        results["vulnerability_indicators"].append(
+                            {
+                                "type": "directory_traversal",
+                                "severity": "critical",
+                                "payload": payload,
+                            }
+                        )
                 except:
                     pass
 
@@ -260,9 +268,9 @@ class PenetrationTestSuite:
                 try:
                     response = await client.get(f"{self.target_url}{endpoint}")
                     if response.status_code == 200:
-                        results["misconfigurations"].append({
-                            "endpoint": endpoint, "exposed": True, "severity": "high"
-                        })
+                        results["misconfigurations"].append(
+                            {"endpoint": endpoint, "exposed": True, "severity": "high"}
+                        )
                 except:
                     pass
 
@@ -271,11 +279,13 @@ class PenetrationTestSuite:
                 response = await client.options(f"{self.target_url}/api/")
                 allowed_methods = response.headers.get("allow", "").split(",")
                 if "TRACE" in allowed_methods or "TRACK" in allowed_methods:
-                    results["misconfigurations"].append({
-                        "type": "dangerous_http_methods",
-                        "methods": allowed_methods,
-                        "severity": "medium",
-                    })
+                    results["misconfigurations"].append(
+                        {
+                            "type": "dangerous_http_methods",
+                            "methods": allowed_methods,
+                            "severity": "medium",
+                        }
+                    )
             except:
                 pass
 
@@ -309,11 +319,13 @@ class PenetrationTestSuite:
                         json={"username": username, "password": password},
                     )
                     if response.status_code == 200:
-                        results["credential_attacks"].append({
-                            "type": "default_credentials",
-                            "username": username,
-                            "severity": "critical",
-                        })
+                        results["credential_attacks"].append(
+                            {
+                                "type": "default_credentials",
+                                "username": username,
+                                "severity": "critical",
+                            }
+                        )
                         # Store for later use
                         self.test_accounts[username] = response.json().get(
                             "access_token"
@@ -336,11 +348,13 @@ class PenetrationTestSuite:
                         f"{self.target_url}/api/admin/users", headers=headers
                     )
                     if response.status_code == 200:
-                        results["authentication_bypasses"].append({
-                            "method": "ip_spoofing",
-                            "headers": headers,
-                            "severity": "critical",
-                        })
+                        results["authentication_bypasses"].append(
+                            {
+                                "method": "ip_spoofing",
+                                "headers": headers,
+                                "severity": "critical",
+                            }
+                        )
                 except:
                     pass
 
@@ -360,9 +374,9 @@ class PenetrationTestSuite:
                         headers={"Authorization": f"Bearer {none_token}"},
                     )
                     if response.status_code == 200:
-                        results["session_vulnerabilities"].append({
-                            "type": "jwt_none_algorithm", "severity": "critical"
-                        })
+                        results["session_vulnerabilities"].append(
+                            {"type": "jwt_none_algorithm", "severity": "critical"}
+                        )
 
                     # Try weak secret
                     weak_secrets = ["secret", "password", "123456", "key"]
@@ -376,11 +390,13 @@ class PenetrationTestSuite:
                                 headers={"Authorization": f"Bearer {weak_token}"},
                             )
                             if response.status_code == 200:
-                                results["session_vulnerabilities"].append({
-                                    "type": "jwt_weak_secret",
-                                    "secret": secret,
-                                    "severity": "critical",
-                                })
+                                results["session_vulnerabilities"].append(
+                                    {
+                                        "type": "jwt_weak_secret",
+                                        "secret": secret,
+                                        "severity": "critical",
+                                    }
+                                )
                                 break
                         except:
                             pass
@@ -420,11 +436,13 @@ class PenetrationTestSuite:
                     )
 
                     if response.status_code == 200:
-                        results["authorization_flaws"].append({
-                            "type": "idor_vulnerability",
-                            "severity": "high",
-                            "description": "User can access other users' data",
-                        })
+                        results["authorization_flaws"].append(
+                            {
+                                "type": "idor_vulnerability",
+                                "severity": "high",
+                                "description": "User can access other users' data",
+                            }
+                        )
             except:
                 pass
 
@@ -451,9 +469,9 @@ class PenetrationTestSuite:
                 )
 
                 if response.cookies.get("session_id") == fixed_session:
-                    results["persistence_mechanisms"].append({
-                        "type": "session_fixation", "severity": "high"
-                    })
+                    results["persistence_mechanisms"].append(
+                        {"type": "session_fixation", "severity": "high"}
+                    )
         except:
             pass
 
@@ -470,11 +488,13 @@ class PenetrationTestSuite:
 
                 # This would only work with known secret
                 # Just documenting the attempt
-                results["privilege_escalation"].append({
-                    "type": "jwt_role_manipulation_attempted",
-                    "severity": "info",
-                    "note": "Would require JWT secret to succeed",
-                })
+                results["privilege_escalation"].append(
+                    {
+                        "type": "jwt_role_manipulation_attempted",
+                        "severity": "info",
+                        "note": "Would require JWT secret to succeed",
+                    }
+                )
             except:
                 pass
 
@@ -509,11 +529,13 @@ class PenetrationTestSuite:
                     if response.status_code == 200:
                         result = response.json()
                         if result.get("verified", False):
-                            results["hash_manipulation"].append({
-                                "fake_hash": fake_hash,
-                                "accepted": True,
-                                "severity": "critical",
-                            })
+                            results["hash_manipulation"].append(
+                                {
+                                    "fake_hash": fake_hash,
+                                    "accepted": True,
+                                    "severity": "critical",
+                                }
+                            )
                 except:
                     pass
 
@@ -543,9 +565,9 @@ class PenetrationTestSuite:
                 )
 
                 if response.status_code in [200, 201]:
-                    results["policy_bypasses"].append({
-                        "type": "malicious_policy_injection", "severity": "critical"
-                    })
+                    results["policy_bypasses"].append(
+                        {"type": "malicious_policy_injection", "severity": "critical"}
+                    )
             except:
                 pass
 
@@ -575,9 +597,9 @@ class PenetrationTestSuite:
                 )
 
                 if response.status_code in [200, 201]:
-                    results["audit_tampering"].append({
-                        "type": "audit_injection", "severity": "critical"
-                    })
+                    results["audit_tampering"].append(
+                        {"type": "audit_injection", "severity": "critical"}
+                    )
 
                 # Try to delete audit logs
                 response = await client.delete(
@@ -594,9 +616,9 @@ class PenetrationTestSuite:
                 )
 
                 if response.status_code == 200:
-                    results["audit_tampering"].append({
-                        "type": "audit_deletion", "severity": "critical"
-                    })
+                    results["audit_tampering"].append(
+                        {"type": "audit_deletion", "severity": "critical"}
+                    )
             except:
                 pass
 
@@ -618,9 +640,9 @@ class PenetrationTestSuite:
                 if response.status_code == 200:
                     result = response.json()
                     if result.get("verified", False):
-                        results["verification_flaws"].append({
-                            "type": "verification_bypass", "severity": "critical"
-                        })
+                        results["verification_flaws"].append(
+                            {"type": "verification_bypass", "severity": "critical"}
+                        )
             except:
                 pass
 
@@ -685,12 +707,14 @@ class PenetrationTestSuite:
                         )
 
                         if response.status_code == 200:
-                            results["cross_tenant_access"].append({
-                                "endpoint": endpoint,
-                                "from_tenant": tenant1,
-                                "to_tenant": tenant2,
-                                "severity": "critical",
-                            })
+                            results["cross_tenant_access"].append(
+                                {
+                                    "endpoint": endpoint,
+                                    "from_tenant": tenant1,
+                                    "to_tenant": tenant2,
+                                    "severity": "critical",
+                                }
+                            )
 
                     # Try header manipulation
                     response = await client.get(
@@ -702,9 +726,9 @@ class PenetrationTestSuite:
                     )
 
                     if response.status_code == 200:
-                        results["tenant_isolation_breaches"].append({
-                            "type": "header_manipulation", "severity": "critical"
-                        })
+                        results["tenant_isolation_breaches"].append(
+                            {"type": "header_manipulation", "severity": "critical"}
+                        )
 
                     # Test tenant enumeration
                     response = await client.get(
@@ -715,11 +739,13 @@ class PenetrationTestSuite:
                     if response.status_code == 200:
                         tenants = response.json()
                         if len(tenants) > 1:  # Can see other tenants
-                            results["tenant_enumeration"].append({
-                                "type": "tenant_list_exposure",
-                                "count": len(tenants),
-                                "severity": "medium",
-                            })
+                            results["tenant_enumeration"].append(
+                                {
+                                    "type": "tenant_list_exposure",
+                                    "count": len(tenants),
+                                    "severity": "medium",
+                                }
+                            )
             except Exception as e:
                 logger.debug(f"Multi-tenant test error: {e}")
 
@@ -759,11 +785,13 @@ class PenetrationTestSuite:
                         pattern in config.lower()
                         for pattern in ["password=", "secret=", "key="]
                     ):
-                        results["weak_crypto"].append({
-                            "type": "plaintext_secrets",
-                            "endpoint": "/api/config/database",
-                            "severity": "critical",
-                        })
+                        results["weak_crypto"].append(
+                            {
+                                "type": "plaintext_secrets",
+                                "endpoint": "/api/config/database",
+                                "severity": "critical",
+                            }
+                        )
             except:
                 pass
 
@@ -787,14 +815,16 @@ class PenetrationTestSuite:
                 abs(timings.get("admin", 0) - timings.get("nonexistent_user_12345", 0))
                 > 0.1
             ):
-                results["timing_attacks"].append({
-                    "type": "username_enumeration",
-                    "timing_difference": abs(
-                        timings.get("admin", 0)
-                        - timings.get("nonexistent_user_12345", 0)
-                    ),
-                    "severity": "medium",
-                })
+                results["timing_attacks"].append(
+                    {
+                        "type": "username_enumeration",
+                        "timing_difference": abs(
+                            timings.get("admin", 0)
+                            - timings.get("nonexistent_user_12345", 0)
+                        ),
+                        "severity": "medium",
+                    }
+                )
 
             # Test for predictable tokens
             tokens = []
@@ -836,11 +866,13 @@ class PenetrationTestSuite:
                     # Check for predictable values
                     if decoded_tokens:
                         # This is a simplified check
-                        results["weak_crypto"].append({
-                            "type": "token_analysis",
-                            "tokens_analyzed": len(tokens),
-                            "severity": "info",
-                        })
+                        results["weak_crypto"].append(
+                            {
+                                "type": "token_analysis",
+                                "tokens_analyzed": len(tokens),
+                                "severity": "info",
+                            }
+                        )
             except:
                 pass
 
@@ -890,31 +922,47 @@ class PenetrationTestSuite:
                 if isinstance(value, list):
                     for item in value:
                         if isinstance(item, dict) and "severity" in item:
-                            all_vulnerabilities.append({
-                                "phase": phase_name, "category": key, "details": item
-                            })
+                            all_vulnerabilities.append(
+                                {"phase": phase_name, "category": key, "details": item}
+                            )
 
         # Count by severity
         severity_count = {
-            "critical": len([
-                v
-                for v in all_vulnerabilities
-                if v["details"].get("severity") == "critical"
-            ]),
-            "high": len([
-                v for v in all_vulnerabilities if v["details"].get("severity") == "high"
-            ]),
-            "medium": len([
-                v
-                for v in all_vulnerabilities
-                if v["details"].get("severity") == "medium"
-            ]),
-            "low": len([
-                v for v in all_vulnerabilities if v["details"].get("severity") == "low"
-            ]),
-            "info": len([
-                v for v in all_vulnerabilities if v["details"].get("severity") == "info"
-            ]),
+            "critical": len(
+                [
+                    v
+                    for v in all_vulnerabilities
+                    if v["details"].get("severity") == "critical"
+                ]
+            ),
+            "high": len(
+                [
+                    v
+                    for v in all_vulnerabilities
+                    if v["details"].get("severity") == "high"
+                ]
+            ),
+            "medium": len(
+                [
+                    v
+                    for v in all_vulnerabilities
+                    if v["details"].get("severity") == "medium"
+                ]
+            ),
+            "low": len(
+                [
+                    v
+                    for v in all_vulnerabilities
+                    if v["details"].get("severity") == "low"
+                ]
+            ),
+            "info": len(
+                [
+                    v
+                    for v in all_vulnerabilities
+                    if v["details"].get("severity") == "info"
+                ]
+            ),
         }
 
         # Calculate risk score
@@ -960,9 +1008,8 @@ class PenetrationTestSuite:
                 "constitutional_compliance_affected": any(
                     "constitutional" in str(v).lower() for v in all_vulnerabilities
                 ),
-                "multi_tenant_isolation_affected": severity_count[
-                    "critical"
-                ] > 0 and any("tenant" in str(v).lower() for v in all_vulnerabilities),
+                "multi_tenant_isolation_affected": severity_count["critical"] > 0
+                and any("tenant" in str(v).lower() for v in all_vulnerabilities),
                 "audit_integrity_affected": any(
                     "audit" in str(v).lower() for v in all_vulnerabilities
                 ),
@@ -1071,18 +1118,20 @@ Regular security improvements are recommended."""
             )
 
         # General recommendations
-        recommendations.extend([
-            "Implement comprehensive input validation on all API endpoints",
-            "Enable rate limiting and DDoS protection",
-            "Implement proper authentication and session management",
-            "Use secure cryptographic algorithms and key management",
-            "Enable comprehensive audit logging with tamper protection",
-            "Conduct regular security assessments and penetration testing",
-            "Implement a Web Application Firewall (WAF)",
-            "Enable security headers (CSP, HSTS, etc.)",
-            "Implement least privilege access controls",
-            "Regular security training for development team",
-        ])
+        recommendations.extend(
+            [
+                "Implement comprehensive input validation on all API endpoints",
+                "Enable rate limiting and DDoS protection",
+                "Implement proper authentication and session management",
+                "Use secure cryptographic algorithms and key management",
+                "Enable comprehensive audit logging with tamper protection",
+                "Conduct regular security assessments and penetration testing",
+                "Implement a Web Application Firewall (WAF)",
+                "Enable security headers (CSP, HSTS, etc.)",
+                "Implement least privilege access controls",
+                "Regular security training for development team",
+            ]
+        )
 
         return recommendations
 

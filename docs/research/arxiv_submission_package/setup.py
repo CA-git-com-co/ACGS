@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Constitutional Hash: cdd01ef066bc6cf2
 """
 Setup script for Academic Submission System.
 
@@ -179,7 +180,8 @@ EXTRAS_REQUIRE = {
         "psutil>=5.9.0",
         "memory-profiler>=0.61.0",
     ],
-    "dev": get_test_requirements() + [
+    "dev": get_test_requirements()
+    + [
         "pre-commit>=3.3.0",
         "black>=23.7.0",
         "isort>=5.12.0",

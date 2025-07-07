@@ -380,13 +380,15 @@ async def transition_amendment_state_endpoint(
 
         # Initialize state machine and trigger transition
         from .core.amendment_state_machine import (
-
-# Security validation imports
-from services.shared.security_validation import (
-    validate_user_input,
-    validate_policy_input,
-    validate_governance_input
-)
+            date_governance_input,
+            date_policy_input,
+            date_user_input,
+            import,
+            imports,
+            ty,
+            validation,
+            vices.shared.security_validation,
+        )
             AmendmentEvent,
             AmendmentState,
             WorkflowContext,

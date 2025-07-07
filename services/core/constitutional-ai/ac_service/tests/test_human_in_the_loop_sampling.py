@@ -8,6 +8,7 @@ Tests all components of the HITL sampling system including:
 - Performance metrics and targets
 - API endpoints and integration
 """
+
 # Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
@@ -15,9 +16,9 @@ from datetime import datetime
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from services.core.constitutional_ai.ac_service.services.human_escalation_system import EscalationLevel
+from services.core.constitutional_ai.ac_service.services.human_escalation_system import (
+    EscalationLevel,
+)
 from services.core.constitutional_ai.ac_service.services.human_in_the_loop_sampler import (
     HITLSamplingConfig,
     HumanInTheLoopSampler,
@@ -25,6 +26,7 @@ from services.core.constitutional_ai.ac_service.services.human_in_the_loop_sampl
     UncertaintyAssessment,
     UncertaintyDimension,
 )
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class TestHITLSamplingConfig:

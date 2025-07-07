@@ -573,14 +573,16 @@ class DynamicAgent:
             await self.a2a_adapter.initialize()
 
             # Log agent activation
-            await self.audit_logger.log_security_event({
-                "event_type": "agent_activated",
-                "agent_id": self.config.agent_id,
-                "role": self.config.role,
-                "capabilities": self.config.capabilities,
-                "constraints": list(self.config.constraints.keys()),
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_security_event(
+                {
+                    "event_type": "agent_activated",
+                    "agent_id": self.config.agent_id,
+                    "role": self.config.role,
+                    "capabilities": self.config.capabilities,
+                    "constraints": list(self.config.constraints.keys()),
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
             # Start main execution loop
             asyncio.create_task(self._main_execution_loop())
@@ -590,12 +592,14 @@ class DynamicAgent:
         except Exception as e:
             self.state = AgentState.ERROR
             logger.error(f"Failed to initialize agent {self.config.agent_id}: {e!s}")
-            await self.alerting_system.send_alert({
-                "severity": "high",
-                "component": "DynamicAgent",
-                "message": f"Agent initialization failed: {e!s}",
-                "agent_id": self.config.agent_id,
-            })
+            await self.alerting_system.send_alert(
+                {
+                    "severity": "high",
+                    "component": "DynamicAgent",
+                    "message": f"Agent initialization failed: {e!s}",
+                    "agent_id": self.config.agent_id,
+                }
+            )
             raise
 
     async def assign_task(self, task: AgentTask) -> bool:
@@ -633,14 +637,16 @@ class DynamicAgent:
             self.task_queue.append(task)
 
             # Log task assignment
-            await self.audit_logger.log_security_event({
-                "event_type": "task_assigned",
-                "agent_id": self.config.agent_id,
-                "task_id": task.task_id,
-                "task_type": task.task_type,
-                "priority": task.priority.value,
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_security_event(
+                {
+                    "event_type": "task_assigned",
+                    "agent_id": self.config.agent_id,
+                    "task_id": task.task_id,
+                    "task_type": task.task_type,
+                    "priority": task.priority.value,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
             logger.info(f"Task {task.task_id} assigned to agent {self.config.agent_id}")
             return True
@@ -673,13 +679,15 @@ class DynamicAgent:
             self.message_outbox.append(message)
 
             # Log communication
-            await self.audit_logger.log_security_event({
-                "event_type": "agent_communication_sent",
-                "sender_agent_id": self.config.agent_id,
-                "recipient_agent_id": recipient_agent_id,
-                "message_type": message.message_type,
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_security_event(
+                {
+                    "event_type": "agent_communication_sent",
+                    "sender_agent_id": self.config.agent_id,
+                    "recipient_agent_id": recipient_agent_id,
+                    "message_type": message.message_type,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
             return True
 
@@ -703,13 +711,15 @@ class DynamicAgent:
                 await self._process_message(message)
 
             # Log message receipt
-            await self.audit_logger.log_security_event({
-                "event_type": "agent_communication_received",
-                "sender_agent_id": message.sender_agent_id,
-                "recipient_agent_id": self.config.agent_id,
-                "message_type": message.message_type,
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_security_event(
+                {
+                    "event_type": "agent_communication_received",
+                    "sender_agent_id": message.sender_agent_id,
+                    "recipient_agent_id": self.config.agent_id,
+                    "message_type": message.message_type,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
         except Exception as e:
             logger.error(f"Failed to receive message: {e!s}")
@@ -749,13 +759,17 @@ class DynamicAgent:
                 task.completed_at = datetime.utcnow()
 
             # Log shutdown
-            await self.audit_logger.log_security_event({
-                "event_type": "agent_shutdown",
-                "agent_id": self.config.agent_id,
-                "uptime_seconds": (datetime.utcnow() - self.start_time).total_seconds(),
-                "tasks_completed": self.metrics.tasks_completed,
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_security_event(
+                {
+                    "event_type": "agent_shutdown",
+                    "agent_id": self.config.agent_id,
+                    "uptime_seconds": (
+                        datetime.utcnow() - self.start_time
+                    ).total_seconds(),
+                    "tasks_completed": self.metrics.tasks_completed,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
         except Exception as e:
             logger.error(f"Error during agent shutdown: {e!s}")
@@ -781,12 +795,14 @@ class DynamicAgent:
 
             except Exception as e:
                 logger.error(f"Error in main execution loop: {e!s}")
-                await self.alerting_system.send_alert({
-                    "severity": "medium",
-                    "component": "DynamicAgent",
-                    "message": f"Execution loop error: {e!s}",
-                    "agent_id": self.config.agent_id,
-                })
+                await self.alerting_system.send_alert(
+                    {
+                        "severity": "medium",
+                        "component": "DynamicAgent",
+                        "message": f"Execution loop error: {e!s}",
+                        "agent_id": self.config.agent_id,
+                    }
+                )
                 await asyncio.sleep(5)  # Back off on error
 
     async def _execute_tasks(self) -> None:
@@ -838,13 +854,15 @@ class DynamicAgent:
             asyncio.create_task(self._execute_single_task(task))
 
             # Log task start
-            await self.audit_logger.log_security_event({
-                "event_type": "task_execution_started",
-                "agent_id": self.config.agent_id,
-                "task_id": task.task_id,
-                "task_type": task.task_type,
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_security_event(
+                {
+                    "event_type": "task_execution_started",
+                    "agent_id": self.config.agent_id,
+                    "task_id": task.task_id,
+                    "task_type": task.task_type,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
         except Exception as e:
             task.status = TaskStatus.FAILED
@@ -856,10 +874,12 @@ class DynamicAgent:
         """Execute a single task with all safety checks"""
         try:
             # Log task execution steps
-            task.execution_logs.append({
-                "action": "task_execution_started",
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            task.execution_logs.append(
+                {
+                    "action": "task_execution_started",
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
             # Retrieve and apply memory insights (EMU Framework)
             await self._apply_memory_insights_to_task(task)
@@ -925,22 +945,26 @@ class DynamicAgent:
             await self._store_task_experience(task, tool_results)
 
             # Log completion
-            task.execution_logs.append({
-                "action": "task_execution_completed",
-                "status": task.status.value,
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            task.execution_logs.append(
+                {
+                    "action": "task_execution_completed",
+                    "status": task.status.value,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
         except Exception as e:
             task.status = TaskStatus.FAILED
             task.error_message = str(e)
             task.completed_at = datetime.utcnow()
 
-            task.execution_logs.append({
-                "action": "task_execution_failed",
-                "error": str(e),
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            task.execution_logs.append(
+                {
+                    "action": "task_execution_failed",
+                    "error": str(e),
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
             logger.error(f"Task {task.task_id} execution failed: {e!s}")
 
@@ -1033,27 +1057,33 @@ class DynamicAgent:
         """Validate task against constitutional constraints"""
         try:
             # Check task against constitutional principles
-            compliance_score = await self.constitutional_framework.evaluate_compliance({
-                "task_type": task.task_type,
-                "parameters": task.parameters,
-                "constraints": task.constitutional_constraints,
-            })
+            compliance_score = await self.constitutional_framework.evaluate_compliance(
+                {
+                    "task_type": task.task_type,
+                    "parameters": task.parameters,
+                    "constraints": task.constitutional_constraints,
+                }
+            )
 
             # Log compliance check
-            self.constraint_checks.append({
-                "task_id": task.task_id,
-                "compliance_score": compliance_score,
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            self.constraint_checks.append(
+                {
+                    "task_id": task.task_id,
+                    "compliance_score": compliance_score,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
             # Threshold check
             if compliance_score < 0.7:
-                self.compliance_violations.append({
-                    "task_id": task.task_id,
-                    "violation_type": "constitutional_compliance",
-                    "score": compliance_score,
-                    "timestamp": datetime.utcnow().isoformat(),
-                })
+                self.compliance_violations.append(
+                    {
+                        "task_id": task.task_id,
+                        "violation_type": "constitutional_compliance",
+                        "score": compliance_score,
+                        "timestamp": datetime.utcnow().isoformat(),
+                    }
+                )
                 return False
 
             return True
@@ -1068,11 +1098,13 @@ class DynamicAgent:
         """Validate task output against constitutional constraints"""
         try:
             # Check output against constitutional principles
-            compliance_score = await self.constitutional_framework.evaluate_compliance({
-                "task_output": result,
-                "task_type": task.task_type,
-                "constraints": task.constitutional_constraints,
-            })
+            compliance_score = await self.constitutional_framework.evaluate_compliance(
+                {
+                    "task_output": result,
+                    "task_type": task.task_type,
+                    "constraints": task.constitutional_constraints,
+                }
+            )
 
             return compliance_score >= 0.7
 
@@ -1136,31 +1168,37 @@ class DynamicAgent:
         if len(self.active_tasks) > self.config.resource_limits.get(
             "max_concurrent_tasks", 5
         ):
-            await self.alerting_system.send_alert({
-                "severity": "medium",
-                "component": "DynamicAgent",
-                "message": "Agent overloaded with tasks",
-                "agent_id": self.config.agent_id,
-            })
+            await self.alerting_system.send_alert(
+                {
+                    "severity": "medium",
+                    "component": "DynamicAgent",
+                    "message": "Agent overloaded with tasks",
+                    "agent_id": self.config.agent_id,
+                }
+            )
 
         # Check error rate
         if self.metrics.error_rate > 0.2:  # 20% error rate threshold
-            await self.alerting_system.send_alert({
-                "severity": "high",
-                "component": "DynamicAgent",
-                "message": f"High error rate: {self.metrics.error_rate:.2%}",
-                "agent_id": self.config.agent_id,
-            })
+            await self.alerting_system.send_alert(
+                {
+                    "severity": "high",
+                    "component": "DynamicAgent",
+                    "message": f"High error rate: {self.metrics.error_rate:.2%}",
+                    "agent_id": self.config.agent_id,
+                }
+            )
 
         # Check compliance violations
         if len(self.compliance_violations) > 10:
             self.state = AgentState.SUSPENDED
-            await self.alerting_system.send_alert({
-                "severity": "critical",
-                "component": "DynamicAgent",
-                "message": "Agent suspended due to compliance violations",
-                "agent_id": self.config.agent_id,
-            })
+            await self.alerting_system.send_alert(
+                {
+                    "severity": "critical",
+                    "component": "DynamicAgent",
+                    "message": "Agent suspended due to compliance violations",
+                    "agent_id": self.config.agent_id,
+                }
+            )
 
     async def _handle_coordination_request(self, message: AgentCommunication) -> None:
         """Handle coordination request from another agent"""
@@ -1379,20 +1417,24 @@ class DynamicAgent:
 
                 # Log insights for debugging
                 for insight in insights["insights"]:
-                    task.execution_logs.append({
-                        "action": "memory_insight_applied",
-                        "insight": insight,
-                        "timestamp": datetime.utcnow().isoformat(),
-                    })
+                    task.execution_logs.append(
+                        {
+                            "action": "memory_insight_applied",
+                            "insight": insight,
+                            "timestamp": datetime.utcnow().isoformat(),
+                        }
+                    )
 
                 # Adjust task priority based on historical success
                 if insights["confidence"] > 0.8 and len(insights["insights"]) > 0:
                     # High confidence - potentially adjust execution strategy
-                    task.execution_logs.append({
-                        "action": "execution_strategy_optimized",
-                        "reason": "high_confidence_memory_insights",
-                        "timestamp": datetime.utcnow().isoformat(),
-                    })
+                    task.execution_logs.append(
+                        {
+                            "action": "execution_strategy_optimized",
+                            "reason": "high_confidence_memory_insights",
+                            "timestamp": datetime.utcnow().isoformat(),
+                        }
+                    )
 
         except Exception as e:
             logger.error(f"Failed to apply memory insights: {e!s}")

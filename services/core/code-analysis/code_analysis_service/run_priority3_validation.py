@@ -193,31 +193,37 @@ class Priority3ValidationRunner:
                 hash_present = (
                     data.get("constitutional_hash") == self.constitutional_hash
                 )
-                compliance_checks.append({
-                    "endpoint": "/health",
-                    "hash_present": hash_present,
-                    "status": "pass" if hash_present else "fail",
-                })
+                compliance_checks.append(
+                    {
+                        "endpoint": "/health",
+                        "hash_present": hash_present,
+                        "status": "pass" if hash_present else "fail",
+                    }
+                )
 
             # Test metrics endpoint for constitutional hash
             response = requests.get(f"{self.base_url}/metrics", timeout=10)
             if response.status_code == 200:
                 hash_in_metrics = self.constitutional_hash in response.text
-                compliance_checks.append({
-                    "endpoint": "/metrics",
-                    "hash_present": hash_in_metrics,
-                    "status": "pass" if hash_in_metrics else "fail",
-                })
+                compliance_checks.append(
+                    {
+                        "endpoint": "/metrics",
+                        "hash_present": hash_in_metrics,
+                        "status": "pass" if hash_in_metrics else "fail",
+                    }
+                )
 
             # Test error responses for constitutional hash
             response = requests.get(f"{self.base_url}/invalid-endpoint", timeout=10)
             if response.status_code == 404:
                 hash_in_error = self.constitutional_hash in response.text
-                compliance_checks.append({
-                    "endpoint": "/invalid-endpoint (error)",
-                    "hash_present": hash_in_error,
-                    "status": "pass" if hash_in_error else "fail",
-                })
+                compliance_checks.append(
+                    {
+                        "endpoint": "/invalid-endpoint (error)",
+                        "hash_present": hash_in_error,
+                        "status": "pass" if hash_in_error else "fail",
+                    }
+                )
 
             # Calculate compliance rate
             total_checks = len(compliance_checks)
@@ -304,7 +310,8 @@ class Priority3ValidationRunner:
             "acgs_infrastructure_integration": (
                 phase_results["integration"]["status"] == "pass"
             ),
-            "performance_targets_met": phase_results["performance"]["status"] in [
+            "performance_targets_met": phase_results["performance"]["status"]
+            in [
                 "pass",
                 "partial",
             ],
@@ -314,7 +321,8 @@ class Priority3ValidationRunner:
             "zero_critical_failures": not any(
                 r["status"] == "failed" for r in phase_results.values()
             ),
-            "monitoring_operational": phase_results["monitoring"]["status"] in [
+            "monitoring_operational": phase_results["monitoring"]["status"]
+            in [
                 "pass",
                 "partial",
             ],

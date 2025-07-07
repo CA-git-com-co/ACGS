@@ -577,9 +577,9 @@ class RegulatoryReportGenerator:
                 f"comprehensive_remediation_{datetime.now().strftime('%Y%m%d')}"
             ),
             "total_items_requiring_remediation": len(all_violations),
-            "high_priority_items": len([
-                v for v in all_violations if v.get("severity") == "high"
-            ]),
+            "high_priority_items": len(
+                [v for v in all_violations if v.get("severity") == "high"]
+            ),
             "implementation_timeline": "90 days",
             "constitutional_compliance_maintained": True,
             "remediation_actions": [

@@ -22,7 +22,6 @@ from pathlib import Path
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class RepositoryAuditor:
     """Audits repository size and hygiene."""
 

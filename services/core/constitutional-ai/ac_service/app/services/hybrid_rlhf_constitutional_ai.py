@@ -11,6 +11,7 @@ Key Features:
 - Risk-based switching between approaches
 - Production monitoring and fallback mechanisms
 """
+
 # Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
@@ -453,15 +454,17 @@ class HybridGovernanceEngine:
                 raise ValueError(f"Unknown governance mode: {self.governance_mode}")
 
             # Log decision for audit trail
-            await self.audit_logger.log_governance_decision({
-                "prompt_hash": hash(prompt),
-                "decision": result.decision,
-                "confidence": result.confidence,
-                "method": result.method_used.value,
-                "risk_level": result.risk_level.value,
-                "human_review_required": result.human_review_required,
-                "timestamp": result.timestamp.isoformat(),
-            })
+            await self.audit_logger.log_governance_decision(
+                {
+                    "prompt_hash": hash(prompt),
+                    "decision": result.decision,
+                    "confidence": result.confidence,
+                    "method": result.method_used.value,
+                    "risk_level": result.risk_level.value,
+                    "human_review_required": result.human_review_required,
+                    "timestamp": result.timestamp.isoformat(),
+                }
+            )
 
             # Update decision counts
             self.decision_counts[result.method_used] += 1
@@ -550,12 +553,12 @@ class HybridGovernanceEngine:
         return {
             "total_decisions": self.performance_metrics["total_decisions"],
             "decision_distribution": dict(self.decision_counts),
-            "human_intervention_rate": self.performance_metrics[
-                "human_interventions"
-            ] / max(1, self.performance_metrics["total_decisions"]),
+            "human_intervention_rate": self.performance_metrics["human_interventions"]
+            / max(1, self.performance_metrics["total_decisions"]),
             "constitutional_violation_rate": self.performance_metrics[
                 "constitutional_violations"
-            ] / max(1, self.performance_metrics["total_decisions"]),
+            ]
+            / max(1, self.performance_metrics["total_decisions"]),
             "average_latency_ms": self.performance_metrics["average_latency"] * 1000,
             "confidence_metrics": {
                 "average": avg_confidence,
@@ -576,7 +579,7 @@ DEFAULT_CONFIG = {
 
 
 async def create_hybrid_governance_engine(
-    config: Optional[dict[str, Any]] = None
+    config: Optional[dict[str, Any]] = None,
 ) -> HybridGovernanceEngine:
     """
     Factory function to create and initialize the hybrid governance engine

@@ -87,9 +87,10 @@ class ServiceRouter:
         self.health_check_interval = 30  # seconds
         self.health_check_task: Optional[asyncio.Task] = None
         self.request_timeout = 30  # seconds
+        self.service_discovery_client = None
 
-        # Service registry configuration
-        self.service_registry = {
+        # Static service registry configuration (fallback)
+        self.static_service_registry = {
             "auth": {
                 "instances": ["http://auth-service:8000"],
                 "health_path": "/health",
@@ -128,19 +129,86 @@ class ServiceRouter:
             },
         }
 
-        logger.info("Service router initialized with constitutional compliance")
+        logger.info(
+            "Service router initialized with constitutional compliance and service discovery"
+        )
 
     async def initialize(self):
         """Initialize service router."""
 
-        # Register services
-        for service_name, config in self.service_registry.items():
-            await self._register_service(service_name, config)
+        # Initialize service discovery client
+        try:
+            from services.shared.middleware.service_discovery_middleware import (
+                get_discovery_client,
+            )
+
+            self.service_discovery_client = await get_discovery_client()
+            logger.info("Service discovery client initialized")
+        except Exception as e:
+            logger.warning(f"Failed to initialize service discovery client: {e}")
+            logger.info("Falling back to static service registry")
+
+        # Register services from discovery or static config
+        await self._discover_and_register_services()
 
         # Start health check monitoring
         self.health_check_task = asyncio.create_task(self._health_check_loop())
 
         logger.info("Service router initialization completed")
+
+    async def _discover_and_register_services(self):
+        """Discover and register services from service registry or static config."""
+
+        if self.service_discovery_client:
+            try:
+                # Get services from dynamic service discovery
+                discovered_services = (
+                    await self.service_discovery_client.discover_all_services()
+                )
+
+                # Convert discovered services to our format
+                for service_name, service_url in discovered_services.items():
+                    config = {
+                        "instances": [service_url],
+                        "health_path": "/health",
+                        "weight": 1,
+                        "constitutional_required": True,
+                    }
+                    await self._register_service(service_name, config)
+
+                logger.info(
+                    f"Registered {len(discovered_services)} services from service discovery"
+                )
+
+                # Also get service capabilities
+                for service_name in discovered_services.keys():
+                    try:
+                        capabilities = await self.service_discovery_client.get_service_capabilities(
+                            service_name
+                        )
+                        logger.info(
+                            f"Service {service_name} capabilities: {capabilities}"
+                        )
+                    except Exception as e:
+                        logger.debug(
+                            f"Could not get capabilities for {service_name}: {e}"
+                        )
+
+            except Exception as e:
+                logger.error(f"Failed to discover services: {e}")
+                # Fall back to static config
+                await self._register_static_services()
+        else:
+            # Use static service registry
+            await self._register_static_services()
+
+    async def _register_static_services(self):
+        """Register services from static configuration."""
+        for service_name, config in self.static_service_registry.items():
+            await self._register_service(service_name, config)
+        logger.info(
+            f"Registered {len(self.static_service_registry)} services from static config"
+        )
 
     async def cleanup(self):
         """Cleanup resources."""
@@ -669,9 +737,9 @@ class ServiceRouter:
             "services": {
                 name: {
                     "instances": len(instances),
-                    "healthy": len([
-                        i for i in instances if i.status == ServiceStatus.HEALTHY
-                    ]),
+                    "healthy": len(
+                        [i for i in instances if i.status == ServiceStatus.HEALTHY]
+                    ),
                     "circuit_breaker_state": self.circuit_breakers[name].state.value,
                 }
                 for name, instances in self.services.items()
@@ -694,9 +762,13 @@ class ServiceRouter:
 
         logger.info("Refreshing service registry")
 
-        # Re-register services
-        for service_name, config in self.service_registry.items():
-            await self._register_service(service_name, config)
+        # Clear existing services
+        self.services.clear()
+        self.circuit_breakers.clear()
+        self.round_robin_counters.clear()
+
+        # Re-discover and register services
+        await self._discover_and_register_services()
 
         # Perform immediate health checks
         await self._perform_health_checks()

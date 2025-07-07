@@ -17,7 +17,6 @@ import psutil
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class SimpleDatabaseOptimizer:
     """Simple database optimizer for ACGS-1."""
 

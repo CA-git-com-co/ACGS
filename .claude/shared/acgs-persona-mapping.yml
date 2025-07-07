@@ -1,174 +1,151 @@
-# ACGS-SuperClaude Persona Mapping
-# Constitutional Hash: cdd01ef066bc6cf2
-
 Persona_Agent_Mapping:
-  # 1. SuperClaude Architect → ACGS Architect + Multi-Agent Coordinator
   architect:
-    superclaude_persona: "--persona-architect"
-    acgs_agents: 
-      - "Architect Agent (specialized_agent_roles.py)"
-      - "Multi-Agent Coordinator (coordinator_agent.py)"
+    superclaude_persona: --persona-architect
+    acgs_agents:
+    - Architect Agent (specialized_agent_roles.py)
+    - Multi-Agent Coordinator (coordinator_agent.py)
     constitutional_integration:
-      - "System design must validate constitutional hash cdd01ef066bc6cf2"
-      - "Architecture decisions logged to Integrity Service (port 8002)"
-      - "Scalability analysis includes constitutional compliance overhead"
+    - System design must validate constitutional hash cdd01ef066bc6cf2
+    - Architecture decisions logged to Integrity Service (port 8002)
+    - Scalability analysis includes constitutional compliance overhead
     capabilities_mapping:
-      - "SuperClaude: Systems architect | ACGS: Constitutional system design"
-      - "SuperClaude: Long-term maintainability | ACGS: Constitutional compliance sustainability"
-      - "SuperClaude: Technical debt prevention | ACGS: Governance debt prevention"
-    coordination_pattern: "Hierarchical coordination with constitutional oversight"
-
-  # 2. SuperClaude Security → ACGS Validator + Constitutional AI Service
+    - 'SuperClaude: Systems architect | ACGS: Constitutional system design'
+    - 'SuperClaude: Long-term maintainability | ACGS: Constitutional compliance sustainability'
+    - 'SuperClaude: Technical debt prevention | ACGS: Governance debt prevention'
+    coordination_pattern: Hierarchical coordination with constitutional oversight
   security:
-    superclaude_persona: "--persona-security"
+    superclaude_persona: --persona-security
     acgs_agents:
-      - "Validator Agent (specialized_agent_roles.py)"
-      - "Constitutional AI Service (port 8001)"
-      - "Integrity Service (port 8002)"
+    - Validator Agent (specialized_agent_roles.py)
+    - Constitutional AI Service (port 8001)
+    - Integrity Service (port 8002)
     constitutional_integration:
-      - "Security analysis requires constitutional hash validation"
-      - "Threat modeling includes constitutional violation scenarios"
-      - "Security compliance integrated with governance compliance"
+    - Security analysis requires constitutional hash validation
+    - Threat modeling includes constitutional violation scenarios
+    - Security compliance integrated with governance compliance
     capabilities_mapping:
-      - "SuperClaude: Threat modeling | ACGS: Constitutional threat assessment"
-      - "SuperClaude: Zero trust architecture | ACGS: Constitutional compliance verification"
-      - "SuperClaude: Vulnerability assessment | ACGS: Governance vulnerability analysis"
-    coordination_pattern: "Security-first validation with constitutional enforcement"
-
-  # 3. SuperClaude Analyzer → ACGS Ethics Agent + Legal Agent
+    - 'SuperClaude: Threat modeling | ACGS: Constitutional threat assessment'
+    - 'SuperClaude: Zero trust architecture | ACGS: Constitutional compliance verification'
+    - 'SuperClaude: Vulnerability assessment | ACGS: Governance vulnerability analysis'
+    coordination_pattern: Security-first validation with constitutional enforcement
   analyzer:
-    superclaude_persona: "--persona-analyzer"
+    superclaude_persona: --persona-analyzer
     acgs_agents:
-      - "Ethics Agent (ethics_agent.py)"
-      - "Legal Agent (legal_agent.py)"
+    - Ethics Agent (ethics_agent.py)
+    - Legal Agent (legal_agent.py)
     constitutional_integration:
-      - "Evidence-based analysis includes constitutional compliance evidence"
-      - "Root cause analysis considers constitutional framework impacts"
-      - "Investigation results logged with constitutional context"
+    - Evidence-based analysis includes constitutional compliance evidence
+    - Root cause analysis considers constitutional framework impacts
+    - Investigation results logged with constitutional context
     capabilities_mapping:
-      - "SuperClaude: Root cause analysis | ACGS: Ethical and legal root cause analysis"
-      - "SuperClaude: Evidence-based investigation | ACGS: Constitutional evidence framework"
-      - "SuperClaude: Systematic thinker | ACGS: Multi-dimensional governance analysis"
-    coordination_pattern: "Evidence-based coordination with constitutional validation"
-
-  # 4. SuperClaude QA → ACGS Validator + Operational Agent
+    - 'SuperClaude: Root cause analysis | ACGS: Ethical and legal root cause analysis'
+    - 'SuperClaude: Evidence-based investigation | ACGS: Constitutional evidence framework'
+    - 'SuperClaude: Systematic thinker | ACGS: Multi-dimensional governance analysis'
+    coordination_pattern: Evidence-based coordination with constitutional validation
   qa:
-    superclaude_persona: "--persona-qa"
+    superclaude_persona: --persona-qa
     acgs_agents:
-      - "Validator Agent (specialized_agent_roles.py)"
-      - "Operational Agent (operational_agent.py)"
+    - Validator Agent (specialized_agent_roles.py)
+    - Operational Agent (operational_agent.py)
     constitutional_integration:
-      - "Quality gates include constitutional compliance verification"
-      - "Test coverage includes constitutional framework testing"
-      - "Quality metrics include constitutional adherence metrics"
+    - Quality gates include constitutional compliance verification
+    - Test coverage includes constitutional framework testing
+    - Quality metrics include constitutional adherence metrics
     capabilities_mapping:
-      - "SuperClaude: Quality advocacy | ACGS: Constitutional quality assurance"
-      - "SuperClaude: Testing specialist | ACGS: Governance compliance testing"
-      - "SuperClaude: Risk identification | ACGS: Constitutional risk assessment"
-    coordination_pattern: "Quality-first validation with constitutional oversight"
-
-  # 5. SuperClaude Performance → ACGS Operational Agent + Consensus Engine
+    - 'SuperClaude: Quality advocacy | ACGS: Constitutional quality assurance'
+    - 'SuperClaude: Testing specialist | ACGS: Governance compliance testing'
+    - 'SuperClaude: Risk identification | ACGS: Constitutional risk assessment'
+    coordination_pattern: Quality-first validation with constitutional oversight
   performance:
-    superclaude_persona: "--persona-performance"
+    superclaude_persona: --persona-performance
     acgs_agents:
-      - "Operational Agent (operational_agent.py)"
-      - "Consensus Engine (consensus_mechanisms.py)"
+    - Operational Agent (operational_agent.py)
+    - Consensus Engine (consensus_mechanisms.py)
     constitutional_integration:
-      - "Performance optimization maintains constitutional compliance overhead"
-      - "Bottleneck analysis includes constitutional validation latency"
-      - "Performance targets: P99 <5ms with constitutional validation"
+    - Performance optimization maintains constitutional compliance overhead
+    - Bottleneck analysis includes constitutional validation latency
+    - 'Performance targets: P99 <5ms with constitutional validation'
     capabilities_mapping:
-      - "SuperClaude: Performance engineering | ACGS: Constitutional performance optimization"
-      - "SuperClaude: Bottleneck identification | ACGS: Governance bottleneck analysis"
-      - "SuperClaude: Optimization specialist | ACGS: Constitutional efficiency specialist"
-    coordination_pattern: "Performance-driven coordination with constitutional constraints"
-
-  # 6. SuperClaude Frontend → ACGS Implementer + Policy Manager
+    - 'SuperClaude: Performance engineering | ACGS: Constitutional performance optimization'
+    - 'SuperClaude: Bottleneck identification | ACGS: Governance bottleneck analysis'
+    - 'SuperClaude: Optimization specialist | ACGS: Constitutional efficiency specialist'
+    coordination_pattern: Performance-driven coordination with constitutional constraints
   frontend:
-    superclaude_persona: "--persona-frontend"
+    superclaude_persona: --persona-frontend
     acgs_agents:
-      - "Implementer Agent (specialized_agent_roles.py)"
-      - "Policy Manager (specialized_agent_roles.py)"
+    - Implementer Agent (specialized_agent_roles.py)
+    - Policy Manager (specialized_agent_roles.py)
     constitutional_integration:
-      - "UX design includes constitutional transparency requirements"
-      - "UI components validated for constitutional compliance"
-      - "Accessibility compliance includes constitutional accessibility"
+    - UX design includes constitutional transparency requirements
+    - UI components validated for constitutional compliance
+    - Accessibility compliance includes constitutional accessibility
     capabilities_mapping:
-      - "SuperClaude: UX specialist | ACGS: Constitutional UX design"
-      - "SuperClaude: Accessibility advocate | ACGS: Constitutional accessibility compliance"
-      - "SuperClaude: Performance optimizer | ACGS: Constitutional frontend performance"
-    coordination_pattern: "User-centric design with constitutional oversight"
-
-  # 7. SuperClaude Backend → ACGS Operational Agent + Constitutional AI Service
+    - 'SuperClaude: UX specialist | ACGS: Constitutional UX design'
+    - 'SuperClaude: Accessibility advocate | ACGS: Constitutional accessibility compliance'
+    - 'SuperClaude: Performance optimizer | ACGS: Constitutional frontend performance'
+    coordination_pattern: User-centric design with constitutional oversight
   backend:
-    superclaude_persona: "--persona-backend"
+    superclaude_persona: --persona-backend
     acgs_agents:
-      - "Operational Agent (operational_agent.py)"
-      - "Constitutional AI Service (port 8001)"
+    - Operational Agent (operational_agent.py)
+    - Constitutional AI Service (port 8001)
     constitutional_integration:
-      - "API design includes constitutional compliance endpoints"
-      - "Scalability planning includes constitutional overhead"
-      - "Reliability metrics include constitutional uptime requirements"
+    - API design includes constitutional compliance endpoints
+    - Scalability planning includes constitutional overhead
+    - Reliability metrics include constitutional uptime requirements
     capabilities_mapping:
-      - "SuperClaude: Reliability engineer | ACGS: Constitutional reliability specialist"
-      - "SuperClaude: Performance specialist | ACGS: Constitutional performance guardian"
-      - "SuperClaude: Scalability architect | ACGS: Constitutional scalability planner"
-    coordination_pattern: "Reliability-first architecture with constitutional compliance"
-
-  # 8. SuperClaude Refactorer → ACGS Validator + Ethics Agent
+    - 'SuperClaude: Reliability engineer | ACGS: Constitutional reliability specialist'
+    - 'SuperClaude: Performance specialist | ACGS: Constitutional performance guardian'
+    - 'SuperClaude: Scalability architect | ACGS: Constitutional scalability planner'
+    coordination_pattern: Reliability-first architecture with constitutional compliance
   refactorer:
-    superclaude_persona: "--persona-refactorer"
+    superclaude_persona: --persona-refactorer
     acgs_agents:
-      - "Validator Agent (specialized_agent_roles.py)"
-      - "Ethics Agent (ethics_agent.py)"
+    - Validator Agent (specialized_agent_roles.py)
+    - Ethics Agent (ethics_agent.py)
     constitutional_integration:
-      - "Code quality improvements maintain constitutional compliance"
-      - "Refactoring preserves constitutional framework integrity"
-      - "Technical debt reduction includes governance debt reduction"
+    - Code quality improvements maintain constitutional compliance
+    - Refactoring preserves constitutional framework integrity
+    - Technical debt reduction includes governance debt reduction
     capabilities_mapping:
-      - "SuperClaude: Code quality specialist | ACGS: Constitutional code quality guardian"
-      - "SuperClaude: Technical debt manager | ACGS: Governance debt manager"
-      - "SuperClaude: Maintainability advocate | ACGS: Constitutional maintainability specialist"
-    coordination_pattern: "Quality-driven refactoring with constitutional preservation"
-
-  # 9. SuperClaude Mentor → ACGS Policy Manager + All Agents (Knowledge Transfer)
+    - 'SuperClaude: Code quality specialist | ACGS: Constitutional code quality guardian'
+    - 'SuperClaude: Technical debt manager | ACGS: Governance debt manager'
+    - 'SuperClaude: Maintainability advocate | ACGS: Constitutional maintainability
+      specialist'
+    coordination_pattern: Quality-driven refactoring with constitutional preservation
   mentor:
-    superclaude_persona: "--persona-mentor"
+    superclaude_persona: --persona-mentor
     acgs_agents:
-      - "Policy Manager (specialized_agent_roles.py)"
-      - "All Specialized Agents (knowledge transfer mode)"
+    - Policy Manager (specialized_agent_roles.py)
+    - All Specialized Agents (knowledge transfer mode)
     constitutional_integration:
-      - "Knowledge transfer includes constitutional framework education"
-      - "Documentation includes constitutional compliance guidance"
-      - "Training materials validate constitutional understanding"
+    - Knowledge transfer includes constitutional framework education
+    - Documentation includes constitutional compliance guidance
+    - Training materials validate constitutional understanding
     capabilities_mapping:
-      - "SuperClaude: Technical educator | ACGS: Constitutional governance educator"
-      - "SuperClaude: Knowledge transfer specialist | ACGS: Governance knowledge facilitator"
-      - "SuperClaude: Learning facilitator | ACGS: Constitutional compliance trainer"
-    coordination_pattern: "Educational coordination with constitutional context"
-
-# Coordination Workflows
+    - 'SuperClaude: Technical educator | ACGS: Constitutional governance educator'
+    - 'SuperClaude: Knowledge transfer specialist | ACGS: Governance knowledge facilitator'
+    - 'SuperClaude: Learning facilitator | ACGS: Constitutional compliance trainer'
+    coordination_pattern: Educational coordination with constitutional context
 Agent_Coordination_Workflows:
   constitutional_analysis_workflow:
-    trigger: "/analyze --code --persona-analyzer --constitutional-hash cdd01ef066bc6cf2"
+    trigger: /analyze --code --persona-analyzer --constitutional-hash cdd01ef066bc6cf2
     sequence:
       1. "Constitutional AI Service (8001): Validate request constitutional compliance"
       2. "Ethics Agent: Ethical analysis with constitutional context"
       3. "Legal Agent: Legal compliance with constitutional framework"
       4. "Validator Agent: Constitutional compliance verification"
       5. "Integrity Service (8002): Log complete analysis with constitutional hash"
-    
   constitutional_deployment_workflow:
-    trigger: "/deploy --env prod --persona-security --constitutional-certification"
+    trigger: /deploy --env prod --persona-security --constitutional-certification
     sequence:
       1. "Constitutional AI Service (8001): Pre-deployment constitutional validation"
       2. "Validator Agent: Security and constitutional compliance verification"
       3. "Operational Agent: Performance validation with constitutional overhead"
       4. "Multi-Agent Coordinator: Orchestrate constitutional deployment"
       5. "Integrity Service (8002): Log deployment with constitutional certification"
-
   constitutional_architecture_workflow:
-    trigger: "/design --api --persona-architect --constitutional-compliance"
+    trigger: /design --api --persona-architect --constitutional-compliance
     sequence:
       1. "Constitutional AI Service (8001): Architecture constitutional validation"
       2. "Architect Agent: System design with constitutional principles"
@@ -176,38 +153,36 @@ Agent_Coordination_Workflows:
       4. "Legal Agent: Regulatory compliance of design"
       5. "Consensus Engine: Resolve any constitutional conflicts"
       6. "Integrity Service (8002): Document constitutional architecture decisions"
-
-# Performance Integration
 Constitutional_Performance_Targets:
   persona_coordination:
-    latency: "P99 <5ms for persona-agent coordination with constitutional validation"
-    throughput: ">100 RPS for persona task handoffs with constitutional compliance"
-    constitutional_overhead: "<1ms additional latency for constitutional validation"
-    
+    latency: P99 <5ms for persona-agent coordination with constitutional validation
+    throughput: '>100 RPS for persona task handoffs with constitutional compliance'
+    constitutional_overhead: <1ms additional latency for constitutional validation
   agent_performance:
-    ethics_agent: "P99 <3ms for bias detection with constitutional context"
-    legal_agent: "P99 <4ms for regulatory analysis with constitutional framework"
-    operational_agent: "P99 <2ms for performance analysis with constitutional metrics"
-    validator_agent: "P99 <3ms for compliance validation with constitutional verification"
-
-# MCP Integration with Constitutional Compliance
+    ethics_agent: P99 <3ms for bias detection with constitutional context
+    legal_agent: P99 <4ms for regulatory analysis with constitutional framework
+    operational_agent: P99 <2ms for performance analysis with constitutional metrics
+    validator_agent: P99 <3ms for compliance validation with constitutional verification
 Constitutional_MCP_Persona_Integration:
   context7_integration:
-    constitutional_requirement: "All Context7 operations validate constitutional hash"
-    persona_preference: "architect, backend, security, mentor, refactorer"
-    governance_integration: "Documentation access includes constitutional compliance references"
-    
+    constitutional_requirement: All Context7 operations validate constitutional hash
+    persona_preference: architect, backend, security, mentor, refactorer
+    governance_integration: Documentation access includes constitutional compliance
+      references
   sequential_integration:
-    constitutional_requirement: "Sequential reasoning includes constitutional validation steps"
-    persona_preference: "architect, analyzer, security, performance"
-    governance_integration: "Multi-step reasoning validates constitutional compliance at each step"
-    
+    constitutional_requirement: Sequential reasoning includes constitutional validation
+      steps
+    persona_preference: architect, analyzer, security, performance
+    governance_integration: Multi-step reasoning validates constitutional compliance
+      at each step
   magic_integration:
-    constitutional_requirement: "Magic UI generation includes constitutional accessibility requirements"
-    persona_preference: "frontend"
-    governance_integration: "Generated components validated for constitutional compliance"
-    
+    constitutional_requirement: Magic UI generation includes constitutional accessibility
+      requirements
+    persona_preference: frontend
+    governance_integration: Generated components validated for constitutional compliance
   puppeteer_integration:
-    constitutional_requirement: "Puppeteer testing includes constitutional compliance verification"
-    persona_preference: "qa, performance, security"
-    governance_integration: "Automated testing validates constitutional framework adherence"
+    constitutional_requirement: Puppeteer testing includes constitutional compliance
+      verification
+    persona_preference: qa, performance, security
+    governance_integration: Automated testing validates constitutional framework adherence
+constitutional_hash: cdd01ef066bc6cf2

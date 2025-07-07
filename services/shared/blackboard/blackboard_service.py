@@ -6,7 +6,7 @@ Implements the Hybrid Hierarchical-Blackboard Policy for ACGS governance.
 import json
 import logging
 import time
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any
 from uuid import uuid4
 
@@ -15,7 +15,6 @@ from pydantic import BaseModel, Field
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
 
 
 class KnowledgeItem(BaseModel):
@@ -766,11 +765,15 @@ class BlackboardService:
                     last_heartbeat_str = agent_data.get("last_heartbeat")
 
                     if last_heartbeat_str:
-                        last_heartbeat = datetime.fromisoformat(last_heartbeat_str.replace('Z', '+00:00'))
+                        last_heartbeat = datetime.fromisoformat(
+                            last_heartbeat_str.replace("Z", "+00:00")
+                        )
                         if last_heartbeat < timeout_threshold:
                             timed_out_agents.append(agent_id)
                             # Remove from active agents
-                            await self.redis_client.srem(f"{self.spaces['agents']}:active", agent_id)
+                            await self.redis_client.srem(
+                                f"{self.spaces['agents']}:active", agent_id
+                            )
                 except (json.JSONDecodeError, ValueError) as e:
                     self.logger.warning(f"Error parsing agent data for {agent_id}: {e}")
 

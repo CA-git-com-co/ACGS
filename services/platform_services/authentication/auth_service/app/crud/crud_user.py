@@ -1,7 +1,9 @@
 # Create simple schemas locally since shared ones are not available
 from pydantic import BaseModel
 
-from ..core.password import get_password_hash  # Import from password module to avoid circular imports
+from ..core.password import (  # Import from password module to avoid circular imports
+    get_password_hash,
+)
 from ..models import User
 
 # Constitutional compliance hash for ACGS

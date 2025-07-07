@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Constitutional Hash: cdd01ef066bc6cf2
 """
 Academic Submission CLI Tool
 
@@ -266,9 +267,7 @@ Examples:
                 output_path = args.output
             else:
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                output_path = (
-                    f"validation_report_{timestamp}.{args.format.replace('markdown', 'md')}"
-                )
+                output_path = f"validation_report_{timestamp}.{args.format.replace('markdown', 'md')}"
 
             if args.format == "markdown":
                 report_file = generate_validation_report(report, output_path)

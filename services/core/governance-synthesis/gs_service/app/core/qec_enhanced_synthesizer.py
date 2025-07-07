@@ -16,12 +16,11 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
 
-from integrations.alphaevolve_engine.core.constitutional_principle import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from integrations.alphaevolve_engine.core.constitutional_principle import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     ConstitutionalPrinciple,
+    "cdd01ef066bc6cf2",
+    =,
 )
 
 # Import QEC enhancement components

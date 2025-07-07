@@ -17,7 +17,6 @@ import aiohttp
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 def setup_environment():
     """Set up environment variables for PGC service."""
     print("🔧 Setting up environment variables...")

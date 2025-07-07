@@ -205,12 +205,14 @@ class PolicyBuilder:
         # Initialize Constitutional AI
         if CONSTITUTIONAL_AI_AVAILABLE and not self._constitutional_ai_initialized:
             try:
-                self.constitutional_ai = await create_hybrid_governance_engine({
-                    "governance_mode": "adaptive",
-                    "constitutional_threshold": 0.8,
-                    "rlhf_threshold": 0.6,
-                    "human_review_threshold": 0.9,
-                })
+                self.constitutional_ai = await create_hybrid_governance_engine(
+                    {
+                        "governance_mode": "adaptive",
+                        "constitutional_threshold": 0.8,
+                        "rlhf_threshold": 0.6,
+                        "human_review_threshold": 0.9,
+                    }
+                )
                 self._constitutional_ai_initialized = True
                 logger.info("Hybrid Governance Engine integrated successfully")
             except Exception as e:
@@ -286,23 +288,27 @@ class PolicyBuilder:
             self.generated_policies[policy_id] = policy
 
             # Log the generation
-            await self.audit_logger.log_security_event({
-                "event_type": "policy_generated",
-                "policy_id": policy_id,
-                "policy_type": policy_type.value,
-                "compliance_score": compliance_score,
-                "conflicts_detected": len(conflicts),
-            })
+            await self.audit_logger.log_security_event(
+                {
+                    "event_type": "policy_generated",
+                    "policy_id": policy_id,
+                    "policy_type": policy_type.value,
+                    "compliance_score": compliance_score,
+                    "conflicts_detected": len(conflicts),
+                }
+            )
 
             return policy
 
         except Exception as e:
             logger.error(f"Error generating policy: {e!s}")
-            await self.alerting_system.send_alert({
-                "severity": "high",
-                "component": "PolicyBuilder",
-                "message": f"Policy generation failed: {e!s}",
-            })
+            await self.alerting_system.send_alert(
+                {
+                    "severity": "high",
+                    "component": "PolicyBuilder",
+                    "message": f"Policy generation failed: {e!s}",
+                }
+            )
             raise
 
     async def create_agent_config(self, agent_request: dict[str, Any]) -> AgentConfig:
@@ -356,13 +362,15 @@ class PolicyBuilder:
             self.agent_configs[agent_id] = config
 
             # Log agent creation
-            await self.audit_logger.log_security_event({
-                "event_type": "agent_config_created",
-                "agent_id": agent_id,
-                "role": role,
-                "capabilities": capabilities,
-                "tools_allowed": len(tools_allowed),
-            })
+            await self.audit_logger.log_security_event(
+                {
+                    "event_type": "agent_config_created",
+                    "agent_id": agent_id,
+                    "role": role,
+                    "capabilities": capabilities,
+                    "tools_allowed": len(tools_allowed),
+                }
+            )
 
             return config
 
@@ -688,17 +696,19 @@ class PolicyBuilder:
                 )
 
                 # Log the evaluation for audit
-                await self.audit_logger.log_security_event({
-                    "event_type": "constitutional_compliance_validation",
-                    "method_used": governance_result.method_used.value,
-                    "compliance_score": compliance_score,
-                    "constitutional_violations": (
-                        governance_result.constitutional_violations
-                    ),
-                    "risk_level": governance_result.risk_level.value,
-                    "human_review_required": governance_result.human_review_required,
-                    "timestamp": datetime.utcnow().isoformat(),
-                })
+                await self.audit_logger.log_security_event(
+                    {
+                        "event_type": "constitutional_compliance_validation",
+                        "method_used": governance_result.method_used.value,
+                        "compliance_score": compliance_score,
+                        "constitutional_violations": (
+                            governance_result.constitutional_violations
+                        ),
+                        "risk_level": governance_result.risk_level.value,
+                        "human_review_required": governance_result.human_review_required,
+                        "timestamp": datetime.utcnow().isoformat(),
+                    }
+                )
 
                 return max(0.0, compliance_score)
             else:

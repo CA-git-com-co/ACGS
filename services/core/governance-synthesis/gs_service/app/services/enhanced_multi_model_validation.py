@@ -30,7 +30,6 @@ from sklearn.metrics.pairwise import cosine_similarity
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 # Local metrics implementation to avoid shared module dependencies
 class MockMetrics:
     def record_timing(self, metric_name: str, value: float):

@@ -15,7 +15,6 @@ import psycopg2
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class ProductionDatabaseConfig:
     def __init__(self):
         self.db_config = {

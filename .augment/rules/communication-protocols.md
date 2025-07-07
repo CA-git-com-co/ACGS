@@ -1,8 +1,7 @@
 ---
-type: "communication_protocols"
-constitutional_hash: "cdd01ef066bc6cf2"
+type: "agent_requested"
+description: "Example description"
 ---
-
 # ACGS Communication Protocols
 **Constitutional Hash:** `cdd01ef066bc6cf2`
 

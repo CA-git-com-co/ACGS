@@ -12,10 +12,6 @@ from .core import WINACore
 from .gating import GatingStrategy, RuntimeGating
 from .metrics import WINAMetrics
 from .performance_monitoring import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
     WINAComponentType,
     WINAConstitutionalComplianceMetrics,
     WINADynamicGatingMetrics,
@@ -25,6 +21,9 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
     WINAPerformanceCollector,
     WINASystemHealthMetrics,
 )
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 __version__ = "1.0.0"
 __all__ = [
@@ -45,4 +44,5 @@ __all__ = [
     "WINASystemHealthMetrics",
     "get_wina_learning_system",
     "load_wina_config_from_env",
+    "CONSTITUTIONAL_HASH",
 ]

@@ -1,14 +1,12 @@
 import argparse
 import os
 
+from analysis.visualize_archive import get_parent_commit, get_performance_score
 from matplotlib import pyplot as plt
 from utils.evo_utils import load_dgm_metadata
 
-from analysis.visualize_archive import get_parent_commit, get_performance_score
-
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
 
 
 def main():

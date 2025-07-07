@@ -3,7 +3,10 @@
   "timestamp": "2025-06-25T05:49:33Z",
   "alerting": {
     "enabled": true,
-    "defaultChannels": ["console", "browser"],
+    "defaultChannels": [
+      "console",
+      "browser"
+    ],
     "retentionDays": 30,
     "maxAlertsPerHour": 100,
     "suppressDuplicates": true,
@@ -14,14 +17,19 @@
       "id": "critical-escalation",
       "severity": "critical",
       "escalateAfter": 300000,
-      "escalateTo": ["email", "slack"],
+      "escalateTo": [
+        "email",
+        "slack"
+      ],
       "maxEscalations": 3
     },
     {
       "id": "high-escalation",
       "severity": "high",
       "escalateAfter": 900000,
-      "escalateTo": ["email"],
+      "escalateTo": [
+        "email"
+      ],
       "maxEscalations": 2
     }
   ],
@@ -86,5 +94,7 @@
       "errorRateThreshold": 5,
       "uptimeThreshold": 95.0
     }
-  }
+  },
+  "_constitutional_hash": "cdd01ef066bc6cf2",
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }

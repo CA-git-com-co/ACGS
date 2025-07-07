@@ -16,7 +16,6 @@ from ..models.agent import AgentStatus, AgentType
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class AgentBase(BaseModel):
     """Base agent schema with common fields."""
 

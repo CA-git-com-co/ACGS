@@ -221,11 +221,13 @@ async def semantic_search(
 
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=ensure_constitutional_compliance({
-                "error": "semantic_search_failed",
-                "message": "Failed to perform semantic search",
-                "request_id": request_id,
-            }),
+            detail=ensure_constitutional_compliance(
+                {
+                    "error": "semantic_search_failed",
+                    "message": "Failed to perform semantic search",
+                    "request_id": request_id,
+                }
+            ),
         )
 
 
@@ -266,11 +268,13 @@ async def get_symbol(
 
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=ensure_constitutional_compliance({
-                "error": "symbol_not_found",
-                "message": f"Symbol with ID {symbol_id} not found",
-                "request_id": request_id,
-            }),
+            detail=ensure_constitutional_compliance(
+                {
+                    "error": "symbol_not_found",
+                    "message": f"Symbol with ID {symbol_id} not found",
+                    "request_id": request_id,
+                }
+            ),
         )
 
     except HTTPException:
@@ -300,11 +304,13 @@ async def get_symbol(
 
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=ensure_constitutional_compliance({
-                "error": "symbol_lookup_failed",
-                "message": "Failed to retrieve symbol information",
-                "request_id": request_id,
-            }),
+            detail=ensure_constitutional_compliance(
+                {
+                    "error": "symbol_lookup_failed",
+                    "message": "Failed to retrieve symbol information",
+                    "request_id": request_id,
+                }
+            ),
         )
 
 
@@ -397,11 +403,13 @@ async def trigger_analysis(
 
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=ensure_constitutional_compliance({
-                "error": "analysis_trigger_failed",
-                "message": "Failed to trigger code analysis",
-                "request_id": request_id,
-            }),
+            detail=ensure_constitutional_compliance(
+                {
+                    "error": "analysis_trigger_failed",
+                    "message": "Failed to trigger code analysis",
+                    "request_id": request_id,
+                }
+            ),
         )
 
 
@@ -483,9 +491,11 @@ async def enrich_context(
 
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=ensure_constitutional_compliance({
-                "error": "context_enrichment_failed",
-                "message": "Failed to enrich context",
-                "request_id": request_id,
-            }),
+            detail=ensure_constitutional_compliance(
+                {
+                    "error": "context_enrichment_failed",
+                    "message": "Failed to enrich context",
+                    "request_id": request_id,
+                }
+            ),
         )

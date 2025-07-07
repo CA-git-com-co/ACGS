@@ -12,6 +12,7 @@ Key Features:
 - Integration with existing ACGS monitoring systems
 - Constitutional AI explanation validation
 """
+
 # Constitutional Hash: cdd01ef066bc6cf2
 
 import hashlib
@@ -174,7 +175,8 @@ class SHAPExplainer:
             self.explainers[explainer_key] = {
                 "explainer": explainer,
                 "type": explainer_type,
-                "feature_names": feature_names or [
+                "feature_names": feature_names
+                or [
                     f"feature_{i}"
                     for i in range(getattr(training_data, "shape", [0, 10])[1])
                 ],
@@ -186,12 +188,14 @@ class SHAPExplainer:
             )
 
             # Log explainer initialization
-            await self.audit_logger.log_explainer_event({
-                "event_type": "explainer_initialized",
-                "explainer_type": explainer_type.value,
-                "model_id": str(id(model)),
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_explainer_event(
+                {
+                    "event_type": "explainer_initialized",
+                    "explainer_type": explainer_type.value,
+                    "model_id": str(id(model)),
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
             return True
 
@@ -357,13 +361,15 @@ class SHAPExplainer:
             self._update_metrics(computation_time, True)
 
             # Log explanation generation
-            await self.audit_logger.log_explainer_event({
-                "event_type": "explanation_generated",
-                "explainer_type": explainer_type.value,
-                "computation_time": computation_time,
-                "confidence": confidence,
-                "timestamp": explanation.timestamp.isoformat(),
-            })
+            await self.audit_logger.log_explainer_event(
+                {
+                    "event_type": "explanation_generated",
+                    "explainer_type": explainer_type.value,
+                    "computation_time": computation_time,
+                    "confidence": confidence,
+                    "timestamp": explanation.timestamp.isoformat(),
+                }
+            )
 
             return explanation
 
@@ -527,15 +533,17 @@ class SHAPExplainer:
             )
 
             # Log batch explanation
-            await self.audit_logger.log_explainer_event({
-                "event_type": "batch_explanation_completed",
-                "batch_size": len(instances),
-                "successful_explanations": len(explanations),
-                "failed_explanations": len(failed_instances),
-                "total_computation_time": total_computation_time,
-                "cache_hit_rate": cache_hit_rate,
-                "timestamp": result.timestamp.isoformat(),
-            })
+            await self.audit_logger.log_explainer_event(
+                {
+                    "event_type": "batch_explanation_completed",
+                    "batch_size": len(instances),
+                    "successful_explanations": len(explanations),
+                    "failed_explanations": len(failed_instances),
+                    "total_computation_time": total_computation_time,
+                    "cache_hit_rate": cache_hit_rate,
+                    "timestamp": result.timestamp.isoformat(),
+                }
+            )
 
             return result
 
@@ -635,7 +643,8 @@ class SHAPExplainer:
             "failed_explanations": self.metrics["failed_explanations"],
             "success_rate": (
                 self.metrics["total_explanations"] - self.metrics["failed_explanations"]
-            ) / max(1, self.metrics["total_explanations"]),
+            )
+            / max(1, self.metrics["total_explanations"]),
             "avg_computation_time": self.metrics["avg_computation_time"],
             "cache_hit_rate": cache_hit_rate,
             "cache_size": len(self.explanation_cache),
@@ -669,9 +678,9 @@ class SHAPExplainer:
 async def example_usage():
     """Example of how to use the SHAP integration"""
     # Initialize explainer
-    explainer = SHAPExplainer({
-        "cache_enabled": True, "cache_ttl_hours": 24, "batch_size": 50
-    })
+    explainer = SHAPExplainer(
+        {"cache_enabled": True, "cache_ttl_hours": 24, "batch_size": 50}
+    )
 
     # Mock model and data
     class MockModel:

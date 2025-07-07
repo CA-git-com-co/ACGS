@@ -179,10 +179,15 @@ For a detailed audit of constitutional compliance, refer to the [Quarterly Audit
 
 ### Monitoring and Observability
 
-- **Health Checks**: `/health` endpoint on all services
-- **Metrics**: Prometheus metrics at `/metrics`
-- **Logging**: Structured JSON logging with constitutional compliance
-- **Alerting**: Automated quality and performance alerts
+The ACGS system includes a comprehensive monitoring infrastructure built on Prometheus and Grafana to ensure constitutional compliance, optimal performance, and robust security. Key components include:
+
+- **Prometheus**: Collects metrics from all ACGS services, including performance data, compliance validation results, and security-related events.
+- **Grafana**: Provides real-time dashboards for visualizing key metrics and monitoring the overall health of the system.
+- **Alerting Rules**: Configured to trigger alerts based on predefined thresholds for constitutional compliance, performance degradation, and security vulnerabilities.
+
+To access the Grafana dashboard, navigate to `config/monitoring/grafana-constitutional-dashboard.json` and import it into your Grafana instance. The dashboard provides a comprehensive overview of the system's health and compliance status.
+
+For detailed information on configuring and using the monitoring infrastructure, refer to `docs/operations/ACGS_PRODUCTION_OPERATIONS.md`.
 
 ---
 

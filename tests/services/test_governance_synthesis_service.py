@@ -71,12 +71,14 @@ class TestPolicyEvaluationContext:
         )
 
         # Should be serializable
-        serialized = json.dumps({
-            "request_id": context.request_id,
-            "principal": context.principal,
-            "resource": context.resource,
-            "action": context.action,
-        })
+        serialized = json.dumps(
+            {
+                "request_id": context.request_id,
+                "principal": context.principal,
+                "resource": context.resource,
+                "action": context.action,
+            }
+        )
         assert serialized is not None
 
 

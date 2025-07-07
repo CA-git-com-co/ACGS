@@ -212,39 +212,47 @@ class SecurityCIIntegration:
 
         # Check minimum security score
         if evaluation["security_score"] < thresholds["minimum_score"]:
-            evaluation["threshold_violations"].append({
-                "type": "minimum_score",
-                "threshold": thresholds["minimum_score"],
-                "actual": evaluation["security_score"],
-                "severity": "HIGH",
-            })
+            evaluation["threshold_violations"].append(
+                {
+                    "type": "minimum_score",
+                    "threshold": thresholds["minimum_score"],
+                    "actual": evaluation["security_score"],
+                    "severity": "HIGH",
+                }
+            )
 
         # Check vulnerability counts
         vuln_counts = evaluation["vulnerability_counts"]
 
         if vuln_counts.get("critical", 0) > thresholds["max_critical_vulnerabilities"]:
-            evaluation["threshold_violations"].append({
-                "type": "critical_vulnerabilities",
-                "threshold": thresholds["max_critical_vulnerabilities"],
-                "actual": vuln_counts.get("critical", 0),
-                "severity": "CRITICAL",
-            })
+            evaluation["threshold_violations"].append(
+                {
+                    "type": "critical_vulnerabilities",
+                    "threshold": thresholds["max_critical_vulnerabilities"],
+                    "actual": vuln_counts.get("critical", 0),
+                    "severity": "CRITICAL",
+                }
+            )
 
         if vuln_counts.get("high", 0) > thresholds["max_high_vulnerabilities"]:
-            evaluation["threshold_violations"].append({
-                "type": "high_vulnerabilities",
-                "threshold": thresholds["max_high_vulnerabilities"],
-                "actual": vuln_counts.get("high", 0),
-                "severity": "HIGH",
-            })
+            evaluation["threshold_violations"].append(
+                {
+                    "type": "high_vulnerabilities",
+                    "threshold": thresholds["max_high_vulnerabilities"],
+                    "actual": vuln_counts.get("high", 0),
+                    "severity": "HIGH",
+                }
+            )
 
         if vuln_counts.get("medium", 0) > thresholds["max_medium_vulnerabilities"]:
-            evaluation["threshold_violations"].append({
-                "type": "medium_vulnerabilities",
-                "threshold": thresholds["max_medium_vulnerabilities"],
-                "actual": vuln_counts.get("medium", 0),
-                "severity": "MEDIUM",
-            })
+            evaluation["threshold_violations"].append(
+                {
+                    "type": "medium_vulnerabilities",
+                    "threshold": thresholds["max_medium_vulnerabilities"],
+                    "actual": vuln_counts.get("medium", 0),
+                    "severity": "MEDIUM",
+                }
+            )
 
         # Check constitutional compliance
         constitutional_compliance = test_results.get("constitutional_compliance", {})
@@ -252,12 +260,14 @@ class SecurityCIIntegration:
             evaluation["constitutional_compliance_status"] = "NON_COMPLIANT"
 
             if thresholds["constitutional_compliance_required"]:
-                evaluation["threshold_violations"].append({
-                    "type": "constitutional_compliance",
-                    "threshold": "REQUIRED",
-                    "actual": "NON_COMPLIANT",
-                    "severity": "CRITICAL",
-                })
+                evaluation["threshold_violations"].append(
+                    {
+                        "type": "constitutional_compliance",
+                        "threshold": "REQUIRED",
+                        "actual": "NON_COMPLIANT",
+                        "severity": "CRITICAL",
+                    }
+                )
 
         # Determine overall status
         if evaluation["threshold_violations"]:

@@ -780,13 +780,15 @@ class GovernanceDecisionEngine:
             for principle in proposal.impact_assessment.get("affected_principles", [])
         ]
 
-        points.extend([
-            "Implementation feasibility",
-            "Resource requirements",
-            "Stakeholder concerns",
-            "Constitutional compliance",
-            "Alternative approaches",
-        ])
+        points.extend(
+            [
+                "Implementation feasibility",
+                "Resource requirements",
+                "Stakeholder concerns",
+                "Constitutional compliance",
+                "Alternative approaches",
+            ]
+        )
 
         if proposal.decision_type == DecisionType.RESOURCE_ALLOCATION:
             points.extend(["Fairness of allocation", "Long-term sustainability"])
@@ -866,9 +868,9 @@ class GovernanceDecisionEngine:
         ]
 
         if common_concerns:
-            consensus_areas.extend([
-                f"Shared concern: {concern}" for concern in common_concerns
-            ])
+            consensus_areas.extend(
+                [f"Shared concern: {concern}" for concern in common_concerns]
+            )
 
         return consensus_areas
 
@@ -1182,12 +1184,14 @@ class GovernanceDecisionEngine:
         )
 
         # Calculate overall health
-        health_metrics["overall_health"] = np.mean([
-            health_metrics["participation_rate"],
-            health_metrics["stakeholder_diversity"],
-            health_metrics["transparency_score"],
-            health_metrics["accountability_score"],
-        ])
+        health_metrics["overall_health"] = np.mean(
+            [
+                health_metrics["participation_rate"],
+                health_metrics["stakeholder_diversity"],
+                health_metrics["transparency_score"],
+                health_metrics["accountability_score"],
+            ]
+        )
 
         return health_metrics
 

@@ -7,7 +7,9 @@
     "sympy__sympy-13031",
     "sympy__sympy-18199"
   ],
-  "no_logs": ["django__django-13807"],
+  "no_logs": [
+    "django__django-13807"
+  ],
   "resolved": [
     "astropy__astropy-12907",
     "astropy__astropy-13579",
@@ -274,5 +276,7 @@
     "sympy__sympy-24443",
     "sympy__sympy-24539",
     "sympy__sympy-24661"
-  ]
+  ],
+  "_constitutional_hash": "cdd01ef066bc6cf2",
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }

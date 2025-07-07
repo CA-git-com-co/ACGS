@@ -282,21 +282,23 @@ class DatabaseManager:
         """
         try:
             if not self.is_connected:
-                return ensure_constitutional_compliance({
-                    "status": "disconnected", "error": "Database not connected"
-                })
+                return ensure_constitutional_compliance(
+                    {"status": "disconnected", "error": "Database not connected"}
+                )
 
             async with self.get_connection() as connection:
                 # Test basic connectivity
                 await connection.execute("SELECT 1")
 
                 # Get database info
-                db_info = await connection.fetchrow("""
+                db_info = await connection.fetchrow(
+                    """
                     SELECT
                         current_database() as database_name,
                         current_user as current_user,
                         version() as version
-                """)
+                """
+                )
 
                 # Get connection pool info
                 pool_info = {
@@ -327,23 +329,25 @@ class DatabaseManager:
                 exc_info=True,
             )
 
-            return ensure_constitutional_compliance({
-                "status": "unhealthy", "error": str(e)
-            })
+            return ensure_constitutional_compliance(
+                {"status": "unhealthy", "error": str(e)}
+            )
 
     def get_status(self) -> dict[str, Any]:
         """Get database manager status."""
-        return ensure_constitutional_compliance({
-            "is_connected": self.is_connected,
-            "host": self.host,
-            "port": self.port,
-            "database": self.database,
-            "username": self.username,
-            "min_connections": self.min_connections,
-            "max_connections": self.max_connections,
-            "pool_size": self.pool.get_size() if self.pool else 0,
-            "pool_idle_size": self.pool.get_idle_size() if self.pool else 0,
-        })
+        return ensure_constitutional_compliance(
+            {
+                "is_connected": self.is_connected,
+                "host": self.host,
+                "port": self.port,
+                "database": self.database,
+                "username": self.username,
+                "min_connections": self.min_connections,
+                "max_connections": self.max_connections,
+                "pool_size": self.pool.get_size() if self.pool else 0,
+                "pool_idle_size": self.pool.get_idle_size() if self.pool else 0,
+            }
+        )
 
     async def __aenter__(self):
         """Async context manager entry."""

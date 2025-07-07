@@ -3,15 +3,14 @@
 
 import asyncio
 
-from services.shared.ai_types import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from services.shared.ai_types import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     ContentType,
     ModelType,
     MultimodalRequest,
     RequestType,
+    "cdd01ef066bc6cf2",
+    =,
 )
 from services.shared.ml_routing_optimizer import MLRoutingOptimizer
 

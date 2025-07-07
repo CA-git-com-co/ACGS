@@ -1,0 +1,220 @@
+# ACGS-2 Constitutional Alerting Rules
+# Constitutional Hash: cdd01ef066bc6cf2
+
+groups:
+  - name: constitutional_compliance_alerts
+    interval: 30s
+    rules:
+      # Critical: Constitutional compliance rate below 100%
+      - alert: ConstitutionalComplianceViolation
+        expr: acgs:constitutional_compliance_rate{constitutional_hash="cdd01ef066bc6cf2"} < 1.0
+        for: 5m
+        labels:
+          severity: critical
+          constitutional_hash: "cdd01ef066bc6cf2"
+          service: "{{ $labels.service }}"
+          compliance_type: "validation"
+        annotations:
+          summary: "Constitutional compliance violation detected"
+          description: "Service {{ $labels.service }} has constitutional compliance rate of {{ $value | humanizePercentage }} (below 100%)"
+          constitutional_hash: "cdd01ef066bc6cf2"
+          runbook_url: "https://docs.acgs.io/runbooks/constitutional-compliance"
+
+      # Critical: Service down
+      - alert: ConstitutionalServiceDown
+        expr: up{constitutional_hash="cdd01ef066bc6cf2"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          constitutional_hash: "cdd01ef066bc6cf2"
+          service: "{{ $labels.job }}"
+          infrastructure_port: "{{ $labels.infrastructure_port }}"
+        annotations:
+          summary: "Constitutional service is down"
+          description: "Service {{ $labels.job }} on port {{ $labels.infrastructure_port }} has been down for more than 2 minutes"
+          constitutional_hash: "cdd01ef066bc6cf2"
+          runbook_url: "https://docs.acgs.io/runbooks/service-down"
+
+      # Warning: High constitutional validation latency
+      - alert: ConstitutionalHighLatency
+        expr: acgs:constitutional_validation_latency_p95{constitutional_hash="cdd01ef066bc6cf2"} > 0.005
+        for: 5m
+        labels:
+          severity: warning
+          constitutional_hash: "cdd01ef066bc6cf2"
+          service: "{{ $labels.service }}"
+          performance_requirement: "p95_under_5ms"
+        annotations:
+          summary: "Constitutional validation latency exceeds 5ms P95"
+          description: "Service {{ $labels.service }} has P95 constitutional validation latency of {{ $value | humanizeDuration }} (exceeds 5ms requirement)"
+          constitutional_hash: "cdd01ef066bc6cf2"
+          runbook_url: "https://docs.acgs.io/runbooks/high-latency"
+
+      # Critical: Low cache hit rate
+      - alert: ConstitutionalLowCacheHitRate
+        expr: (rate(constitutional_cache_hits_total{constitutional_hash="cdd01ef066bc6cf2"}[5m]) / rate(constitutional_cache_requests_total{constitutional_hash="cdd01ef066bc6cf2"}[5m])) < 0.85
+        for: 10m
+        labels:
+          severity: warning
+          constitutional_hash: "cdd01ef066bc6cf2"
+          service: "{{ $labels.service }}"
+          performance_requirement: "cache_hit_rate_85_percent"
+        annotations:
+          summary: "Constitutional cache hit rate below 85%"
+          description: "Service {{ $labels.service }} has cache hit rate of {{ $value | humanizePercentage }} (below 85% requirement)"
+          constitutional_hash: "cdd01ef066bc6cf2"
+          runbook_url: "https://docs.acgs.io/runbooks/low-cache-hit-rate"
+
+      # Critical: Low throughput
+      - alert: ConstitutionalLowThroughput
+        expr: rate(http_requests_total{constitutional_hash="cdd01ef066bc6cf2"}[5m]) < 100
+        for: 5m
+        labels:
+          severity: warning
+          constitutional_hash: "cdd01ef066bc6cf2"
+          service: "{{ $labels.service }}"
+          performance_requirement: "throughput_100_rps"
+        annotations:
+          summary: "Constitutional service throughput below 100 RPS"
+          description: "Service {{ $labels.service }} has throughput of {{ $value | humanize }} RPS (below 100 RPS requirement)"
+          constitutional_hash: "cdd01ef066bc6cf2"
+          runbook_url: "https://docs.acgs.io/runbooks/low-throughput"
+
+  - name: infrastructure_alerts
+    interval: 30s
+    rules:
+      # Critical: Database connection issues
+      - alert: ConstitutionalDatabaseConnections
+        expr: postgresql_connections_active{constitutional_hash="cdd01ef066bc6cf2"} > 80
+        for: 5m
+        labels:
+          severity: warning
+          constitutional_hash: "cdd01ef066bc6cf2"
+          infrastructure_type: "database"
+          infrastructure_port: "5439"
+        annotations:
+          summary: "High database connection usage"
+          description: "PostgreSQL has {{ $value }} active connections (approaching limit)"
+          constitutional_hash: "cdd01ef066bc6cf2"
+          runbook_url: "https://docs.acgs.io/runbooks/database-connections"
+
+      # Critical: Redis memory usage
+      - alert: ConstitutionalRedisMemory
+        expr: redis_memory_used_bytes{constitutional_hash="cdd01ef066bc6cf2"} / redis_memory_max_bytes{constitutional_hash="cdd01ef066bc6cf2"} > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          constitutional_hash: "cdd01ef066bc6cf2"
+          infrastructure_type: "cache"
+          infrastructure_port: "6389"
+        annotations:
+          summary: "High Redis memory usage"
+          description: "Redis memory usage is {{ $value | humanizePercentage }} (above 90%)"
+          constitutional_hash: "cdd01ef066bc6cf2"
+          runbook_url: "https://docs.acgs.io/runbooks/redis-memory"
+
+      # Critical: Port availability
+      - alert: ConstitutionalPortUnavailable
+        expr: acgs:infrastructure_port_availability{constitutional_hash="cdd01ef066bc6cf2"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          constitutional_hash: "cdd01ef066bc6cf2"
+          infrastructure_port: "{{ $labels.infrastructure_port }}"
+          service_type: "{{ $labels.service_type }}"
+        annotations:
+          summary: "Infrastructure port unavailable"
+          description: "Port {{ $labels.infrastructure_port }} for {{ $labels.service_type }} is unavailable"
+          constitutional_hash: "cdd01ef066bc6cf2"
+          runbook_url: "https://docs.acgs.io/runbooks/port-unavailable"
+
+  - name: security_alerts
+    interval: 30s
+    rules:
+      # Critical: Authentication failures
+      - alert: ConstitutionalAuthFailures
+        expr: rate(authentication_failures_total{constitutional_hash="cdd01ef066bc6cf2"}[5m]) > 10
+        for: 2m
+        labels:
+          severity: critical
+          constitutional_hash: "cdd01ef066bc6cf2"
+          security_type: "authentication"
+          infrastructure_port: "8016"
+        annotations:
+          summary: "High authentication failure rate"
+          description: "Authentication failures at {{ $value }} per second (above 10/sec threshold)"
+          constitutional_hash: "cdd01ef066bc6cf2"
+          runbook_url: "https://docs.acgs.io/runbooks/auth-failures"
+
+      # Critical: Constitutional hash validation failures
+      - alert: ConstitutionalHashValidationFailure
+        expr: rate(constitutional_hash_validation_failures_total{constitutional_hash="cdd01ef066bc6cf2"}[5m]) > 0
+        for: 1m
+        labels:
+          severity: critical
+          constitutional_hash: "cdd01ef066bc6cf2"
+          security_type: "constitutional_validation"
+        annotations:
+          summary: "Constitutional hash validation failures detected"
+          description: "Constitutional hash validation failures at {{ $value }} per second"
+          constitutional_hash: "cdd01ef066bc6cf2"
+          runbook_url: "https://docs.acgs.io/runbooks/constitutional-hash-failures"
+
+      # Warning: Suspicious request patterns
+      - alert: ConstitutionalSuspiciousRequests
+        expr: rate(http_requests_total{constitutional_hash="cdd01ef066bc6cf2",code=~"4..|5.."}[5m]) > 50
+        for: 5m
+        labels:
+          severity: warning
+          constitutional_hash: "cdd01ef066bc6cf2"
+          security_type: "request_anomaly"
+        annotations:
+          summary: "High error rate detected"
+          description: "HTTP error rate of {{ $value }} per second (above 50/sec threshold)"
+          constitutional_hash: "cdd01ef066bc6cf2"
+          runbook_url: "https://docs.acgs.io/runbooks/high-error-rate"
+
+  - name: capacity_alerts
+    interval: 60s
+    rules:
+      # Warning: High CPU usage
+      - alert: ConstitutionalHighCPU
+        expr: (100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle",constitutional_hash="cdd01ef066bc6cf2"}[5m])) * 100)) > 80
+        for: 10m
+        labels:
+          severity: warning
+          constitutional_hash: "cdd01ef066bc6cf2"
+          resource_type: "cpu"
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage is {{ $value | humanize }}% on instance {{ $labels.instance }}"
+          constitutional_hash: "cdd01ef066bc6cf2"
+          runbook_url: "https://docs.acgs.io/runbooks/high-cpu"
+
+      # Warning: High memory usage
+      - alert: ConstitutionalHighMemory
+        expr: (1 - (node_memory_MemAvailable_bytes{constitutional_hash="cdd01ef066bc6cf2"} / node_memory_MemTotal_bytes{constitutional_hash="cdd01ef066bc6cf2"})) * 100 > 85
+        for: 10m
+        labels:
+          severity: warning
+          constitutional_hash: "cdd01ef066bc6cf2"
+          resource_type: "memory"
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage is {{ $value | humanize }}% on instance {{ $labels.instance }}"
+          constitutional_hash: "cdd01ef066bc6cf2"
+          runbook_url: "https://docs.acgs.io/runbooks/high-memory"
+
+      # Warning: Disk space
+      - alert: ConstitutionalLowDiskSpace
+        expr: (node_filesystem_avail_bytes{constitutional_hash="cdd01ef066bc6cf2",fstype!="tmpfs"} / node_filesystem_size_bytes{constitutional_hash="cdd01ef066bc6cf2",fstype!="tmpfs"} * 100) < 20
+        for: 5m
+        labels:
+          severity: warning
+          constitutional_hash: "cdd01ef066bc6cf2"
+          resource_type: "disk"
+        annotations:
+          summary: "Low disk space detected"
+          description: "Disk space is {{ $value | humanize }}% available on {{ $labels.mountpoint }} ({{ $labels.instance }})"
+          constitutional_hash: "cdd01ef066bc6cf2"
+          runbook_url: "https://docs.acgs.io/runbooks/low-disk-space"

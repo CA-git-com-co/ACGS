@@ -222,13 +222,15 @@ rights are preserved throughout all data processing activities.
 
         # Update summary
         inventory["lawful_basis_summary"] = lawful_basis_counts
-        inventory["constitutional_compliance_summary"].update({
-            "activities_constitutionally_compliant": constitutional_compliant_count,
-            "tenant_isolation_maintained": tenant_isolation_count,
-            "formal_verification_applied": len(
-                processing_activities
-            ),  # All activities undergo formal verification
-        })
+        inventory["constitutional_compliance_summary"].update(
+            {
+                "activities_constitutionally_compliant": constitutional_compliant_count,
+                "tenant_isolation_maintained": tenant_isolation_count,
+                "formal_verification_applied": len(
+                    processing_activities
+                ),  # All activities undergo formal verification
+            }
+        )
 
         return inventory
 
@@ -292,9 +294,8 @@ rights are preserved throughout all data processing activities.
                 "average_response_time_days": round(avg_response_time, 1),
                 "maximum_response_time_days": max_response_time,
                 "responses_within_30_days": len(timely_responses),
-                "responses_exceeding_30_days": len(completed_requests) - len(
-                    timely_responses
-                ),
+                "responses_exceeding_30_days": len(completed_requests)
+                - len(timely_responses),
                 "gdpr_compliance_target": "30 days",
                 "constitutional_verification_time": "Real-time",
             },
@@ -562,20 +563,22 @@ Constitutional safeguards include:
             breach_incidents, reporting_period
         )
 
-        privacy_impact_assessment = self.generate_privacy_impact_assessment({
-            "operation": "ACGS Constitutional AI Governance System",
-            "data_types": ["User data", "Tenant data", "Governance data"],
-            "data_subjects": [
-                "System users",
-                "Tenant administrators",
-                "Data subjects",
-            ],
-            "purposes": [
-                "Constitutional governance",
-                "Democratic decision-making",
-                "Multi-tenant security",
-            ],
-        })
+        privacy_impact_assessment = self.generate_privacy_impact_assessment(
+            {
+                "operation": "ACGS Constitutional AI Governance System",
+                "data_types": ["User data", "Tenant data", "Governance data"],
+                "data_subjects": [
+                    "System users",
+                    "Tenant administrators",
+                    "Data subjects",
+                ],
+                "purposes": [
+                    "Constitutional governance",
+                    "Democratic decision-making",
+                    "Multi-tenant security",
+                ],
+            }
+        )
 
         # Calculate overall compliance score
         compliance_metrics = [

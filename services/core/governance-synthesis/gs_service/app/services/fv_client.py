@@ -2,14 +2,13 @@ import os
 
 import httpx
 
-from ..schemas import (  # Schemas from gs_service
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from ..schemas import (  # Schemas from gs_service; Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     FVPolicyRuleRef,
     FVVerificationRequest,
     FVVerificationResponse,
+    "cdd01ef066bc6cf2",
+    =,
 )
 
 # Load environment variables

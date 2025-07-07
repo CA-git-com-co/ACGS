@@ -29,10 +29,11 @@ logger = logging.getLogger(__name__)
 def handle_validation_errors(service_name: str):
     """
     Decorator to handle validation errors and return standardized responses.
-    
+
     Args:
         service_name: Name of the service for error tracking
     """
+
     def decorator(func: Callable) -> Callable:
         @functools.wraps(func)
         async def wrapper(*args, **kwargs):
@@ -43,52 +44,53 @@ def handle_validation_errors(service_name: str):
                     if isinstance(arg, Request):
                         request = arg
                         break
-                
+
                 correlation_id = None
-                if request and hasattr(request.state, 'correlation_id'):
+                if request and hasattr(request.state, "correlation_id"):
                     correlation_id = request.state.correlation_id
-                
+
                 # Execute the original function
                 result = await func(*args, **kwargs)
-                
+
                 # Ensure constitutional compliance in response
                 if isinstance(result, dict):
                     result = ensure_constitutional_compliance(result)
-                
+
                 return result
-                
+
             except ValidationError as e:
                 logger.warning(f"Validation error in {service_name}: {e}")
-                
+
                 # Convert Pydantic validation errors to our format
                 validation_errors = []
                 for error in e.errors():
                     field_path = " -> ".join(str(loc) for loc in error["loc"])
-                    validation_errors.append({
-                        "field": field_path,
-                        "message": error["msg"],
-                        "type": error["type"],
-                    })
-                
+                    validation_errors.append(
+                        {
+                            "field": field_path,
+                            "message": error["msg"],
+                            "type": error["type"],
+                        }
+                    )
+
                 response = create_validation_error_response(
                     validation_errors=validation_errors,
                     service_name=service_name,
                     correlation_id=correlation_id,
                 )
-                
+
                 raise HTTPException(
-                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                    detail=response
+                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=response
                 )
-                
+
             except HTTPException:
                 # Re-raise HTTP exceptions as-is
                 raise
-                
+
             except Exception as e:
                 logger.error(f"Unexpected error in {service_name}: {e}")
                 logger.error(f"Traceback: {traceback.format_exc()}")
-                
+
                 response = create_error_response(
                     message="Internal server error",
                     error_code=ErrorCode.INTERNAL_ERROR,
@@ -96,37 +98,39 @@ def handle_validation_errors(service_name: str):
                     service_name=service_name,
                     correlation_id=correlation_id,
                 )
-                
+
                 raise HTTPException(
-                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail=response
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=response
                 )
-        
+
         return wrapper
+
     return decorator
 
 
 def validate_constitutional_compliance(data: Dict[str, Any]) -> bool:
     """
     Validate that data includes proper constitutional compliance.
-    
+
     Args:
         data: Data to validate
-        
+
     Returns:
         True if compliant, False otherwise
     """
     return data.get("constitutional_hash") == CONSTITUTIONAL_HASH
 
 
-def validate_required_fields(data: Dict[str, Any], required_fields: List[str]) -> List[str]:
+def validate_required_fields(
+    data: Dict[str, Any], required_fields: List[str]
+) -> List[str]:
     """
     Validate that all required fields are present in data.
-    
+
     Args:
         data: Data to validate
         required_fields: List of required field names
-        
+
     Returns:
         List of missing field names
     """
@@ -134,18 +138,20 @@ def validate_required_fields(data: Dict[str, Any], required_fields: List[str]) -
     for field in required_fields:
         if field not in data or data[field] is None:
             missing_fields.append(field)
-    
+
     return missing_fields
 
 
-def validate_field_types(data: Dict[str, Any], field_types: Dict[str, type]) -> List[str]:
+def validate_field_types(
+    data: Dict[str, Any], field_types: Dict[str, type]
+) -> List[str]:
     """
     Validate that fields have the correct types.
-    
+
     Args:
         data: Data to validate
         field_types: Dictionary mapping field names to expected types
-        
+
     Returns:
         List of validation error messages
     """
@@ -153,94 +159,97 @@ def validate_field_types(data: Dict[str, Any], field_types: Dict[str, type]) -> 
     for field, expected_type in field_types.items():
         if field in data and data[field] is not None:
             if not isinstance(data[field], expected_type):
-                errors.append(f"Field '{field}' must be of type {expected_type.__name__}")
-    
+                errors.append(
+                    f"Field '{field}' must be of type {expected_type.__name__}"
+                )
+
     return errors
 
 
 def sanitize_string_input(value: str, max_length: Optional[int] = None) -> str:
     """
     Sanitize string input for security.
-    
+
     Args:
         value: String to sanitize
         max_length: Maximum allowed length
-        
+
     Returns:
         Sanitized string
     """
     if not isinstance(value, str):
         raise ValueError("Value must be a string")
-    
+
     # Strip whitespace
     sanitized = value.strip()
-    
+
     # Truncate if necessary
     if max_length and len(sanitized) > max_length:
         sanitized = sanitized[:max_length]
-    
+
     # Remove potentially dangerous characters
-    dangerous_chars = ['<', '>', '"', "'", '&', '\x00']
+    dangerous_chars = ["<", ">", '"', "'", "&", "\x00"]
     for char in dangerous_chars:
-        sanitized = sanitized.replace(char, '')
-    
+        sanitized = sanitized.replace(char, "")
+
     return sanitized
 
 
 def validate_correlation_id(correlation_id: Optional[str]) -> bool:
     """
     Validate correlation ID format.
-    
+
     Args:
         correlation_id: Correlation ID to validate
-        
+
     Returns:
         True if valid, False otherwise
     """
     if not correlation_id:
         return False
-    
+
     # Should be a valid UUID-like string
     import re
+
     uuid_pattern = re.compile(
-        r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$',
-        re.IGNORECASE
+        r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", re.IGNORECASE
     )
-    
+
     return bool(uuid_pattern.match(correlation_id))
 
 
 def create_correlation_id() -> str:
     """
     Create a new correlation ID.
-    
+
     Returns:
         New correlation ID string
     """
     import uuid
+
     return str(uuid.uuid4())
 
 
 def validate_service_response(response: Dict[str, Any]) -> bool:
     """
     Validate that a service response has the expected structure.
-    
+
     Args:
         response: Response to validate
-        
+
     Returns:
         True if valid, False otherwise
     """
     required_fields = ["success", "message", "constitutional_hash"]
-    
+
     for field in required_fields:
         if field not in response:
             return False
-    
+
     # Validate constitutional compliance
     if response.get("constitutional_hash") != CONSTITUTIONAL_HASH:
         return False
-    
+
     return True
 
 
@@ -248,11 +257,11 @@ def log_validation_error(
     service_name: str,
     error_type: str,
     details: Dict[str, Any],
-    correlation_id: Optional[str] = None
+    correlation_id: Optional[str] = None,
 ) -> None:
     """
     Log validation errors with structured information.
-    
+
     Args:
         service_name: Name of the service
         error_type: Type of validation error
@@ -265,56 +274,53 @@ def log_validation_error(
         "details": details,
         "constitutional_hash": CONSTITUTIONAL_HASH,
     }
-    
+
     if correlation_id:
         log_data["correlation_id"] = correlation_id
-    
+
     logger.warning(f"Validation error: {log_data}")
 
 
-def validate_pagination_params(page: int, size: int, max_size: int = 100) -> Dict[str, Any]:
+def validate_pagination_params(
+    page: int, size: int, max_size: int = 100
+) -> Dict[str, Any]:
     """
     Validate pagination parameters.
-    
+
     Args:
         page: Page number (1-based)
         size: Page size
         max_size: Maximum allowed page size
-        
+
     Returns:
         Dictionary with validated parameters or error details
     """
     errors = []
-    
+
     if page < 1:
         errors.append("Page number must be >= 1")
-    
+
     if size < 1:
         errors.append("Page size must be >= 1")
-    
+
     if size > max_size:
         errors.append(f"Page size must be <= {max_size}")
-    
+
     if errors:
         return {"valid": False, "errors": errors}
-    
-    return {
-        "valid": True,
-        "page": page,
-        "size": size,
-        "offset": (page - 1) * size
-    }
+
+    return {"valid": True, "page": page, "size": size, "offset": (page - 1) * size}
 
 
 class ValidationContext:
     """Context for validation operations."""
-    
+
     def __init__(self, service_name: str, correlation_id: Optional[str] = None):
         self.service_name = service_name
         self.correlation_id = correlation_id or create_correlation_id()
         self.errors: List[str] = []
         self.warnings: List[str] = []
-    
+
     def add_error(self, message: str) -> None:
         """Add a validation error."""
         self.errors.append(message)
@@ -322,22 +328,24 @@ class ValidationContext:
             self.service_name,
             "validation_error",
             {"message": message},
-            self.correlation_id
+            self.correlation_id,
         )
-    
+
     def add_warning(self, message: str) -> None:
         """Add a validation warning."""
         self.warnings.append(message)
         logger.warning(f"Validation warning in {self.service_name}: {message}")
-    
+
     def is_valid(self) -> bool:
         """Check if validation passed."""
         return len(self.errors) == 0
-    
+
     def get_error_response(self) -> Dict[str, Any]:
         """Get standardized error response."""
         return create_validation_error_response(
-            validation_errors=[{"field": "general", "message": error} for error in self.errors],
+            validation_errors=[
+                {"field": "general", "message": error} for error in self.errors
+            ],
             service_name=self.service_name,
             correlation_id=self.correlation_id,
         )

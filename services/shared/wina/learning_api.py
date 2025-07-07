@@ -8,7 +8,6 @@ from pydantic import BaseModel, Field, field_validator
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 # --- Feedback Schemas ---
 class FeedbackType(str, Enum):
     accuracy = "accuracy"

@@ -17,18 +17,18 @@ from typing import Any
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, Field
 
-from ...core.wina_rego_synthesis import (
-
-# Security validation imports
-from services.shared.security_validation import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
-    validate_user_input,
+from ...core.wina_rego_synthesis import (  # Security validation imports; Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
+    "cdd01ef066bc6cf2",
+    =,
+    from,
+    import,
+    services.shared.security_validation,
+    validate_governance_input,
     validate_policy_input,
-    validate_governance_input
+    validate_user_input,
 )
+
     batch_synthesize_rego_policies_with_wina,
     clear_wina_rego_synthesis_cache,
     get_wina_rego_synthesis_performance_summary,

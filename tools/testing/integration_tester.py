@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Constitutional Hash: cdd01ef066bc6cf2
 """
 Integration Testing Framework for ACGS-2
 Tests integration points between storage abstraction layers and AI service interfaces.

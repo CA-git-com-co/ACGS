@@ -486,19 +486,21 @@ async def get_available_tools(
         # Convert to response format
         tools_data = []
         for tool in tools:
-            tools_data.append({
-                "tool_id": tool.tool_id,
-                "name": tool.name,
-                "description": tool.description,
-                "safety_level": tool.safety_level.value,
-                "required_permissions": [
-                    perm.value for perm in tool.required_permissions
-                ],
-                "rate_limit_per_hour": tool.rate_limit_per_hour,
-                "max_execution_time_seconds": tool.max_execution_time_seconds,
-                "tags": tool.tags,
-                "version": tool.version,
-            })
+            tools_data.append(
+                {
+                    "tool_id": tool.tool_id,
+                    "name": tool.name,
+                    "description": tool.description,
+                    "safety_level": tool.safety_level.value,
+                    "required_permissions": [
+                        perm.value for perm in tool.required_permissions
+                    ],
+                    "rate_limit_per_hour": tool.rate_limit_per_hour,
+                    "max_execution_time_seconds": tool.max_execution_time_seconds,
+                    "tags": tool.tags,
+                    "version": tool.version,
+                }
+            )
 
         return {
             "tools": tools_data,

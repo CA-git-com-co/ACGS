@@ -13,6 +13,7 @@ Key Features:
 - Conformity assessment procedure automation
 - Post-market surveillance and incident reporting
 """
+
 # Constitutional Hash: cdd01ef066bc6cf2
 
 import logging
@@ -448,14 +449,16 @@ class EUAIActCompliance:
             self.risk_assessments[system_name] = assessment
 
             # Log assessment
-            await self.audit_logger.log_compliance_event({
-                "event_type": "risk_assessment_completed",
-                "system_name": system_name,
-                "risk_level": assessment.assessed_risk_level.value,
-                "category": assessment.assessed_category.value,
-                "confidence_score": confidence_score,
-                "timestamp": assessment.assessment_date.isoformat(),
-            })
+            await self.audit_logger.log_compliance_event(
+                {
+                    "event_type": "risk_assessment_completed",
+                    "system_name": system_name,
+                    "risk_level": assessment.assessed_risk_level.value,
+                    "category": assessment.assessed_category.value,
+                    "confidence_score": confidence_score,
+                    "timestamp": assessment.assessment_date.isoformat(),
+                }
+            )
 
             return assessment
 
@@ -514,40 +517,48 @@ class EUAIActCompliance:
         mitigation_measures = []
 
         # Standard mitigations for democratic processes
-        mitigation_measures.extend([
-            "Implement mandatory human oversight for all decisions",
-            "Establish transparent decision-making processes",
-            "Provide comprehensive audit trails",
-            "Implement bias detection and mitigation",
-            "Ensure explainability of all decisions",
-            "Establish appeal and review mechanisms",
-            "Implement data protection and privacy safeguards",
-            "Conduct regular fairness assessments",
-            "Establish public consultation processes",
-            "Implement constitutional compliance validation",
-        ])
+        mitigation_measures.extend(
+            [
+                "Implement mandatory human oversight for all decisions",
+                "Establish transparent decision-making processes",
+                "Provide comprehensive audit trails",
+                "Implement bias detection and mitigation",
+                "Ensure explainability of all decisions",
+                "Establish appeal and review mechanisms",
+                "Implement data protection and privacy safeguards",
+                "Conduct regular fairness assessments",
+                "Establish public consultation processes",
+                "Implement constitutional compliance validation",
+            ]
+        )
 
         # Risk-specific mitigations
         if "machine learning algorithms" in str(risk_factors):
-            mitigation_measures.extend([
-                "Implement model validation and testing procedures",
-                "Establish model drift monitoring",
-                "Implement adversarial robustness testing",
-            ])
+            mitigation_measures.extend(
+                [
+                    "Implement model validation and testing procedures",
+                    "Establish model drift monitoring",
+                    "Implement adversarial robustness testing",
+                ]
+            )
 
         if "real-time processing" in str(risk_factors):
-            mitigation_measures.extend([
-                "Implement circuit breakers for system failures",
-                "Establish graceful degradation procedures",
-                "Implement real-time monitoring and alerting",
-            ])
+            mitigation_measures.extend(
+                [
+                    "Implement circuit breakers for system failures",
+                    "Establish graceful degradation procedures",
+                    "Implement real-time monitoring and alerting",
+                ]
+            )
 
         if "wide-scale deployment" in str(risk_factors):
-            mitigation_measures.extend([
-                "Implement phased rollout procedures",
-                "Establish incident response capabilities",
-                "Implement comprehensive monitoring and logging",
-            ])
+            mitigation_measures.extend(
+                [
+                    "Implement phased rollout procedures",
+                    "Establish incident response capabilities",
+                    "Implement comprehensive monitoring and logging",
+                ]
+            )
 
         return list(set(mitigation_measures))  # Remove duplicates
 
@@ -619,15 +630,17 @@ class EUAIActCompliance:
             self.compliance_assessments[assessment_id] = assessment
 
             # Log compliance assessment
-            await self.audit_logger.log_compliance_event({
-                "event_type": "compliance_assessment_completed",
-                "assessment_id": assessment_id,
-                "requirement_id": requirement_id,
-                "status": status.value,
-                "risk_score": risk_score,
-                "gaps_count": len(gaps),
-                "timestamp": assessment.assessment_date.isoformat(),
-            })
+            await self.audit_logger.log_compliance_event(
+                {
+                    "event_type": "compliance_assessment_completed",
+                    "assessment_id": assessment_id,
+                    "requirement_id": requirement_id,
+                    "status": status.value,
+                    "risk_score": risk_score,
+                    "gaps_count": len(gaps),
+                    "timestamp": assessment.assessment_date.isoformat(),
+                }
+            )
 
             # Send alerts for non-compliance
             if status in [
@@ -858,15 +871,17 @@ class EUAIActCompliance:
             )
 
         # Standard recommendations for high-risk AI systems
-        recommendations.extend([
-            "Establish regular compliance monitoring procedures",
-            "Implement automated compliance checking where possible",
-            "Conduct quarterly compliance reviews",
-            "Maintain up-to-date technical documentation",
-            "Ensure human oversight procedures are followed",
-            "Monitor for bias and fairness issues continuously",
-            "Establish incident response procedures for compliance violations",
-        ])
+        recommendations.extend(
+            [
+                "Establish regular compliance monitoring procedures",
+                "Implement automated compliance checking where possible",
+                "Conduct quarterly compliance reviews",
+                "Maintain up-to-date technical documentation",
+                "Ensure human oversight procedures are followed",
+                "Monitor for bias and fairness issues continuously",
+                "Establish incident response procedures for compliance violations",
+            ]
+        )
 
         return recommendations
 
@@ -881,10 +896,12 @@ class EUAIActCompliance:
         )
 
         if unassessed_requirements:
-            actions.extend([
-                f"Conduct compliance assessment for {req_id}"
-                for req_id in unassessed_requirements
-            ])
+            actions.extend(
+                [
+                    f"Conduct compliance assessment for {req_id}"
+                    for req_id in unassessed_requirements
+                ]
+            )
 
         # Remediation actions from assessments
         for assessment in self.compliance_assessments.values():
@@ -899,10 +916,12 @@ class EUAIActCompliance:
         ]
 
         if upcoming_reviews:
-            actions.extend([
-                f"Schedule compliance review for {assessment.requirement_id}"
-                for assessment in upcoming_reviews
-            ])
+            actions.extend(
+                [
+                    f"Schedule compliance review for {assessment.requirement_id}"
+                    for assessment in upcoming_reviews
+                ]
+            )
 
         return list(set(actions))  # Remove duplicates
 
@@ -926,12 +945,14 @@ class EUAIActCompliance:
 async def example_usage():
     """Example of using the EU AI Act compliance engine"""
     # Initialize compliance engine
-    compliance_engine = EUAIActCompliance({
-        "system_name": "ACGS",
-        "system_version": "1.0.0",
-        "organization": "Constitutional AI Research Institute",
-        "deployment_region": "EU",
-    })
+    compliance_engine = EUAIActCompliance(
+        {
+            "system_name": "ACGS",
+            "system_version": "1.0.0",
+            "organization": "Constitutional AI Research Institute",
+            "deployment_region": "EU",
+        }
+    )
 
     # Assess system risk
     system_details = {

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Constitutional Hash: cdd01ef066bc6cf2
 """
 Unit tests for SubmissionValidator class.
 
@@ -8,7 +9,6 @@ Tests individual validation methods and overall validation workflow.
 from pathlib import Path
 
 import pytest
-
 from quality_assurance.submission_validator import (
     SubmissionReport,
     SubmissionValidator,
@@ -97,13 +97,15 @@ class TestSubmissionValidator:
         paper_dir.mkdir()
 
         # Create LaTeX with unmatched braces
-        (paper_dir / "main.tex").write_text("""
+        (paper_dir / "main.tex").write_text(
+            """
         \\documentclass{article}
         \\begin{document}
         \\title{Test Paper
         \\author{Test Author}
         \\end{document}
-        """)
+        """
+        )
 
         validator = SubmissionValidator(str(paper_dir))
         validator._validate_latex_syntax()
@@ -120,13 +122,15 @@ class TestSubmissionValidator:
         paper_dir = temp_dir / "test_paper"
         paper_dir.mkdir()
 
-        (paper_dir / "main.tex").write_text("""
+        (paper_dir / "main.tex").write_text(
+            """
         \\documentclass{article}
         \\begin{document}
         \\section{Introduction}\\label{sec:intro}
         This references a non-existent section \\ref{sec:nonexistent}.
         \\end{document}
-        """)
+        """
+        )
 
         validator = SubmissionValidator(str(paper_dir))
         validator._validate_latex_syntax()
@@ -190,12 +194,14 @@ class TestSubmissionValidator:
         paper_dir = temp_dir / "test_paper"
         paper_dir.mkdir()
 
-        (paper_dir / "main.tex").write_text("""
+        (paper_dir / "main.tex").write_text(
+            """
         \\documentclass{article}
         \\begin{document}
         \\includegraphics{missing_figure.png}
         \\end{document}
-        """)
+        """
+        )
 
         validator = SubmissionValidator(str(paper_dir))
         validator._validate_figures()
@@ -223,12 +229,14 @@ class TestSubmissionValidator:
         paper_dir = temp_dir / "test_paper"
         paper_dir.mkdir()
 
-        (paper_dir / "main.tex").write_text("""
+        (paper_dir / "main.tex").write_text(
+            """
         \\documentclass{article}
         \\begin{document}
         Content without title, author, or abstract.
         \\end{document}
-        """)
+        """
+        )
 
         validator = SubmissionValidator(str(paper_dir))
         validator._validate_arxiv_compliance()
@@ -256,7 +264,8 @@ class TestSubmissionValidator:
         paper_dir = temp_dir / "test_paper"
         paper_dir.mkdir()
 
-        (paper_dir / "main.tex").write_text("""
+        (paper_dir / "main.tex").write_text(
+            """
         \\documentclass{article}
         \\begin{document}
         \\begin{abstract}
@@ -264,7 +273,8 @@ class TestSubmissionValidator:
         \\end{abstract}
         \\section{Introduction}
         \\end{document}
-        """)
+        """
+        )
 
         validator = SubmissionValidator(str(paper_dir))
         validator._validate_content_quality()

@@ -1,315 +1,280 @@
-# ACGS-1 Governance Workflow Alert Rules - Subtask 13.5
-# Comprehensive alerting for constitutional governance workflows
-# Target: End-to-end workflow monitoring with constitutional compliance validation
-
 groups:
-  # ============================================================================
-  # POLICY CREATION WORKFLOW ALERTS
-  # ============================================================================
-  - name: acgs_policy_creation_workflow
-    rules:
-      # Policy Creation Pipeline Failures
-      - alert: PolicyCreationPipelineFailures
-        expr: rate(acgs_governance_workflow_operations_total{workflow_type="policy_creation",result="failed"}[5m]) > 0.1
-        for: 2m
-        labels:
-          severity: warning
-          workflow: policy_creation
-          component: pipeline
-          team: governance
-        annotations:
-          summary: 'Policy creation pipeline failures detected'
-          description: '{{ $value }} pipeline failures per second in {{ $labels.stage }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/policy-creation-failures'
-
-      # Policy Creation Stage Transition Issues
-      - alert: PolicyCreationStageTransitionIssues
-        expr: rate(acgs_governance_workflow_operations_total{workflow_type="policy_creation",stage=~".*_to_.*",result="failed"}[5m]) > 0.05
-        for: 3m
-        labels:
-          severity: warning
-          workflow: policy_creation
-          component: stage_transitions
-          team: governance
-        annotations:
-          summary: 'Policy creation stage transition issues'
-          description: '{{ $value }} transition failures per second in {{ $labels.stage }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/stage-transition-issues'
-
-      # Policy Creation Bottleneck
-      - alert: PolicyCreationBottleneck
-        expr: acgs_active_policy_drafts{workflow_type="policy_creation"} > 100
-        for: 10m
-        labels:
-          severity: warning
-          workflow: policy_creation
-          component: bottleneck
-          team: governance
-        annotations:
-          summary: 'Policy creation bottleneck detected'
-          description: '{{ $value }} policies waiting in creation queue'
-          runbook_url: 'https://docs.acgs.ai/runbooks/policy-creation-bottleneck'
-
-      # Policy Approval Bottleneck
-      - alert: PolicyApprovalBottleneck
-        expr: acgs_policies_under_review{workflow_type="policy_creation"} > 50
-        for: 15m
-        labels:
-          severity: warning
-          workflow: policy_creation
-          component: approval_bottleneck
-          team: governance
-        annotations:
-          summary: 'Policy approval bottleneck detected'
-          description: '{{ $value }} policies waiting for review'
-          runbook_url: 'https://docs.acgs.ai/runbooks/policy-approval-bottleneck'
-
-      # Policy Voting Stagnation
-      - alert: PolicyVotingStagnation
-        expr: acgs_policies_in_voting{workflow_type="policy_creation"} > 20
-        for: 30m
-        labels:
-          severity: warning
-          workflow: policy_creation
-          component: voting_stagnation
-          team: governance
-        annotations:
-          summary: 'Policy voting stagnation detected'
-          description: '{{ $value }} policies stuck in voting stage'
-          runbook_url: 'https://docs.acgs.ai/runbooks/policy-voting-stagnation'
-
-      # Low Policy Implementation Rate
-      - alert: LowPolicyImplementationRate
-        expr: rate(acgs_implemented_policies{workflow_type="policy_creation"}[1h]) < 0.1
-        for: 2h
-        labels:
-          severity: warning
-          workflow: policy_creation
-          component: implementation_rate
-          team: governance
-        annotations:
-          summary: 'Low policy implementation rate'
-          description: 'Policy implementation rate is {{ $value }} policies per hour'
-          runbook_url: 'https://docs.acgs.ai/runbooks/low-implementation-rate'
-
-  # ============================================================================
-  # CONSTITUTIONAL COMPLIANCE WORKFLOW ALERTS
-  # ============================================================================
-  - name: acgs_constitutional_compliance_workflow
-    rules:
-      # Constitutional Compliance Workflow Failures
-      - alert: ConstitutionalComplianceWorkflowFailures
-        expr: rate(acgs_governance_workflow_operations_total{workflow_type="constitutional_compliance",result="failed"}[5m]) > 0.05
-        for: 2m
-        labels:
-          severity: critical
-          workflow: constitutional_compliance
-          component: workflow
-          team: governance
-          escalation: immediate
-        annotations:
-          summary: 'Constitutional compliance workflow failures'
-          description: '{{ $value }} compliance workflow failures per second in {{ $labels.stage }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/compliance-workflow-failures'
-          impact: 'Constitutional governance integrity at risk'
-
-      # Compliance Validation Accuracy Low
-      - alert: ComplianceValidationAccuracyLow
-        expr: rate(acgs_constitutional_compliance_checks_total{workflow_type="constitutional_compliance",result="success"}[5m]) / rate(acgs_constitutional_compliance_checks_total{workflow_type="constitutional_compliance"}[5m]) < 0.95
-        for: 3m
-        labels:
-          severity: warning
-          workflow: constitutional_compliance
-          component: validation_accuracy
-          team: governance
-        annotations:
-          summary: 'Compliance validation accuracy below threshold'
-          description: 'Validation accuracy is {{ $value | humanizePercentage }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/compliance-accuracy-low'
-
-      # Constitutional Hash Validation Failures
-      - alert: ConstitutionalHashValidationFailures
-        expr: rate(acgs_constitutional_hash_validations_total{workflow_type="constitutional_compliance",result="failed"}[5m]) > 0.01
-        for: 1m
-        labels:
-          severity: critical
-          workflow: constitutional_compliance
-          component: hash_validation
-          team: governance
-          escalation: immediate
-        annotations:
-          summary: 'Constitutional hash validation failures'
-          description: '{{ $value }} hash validation failures per second for {{ $labels.validation_type }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/hash-validation-failures'
-          impact: 'Constitutional integrity compromised'
-
-      # Compliance Assessment Backlog
-      - alert: ComplianceAssessmentBacklog
-        expr: acgs_compliance_assessments{workflow_type="constitutional_compliance"} > 200
-        for: 10m
-        labels:
-          severity: warning
-          workflow: constitutional_compliance
-          component: assessment_backlog
-          team: governance
-        annotations:
-          summary: 'Compliance assessment backlog detected'
-          description: '{{ $value }} assessments waiting for processing'
-          runbook_url: 'https://docs.acgs.ai/runbooks/compliance-backlog'
-
-      # Compliance Violations Detected
-      - alert: ComplianceViolationsDetected
-        expr: acgs_compliance_violations_detected{workflow_type="constitutional_compliance"} > 5
-        for: 5m
-        labels:
-          severity: critical
-          workflow: constitutional_compliance
-          component: violations
-          team: governance
-          escalation: immediate
-        annotations:
-          summary: 'Constitutional compliance violations detected'
-          description: '{{ $value }} compliance violations detected'
-          runbook_url: 'https://docs.acgs.ai/runbooks/compliance-violations'
-          impact: 'Constitutional violations require immediate attention'
-
-  # ============================================================================
-  # POLICY ENFORCEMENT WORKFLOW ALERTS
-  # ============================================================================
-  - name: acgs_policy_enforcement_workflow
-    rules:
-      # Policy Enforcement Workflow Failures
-      - alert: PolicyEnforcementWorkflowFailures
-        expr: rate(acgs_governance_workflow_operations_total{workflow_type="policy_enforcement",result="failed"}[5m]) > 0.1
-        for: 2m
-        labels:
-          severity: warning
-          workflow: policy_enforcement
-          component: workflow
-          team: governance
-        annotations:
-          summary: 'Policy enforcement workflow failures'
-          description: '{{ $value }} enforcement workflow failures per second in {{ $labels.stage }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/enforcement-workflow-failures'
-
-      # High Policy Violation Detection Rate
-      - alert: HighPolicyViolationDetectionRate
-        expr: rate(acgs_policy_violation_detections_total{workflow_type="policy_enforcement"}[5m]) > 1.0
-        for: 3m
-        labels:
-          severity: warning
-          workflow: policy_enforcement
-          component: violation_detection
-          team: governance
-        annotations:
-          summary: 'High policy violation detection rate'
-          description: '{{ $value }} violations per second detected for {{ $labels.violation_type }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/high-violation-rate'
-
-      # Enforcement Action Failures
-      - alert: EnforcementActionFailures
-        expr: rate(acgs_policy_enforcement_actions_total{workflow_type="policy_enforcement",result="failed"}[5m]) > 0.1
-        for: 2m
-        labels:
-          severity: warning
-          workflow: policy_enforcement
-          component: enforcement_actions
-          team: governance
-        annotations:
-          summary: 'Enforcement action failures detected'
-          description: '{{ $value }} enforcement action failures per second for {{ $labels.action_type }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/enforcement-action-failures'
-
-      # Remediation Failures
-      - alert: RemediationFailures
-        expr: rate(acgs_remediation_operations_total{workflow_type="policy_enforcement",result="failed"}[5m]) > 0.05
-        for: 3m
-        labels:
-          severity: warning
-          workflow: policy_enforcement
-          component: remediation
-          team: governance
-        annotations:
-          summary: 'Remediation operation failures'
-          description: '{{ $value }} remediation failures per second'
-          runbook_url: 'https://docs.acgs.ai/runbooks/remediation-failures'
-
-      # Enforcement Response Time High
-      - alert: EnforcementResponseTimeHigh
-        expr: histogram_quantile(0.95, rate(acgs_enforcement_response_time_seconds_bucket{workflow_type="policy_enforcement"}[5m])) > 60
-        for: 5m
-        labels:
-          severity: warning
-          workflow: policy_enforcement
-          component: response_time
-          team: governance
-        annotations:
-          summary: 'High enforcement response time'
-          description: '95th percentile enforcement response time is {{ $value }}s'
-          runbook_url: 'https://docs.acgs.ai/runbooks/enforcement-response-time'
-
-  # ============================================================================
-  # WINA OVERSIGHT WORKFLOW ALERTS
-  # ============================================================================
-  - name: acgs_wina_oversight_workflow
-    rules:
-      # WINA Oversight Failures
-      - alert: WINAOversightFailures
-        expr: rate(acgs_wina_oversight_operations_total{result="failed"}[5m]) > 0.1
-        for: 3m
-        labels:
-          severity: warning
-          workflow: wina_oversight
-          component: oversight
-          team: governance
-        annotations:
-          summary: 'WINA oversight operation failures'
-          description: '{{ $value }} WINA oversight failures per second for {{ $labels.oversight_type }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/wina-oversight-failures'
-
-      # WINA Performance Monitoring Issues
-      - alert: WINAPerformanceMonitoringIssues
-        expr: acgs_wina_optimization_score < 0.8
-        for: 10m
-        labels:
-          severity: warning
-          workflow: wina_oversight
-          component: performance_monitoring
-          team: governance
-        annotations:
-          summary: 'WINA performance monitoring issues'
-          description: 'WINA optimization score is {{ $value }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/wina-performance-issues'
-
-  # ============================================================================
-  # AUDIT AND TRANSPARENCY WORKFLOW ALERTS
-  # ============================================================================
-  - name: acgs_audit_transparency_workflow
-    rules:
-      # Audit Data Collection Failures
-      - alert: AuditDataCollectionFailures
-        expr: rate(acgs_audit_data_collection_operations_total{result="failed"}[5m]) > 0.05
-        for: 3m
-        labels:
-          severity: warning
-          workflow: audit_transparency
-          component: data_collection
-          team: governance
-        annotations:
-          summary: 'Audit data collection failures'
-          description: '{{ $value }} audit data collection failures per second'
-          runbook_url: 'https://docs.acgs.ai/runbooks/audit-collection-failures'
-
-      # Transparency Report Generation Failures
-      - alert: TransparencyReportGenerationFailures
-        expr: rate(acgs_transparency_report_operations_total{result="failed"}[5m]) > 0.01
-        for: 5m
-        labels:
-          severity: warning
-          workflow: audit_transparency
-          component: report_generation
-          team: governance
-        annotations:
-          summary: 'Transparency report generation failures'
-          description: '{{ $value }} report generation failures per second'
-          runbook_url: 'https://docs.acgs.ai/runbooks/report-generation-failures'
+- name: acgs_policy_creation_workflow
+  rules:
+  - alert: PolicyCreationPipelineFailures
+    expr: rate(acgs_governance_workflow_operations_total{workflow_type="policy_creation",result="failed"}[5m])
+      > 0.1
+    for: 2m
+    labels:
+      severity: warning
+      workflow: policy_creation
+      component: pipeline
+      team: governance
+    annotations:
+      summary: Policy creation pipeline failures detected
+      description: '{{ $value }} pipeline failures per second in {{ $labels.stage
+        }}'
+      runbook_url: https://docs.acgs.ai/runbooks/policy-creation-failures
+  - alert: PolicyCreationStageTransitionIssues
+    expr: rate(acgs_governance_workflow_operations_total{workflow_type="policy_creation",stage=~".*_to_.*",result="failed"}[5m])
+      > 0.05
+    for: 3m
+    labels:
+      severity: warning
+      workflow: policy_creation
+      component: stage_transitions
+      team: governance
+    annotations:
+      summary: Policy creation stage transition issues
+      description: '{{ $value }} transition failures per second in {{ $labels.stage
+        }}'
+      runbook_url: https://docs.acgs.ai/runbooks/stage-transition-issues
+  - alert: PolicyCreationBottleneck
+    expr: acgs_active_policy_drafts{workflow_type="policy_creation"} > 100
+    for: 10m
+    labels:
+      severity: warning
+      workflow: policy_creation
+      component: bottleneck
+      team: governance
+    annotations:
+      summary: Policy creation bottleneck detected
+      description: '{{ $value }} policies waiting in creation queue'
+      runbook_url: https://docs.acgs.ai/runbooks/policy-creation-bottleneck
+  - alert: PolicyApprovalBottleneck
+    expr: acgs_policies_under_review{workflow_type="policy_creation"} > 50
+    for: 15m
+    labels:
+      severity: warning
+      workflow: policy_creation
+      component: approval_bottleneck
+      team: governance
+    annotations:
+      summary: Policy approval bottleneck detected
+      description: '{{ $value }} policies waiting for review'
+      runbook_url: https://docs.acgs.ai/runbooks/policy-approval-bottleneck
+  - alert: PolicyVotingStagnation
+    expr: acgs_policies_in_voting{workflow_type="policy_creation"} > 20
+    for: 30m
+    labels:
+      severity: warning
+      workflow: policy_creation
+      component: voting_stagnation
+      team: governance
+    annotations:
+      summary: Policy voting stagnation detected
+      description: '{{ $value }} policies stuck in voting stage'
+      runbook_url: https://docs.acgs.ai/runbooks/policy-voting-stagnation
+  - alert: LowPolicyImplementationRate
+    expr: rate(acgs_implemented_policies{workflow_type="policy_creation"}[1h]) < 0.1
+    for: 2h
+    labels:
+      severity: warning
+      workflow: policy_creation
+      component: implementation_rate
+      team: governance
+    annotations:
+      summary: Low policy implementation rate
+      description: Policy implementation rate is {{ $value }} policies per hour
+      runbook_url: https://docs.acgs.ai/runbooks/low-implementation-rate
+- name: acgs_constitutional_compliance_workflow
+  rules:
+  - alert: ConstitutionalComplianceWorkflowFailures
+    expr: rate(acgs_governance_workflow_operations_total{workflow_type="constitutional_compliance",result="failed"}[5m])
+      > 0.05
+    for: 2m
+    labels:
+      severity: critical
+      workflow: constitutional_compliance
+      component: workflow
+      team: governance
+      escalation: immediate
+    annotations:
+      summary: Constitutional compliance workflow failures
+      description: '{{ $value }} compliance workflow failures per second in {{ $labels.stage
+        }}'
+      runbook_url: https://docs.acgs.ai/runbooks/compliance-workflow-failures
+      impact: Constitutional governance integrity at risk
+  - alert: ComplianceValidationAccuracyLow
+    expr: rate(acgs_constitutional_compliance_checks_total{workflow_type="constitutional_compliance",result="success"}[5m])
+      / rate(acgs_constitutional_compliance_checks_total{workflow_type="constitutional_compliance"}[5m])
+      < 0.95
+    for: 3m
+    labels:
+      severity: warning
+      workflow: constitutional_compliance
+      component: validation_accuracy
+      team: governance
+    annotations:
+      summary: Compliance validation accuracy below threshold
+      description: Validation accuracy is {{ $value | humanizePercentage }}
+      runbook_url: https://docs.acgs.ai/runbooks/compliance-accuracy-low
+  - alert: ConstitutionalHashValidationFailures
+    expr: rate(acgs_constitutional_hash_validations_total{workflow_type="constitutional_compliance",result="failed"}[5m])
+      > 0.01
+    for: 1m
+    labels:
+      severity: critical
+      workflow: constitutional_compliance
+      component: hash_validation
+      team: governance
+      escalation: immediate
+    annotations:
+      summary: Constitutional hash validation failures
+      description: '{{ $value }} hash validation failures per second for {{ $labels.validation_type
+        }}'
+      runbook_url: https://docs.acgs.ai/runbooks/hash-validation-failures
+      impact: Constitutional integrity compromised
+  - alert: ComplianceAssessmentBacklog
+    expr: acgs_compliance_assessments{workflow_type="constitutional_compliance"} >
+      200
+    for: 10m
+    labels:
+      severity: warning
+      workflow: constitutional_compliance
+      component: assessment_backlog
+      team: governance
+    annotations:
+      summary: Compliance assessment backlog detected
+      description: '{{ $value }} assessments waiting for processing'
+      runbook_url: https://docs.acgs.ai/runbooks/compliance-backlog
+  - alert: ComplianceViolationsDetected
+    expr: acgs_compliance_violations_detected{workflow_type="constitutional_compliance"}
+      > 5
+    for: 5m
+    labels:
+      severity: critical
+      workflow: constitutional_compliance
+      component: violations
+      team: governance
+      escalation: immediate
+    annotations:
+      summary: Constitutional compliance violations detected
+      description: '{{ $value }} compliance violations detected'
+      runbook_url: https://docs.acgs.ai/runbooks/compliance-violations
+      impact: Constitutional violations require immediate attention
+- name: acgs_policy_enforcement_workflow
+  rules:
+  - alert: PolicyEnforcementWorkflowFailures
+    expr: rate(acgs_governance_workflow_operations_total{workflow_type="policy_enforcement",result="failed"}[5m])
+      > 0.1
+    for: 2m
+    labels:
+      severity: warning
+      workflow: policy_enforcement
+      component: workflow
+      team: governance
+    annotations:
+      summary: Policy enforcement workflow failures
+      description: '{{ $value }} enforcement workflow failures per second in {{ $labels.stage
+        }}'
+      runbook_url: https://docs.acgs.ai/runbooks/enforcement-workflow-failures
+  - alert: HighPolicyViolationDetectionRate
+    expr: rate(acgs_policy_violation_detections_total{workflow_type="policy_enforcement"}[5m])
+      > 1.0
+    for: 3m
+    labels:
+      severity: warning
+      workflow: policy_enforcement
+      component: violation_detection
+      team: governance
+    annotations:
+      summary: High policy violation detection rate
+      description: '{{ $value }} violations per second detected for {{ $labels.violation_type
+        }}'
+      runbook_url: https://docs.acgs.ai/runbooks/high-violation-rate
+  - alert: EnforcementActionFailures
+    expr: rate(acgs_policy_enforcement_actions_total{workflow_type="policy_enforcement",result="failed"}[5m])
+      > 0.1
+    for: 2m
+    labels:
+      severity: warning
+      workflow: policy_enforcement
+      component: enforcement_actions
+      team: governance
+    annotations:
+      summary: Enforcement action failures detected
+      description: '{{ $value }} enforcement action failures per second for {{ $labels.action_type
+        }}'
+      runbook_url: https://docs.acgs.ai/runbooks/enforcement-action-failures
+  - alert: RemediationFailures
+    expr: rate(acgs_remediation_operations_total{workflow_type="policy_enforcement",result="failed"}[5m])
+      > 0.05
+    for: 3m
+    labels:
+      severity: warning
+      workflow: policy_enforcement
+      component: remediation
+      team: governance
+    annotations:
+      summary: Remediation operation failures
+      description: '{{ $value }} remediation failures per second'
+      runbook_url: https://docs.acgs.ai/runbooks/remediation-failures
+  - alert: EnforcementResponseTimeHigh
+    expr: histogram_quantile(0.95, rate(acgs_enforcement_response_time_seconds_bucket{workflow_type="policy_enforcement"}[5m]))
+      > 60
+    for: 5m
+    labels:
+      severity: warning
+      workflow: policy_enforcement
+      component: response_time
+      team: governance
+    annotations:
+      summary: High enforcement response time
+      description: 95th percentile enforcement response time is {{ $value }}s
+      runbook_url: https://docs.acgs.ai/runbooks/enforcement-response-time
+- name: acgs_wina_oversight_workflow
+  rules:
+  - alert: WINAOversightFailures
+    expr: rate(acgs_wina_oversight_operations_total{result="failed"}[5m]) > 0.1
+    for: 3m
+    labels:
+      severity: warning
+      workflow: wina_oversight
+      component: oversight
+      team: governance
+    annotations:
+      summary: WINA oversight operation failures
+      description: '{{ $value }} WINA oversight failures per second for {{ $labels.oversight_type
+        }}'
+      runbook_url: https://docs.acgs.ai/runbooks/wina-oversight-failures
+  - alert: WINAPerformanceMonitoringIssues
+    expr: acgs_wina_optimization_score < 0.8
+    for: 10m
+    labels:
+      severity: warning
+      workflow: wina_oversight
+      component: performance_monitoring
+      team: governance
+    annotations:
+      summary: WINA performance monitoring issues
+      description: WINA optimization score is {{ $value }}
+      runbook_url: https://docs.acgs.ai/runbooks/wina-performance-issues
+- name: acgs_audit_transparency_workflow
+  rules:
+  - alert: AuditDataCollectionFailures
+    expr: rate(acgs_audit_data_collection_operations_total{result="failed"}[5m]) >
+      0.05
+    for: 3m
+    labels:
+      severity: warning
+      workflow: audit_transparency
+      component: data_collection
+      team: governance
+    annotations:
+      summary: Audit data collection failures
+      description: '{{ $value }} audit data collection failures per second'
+      runbook_url: https://docs.acgs.ai/runbooks/audit-collection-failures
+  - alert: TransparencyReportGenerationFailures
+    expr: rate(acgs_transparency_report_operations_total{result="failed"}[5m]) > 0.01
+    for: 5m
+    labels:
+      severity: warning
+      workflow: audit_transparency
+      component: report_generation
+      team: governance
+    annotations:
+      summary: Transparency report generation failures
+      description: '{{ $value }} report generation failures per second'
+      runbook_url: https://docs.acgs.ai/runbooks/report-generation-failures
+constitutional_hash: cdd01ef066bc6cf2

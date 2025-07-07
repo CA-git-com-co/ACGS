@@ -5,10 +5,11 @@ Basic smoke tests for quick validation of the E2E test framework.
 These tests run in offline mode and validate the framework itself.
 """
 
-import pytest
 import asyncio
 import time
-from typing import Dict, Any
+from typing import Any, Dict
+
+import pytest
 
 from ..framework.config import E2ETestConfig, E2ETestMode
 
@@ -18,8 +19,7 @@ from ..framework.config import E2ETestConfig, E2ETestMode
 async def test_framework_initialization():
     """Test that the E2E test framework can be initialized."""
     config = E2ETestConfig(
-        test_mode=E2ETestMode.OFFLINE,
-        constitutional_hash="cdd01ef066bc6cf2"
+        test_mode=E2ETestMode.OFFLINE, constitutional_hash="cdd01ef066bc6cf2"
     )
 
     assert config is not None
@@ -32,16 +32,15 @@ async def test_framework_initialization():
 async def test_constitutional_hash_validation():
     """Test constitutional hash validation."""
     config = E2ETestConfig(
-        test_mode=E2ETestMode.OFFLINE,
-        constitutional_hash="cdd01ef066bc6cf2"
+        test_mode=E2ETestMode.OFFLINE, constitutional_hash="cdd01ef066bc6cf2"
     )
-    
+
     # Test valid hash
     assert config.constitutional_hash == "cdd01ef066bc6cf2"
-    
+
     # Test hash format (should be 16 hex characters)
     assert len(config.constitutional_hash) == 16
-    assert all(c in '0123456789abcdef' for c in config.constitutional_hash)
+    assert all(c in "0123456789abcdef" for c in config.constitutional_hash)
 
 
 @pytest.mark.smoke
@@ -49,20 +48,19 @@ async def test_constitutional_hash_validation():
 async def test_performance_targets():
     """Test that performance targets are properly defined."""
     config = E2ETestConfig(
-        test_mode=E2ETestMode.OFFLINE,
-        constitutional_hash="cdd01ef066bc6cf2"
+        test_mode=E2ETestMode.OFFLINE, constitutional_hash="cdd01ef066bc6cf2"
     )
-    
+
     # Test latency targets
-    assert hasattr(config, 'performance')
-    
+    assert hasattr(config, "performance")
+
     # Simulate performance measurement
     start_time = time.perf_counter()
     await asyncio.sleep(0.001)  # 1ms delay
     end_time = time.perf_counter()
-    
+
     duration_ms = (end_time - start_time) * 1000
-    
+
     # Should be under 5ms target (with some tolerance for test environment)
     assert duration_ms < 50  # Generous tolerance for CI environments
 
@@ -72,12 +70,11 @@ async def test_performance_targets():
 async def test_offline_mode_configuration():
     """Test offline mode configuration."""
     config = E2ETestConfig(
-        test_mode=E2ETestMode.OFFLINE,
-        constitutional_hash="cdd01ef066bc6cf2"
+        test_mode=E2ETestMode.OFFLINE, constitutional_hash="cdd01ef066bc6cf2"
     )
 
     assert config.test_mode == E2ETestMode.OFFLINE
-    
+
     # In offline mode, external services should be disabled
     # This is a basic validation that the framework respects offline mode
 
@@ -86,11 +83,11 @@ async def test_offline_mode_configuration():
 def test_constitutional_compliance_hash():
     """Test constitutional compliance hash validation."""
     expected_hash = "cdd01ef066bc6cf2"
-    
+
     # Test hash format validation
     assert len(expected_hash) == 16
-    assert all(c in '0123456789abcdef' for c in expected_hash)
-    
+    assert all(c in "0123456789abcdef" for c in expected_hash)
+
     # Test that the hash is the expected value
     assert expected_hash == "cdd01ef066bc6cf2"
 
@@ -100,13 +97,13 @@ def test_constitutional_compliance_hash():
 async def test_basic_async_functionality():
     """Test basic async functionality works in the test environment."""
     start_time = time.perf_counter()
-    
+
     # Test async operations
     await asyncio.sleep(0.001)
-    
+
     end_time = time.perf_counter()
     duration_ms = (end_time - start_time) * 1000
-    
+
     # Should complete in reasonable time
     assert duration_ms >= 1  # At least 1ms
     assert duration_ms < 100  # Less than 100ms
@@ -128,13 +125,13 @@ async def test_framework_imports():
         from ..framework.base import BaseE2ETest, E2ETestResult
         from ..framework.config import E2ETestConfig, E2ETestMode, ServiceType
         from ..framework.core import E2ETestFramework
-        from ..framework.utils import TestEnvironmentManager
         from ..framework.mocks import MockServiceManager
         from ..framework.reporter import E2ETestReporter
-        
+        from ..framework.utils import TestEnvironmentManager
+
         # If we get here, all imports worked
         assert True
-        
+
     except ImportError as e:
         pytest.fail(f"Framework import failed: {e}")
 
@@ -144,23 +141,23 @@ async def test_framework_imports():
 async def test_performance_measurement():
     """Test performance measurement capabilities."""
     measurements = []
-    
+
     for i in range(5):
         start_time = time.perf_counter()
         await asyncio.sleep(0.001)  # 1ms operation
         end_time = time.perf_counter()
-        
+
         duration_ms = (end_time - start_time) * 1000
         measurements.append(duration_ms)
-    
+
     # Calculate P99 (95th percentile for small sample)
     measurements.sort()
     p99_index = int(0.95 * len(measurements))
     p99_latency = measurements[p99_index]
-    
+
     # P99 should be reasonable for test environment
     assert p99_latency < 100  # Less than 100ms
-    
+
     # Average should be close to expected
     avg_latency = sum(measurements) / len(measurements)
     assert avg_latency >= 1  # At least 1ms
@@ -172,10 +169,9 @@ async def test_performance_measurement():
 async def test_error_handling():
     """Test basic error handling in the framework."""
     config = E2ETestConfig(
-        test_mode=E2ETestMode.OFFLINE,
-        constitutional_hash="cdd01ef066bc6cf2"
+        test_mode=E2ETestMode.OFFLINE, constitutional_hash="cdd01ef066bc6cf2"
     )
-    
+
     # Test that config handles invalid values gracefully
     try:
         # This should work
@@ -188,33 +184,34 @@ async def test_error_handling():
 def test_environment_variables():
     """Test environment variable handling."""
     import os
-    
+
     # Test that we can access environment variables
     # These should be set by the test runner script
-    constitutional_hash = os.getenv('CONSTITUTIONAL_HASH', 'cdd01ef066bc6cf2')
-    test_mode = os.getenv('E2E_TEST_MODE', 'offline')
-    
-    assert constitutional_hash == 'cdd01ef066bc6cf2'
-    assert test_mode == 'offline'
+    constitutional_hash = os.getenv("CONSTITUTIONAL_HASH", "cdd01ef066bc6cf2")
+    test_mode = os.getenv("E2E_TEST_MODE", "offline")
+
+    assert constitutional_hash == "cdd01ef066bc6cf2"
+    assert test_mode == "offline"
 
 
 @pytest.mark.smoke
 @pytest.mark.asyncio
 async def test_concurrent_operations():
     """Test concurrent operations for performance validation."""
+
     async def mock_operation():
         await asyncio.sleep(0.001)
         return time.perf_counter()
-    
+
     # Run 5 concurrent operations
     start_time = time.perf_counter()
     tasks = [mock_operation() for _ in range(5)]
     results = await asyncio.gather(*tasks)
     end_time = time.perf_counter()
-    
+
     # All operations should complete
     assert len(results) == 5
-    
+
     # Total time should be less than sequential execution
     total_duration_ms = (end_time - start_time) * 1000
     assert total_duration_ms < 50  # Should be much faster than 5 * 1ms
@@ -241,7 +238,9 @@ async def test_service_connectivity():
     async with aiohttp.ClientSession() as session:
         for service_name, health_url in available_services:
             try:
-                async with session.get(health_url, timeout=aiohttp.ClientTimeout(total=5)) as response:
+                async with session.get(
+                    health_url, timeout=aiohttp.ClientTimeout(total=5)
+                ) as response:
                     if response.status == 200:
                         healthy_count += 1
                         print(f"✅ {service_name}: Healthy")
@@ -265,7 +264,7 @@ def test_infrastructure_connectivity():
         result = subprocess.run(
             ["pg_isready", "-h", "localhost", "-p", "5439"],
             capture_output=True,
-            timeout=10
+            timeout=10,
         )
         postgres_healthy = result.returncode == 0
     except Exception:
@@ -276,7 +275,7 @@ def test_infrastructure_connectivity():
         result = subprocess.run(
             ["redis-cli", "-h", "localhost", "-p", "6389", "ping"],
             capture_output=True,
-            timeout=10
+            timeout=10,
         )
         redis_healthy = result.returncode == 0 and b"PONG" in result.stdout
     except Exception:

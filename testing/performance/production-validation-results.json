@@ -1,0 +1,72 @@
+{
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "timestamp": 1751894582,
+  "validation_type": "production_infrastructure",
+  "summary": {
+    "total_tests": 10,
+    "passed_tests": 8,
+    "success_rate": 80
+  },
+  "results": [
+    {
+      "test_name": "PostgreSQL Health",
+      "result": "PASS",
+      "details": "Available, query latency: 47ms",
+      "constitutional_hash": "cdd01ef066bc6cf2"
+    },
+    {
+      "test_name": "Redis Health",
+      "result": "FAIL",
+      "details": "High latency: 146ms",
+      "constitutional_hash": "cdd01ef066bc6cf2"
+    },
+    {
+      "test_name": "Prometheus Health",
+      "result": "PASS",
+      "details": "Available, query latency: 7ms",
+      "constitutional_hash": "cdd01ef066bc6cf2"
+    },
+    {
+      "test_name": "Grafana Health",
+      "result": "FAIL",
+      "details": "Health check failed",
+      "constitutional_hash": "cdd01ef066bc6cf2"
+    },
+    {
+      "test_name": "Alert Rules",
+      "result": "PASS",
+      "details": "4 rule groups loaded",
+      "constitutional_hash": "cdd01ef066bc6cf2"
+    },
+    {
+      "test_name": "Alert System",
+      "result": "PASS",
+      "details": "13 active alerts (expected)",
+      "constitutional_hash": "cdd01ef066bc6cf2"
+    },
+    {
+      "test_name": "Grafana Dashboards",
+      "result": "PASS",
+      "details": "3 dashboards imported",
+      "constitutional_hash": "cdd01ef066bc6cf2"
+    },
+    {
+      "test_name": "Constitutional Compliance",
+      "result": "PASS",
+      "details": "Hash found 1 times in config",
+      "constitutional_hash": "cdd01ef066bc6cf2"
+    },
+    {
+      "test_name": "Alert Rule Compliance",
+      "result": "PASS",
+      "details": "Hash found 1 times in alert rules",
+      "constitutional_hash": "cdd01ef066bc6cf2"
+    },
+    {
+      "test_name": "Sustained Load",
+      "result": "PASS",
+      "details": "59 requests, 100% success rate",
+      "constitutional_hash": "cdd01ef066bc6cf2"
+    }
+  ]
+}

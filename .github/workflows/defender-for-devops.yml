@@ -16,6 +16,7 @@
 # and provide permission before this can report data back to azure.
 # Read the official documentation here : https://learn.microsoft.com/en-us/azure/defender-for-cloud/quickstart-onboard-github
 
+# Constitutional Hash: cdd01ef066bc6cf2
 name: 'Microsoft Defender For Devops'
 permissions:
   contents: read

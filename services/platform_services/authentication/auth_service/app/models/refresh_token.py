@@ -16,11 +16,15 @@ class RefreshToken(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
-    
+
     # Token details
-    token = Column(String(1024), unique=True, index=True, nullable=False)  # Store the refresh token string (or its hash)
-    jti = Column(String(255), unique=True, index=True, nullable=False)  # JTI of the refresh token itself
-    
+    token = Column(
+        String(1024), unique=True, index=True, nullable=False
+    )  # Store the refresh token string (or its hash)
+    jti = Column(
+        String(255), unique=True, index=True, nullable=False
+    )  # JTI of the refresh token itself
+
     # Token lifecycle
     expires_at = Column(DateTime(timezone=True), nullable=False)
     created_at = Column(
@@ -29,7 +33,9 @@ class RefreshToken(Base):
         nullable=False,
     )
     revoked = Column(Boolean, default=False, nullable=False, index=True)
-    is_revoked = Column(Boolean, default=False, nullable=False, index=True)  # Alias for compatibility
+    is_revoked = Column(
+        Boolean, default=False, nullable=False, index=True
+    )  # Alias for compatibility
 
     # Relationships
     user = relationship("User", back_populates="refresh_tokens")

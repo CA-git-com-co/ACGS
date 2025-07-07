@@ -11,7 +11,6 @@ from pathlib import Path
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 def setup_environment():
     """Set up the environment for the integrity service."""
     # Set up Python path

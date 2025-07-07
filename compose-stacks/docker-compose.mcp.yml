@@ -1,0 +1,222 @@
+version: '3.8'
+services:
+  mcp-aggregator:
+    image: node:18-alpine
+    container_name: acgs_mcp_aggregator
+    ports:
+    - ${MCP_AGGREGATOR_PORT:-3000}:3000
+    volumes:
+    - ./services/mcp/aggregator:/app
+    - mcp_aggregator_data:/data
+    working_dir: /app
+    environment:
+    - NODE_ENV=${NODE_ENV:-development}
+    - PORT=3000
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - ACGS_CONSTITUTIONAL_AI_URL=http://host.docker.internal:8001
+    - FILESYSTEM_MCP_URL=http://filesystem-mcp:3001
+    - GITHUB_MCP_URL=http://github-mcp:3002
+    - BROWSER_MCP_URL=http://browser-mcp:3003
+    command: "sh -c \"\n  npm install &&\n  npm start\n\"\n"
+    healthcheck:
+      test:
+      - CMD
+      - wget
+      - --quiet
+      - --tries=1
+      - --spider
+      - http://localhost:3000/health
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+    - mcp_network
+    - acgs_network
+    labels:
+    - acgs.service=mcp
+    - acgs.component=aggregator
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
+  filesystem-mcp:
+    image: node:18-alpine
+    container_name: acgs_filesystem_mcp
+    ports:
+    - ${FILESYSTEM_MCP_PORT:-3001}:3001
+    volumes:
+    - ./services/mcp/filesystem:/app
+    - filesystem_mcp_data:/data
+    - /tmp/acgs-workspace:/workspace
+    working_dir: /app
+    environment:
+    - NODE_ENV=${NODE_ENV:-development}
+    - PORT=3001
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - WORKSPACE_PATH=/workspace
+    - MAX_FILE_SIZE=10MB
+    - ALLOWED_EXTENSIONS=.txt,.md,.json,.yaml,.yml,.py,.js,.ts
+    command: "sh -c \"\n  npm install &&\n  npm start\n\"\n"
+    healthcheck:
+      test:
+      - CMD
+      - wget
+      - --quiet
+      - --tries=1
+      - --spider
+      - http://localhost:3001/health
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+    - mcp_network
+    labels:
+    - acgs.service=mcp
+    - acgs.component=filesystem
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
+  github-mcp:
+    image: node:18-alpine
+    container_name: acgs_github_mcp
+    ports:
+    - ${GITHUB_MCP_PORT:-3002}:3002
+    volumes:
+    - ./services/mcp/github:/app
+    - github_mcp_data:/data
+    working_dir: /app
+    environment:
+    - NODE_ENV=${NODE_ENV:-development}
+    - PORT=3002
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - GITHUB_TOKEN=${GITHUB_TOKEN}
+    - RATE_LIMIT_PER_HOUR=100
+    command: "sh -c \"\n  npm install &&\n  npm start\n\"\n"
+    healthcheck:
+      test:
+      - CMD
+      - wget
+      - --quiet
+      - --tries=1
+      - --spider
+      - http://localhost:3002/health
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+    - mcp_network
+    labels:
+    - acgs.service=mcp
+    - acgs.component=github
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
+  browser-mcp:
+    image: node:18-alpine
+    container_name: acgs_browser_mcp
+    ports:
+    - ${BROWSER_MCP_PORT:-3003}:3003
+    volumes:
+    - ./services/mcp/browser:/app
+    - browser_mcp_data:/data
+    working_dir: /app
+    environment:
+    - NODE_ENV=${NODE_ENV:-development}
+    - PORT=3003
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - PUPPETEER_ARGS=--no-sandbox --disable-setuid-sandbox
+    - MAX_CONCURRENT_BROWSERS=2
+    command: "sh -c \"\n  apk add --no-cache chromium &&\n  npm install &&\n  npm\
+      \ start\n\"\n"
+    healthcheck:
+      test:
+      - CMD
+      - wget
+      - --quiet
+      - --tries=1
+      - --spider
+      - http://localhost:3003/health
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+    - mcp_network
+    labels:
+    - acgs.service=mcp
+    - acgs.component=browser
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
+  mcp-monitor:
+    image: node:18-alpine
+    container_name: acgs_mcp_monitor
+    ports:
+    - ${MCP_MONITOR_PORT:-3004}:3004
+    volumes:
+    - ./services/mcp/monitor:/app
+    - mcp_monitor_data:/data
+    working_dir: /app
+    environment:
+    - NODE_ENV=${NODE_ENV:-development}
+    - PORT=3004
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - MCP_SERVICES=mcp-aggregator:3000,filesystem-mcp:3001,github-mcp:3002,browser-mcp:3003
+    command: "sh -c \"\n  npm install &&\n  npm start\n\"\n"
+    depends_on:
+    - mcp-aggregator
+    - filesystem-mcp
+    - github-mcp
+    - browser-mcp
+    healthcheck:
+      test:
+      - CMD
+      - wget
+      - --quiet
+      - --tries=1
+      - --spider
+      - http://localhost:3004/health
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+    - mcp_network
+    labels:
+    - acgs.service=mcp
+    - acgs.component=monitor
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
+volumes:
+  mcp_aggregator_data:
+    driver: local
+    labels:
+    - acgs.volume=mcp
+    - acgs.component=aggregator
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
+  filesystem_mcp_data:
+    driver: local
+    labels:
+    - acgs.volume=mcp
+    - acgs.component=filesystem
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
+  github_mcp_data:
+    driver: local
+    labels:
+    - acgs.volume=mcp
+    - acgs.component=github
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
+  browser_mcp_data:
+    driver: local
+    labels:
+    - acgs.volume=mcp
+    - acgs.component=browser
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
+  mcp_monitor_data:
+    driver: local
+    labels:
+    - acgs.volume=mcp
+    - acgs.component=monitor
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
+networks:
+  mcp_network:
+    driver: bridge
+    labels:
+    - acgs.network=mcp
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
+  acgs_network:
+    external: true
+constitutional_hash: cdd01ef066bc6cf2

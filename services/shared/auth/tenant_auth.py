@@ -451,17 +451,19 @@ class TenantAuthenticationService:
         result = []
         for tenant_info in user_tenants:
             tenant = tenant_info["tenant"]
-            result.append({
-                "tenant_id": str(tenant.id),
-                "tenant_name": tenant.name,
-                "tenant_slug": tenant.slug,
-                "organization_id": str(tenant.organization_id),
-                "role": tenant_info["role"],
-                "access_level": tenant_info["access_level"],
-                "security_level": tenant.security_level,
-                "status": tenant.status,
-                "last_accessed_at": tenant_info["last_accessed_at"],
-            })
+            result.append(
+                {
+                    "tenant_id": str(tenant.id),
+                    "tenant_name": tenant.name,
+                    "tenant_slug": tenant.slug,
+                    "organization_id": str(tenant.organization_id),
+                    "role": tenant_info["role"],
+                    "access_level": tenant_info["access_level"],
+                    "security_level": tenant.security_level,
+                    "status": tenant.status,
+                    "last_accessed_at": tenant_info["last_accessed_at"],
+                }
+            )
 
         return result
 

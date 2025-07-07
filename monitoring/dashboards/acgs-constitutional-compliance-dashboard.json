@@ -1,0 +1,192 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "ACGS Constitutional Compliance Dashboard",
+    "tags": [
+      "acgs",
+      "constitutional",
+      "compliance",
+      "constitutional_hash:cdd01ef066bc6cf2"
+    ],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Constitutional Hash Validation Rate",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "avg(acgs_constitutional_hash_valid)",
+            "legendFormat": "Hash Valid",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "red",
+                  "value": null
+                },
+                {
+                  "color": "yellow",
+                  "value": 0.95
+                },
+                {
+                  "color": "green",
+                  "value": 1.0
+                }
+              ]
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "id": 2,
+        "title": "Constitutional Compliance Score",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "avg(acgs_constitutional_compliance_score)",
+            "legendFormat": "Compliance Score",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "red",
+                  "value": null
+                },
+                {
+                  "color": "yellow",
+                  "value": 0.95
+                },
+                {
+                  "color": "green",
+                  "value": 1.0
+                }
+              ]
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 8,
+          "y": 0
+        }
+      },
+      {
+        "id": 3,
+        "title": "Policy Violations",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(acgs_policy_violations_total)",
+            "legendFormat": "Violations",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "yellow",
+                  "value": 1
+                },
+                {
+                  "color": "red",
+                  "value": 5
+                }
+              ]
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 16,
+          "y": 0
+        }
+      },
+      {
+        "id": 4,
+        "title": "Constitutional Hash Validation by Service",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "acgs_constitutional_hash_valid",
+            "legendFormat": "{{job}} - {{instance}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "min": 0,
+            "max": 1
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        }
+      },
+      {
+        "id": 5,
+        "title": "Governance Metrics",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "acgs_governance_decisions_total",
+            "legendFormat": "Decisions - {{job}}",
+            "refId": "A"
+          },
+          {
+            "expr": "acgs_governance_policy_updates_total",
+            "legendFormat": "Policy Updates - {{job}}",
+            "refId": "B"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short"
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        }
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "refresh": "5s"
+  },
+  "overwrite": true,
+  "constitutional_hash": "cdd01ef066bc6cf2"
+}

@@ -81,8 +81,8 @@ async def metrics():
         "performance": {
             "p99_latency_ms": 2.1,
             "cache_hit_rate": 0.89,
-            "requests_per_second": 125
-        }
+            "requests_per_second": 125,
+        },
     }
 
 

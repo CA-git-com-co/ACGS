@@ -10,10 +10,10 @@ import asyncio
 import json
 import logging
 import uuid
+from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional, Callable
-from dataclasses import dataclass, asdict
+from typing import Any, Callable, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -23,6 +23,7 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 class RollbackStatus(Enum):
     """Status of rollback operations."""
+
     PENDING = "pending"
     IN_PROGRESS = "in_progress"
     COMPLETED = "completed"
@@ -32,6 +33,7 @@ class RollbackStatus(Enum):
 
 class OperationType(Enum):
     """Types of operations that can be rolled back."""
+
     CREATE = "create"
     UPDATE = "update"
     DELETE = "delete"
@@ -43,6 +45,7 @@ class OperationType(Enum):
 @dataclass
 class OperationSnapshot:
     """Snapshot of operation state for rollback purposes."""
+
     operation_id: str
     operation_type: OperationType
     timestamp: datetime
@@ -56,6 +59,7 @@ class OperationSnapshot:
 @dataclass
 class RollbackResult:
     """Result of a rollback operation."""
+
     operation_id: str
     rollback_id: str
     status: RollbackStatus
@@ -81,15 +85,17 @@ class OperationRollbackManager:
 
     def _register_default_procedures(self) -> None:
         """Register default rollback procedures."""
-        self.rollback_procedures.update({
-            "database_create": self._rollback_database_create,
-            "database_update": self._rollback_database_update,
-            "database_delete": self._rollback_database_delete,
-            "file_create": self._rollback_file_create,
-            "file_update": self._rollback_file_update,
-            "file_delete": self._rollback_file_delete,
-            "configuration_change": self._rollback_configuration_change,
-        })
+        self.rollback_procedures.update(
+            {
+                "database_create": self._rollback_database_create,
+                "database_update": self._rollback_database_update,
+                "database_delete": self._rollback_database_delete,
+                "file_create": self._rollback_file_create,
+                "file_update": self._rollback_file_update,
+                "file_delete": self._rollback_file_delete,
+                "configuration_change": self._rollback_configuration_change,
+            }
+        )
 
     async def create_operation_snapshot(
         self,
@@ -113,7 +119,7 @@ class OperationRollbackManager:
             )
 
             self.snapshots[operation_id] = snapshot
-            
+
             self.logger.info(
                 f"Created operation snapshot for {operation_id}",
                 extra={
@@ -122,9 +128,9 @@ class OperationRollbackManager:
                     "constitutional_hash": self.constitutional_hash,
                     "operational_transparency": True,
                     "operation_reversibility": True,
-                }
+                },
             )
-            
+
             return True
 
         except Exception as e:
@@ -143,16 +149,16 @@ class OperationRollbackManager:
                 return False
 
             self.snapshots[operation_id].state_after = state_after
-            
+
             self.logger.info(
                 f"Updated operation snapshot for {operation_id}",
                 extra={
                     "operation_id": operation_id,
                     "constitutional_hash": self.constitutional_hash,
                     "operational_transparency": True,
-                }
+                },
             )
-            
+
             return True
 
         except Exception as e:
@@ -166,7 +172,7 @@ class OperationRollbackManager:
     ) -> RollbackResult:
         """Rollback an operation using its snapshot."""
         rollback_id = str(uuid.uuid4())
-        
+
         try:
             if operation_id not in self.snapshots:
                 return RollbackResult(
@@ -202,7 +208,7 @@ class OperationRollbackManager:
                     "constitutional_hash": self.constitutional_hash,
                     "operational_transparency": True,
                     "operation_reversibility": True,
-                }
+                },
             )
 
             # Execute rollback procedure
@@ -210,7 +216,9 @@ class OperationRollbackManager:
             success = await procedure(snapshot)
 
             status = RollbackStatus.COMPLETED if success else RollbackStatus.FAILED
-            message = "Rollback completed successfully" if success else "Rollback failed"
+            message = (
+                "Rollback completed successfully" if success else "Rollback failed"
+            )
 
             result = RollbackResult(
                 operation_id=operation_id,
@@ -224,7 +232,7 @@ class OperationRollbackManager:
                     "reason": reason,
                     "procedure_used": procedure_name,
                     "snapshot_timestamp": snapshot.timestamp.isoformat(),
-                }
+                },
             )
 
             self.logger.info(
@@ -235,7 +243,7 @@ class OperationRollbackManager:
                     "success": success,
                     "constitutional_hash": self.constitutional_hash,
                     "operational_transparency": True,
-                }
+                },
             )
 
             return result
@@ -291,7 +299,9 @@ class OperationRollbackManager:
     async def _rollback_configuration_change(self, snapshot: OperationSnapshot) -> bool:
         """Rollback configuration change operation."""
         # Implementation would restore the previous configuration
-        self.logger.info(f"Rolling back configuration change for {snapshot.operation_id}")
+        self.logger.info(
+            f"Rolling back configuration change for {snapshot.operation_id}"
+        )
         return True
 
     def get_operation_snapshot(self, operation_id: str) -> Optional[OperationSnapshot]:
@@ -314,8 +324,8 @@ _rollback_manager: Optional[OperationRollbackManager] = None
 def get_rollback_manager() -> OperationRollbackManager:
     """Get or create the global rollback manager instance."""
     global _rollback_manager
-    
+
     if _rollback_manager is None:
         _rollback_manager = OperationRollbackManager()
-    
+
     return _rollback_manager

@@ -27,15 +27,14 @@ import numpy as np
 
 from services.shared.metrics import get_metrics
 
-from ..services.collective_constitutional_ai import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from ..services.collective_constitutional_ai import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     BiasCategory,
     CollectiveInput,
     DemocraticLegitimacyLevel,
     PolisConversation,
+    "cdd01ef066bc6cf2",
+    =,
 )
 
 logger = logging.getLogger(__name__)

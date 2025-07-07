@@ -16,7 +16,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 # Local implementations to avoid shared module dependencies
 async def get_db():
     # requires: Valid input parameters

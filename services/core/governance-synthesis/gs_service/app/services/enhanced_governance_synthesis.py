@@ -16,13 +16,12 @@ from datetime import datetime
 from typing import Any
 
 from ..core.opa_integration import get_opa_client
-from ..core.wina_rego_synthesis import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from ..core.wina_rego_synthesis import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     WINARegoSynthesisResult,
     WINARegoSynthesizer,
+    "cdd01ef066bc6cf2",
+    =,
     get_wina_rego_synthesizer,
     synthesize_rego_policy_with_wina,
 )

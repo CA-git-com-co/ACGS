@@ -2,6 +2,7 @@
 Filesystem MCP Server for Gemini CLI
 Enhanced file system operations with security controls
 """
+
 # Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio

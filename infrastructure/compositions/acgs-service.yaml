@@ -9,468 +9,186 @@ spec:
   compositeTypeRef:
     apiVersion: acgs.io/v1alpha1
     kind: ACGSServiceClaim
-
   mode: Pipeline
   pipeline:
-    - step: generate-resources
-      functionRef:
-        name: function-kcl
-      input:
-        apiVersion: krm.kcl.dev/v1alpha1
-        kind: KCLInput
-        metadata:
-          name: acgs-service-resources
-        spec:
-          source: |
-            import regex
-
-            # Get the observed composite resource
-            oxr = option("params").oxr
-            ocds = option("params").ocds
-
-            # Extract service configuration
-            serviceType = oxr.spec.serviceType
-            serviceName = oxr.spec.serviceName
-            constitutionalHash = oxr.spec.constitutionalHash or "cdd01ef066bc6cf2"
-
-            # Service port mapping
-            servicePorts = {
-                "auth": 8000,
-                "ac": 8001,
-                "integrity": 8002,
-                "fv": 8003,
-                "gs": 8004,
-                "pgc": 8005,
-                "ec": 8006,
-                "dgm": 8007
-            }
-
-            # Service descriptions
-            serviceDescriptions = {
-                "auth": "ACGS Authentication Service - Handles user authentication and authorization",
-                "ac": "ACGS Audit & Compliance Service - Constitutional AI compliance monitoring",
-                "integrity": "ACGS Integrity Service - Data integrity and validation",
-                "fv": "ACGS Formal Verification Service - Mathematical proof verification",
-                "gs": "ACGS Governance Synthesis Service - Policy synthesis and governance",
-                "pgc": "ACGS Policy Governance Service - Policy management and compliance",
-                "ec": "ACGS Evolutionary Computation Service - Genetic algorithm optimization",
-                "dgm": "ACGS Dynamic Governance Model Service - Adaptive governance modeling"
-            }
-
-            # Get deployment configuration
-            deployment = oxr.spec.deployment or {}
-            replicas = deployment.replicas or 1
-            resources = deployment.resources or {}
-            requests = resources.requests or {"cpu": "200m", "memory": "512Mi"}
-            limits = resources.limits or {"cpu": "500m", "memory": "1Gi"}
-            port = deployment.port or servicePorts[serviceType]
-
-            # Get GitOps configuration
-            gitops = oxr.spec.gitops or {}
-            repository = gitops.repository or {}
-            repoName = repository.name or "${serviceName}-${serviceType}-service"
-            repoDescription = repository.description or serviceDescriptions[serviceType]
-
-            # Generate Dockerfile content
-            dockerfileContent = """FROM python:3.11-slim
-
-            # Set working directory
-            WORKDIR /app
-
-            # Install system dependencies
-            RUN apt-get update && apt-get install -y \\
-                curl \\
-                && rm -rf /var/lib/apt/lists/*
-
-            # Create non-root user
-            RUN groupadd -r acgs && useradd -r -g acgs acgs
-
-            # Copy requirements and install Python dependencies
-            COPY requirements.txt .
-            RUN pip install --no-cache-dir -r requirements.txt
-
-            # Copy application code
-            COPY . .
-
-            # Set ownership
-            RUN chown -R acgs:acgs /app
-
-            # Switch to non-root user
-            USER acgs
-
-            # Expose port
-            EXPOSE ${port}
-
-            # Health check
-            HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \\
-                CMD curl -f http://localhost:${port}/health || exit 1
-
-            # Start the service
-            CMD ["python", "main.py"]
-            """
-
-            # Generate main.py content
-            mainPyContent = """#!/usr/bin/env python3
-            \"\"\"
-            ACGS ${serviceType.upper()} Service
-            ${serviceDescriptions[serviceType]}
-            \"\"\"
-
-            import asyncio
-            import logging
-            import os
-            from fastapi import FastAPI, HTTPException
-            from fastapi.middleware.cors import CORSMiddleware
-            from fastapi.responses import JSONResponse
-            import uvicorn
-
-            # Configure logging
-            logging.basicConfig(
-                level=logging.INFO,
-                format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-            )
-            logger = logging.getLogger(__name__)
-
-            # Initialize FastAPI app
-            app = FastAPI(
-                title="ACGS ${serviceType.upper()} Service",
-                description="${serviceDescriptions[serviceType]}",
-                version="1.0.0"
-            )
-
-            # Add CORS middleware
-            app.add_middleware(
-                CORSMiddleware,
-                allow_origins=["*"],
-                allow_credentials=True,
-                allow_methods=["*"],
-                allow_headers=["*"],
-            )
-
-            # Constitutional hash validation
-            CONSTITUTIONAL_HASH = "${constitutionalHash}"
-
-            @app.get("/health")
-            async def health_check():
-                \"\"\"Health check endpoint\"\"\"
-                return {
-                    "status": "healthy",
-                    "service": "${serviceType}",
-                    "constitutional_hash": CONSTITUTIONAL_HASH,
-                    "version": "1.0.0"
-                }
-
-            @app.get("/")
-            async def root():
-                \"\"\"Root endpoint\"\"\"
-                return {
-                    "service": "ACGS ${serviceType.upper()} Service",
-                    "description": "${serviceDescriptions[serviceType]}",
-                    "constitutional_hash": CONSTITUTIONAL_HASH,
-                    "endpoints": ["/health", "/docs", "/redoc"]
-                }
-
-            @app.get("/constitutional/validate")
-            async def validate_constitutional_hash(hash: str = None):
-                \"\"\"Validate constitutional hash\"\"\"
-                if hash and hash != CONSTITUTIONAL_HASH:
-                    raise HTTPException(
-                        status_code=400,
-                        detail=f"Invalid constitutional hash. Expected: {CONSTITUTIONAL_HASH}"
-                    )
-                return {
-                    "valid": True,
-                    "constitutional_hash": CONSTITUTIONAL_HASH,
-                    "service": "${serviceType}"
-                }
-
-            if __name__ == "__main__":
-                port = int(os.getenv("PORT", ${port}))
-                uvicorn.run(
-                    "main:app",
-                    host="0.0.0.0",
-                    port=port,
-                    log_level="info",
-                    access_log=True
-                )
-            """
-
-            # Generate requirements.txt content
-            requirementsTxtContent = """fastapi==0.104.1
-            uvicorn[standard]==0.24.0
-            pydantic==2.5.0
-            httpx==0.25.2
-            python-multipart==0.0.6
-            python-jose[cryptography]==3.3.0
-            passlib[bcrypt]==1.7.4
-            python-dotenv==1.0.0
-            prometheus-client==0.19.0
-            structlog==23.2.0
-            """
-
-            # Generate README.md content
-            readmeContent = """# ACGS ${serviceType.upper()} Service
-
-            ${serviceDescriptions[serviceType]}
-
-            ## Overview
-
-            This service is part of the Autonomous Code Generation System (ACGS) and provides ${serviceType} functionality with constitutional governance compliance.
-
-            ## Features
-
-            - Constitutional hash validation: `${constitutionalHash}`
-            - Health check endpoint: `/health`
-            - Prometheus metrics: `/metrics`
-            - API documentation: `/docs`
-            - Service port: `${port}`
-
-            ## Quick Start
-
-            ### Using Docker
-
-            ```bash
-            docker build -t acgs-${serviceType}-service .
-            docker run -p ${port}:${port} acgs-${serviceType}-service
-            ```
-
-            ### Local Development
-
-            ```bash
-            pip install -r requirements.txt
-            python main.py
-            ```
-
-            ## Configuration
-
-            Environment variables:
-
-            - `PORT`: Service port (default: ${port})
-            - `LOG_LEVEL`: Logging level (default: INFO)
-            - `CONSTITUTIONAL_HASH`: Constitutional hash for validation
-
-            ## Health Check
-
-            ```bash
-            curl http://localhost:${port}/health
-            ```
-
-            ## Constitutional Compliance
-
-            This service validates constitutional compliance using hash: `${constitutionalHash}`
-
-            ```bash
-            curl http://localhost:${port}/constitutional/validate?hash=${constitutionalHash}
-            ```
-
-            ## Deployment
-
-            This service is designed to be deployed using GitOps with ArgoCD and Crossplane.
-
-            ## License
-
-            Copyright (c) 2025 ACGS Project. All rights reserved.
-            """
-
-            # Generate Kubernetes manifests
-            k8sManifests = """apiVersion: apps/v1
-            kind: Deployment
-            metadata:
-              name: ${serviceName}-${serviceType}
-              labels:
-                app: ${serviceName}-${serviceType}
-                service: ${serviceType}
-                constitutional-hash: ${constitutionalHash}
-            spec:
-              replicas: ${replicas}
-              selector:
-                matchLabels:
-                  app: ${serviceName}-${serviceType}
-              template:
-                metadata:
-                  labels:
-                    app: ${serviceName}-${serviceType}
-                    service: ${serviceType}
-                spec:
-                  securityContext:
-                    runAsNonRoot: true
-                    runAsUser: 1000
-                    runAsGroup: 1000
-                  containers:
-                  - name: ${serviceType}-service
-                    image: ghcr.io/ca-git-com-co/acgs/${serviceName}-${serviceType}:latest
-                    ports:
-                    - containerPort: ${port}
-                      name: http
-                    resources:
-                      requests:
-                        cpu: ${requests.cpu}
-                        memory: ${requests.memory}
-                      limits:
-                        cpu: ${limits.cpu}
-                        memory: ${limits.memory}
-                    env:
-                    - name: PORT
-                      value: "${port}"
-                    - name: CONSTITUTIONAL_HASH
-                      value: "${constitutionalHash}"
-                    - name: SERVICE_TYPE
-                      value: "${serviceType}"
-                    livenessProbe:
-                      httpGet:
-                        path: /health
-                        port: ${port}
-                      initialDelaySeconds: 30
-                      periodSeconds: 10
-                    readinessProbe:
-                      httpGet:
-                        path: /health
-                        port: ${port}
-                      initialDelaySeconds: 5
-                      periodSeconds: 5
-            ---
-            apiVersion: v1
-            kind: Service
-            metadata:
-              name: ${serviceName}-${serviceType}
-              labels:
-                app: ${serviceName}-${serviceType}
-                service: ${serviceType}
-            spec:
-              selector:
-                app: ${serviceName}-${serviceType}
-              ports:
-              - port: ${port}
-                targetPort: ${port}
-                name: http
-              type: ClusterIP
-            """
-
-            # Create GitHub repository resource
-            githubRepo = {
-                "apiVersion": "github.upbound.io/v1alpha1",
-                "kind": "Repository",
-                "metadata": {
-                    "name": repoName,
-                    "annotations": {
-                        "crossplane.io/external-name": repoName
-                    }
-                },
-                "spec": {
-                    "forProvider": {
-                        "name": repoName,
-                        "description": repoDescription,
-                        "private": repository.private or True,
-                        "hasIssues": repository.hasIssues or True,
-                        "hasProjects": repository.hasProjects or True,
-                        "hasWiki": repository.hasWiki or False,
-                        "autoInit": repository.autoInit or True,
-                        "defaultBranch": repository.defaultBranch or "main"
-                    },
-                    "providerConfigRef": {
-                        "name": "github-provider-config"
-                    }
-                }
-            }
-
-            # Create repository files
-            repositoryFiles = [
-                {
-                    "apiVersion": "github.upbound.io/v1alpha1",
-                    "kind": "RepositoryFile",
-                    "metadata": {
-                        "name": "${repoName}-dockerfile"
-                    },
-                    "spec": {
-                        "forProvider": {
-                            "repository": repoName,
-                            "file": "Dockerfile",
-                            "content": dockerfileContent,
-                            "branch": "main",
-                            "commitMessage": "Add Dockerfile for ${serviceType} service"
-                        },
-                        "providerConfigRef": {
-                            "name": "github-provider-config"
-                        }
-                    }
-                },
-                {
-                    "apiVersion": "github.upbound.io/v1alpha1",
-                    "kind": "RepositoryFile",
-                    "metadata": {
-                        "name": "${repoName}-main-py"
-                    },
-                    "spec": {
-                        "forProvider": {
-                            "repository": repoName,
-                            "file": "main.py",
-                            "content": mainPyContent,
-                            "branch": "main",
-                            "commitMessage": "Add main.py for ${serviceType} service"
-                        },
-                        "providerConfigRef": {
-                            "name": "github-provider-config"
-                        }
-                    }
-                },
-                {
-                    "apiVersion": "github.upbound.io/v1alpha1",
-                    "kind": "RepositoryFile",
-                    "metadata": {
-                        "name": "${repoName}-requirements"
-                    },
-                    "spec": {
-                        "forProvider": {
-                            "repository": repoName,
-                            "file": "requirements.txt",
-                            "content": requirementsTxtContent,
-                            "branch": "main",
-                            "commitMessage": "Add requirements.txt for ${serviceType} service"
-                        },
-                        "providerConfigRef": {
-                            "name": "github-provider-config"
-                        }
-                    }
-                },
-                {
-                    "apiVersion": "github.upbound.io/v1alpha1",
-                    "kind": "RepositoryFile",
-                    "metadata": {
-                        "name": "${repoName}-readme"
-                    },
-                    "spec": {
-                        "forProvider": {
-                            "repository": repoName,
-                            "file": "README.md",
-                            "content": readmeContent,
-                            "branch": "main",
-                            "commitMessage": "Add README.md for ${serviceType} service"
-                        },
-                        "providerConfigRef": {
-                            "name": "github-provider-config"
-                        }
-                    }
-                },
-                {
-                    "apiVersion": "github.upbound.io/v1alpha1",
-                    "kind": "RepositoryFile",
-                    "metadata": {
-                        "name": "${repoName}-k8s-manifests"
-                    },
-                    "spec": {
-                        "forProvider": {
-                            "repository": repoName,
-                            "file": "k8s/manifests.yaml",
-                            "content": k8sManifests,
-                            "branch": "main",
-                            "commitMessage": "Add Kubernetes manifests for ${serviceType} service"
-                        },
-                        "providerConfigRef": {
-                            "name": "github-provider-config"
-                        }
-                    }
-                }
-            ]
-
-            # Return all resources
-            items = [githubRepo] + repositoryFiles
+  - step: generate-resources
+    functionRef:
+      name: function-kcl
+    input:
+      apiVersion: krm.kcl.dev/v1alpha1
+      kind: KCLInput
+      metadata:
+        name: acgs-service-resources
+      spec:
+        source: "import regex\n\n# Get the observed composite resource\noxr = option(\"\
+          params\").oxr\nocds = option(\"params\").ocds\n\n# Extract service configuration\n\
+          serviceType = oxr.spec.serviceType\nserviceName = oxr.spec.serviceName\n\
+          constitutionalHash = oxr.spec.constitutionalHash or \"cdd01ef066bc6cf2\"\
+          \n\n# Service port mapping\nservicePorts = {\n    \"auth\": 8000,\n    \"\
+          ac\": 8001,\n    \"integrity\": 8002,\n    \"fv\": 8003,\n    \"gs\": 8004,\n\
+          \    \"pgc\": 8005,\n    \"ec\": 8006,\n    \"dgm\": 8007\n}\n\n# Service\
+          \ descriptions\nserviceDescriptions = {\n    \"auth\": \"ACGS Authentication\
+          \ Service - Handles user authentication and authorization\",\n    \"ac\"\
+          : \"ACGS Audit & Compliance Service - Constitutional AI compliance monitoring\"\
+          ,\n    \"integrity\": \"ACGS Integrity Service - Data integrity and validation\"\
+          ,\n    \"fv\": \"ACGS Formal Verification Service - Mathematical proof verification\"\
+          ,\n    \"gs\": \"ACGS Governance Synthesis Service - Policy synthesis and\
+          \ governance\",\n    \"pgc\": \"ACGS Policy Governance Service - Policy\
+          \ management and compliance\",\n    \"ec\": \"ACGS Evolutionary Computation\
+          \ Service - Genetic algorithm optimization\",\n    \"dgm\": \"ACGS Dynamic\
+          \ Governance Model Service - Adaptive governance modeling\"\n}\n\n# Get\
+          \ deployment configuration\ndeployment = oxr.spec.deployment or {}\nreplicas\
+          \ = deployment.replicas or 1\nresources = deployment.resources or {}\nrequests\
+          \ = resources.requests or {\"cpu\": \"200m\", \"memory\": \"512Mi\"}\nlimits\
+          \ = resources.limits or {\"cpu\": \"500m\", \"memory\": \"1Gi\"}\nport =\
+          \ deployment.port or servicePorts[serviceType]\n\n# Get GitOps configuration\n\
+          gitops = oxr.spec.gitops or {}\nrepository = gitops.repository or {}\nrepoName\
+          \ = repository.name or \"${serviceName}-${serviceType}-service\"\nrepoDescription\
+          \ = repository.description or serviceDescriptions[serviceType]\n\n# Generate\
+          \ Dockerfile content\ndockerfileContent = \"\"\"FROM python:3.11-slim\n\n\
+          # Set working directory\nWORKDIR /app\n\n# Install system dependencies\n\
+          RUN apt-get update && apt-get install -y \\\\\n    curl \\\\\n    && rm\
+          \ -rf /var/lib/apt/lists/*\n\n# Create non-root user\nRUN groupadd -r acgs\
+          \ && useradd -r -g acgs acgs\n\n# Copy requirements and install Python dependencies\n\
+          COPY requirements.txt .\nRUN pip install --no-cache-dir -r requirements.txt\n\
+          \n# Copy application code\nCOPY . .\n\n# Set ownership\nRUN chown -R acgs:acgs\
+          \ /app\n\n# Switch to non-root user\nUSER acgs\n\n# Expose port\nEXPOSE\
+          \ ${port}\n\n# Health check\nHEALTHCHECK --interval=30s --timeout=10s --start-period=30s\
+          \ --retries=3 \\\\\n    CMD curl -f http://localhost:${port}/health || exit\
+          \ 1\n\n# Start the service\nCMD [\"python\", \"main.py\"]\n\"\"\"\n\n# Generate\
+          \ main.py content\nmainPyContent = \"\"\"#!/usr/bin/env python3\n\\\"\\\"\
+          \\\"\nACGS ${serviceType.upper()} Service\n${serviceDescriptions[serviceType]}\n\
+          \\\"\\\"\\\"\n\nimport asyncio\nimport logging\nimport os\nfrom fastapi\
+          \ import FastAPI, HTTPException\nfrom fastapi.middleware.cors import CORSMiddleware\n\
+          from fastapi.responses import JSONResponse\nimport uvicorn\n\n# Configure\
+          \ logging\nlogging.basicConfig(\n    level=logging.INFO,\n    format='%(asctime)s\
+          \ - %(name)s - %(levelname)s - %(message)s'\n)\nlogger = logging.getLogger(__name__)\n\
+          \n# Initialize FastAPI app\napp = FastAPI(\n    title=\"ACGS ${serviceType.upper()}\
+          \ Service\",\n    description=\"${serviceDescriptions[serviceType]}\",\n\
+          \    version=\"1.0.0\"\n)\n\n# Add CORS middleware\napp.add_middleware(\n\
+          \    CORSMiddleware,\n    allow_origins=[\"*\"],\n    allow_credentials=True,\n\
+          \    allow_methods=[\"*\"],\n    allow_headers=[\"*\"],\n)\n\n# Constitutional\
+          \ hash validation\nCONSTITUTIONAL_HASH = \"${constitutionalHash}\"\n\n@app.get(\"\
+          /health\")\nasync def health_check():\n    \\\"\\\"\\\"Health check endpoint\\\
+          \"\\\"\\\"\n    return {\n        \"status\": \"healthy\",\n        \"service\"\
+          : \"${serviceType}\",\n        \"constitutional_hash\": CONSTITUTIONAL_HASH,\n\
+          \        \"version\": \"1.0.0\"\n    }\n\n@app.get(\"/\")\nasync def root():\n\
+          \    \\\"\\\"\\\"Root endpoint\\\"\\\"\\\"\n    return {\n        \"service\"\
+          : \"ACGS ${serviceType.upper()} Service\",\n        \"description\": \"\
+          ${serviceDescriptions[serviceType]}\",\n        \"constitutional_hash\"\
+          : CONSTITUTIONAL_HASH,\n        \"endpoints\": [\"/health\", \"/docs\",\
+          \ \"/redoc\"]\n    }\n\n@app.get(\"/constitutional/validate\")\nasync def\
+          \ validate_constitutional_hash(hash: str = None):\n    \\\"\\\"\\\"Validate\
+          \ constitutional hash\\\"\\\"\\\"\n    if hash and hash != CONSTITUTIONAL_HASH:\n\
+          \        raise HTTPException(\n            status_code=400,\n          \
+          \  detail=f\"Invalid constitutional hash. Expected: {CONSTITUTIONAL_HASH}\"\
+          \n        )\n    return {\n        \"valid\": True,\n        \"constitutional_hash\"\
+          : CONSTITUTIONAL_HASH,\n        \"service\": \"${serviceType}\"\n    }\n\
+          \nif __name__ == \"__main__\":\n    port = int(os.getenv(\"PORT\", ${port}))\n\
+          \    uvicorn.run(\n        \"main:app\",\n        host=\"0.0.0.0\",\n  \
+          \      port=port,\n        log_level=\"info\",\n        access_log=True\n\
+          \    )\n\"\"\"\n\n# Generate requirements.txt content\nrequirementsTxtContent\
+          \ = \"\"\"fastapi==0.104.1\nuvicorn[standard]==0.24.0\npydantic==2.5.0\n\
+          httpx==0.25.2\npython-multipart==0.0.6\npython-jose[cryptography]==3.3.0\n\
+          passlib[bcrypt]==1.7.4\npython-dotenv==1.0.0\nprometheus-client==0.19.0\n\
+          structlog==23.2.0\n\"\"\"\n\n# Generate README.md content\nreadmeContent\
+          \ = \"\"\"# ACGS ${serviceType.upper()} Service\n\n${serviceDescriptions[serviceType]}\n\
+          \n## Overview\n\nThis service is part of the Autonomous Code Generation\
+          \ System (ACGS) and provides ${serviceType} functionality with constitutional\
+          \ governance compliance.\n\n## Features\n\n- Constitutional hash validation:\
+          \ `${constitutionalHash}`\n- Health check endpoint: `/health`\n- Prometheus\
+          \ metrics: `/metrics`\n- API documentation: `/docs`\n- Service port: `${port}`\n\
+          \n## Quick Start\n\n### Using Docker\n\n```bash\ndocker build -t acgs-${serviceType}-service\
+          \ .\ndocker run -p ${port}:${port} acgs-${serviceType}-service\n```\n\n\
+          ### Local Development\n\n```bash\npip install -r requirements.txt\npython\
+          \ main.py\n```\n\n## Configuration\n\nEnvironment variables:\n\n- `PORT`:\
+          \ Service port (default: ${port})\n- `LOG_LEVEL`: Logging level (default:\
+          \ INFO)\n- `CONSTITUTIONAL_HASH`: Constitutional hash for validation\n\n\
+          ## Health Check\n\n```bash\ncurl http://localhost:${port}/health\n```\n\n\
+          ## Constitutional Compliance\n\nThis service validates constitutional compliance\
+          \ using hash: `${constitutionalHash}`\n\n```bash\ncurl http://localhost:${port}/constitutional/validate?hash=${constitutionalHash}\n\
+          ```\n\n## Deployment\n\nThis service is designed to be deployed using GitOps\
+          \ with ArgoCD and Crossplane.\n\n## License\n\nCopyright (c) 2025 ACGS Project.\
+          \ All rights reserved.\n\"\"\"\n\n# Generate Kubernetes manifests\nk8sManifests\
+          \ = \"\"\"apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: ${serviceName}-${serviceType}\n\
+          \  labels:\n    app: ${serviceName}-${serviceType}\n    service: ${serviceType}\n\
+          \    constitutional-hash: ${constitutionalHash}\nspec:\n  replicas: ${replicas}\n\
+          \  selector:\n    matchLabels:\n      app: ${serviceName}-${serviceType}\n\
+          \  template:\n    metadata:\n      labels:\n        app: ${serviceName}-${serviceType}\n\
+          \        service: ${serviceType}\n    spec:\n      securityContext:\n  \
+          \      runAsNonRoot: true\n        runAsUser: 1000\n        runAsGroup:\
+          \ 1000\n      containers:\n      - name: ${serviceType}-service\n      \
+          \  image: ghcr.io/ca-git-com-co/acgs/${serviceName}-${serviceType}:latest\n\
+          \        ports:\n        - containerPort: ${port}\n          name: http\n\
+          \        resources:\n          requests:\n            cpu: ${requests.cpu}\n\
+          \            memory: ${requests.memory}\n          limits:\n           \
+          \ cpu: ${limits.cpu}\n            memory: ${limits.memory}\n        env:\n\
+          \        - name: PORT\n          value: \"${port}\"\n        - name: CONSTITUTIONAL_HASH\n\
+          \          value: \"${constitutionalHash}\"\n        - name: SERVICE_TYPE\n\
+          \          value: \"${serviceType}\"\n        livenessProbe:\n         \
+          \ httpGet:\n            path: /health\n            port: ${port}\n     \
+          \     initialDelaySeconds: 30\n          periodSeconds: 10\n        readinessProbe:\n\
+          \          httpGet:\n            path: /health\n            port: ${port}\n\
+          \          initialDelaySeconds: 5\n          periodSeconds: 5\n---\napiVersion:\
+          \ v1\nkind: Service\nmetadata:\n  name: ${serviceName}-${serviceType}\n\
+          \  labels:\n    app: ${serviceName}-${serviceType}\n    service: ${serviceType}\n\
+          spec:\n  selector:\n    app: ${serviceName}-${serviceType}\n  ports:\n \
+          \ - port: ${port}\n    targetPort: ${port}\n    name: http\n  type: ClusterIP\n\
+          \"\"\"\n\n# Create GitHub repository resource\ngithubRepo = {\n    \"apiVersion\"\
+          : \"github.upbound.io/v1alpha1\",\n    \"kind\": \"Repository\",\n    \"\
+          metadata\": {\n        \"name\": repoName,\n        \"annotations\": {\n\
+          \            \"crossplane.io/external-name\": repoName\n        }\n    },\n\
+          \    \"spec\": {\n        \"forProvider\": {\n            \"name\": repoName,\n\
+          \            \"description\": repoDescription,\n            \"private\"\
+          : repository.private or True,\n            \"hasIssues\": repository.hasIssues\
+          \ or True,\n            \"hasProjects\": repository.hasProjects or True,\n\
+          \            \"hasWiki\": repository.hasWiki or False,\n            \"autoInit\"\
+          : repository.autoInit or True,\n            \"defaultBranch\": repository.defaultBranch\
+          \ or \"main\"\n        },\n        \"providerConfigRef\": {\n          \
+          \  \"name\": \"github-provider-config\"\n        }\n    }\n}\n\n# Create\
+          \ repository files\nrepositoryFiles = [\n    {\n        \"apiVersion\":\
+          \ \"github.upbound.io/v1alpha1\",\n        \"kind\": \"RepositoryFile\"\
+          ,\n        \"metadata\": {\n            \"name\": \"${repoName}-dockerfile\"\
+          \n        },\n        \"spec\": {\n            \"forProvider\": {\n    \
+          \            \"repository\": repoName,\n                \"file\": \"Dockerfile\"\
+          ,\n                \"content\": dockerfileContent,\n                \"branch\"\
+          : \"main\",\n                \"commitMessage\": \"Add Dockerfile for ${serviceType}\
+          \ service\"\n            },\n            \"providerConfigRef\": {\n    \
+          \            \"name\": \"github-provider-config\"\n            }\n     \
+          \   }\n    },\n    {\n        \"apiVersion\": \"github.upbound.io/v1alpha1\"\
+          ,\n        \"kind\": \"RepositoryFile\",\n        \"metadata\": {\n    \
+          \        \"name\": \"${repoName}-main-py\"\n        },\n        \"spec\"\
+          : {\n            \"forProvider\": {\n                \"repository\": repoName,\n\
+          \                \"file\": \"main.py\",\n                \"content\": mainPyContent,\n\
+          \                \"branch\": \"main\",\n                \"commitMessage\"\
+          : \"Add main.py for ${serviceType} service\"\n            },\n         \
+          \   \"providerConfigRef\": {\n                \"name\": \"github-provider-config\"\
+          \n            }\n        }\n    },\n    {\n        \"apiVersion\": \"github.upbound.io/v1alpha1\"\
+          ,\n        \"kind\": \"RepositoryFile\",\n        \"metadata\": {\n    \
+          \        \"name\": \"${repoName}-requirements\"\n        },\n        \"\
+          spec\": {\n            \"forProvider\": {\n                \"repository\"\
+          : repoName,\n                \"file\": \"requirements.txt\",\n         \
+          \       \"content\": requirementsTxtContent,\n                \"branch\"\
+          : \"main\",\n                \"commitMessage\": \"Add requirements.txt for\
+          \ ${serviceType} service\"\n            },\n            \"providerConfigRef\"\
+          : {\n                \"name\": \"github-provider-config\"\n            }\n\
+          \        }\n    },\n    {\n        \"apiVersion\": \"github.upbound.io/v1alpha1\"\
+          ,\n        \"kind\": \"RepositoryFile\",\n        \"metadata\": {\n    \
+          \        \"name\": \"${repoName}-readme\"\n        },\n        \"spec\"\
+          : {\n            \"forProvider\": {\n                \"repository\": repoName,\n\
+          \                \"file\": \"README.md\",\n                \"content\":\
+          \ readmeContent,\n                \"branch\": \"main\",\n              \
+          \  \"commitMessage\": \"Add README.md for ${serviceType} service\"\n   \
+          \         },\n            \"providerConfigRef\": {\n                \"name\"\
+          : \"github-provider-config\"\n            }\n        }\n    },\n    {\n\
+          \        \"apiVersion\": \"github.upbound.io/v1alpha1\",\n        \"kind\"\
+          : \"RepositoryFile\",\n        \"metadata\": {\n            \"name\": \"\
+          ${repoName}-k8s-manifests\"\n        },\n        \"spec\": {\n         \
+          \   \"forProvider\": {\n                \"repository\": repoName,\n    \
+          \            \"file\": \"k8s/manifests.yaml\",\n                \"content\"\
+          : k8sManifests,\n                \"branch\": \"main\",\n               \
+          \ \"commitMessage\": \"Add Kubernetes manifests for ${serviceType} service\"\
+          \n            },\n            \"providerConfigRef\": {\n               \
+          \ \"name\": \"github-provider-config\"\n            }\n        }\n    }\n\
+          ]\n\n# Return all resources\nitems = [githubRepo] + repositoryFiles\n"
+constitutional_hash: cdd01ef066bc6cf2

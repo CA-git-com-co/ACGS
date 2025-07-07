@@ -12,6 +12,7 @@ Key Features:
 - Real-time fairness monitoring
 - Integration with existing ACGS audit systems
 """
+
 # Constitutional Hash: cdd01ef066bc6cf2
 
 import logging
@@ -328,14 +329,16 @@ class FairlearnBiasDetector:
             )
 
             # Log for audit trail
-            await self.audit_logger.log_bias_detection({
-                "overall_bias_level": overall_bias.value,
-                "num_fairness_violations": len([
-                    r for r in fairness_results if r.bias_level != BiasLevel.NONE
-                ]),
-                "requires_mitigation": requires_mitigation,
-                "timestamp": result.timestamp.isoformat(),
-            })
+            await self.audit_logger.log_bias_detection(
+                {
+                    "overall_bias_level": overall_bias.value,
+                    "num_fairness_violations": len(
+                        [r for r in fairness_results if r.bias_level != BiasLevel.NONE]
+                    ),
+                    "requires_mitigation": requires_mitigation,
+                    "timestamp": result.timestamp.isoformat(),
+                }
+            )
 
             # Send alerts if necessary
             if overall_bias in [BiasLevel.HIGH, BiasLevel.CRITICAL]:
@@ -548,12 +551,14 @@ class FairlearnBiasDetector:
             if baseline_result:
                 metric_drift = abs(current_result.value - baseline_result.value)
                 if metric_drift > 0.05:  # 5% drift threshold
-                    metric_drifts.append({
-                        "metric": current_result.metric.value,
-                        "drift": metric_drift,
-                        "current_value": current_result.value,
-                        "baseline_value": baseline_result.value,
-                    })
+                    metric_drifts.append(
+                        {
+                            "metric": current_result.metric.value,
+                            "drift": metric_drift,
+                            "current_value": current_result.value,
+                            "baseline_value": baseline_result.value,
+                        }
+                    )
 
         drift_detected = level_change > 0 or len(metric_drifts) > 0
 
@@ -628,11 +633,13 @@ class FairnessMitigator:
             mitigator.fit(X_train, y_train, sensitive_features=sensitive_features)
 
             # Log mitigation applied
-            await self.audit_logger.log_bias_mitigation({
-                "constraint_type": constraint_type,
-                "method": "exponentiated_gradient",
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_bias_mitigation(
+                {
+                    "constraint_type": constraint_type,
+                    "method": "exponentiated_gradient",
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
             return mitigator
 
@@ -682,11 +689,13 @@ class FairnessMitigator:
             postprocessor.fit(X_val, y_val, sensitive_features=sensitive_features)
 
             # Log post-processing applied
-            await self.audit_logger.log_bias_mitigation({
-                "constraint_type": constraint_type,
-                "method": "threshold_optimization",
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_bias_mitigation(
+                {
+                    "constraint_type": constraint_type,
+                    "method": "threshold_optimization",
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
             return postprocessor
 
@@ -704,10 +713,12 @@ async def example_usage():
     # Sample data (in production, this would be your actual model data)
     y_true = np.random.randint(0, 2, 1000)
     y_pred = np.random.randint(0, 2, 1000)
-    sensitive_features = pd.DataFrame({
-        "gender": np.random.choice(["M", "F"], 1000),
-        "race": np.random.choice(["White", "Black", "Hispanic", "Asian"], 1000),
-    })
+    sensitive_features = pd.DataFrame(
+        {
+            "gender": np.random.choice(["M", "F"], 1000),
+            "race": np.random.choice(["White", "Black", "Hispanic", "Asian"], 1000),
+        }
+    )
 
     # Detect bias
     bias_result = await detector.detect_bias_fairlearn(

@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 FROM node:20-alpine AS builder
 
 # Install build dependencies

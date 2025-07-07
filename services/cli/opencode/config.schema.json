@@ -203,7 +203,10 @@
                       "type": "number"
                     }
                   },
-                  "required": ["input", "output"],
+                  "required": [
+                    "input",
+                    "output"
+                  ],
                   "additionalProperties": false
                 },
                 "limit": {
@@ -216,7 +219,10 @@
                       "type": "number"
                     }
                   },
-                  "required": ["context", "output"],
+                  "required": [
+                    "context",
+                    "output"
+                  ],
                   "additionalProperties": false
                 },
                 "id": {
@@ -235,7 +241,9 @@
             "additionalProperties": {}
           }
         },
-        "required": ["models"],
+        "required": [
+          "models"
+        ],
         "additionalProperties": false
       },
       "description": "Custom provider configurations and model overrides"
@@ -271,7 +279,10 @@
                 "description": "Enable or disable the MCP server on startup"
               }
             },
-            "required": ["type", "command"],
+            "required": [
+              "type",
+              "command"
+            ],
             "additionalProperties": false
           },
           {
@@ -291,7 +302,10 @@
                 "description": "Enable or disable the MCP server on startup"
               }
             },
-            "required": ["type", "url"],
+            "required": [
+              "type",
+              "url"
+            ],
             "additionalProperties": false
           }
         ]
@@ -331,7 +345,9 @@
                       }
                     }
                   },
-                  "required": ["command"],
+                  "required": [
+                    "command"
+                  ],
                   "additionalProperties": false
                 }
               }
@@ -354,7 +370,9 @@
                     }
                   }
                 },
-                "required": ["command"],
+                "required": [
+                  "command"
+                ],
                 "additionalProperties": false
               }
             }
@@ -366,5 +384,6 @@
     }
   },
   "additionalProperties": false,
-  "$schema": "http://json-schema.org/draft-07/schema#"
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }

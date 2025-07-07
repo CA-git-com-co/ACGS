@@ -1,27 +1,28 @@
 groups:
-  - name: acgs_alerts
-    rules:
-      - alert: ServiceDown
-        annotations:
-          description: '{{ $labels.job }} service has been down for more than 1 minute.'
-          summary: Service {{ $labels.instance }} is down
-        expr: up == 0
-        for: 1m
-        labels:
-          severity: critical
-      - alert: HighResponseTime
-        annotations:
-          description: 95th percentile response time is above 500ms for 2 minutes.
-          summary: High response time on {{ $labels.instance }}
-        expr: http_request_duration_seconds{quantile="0.95"} > 0.5
-        for: 2m
-        labels:
-          severity: warning
-      - alert: GovernanceWorkflowFailure
-        annotations:
-          description: Governance workflow {{ $labels.workflow_type }} has failed.
-          summary: Governance workflow failure detected
-        expr: governance_workflow_failures_total > 0
-        for: 1m
-        labels:
-          severity: warning
+- name: acgs_alerts
+  rules:
+  - alert: ServiceDown
+    annotations:
+      description: '{{ $labels.job }} service has been down for more than 1 minute.'
+      summary: Service {{ $labels.instance }} is down
+    expr: up == 0
+    for: 1m
+    labels:
+      severity: critical
+  - alert: HighResponseTime
+    annotations:
+      description: 95th percentile response time is above 500ms for 2 minutes.
+      summary: High response time on {{ $labels.instance }}
+    expr: http_request_duration_seconds{quantile="0.95"} > 0.5
+    for: 2m
+    labels:
+      severity: warning
+  - alert: GovernanceWorkflowFailure
+    annotations:
+      description: Governance workflow {{ $labels.workflow_type }} has failed.
+      summary: Governance workflow failure detected
+    expr: governance_workflow_failures_total > 0
+    for: 1m
+    labels:
+      severity: warning
+constitutional_hash: cdd01ef066bc6cf2

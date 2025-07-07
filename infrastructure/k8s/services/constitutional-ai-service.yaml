@@ -13,3 +13,4 @@ spec:
     app: acgs-constitutional-ai
   sessionAffinity: None
   type: LoadBalancer
+constitutional_hash: cdd01ef066bc6cf2

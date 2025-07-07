@@ -126,6 +126,7 @@ Standard HTTP status codes are used. All error responses include a constitutiona
 
 ## 5. Related Information
 
+- **Governance Synthesis Service**: For information on how governance policies are synthesized from constitutional principles, see the [Governance Synthesis Service API](governance_synthesis.md).
 - [ACGS Service Architecture Overview](../ACGS_SERVICE_OVERVIEW.md)
 - [ACGS System Overview](../../SYSTEM_OVERVIEW.md)
 - [Constitutional Compliance Validation Framework](../constitutional_compliance_validation_framework.md)

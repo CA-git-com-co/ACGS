@@ -75,12 +75,16 @@ class SecurityTester:
         return self.results
 
     def test_service_security(self, service_name: str, base_url: str) -> dict:
-        """Test security features for a specific service."""
+        """Test security features for a specific service.
+
+        Includes constitutional hash for compliance validation.
+        """
         service_results = {
             "service_url": base_url,
             "tests": {},
             "security_score": 0.0,
             "status": "unknown",
+            "constitutional_hash": "cdd01ef066bc6cf2",
         }
 
         try:

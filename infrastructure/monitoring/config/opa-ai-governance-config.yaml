@@ -1,52 +1,39 @@
-# OPA Configuration for ACGS AI Governance
-# Enhanced policy-as-code integration with constitutional AI and multi-armed bandits
-
 services:
   authz:
     url: http://localhost:8181
     credentials:
       bearer:
-        token: 'acgs-ai-governance-token'
-
-  # Prometheus metrics endpoint
+        token: acgs-ai-governance-token
   prometheus:
     url: http://prometheus:9090
-
 bundles:
-  # Constitutional AI policies
   constitutional_ai:
-    resource: '/policies/constitutional-ai'
+    resource: /policies/constitutional-ai
     persist: true
     polling:
       min_delay_seconds: 5
       max_delay_seconds: 10
     signing:
-      keyid: 'acgs_constitutional_ai_key'
-      scope: 'write'
-
-  # Multi-Armed Bandit policies
+      keyid: acgs_constitutional_ai_key
+      scope: write
   mab_governance:
-    resource: '/policies/mab-governance'
+    resource: /policies/mab-governance
     persist: true
     polling:
       min_delay_seconds: 5
       max_delay_seconds: 10
     signing:
-      keyid: 'acgs_mab_governance_key'
-      scope: 'write'
-
-  # Policy governance rules
+      keyid: acgs_mab_governance_key
+      scope: write
   policy_governance:
-    resource: '/policies/policy-governance'
+    resource: /policies/policy-governance
     persist: true
     polling:
       min_delay_seconds: 10
       max_delay_seconds: 20
     signing:
-      keyid: 'acgs_policy_governance_key'
-      scope: 'write'
-
-# Decision logging for audit and compliance
+      keyid: acgs_policy_governance_key
+      scope: write
 decision_logs:
   console: true
   reporting:
@@ -54,33 +41,22 @@ decision_logs:
     max_delay_seconds: 5
     upload_size_limit_bytes: 32768
   mask_decision:
-    - '/input/sensitive_data'
-    - '/input/personal_info'
-
-# Status reporting
+  - /input/sensitive_data
+  - /input/personal_info
 status:
   console: true
   service: authz
-  partition_name: 'acgs-ai-governance'
-
-# Plugin configuration
+  partition_name: acgs-ai-governance
 plugins:
-  # Health check endpoint
   health:
     service: authz
-
-  # Discovery service for dynamic policy loading
   discovery:
     name: discovery
     prefix: acgs
     service: authz
-
-# Performance optimizations for AI governance
 caching:
   inter_query_builtin_cache:
-    max_size_bytes: 200000000 # 200MB cache for AI governance operations
-
-# Distributed tracing for performance monitoring
+    max_size_bytes: 200000000
 distributed_tracing:
   type: grpc
   address: jaeger:14250
@@ -88,123 +64,83 @@ distributed_tracing:
   sample_percentage: 100
   tls:
     insecure: true
-
-# Server configuration
 server:
-  # Enable metrics endpoint
   metrics:
     prom: true
-
-  # Encoding optimizations
   encoding:
     gzip:
       min_length: 512
-
-  # Diagnostic endpoint
   diagnostic:
     addr: 0.0.0.0:8282
-
-  # Authorization configuration
   authorization:
-    # Allow all for internal AI governance operations
     default_decision: allow
-
-# Storage configuration for policy persistence
 storage:
   disk:
     directory: /data
     auto_create: true
     partitions:
-      - /policies/constitutional-ai
-      - /policies/mab-governance
-      - /policies/policy-governance
-      - /data/decisions
-      - /data/metrics
-
-# Compiler optimizations for AI governance policies
+    - /policies/constitutional-ai
+    - /policies/mab-governance
+    - /policies/policy-governance
+    - /data/decisions
+    - /data/metrics
 compiler:
-  # Enable partial evaluation for better performance
   partial_evaluation: true
-
-  # Optimize for incremental compilation
   incremental: true
-
-  # Enable strict mode for better error detection
   strict: true
-
-  # Optimize for AI governance use cases
   optimize_for:
-    - constitutional_compliance
-    - safety_constraints
-    - performance_thresholds
-
-# Custom built-in functions for AI governance
+  - constitutional_compliance
+  - safety_constraints
+  - performance_thresholds
 builtins:
-  # Constitutional AI functions
-  - name: constitutional.evaluate_compliance
-    decl:
-      type: function
-      args:
-        - type: object
-        - type: array
-      result:
-        type: number
-
-  - name: constitutional.check_safety_constraints
-    decl:
-      type: function
-      args:
-        - type: object
-      result:
-        type: boolean
-
-  # Multi-Armed Bandit functions
-  - name: mab.calculate_ucb
-    decl:
-      type: function
-      args:
-        - type: number
-        - type: number
-        - type: number
-      result:
-        type: number
-
-  - name: mab.check_safety_threshold
-    decl:
-      type: function
-      args:
-        - type: number
-        - type: number
-      result:
-        type: boolean
-
-  # Policy governance functions
-  - name: policy.validate_governance_rules
-    decl:
-      type: function
-      args:
-        - type: object
-      result:
-        type: object
-
-# Logging configuration
+- name: constitutional.evaluate_compliance
+  decl:
+    type: function
+    args:
+    - type: object
+    - type: array
+    result:
+      type: number
+- name: constitutional.check_safety_constraints
+  decl:
+    type: function
+    args:
+    - type: object
+    result:
+      type: boolean
+- name: mab.calculate_ucb
+  decl:
+    type: function
+    args:
+    - type: number
+    - type: number
+    - type: number
+    result:
+      type: number
+- name: mab.check_safety_threshold
+  decl:
+    type: function
+    args:
+    - type: number
+    - type: number
+    result:
+      type: boolean
+- name: policy.validate_governance_rules
+  decl:
+    type: function
+    args:
+    - type: object
+    result:
+      type: object
 logs:
   level: info
   format: json
-  timestamp_format: '2006-01-02T15:04:05.000Z07:00'
-
-# Profiling for performance optimization
+  timestamp_format: 2006-01-02T15:04:05.000Z07:00
 profiling:
   enabled: true
   port: 6060
-
-# Limits for AI governance operations
 limits:
-  # Maximum policy evaluation time
-  max_eval_time: '10s'
-
-  # Maximum memory usage per evaluation
-  max_eval_memory: '100MB'
-
-  # Maximum number of concurrent evaluations
+  max_eval_time: 10s
+  max_eval_memory: 100MB
   max_concurrent_evals: 100
+constitutional_hash: cdd01ef066bc6cf2

@@ -7,7 +7,6 @@ from fastapi.responses import JSONResponse
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class EnhancedSecurityMiddleware:
     """Enhanced security middleware for input validation and HTTP method control."""
 

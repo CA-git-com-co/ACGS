@@ -1,64 +1,65 @@
 alerting:
   alertmanagers:
-    - static_configs:
-        - targets:
-            - localhost:9093
+  - static_configs:
+    - targets:
+      - localhost:9093
 global:
   evaluation_interval: 15s
   scrape_interval: 15s
 rule_files:
-  - rules/*.yml
+- rules/*.yml
 scrape_configs:
-  - job_name: prometheus
-    static_configs:
-      - targets:
-          - localhost:9090
-  - job_name: auth_service
-    metrics_path: /metrics
-    scrape_interval: 10s
-    scrape_timeout: 5s
-    static_configs:
-      - targets:
-          - localhost:8000
-  - job_name: ac_service
-    metrics_path: /metrics
-    scrape_interval: 10s
-    scrape_timeout: 5s
-    static_configs:
-      - targets:
-          - localhost:8001
-  - job_name: integrity_service
-    metrics_path: /metrics
-    scrape_interval: 10s
-    scrape_timeout: 5s
-    static_configs:
-      - targets:
-          - localhost:8002
-  - job_name: fv_service
-    metrics_path: /metrics
-    scrape_interval: 10s
-    scrape_timeout: 5s
-    static_configs:
-      - targets:
-          - localhost:8003
-  - job_name: gs_service
-    metrics_path: /metrics
-    scrape_interval: 10s
-    scrape_timeout: 5s
-    static_configs:
-      - targets:
-          - localhost:8004
-  - job_name: pgc_service
-    metrics_path: /metrics
-    scrape_interval: 10s
-    scrape_timeout: 5s
-    static_configs:
-      - targets:
-          - localhost:8005
-  - job_name: ec_service
-    metrics_path: /metrics
-    scrape_interval: 10s
-    scrape_timeout: 5s
-    static_configs:
-      - targets:
-          - localhost:8006
+- job_name: prometheus
+  static_configs:
+  - targets:
+    - localhost:9090
+- job_name: auth_service
+  metrics_path: /metrics
+  scrape_interval: 10s
+  scrape_timeout: 5s
+  static_configs:
+  - targets:
+    - localhost:8000
+- job_name: ac_service
+  metrics_path: /metrics
+  scrape_interval: 10s
+  scrape_timeout: 5s
+  static_configs:
+  - targets:
+    - localhost:8001
+- job_name: integrity_service
+  metrics_path: /metrics
+  scrape_interval: 10s
+  scrape_timeout: 5s
+  static_configs:
+  - targets:
+    - localhost:8002
+- job_name: fv_service
+  metrics_path: /metrics
+  scrape_interval: 10s
+  scrape_timeout: 5s
+  static_configs:
+  - targets:
+    - localhost:8003
+- job_name: gs_service
+  metrics_path: /metrics
+  scrape_interval: 10s
+  scrape_timeout: 5s
+  static_configs:
+  - targets:
+    - localhost:8004
+- job_name: pgc_service
+  metrics_path: /metrics
+  scrape_interval: 10s
+  scrape_timeout: 5s
+  static_configs:
+  - targets:
+    - localhost:8005
+- job_name: ec_service
+  metrics_path: /metrics
+  scrape_interval: 10s
+  scrape_timeout: 5s
+  static_configs:
+  - targets:
+    - localhost:8006
+constitutional_hash: cdd01ef066bc6cf2

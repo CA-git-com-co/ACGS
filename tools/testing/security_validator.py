@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Constitutional Hash: cdd01ef066bc6cf2
 """
 Security Hardening Validation Framework for ACGS-2
 Tests security measures including input validation, authentication/authorization flows,

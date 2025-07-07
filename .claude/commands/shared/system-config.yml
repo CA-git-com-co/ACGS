@@ -1,7 +1,9 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 # System Configuration - Consolidated runtime & session settings
 # Consolidates common system-level configuration patterns
 
 ## Legend
+# Constitutional Hash: cdd01ef066bc6cf2
 @include universal-constants.yml#Universal_Legend
 
 ## Session Management

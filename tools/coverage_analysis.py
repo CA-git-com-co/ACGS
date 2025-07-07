@@ -18,7 +18,6 @@ from typing import Any
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 @dataclass
 class CoverageResult:
     """Coverage analysis result for a module."""

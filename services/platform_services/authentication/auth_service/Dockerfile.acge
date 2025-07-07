@@ -1,5 +1,6 @@
 # ACGE Phase 2 Enhanced Auth Service Dockerfile
 # Constitutional compliance authentication service with ACGE integration
+# Constitutional Hash: cdd01ef066bc6cf2
 
 FROM python:3.11-slim
 

@@ -614,5 +614,7 @@
   "timezone": "",
   "title": "ACGS Operational Excellence Dashboard",
   "uid": "acgs-operational-excellence",
-  "version": 1
+  "version": 1,
+  "_constitutional_hash": "cdd01ef066bc6cf2",
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }

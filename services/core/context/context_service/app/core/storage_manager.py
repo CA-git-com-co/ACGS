@@ -249,7 +249,8 @@ class MultiTierStorageManager:
         """Create PostgreSQL tables for L3 archive."""
         async with self.postgres_pool.acquire() as conn:
             # Archive entries table
-            await conn.execute("""
+            await conn.execute(
+                """
                 CREATE TABLE IF NOT EXISTS archive_entries (
                     archive_id UUID PRIMARY KEY,
                     context_id UUID NOT NULL,
@@ -267,10 +268,12 @@ class MultiTierStorageManager:
                     created_at TIMESTAMP DEFAULT NOW(),
                     updated_at TIMESTAMP DEFAULT NOW()
                 );
-            """)
+            """
+            )
 
             # Storage operations log table
-            await conn.execute("""
+            await conn.execute(
+                """
                 CREATE TABLE IF NOT EXISTS storage_operations (
                     operation_id UUID PRIMARY KEY,
                     operation_type TEXT NOT NULL,
@@ -288,28 +291,37 @@ class MultiTierStorageManager:
                     user_id TEXT,
                     created_at TIMESTAMP DEFAULT NOW()
                 );
-            """)
+            """
+            )
 
             # Create indexes
-            await conn.execute("""
+            await conn.execute(
+                """
                 CREATE INDEX IF NOT EXISTS idx_archive_entries_context_id
                 ON archive_entries (context_id);
-            """)
+            """
+            )
 
-            await conn.execute("""
+            await conn.execute(
+                """
                 CREATE INDEX IF NOT EXISTS idx_archive_entries_archived_at
                 ON archive_entries (archived_at);
-            """)
+            """
+            )
 
-            await conn.execute("""
+            await conn.execute(
+                """
                 CREATE INDEX IF NOT EXISTS idx_storage_operations_context_id
                 ON storage_operations (context_id);
-            """)
+            """
+            )
 
-            await conn.execute("""
+            await conn.execute(
+                """
                 CREATE INDEX IF NOT EXISTS idx_storage_operations_started_at
                 ON storage_operations (started_at);
-            """)
+            """
+            )
 
     async def store_context(
         self,
@@ -445,11 +457,13 @@ class MultiTierStorageManager:
                         context.refresh_access()
 
                     retrieval_time = (time.time() - start_time) * 1000
-                    metadata.update({
-                        "tier": StorageTier.L1_CACHE.value,
-                        "cache_hit": True,
-                        "latency_ms": retrieval_time,
-                    })
+                    metadata.update(
+                        {
+                            "tier": StorageTier.L1_CACHE.value,
+                            "cache_hit": True,
+                            "latency_ms": retrieval_time,
+                        }
+                    )
 
                     await self._log_storage_operation(
                         operation_id=context_id,
@@ -475,12 +489,14 @@ class MultiTierStorageManager:
                         await self._store_in_l1(context)
 
                     retrieval_time = (time.time() - start_time) * 1000
-                    metadata.update({
-                        "tier": StorageTier.L2_VECTOR.value,
-                        "cache_hit": False,
-                        "promoted_to_l1": self.cache_manager is not None,
-                        "latency_ms": retrieval_time,
-                    })
+                    metadata.update(
+                        {
+                            "tier": StorageTier.L2_VECTOR.value,
+                            "cache_hit": False,
+                            "promoted_to_l1": self.cache_manager is not None,
+                            "latency_ms": retrieval_time,
+                        }
+                    )
 
                     await self._log_storage_operation(
                         operation_id=context_id,
@@ -509,14 +525,16 @@ class MultiTierStorageManager:
                         await self._store_in_l1(context)
 
                     retrieval_time = (time.time() - start_time) * 1000
-                    metadata.update({
-                        "tier": StorageTier.L3_ARCHIVE.value,
-                        "cache_hit": False,
-                        "promoted_tier": (
-                            promotion_tier.value if promotion_tier else None
-                        ),
-                        "latency_ms": retrieval_time,
-                    })
+                    metadata.update(
+                        {
+                            "tier": StorageTier.L3_ARCHIVE.value,
+                            "cache_hit": False,
+                            "promoted_tier": (
+                                promotion_tier.value if promotion_tier else None
+                            ),
+                            "latency_ms": retrieval_time,
+                        }
+                    )
 
                     await self._log_storage_operation(
                         operation_id=context_id,

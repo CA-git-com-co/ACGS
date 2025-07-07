@@ -13,6 +13,7 @@ Key Features:
 - Tool capability discovery and registration
 - Emergency shutdown and circuit breaker patterns
 """
+
 # Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
@@ -335,20 +336,24 @@ class SafeToolExecutor:
         """Perform comprehensive security checks before execution"""
 
         # Add to audit trail
-        execution_result.audit_trail.append({
-            "action": "security_check_started",
-            "timestamp": datetime.utcnow().isoformat(),
-            "tool_safety_level": tool_def.safety_level.value,
-        })
+        execution_result.audit_trail.append(
+            {
+                "action": "security_check_started",
+                "timestamp": datetime.utcnow().isoformat(),
+                "tool_safety_level": tool_def.safety_level.value,
+            }
+        )
 
         # Check if tool is blocked
         if tool_def.safety_level == ToolSafetyLevel.CRITICAL:
             # Critical tools require special approval
-            execution_result.audit_trail.append({
-                "action": "critical_tool_access_attempt",
-                "timestamp": datetime.utcnow().isoformat(),
-                "requires_approval": True,
-            })
+            execution_result.audit_trail.append(
+                {
+                    "action": "critical_tool_access_attempt",
+                    "timestamp": datetime.utcnow().isoformat(),
+                    "requires_approval": True,
+                }
+            )
             # In a real implementation, this would check for approval
 
         # Check agent permissions (simplified check)
@@ -365,10 +370,12 @@ class SafeToolExecutor:
                     f" {tool_def.safety_level.value} tool"
                 )
 
-        execution_result.audit_trail.append({
-            "action": "security_check_passed",
-            "timestamp": datetime.utcnow().isoformat(),
-        })
+        execution_result.audit_trail.append(
+            {
+                "action": "security_check_passed",
+                "timestamp": datetime.utcnow().isoformat(),
+            }
+        )
 
     async def _check_rate_limits(
         self,
@@ -410,12 +417,14 @@ class SafeToolExecutor:
             rate_info.blocked_until = current_time + timedelta(hours=1)
             raise Exception(f"Rate limit exceeded for tool {request.tool_id}")
 
-        execution_result.audit_trail.append({
-            "action": "rate_limit_check_passed",
-            "timestamp": current_time.isoformat(),
-            "requests_this_hour": rate_info.requests_this_hour,
-            "rate_limit": tool_def.rate_limit_per_hour,
-        })
+        execution_result.audit_trail.append(
+            {
+                "action": "rate_limit_check_passed",
+                "timestamp": current_time.isoformat(),
+                "requests_this_hour": rate_info.requests_this_hour,
+                "rate_limit": tool_def.rate_limit_per_hour,
+            }
+        )
 
     async def _check_circuit_breaker(
         self,
@@ -444,11 +453,13 @@ class SafeToolExecutor:
                 # Move to half-open state
                 breaker["state"] = "half_open"
 
-        execution_result.audit_trail.append({
-            "action": "circuit_breaker_check_passed",
-            "timestamp": current_time.isoformat(),
-            "breaker_state": breaker["state"],
-        })
+        execution_result.audit_trail.append(
+            {
+                "action": "circuit_breaker_check_passed",
+                "timestamp": current_time.isoformat(),
+                "breaker_state": breaker["state"],
+            }
+        )
 
     async def _validate_and_sanitize_input(
         self,
@@ -466,11 +477,13 @@ class SafeToolExecutor:
         if not validation_result["is_valid"]:
             raise ValueError(f"Input validation failed: {validation_result['errors']}")
 
-        execution_result.audit_trail.append({
-            "action": "input_validation_passed",
-            "timestamp": datetime.utcnow().isoformat(),
-            "sanitization_applied": validation_result["sanitization_applied"],
-        })
+        execution_result.audit_trail.append(
+            {
+                "action": "input_validation_passed",
+                "timestamp": datetime.utcnow().isoformat(),
+                "sanitization_applied": validation_result["sanitization_applied"],
+            }
+        )
 
         return validation_result["sanitized_data"]
 
@@ -491,11 +504,13 @@ class SafeToolExecutor:
             if any(sensitive in key.lower() for sensitive in sensitive_keys):
                 sanitized_result[key] = "[REDACTED]"
 
-        execution_result.audit_trail.append({
-            "action": "output_sanitization_completed",
-            "timestamp": datetime.utcnow().isoformat(),
-            "sensitive_data_redacted": True,
-        })
+        execution_result.audit_trail.append(
+            {
+                "action": "output_sanitization_completed",
+                "timestamp": datetime.utcnow().isoformat(),
+                "sensitive_data_redacted": True,
+            }
+        )
 
         return sanitized_result
 
@@ -533,12 +548,14 @@ class SafeToolExecutor:
             "allocated_at": datetime.utcnow(),
         }
 
-        execution_result.audit_trail.append({
-            "action": "resources_allocated",
-            "timestamp": datetime.utcnow().isoformat(),
-            "memory_mb": required_memory,
-            "cpu_percent": required_cpu,
-        })
+        execution_result.audit_trail.append(
+            {
+                "action": "resources_allocated",
+                "timestamp": datetime.utcnow().isoformat(),
+                "memory_mb": required_memory,
+                "cpu_percent": required_cpu,
+            }
+        )
 
     async def _handle_execution_error(
         self,
@@ -562,20 +579,24 @@ class SafeToolExecutor:
 
         # Send alert for critical failures
         if tool_def.safety_level in [ToolSafetyLevel.HIGH, ToolSafetyLevel.CRITICAL]:
-            await self.alerting_system.send_alert({
-                "severity": "high",
-                "component": "ToolRouter",
-                "message": f"Critical tool execution failed: {request.tool_id}",
-                "error": str(error),
-                "agent_id": request.agent_id,
-            })
+            await self.alerting_system.send_alert(
+                {
+                    "severity": "high",
+                    "component": "ToolRouter",
+                    "message": f"Critical tool execution failed: {request.tool_id}",
+                    "error": str(error),
+                    "agent_id": request.agent_id,
+                }
+            )
 
-        execution_result.audit_trail.append({
-            "action": "execution_error_handled",
-            "timestamp": datetime.utcnow().isoformat(),
-            "error_type": type(error).__name__,
-            "circuit_breaker_updated": True,
-        })
+        execution_result.audit_trail.append(
+            {
+                "action": "execution_error_handled",
+                "timestamp": datetime.utcnow().isoformat(),
+                "error_type": type(error).__name__,
+                "circuit_breaker_updated": True,
+            }
+        )
 
     async def _record_resource_usage(
         self,
@@ -636,19 +657,21 @@ class SafeToolExecutor:
     ) -> None:
         """Log comprehensive execution audit trail"""
 
-        await self.audit_logger.log_security_event({
-            "event_type": "tool_execution",
-            "request_id": request.request_id,
-            "agent_id": request.agent_id,
-            "tool_id": request.tool_id,
-            "tool_safety_level": tool_def.safety_level.value,
-            "execution_status": execution_result.status.value,
-            "execution_time_seconds": execution_result.execution_time_seconds,
-            "resource_usage": execution_result.resource_usage,
-            "audit_trail": execution_result.audit_trail,
-            "error_message": execution_result.error_message,
-            "timestamp": datetime.utcnow().isoformat(),
-        })
+        await self.audit_logger.log_security_event(
+            {
+                "event_type": "tool_execution",
+                "request_id": request.request_id,
+                "agent_id": request.agent_id,
+                "tool_id": request.tool_id,
+                "tool_safety_level": tool_def.safety_level.value,
+                "execution_status": execution_result.status.value,
+                "execution_time_seconds": execution_result.execution_time_seconds,
+                "resource_usage": execution_result.resource_usage,
+                "audit_trail": execution_result.audit_trail,
+                "error_message": execution_result.error_message,
+                "timestamp": datetime.utcnow().isoformat(),
+            }
+        )
 
 
 class ToolRouter:
@@ -727,12 +750,14 @@ class ToolRouter:
 
         except Exception as e:
             logger.error(f"Error routing tool request: {e!s}")
-            await self.alerting_system.send_alert({
-                "severity": "high",
-                "component": "ToolRouter",
-                "message": f"Tool routing failed: {e!s}",
-                "request_id": request.request_id,
-            })
+            await self.alerting_system.send_alert(
+                {
+                    "severity": "high",
+                    "component": "ToolRouter",
+                    "message": f"Tool routing failed: {e!s}",
+                    "request_id": request.request_id,
+                }
+            )
 
             return ToolExecutionResult(
                 request_id=request.request_id,
@@ -905,7 +930,7 @@ class ToolRouter:
 
         # Stakeholder Consultation Tool
         async def stakeholder_consultation_handler(
-            params: dict[str, Any]
+            params: dict[str, Any],
         ) -> dict[str, Any]:
             # Simulate stakeholder consultation for governance decisions
             consultation_topic = params.get("topic", "General governance")
@@ -983,7 +1008,7 @@ class ToolRouter:
 
         # Policy Impact Analysis Tool
         async def policy_impact_analysis_handler(
-            params: dict[str, Any]
+            params: dict[str, Any],
         ) -> dict[str, Any]:
             # Simulate policy impact analysis
             policy_description = params.get("policy_description", "")

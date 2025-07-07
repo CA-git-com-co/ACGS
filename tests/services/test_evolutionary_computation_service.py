@@ -33,6 +33,9 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 # Try to import real service components
 try:
     # Import from the actual evolutionary computation service
+    from services.core.evolutionary_computation.app.core.evolution_engine import (
+        EvolutionEngine,
+    )
     from services.core.evolutionary_computation.app.services.evolution_service import (
         EvolutionService,
     )
@@ -41,9 +44,6 @@ try:
     )
     from services.core.evolutionary_computation.app.services.hitl_service import (
         HITLService,
-    )
-    from services.core.evolutionary_computation.app.core.evolution_engine import (
-        EvolutionEngine,
     )
 
     print("✅ Successfully imported real Evolutionary Computation service components")
@@ -64,7 +64,7 @@ except ImportError as e:
             return {
                 "fitness_score": 0.85,
                 "constitutional_hash": self.constitutional_hash,
-                "metrics": {"performance": 0.9, "compliance": 0.8}
+                "metrics": {"performance": 0.9, "compliance": 0.8},
             }
 
         async def evolve_population(self, population):
@@ -72,7 +72,7 @@ except ImportError as e:
             return {
                 "evolved_population": population,
                 "generation": 1,
-                "constitutional_hash": self.constitutional_hash
+                "constitutional_hash": self.constitutional_hash,
             }
 
     class FitnessService:
@@ -101,8 +101,9 @@ except ImportError as e:
                 "success": True,
                 "generations": 10,
                 "best_fitness": 0.95,
-                "constitutional_hash": self.constitutional_hash
+                "constitutional_hash": self.constitutional_hash,
             }
+
 
 # Create test data structures
 class Individual:
@@ -111,11 +112,13 @@ class Individual:
         self.fitness = fitness or 0.0
         self.constitutional_hash = CONSTITUTIONAL_HASH
 
+
 class Population:
     def __init__(self, individuals=None, size=50):
         self.individuals = individuals or [Individual() for _ in range(size)]
         self.size = size
         self.constitutional_hash = CONSTITUTIONAL_HASH
+
 
 class EvolutionConfig:
     def __init__(self, population_size=50, generations=100, mutation_rate=0.1):
@@ -124,11 +127,13 @@ class EvolutionConfig:
         self.mutation_rate = mutation_rate
         self.constitutional_hash = CONSTITUTIONAL_HASH
 
+
 class ConstitutionalConstraint:
     def __init__(self, name, constraint_func):
         self.name = name
         self.constraint_func = constraint_func
         self.constitutional_hash = CONSTITUTIONAL_HASH
+
 
 class OptimizationObjective:
     def __init__(self, name, objective_func, weight=1.0):
@@ -518,13 +523,11 @@ class TestMultiObjectiveEvolution:
             # Conflicting objectives
             return {
                 OptimizationObjective.PERFORMANCE.value: np.sum(genome),  # Maximize
-                OptimizationObjective.RESOURCE_EFFICIENCY.value: 1.0 / (
-                    1.0 + np.sum(genome)
-                ),  # Minimize resource use
+                OptimizationObjective.RESOURCE_EFFICIENCY.value: 1.0
+                / (1.0 + np.sum(genome)),  # Minimize resource use
                 OptimizationObjective.CONSTITUTIONAL_COMPLIANCE.value: 0.9,
-                OptimizationObjective.SAFETY.value: 1.0 - np.std(
-                    genome
-                ),  # Minimize variance
+                OptimizationObjective.SAFETY.value: 1.0
+                - np.std(genome),  # Minimize variance
                 OptimizationObjective.EXPLAINABILITY.value: 1.0 / (1.0 + len(genome)),
             }
 

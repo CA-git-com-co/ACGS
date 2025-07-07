@@ -1,0 +1,48 @@
+{
+  "service_name": "gs_service",
+  "cache_type": "policy_decisions",
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "optimization": {
+    "ttl_seconds": 3600,
+    "max_size": 4000,
+    "warming_enabled": true,
+    "warming_keys": [
+      "policy_cache",
+      "decision_cache",
+      "synthesis_results"
+    ]
+  },
+  "deployment_timestamp": 1751898091.8127441,
+  "cache_strategies": {
+    "multi_tier_enabled": true,
+    "l1_memory_cache": {
+      "enabled": true,
+      "max_size": 1000,
+      "ttl_seconds": 300
+    },
+    "l2_redis_cache": {
+      "enabled": true,
+      "max_size": 4000,
+      "ttl_seconds": 3600
+    },
+    "cache_warming": {
+      "enabled": true,
+      "warming_keys": [
+        "policy_cache",
+        "decision_cache",
+        "synthesis_results"
+      ],
+      "warming_frequency_minutes": 30
+    }
+  },
+  "performance_targets": {
+    "hit_rate_target": 0.85,
+    "latency_target_ms": 2.0,
+    "throughput_target_rps": 100
+  },
+  "monitoring": {
+    "metrics_enabled": true,
+    "hit_rate_alerts": true,
+    "latency_alerts": true
+  }
+}

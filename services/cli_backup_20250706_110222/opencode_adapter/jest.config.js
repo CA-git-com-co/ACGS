@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 export default {
   preset: 'ts-jest',
   testEnvironment: 'node',

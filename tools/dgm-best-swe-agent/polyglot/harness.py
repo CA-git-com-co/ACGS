@@ -5,12 +5,15 @@ import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
+import docker
+from polyglot.constants import MAP_REPO_VERSION_TO_SPECS, TEST_COMMANDS
+from polyglot.docker_build import build_container, build_env_images, cleanup_container
+from polyglot.test_spec import make_test_spec
 from prompts.testrepo_prompt import get_test_description
-from swe_bench.utils import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from swe_bench.utils import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
+    "cdd01ef066bc6cf2",
+    =,
     copy_from_container,
     copy_to_container,
     log_container_output,
@@ -19,11 +22,6 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
     setup_logger,
 )
 from utils.git_utils import remove_patch_by_files
-
-import docker
-from polyglot.constants import MAP_REPO_VERSION_TO_SPECS, TEST_COMMANDS
-from polyglot.docker_build import build_container, build_env_images, cleanup_container
-from polyglot.test_spec import make_test_spec
 
 
 def get_eval_script(commands):

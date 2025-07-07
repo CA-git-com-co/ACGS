@@ -23,15 +23,14 @@ from services.shared.database import get_async_db
 from services.shared.models import ConstitutionalPrinciple, Policy, User
 
 # Import QEC error correction services
-from .services.qec_error_correction_service import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from .services.qec_error_correction_service import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     ConflictDetectionResult,
     ConflictType,
     QECErrorCorrectionService,
     ResolutionStrategy,
+    "cdd01ef066bc6cf2",
+    =,
 )
 
 logger = logging.getLogger(__name__)

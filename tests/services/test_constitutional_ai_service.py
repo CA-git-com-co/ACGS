@@ -25,16 +25,18 @@ import pytest
 # Add service paths to Python path
 project_root = os.path.join(os.path.dirname(__file__), "../..")
 sys.path.insert(0, project_root)
-sys.path.insert(0, os.path.join(project_root, "services/core/constitutional-ai/ac_service"))
+sys.path.insert(
+    0, os.path.join(project_root, "services/core/constitutional-ai/ac_service")
+)
 
 # Import real service implementations
 try:
     # Try to import from the actual service
-    from services.core.constitutional_ai.ac_service.app.services.constitutional_compliance_engine import (
-        ConstitutionalComplianceEngine,
-    )
     from services.core.constitutional_ai.ac_service.app.services.audit_logging_service import (
         AuditLoggingService,
+    )
+    from services.core.constitutional_ai.ac_service.app.services.constitutional_compliance_engine import (
+        ConstitutionalComplianceEngine,
     )
     from services.core.constitutional_ai.ac_service.app.services.violation_detection_service import (
         ViolationDetectionService,
@@ -52,14 +54,16 @@ try:
             """Validate policy using real compliance engine."""
             try:
                 # Use the real compliance engine
-                compliance_result = await self.compliance_engine.evaluate_compliance(policy)
+                compliance_result = await self.compliance_engine.evaluate_compliance(
+                    policy
+                )
 
                 return {
                     "compliant": compliance_result.get("compliant", True),
                     "confidence_score": compliance_result.get("confidence_score", 0.85),
                     "constitutional_hash": self.constitutional_hash,
                     "validation_details": compliance_result.get("details", {}),
-                    "compliance_score": compliance_result.get("score", 0.85)
+                    "compliance_score": compliance_result.get("score", 0.85),
                 }
             except Exception as e:
                 # Fallback for testing
@@ -68,7 +72,7 @@ try:
                     "confidence_score": 0.85,
                     "constitutional_hash": self.constitutional_hash,
                     "validation_details": {"test_mode": True, "error": str(e)},
-                    "compliance_score": 0.85
+                    "compliance_score": 0.85,
                 }
 
         def _calculate_weighted_compliance(self, scores):
@@ -85,7 +89,11 @@ try:
 
     class MultiModelConsensus:
         def __init__(self):
-            self.models = ["constitutional_ai", "compliance_engine", "violation_detector"]
+            self.models = [
+                "constitutional_ai",
+                "compliance_engine",
+                "violation_detector",
+            ]
 
         async def evaluate(self, policy, principles):
             """Evaluate using multiple models."""
@@ -96,8 +104,8 @@ try:
                 "model_results": [
                     {"model": "constitutional_ai", "score": 0.87},
                     {"model": "compliance_engine", "score": 0.83},
-                    {"model": "violation_detector", "score": 0.85}
-                ]
+                    {"model": "violation_detector", "score": 0.85},
+                ],
             }
 
     print("✅ Successfully imported real Constitutional AI service components")
@@ -118,7 +126,7 @@ except ImportError as e:
                 "confidence_score": 0.85,
                 "constitutional_hash": self.constitutional_hash,
                 "validation_details": {"test_mode": True},
-                "compliance_score": 0.85
+                "compliance_score": 0.85,
             }
 
         def _calculate_weighted_compliance(self, scores):
@@ -145,8 +153,8 @@ except ImportError as e:
                 "model_results": [
                     {"model": "fallback_model_1", "score": 0.87},
                     {"model": "fallback_model_2", "score": 0.83},
-                    {"model": "fallback_model_3", "score": 0.85}
-                ]
+                    {"model": "fallback_model_3", "score": 0.85},
+                ],
             }
 
 
@@ -451,21 +459,23 @@ class TestConstitutionalValidationService:
         # Create diverse policies
         policies = []
         for i in range(50):
-            policies.append({
-                "id": f"stress_{i}",
-                "name": f"Policy {i}",
-                "content": f"Policy content with variation {i}" * 10,
-                "metadata": {
-                    "complexity": i % 5,
-                    "domain": ["governance", "security", "privacy"][i % 3],
-                },
-            })
+            policies.append(
+                {
+                    "id": f"stress_{i}",
+                    "name": f"Policy {i}",
+                    "content": f"Policy content with variation {i}" * 10,
+                    "metadata": {
+                        "complexity": i % 5,
+                        "domain": ["governance", "security", "privacy"][i % 3],
+                    },
+                }
+            )
 
         # Validate all concurrently
         start_time = time.time()
-        results = await asyncio.gather(*[
-            validation_service.validate_policy(p) for p in policies
-        ])
+        results = await asyncio.gather(
+            *[validation_service.validate_policy(p) for p in policies]
+        )
         end_time = time.time()
 
         assert len(results) == 50

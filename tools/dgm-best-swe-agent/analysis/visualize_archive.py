@@ -11,7 +11,6 @@ from utils.evo_utils import get_model_patch_paths, load_dgm_metadata
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class EvalQuantity:
     SMALL = "small"
     MED = "med"

@@ -1,8 +1,7 @@
 ---
-type: "agent_coordination"
-constitutional_hash: "cdd01ef066bc6cf2"
+type: "agent_requested"
+description: "Example description"
 ---
-
 # ACGS Agent Roles
 **Constitutional Hash:** `cdd01ef066bc6cf2`
 

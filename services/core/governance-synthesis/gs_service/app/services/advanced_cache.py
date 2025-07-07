@@ -325,6 +325,7 @@ class RedisCache:
             except Exception:
                 # Fallback for legacy pickle data
                 import pickle
+
                 value = pickle.loads(data)
 
             self.stats.cache_hits += 1
@@ -351,6 +352,7 @@ class RedisCache:
             except Exception:
                 # Fallback to pickle for complex objects
                 import pickle
+
                 data = pickle.dumps(value)
 
             if ttl:

@@ -20,18 +20,18 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel, Field
 
 from ...core.performance_optimizer import OptimizationStrategy
-from ...services.enhanced_governance_synthesis import (
-
-# Security validation imports
-from services.shared.security_validation import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
-    validate_user_input,
+from ...services.enhanced_governance_synthesis import (  # Security validation imports; Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
+    "cdd01ef066bc6cf2",
+    =,
+    from,
+    import,
+    services.shared.security_validation,
+    validate_governance_input,
     validate_policy_input,
-    validate_governance_input
+    validate_user_input,
 )
+
     EnhancedGovernanceSynthesis,
     EnhancedSynthesisRequest,
 )

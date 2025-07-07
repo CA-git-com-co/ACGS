@@ -1,245 +1,220 @@
-version: "3.8"
-
+version: '3.8'
 services:
-  # Locust Master
   locust-master:
     build:
       context: .
       dockerfile: Dockerfile.loadtest
     command:
-      [
-        "locust",
-        "-f",
-        "/app/locustfile.py",
-        "--master",
-        "--host",
-        "${ACGS_TARGET_HOST:-http://localhost:8080}",
-        "--web-port",
-        "8089",
-        "--master-bind-port",
-        "5557",
-        "--html",
-        "/app/reports/acgs_distributed_load_test.html",
-        "--csv",
-        "/app/reports/acgs_distributed_load_test",
-      ]
+    - locust
+    - -f
+    - /app/locustfile.py
+    - --master
+    - --host
+    - ${ACGS_TARGET_HOST:-http://localhost:8080}
+    - --web-port
+    - '8089'
+    - --master-bind-port
+    - '5557'
+    - --html
+    - /app/reports/acgs_distributed_load_test.html
+    - --csv
+    - /app/reports/acgs_distributed_load_test
     ports:
-      - "8089:8089"
-      - "5557:5557"
+    - 8089:8089
+    - 5557:5557
     environment:
-      - LOCUST_MODE=master
-      - ACGS_TARGET_HOST=${ACGS_TARGET_HOST:-http://localhost:8080}
-      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-      - PYTHONPATH=/app
+    - LOCUST_MODE=master
+    - ACGS_TARGET_HOST=${ACGS_TARGET_HOST:-http://localhost:8080}
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - PYTHONPATH=/app
     volumes:
-      - ./reports:/app/reports
-      - ./logs:/app/logs
+    - ./reports:/app/reports
+    - ./logs:/app/logs
     networks:
-      - acgs-load-test
+    - acgs-load-test
     depends_on:
-      - prometheus
-      - grafana
-      - redis
-
-  # Locust Workers
+    - prometheus
+    - grafana
+    - redis
   locust-worker-1:
     build:
       context: .
       dockerfile: Dockerfile.loadtest
     command:
-      [
-        "locust",
-        "-f",
-        "/app/locustfile.py",
-        "--worker",
-        "--master-host",
-        "locust-master",
-        "--master-port",
-        "5557",
-        "--processes",
-        "4",
-      ]
+    - locust
+    - -f
+    - /app/locustfile.py
+    - --worker
+    - --master-host
+    - locust-master
+    - --master-port
+    - '5557'
+    - --processes
+    - '4'
     environment:
-      - LOCUST_MODE=worker
-      - LOCUST_MASTER_HOST=locust-master
-      - LOCUST_MASTER_PORT=5557
-      - LOCUST_PROCESSES=4
-      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-      - NODE_ID=worker-1
-      - NODE_REGION=us-east-1
-      - PYTHONPATH=/app
+    - LOCUST_MODE=worker
+    - LOCUST_MASTER_HOST=locust-master
+    - LOCUST_MASTER_PORT=5557
+    - LOCUST_PROCESSES=4
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - NODE_ID=worker-1
+    - NODE_REGION=us-east-1
+    - PYTHONPATH=/app
     volumes:
-      - ./logs:/app/logs
+    - ./logs:/app/logs
     networks:
-      - acgs-load-test
+    - acgs-load-test
     depends_on:
-      - locust-master
-
+    - locust-master
   locust-worker-2:
     build:
       context: .
       dockerfile: Dockerfile.loadtest
     command:
-      [
-        "locust",
-        "-f",
-        "/app/locustfile.py",
-        "--worker",
-        "--master-host",
-        "locust-master",
-        "--master-port",
-        "5557",
-        "--processes",
-        "4",
-      ]
+    - locust
+    - -f
+    - /app/locustfile.py
+    - --worker
+    - --master-host
+    - locust-master
+    - --master-port
+    - '5557'
+    - --processes
+    - '4'
     environment:
-      - LOCUST_MODE=worker
-      - LOCUST_MASTER_HOST=locust-master
-      - LOCUST_MASTER_PORT=5557
-      - LOCUST_PROCESSES=4
-      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-      - NODE_ID=worker-2
-      - NODE_REGION=us-west-2
-      - PYTHONPATH=/app
+    - LOCUST_MODE=worker
+    - LOCUST_MASTER_HOST=locust-master
+    - LOCUST_MASTER_PORT=5557
+    - LOCUST_PROCESSES=4
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - NODE_ID=worker-2
+    - NODE_REGION=us-west-2
+    - PYTHONPATH=/app
     volumes:
-      - ./logs:/app/logs
+    - ./logs:/app/logs
     networks:
-      - acgs-load-test
+    - acgs-load-test
     depends_on:
-      - locust-master
-
+    - locust-master
   locust-worker-3:
     build:
       context: .
       dockerfile: Dockerfile.loadtest
     command:
-      [
-        "locust",
-        "-f",
-        "/app/locustfile.py",
-        "--worker",
-        "--master-host",
-        "locust-master",
-        "--master-port",
-        "5557",
-        "--processes",
-        "4",
-      ]
+    - locust
+    - -f
+    - /app/locustfile.py
+    - --worker
+    - --master-host
+    - locust-master
+    - --master-port
+    - '5557'
+    - --processes
+    - '4'
     environment:
-      - LOCUST_MODE=worker
-      - LOCUST_MASTER_HOST=locust-master
-      - LOCUST_MASTER_PORT=5557
-      - LOCUST_PROCESSES=4
-      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-      - NODE_ID=worker-3
-      - NODE_REGION=eu-west-1
-      - PYTHONPATH=/app
+    - LOCUST_MODE=worker
+    - LOCUST_MASTER_HOST=locust-master
+    - LOCUST_MASTER_PORT=5557
+    - LOCUST_PROCESSES=4
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - NODE_ID=worker-3
+    - NODE_REGION=eu-west-1
+    - PYTHONPATH=/app
     volumes:
-      - ./logs:/app/logs
+    - ./logs:/app/logs
     networks:
-      - acgs-load-test
+    - acgs-load-test
     depends_on:
-      - locust-master
-
+    - locust-master
   locust-worker-4:
     build:
       context: .
       dockerfile: Dockerfile.loadtest
     command:
-      [
-        "locust",
-        "-f",
-        "/app/locustfile.py",
-        "--worker",
-        "--master-host",
-        "locust-master",
-        "--master-port",
-        "5557",
-        "--processes",
-        "4",
-      ]
+    - locust
+    - -f
+    - /app/locustfile.py
+    - --worker
+    - --master-host
+    - locust-master
+    - --master-port
+    - '5557'
+    - --processes
+    - '4'
     environment:
-      - LOCUST_MODE=worker
-      - LOCUST_MASTER_HOST=locust-master
-      - LOCUST_MASTER_PORT=5557
-      - LOCUST_PROCESSES=4
-      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-      - NODE_ID=worker-4
-      - NODE_REGION=ap-southeast-1
-      - PYTHONPATH=/app
+    - LOCUST_MODE=worker
+    - LOCUST_MASTER_HOST=locust-master
+    - LOCUST_MASTER_PORT=5557
+    - LOCUST_PROCESSES=4
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - NODE_ID=worker-4
+    - NODE_REGION=ap-southeast-1
+    - PYTHONPATH=/app
     volumes:
-      - ./logs:/app/logs
+    - ./logs:/app/logs
     networks:
-      - acgs-load-test
+    - acgs-load-test
     depends_on:
-      - locust-master
-
-  # Performance Monitoring
+    - locust-master
   prometheus:
     image: prom/prometheus:latest
     ports:
-      - "9090:9090"
+    - 9090:9090
     volumes:
-      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus_data:/prometheus
+    - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    - prometheus_data:/prometheus
     command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-      - "--storage.tsdb.path=/prometheus"
-      - "--web.console.libraries=/etc/prometheus/console_libraries"
-      - "--web.console.templates=/etc/prometheus/consoles"
-      - "--storage.tsdb.retention.time=200h"
-      - "--web.enable-lifecycle"
+    - --config.file=/etc/prometheus/prometheus.yml
+    - --storage.tsdb.path=/prometheus
+    - --web.console.libraries=/etc/prometheus/console_libraries
+    - --web.console.templates=/etc/prometheus/consoles
+    - --storage.tsdb.retention.time=200h
+    - --web.enable-lifecycle
     networks:
-      - acgs-load-test
-
+    - acgs-load-test
   grafana:
     image: grafana/grafana:latest
     ports:
-      - "3000:3000"
+    - 3000:3000
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-      - GF_SECURITY_ADMIN_USER=admin
+    - GF_SECURITY_ADMIN_PASSWORD=admin
+    - GF_SECURITY_ADMIN_USER=admin
     volumes:
-      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
-      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
-      - grafana_data:/var/lib/grafana
+    - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+    - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+    - grafana_data:/var/lib/grafana
     networks:
-      - acgs-load-test
+    - acgs-load-test
     depends_on:
-      - prometheus
-
-  # Redis for caching and session storage
+    - prometheus
   redis:
     image: redis:alpine
     ports:
-      - "6379:6379"
+    - 6379:6379
     command: redis-server --appendonly yes
     volumes:
-      - redis_data:/data
+    - redis_data:/data
     networks:
-      - acgs-load-test
-
-  # Load test result analyzer
+    - acgs-load-test
   analyzer:
     build:
       context: .
       dockerfile: Dockerfile.analyzer
     environment:
-      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-      - RESULTS_DIR=/app/reports
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - RESULTS_DIR=/app/reports
     volumes:
-      - ./reports:/app/reports
-      - ./analysis:/app/analysis
+    - ./reports:/app/reports
+    - ./analysis:/app/analysis
     networks:
-      - acgs-load-test
+    - acgs-load-test
     depends_on:
-      - locust-master
-
+    - locust-master
 networks:
   acgs-load-test:
     driver: bridge
-
 volumes:
-  prometheus_data:
-  grafana_data:
-  redis_data:
+  prometheus_data: null
+  grafana_data: null
+  redis_data: null
+constitutional_hash: cdd01ef066bc6cf2

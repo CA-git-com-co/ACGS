@@ -17,7 +17,6 @@ import httpx
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class ConstitutionalComplianceAuthFixer:
     """Fixes constitutional compliance authentication and endpoint access."""
 

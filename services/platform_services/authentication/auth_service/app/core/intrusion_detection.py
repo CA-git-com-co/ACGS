@@ -14,7 +14,6 @@ from .security_audit import security_audit
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 @dataclass
 class SecurityThreat:
     """Security threat detection result"""

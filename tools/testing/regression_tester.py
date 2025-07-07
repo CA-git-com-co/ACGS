@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Constitutional Hash: cdd01ef066bc6cf2
 """
 Regression Testing and Validation Framework for ACGS-2
 Runs comprehensive regression tests to ensure no new issues are introduced

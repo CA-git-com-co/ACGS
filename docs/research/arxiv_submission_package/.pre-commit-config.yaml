@@ -1,177 +1,157 @@
-# Pre-commit configuration for Academic Submission System
-# Ensures code quality and consistency before commits
-
 repos:
-  # Code formatting
-  - repo: https://github.com/psf/black
-    rev: 23.7.0
-    hooks:
-      - id: black
-        language_version: python3
-        args: [--line-length=127]
-
-  # Import sorting
-  - repo: https://github.com/pycqa/isort
-    rev: 5.12.0
-    hooks:
-      - id: isort
-        args: [--profile=black, --line-length=127]
-
-  # Code linting
-  - repo: https://github.com/pycqa/flake8
-    rev: 6.0.0
-    hooks:
-      - id: flake8
-        args: [--max-line-length=127, --extend-ignore=E203, W503]
-        additional_dependencies:
-          - flake8-docstrings
-          - flake8-bugbear
-          - flake8-comprehensions
-
-  # Type checking
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.5.0
-    hooks:
-      - id: mypy
-        args: [--ignore-missing-imports]
-        additional_dependencies: [types-requests]
-
-  # Security scanning
-  - repo: https://github.com/pycqa/bandit
-    rev: 1.7.5
-    hooks:
-      - id: bandit
-        args: [-r, quality_assurance, cli, web]
-        exclude: tests/
-
-  # General code quality
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
-    hooks:
-      # File formatting
-      - id: trailing-whitespace
-      - id: end-of-file-fixer
-      - id: mixed-line-ending
-        args: [--fix=lf]
-
-      # Python specific
-      - id: check-ast
-      - id: check-builtin-literals
-      - id: check-docstring-first
-      - id: debug-statements
-      - id: name-tests-test
-        args: [--pytest-test-first]
-
-      # General file checks
-      - id: check-added-large-files
-        args: [--maxkb=1000]
-      - id: check-case-conflict
-      - id: check-merge-conflict
-      - id: check-symlinks
-      - id: check-toml
-      - id: check-yaml
-      - id: check-json
-
-      # Security
-      - id: detect-private-key
-      - id: detect-aws-credentials
-
-  # Documentation
-  - repo: https://github.com/pycqa/pydocstyle
-    rev: 6.3.0
-    hooks:
-      - id: pydocstyle
-        args: [--convention=google]
-        exclude: tests/
-
-  # Jupyter notebooks (if any)
-  - repo: https://github.com/nbQA-dev/nbQA
-    rev: 1.7.0
-    hooks:
-      - id: nbqa-black
-      - id: nbqa-isort
-      - id: nbqa-flake8
-
-  # Shell scripts
-  - repo: https://github.com/shellcheck-py/shellcheck-py
-    rev: v0.9.0.5
-    hooks:
-      - id: shellcheck
-
-  # Markdown
-  - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.35.0
-    hooks:
-      - id: markdownlint
-        args: [--fix]
-
-  # Local hooks for project-specific checks
-  - repo: local
-    hooks:
-      # Run unit tests before commit
-      - id: pytest-unit
-        name: Run unit tests
-        entry: pytest tests/unit/ -x -q
-        language: system
-        pass_filenames: false
-        stages: [commit]
-
-      # Validate example paper
-      - id: validate-example
-        name: Validate example paper
-        entry: python cli/academic_cli.py validate example_paper/
-        language: system
-        pass_filenames: false
-        files: ^(quality_assurance|cli)/.*\.py$
-        stages: [push]
-
-      # Check requirements files
-      - id: requirements-check
-        name: Check requirements files
-        entry: python -m pip check
-        language: system
-        pass_filenames: false
-        files: requirements.*\.txt$
-
-      # Validate configuration files
-      - id: config-validation
-        name: Validate configuration files
-        entry: python -c "import json; json.load(open('config.json'))"
-        language: system
-        pass_filenames: false
-        files: config\.json$
-        stages: [commit]
-
-      # Check for TODO/FIXME comments
-      - id: check-todos
-        name: Check for TODO/FIXME comments
-        entry: grep -rn "TODO\|FIXME\|XXX\|HACK" quality_assurance cli web
-        language: system
-        pass_filenames: false
-        stages: [push]
-        verbose: true
-        always_run: true
-        # Allow failure - just warn about TODOs
-        # This will show TODOs but not block commits
-
-      # Performance regression check
-      - id: performance-check
-        name: Quick performance check
-        entry: pytest tests/performance/test_performance.py::TestValidationPerformance::test_single_paper_validation_speed -q
-        language: system
-        pass_filenames: false
-        files: ^quality_assurance/.*\.py$
-        stages: [push]
-
-# Configuration for specific hooks
+- repo: https://github.com/psf/black
+  rev: 23.7.0
+  hooks:
+  - id: black
+    language_version: python3
+    args:
+    - --line-length=127
+- repo: https://github.com/pycqa/isort
+  rev: 5.12.0
+  hooks:
+  - id: isort
+    args:
+    - --profile=black
+    - --line-length=127
+- repo: https://github.com/pycqa/flake8
+  rev: 6.0.0
+  hooks:
+  - id: flake8
+    args:
+    - --max-line-length=127
+    - --extend-ignore=E203
+    - W503
+    additional_dependencies:
+    - flake8-docstrings
+    - flake8-bugbear
+    - flake8-comprehensions
+- repo: https://github.com/pre-commit/mirrors-mypy
+  rev: v1.5.0
+  hooks:
+  - id: mypy
+    args:
+    - --ignore-missing-imports
+    additional_dependencies:
+    - types-requests
+- repo: https://github.com/pycqa/bandit
+  rev: 1.7.5
+  hooks:
+  - id: bandit
+    args:
+    - -r
+    - quality_assurance
+    - cli
+    - web
+    exclude: tests/
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.4.0
+  hooks:
+  - id: trailing-whitespace
+  - id: end-of-file-fixer
+  - id: mixed-line-ending
+    args:
+    - --fix=lf
+  - id: check-ast
+  - id: check-builtin-literals
+  - id: check-docstring-first
+  - id: debug-statements
+  - id: name-tests-test
+    args:
+    - --pytest-test-first
+  - id: check-added-large-files
+    args:
+    - --maxkb=1000
+  - id: check-case-conflict
+  - id: check-merge-conflict
+  - id: check-symlinks
+  - id: check-toml
+  - id: check-yaml
+  - id: check-json
+  - id: detect-private-key
+  - id: detect-aws-credentials
+- repo: https://github.com/pycqa/pydocstyle
+  rev: 6.3.0
+  hooks:
+  - id: pydocstyle
+    args:
+    - --convention=google
+    exclude: tests/
+- repo: https://github.com/nbQA-dev/nbQA
+  rev: 1.7.0
+  hooks:
+  - id: nbqa-black
+  - id: nbqa-isort
+  - id: nbqa-flake8
+- repo: https://github.com/shellcheck-py/shellcheck-py
+  rev: v0.9.0.5
+  hooks:
+  - id: shellcheck
+- repo: https://github.com/igorshubovych/markdownlint-cli
+  rev: v0.35.0
+  hooks:
+  - id: markdownlint
+    args:
+    - --fix
+- repo: local
+  hooks:
+  - id: pytest-unit
+    name: Run unit tests
+    entry: pytest tests/unit/ -x -q
+    language: system
+    pass_filenames: false
+    stages:
+    - commit
+  - id: validate-example
+    name: Validate example paper
+    entry: python cli/academic_cli.py validate example_paper/
+    language: system
+    pass_filenames: false
+    files: ^(quality_assurance|cli)/.*\.py$
+    stages:
+    - push
+  - id: requirements-check
+    name: Check requirements files
+    entry: python -m pip check
+    language: system
+    pass_filenames: false
+    files: requirements.*\.txt$
+  - id: config-validation
+    name: Validate configuration files
+    entry: python -c "import json; json.load(open('config.json'))"
+    language: system
+    pass_filenames: false
+    files: config\.json$
+    stages:
+    - commit
+  - id: check-todos
+    name: Check for TODO/FIXME comments
+    entry: grep -rn "TODO\|FIXME\|XXX\|HACK" quality_assurance cli web
+    language: system
+    pass_filenames: false
+    stages:
+    - push
+    verbose: true
+    always_run: true
+  - id: performance-check
+    name: Quick performance check
+    entry: pytest tests/performance/test_performance.py::TestValidationPerformance::test_single_paper_validation_speed
+      -q
+    language: system
+    pass_filenames: false
+    files: ^quality_assurance/.*\.py$
+    stages:
+    - push
 ci:
-  autofix_commit_msg: |
-    [pre-commit.ci] auto fixes from pre-commit.com hooks
+  autofix_commit_msg: '[pre-commit.ci] auto fixes from pre-commit.com hooks
+
 
     for more information, see https://pre-commit.ci
+
+    '
   autofix_prs: true
-  autoupdate_branch: ""
-  autoupdate_commit_msg: "[pre-commit.ci] pre-commit autoupdate"
+  autoupdate_branch: ''
+  autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
   autoupdate_schedule: weekly
   skip: []
   submodules: false
+constitutional_hash: cdd01ef066bc6cf2

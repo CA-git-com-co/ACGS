@@ -24,14 +24,13 @@ from typing import Any
 
 import aiohttp
 
-from ..core.heterogeneous_validator import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from ..core.heterogeneous_validator import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     BaseValidator,
     GovernanceContext,
     ValidationResult,
+    "cdd01ef066bc6cf2",
+    =,
 )
 
 logger = logging.getLogger(__name__)

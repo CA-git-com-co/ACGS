@@ -1,312 +1,279 @@
-# ACGS Operational Excellence Alert Rules
-# Comprehensive alerting for 98+/100 production readiness
-
 groups:
-  - name: operational_excellence
-    rules:
-      # Operational Excellence Score Alerts
-      - alert: OperationalExcellenceScoreLow
-        expr: acgs_operational_score < 98
-        for: 5m
-        labels:
-          severity: warning
-          category: operational_excellence
-        annotations:
-          summary: "ACGS operational excellence score below target"
-          description: "Operational excellence score is {{ $value }}/100, below target of 98/100"
-          runbook_url: "https://acgs.local/runbooks/operational-excellence"
-
-      - alert: OperationalExcellenceScoreCritical
-        expr: acgs_operational_score < 90
-        for: 2m
-        labels:
-          severity: critical
-          category: operational_excellence
-        annotations:
-          summary: "ACGS operational excellence score critically low"
-          description: "Operational excellence score is {{ $value }}/100, critically below acceptable threshold"
-          runbook_url: "https://acgs.local/runbooks/operational-excellence"
-
-      # Deployment Pipeline Alerts
-      - alert: DeploymentFailureRate
-        expr: acgs_deployment_success_rate < 95
-        for: 10m
-        labels:
-          severity: warning
-          category: deployment
-        annotations:
-          summary: "High deployment failure rate detected"
-          description: "Deployment success rate is {{ $value }}%, below 95% threshold"
-          runbook_url: "https://acgs.local/runbooks/deployment-failures"
-
-      - alert: DeploymentFailureRateCritical
-        expr: acgs_deployment_success_rate < 90
-        for: 5m
-        labels:
-          severity: critical
-          category: deployment
-        annotations:
-          summary: "Critical deployment failure rate"
-          description: "Deployment success rate is {{ $value }}%, critically low"
-          runbook_url: "https://acgs.local/runbooks/deployment-failures"
-
-      # Backup and Recovery Alerts
-      - alert: BackupFailureRate
-        expr: acgs_backup_success_rate < 98
-        for: 15m
-        labels:
-          severity: warning
-          category: backup
-        annotations:
-          summary: "Backup failure rate above threshold"
-          description: "Backup success rate is {{ $value }}%, below 98% threshold"
-          runbook_url: "https://acgs.local/runbooks/backup-failures"
-
-      - alert: BackupFailureRateCritical
-        expr: acgs_backup_success_rate < 95
-        for: 5m
-        labels:
-          severity: critical
-          category: backup
-        annotations:
-          summary: "Critical backup failure rate"
-          description: "Backup success rate is {{ $value }}%, critically low"
-          runbook_url: "https://acgs.local/runbooks/backup-failures"
-
-      # Mean Time to Recovery Alerts
-      - alert: MTTRHigh
-        expr: acgs_mean_time_to_recovery_seconds > 1800
-        for: 5m
-        labels:
-          severity: warning
-          category: recovery
-        annotations:
-          summary: "Mean Time to Recovery exceeds target"
-          description: "MTTR is {{ $value }} seconds, above 30-minute target"
-          runbook_url: "https://acgs.local/runbooks/recovery-procedures"
-
-      - alert: MTTRCritical
-        expr: acgs_mean_time_to_recovery_seconds > 3600
-        for: 2m
-        labels:
-          severity: critical
-          category: recovery
-        annotations:
-          summary: "Mean Time to Recovery critically high"
-          description: "MTTR is {{ $value }} seconds, critically above target"
-          runbook_url: "https://acgs.local/runbooks/recovery-procedures"
-
-      # Security Compliance Alerts
-      - alert: SecurityComplianceScoreLow
-        expr: acgs_security_compliance_score < 95
-        for: 5m
-        labels:
-          severity: warning
-          category: security
-        annotations:
-          summary: "Security compliance score below threshold"
-          description: "Security compliance score is {{ $value }}%, below 95% threshold"
-          runbook_url: "https://acgs.local/runbooks/security-compliance"
-
-      - alert: SecurityComplianceScoreCritical
-        expr: acgs_security_compliance_score < 90
-        for: 2m
-        labels:
-          severity: critical
-          category: security
-        annotations:
-          summary: "Critical security compliance score"
-          description: "Security compliance score is {{ $value }}%, critically low"
-          runbook_url: "https://acgs.local/runbooks/security-compliance"
-
-      # Infrastructure Health Alerts
-      - alert: InfrastructureHealthScoreLow
-        expr: acgs_infrastructure_health_score < 95
-        for: 10m
-        labels:
-          severity: warning
-          category: infrastructure
-        annotations:
-          summary: "Infrastructure health score below threshold"
-          description: "Infrastructure health score is {{ $value }}%, below 95% threshold"
-          runbook_url: "https://acgs.local/runbooks/infrastructure-health"
-
-      - alert: InfrastructureHealthScoreCritical
-        expr: acgs_infrastructure_health_score < 90
-        for: 5m
-        labels:
-          severity: critical
-          category: infrastructure
-        annotations:
-          summary: "Critical infrastructure health score"
-          description: "Infrastructure health score is {{ $value }}%, critically low"
-          runbook_url: "https://acgs.local/runbooks/infrastructure-health"
-
-  - name: sla_compliance
-    rules:
-      # SLA Compliance Alerts
-      - alert: UptimeSLABreach
-        expr: acgs_sla_compliance_percent{metric_type="uptime"} < 99.9
-        for: 5m
-        labels:
-          severity: critical
-          category: sla
-        annotations:
-          summary: "Uptime SLA breach detected"
-          description: "Uptime SLA compliance is {{ $value }}%, below 99.9% target"
-          runbook_url: "https://acgs.local/runbooks/sla-breach"
-
-      - alert: ResponseTimeSLABreach
-        expr: acgs_sla_compliance_percent{metric_type="response_time"} < 95
-        for: 10m
-        labels:
-          severity: warning
-          category: sla
-        annotations:
-          summary: "Response time SLA breach detected"
-          description: "Response time SLA compliance is {{ $value }}%, below 95% target"
-          runbook_url: "https://acgs.local/runbooks/sla-breach"
-
-      - alert: ErrorRateSLABreach
-        expr: acgs_sla_compliance_percent{metric_type="error_rate"} < 99
-        for: 5m
-        labels:
-          severity: warning
-          category: sla
-        annotations:
-          summary: "Error rate SLA breach detected"
-          description: "Error rate SLA compliance is {{ $value }}%, below 99% target"
-          runbook_url: "https://acgs.local/runbooks/sla-breach"
-
-  - name: constitutional_compliance
-    rules:
-      # Constitutional Compliance Alerts
-      - alert: ConstitutionalComplianceViolation
-        expr: acgs_constitutional_compliance == 0
-        for: 1m
-        labels:
-          severity: critical
-          category: compliance
-        annotations:
-          summary: "Constitutional compliance violation detected"
-          description: "Constitutional compliance check failed - immediate investigation required"
-          runbook_url: "https://acgs.local/runbooks/constitutional-compliance"
-
-      - alert: ConstitutionalHashMismatch
-        expr: increase(acgs_constitutional_hash_mismatches_total[5m]) > 0
-        for: 1m
-        labels:
-          severity: critical
-          category: compliance
-        annotations:
-          summary: "Constitutional hash mismatch detected"
-          description: "Constitutional hash validation failed - security breach possible"
-          runbook_url: "https://acgs.local/runbooks/constitutional-compliance"
-
-  - name: service_health
-    rules:
-      # Critical Service Health Alerts
-      - alert: CriticalServiceDown
-        expr: acgs_service_up{service_name=~"auth-service|ac-service|integrity-service|ec-service"} == 0
-        for: 1m
-        labels:
-          severity: critical
-          category: service_health
-        annotations:
-          summary: "Critical service {{ $labels.service_name }} is down"
-          description: "Critical service {{ $labels.service_name }} has been down for more than 1 minute"
-          runbook_url: "https://acgs.local/runbooks/service-restart"
-
-      - alert: ServiceDown
-        expr: acgs_service_up{service_name=~"fv-service|gs-service|pgc-service"} == 0
-        for: 5m
-        labels:
-          severity: warning
-          category: service_health
-        annotations:
-          summary: "Service {{ $labels.service_name }} is down"
-          description: "Service {{ $labels.service_name }} has been down for more than 5 minutes"
-          runbook_url: "https://acgs.local/runbooks/service-restart"
-
-      # Response Time Alerts
-      - alert: ServiceResponseTimeHigh
-        expr: histogram_quantile(0.95, acgs_response_time_seconds_bucket) > 0.5
-        for: 10m
-        labels:
-          severity: warning
-          category: performance
-        annotations:
-          summary: "Service response time high for {{ $labels.service_name }}"
-          description: "95th percentile response time is {{ $value }}s, above 500ms threshold"
-          runbook_url: "https://acgs.local/runbooks/performance-optimization"
-
-      - alert: ServiceResponseTimeCritical
-        expr: histogram_quantile(0.95, acgs_response_time_seconds_bucket) > 1.0
-        for: 5m
-        labels:
-          severity: critical
-          category: performance
-        annotations:
-          summary: "Service response time critically high for {{ $labels.service_name }}"
-          description: "95th percentile response time is {{ $value }}s, critically above threshold"
-          runbook_url: "https://acgs.local/runbooks/performance-optimization"
-
-      # Error Rate Alerts
-      - alert: ServiceErrorRateHigh
-        expr: acgs_error_rate_percent > 1.0
-        for: 5m
-        labels:
-          severity: warning
-          category: performance
-        annotations:
-          summary: "Service error rate high for {{ $labels.service_name }}"
-          description: "Error rate is {{ $value }}%, above 1% threshold"
-          runbook_url: "https://acgs.local/runbooks/error-investigation"
-
-      - alert: ServiceErrorRateCritical
-        expr: acgs_error_rate_percent > 5.0
-        for: 2m
-        labels:
-          severity: critical
-          category: performance
-        annotations:
-          summary: "Service error rate critically high for {{ $labels.service_name }}"
-          description: "Error rate is {{ $value }}%, critically above threshold"
-          runbook_url: "https://acgs.local/runbooks/error-investigation"
-
-  - name: alerts_meta
-    rules:
-      # Alert Fatigue Prevention
-      - alert: AlertFatigueDetected
-        expr: increase(acgs_alerts_fired_total[1h]) > 50
-        for: 5m
-        labels:
-          severity: warning
-          category: alerting
-        annotations:
-          summary: "Alert fatigue detected"
-          description: "More than 50 alerts fired in the last hour - review alert thresholds"
-          runbook_url: "https://acgs.local/runbooks/alert-tuning"
-
-      # Monitoring System Health
-      - alert: PrometheusDown
-        expr: up{job="prometheus"} == 0
-        for: 2m
-        labels:
-          severity: critical
-          category: monitoring
-        annotations:
-          summary: "Prometheus monitoring system is down"
-          description: "Prometheus has been down for more than 2 minutes"
-          runbook_url: "https://acgs.local/runbooks/monitoring-recovery"
-
-      - alert: GrafanaDown
-        expr: up{job="grafana"} == 0
-        for: 5m
-        labels:
-          severity: warning
-          category: monitoring
-        annotations:
-          summary: "Grafana dashboard system is down"
-          description: "Grafana has been down for more than 5 minutes"
-          runbook_url: "https://acgs.local/runbooks/monitoring-recovery"
+- name: operational_excellence
+  rules:
+  - alert: OperationalExcellenceScoreLow
+    expr: acgs_operational_score < 98
+    for: 5m
+    labels:
+      severity: warning
+      category: operational_excellence
+    annotations:
+      summary: ACGS operational excellence score below target
+      description: Operational excellence score is {{ $value }}/100, below target
+        of 98/100
+      runbook_url: https://acgs.local/runbooks/operational-excellence
+  - alert: OperationalExcellenceScoreCritical
+    expr: acgs_operational_score < 90
+    for: 2m
+    labels:
+      severity: critical
+      category: operational_excellence
+    annotations:
+      summary: ACGS operational excellence score critically low
+      description: Operational excellence score is {{ $value }}/100, critically below
+        acceptable threshold
+      runbook_url: https://acgs.local/runbooks/operational-excellence
+  - alert: DeploymentFailureRate
+    expr: acgs_deployment_success_rate < 95
+    for: 10m
+    labels:
+      severity: warning
+      category: deployment
+    annotations:
+      summary: High deployment failure rate detected
+      description: Deployment success rate is {{ $value }}%, below 95% threshold
+      runbook_url: https://acgs.local/runbooks/deployment-failures
+  - alert: DeploymentFailureRateCritical
+    expr: acgs_deployment_success_rate < 90
+    for: 5m
+    labels:
+      severity: critical
+      category: deployment
+    annotations:
+      summary: Critical deployment failure rate
+      description: Deployment success rate is {{ $value }}%, critically low
+      runbook_url: https://acgs.local/runbooks/deployment-failures
+  - alert: BackupFailureRate
+    expr: acgs_backup_success_rate < 98
+    for: 15m
+    labels:
+      severity: warning
+      category: backup
+    annotations:
+      summary: Backup failure rate above threshold
+      description: Backup success rate is {{ $value }}%, below 98% threshold
+      runbook_url: https://acgs.local/runbooks/backup-failures
+  - alert: BackupFailureRateCritical
+    expr: acgs_backup_success_rate < 95
+    for: 5m
+    labels:
+      severity: critical
+      category: backup
+    annotations:
+      summary: Critical backup failure rate
+      description: Backup success rate is {{ $value }}%, critically low
+      runbook_url: https://acgs.local/runbooks/backup-failures
+  - alert: MTTRHigh
+    expr: acgs_mean_time_to_recovery_seconds > 1800
+    for: 5m
+    labels:
+      severity: warning
+      category: recovery
+    annotations:
+      summary: Mean Time to Recovery exceeds target
+      description: MTTR is {{ $value }} seconds, above 30-minute target
+      runbook_url: https://acgs.local/runbooks/recovery-procedures
+  - alert: MTTRCritical
+    expr: acgs_mean_time_to_recovery_seconds > 3600
+    for: 2m
+    labels:
+      severity: critical
+      category: recovery
+    annotations:
+      summary: Mean Time to Recovery critically high
+      description: MTTR is {{ $value }} seconds, critically above target
+      runbook_url: https://acgs.local/runbooks/recovery-procedures
+  - alert: SecurityComplianceScoreLow
+    expr: acgs_security_compliance_score < 95
+    for: 5m
+    labels:
+      severity: warning
+      category: security
+    annotations:
+      summary: Security compliance score below threshold
+      description: Security compliance score is {{ $value }}%, below 95% threshold
+      runbook_url: https://acgs.local/runbooks/security-compliance
+  - alert: SecurityComplianceScoreCritical
+    expr: acgs_security_compliance_score < 90
+    for: 2m
+    labels:
+      severity: critical
+      category: security
+    annotations:
+      summary: Critical security compliance score
+      description: Security compliance score is {{ $value }}%, critically low
+      runbook_url: https://acgs.local/runbooks/security-compliance
+  - alert: InfrastructureHealthScoreLow
+    expr: acgs_infrastructure_health_score < 95
+    for: 10m
+    labels:
+      severity: warning
+      category: infrastructure
+    annotations:
+      summary: Infrastructure health score below threshold
+      description: Infrastructure health score is {{ $value }}%, below 95% threshold
+      runbook_url: https://acgs.local/runbooks/infrastructure-health
+  - alert: InfrastructureHealthScoreCritical
+    expr: acgs_infrastructure_health_score < 90
+    for: 5m
+    labels:
+      severity: critical
+      category: infrastructure
+    annotations:
+      summary: Critical infrastructure health score
+      description: Infrastructure health score is {{ $value }}%, critically low
+      runbook_url: https://acgs.local/runbooks/infrastructure-health
+- name: sla_compliance
+  rules:
+  - alert: UptimeSLABreach
+    expr: acgs_sla_compliance_percent{metric_type="uptime"} < 99.9
+    for: 5m
+    labels:
+      severity: critical
+      category: sla
+    annotations:
+      summary: Uptime SLA breach detected
+      description: Uptime SLA compliance is {{ $value }}%, below 99.9% target
+      runbook_url: https://acgs.local/runbooks/sla-breach
+  - alert: ResponseTimeSLABreach
+    expr: acgs_sla_compliance_percent{metric_type="response_time"} < 95
+    for: 10m
+    labels:
+      severity: warning
+      category: sla
+    annotations:
+      summary: Response time SLA breach detected
+      description: Response time SLA compliance is {{ $value }}%, below 95% target
+      runbook_url: https://acgs.local/runbooks/sla-breach
+  - alert: ErrorRateSLABreach
+    expr: acgs_sla_compliance_percent{metric_type="error_rate"} < 99
+    for: 5m
+    labels:
+      severity: warning
+      category: sla
+    annotations:
+      summary: Error rate SLA breach detected
+      description: Error rate SLA compliance is {{ $value }}%, below 99% target
+      runbook_url: https://acgs.local/runbooks/sla-breach
+- name: constitutional_compliance
+  rules:
+  - alert: ConstitutionalComplianceViolation
+    expr: acgs_constitutional_compliance == 0
+    for: 1m
+    labels:
+      severity: critical
+      category: compliance
+    annotations:
+      summary: Constitutional compliance violation detected
+      description: Constitutional compliance check failed - immediate investigation
+        required
+      runbook_url: https://acgs.local/runbooks/constitutional-compliance
+  - alert: ConstitutionalHashMismatch
+    expr: increase(acgs_constitutional_hash_mismatches_total[5m]) > 0
+    for: 1m
+    labels:
+      severity: critical
+      category: compliance
+    annotations:
+      summary: Constitutional hash mismatch detected
+      description: Constitutional hash validation failed - security breach possible
+      runbook_url: https://acgs.local/runbooks/constitutional-compliance
+- name: service_health
+  rules:
+  - alert: CriticalServiceDown
+    expr: acgs_service_up{service_name=~"auth-service|ac-service|integrity-service|ec-service"}
+      == 0
+    for: 1m
+    labels:
+      severity: critical
+      category: service_health
+    annotations:
+      summary: Critical service {{ $labels.service_name }} is down
+      description: Critical service {{ $labels.service_name }} has been down for more
+        than 1 minute
+      runbook_url: https://acgs.local/runbooks/service-restart
+  - alert: ServiceDown
+    expr: acgs_service_up{service_name=~"fv-service|gs-service|pgc-service"} == 0
+    for: 5m
+    labels:
+      severity: warning
+      category: service_health
+    annotations:
+      summary: Service {{ $labels.service_name }} is down
+      description: Service {{ $labels.service_name }} has been down for more than
+        5 minutes
+      runbook_url: https://acgs.local/runbooks/service-restart
+  - alert: ServiceResponseTimeHigh
+    expr: histogram_quantile(0.95, acgs_response_time_seconds_bucket) > 0.5
+    for: 10m
+    labels:
+      severity: warning
+      category: performance
+    annotations:
+      summary: Service response time high for {{ $labels.service_name }}
+      description: 95th percentile response time is {{ $value }}s, above 500ms threshold
+      runbook_url: https://acgs.local/runbooks/performance-optimization
+  - alert: ServiceResponseTimeCritical
+    expr: histogram_quantile(0.95, acgs_response_time_seconds_bucket) > 1.0
+    for: 5m
+    labels:
+      severity: critical
+      category: performance
+    annotations:
+      summary: Service response time critically high for {{ $labels.service_name }}
+      description: 95th percentile response time is {{ $value }}s, critically above
+        threshold
+      runbook_url: https://acgs.local/runbooks/performance-optimization
+  - alert: ServiceErrorRateHigh
+    expr: acgs_error_rate_percent > 1.0
+    for: 5m
+    labels:
+      severity: warning
+      category: performance
+    annotations:
+      summary: Service error rate high for {{ $labels.service_name }}
+      description: Error rate is {{ $value }}%, above 1% threshold
+      runbook_url: https://acgs.local/runbooks/error-investigation
+  - alert: ServiceErrorRateCritical
+    expr: acgs_error_rate_percent > 5.0
+    for: 2m
+    labels:
+      severity: critical
+      category: performance
+    annotations:
+      summary: Service error rate critically high for {{ $labels.service_name }}
+      description: Error rate is {{ $value }}%, critically above threshold
+      runbook_url: https://acgs.local/runbooks/error-investigation
+- name: alerts_meta
+  rules:
+  - alert: AlertFatigueDetected
+    expr: increase(acgs_alerts_fired_total[1h]) > 50
+    for: 5m
+    labels:
+      severity: warning
+      category: alerting
+    annotations:
+      summary: Alert fatigue detected
+      description: More than 50 alerts fired in the last hour - review alert thresholds
+      runbook_url: https://acgs.local/runbooks/alert-tuning
+  - alert: PrometheusDown
+    expr: up{job="prometheus"} == 0
+    for: 2m
+    labels:
+      severity: critical
+      category: monitoring
+    annotations:
+      summary: Prometheus monitoring system is down
+      description: Prometheus has been down for more than 2 minutes
+      runbook_url: https://acgs.local/runbooks/monitoring-recovery
+  - alert: GrafanaDown
+    expr: up{job="grafana"} == 0
+    for: 5m
+    labels:
+      severity: warning
+      category: monitoring
+    annotations:
+      summary: Grafana dashboard system is down
+      description: Grafana has been down for more than 5 minutes
+      runbook_url: https://acgs.local/runbooks/monitoring-recovery
+constitutional_hash: cdd01ef066bc6cf2

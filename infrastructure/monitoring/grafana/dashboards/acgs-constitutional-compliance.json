@@ -68,7 +68,9 @@
       "options": {
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": ["lastNotNull"],
+          "calcs": [
+            "lastNotNull"
+          ],
           "fields": "",
           "values": false
         },
@@ -147,7 +149,9 @@
         "justifyMode": "center",
         "orientation": "horizontal",
         "reduceOptions": {
-          "calcs": ["lastNotNull"],
+          "calcs": [
+            "lastNotNull"
+          ],
           "fields": "",
           "values": false
         },
@@ -550,7 +554,9 @@
         "justifyMode": "center",
         "orientation": "horizontal",
         "reduceOptions": {
-          "calcs": ["lastNotNull"],
+          "calcs": [
+            "lastNotNull"
+          ],
           "fields": "",
           "values": false
         },
@@ -609,7 +615,9 @@
         "justifyMode": "center",
         "orientation": "horizontal",
         "reduceOptions": {
-          "calcs": ["lastNotNull"],
+          "calcs": [
+            "lastNotNull"
+          ],
           "fields": "",
           "values": false
         },
@@ -1068,7 +1076,12 @@
   "refresh": "5s",
   "schemaVersion": 36,
   "style": "dark",
-  "tags": ["acgs", "constitutional", "compliance", "security"],
+  "tags": [
+    "acgs",
+    "constitutional",
+    "compliance",
+    "security"
+  ],
   "templating": {
     "list": []
   },
@@ -1081,5 +1094,6 @@
   "title": "ACGS Constitutional Compliance Dashboard",
   "uid": "acgs-constitutional",
   "version": 1,
-  "weekStart": ""
+  "weekStart": "",
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }

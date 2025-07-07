@@ -56,10 +56,10 @@ kubectl apply -f infrastructure/kubernetes/dragonflydb.yaml
 
 ### Phase 2: Deploy Monitoring Services
 
-Deploy Prometheus and Grafana for system observability.
+Deploy Prometheus and Grafana for system observability with constitutional compliance monitoring.
 
 ```bash
-# Deploy Prometheus
+# Deploy Prometheus with constitutional configuration
 kubectl apply -f infrastructure/kubernetes/prometheus.yaml
 
 # Deploy Grafana
@@ -70,8 +70,17 @@ kubectl apply -f infrastructure/kubernetes/monitoring/prometheus-rules.yaml
 kubectl apply -f config/monitoring/acgs_alert_rules.yml
 kubectl apply -f config/monitoring/constitutional_compliance_rules.yml
 
+# Configure Prometheus with constitutional configuration
+kubectl create configmap prometheus-config \
+  --from-file=config/monitoring/prometheus-constitutional.yml
+
+# Configure constitutional alerting rules
+kubectl create configmap prometheus-rules \
+  --from-file=config/monitoring/constitutional_rules.yml
+
 # Configure Grafana dashboards
 # Access Grafana UI and import dashboards from:
+# - config/monitoring/grafana-constitutional-dashboard.json (Primary constitutional dashboard)
 # - config/grafana/dashboards/nano-vllm-constitutional-ai.json
 # - config/monitoring/acgs_constitutional_dashboard.json
 # - config/monitoring/acgs_production_dashboard.json
@@ -138,7 +147,20 @@ kubectl logs -l app=dragonflydb # Check DragonflyDB logs for readiness
 ```bash
 kubectl get pods -l app=prometheus
 kubectl get pods -l app=grafana
-# Access Grafana dashboard and verify data sources are connected
+
+# Verify Prometheus is collecting constitutional metrics
+kubectl port-forward svc/prometheus 9090:9090 &
+curl -s "http://localhost:9090/api/v1/query?query=up{constitutional_hash=\"cdd01ef066bc6cf2\"}"
+
+# Verify constitutional alerting rules are loaded
+curl -s "http://localhost:9090/api/v1/rules" | grep "cdd01ef066bc6cf2"
+
+# Access Grafana dashboard and verify:
+# 1. Prometheus data source is connected
+# 2. Constitutional dashboard is imported and functional
+# 3. Constitutional hash template is properly configured
+kubectl port-forward svc/grafana 3000:3000 &
+# Navigate to http://localhost:3000 and import config/monitoring/grafana-constitutional-dashboard.json
 ```
 
 ### Service Validation
@@ -182,6 +204,9 @@ kubectl scale --replicas=0 deployment -l app=acgs-service
 Refer to `PRODUCTION_READINESS_CHECKLIST.md` for detailed rollback criteria and procedures.
 
 ## 6. Troubleshooting Guidance
+
+- **Unified Architecture Guide**: For a comprehensive overview of the ACGS architecture, see the [ACGS Unified Architecture Guide](../architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md).
+- **GEMINI.md**: For a comprehensive overview of the entire ACGS project, including development environment setup, testing commands, and service architecture, see the [GEMINI.md](../../GEMINI.md) file.
 
 - **Pod stuck in Pending**: Check `kubectl describe pod <pod-name>` for events related to scheduling, resource limits, or persistent volume claims.
 - **Pod in CrashLoopBackOff**: Check `kubectl logs <pod-name>` for application errors.

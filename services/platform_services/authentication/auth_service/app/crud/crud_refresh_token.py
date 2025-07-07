@@ -10,7 +10,6 @@ from ..models import RefreshToken  # Import from local models
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 async def create_refresh_token(
     db: AsyncSession, user_id: int, token: str, jti: str, expires_at: datetime
 ) -> RefreshToken:

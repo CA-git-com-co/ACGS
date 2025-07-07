@@ -5,7 +5,7 @@ Constitutional Hash: cdd01ef066bc6cf2
 
 Consolidates and optimizes performance-critical tools for ACGS targets:
 - P99 <5ms latency
-- >100 RPS throughput  
+- >100 RPS throughput
 - >85% cache hit rate
 
 Features:
@@ -19,16 +19,16 @@ Features:
 import asyncio
 import json
 import logging
-import time
 import statistics
+import time
+from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
-from dataclasses import dataclass, asdict
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 import aiohttp
-import asyncpg
 import aioredis
+import asyncpg
 import psutil
 from pydantic import BaseModel
 
@@ -76,8 +76,7 @@ REDIS_CONFIG = {
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -85,6 +84,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class PerformanceMetrics:
     """Performance metrics data structure."""
+
     timestamp: datetime
     service_name: str
     latency_ms: float
@@ -98,34 +98,34 @@ class PerformanceMetrics:
 
 class ACGSPerformanceSuite:
     """Unified ACGS performance testing and monitoring suite."""
-    
+
     def __init__(self):
         self.db_pool: Optional[asyncpg.Pool] = None
         self.redis_client: Optional[aioredis.Redis] = None
         self.session: Optional[aiohttp.ClientSession] = None
         self.metrics_history: List[PerformanceMetrics] = []
         self.start_time = time.perf_counter()
-        
+
     async def __aenter__(self):
         """Async context manager entry."""
         await self.initialize()
         return self
-        
+
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         """Async context manager exit."""
         await self.cleanup()
-        
+
     async def initialize(self):
         """Initialize connections and resources."""
         logger.info("🚀 Initializing ACGS Performance Suite...")
-        
+
         # Initialize database pool
         try:
             self.db_pool = await asyncpg.create_pool(**DATABASE_CONFIG)
             logger.info("✅ Database connection pool initialized")
         except Exception as e:
             logger.error(f"❌ Database pool initialization failed: {e}")
-            
+
         # Initialize Redis client
         try:
             self.redis_client = await aioredis.from_url(**REDIS_CONFIG)
@@ -133,31 +133,31 @@ class ACGSPerformanceSuite:
             logger.info("✅ Redis client initialized")
         except Exception as e:
             logger.error(f"❌ Redis client initialization failed: {e}")
-            
+
         # Initialize HTTP session
         timeout = aiohttp.ClientTimeout(total=10)
         self.session = aiohttp.ClientSession(timeout=timeout)
         logger.info("✅ HTTP session initialized")
-        
+
     async def cleanup(self):
         """Cleanup resources."""
         logger.info("🧹 Cleaning up resources...")
-        
+
         if self.session:
             await self.session.close()
-            
+
         if self.redis_client:
             await self.redis_client.close()
-            
+
         if self.db_pool:
             await self.db_pool.close()
-            
+
         logger.info("✅ Cleanup completed")
 
     async def run_comprehensive_performance_test(self) -> Dict[str, Any]:
         """Run comprehensive performance test suite."""
         logger.info("🎯 Starting comprehensive performance test...")
-        
+
         results = {
             "test_start": datetime.now(timezone.utc).isoformat(),
             "constitutional_hash": CONSTITUTIONAL_HASH,
@@ -168,32 +168,32 @@ class ACGSPerformanceSuite:
             "system_metrics": {},
             "performance_summary": {},
         }
-        
+
         try:
             # Test service health with concurrent checks
             results["service_health"] = await self._test_service_health()
-            
+
             # Run load tests
             results["load_test_results"] = await self._run_load_tests()
-            
+
             # Test cache performance
             results["cache_performance"] = await self._test_cache_performance()
-            
+
             # Test database performance
             results["database_performance"] = await self._test_database_performance()
-            
+
             # Collect system metrics
             results["system_metrics"] = await self._collect_system_metrics()
-            
+
             # Generate performance summary
             results["performance_summary"] = self._generate_performance_summary(results)
-            
+
             # Save results
             await self._save_results(results)
-            
+
             logger.info("✅ Comprehensive performance test completed")
             return results
-            
+
         except Exception as e:
             logger.error(f"❌ Performance test failed: {e}")
             raise
@@ -201,24 +201,27 @@ class ACGSPerformanceSuite:
     async def _test_service_health(self) -> Dict[str, Any]:
         """Test health of all ACGS services concurrently."""
         logger.info("🏥 Testing service health...")
-        
-        async def check_service(service_name: str, config: Dict[str, Any]) -> Dict[str, Any]:
+
+        async def check_service(
+            service_name: str, config: Dict[str, Any]
+        ) -> Dict[str, Any]:
             """Check individual service health."""
             start_time = time.perf_counter()
-            
+
             try:
                 url = f"http://localhost:{config['port']}/health"
                 async with self.session.get(url) as response:
                     latency_ms = (time.perf_counter() - start_time) * 1000
-                    
+
                     return {
                         "service": service_name,
                         "status": "healthy" if response.status == 200 else "unhealthy",
                         "latency_ms": round(latency_ms, 2),
                         "status_code": response.status,
-                        "meets_target": latency_ms < PERFORMANCE_TARGETS["p99_latency_ms"],
+                        "meets_target": latency_ms
+                        < PERFORMANCE_TARGETS["p99_latency_ms"],
                     }
-                    
+
             except Exception as e:
                 latency_ms = (time.perf_counter() - start_time) * 1000
                 return {
@@ -228,20 +231,19 @@ class ACGSPerformanceSuite:
                     "error": str(e),
                     "meets_target": False,
                 }
-        
+
         # Run health checks concurrently
-        tasks = [
-            check_service(name, config) 
-            for name, config in ACGS_SERVICES.items()
-        ]
-        
+        tasks = [check_service(name, config) for name, config in ACGS_SERVICES.items()]
+
         health_results = await asyncio.gather(*tasks, return_exceptions=True)
-        
+
         # Process results
-        healthy_services = sum(1 for r in health_results if r.get("status") == "healthy")
+        healthy_services = sum(
+            1 for r in health_results if r.get("status") == "healthy"
+        )
         total_services = len(ACGS_SERVICES)
         avg_latency = statistics.mean([r.get("latency_ms", 0) for r in health_results])
-        
+
         return {
             "healthy_services": healthy_services,
             "total_services": total_services,
@@ -254,74 +256,85 @@ class ACGSPerformanceSuite:
     async def _run_load_tests(self) -> Dict[str, Any]:
         """Run concurrent load tests."""
         logger.info("⚡ Running load tests...")
-        
-        async def load_test_worker(worker_id: int, duration_seconds: int = 30) -> Dict[str, Any]:
+
+        async def load_test_worker(
+            worker_id: int, duration_seconds: int = 30
+        ) -> Dict[str, Any]:
             """Individual load test worker."""
             requests_made = 0
             successful_requests = 0
             total_latency = 0
             errors = []
-            
+
             end_time = time.time() + duration_seconds
-            
+
             while time.time() < end_time:
                 start_time = time.perf_counter()
-                
+
                 try:
                     # Test random service
-                    service_name = list(ACGS_SERVICES.keys())[requests_made % len(ACGS_SERVICES)]
+                    service_name = list(ACGS_SERVICES.keys())[
+                        requests_made % len(ACGS_SERVICES)
+                    ]
                     service_config = ACGS_SERVICES[service_name]
                     url = f"http://localhost:{service_config['port']}/health"
-                    
+
                     async with self.session.get(url) as response:
                         latency_ms = (time.perf_counter() - start_time) * 1000
                         total_latency += latency_ms
-                        
+
                         if response.status == 200:
                             successful_requests += 1
                         else:
                             errors.append(f"HTTP {response.status}")
-                            
+
                 except Exception as e:
                     errors.append(str(e))
-                    
+
                 requests_made += 1
-                
+
                 # Small delay to prevent overwhelming
                 await asyncio.sleep(0.01)
-            
+
             return {
                 "worker_id": worker_id,
                 "requests_made": requests_made,
                 "successful_requests": successful_requests,
-                "avg_latency_ms": total_latency / requests_made if requests_made > 0 else 0,
+                "avg_latency_ms": (
+                    total_latency / requests_made if requests_made > 0 else 0
+                ),
                 "error_count": len(errors),
                 "rps": requests_made / duration_seconds,
             }
-        
+
         # Run concurrent workers
         num_workers = 10
         duration = 30
-        
+
         tasks = [load_test_worker(i, duration) for i in range(num_workers)]
         worker_results = await asyncio.gather(*tasks, return_exceptions=True)
-        
+
         # Aggregate results
         total_requests = sum(r.get("requests_made", 0) for r in worker_results)
         total_successful = sum(r.get("successful_requests", 0) for r in worker_results)
         total_rps = sum(r.get("rps", 0) for r in worker_results)
-        avg_latency = statistics.mean([r.get("avg_latency_ms", 0) for r in worker_results])
-        
+        avg_latency = statistics.mean(
+            [r.get("avg_latency_ms", 0) for r in worker_results]
+        )
+
         return {
             "duration_seconds": duration,
             "concurrent_workers": num_workers,
             "total_requests": total_requests,
             "successful_requests": total_successful,
-            "success_rate": (total_successful / total_requests) * 100 if total_requests > 0 else 0,
+            "success_rate": (
+                (total_successful / total_requests) * 100 if total_requests > 0 else 0
+            ),
             "total_rps": round(total_rps, 2),
             "average_latency_ms": round(avg_latency, 2),
             "meets_rps_target": total_rps >= PERFORMANCE_TARGETS["min_throughput_rps"],
-            "meets_latency_target": avg_latency <= PERFORMANCE_TARGETS["p99_latency_ms"],
+            "meets_latency_target": avg_latency
+            <= PERFORMANCE_TARGETS["p99_latency_ms"],
             "worker_results": worker_results,
         }
 
@@ -376,12 +389,10 @@ class ACGSPerformanceSuite:
                 "hit_rate_percent": round(hit_rate, 2),
                 "average_latency_ms": round(avg_latency, 2),
                 "memory_usage_bytes": memory_usage,
-                "meets_hit_rate_target": hit_rate >= (
-                    PERFORMANCE_TARGETS["min_cache_hit_rate"] * 100
-                ),
-                "meets_latency_target": avg_latency <= PERFORMANCE_TARGETS[
-                    "p99_latency_ms"
-                ],
+                "meets_hit_rate_target": hit_rate
+                >= (PERFORMANCE_TARGETS["min_cache_hit_rate"] * 100),
+                "meets_latency_target": avg_latency
+                <= PERFORMANCE_TARGETS["p99_latency_ms"],
                 "constitutional_hash": CONSTITUTIONAL_HASH,
             }
 
@@ -410,7 +421,8 @@ class ACGSPerformanceSuite:
                     # Simple query to test performance
                     await conn.fetchval(
                         "SELECT $1 as hash, $2 as op_id, NOW()",
-                        CONSTITUTIONAL_HASH, operation_id
+                        CONSTITUTIONAL_HASH,
+                        operation_id,
                     )
 
                 return (time.perf_counter() - start_time) * 1000
@@ -421,14 +433,14 @@ class ACGSPerformanceSuite:
 
             # Process results
             successful_latencies = [
-                latency for latency in latencies
-                if isinstance(latency, (int, float))
+                latency for latency in latencies if isinstance(latency, (int, float))
             ]
             successful_operations = len(successful_latencies)
             total_latency = sum(successful_latencies)
             avg_latency = (
                 total_latency / successful_operations
-                if successful_operations > 0 else 0
+                if successful_operations > 0
+                else 0
             )
 
             # Get pool stats
@@ -443,12 +455,10 @@ class ACGSPerformanceSuite:
                 "pool_size": pool_size,
                 "pool_idle": pool_idle,
                 "pool_utilization": (
-                    ((pool_size - pool_idle) / pool_size) * 100
-                    if pool_size > 0 else 0
+                    ((pool_size - pool_idle) / pool_size) * 100 if pool_size > 0 else 0
                 ),
-                "meets_latency_target": avg_latency <= PERFORMANCE_TARGETS[
-                    "p99_latency_ms"
-                ],
+                "meets_latency_target": avg_latency
+                <= PERFORMANCE_TARGETS["p99_latency_ms"],
                 "constitutional_hash": CONSTITUTIONAL_HASH,
             }
 
@@ -471,7 +481,7 @@ class ACGSPerformanceSuite:
             memory_available = memory.available
 
             # Disk metrics
-            disk = psutil.disk_usage('/')
+            disk = psutil.disk_usage("/")
             disk_percent = (disk.used / disk.total) * 100
 
             # Network metrics (if available)
@@ -487,17 +497,15 @@ class ACGSPerformanceSuite:
                 "cpu": {
                     "percent": round(cpu_percent, 2),
                     "count": cpu_count,
-                    "meets_target": cpu_percent <= PERFORMANCE_TARGETS[
-                        "max_cpu_percent"
-                    ],
+                    "meets_target": cpu_percent
+                    <= PERFORMANCE_TARGETS["max_cpu_percent"],
                 },
                 "memory": {
                     "percent": round(memory_percent, 2),
                     "available_bytes": memory_available,
                     "total_bytes": memory.total,
-                    "meets_target": memory_percent <= PERFORMANCE_TARGETS[
-                        "max_memory_percent"
-                    ],
+                    "meets_target": memory_percent
+                    <= PERFORMANCE_TARGETS["max_memory_percent"],
                 },
                 "disk": {
                     "percent": round(disk_percent, 2),
@@ -558,7 +566,9 @@ class ACGSPerformanceSuite:
             recommendations = []
 
             if not load_test.get("meets_rps_target", False):
-                recommendations.append("Optimize service throughput for >100 RPS target")
+                recommendations.append(
+                    "Optimize service throughput for >100 RPS target"
+                )
             if not load_test.get("meets_latency_target", False):
                 recommendations.append("Reduce P99 latency to <5ms target")
             if not cache_perf.get("meets_hit_rate_target", False):
@@ -621,7 +631,9 @@ class ACGSPerformanceSuite:
 
     async def start_monitoring(self, interval_seconds: int = 60):
         """Start continuous performance monitoring."""
-        logger.info(f"🔄 Starting continuous monitoring (interval: {interval_seconds}s)...")
+        logger.info(
+            f"🔄 Starting continuous monitoring (interval: {interval_seconds}s)..."
+        )
 
         try:
             while True:
@@ -648,7 +660,9 @@ class ACGSPerformanceSuite:
                     },
                     "system_summary": {
                         "cpu_percent": system_metrics.get("cpu", {}).get("percent", 0),
-                        "memory_percent": system_metrics.get("memory", {}).get("percent", 0),
+                        "memory_percent": system_metrics.get("memory", {}).get(
+                            "percent", 0
+                        ),
                     },
                     "constitutional_hash": CONSTITUTIONAL_HASH,
                 }
@@ -702,16 +716,26 @@ async def main():
 
             # Print summary
             summary = results.get("performance_summary", {})
-            print("\n" + "="*60)
+            print("\n" + "=" * 60)
             print("🎯 ACGS PERFORMANCE TEST SUMMARY")
-            print("="*60)
+            print("=" * 60)
             print(f"Overall Score: {summary.get('overall_score', 0):.1f}/100")
-            print(f"Services Healthy: {summary.get('summary', {}).get('services_healthy', 0)}/{summary.get('summary', {}).get('total_services', 0)}")
-            print(f"Throughput: {summary.get('summary', {}).get('throughput_rps', 0):.1f} RPS")
-            print(f"Avg Latency: {summary.get('summary', {}).get('avg_latency_ms', 0):.2f} ms")
-            print(f"Cache Hit Rate: {summary.get('summary', {}).get('cache_hit_rate', 0):.1f}%")
+            print(
+                f"Services Healthy: {summary.get('summary', {}).get('services_healthy', 0)}/{summary.get('summary', {}).get('total_services', 0)}"
+            )
+            print(
+                f"Throughput: {summary.get('summary', {}).get('throughput_rps', 0):.1f} RPS"
+            )
+            print(
+                f"Avg Latency: {summary.get('summary', {}).get('avg_latency_ms', 0):.2f} ms"
+            )
+            print(
+                f"Cache Hit Rate: {summary.get('summary', {}).get('cache_hit_rate', 0):.1f}%"
+            )
             print(f"CPU Usage: {summary.get('summary', {}).get('cpu_usage', 0):.1f}%")
-            print(f"Memory Usage: {summary.get('summary', {}).get('memory_usage', 0):.1f}%")
+            print(
+                f"Memory Usage: {summary.get('summary', {}).get('memory_usage', 0):.1f}%"
+            )
 
             # Print recommendations
             recommendations = summary.get("recommendations", [])
@@ -723,7 +747,7 @@ async def main():
                 print("\n✅ All performance targets met!")
 
             print(f"\n🏛️ Constitutional Hash: {CONSTITUTIONAL_HASH}")
-            print("="*60)
+            print("=" * 60)
 
         except Exception as e:
             logger.error(f"❌ Performance test failed: {e}")

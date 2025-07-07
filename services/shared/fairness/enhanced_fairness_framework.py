@@ -12,6 +12,7 @@ Key Features:
 - Integration with existing ACGS audit and monitoring systems
 - Production-ready bias drift detection
 """
+
 # Constitutional Hash: cdd01ef066bc6cf2
 
 import logging
@@ -207,13 +208,15 @@ class EnhancedFairnessFramework:
             ]
 
             # Log evaluation
-            await self.audit_logger.log_fairness_evaluation({
-                "overall_bias_level": combined_result.overall_bias_level.value,
-                "combined_score": combined_result.combined_score,
-                "requires_immediate_action": combined_result.requires_immediate_action,
-                "evaluation_time_seconds": evaluation_time,
-                "timestamp": combined_result.timestamp.isoformat(),
-            })
+            await self.audit_logger.log_fairness_evaluation(
+                {
+                    "overall_bias_level": combined_result.overall_bias_level.value,
+                    "combined_score": combined_result.combined_score,
+                    "requires_immediate_action": combined_result.requires_immediate_action,
+                    "evaluation_time_seconds": evaluation_time,
+                    "timestamp": combined_result.timestamp.isoformat(),
+                }
+            )
 
             # Send alerts if necessary
             if combined_result.overall_bias_level in [
@@ -427,17 +430,21 @@ class EnhancedFairnessFramework:
             recommendations = []
             if drift_detected:
                 if trend_direction == "degrading":
-                    recommendations.extend([
-                        "Bias metrics are degrading over time",
-                        "Investigate recent model changes or data shifts",
-                        "Consider implementing bias mitigation strategies",
-                    ])
+                    recommendations.extend(
+                        [
+                            "Bias metrics are degrading over time",
+                            "Investigate recent model changes or data shifts",
+                            "Consider implementing bias mitigation strategies",
+                        ]
+                    )
                 elif trend_direction == "improving":
-                    recommendations.extend([
-                        "Bias metrics are improving",
-                        "Continue current fairness practices",
-                        "Monitor to ensure continued improvement",
-                    ])
+                    recommendations.extend(
+                        [
+                            "Bias metrics are improving",
+                            "Continue current fairness practices",
+                            "Monitor to ensure continued improvement",
+                        ]
+                    )
             else:
                 recommendations.append("No significant fairness drift detected")
 
@@ -466,13 +473,15 @@ class EnhancedFairnessFramework:
                 )
 
             # Log drift analysis
-            await self.audit_logger.log_fairness_drift({
-                "drift_detected": drift_detected,
-                "drift_magnitude": drift_magnitude,
-                "trend_direction": trend_direction,
-                "time_period_days": lookback_days,
-                "timestamp": result.timestamp.isoformat(),
-            })
+            await self.audit_logger.log_fairness_drift(
+                {
+                    "drift_detected": drift_detected,
+                    "drift_magnitude": drift_magnitude,
+                    "trend_direction": trend_direction,
+                    "time_period_days": lookback_days,
+                    "timestamp": result.timestamp.isoformat(),
+                }
+            )
 
             return result
 
@@ -553,10 +562,12 @@ class EnhancedFairnessFramework:
             self.evaluation_metrics["mitigations_applied"] += 1
 
             # Log mitigation
-            await self.audit_logger.log_bias_mitigation({
-                "strategy": mitigation_strategy,
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_bias_mitigation(
+                {
+                    "strategy": mitigation_strategy,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
             return mitigated_model
 
@@ -701,7 +712,7 @@ class EnhancedFairnessFramework:
 
 # Example usage and factory function
 async def create_enhanced_fairness_framework(
-    config: Optional[dict[str, Any]] = None
+    config: Optional[dict[str, Any]] = None,
 ) -> EnhancedFairnessFramework:
     """
     Factory function to create and initialize the enhanced fairness framework

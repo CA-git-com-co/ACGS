@@ -4,6 +4,7 @@ Integration Tests for WINA Enforcement Optimization
 This module contains integration tests for the WINA-optimized policy enforcement
 endpoints and their integration with the PGC service infrastructure.
 """
+
 # Constitutional Hash: cdd01ef066bc6cf2
 
 from unittest.mock import AsyncMock, patch

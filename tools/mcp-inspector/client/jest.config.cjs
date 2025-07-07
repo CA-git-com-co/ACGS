@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 module.exports = {
   preset: "ts-jest",
   testEnvironment: "jest-fixed-jsdom",

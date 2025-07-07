@@ -2,7 +2,11 @@
   "dashboard": {
     "id": null,
     "title": "ACGS Error Analysis Dashboard",
-    "tags": ["acgs", "errors", "monitoring"],
+    "tags": [
+      "acgs",
+      "errors",
+      "monitoring"
+    ],
     "timezone": "browser",
     "panels": [
       {
@@ -382,5 +386,7 @@
     "style": "dark",
     "uid": "acgs-error-analysis",
     "version": 1
-  }
+  },
+  "_constitutional_hash": "cdd01ef066bc6cf2",
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }

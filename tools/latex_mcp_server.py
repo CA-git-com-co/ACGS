@@ -13,7 +13,6 @@ from typing import Any
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 def handle_compile_request(request: dict[str, Any]) -> dict[str, Any]:
     """Handle LaTeX compilation request via MCP protocol"""
     try:

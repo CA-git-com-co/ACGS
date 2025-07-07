@@ -215,9 +215,7 @@ class QuantumagiSolanaClient:
             )
 
             # Create instruction data
-            self._create_compliance_check_instruction(
-                action, action_context
-            )
+            self._create_compliance_check_instruction(action, action_context)
 
             # Build transaction
             transaction = Transaction()

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Constitutional Hash: cdd01ef066bc6cf2
 """
 Academic Submission Quality Assurance and Validation Pipeline
 
@@ -56,7 +57,9 @@ class SubmissionValidator:
     def __init__(self, submission_path: str):
         self.submission_path = Path(submission_path)
         if not self.submission_path.exists():
-            raise FileNotFoundError(f"Submission path does not exist: {submission_path}")
+            raise FileNotFoundError(
+                f"Submission path does not exist: {submission_path}"
+            )
         self.results: list[ValidationResult] = []
         self.recommendations: list[str] = []
 
@@ -64,23 +67,23 @@ class SubmissionValidator:
         """Safely read a text file with encoding error handling."""
         try:
             # First try UTF-8
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 return f.read()
         except UnicodeDecodeError:
             try:
                 # Try common encodings
-                for encoding in ['latin-1', 'cp1252', 'iso-8859-1']:
+                for encoding in ["latin-1", "cp1252", "iso-8859-1"]:
                     try:
-                        with open(file_path, 'r', encoding=encoding) as f:
+                        with open(file_path, "r", encoding=encoding) as f:
                             return f.read()
                     except UnicodeDecodeError:
                         continue
                 # Last resort: read with error replacement
-                with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
+                with open(file_path, "r", encoding="utf-8", errors="replace") as f:
                     return f.read()
             except Exception:
                 # Final fallback: read with error replacement
-                with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
+                with open(file_path, "r", encoding="utf-8", errors="replace") as f:
                     return f.read()
 
     def validate_submission(self) -> SubmissionReport:
@@ -187,9 +190,9 @@ class SubmissionValidator:
                         details={"issues": issues},
                     )
                 )
-                self.recommendations.extend([
-                    f"Fix LaTeX issue: {issue}" for issue in issues
-                ])
+                self.recommendations.extend(
+                    [f"Fix LaTeX issue: {issue}" for issue in issues]
+                )
             else:
                 self.results.append(
                     ValidationResult(
@@ -239,7 +242,9 @@ class SubmissionValidator:
 
                 # Check for missing required fields in articles
                 # Find all @article entries
-                article_entries = re.findall(r"@article\{[^@]*?(?=@|\Z)", content, re.DOTALL)
+                article_entries = re.findall(
+                    r"@article\{[^@]*?(?=@|\Z)", content, re.DOTALL
+                )
                 for entry in article_entries:
                     if "author" not in entry.lower():
                         issues.append("Articles missing author field")
@@ -265,9 +270,9 @@ class SubmissionValidator:
                         details={**details, "issues": issues},
                     )
                 )
-                self.recommendations.extend([
-                    f"Fix bibliography: {issue}" for issue in issues
-                ])
+                self.recommendations.extend(
+                    [f"Fix bibliography: {issue}" for issue in issues]
+                )
             else:
                 self.results.append(
                     ValidationResult(
@@ -339,9 +344,7 @@ class SubmissionValidator:
                     },
                 )
             )
-            self.recommendations.append(
-                "Add missing figure files or fix references"
-            )
+            self.recommendations.append("Add missing figure files or fix references")
             return
 
         try:
@@ -447,7 +450,9 @@ class SubmissionValidator:
             if len(compliance_issues) == 1:
                 message = f"arXiv compliance issues detected: {compliance_issues[0]}"
             else:
-                message = f"arXiv compliance issues detected: {', '.join(compliance_issues)}"
+                message = (
+                    f"arXiv compliance issues detected: {', '.join(compliance_issues)}"
+                )
 
             self.results.append(
                 ValidationResult(
@@ -457,9 +462,9 @@ class SubmissionValidator:
                     details={**details, "issues": compliance_issues},
                 )
             )
-            self.recommendations.extend([
-                f"Fix arXiv compliance: {issue}" for issue in compliance_issues
-            ])
+            self.recommendations.extend(
+                [f"Fix arXiv compliance: {issue}" for issue in compliance_issues]
+            )
         else:
             self.results.append(
                 ValidationResult(
@@ -522,7 +527,9 @@ class SubmissionValidator:
                 if len(quality_issues) == 1:
                     message = f"Content quality issues detected: {quality_issues[0]}"
                 else:
-                    message = f"Content quality issues detected: {', '.join(quality_issues)}"
+                    message = (
+                        f"Content quality issues detected: {', '.join(quality_issues)}"
+                    )
 
                 self.results.append(
                     ValidationResult(
@@ -532,9 +539,9 @@ class SubmissionValidator:
                         details={**details, "issues": quality_issues},
                     )
                 )
-                self.recommendations.extend([
-                    f"Improve content: {issue}" for issue in quality_issues
-                ])
+                self.recommendations.extend(
+                    [f"Improve content: {issue}" for issue in quality_issues]
+                )
             else:
                 self.results.append(
                     ValidationResult(
@@ -603,9 +610,12 @@ class SubmissionValidator:
                         details={**details, "issues": accessibility_issues},
                     )
                 )
-                self.recommendations.extend([
-                    f"Improve accessibility: {issue}" for issue in accessibility_issues
-                ])
+                self.recommendations.extend(
+                    [
+                        f"Improve accessibility: {issue}"
+                        for issue in accessibility_issues
+                    ]
+                )
             else:
                 self.results.append(
                     ValidationResult(

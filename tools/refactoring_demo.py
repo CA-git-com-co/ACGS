@@ -12,11 +12,10 @@ import logging
 import time
 
 # Import the new consolidated utilities
-from services.shared.common import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from services.shared.common import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
+    "cdd01ef066bc6cf2",
+    =,
     handle_service_error,
 )
 from services.shared.service_mesh import (

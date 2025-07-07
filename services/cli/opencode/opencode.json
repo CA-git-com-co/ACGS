@@ -22,5 +22,6 @@
       }
     }
   },
-  "model": "openrouter/anthropic/claude-3.5-sonnet"
+  "model": "openrouter/anthropic/claude-3.5-sonnet",
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }

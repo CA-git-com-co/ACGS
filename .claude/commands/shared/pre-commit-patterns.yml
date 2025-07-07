@@ -1,6 +1,8 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 # Pre-commit Patterns
 # Simple pre-commit hook configuration and management
 
+# Constitutional Hash: cdd01ef066bc6cf2
 ```yaml
 Pre_Commit_Setup:
   Install_Python: "uv add --dev pre-commit && uv run pre-commit install"

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Constitutional Hash: cdd01ef066bc6cf2
 """
 Standalone MAB Prompt Optimization Test
 Tests the core MAB functionality without complex service dependencies.

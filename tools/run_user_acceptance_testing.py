@@ -160,7 +160,6 @@ class UserAcceptanceTestRunner:
         try:
             # Import and start the test server from deprecation validation
             import uvicorn
-
             from docs.implementation.validation_scripts.deprecation_validation_test import (
                 create_test_app,
             )

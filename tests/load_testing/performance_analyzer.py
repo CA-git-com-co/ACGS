@@ -234,16 +234,18 @@ class PerformanceAnalyzer:
                 keyword in endpoint.lower()
                 for keyword in ["constitutional", "compliance", "verify", "governance"]
             ):
-                constitutional_endpoints.append({
-                    "endpoint": endpoint,
-                    "success_rate": (
-                        1 - (row["Failure Count"] / row["Request Count"])
-                        if row["Request Count"] > 0
-                        else 0
-                    ),
-                    "avg_response_time_ms": row["Average Response Time"],
-                    "request_count": int(row["Request Count"]),
-                })
+                constitutional_endpoints.append(
+                    {
+                        "endpoint": endpoint,
+                        "success_rate": (
+                            1 - (row["Failure Count"] / row["Request Count"])
+                            if row["Request Count"] > 0
+                            else 0
+                        ),
+                        "avg_response_time_ms": row["Average Response Time"],
+                        "request_count": int(row["Request Count"]),
+                    }
+                )
 
         # Calculate overall constitutional compliance score
         if constitutional_endpoints:
@@ -318,9 +320,8 @@ class PerformanceAnalyzer:
         return {
             "total_failures": len(failures_df),
             "error_types": error_types,
-            "error_recommendations": recommendations or [
-                "Review error logs for detailed troubleshooting"
-            ],
+            "error_recommendations": recommendations
+            or ["Review error logs for detailed troubleshooting"],
         }
 
     def _generate_recommendations(
@@ -367,11 +368,13 @@ class PerformanceAnalyzer:
                 )
 
         # Constitutional compliance recommendations
-        recommendations.extend([
-            "Ensure all endpoints maintain constitutional compliance under load",
-            "Monitor constitutional hash consistency across all responses",
-            "Validate multi-tenant isolation maintains integrity during peak load",
-        ])
+        recommendations.extend(
+            [
+                "Ensure all endpoints maintain constitutional compliance under load",
+                "Monitor constitutional hash consistency across all responses",
+                "Validate multi-tenant isolation maintains integrity during peak load",
+            ]
+        )
 
         return recommendations or ["System performance appears optimal"]
 

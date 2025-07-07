@@ -11,12 +11,13 @@ Global test configuration for ACGS test suite including:
 """
 
 import asyncio
-import pytest
-import pytest_asyncio
-from unittest.mock import AsyncMock, Mock
 import os
 import sys
 from pathlib import Path
+from unittest.mock import AsyncMock, Mock
+
+import pytest
+import pytest_asyncio
 
 # Add project root to Python path
 project_root = Path(__file__).parent.parent
@@ -38,11 +39,13 @@ SERVICE_ENDPOINTS = {
 }
 
 # Test database configuration
-TEST_DATABASE_URL = "postgresql+asyncpg://test_user:test_pass@localhost:5439/test_acgs_db"
+TEST_DATABASE_URL = (
+    "postgresql+asyncpg://test_user:test_pass@localhost:5439/test_acgs_db"
+)
 TEST_REDIS_URL = "redis://localhost:6389/0"
 
 # JWT configuration for testing
-TEST_JWT_SECRET = "test_jwt_secret_key_for_acgs_testing"
+TEST_JWT_SECRET = os.getenv("SECRET_KEY", "test_jwt_secret_for_acgs_testing")
 TEST_JWT_ALGORITHM = "HS256"
 
 
@@ -58,7 +61,7 @@ def event_loop():
 async def mock_redis():
     """Mock Redis client for testing."""
     redis_mock = AsyncMock()
-    
+
     # Configure async methods properly
     redis_mock.get = AsyncMock(return_value=None)
     redis_mock.set = AsyncMock(return_value=True)
@@ -68,7 +71,7 @@ async def mock_redis():
     redis_mock.delete = AsyncMock(return_value=True)
     redis_mock.flushdb = AsyncMock(return_value=True)
     redis_mock.ping = AsyncMock(return_value=True)
-    
+
     return redis_mock
 
 
@@ -76,13 +79,13 @@ async def mock_redis():
 async def mock_database():
     """Mock database connection for testing."""
     db_mock = AsyncMock()
-    
+
     # Configure database methods
     db_mock.execute = AsyncMock(return_value=Mock())
     db_mock.fetch = AsyncMock(return_value=[])
     db_mock.fetchrow = AsyncMock(return_value=None)
     db_mock.fetchval = AsyncMock(return_value=None)
-    
+
     return db_mock
 
 
@@ -90,21 +93,20 @@ async def mock_database():
 async def mock_http_client():
     """Mock HTTP client for service communication."""
     client = AsyncMock()
-    
+
     # Configure async methods properly
     mock_response = Mock()
     mock_response.status_code = 200
-    mock_response.json = Mock(return_value={
-        "status": "healthy", 
-        "constitutional_hash": CONSTITUTIONAL_HASH
-    })
+    mock_response.json = Mock(
+        return_value={"status": "healthy", "constitutional_hash": CONSTITUTIONAL_HASH}
+    )
     mock_response.text = "OK"
-    
+
     client.get = AsyncMock(return_value=mock_response)
     client.post = AsyncMock(return_value=mock_response)
     client.put = AsyncMock(return_value=mock_response)
     client.delete = AsyncMock(return_value=mock_response)
-    
+
     return client
 
 
@@ -116,7 +118,7 @@ def sample_auth_token():
         "user_id": "test_user",
         "permissions": ["read", "write", "admin"],
         "expires_at": "2025-07-07T12:00:00Z",
-        "constitutional_hash": CONSTITUTIONAL_HASH
+        "constitutional_hash": CONSTITUTIONAL_HASH,
     }
 
 
@@ -133,8 +135,8 @@ def sample_policy():
         "metadata": {
             "category": "governance",
             "priority": "high",
-            "constitutional_hash": CONSTITUTIONAL_HASH
-        }
+            "constitutional_hash": CONSTITUTIONAL_HASH,
+        },
     }
 
 
@@ -147,7 +149,7 @@ def performance_targets():
         "cache_hit_rate": 0.85,
         "constitutional_compliance": True,
         "memory_usage_mb": 512,
-        "cpu_usage_percent": 80
+        "cpu_usage_percent": 80,
     }
 
 
@@ -155,17 +157,19 @@ def performance_targets():
 async def mock_constitutional_service():
     """Mock Constitutional AI Service for testing."""
     service = AsyncMock()
-    
-    service.validate_policy = AsyncMock(return_value={
-        "compliant": True,
-        "confidence_score": 0.85,
-        "constitutional_hash": CONSTITUTIONAL_HASH,
-        "validation_details": {
-            "principles_checked": ["democratic_participation", "transparency"],
-            "scores": {"democratic_participation": 0.9, "transparency": 0.8}
+
+    service.validate_policy = AsyncMock(
+        return_value={
+            "compliant": True,
+            "confidence_score": 0.85,
+            "constitutional_hash": CONSTITUTIONAL_HASH,
+            "validation_details": {
+                "principles_checked": ["democratic_participation", "transparency"],
+                "scores": {"democratic_participation": 0.9, "transparency": 0.8},
+            },
         }
-    })
-    
+    )
+
     return service
 
 
@@ -173,18 +177,16 @@ async def mock_constitutional_service():
 async def mock_evolutionary_service():
     """Mock Evolutionary Computation Service for testing."""
     service = AsyncMock()
-    
-    service.evaluate_fitness = AsyncMock(return_value={
-        "fitness_score": 0.85,
-        "generation": 1,
-        "constitutional_hash": CONSTITUTIONAL_HASH,
-        "metrics": {
-            "performance": 0.9,
-            "compliance": 0.8,
-            "efficiency": 0.85
+
+    service.evaluate_fitness = AsyncMock(
+        return_value={
+            "fitness_score": 0.85,
+            "generation": 1,
+            "constitutional_hash": CONSTITUTIONAL_HASH,
+            "metrics": {"performance": 0.9, "compliance": 0.8, "efficiency": 0.85},
         }
-    })
-    
+    )
+
     return service
 
 
@@ -192,20 +194,24 @@ async def mock_evolutionary_service():
 async def mock_auth_service():
     """Mock Authentication Service for testing."""
     service = AsyncMock()
-    
-    service.validate_token = AsyncMock(return_value={
-        "valid": True,
-        "user_id": "test_user",
-        "permissions": ["read", "write"],
-        "constitutional_hash": CONSTITUTIONAL_HASH
-    })
-    
-    service.generate_token = AsyncMock(return_value={
-        "token": "mock_jwt_token",
-        "expires_at": "2025-07-07T12:00:00Z",
-        "constitutional_hash": CONSTITUTIONAL_HASH
-    })
-    
+
+    service.validate_token = AsyncMock(
+        return_value={
+            "valid": True,
+            "user_id": "test_user",
+            "permissions": ["read", "write"],
+            "constitutional_hash": CONSTITUTIONAL_HASH,
+        }
+    )
+
+    service.generate_token = AsyncMock(
+        return_value={
+            "token": "mock_jwt_token",
+            "expires_at": "2025-07-07T12:00:00Z",
+            "constitutional_hash": CONSTITUTIONAL_HASH,
+        }
+    )
+
     return service
 
 
@@ -227,11 +233,11 @@ def pytest_collection_modifyitems(config, items):
         # Add asyncio marker to all async tests
         if asyncio.iscoroutinefunction(item.function):
             item.add_marker(pytest.mark.asyncio)
-        
+
         # Add performance marker to performance tests
         if "performance" in item.nodeid:
             item.add_marker(pytest.mark.performance)
-        
+
         # Add integration marker to integration tests
         if "integration" in item.nodeid:
             item.add_marker(pytest.mark.integration)

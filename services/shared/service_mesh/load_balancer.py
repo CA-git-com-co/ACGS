@@ -14,7 +14,6 @@ from .common_types import LoadBalancingStrategy, ServiceInstance, ServiceType
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class LoadBalancer:
     """
     Advanced load balancer for ACGS-1 service instances.

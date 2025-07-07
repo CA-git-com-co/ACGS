@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Constitutional Hash: cdd01ef066bc6cf2
 """
 Simple test for ACGS-1 Async Processing capabilities
 Tests basic async job processing without complex imports

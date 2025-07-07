@@ -114,13 +114,13 @@ async def evaluate_policy_query(
     # SECURITY: Enhanced input validation and safe query construction
     # Prevent injection attacks with comprehensive validation and parameterized queries
     import re
-    from typing import Dict, Any
+    from typing import Any, Dict
 
 # Security validation imports
 from services.shared.security_validation import (
-    validate_user_input,
+    validate_governance_input,
     validate_policy_input,
-    validate_governance_input
+    validate_user_input,
 )
 
     def validate_and_sanitize_datalog_input(value: str, field_name: str, max_length: int = 50) -> str:

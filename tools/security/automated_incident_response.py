@@ -12,7 +12,6 @@ from enum import Enum
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class IncidentSeverity(Enum):
     LOW = "low"
     MEDIUM = "medium"

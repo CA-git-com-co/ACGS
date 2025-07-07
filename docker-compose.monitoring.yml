@@ -1,0 +1,307 @@
+version: '3.8'
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: acgs_prometheus
+    ports:
+    - ${PROMETHEUS_PORT:-9090}:9090
+    volumes:
+    - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    - ./monitoring/alert_rules.yml:/etc/prometheus/alert_rules.yml
+    - prometheus_data:/prometheus
+    command:
+    - --config.file=/etc/prometheus/prometheus.yml
+    - --storage.tsdb.path=/prometheus
+    - --web.console.libraries=/etc/prometheus/console_libraries
+    - --web.console.templates=/etc/prometheus/consoles
+    - --storage.tsdb.retention.time=30d
+    - --web.enable-lifecycle
+    - --web.enable-admin-api
+    environment:
+      CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+    healthcheck:
+      test:
+      - CMD
+      - wget
+      - --quiet
+      - --tries=1
+      - --spider
+      - http://localhost:9090/-/healthy
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+    - acgs_network
+    labels:
+    - acgs.service=monitoring
+    - acgs.component=metrics
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
+  grafana:
+    image: grafana/grafana:latest
+    container_name: acgs_grafana
+    ports:
+    - ${GRAFANA_PORT:-3000}:3000
+    volumes:
+    - grafana_data:/var/lib/grafana
+    - ./monitoring/dashboards:/etc/grafana/provisioning/dashboards
+    - ./monitoring/datasources:/etc/grafana/provisioning/datasources
+    environment:
+    - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin123}
+    - GF_USERS_ALLOW_SIGN_UP=false
+    - GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-worldmap-panel
+    - GF_FEATURE_TOGGLES_ENABLE=publicDashboards
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    depends_on:
+      prometheus:
+        condition: service_healthy
+    healthcheck:
+      test:
+      - CMD
+      - wget
+      - --quiet
+      - --tries=1
+      - --spider
+      - http://localhost:3000/api/health
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+    - acgs_network
+    labels:
+    - acgs.service=monitoring
+    - acgs.component=visualization
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: acgs_alertmanager
+    ports:
+    - ${ALERTMANAGER_PORT:-9100}:9093
+    volumes:
+    - ./monitoring/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+    - alertmanager_data:/alertmanager
+    command:
+    - --config.file=/etc/alertmanager/alertmanager.yml
+    - --storage.path=/alertmanager
+    - --web.external-url=http://localhost:9093
+    environment:
+      CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+    depends_on:
+      prometheus:
+        condition: service_healthy
+    healthcheck:
+      test:
+      - CMD
+      - wget
+      - --quiet
+      - --tries=1
+      - --spider
+      - http://localhost:9093/-/healthy
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+    - acgs_network
+    labels:
+    - acgs.service=monitoring
+    - acgs.component=alerting
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: acgs_jaeger
+    ports:
+    - ${JAEGER_UI_PORT:-16686}:16686
+    - ${JAEGER_COLLECTOR_PORT:-14268}:14268
+    - ${JAEGER_AGENT_PORT:-6831}:6831/udp
+    environment:
+    - COLLECTOR_OTLP_ENABLED=true
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    volumes:
+    - jaeger_data:/tmp
+    healthcheck:
+      test:
+      - CMD
+      - wget
+      - --quiet
+      - --tries=1
+      - --spider
+      - http://localhost:16686/
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+    - acgs_network
+    labels:
+    - acgs.service=monitoring
+    - acgs.component=tracing
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: acgs_elasticsearch
+    ports:
+    - ${ELASTICSEARCH_PORT:-9200}:9200
+    environment:
+    - discovery.type=single-node
+    - xpack.security.enabled=false
+    - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    volumes:
+    - elasticsearch_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:9200/_cluster/health
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+    - acgs_network
+    labels:
+    - acgs.service=monitoring
+    - acgs.component=logs
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    container_name: acgs_kibana
+    ports:
+    - ${KIBANA_PORT:-5601}:5601
+    environment:
+    - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:5601/api/status
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+    networks:
+    - acgs_network
+    labels:
+    - acgs.service=monitoring
+    - acgs.component=log-visualization
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:8.11.0
+    container_name: acgs_filebeat
+    user: root
+    volumes:
+    - ./monitoring/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+    - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+    - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    command: filebeat -e -strict.perms=false
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+    - acgs_network
+    labels:
+    - acgs.service=monitoring
+    - acgs.component=log-shipping
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: acgs_node_exporter
+    ports:
+    - ${NODE_EXPORTER_PORT:-9100}:9100
+    volumes:
+    - /proc:/host/proc:ro
+    - /sys:/host/sys:ro
+    - /:/rootfs:ro
+    command:
+    - --path.procfs=/host/proc
+    - --path.rootfs=/rootfs
+    - --path.sysfs=/host/sys
+    - --collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)
+    environment:
+      CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+    restart: unless-stopped
+    networks:
+    - acgs_network
+    labels:
+    - acgs.service=monitoring
+    - acgs.component=system-metrics
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: acgs_postgres_exporter
+    ports:
+    - ${POSTGRES_EXPORTER_PORT:-9187}:9187
+    environment:
+    - DATA_SOURCE_NAME=postgresql://acgs_user:${POSTGRES_PASSWORD:-acgs_dev_password}@postgres:5432/acgs?sslmode=disable
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+    - acgs_network
+    labels:
+    - acgs.service=monitoring
+    - acgs.component=database-metrics
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
+  redis-exporter:
+    image: oliver006/redis_exporter:latest
+    container_name: acgs_redis_exporter
+    ports:
+    - ${REDIS_EXPORTER_PORT:-9121}:9121
+    environment:
+    - REDIS_ADDR=redis://redis:6379
+    - REDIS_PASSWORD=${REDIS_PASSWORD:-acgs_dev_redis}
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+    - acgs_network
+    labels:
+    - acgs.service=monitoring
+    - acgs.component=cache-metrics
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
+volumes:
+  prometheus_data:
+    driver: local
+    labels:
+    - acgs.volume=monitoring
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
+  grafana_data:
+    driver: local
+    labels:
+    - acgs.volume=monitoring
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
+  alertmanager_data:
+    driver: local
+    labels:
+    - acgs.volume=monitoring
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
+  elasticsearch_data:
+    driver: local
+    labels:
+    - acgs.volume=monitoring
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
+  jaeger_data:
+    driver: local
+    labels:
+    - acgs.volume=monitoring
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
+networks:
+  acgs_network:
+    external: true
+constitutional_hash: cdd01ef066bc6cf2

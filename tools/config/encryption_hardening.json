@@ -27,5 +27,7 @@
     "salt_length": 32,
     "iterations": 100000,
     "secure_random": true
-  }
+  },
+  "_constitutional_hash": "cdd01ef066bc6cf2",
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }

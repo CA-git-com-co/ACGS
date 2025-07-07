@@ -60,7 +60,9 @@
         "orientation": "auto",
         "reduceOptions": {
           "values": false,
-          "calcs": ["lastNotNull"],
+          "calcs": [
+            "lastNotNull"
+          ],
           "fields": ""
         },
         "showThresholdLabels": false,
@@ -195,7 +197,9 @@
         "pieType": "pie",
         "reduceOptions": {
           "values": false,
-          "calcs": ["lastNotNull"],
+          "calcs": [
+            "lastNotNull"
+          ],
           "fields": ""
         },
         "tooltip": {
@@ -252,7 +256,9 @@
         "orientation": "auto",
         "reduceOptions": {
           "values": false,
-          "calcs": ["lastNotNull"],
+          "calcs": [
+            "lastNotNull"
+          ],
           "fields": ""
         },
         "text": {},
@@ -399,7 +405,9 @@
         "orientation": "auto",
         "reduceOptions": {
           "values": false,
-          "calcs": ["lastNotNull"],
+          "calcs": [
+            "lastNotNull"
+          ],
           "fields": ""
         },
         "showThresholdLabels": false,
@@ -421,7 +429,12 @@
   ],
   "schemaVersion": 27,
   "style": "dark",
-  "tags": ["acgs-pgp", "constitutional", "compliance", "monitoring"],
+  "tags": [
+    "acgs-pgp",
+    "constitutional",
+    "compliance",
+    "monitoring"
+  ],
   "templating": {
     "list": []
   },
@@ -433,5 +446,7 @@
   "timezone": "",
   "title": "ACGS-PGP Constitutional Compliance Dashboard",
   "uid": "acgs-constitutional-compliance",
-  "version": 1
+  "version": 1,
+  "_constitutional_hash": "cdd01ef066bc6cf2",
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }

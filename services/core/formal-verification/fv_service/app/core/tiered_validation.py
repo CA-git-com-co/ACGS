@@ -6,11 +6,8 @@ Implements three-tier validation: Automated, Human-in-the-Loop (HITL), and Rigor
 import logging
 import time
 
-from ..schemas import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from ..schemas import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     ACPrinciple,
     PolicyRule,
     SafetyProperty,
@@ -19,6 +16,8 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
     TieredVerificationResult,
     ValidationLevel,
     ValidationTier,
+    "cdd01ef066bc6cf2",
+    =,
 )
 from .proof_obligations import generate_proof_obligations_from_principles
 from .smt_solver_integration import verify_rules_against_obligations

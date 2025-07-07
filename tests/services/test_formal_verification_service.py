@@ -25,6 +25,9 @@ sys.path.append(
     os.path.join(os.path.dirname(__file__), "../../services/core/formal-verification")
 )
 
+# Create a ProofStatus enum since it's not in the actual implementation
+from enum import Enum
+
 from advanced_proof_engine import (
     AdvancedProofEngine,
     ConstitutionalPrinciple,
@@ -37,18 +40,24 @@ from advanced_proof_engine import (
     TemporalOperator,
 )
 
-# Create a ProofStatus enum since it's not in the actual implementation
-from enum import Enum
 
 class ProofStatus(Enum):
     """Proof status for testing compatibility."""
+
     PENDING = "pending"
     VERIFIED = "verified"
     FAILED = "failed"
     TIMEOUT = "timeout"
-import sys
+
+
 import os
-sys.path.append(os.path.join(os.path.dirname(__file__), "../..", "services", "core", "formal-verification"))
+import sys
+
+sys.path.append(
+    os.path.join(
+        os.path.dirname(__file__), "../..", "services", "core", "formal-verification"
+    )
+)
 from fv_service.app.services.z3_solver import (
     FormalVerificationEngine,
     ProofObligation,

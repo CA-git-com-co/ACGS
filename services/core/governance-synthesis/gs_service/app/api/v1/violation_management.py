@@ -18,19 +18,18 @@ from sqlalchemy.orm import selectinload
 
 from services.shared.auth import get_current_active_user
 from services.shared.database import get_async_db
-from services.shared.models import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from services.shared.models import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     ConstitutionalViolation,
     User,
     ViolationEscalation,
+    "cdd01ef066bc6cf2",
+    =,
 )
 
 # Import WebSocket broadcasting
+from .api.v1.fidelity_monitoring_websocket import ViolationAlert as WSViolationAlert
 from .api.v1.fidelity_monitoring_websocket import (
-    ViolationAlert as WSViolationAlert,
     monitoring_manager,
 )
 from .core.violation_config import (

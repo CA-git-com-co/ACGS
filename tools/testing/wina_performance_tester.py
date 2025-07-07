@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Constitutional Hash: cdd01ef066bc6cf2
 """
 WINA Performance Optimization Testing Framework
 Tests WINA components against sub-5ms P99 latency requirements.

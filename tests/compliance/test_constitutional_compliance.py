@@ -11,19 +11,26 @@ import asyncio
 import hashlib
 import json
 import logging
+import os
+
+# Import ACGS components
+import sys
 from datetime import datetime, timedelta, timezone
 from unittest.mock import patch
 
 import pytest
+
 from infrastructure.monitoring.compliance.compliance_reporter import ComplianceReporter
 
-# Import ACGS components
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(__file__), "../..", "services", "core", "formal-verification"))
+sys.path.append(
+    os.path.join(
+        os.path.dirname(__file__), "../..", "services", "core", "formal-verification"
+    )
+)
 from fv_service.app.services.z3_solver import (
     Z3ConstitutionalSolver,
 )
+
 from services.platform_services.integrity.integrity_service.app.core.persistent_audit_trail import (
     CryptographicAuditChain,
 )
@@ -51,7 +58,10 @@ class TestConstitutionalCompliance:
     def audit_chain(self):
         """Create cryptographic audit chain instance."""
         # Use the simple version that doesn't require db_pool for testing
-        from services.platform_services.integrity.integrity_service.core.persistent_audit_trail import CryptographicAuditChain as SimpleCryptographicAuditChain
+        from services.platform_services.integrity.integrity_service.core.persistent_audit_trail import (
+            CryptographicAuditChain as SimpleCryptographicAuditChain,
+        )
+
         return SimpleCryptographicAuditChain()
 
     @pytest.fixture
@@ -91,9 +101,7 @@ class TestConstitutionalCompliance:
         # Test human dignity axiom - use the correct method that exists
         policy_constraints = ["dignity_preserved", "privacy_maintained"]
 
-        result = constitutional_solver.verify_constitutional_policy(
-            policy_constraints
-        )
+        result = constitutional_solver.verify_constitutional_policy(policy_constraints)
 
         # Test that the solver is working and returns a valid result
         assert result.result.value in ["valid", "invalid", "unknown"]
@@ -120,7 +128,9 @@ class TestConstitutionalCompliance:
     async def test_audit_trail_cryptographic_integrity(self, audit_chain):
         """Test cryptographic audit trail integrity."""
         from services.platform_services.integrity.integrity_service.core.persistent_audit_trail import (
-            AuditEvent, AuditEventType, AuditSeverity
+            AuditEvent,
+            AuditEventType,
+            AuditSeverity,
         )
 
         # Create test audit events
@@ -158,7 +168,9 @@ class TestConstitutionalCompliance:
     async def test_audit_trail_tampering_detection(self, audit_chain):
         """Test audit trail detects tampering attempts."""
         from services.platform_services.integrity.integrity_service.core.persistent_audit_trail import (
-            AuditEvent, AuditEventType, AuditSeverity
+            AuditEvent,
+            AuditEventType,
+            AuditSeverity,
         )
 
         # Create and add legitimate event

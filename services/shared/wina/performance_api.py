@@ -23,11 +23,8 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
 from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel, Field
 
-from .performance_monitoring import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from .performance_monitoring import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     WINAComponentType,
     WINAConstitutionalComplianceMetrics,
     WINADynamicGatingMetrics,

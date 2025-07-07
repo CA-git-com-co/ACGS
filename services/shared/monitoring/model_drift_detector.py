@@ -13,6 +13,7 @@ Key Features:
 - Real-time alerting with severity classification
 - Automated remediation recommendations
 """
+
 # Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
@@ -951,28 +952,36 @@ class ModelDriftDetector:
         recommendations = []
 
         if severity == DriftSeverity.CRITICAL:
-            recommendations.extend([
-                f"URGENT: Investigate {feature_name} data source immediately",
-                f"Consider emergency model rollback for {feature_name}",
-                f"Implement immediate monitoring for {feature_name}",
-            ])
+            recommendations.extend(
+                [
+                    f"URGENT: Investigate {feature_name} data source immediately",
+                    f"Consider emergency model rollback for {feature_name}",
+                    f"Implement immediate monitoring for {feature_name}",
+                ]
+            )
         elif severity == DriftSeverity.HIGH:
-            recommendations.extend([
-                f"Review data collection process for {feature_name}",
-                f"Consider feature engineering adjustments for {feature_name}",
-                f"Increase monitoring frequency for {feature_name}",
-            ])
+            recommendations.extend(
+                [
+                    f"Review data collection process for {feature_name}",
+                    f"Consider feature engineering adjustments for {feature_name}",
+                    f"Increase monitoring frequency for {feature_name}",
+                ]
+            )
         elif severity == DriftSeverity.MEDIUM:
-            recommendations.extend([
-                f"Monitor {feature_name} trends closely",
-                f"Consider retraining with recent data including {feature_name}",
-                f"Review feature importance of {feature_name}",
-            ])
+            recommendations.extend(
+                [
+                    f"Monitor {feature_name} trends closely",
+                    f"Consider retraining with recent data including {feature_name}",
+                    f"Review feature importance of {feature_name}",
+                ]
+            )
         elif severity == DriftSeverity.LOW:
-            recommendations.extend([
-                f"Continue standard monitoring for {feature_name}",
-                f"Document drift pattern for {feature_name}",
-            ])
+            recommendations.extend(
+                [
+                    f"Continue standard monitoring for {feature_name}",
+                    f"Document drift pattern for {feature_name}",
+                ]
+            )
 
         return recommendations
 
@@ -1089,47 +1098,57 @@ class ModelDriftDetector:
         # Component-specific recommendations
         if component == DriftComponent.INPUT_FEATURES:
             if severity == DriftSeverity.CRITICAL:
-                plan.extend([
-                    "IMMEDIATE: Stop model predictions and investigate data sources",
-                    "Contact data engineering team to verify data pipeline integrity",
-                    "Implement emergency data validation checks",
-                    "Consider rolling back to previous model version",
-                ])
+                plan.extend(
+                    [
+                        "IMMEDIATE: Stop model predictions and investigate data sources",
+                        "Contact data engineering team to verify data pipeline integrity",
+                        "Implement emergency data validation checks",
+                        "Consider rolling back to previous model version",
+                    ]
+                )
             elif severity == DriftSeverity.HIGH:
-                plan.extend([
-                    "Investigate data source changes in the last 24-48 hours",
-                    "Review feature engineering pipeline for issues",
-                    "Increase data quality monitoring frequency",
-                    "Prepare for potential model retraining",
-                ])
+                plan.extend(
+                    [
+                        "Investigate data source changes in the last 24-48 hours",
+                        "Review feature engineering pipeline for issues",
+                        "Increase data quality monitoring frequency",
+                        "Prepare for potential model retraining",
+                    ]
+                )
             elif severity == DriftSeverity.MEDIUM:
-                plan.extend([
-                    "Monitor data sources for continued drift",
-                    "Review recent changes to data collection processes",
-                    "Consider gradual model adaptation strategies",
-                    "Schedule model performance review",
-                ])
+                plan.extend(
+                    [
+                        "Monitor data sources for continued drift",
+                        "Review recent changes to data collection processes",
+                        "Consider gradual model adaptation strategies",
+                        "Schedule model performance review",
+                    ]
+                )
 
         elif component == DriftComponent.PREDICTIONS:
             if severity >= DriftSeverity.HIGH:
-                plan.extend([
-                    "Review model outputs for accuracy and bias",
-                    "Implement additional prediction validation checks",
-                    "Consider adjusting prediction confidence thresholds",
-                    "Increase human oversight for predictions",
-                ])
+                plan.extend(
+                    [
+                        "Review model outputs for accuracy and bias",
+                        "Implement additional prediction validation checks",
+                        "Consider adjusting prediction confidence thresholds",
+                        "Increase human oversight for predictions",
+                    ]
+                )
 
         elif component == DriftComponent.MODEL_PERFORMANCE:
             if severity >= DriftSeverity.HIGH:
-                plan.extend([
-                    "Conduct comprehensive model evaluation",
-                    "Review recent model updates or configuration changes",
-                    "Check for infrastructure or resource constraints",
-                    (
-                        "Consider emergency model rollback if performance continues to"
-                        " degrade"
-                    ),
-                ])
+                plan.extend(
+                    [
+                        "Conduct comprehensive model evaluation",
+                        "Review recent model updates or configuration changes",
+                        "Check for infrastructure or resource constraints",
+                        (
+                            "Consider emergency model rollback if performance continues to"
+                            " degrade"
+                        ),
+                    ]
+                )
 
         # Feature-specific recommendations
         critical_features = [
@@ -1144,12 +1163,14 @@ class ModelDriftDetector:
             )
 
         # General recommendations
-        plan.extend([
-            "Document drift incident for future reference",
-            "Update monitoring thresholds based on findings",
-            "Schedule post-incident review meeting",
-            "Consider implementing additional preventive measures",
-        ])
+        plan.extend(
+            [
+                "Document drift incident for future reference",
+                "Update monitoring thresholds based on findings",
+                "Schedule post-incident review meeting",
+                "Consider implementing additional preventive measures",
+            ]
+        )
 
         return plan
 
@@ -1213,33 +1234,37 @@ class ModelDriftDetector:
             )
 
             # Log drift detection
-            await self.audit_logger.log_compliance_event({
-                "event_type": "model_drift_detected",
-                "detection_id": result.detection_id,
-                "component": result.component.value,
-                "overall_severity": result.overall_severity.value,
-                "overall_score": result.overall_drift_score,
-                "confidence": result.confidence,
-                "requires_immediate_action": result.requires_immediate_action,
-                "methods_used": [
-                    method.value for method in result.method_results.keys()
-                ],
-                "features_affected": len(result.feature_results),
-                "timestamp": result.timestamp.isoformat(),
-            })
+            await self.audit_logger.log_compliance_event(
+                {
+                    "event_type": "model_drift_detected",
+                    "detection_id": result.detection_id,
+                    "component": result.component.value,
+                    "overall_severity": result.overall_severity.value,
+                    "overall_score": result.overall_drift_score,
+                    "confidence": result.confidence,
+                    "requires_immediate_action": result.requires_immediate_action,
+                    "methods_used": [
+                        method.value for method in result.method_results.keys()
+                    ],
+                    "features_affected": len(result.feature_results),
+                    "timestamp": result.timestamp.isoformat(),
+                }
+            )
 
             # Log feature-level drift
             for feature_result in result.feature_results:
                 if feature_result.severity != DriftSeverity.NONE:
-                    await self.audit_logger.log_compliance_event({
-                        "event_type": "feature_drift_detected",
-                        "detection_id": result.detection_id,
-                        "feature_name": feature_result.feature_name,
-                        "drift_score": feature_result.drift_score,
-                        "severity": feature_result.severity.value,
-                        "method": feature_result.method_used.value,
-                        "timestamp": result.timestamp.isoformat(),
-                    })
+                    await self.audit_logger.log_compliance_event(
+                        {
+                            "event_type": "feature_drift_detected",
+                            "detection_id": result.detection_id,
+                            "feature_name": feature_result.feature_name,
+                            "drift_score": feature_result.drift_score,
+                            "severity": feature_result.severity.value,
+                            "method": feature_result.method_used.value,
+                            "timestamp": result.timestamp.isoformat(),
+                        }
+                    )
 
         except Exception as e:
             logger.error(f"Failed to handle drift detection: {e}")
@@ -1354,12 +1379,14 @@ class ModelDriftDetector:
                 )
 
             # Store adaptation history
-            self.threshold_adaptation_history.append({
-                "timestamp": datetime.utcnow(),
-                "fp_rate": current_fp_rate,
-                "detections_analyzed": len(recent_detections),
-                "adjustment_made": current_fp_rate != self.false_positive_rate,
-            })
+            self.threshold_adaptation_history.append(
+                {
+                    "timestamp": datetime.utcnow(),
+                    "fp_rate": current_fp_rate,
+                    "detections_analyzed": len(recent_detections),
+                    "adjustment_made": current_fp_rate != self.false_positive_rate,
+                }
+            )
 
         except Exception as e:
             logger.error(f"Adaptive threshold update failed: {e}")
@@ -1430,15 +1457,17 @@ class ModelDriftDetector:
                         f" {len(recent_stable_data)} data points"
                     )
 
-            await self.audit_logger.log_compliance_event({
-                "event_type": "baseline_updated",
-                "components_updated": [
-                    component.value
-                    for component in DriftComponent
-                    if component in self.baseline_data
-                ],
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_compliance_event(
+                {
+                    "event_type": "baseline_updated",
+                    "components_updated": [
+                        component.value
+                        for component in DriftComponent
+                        if component in self.baseline_data
+                    ],
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
         except Exception as e:
             logger.error(f"Baseline update failed: {e}")
@@ -1485,17 +1514,19 @@ class ModelDriftDetector:
                 severity_trends.append(result.overall_severity.value)
 
             # Log pattern analysis
-            await self.audit_logger.log_compliance_event({
-                "event_type": "drift_pattern_analysis",
-                "analysis_period_detections": len(recent_drift),
-                "component_frequency": component_counts,
-                "hourly_distribution": hourly_counts,
-                "severity_distribution": {
-                    severity.value: severity_trends.count(severity.value)
-                    for severity in DriftSeverity
-                },
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_compliance_event(
+                {
+                    "event_type": "drift_pattern_analysis",
+                    "analysis_period_detections": len(recent_drift),
+                    "component_frequency": component_counts,
+                    "hourly_distribution": hourly_counts,
+                    "severity_distribution": {
+                        severity.value: severity_trends.count(severity.value)
+                        for severity in DriftSeverity
+                    },
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
         except Exception as e:
             logger.error(f"Drift pattern analysis failed: {e}")
@@ -1515,12 +1546,14 @@ class ModelDriftDetector:
                 f" {len(baseline_data)} data points"
             )
 
-            await self.audit_logger.log_compliance_event({
-                "event_type": "baseline_established",
-                "component": component.value,
-                "baseline_size": len(baseline_data),
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_compliance_event(
+                {
+                    "event_type": "baseline_established",
+                    "component": component.value,
+                    "baseline_size": len(baseline_data),
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
         except Exception as e:
             logger.error(f"Failed to establish baseline for {component.value}: {e}")
@@ -1553,15 +1586,15 @@ class ModelDriftDetector:
             "recent_drift_summary": {
                 "total_detections_24h": len(recent_drift),
                 "by_component": {
-                    component.value: len([
-                        r for r in recent_drift if r.component == component
-                    ])
+                    component.value: len(
+                        [r for r in recent_drift if r.component == component]
+                    )
                     for component in DriftComponent
                 },
                 "by_severity": {
-                    severity.value: len([
-                        r for r in recent_drift if r.overall_severity == severity
-                    ])
+                    severity.value: len(
+                        [r for r in recent_drift if r.overall_severity == severity]
+                    )
                     for severity in DriftSeverity
                 },
                 "requires_immediate_action": sum(
@@ -1584,11 +1617,13 @@ class ModelDriftDetector:
 async def example_usage():
     """Example of using the model drift detector"""
     # Initialize detector
-    detector = ModelDriftDetector({
-        "detection_interval_seconds": 60,
-        "adaptive_thresholds": True,
-        "auto_baseline_update": False,
-    })
+    detector = ModelDriftDetector(
+        {
+            "detection_interval_seconds": 60,
+            "adaptive_thresholds": True,
+            "auto_baseline_update": False,
+        }
+    )
 
     # Establish baselines for components
     for component in [DriftComponent.INPUT_FEATURES, DriftComponent.PREDICTIONS]:

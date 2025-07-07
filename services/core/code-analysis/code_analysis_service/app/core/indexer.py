@@ -114,12 +114,14 @@ class IndexerService:
                 f"File already being analyzed: {file_path}",
                 extra={"constitutional_hash": CONSTITUTIONAL_HASH},
             )
-            return ensure_constitutional_compliance({
-                "file_path": file_path,
-                "status": "already_analyzing",
-                "symbols_found": 0,
-                "dependencies_found": 0,
-            })
+            return ensure_constitutional_compliance(
+                {
+                    "file_path": file_path,
+                    "status": "already_analyzing",
+                    "symbols_found": 0,
+                    "dependencies_found": 0,
+                }
+            )
 
         self.active_analyses.add(file_path)
 
@@ -141,12 +143,14 @@ class IndexerService:
                     f"File does not exist: {file_path}",
                     extra={"constitutional_hash": CONSTITUTIONAL_HASH},
                 )
-                return ensure_constitutional_compliance({
-                    "file_path": file_path,
-                    "status": "file_not_found",
-                    "symbols_found": 0,
-                    "dependencies_found": 0,
-                })
+                return ensure_constitutional_compliance(
+                    {
+                        "file_path": file_path,
+                        "status": "file_not_found",
+                        "symbols_found": 0,
+                        "dependencies_found": 0,
+                    }
+                )
 
             # Determine language
             language = self._detect_language(file_path)
@@ -155,13 +159,15 @@ class IndexerService:
                     f"Unsupported language for file: {file_path} ({language})",
                     extra={"constitutional_hash": CONSTITUTIONAL_HASH},
                 )
-                return ensure_constitutional_compliance({
-                    "file_path": file_path,
-                    "status": "unsupported_language",
-                    "language": language,
-                    "symbols_found": 0,
-                    "dependencies_found": 0,
-                })
+                return ensure_constitutional_compliance(
+                    {
+                        "file_path": file_path,
+                        "status": "unsupported_language",
+                        "language": language,
+                        "symbols_found": 0,
+                        "dependencies_found": 0,
+                    }
+                )
 
             # Check if file needs analysis
             if not force_reanalysis and await self._is_file_up_to_date(file_path):
@@ -169,12 +175,14 @@ class IndexerService:
                     f"File is up to date, skipping analysis: {file_path}",
                     extra={"constitutional_hash": CONSTITUTIONAL_HASH},
                 )
-                return ensure_constitutional_compliance({
-                    "file_path": file_path,
-                    "status": "up_to_date",
-                    "symbols_found": 0,
-                    "dependencies_found": 0,
-                })
+                return ensure_constitutional_compliance(
+                    {
+                        "file_path": file_path,
+                        "status": "up_to_date",
+                        "symbols_found": 0,
+                        "dependencies_found": 0,
+                    }
+                )
 
             # Read file content
             try:
@@ -185,12 +193,14 @@ class IndexerService:
                     f"Failed to read file as UTF-8: {file_path}",
                     extra={"constitutional_hash": CONSTITUTIONAL_HASH},
                 )
-                return ensure_constitutional_compliance({
-                    "file_path": file_path,
-                    "status": "encoding_error",
-                    "symbols_found": 0,
-                    "dependencies_found": 0,
-                })
+                return ensure_constitutional_compliance(
+                    {
+                        "file_path": file_path,
+                        "status": "encoding_error",
+                        "symbols_found": 0,
+                        "dependencies_found": 0,
+                    }
+                )
 
             # Analyze content
             analysis_result = await self._analyze_content(file_path, content, language)
@@ -237,13 +247,15 @@ class IndexerService:
                 operation_id=operation_id, success=False, error=str(e)
             )
 
-            return ensure_constitutional_compliance({
-                "file_path": file_path,
-                "status": "analysis_error",
-                "error": str(e),
-                "symbols_found": 0,
-                "dependencies_found": 0,
-            })
+            return ensure_constitutional_compliance(
+                {
+                    "file_path": file_path,
+                    "status": "analysis_error",
+                    "error": str(e),
+                    "symbols_found": 0,
+                    "dependencies_found": 0,
+                }
+            )
 
         finally:
             self.active_analyses.discard(file_path)
@@ -273,13 +285,15 @@ class IndexerService:
                     f"Directory does not exist: {directory_path}",
                     extra={"constitutional_hash": CONSTITUTIONAL_HASH},
                 )
-                return ensure_constitutional_compliance({
-                    "directory_path": directory_path,
-                    "status": "directory_not_found",
-                    "files_analyzed": 0,
-                    "total_symbols": 0,
-                    "total_dependencies": 0,
-                })
+                return ensure_constitutional_compliance(
+                    {
+                        "directory_path": directory_path,
+                        "status": "directory_not_found",
+                        "files_analyzed": 0,
+                        "total_symbols": 0,
+                        "total_dependencies": 0,
+                    }
+                )
 
             # Find files to analyze
             files_to_analyze = []
@@ -344,14 +358,16 @@ class IndexerService:
                 exc_info=True,
             )
 
-            return ensure_constitutional_compliance({
-                "directory_path": directory_path,
-                "status": "analysis_error",
-                "error": str(e),
-                "files_analyzed": 0,
-                "total_symbols": 0,
-                "total_dependencies": 0,
-            })
+            return ensure_constitutional_compliance(
+                {
+                    "directory_path": directory_path,
+                    "status": "analysis_error",
+                    "error": str(e),
+                    "files_analyzed": 0,
+                    "total_symbols": 0,
+                    "total_dependencies": 0,
+                }
+            )
 
     async def remove_file(self, file_path: str) -> dict[str, Any]:
         """
@@ -375,12 +391,14 @@ class IndexerService:
                 },
             )
 
-            return ensure_constitutional_compliance({
-                "file_path": file_path,
-                "status": "removed",
-                "symbols_removed": 0,
-                "dependencies_removed": 0,
-            })
+            return ensure_constitutional_compliance(
+                {
+                    "file_path": file_path,
+                    "status": "removed",
+                    "symbols_removed": 0,
+                    "dependencies_removed": 0,
+                }
+            )
 
         except Exception as e:
             logger.error(
@@ -392,9 +410,9 @@ class IndexerService:
                 exc_info=True,
             )
 
-            return ensure_constitutional_compliance({
-                "file_path": file_path, "status": "removal_error", "error": str(e)
-            })
+            return ensure_constitutional_compliance(
+                {"file_path": file_path, "status": "removal_error", "error": str(e)}
+            )
 
     def _detect_language(self, file_path: str) -> str:
         """Detect programming language from file extension."""
@@ -516,12 +534,14 @@ class IndexerService:
 
     def get_status(self) -> dict[str, Any]:
         """Get indexer service status."""
-        return ensure_constitutional_compliance({
-            "is_initialized": self.is_initialized,
-            "supported_languages": self.supported_languages,
-            "active_analyses": len(self.active_analyses),
-            "files_analyzed": self.files_analyzed,
-            "symbols_extracted": self.symbols_extracted,
-            "dependencies_found": self.dependencies_found,
-            "embeddings_created": self.embeddings_created,
-        })
+        return ensure_constitutional_compliance(
+            {
+                "is_initialized": self.is_initialized,
+                "supported_languages": self.supported_languages,
+                "active_analyses": len(self.active_analyses),
+                "files_analyzed": self.files_analyzed,
+                "symbols_extracted": self.symbols_extracted,
+                "dependencies_found": self.dependencies_found,
+                "embeddings_created": self.embeddings_created,
+            }
+        )

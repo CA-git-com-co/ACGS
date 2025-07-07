@@ -10,21 +10,24 @@ import asyncio
 import logging
 import time
 from datetime import datetime, timezone
+from enum import Enum
 from typing import Any, Dict, List, Optional, Set, Union
 from uuid import uuid4
-from enum import Enum
 
 from pydantic import BaseModel, Field
 
+from .blackboard import BlackboardService, KnowledgeItem, TaskDefinition
+
 # Constitutional compliance imports
 from .constitutional_safety_framework import ConstitutionalSafetyValidator
-from .blackboard import BlackboardService, KnowledgeItem, TaskDefinition
 
 # Configure logging
 logger = logging.getLogger(__name__)
 
+
 class SuperClaudePersona(Enum):
     """SuperClaude cognitive personas with constitutional compliance"""
+
     ARCHITECT = "architect"
     FRONTEND = "frontend"
     BACKEND = "backend"
@@ -35,8 +38,10 @@ class SuperClaudePersona(Enum):
     REFACTORER = "refactorer"
     MENTOR = "mentor"
 
+
 class PersonaCapabilities(BaseModel):
     """Persona-specific capabilities and preferences"""
+
     identity: str
     core_belief: str
     primary_question: str
@@ -49,8 +54,10 @@ class PersonaCapabilities(BaseModel):
     focus_areas: List[str]
     constitutional_requirements: List[str] = Field(default_factory=list)
 
+
 class PersonaIntegrationResult(BaseModel):
     """Result of persona-enhanced agent operation"""
+
     persona: SuperClaudePersona
     agent_type: str
     constitutional_hash: str = "cdd01ef066bc6cf2"
@@ -61,9 +68,10 @@ class PersonaIntegrationResult(BaseModel):
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     audit_trail: List[str] = Field(default_factory=list)
 
+
 class PersonaAgentIntegration:
     """Integration layer between SuperClaude personas and ACGS agents"""
-    
+
     PERSONA_CAPABILITIES = {
         SuperClaudePersona.ARCHITECT: PersonaCapabilities(
             identity="Constitutional systems architect | Governance-aware scalability specialist",
@@ -75,12 +83,16 @@ class PersonaAgentIntegration:
             communication_style="Constitutional system diagrams | Governance trade-off analysis",
             problem_solving="Think in constitutional systems | Minimize governance coupling",
             mcp_preferences="Sequential(primary) + Context7(patterns) | Constitutional validation",
-            focus_areas=["Constitutional scalability", "Governance maintainability", "Constitutional debt prevention"],
+            focus_areas=[
+                "Constitutional scalability",
+                "Governance maintainability",
+                "Constitutional debt prevention",
+            ],
             constitutional_requirements=[
                 "All architecture decisions validate constitutional hash cdd01ef066bc6cf2",
                 "System design includes governance framework integration",
-                "Scalability planning includes constitutional overhead analysis"
-            ]
+                "Scalability planning includes constitutional overhead analysis",
+            ],
         ),
         SuperClaudePersona.SECURITY: PersonaCapabilities(
             identity="Constitutional security architect | Governance threat modeler",
@@ -92,12 +104,16 @@ class PersonaAgentIntegration:
             communication_style="Constitutional threat models | Governance risk assessments",
             problem_solving="Question constitutional boundaries | Validate governance everything",
             mcp_preferences="Sequential(threat modeling) + Context7(constitutional patterns)",
-            focus_areas=["Constitutional threat modeling", "Governance vulnerability assessment", "Constitutional incident response"],
+            focus_areas=[
+                "Constitutional threat modeling",
+                "Governance vulnerability assessment",
+                "Constitutional incident response",
+            ],
             constitutional_requirements=[
                 "Security analysis includes constitutional framework threats",
                 "Threat modeling validates constitutional hash integrity",
-                "Security compliance integrates governance requirements"
-            ]
+                "Security compliance integrates governance requirements",
+            ],
         ),
         SuperClaudePersona.ANALYZER: PersonaCapabilities(
             identity="Constitutional root cause specialist | Governance evidence investigator",
@@ -109,12 +125,16 @@ class PersonaAgentIntegration:
             communication_style="Constitutional evidence documentation | Governance reasoning chains",
             problem_solving="Assume constitutional implications | Follow governance evidence trails",
             mcp_preferences="All servers with constitutional validation",
-            focus_areas=["Constitutional root cause analysis", "Governance evidence reasoning", "Constitutional quality forensics"],
+            focus_areas=[
+                "Constitutional root cause analysis",
+                "Governance evidence reasoning",
+                "Constitutional quality forensics",
+            ],
             constitutional_requirements=[
                 "Analysis includes constitutional compliance evidence",
                 "Root cause investigation considers governance framework",
-                "Evidence collection validates constitutional context"
-            ]
+                "Evidence collection validates constitutional context",
+            ],
         ),
         SuperClaudePersona.QA: PersonaCapabilities(
             identity="Constitutional quality advocate | Governance testing specialist",
@@ -126,12 +146,16 @@ class PersonaAgentIntegration:
             communication_style="Constitutional test scenarios | Governance quality metrics",
             problem_solving="Think like constitutional adversary | Automate governance verification",
             mcp_preferences="Puppeteer(testing) + Sequential(constitutional edge cases)",
-            focus_areas=["Constitutional quality assurance", "Governance test coverage", "Constitutional edge case identification"],
+            focus_areas=[
+                "Constitutional quality assurance",
+                "Governance test coverage",
+                "Constitutional edge case identification",
+            ],
             constitutional_requirements=[
                 "Quality gates include constitutional compliance verification",
                 "Test coverage validates governance framework adherence",
-                "Quality metrics include constitutional compliance rates"
-            ]
+                "Quality metrics include constitutional compliance rates",
+            ],
         ),
         SuperClaudePersona.PERFORMANCE: PersonaCapabilities(
             identity="Constitutional performance engineer | Governance optimization specialist",
@@ -143,64 +167,72 @@ class PersonaAgentIntegration:
             communication_style="Constitutional performance benchmarks | Governance optimization strategies",
             problem_solving="Profile constitutional overhead | Fix governance hotspots",
             mcp_preferences="Puppeteer(metrics) + Sequential(constitutional bottleneck analysis)",
-            focus_areas=["Constitutional performance optimization", "Governance bottleneck identification", "Constitutional monitoring"],
+            focus_areas=[
+                "Constitutional performance optimization",
+                "Governance bottleneck identification",
+                "Constitutional monitoring",
+            ],
             constitutional_requirements=[
                 "Performance optimization maintains constitutional overhead",
                 "Bottleneck analysis includes governance validation latency",
-                "Performance targets include constitutional compliance metrics"
-            ]
-        )
+                "Performance targets include constitutional compliance metrics",
+            ],
+        ),
         # Additional personas can be added following the same pattern
     }
-    
-    def __init__(self, blackboard_service: BlackboardService, constitutional_validator: ConstitutionalSafetyValidator):
+
+    def __init__(
+        self,
+        blackboard_service: BlackboardService,
+        constitutional_validator: ConstitutionalSafetyValidator,
+    ):
         """Initialize persona integration layer"""
         self.blackboard = blackboard_service
         self.constitutional_validator = constitutional_validator
         self.logger = logging.getLogger(__name__)
-        
+
     async def integrate_persona_with_agent(
         self,
         persona: SuperClaudePersona,
         agent_type: str,
         task_data: Dict[str, Any],
-        agent_result: Dict[str, Any]
+        agent_result: Dict[str, Any],
     ) -> PersonaIntegrationResult:
         """Integrate SuperClaude persona with ACGS agent operation"""
-        
+
         # Validate constitutional compliance
         constitutional_result = await self._validate_constitutional_compliance(
             persona, agent_type, task_data
         )
-        
+
         # Get persona-specific capabilities
         persona_capabilities = self.PERSONA_CAPABILITIES.get(persona)
         if not persona_capabilities:
             raise ValueError(f"Unsupported persona: {persona}")
-        
+
         # Apply persona-specific analysis
         persona_insights = await self._apply_persona_analysis(
             persona_capabilities, agent_result, task_data
         )
-        
+
         # Generate persona-enhanced recommendations
         recommendations = await self._generate_persona_recommendations(
             persona_capabilities, agent_result, persona_insights
         )
-        
+
         # Create audit trail
         audit_trail = [
             f"Persona {persona.value} integrated with {agent_type}",
             f"Constitutional hash validated: cdd01ef066bc6cf2",
             f"Persona-specific analysis applied: {len(persona_insights)} insights",
-            f"Generated {len(recommendations)} persona-enhanced recommendations"
+            f"Generated {len(recommendations)} persona-enhanced recommendations",
         ]
-        
+
         # Log integration to blackboard
         await self._log_integration_to_blackboard(
             persona, agent_type, persona_insights, recommendations
         )
-        
+
         return PersonaIntegrationResult(
             persona=persona,
             agent_type=agent_type,
@@ -208,219 +240,228 @@ class PersonaAgentIntegration:
             persona_insights=persona_insights,
             constitutional_compliance=constitutional_result,
             recommendations=recommendations,
-            audit_trail=audit_trail
+            audit_trail=audit_trail,
         )
-    
+
     async def _validate_constitutional_compliance(
-        self,
-        persona: SuperClaudePersona,
-        agent_type: str,
-        task_data: Dict[str, Any]
+        self, persona: SuperClaudePersona, agent_type: str, task_data: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Validate constitutional compliance for persona-agent integration"""
-        
+
         constitutional_hash = "cdd01ef066bc6cf2"
-        
+
         # Validate constitutional hash presence
-        if not task_data.get('constitutional_hash') == constitutional_hash:
-            raise ValueError(f"Constitutional hash validation failed. Expected: {constitutional_hash}")
-        
+        if not task_data.get("constitutional_hash") == constitutional_hash:
+            raise ValueError(
+                f"Constitutional hash validation failed. Expected: {constitutional_hash}"
+            )
+
         # Use constitutional validator
         validation_result = await self.constitutional_validator.validate_request(
             request_data=task_data,
-            context={'persona': persona.value, 'agent_type': agent_type}
+            context={"persona": persona.value, "agent_type": agent_type},
         )
-        
+
         return {
-            'constitutional_hash': constitutional_hash,
-            'validation_passed': validation_result.get('approved', False),
-            'compliance_score': validation_result.get('confidence', 0.0),
-            'compliance_details': validation_result,
-            'timestamp': datetime.now(timezone.utc).isoformat()
+            "constitutional_hash": constitutional_hash,
+            "validation_passed": validation_result.get("approved", False),
+            "compliance_score": validation_result.get("confidence", 0.0),
+            "compliance_details": validation_result,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
-    
+
     async def _apply_persona_analysis(
         self,
         persona_capabilities: PersonaCapabilities,
         agent_result: Dict[str, Any],
-        task_data: Dict[str, Any]
+        task_data: Dict[str, Any],
     ) -> Dict[str, Any]:
         """Apply persona-specific analysis to agent results"""
-        
+
         insights = {
-            'persona_perspective': {
-                'identity_lens': persona_capabilities.identity,
-                'core_belief_application': persona_capabilities.core_belief,
-                'primary_question_analysis': persona_capabilities.primary_question
+            "persona_perspective": {
+                "identity_lens": persona_capabilities.identity,
+                "core_belief_application": persona_capabilities.core_belief,
+                "primary_question_analysis": persona_capabilities.primary_question,
             },
-            'decision_framework_analysis': {
-                'framework': persona_capabilities.decision_framework,
-                'risk_assessment': persona_capabilities.risk_profile,
-                'success_criteria': persona_capabilities.success_metrics
+            "decision_framework_analysis": {
+                "framework": persona_capabilities.decision_framework,
+                "risk_assessment": persona_capabilities.risk_profile,
+                "success_criteria": persona_capabilities.success_metrics,
             },
-            'constitutional_integration': {
-                'requirements_check': persona_capabilities.constitutional_requirements,
-                'constitutional_implications': await self._analyze_constitutional_implications(
+            "constitutional_integration": {
+                "requirements_check": persona_capabilities.constitutional_requirements,
+                "constitutional_implications": await self._analyze_constitutional_implications(
                     agent_result, persona_capabilities
                 ),
-                'governance_impact': await self._analyze_governance_impact(
+                "governance_impact": await self._analyze_governance_impact(
                     agent_result, persona_capabilities
-                )
+                ),
             },
-            'focus_area_analysis': {
+            "focus_area_analysis": {
                 area: await self._analyze_focus_area(area, agent_result, task_data)
                 for area in persona_capabilities.focus_areas
-            }
+            },
         }
-        
+
         return insights
-    
+
     async def _analyze_constitutional_implications(
-        self,
-        agent_result: Dict[str, Any],
-        persona_capabilities: PersonaCapabilities
+        self, agent_result: Dict[str, Any], persona_capabilities: PersonaCapabilities
     ) -> Dict[str, Any]:
         """Analyze constitutional implications from persona perspective"""
-        
+
         implications = {
-            'compliance_impact': "High - persona analysis enhances constitutional compliance",
-            'governance_enhancement': "Persona-specific expertise improves governance decisions",
-            'risk_mitigation': "Specialized persona perspective identifies governance risks",
-            'constitutional_alignment': "Persona framework aligns with constitutional principles"
+            "compliance_impact": "High - persona analysis enhances constitutional compliance",
+            "governance_enhancement": "Persona-specific expertise improves governance decisions",
+            "risk_mitigation": "Specialized persona perspective identifies governance risks",
+            "constitutional_alignment": "Persona framework aligns with constitutional principles",
         }
-        
+
         # Add persona-specific constitutional analysis
-        if 'security' in persona_capabilities.identity.lower():
-            implications['security_constitutional_alignment'] = "Enhanced threat modeling for constitutional violations"
-        elif 'performance' in persona_capabilities.identity.lower():
-            implications['performance_constitutional_balance'] = "Optimized performance while maintaining compliance"
-        elif 'quality' in persona_capabilities.identity.lower():
-            implications['quality_constitutional_verification'] = "Quality gates ensure constitutional adherence"
-        
+        if "security" in persona_capabilities.identity.lower():
+            implications["security_constitutional_alignment"] = (
+                "Enhanced threat modeling for constitutional violations"
+            )
+        elif "performance" in persona_capabilities.identity.lower():
+            implications["performance_constitutional_balance"] = (
+                "Optimized performance while maintaining compliance"
+            )
+        elif "quality" in persona_capabilities.identity.lower():
+            implications["quality_constitutional_verification"] = (
+                "Quality gates ensure constitutional adherence"
+            )
+
         return implications
-    
+
     async def _analyze_governance_impact(
-        self,
-        agent_result: Dict[str, Any],
-        persona_capabilities: PersonaCapabilities
+        self, agent_result: Dict[str, Any], persona_capabilities: PersonaCapabilities
     ) -> Dict[str, Any]:
         """Analyze governance impact from persona perspective"""
-        
+
         impact = {
-            'governance_enhancement': "Persona expertise enhances governance decision quality",
-            'stakeholder_benefit': "Specialized perspective benefits all stakeholders",
-            'process_improvement': "Persona-driven analysis improves governance processes",
-            'compliance_strengthening': "Domain expertise strengthens compliance validation"
+            "governance_enhancement": "Persona expertise enhances governance decision quality",
+            "stakeholder_benefit": "Specialized perspective benefits all stakeholders",
+            "process_improvement": "Persona-driven analysis improves governance processes",
+            "compliance_strengthening": "Domain expertise strengthens compliance validation",
         }
-        
+
         return impact
-    
+
     async def _analyze_focus_area(
-        self,
-        focus_area: str,
-        agent_result: Dict[str, Any],
-        task_data: Dict[str, Any]
+        self, focus_area: str, agent_result: Dict[str, Any], task_data: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Analyze specific focus area from persona perspective"""
-        
+
         analysis = {
-            'area': focus_area,
-            'relevance': "High - directly applicable to current task",
-            'insights': f"Persona expertise in {focus_area} provides valuable perspective",
-            'recommendations': f"Apply {focus_area} best practices with constitutional compliance",
-            'metrics': f"Track {focus_area} improvements with governance validation"
+            "area": focus_area,
+            "relevance": "High - directly applicable to current task",
+            "insights": f"Persona expertise in {focus_area} provides valuable perspective",
+            "recommendations": f"Apply {focus_area} best practices with constitutional compliance",
+            "metrics": f"Track {focus_area} improvements with governance validation",
         }
-        
+
         return analysis
-    
+
     async def _generate_persona_recommendations(
         self,
         persona_capabilities: PersonaCapabilities,
         agent_result: Dict[str, Any],
-        persona_insights: Dict[str, Any]
+        persona_insights: Dict[str, Any],
     ) -> List[str]:
         """Generate persona-enhanced recommendations"""
-        
+
         recommendations = [
             f"Apply {persona_capabilities.identity} perspective to decision-making",
             f"Validate decisions against: {persona_capabilities.primary_question}",
             f"Use {persona_capabilities.decision_framework} for prioritization",
             "Maintain constitutional hash validation throughout process",
-            "Integrate governance requirements into all recommendations"
+            "Integrate governance requirements into all recommendations",
         ]
-        
+
         # Add persona-specific recommendations
         for requirement in persona_capabilities.constitutional_requirements:
             recommendations.append(f"Constitutional requirement: {requirement}")
-        
+
         return recommendations
-    
+
     async def _log_integration_to_blackboard(
         self,
         persona: SuperClaudePersona,
         agent_type: str,
         insights: Dict[str, Any],
-        recommendations: List[str]
+        recommendations: List[str],
     ) -> None:
         """Log persona integration results to blackboard"""
-        
+
         knowledge_item = KnowledgeItem(
             id=str(uuid4()),
             content={
-                'type': 'persona_integration',
-                'persona': persona.value,
-                'agent_type': agent_type,
-                'insights': insights,
-                'recommendations': recommendations,
-                'constitutional_hash': 'cdd01ef066bc6cf2'
+                "type": "persona_integration",
+                "persona": persona.value,
+                "agent_type": agent_type,
+                "insights": insights,
+                "recommendations": recommendations,
+                "constitutional_hash": "cdd01ef066bc6cf2",
             },
             metadata={
-                'source': 'superclaude_persona_integration',
-                'timestamp': datetime.now(timezone.utc).isoformat(),
-                'constitutional_compliance': True
+                "source": "superclaude_persona_integration",
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "constitutional_compliance": True,
             },
-            tags=['persona', 'integration', 'constitutional', persona.value, agent_type]
+            tags=[
+                "persona",
+                "integration",
+                "constitutional",
+                persona.value,
+                agent_type,
+            ],
         )
-        
+
         await self.blackboard.add_knowledge(knowledge_item)
+
 
 class PersonaEnhancedAgent:
     """Base class for ACGS agents enhanced with SuperClaude personas"""
-    
+
     def __init__(
         self,
         agent_type: str,
         blackboard_service: BlackboardService,
-        constitutional_validator: ConstitutionalSafetyValidator
+        constitutional_validator: ConstitutionalSafetyValidator,
     ):
         """Initialize persona-enhanced agent"""
         self.agent_type = agent_type
         self.blackboard = blackboard_service
         self.constitutional_validator = constitutional_validator
-        self.persona_integration = PersonaAgentIntegration(blackboard_service, constitutional_validator)
+        self.persona_integration = PersonaAgentIntegration(
+            blackboard_service, constitutional_validator
+        )
         self.logger = logging.getLogger(__name__)
-    
+
     async def execute_with_persona(
-        self,
-        task_data: Dict[str, Any],
-        persona: Optional[SuperClaudePersona] = None
+        self, task_data: Dict[str, Any], persona: Optional[SuperClaudePersona] = None
     ) -> PersonaIntegrationResult:
         """Execute agent task with optional persona enhancement"""
-        
+
         # Validate constitutional compliance
-        if not task_data.get('constitutional_hash') == 'cdd01ef066bc6cf2':
-            raise ValueError("Constitutional hash validation required for persona-enhanced execution")
-        
+        if not task_data.get("constitutional_hash") == "cdd01ef066bc6cf2":
+            raise ValueError(
+                "Constitutional hash validation required for persona-enhanced execution"
+            )
+
         # Execute base agent functionality
         base_result = await self._execute_base_functionality(task_data)
-        
+
         # Apply persona enhancement if specified
         if persona:
-            integration_result = await self.persona_integration.integrate_persona_with_agent(
-                persona=persona,
-                agent_type=self.agent_type,
-                task_data=task_data,
-                agent_result=base_result
+            integration_result = (
+                await self.persona_integration.integrate_persona_with_agent(
+                    persona=persona,
+                    agent_type=self.agent_type,
+                    task_data=task_data,
+                    agent_result=base_result,
+                )
             )
             return integration_result
         else:
@@ -430,10 +471,14 @@ class PersonaEnhancedAgent:
                 agent_type=self.agent_type,
                 analysis_result=base_result,
                 persona_insights={},
-                constitutional_compliance={'constitutional_hash': 'cdd01ef066bc6cf2'},
-                recommendations=base_result.get('recommendations', [])
+                constitutional_compliance={"constitutional_hash": "cdd01ef066bc6cf2"},
+                recommendations=base_result.get("recommendations", []),
             )
-    
-    async def _execute_base_functionality(self, task_data: Dict[str, Any]) -> Dict[str, Any]:
+
+    async def _execute_base_functionality(
+        self, task_data: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Execute base agent functionality - to be implemented by subclasses"""
-        raise NotImplementedError("Subclasses must implement _execute_base_functionality")
+        raise NotImplementedError(
+            "Subclasses must implement _execute_base_functionality"
+        )

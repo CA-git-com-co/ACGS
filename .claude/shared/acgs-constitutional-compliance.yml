@@ -1,72 +1,60 @@
-# ACGS Constitutional Compliance Framework
-# Constitutional Hash: cdd01ef066bc6cf2
-
 Constitutional_Framework:
-  hash_validation: "cdd01ef066bc6cf2"
-  enforcement_level: "CRITICAL"
+  hash_validation: cdd01ef066bc6cf2
+  enforcement_level: CRITICAL
   compliance_requirements:
-    - "ALL operations MUST include constitutional hash validation"
-    - "NO operations may bypass constitutional compliance checks"
-    - "ALL agent communications require constitutional hash verification"
-    - "IMMEDIATE escalation for constitutional violations"
-    - "100% constitutional compliance rate mandatory"
-
+  - ALL operations MUST include constitutional hash validation
+  - NO operations may bypass constitutional compliance checks
+  - ALL agent communications require constitutional hash verification
+  - IMMEDIATE escalation for constitutional violations
+  - 100% constitutional compliance rate mandatory
 Token_Economy_Governance:
   constitutional_tracking:
-    - "All token usage must be logged with constitutional hash"
-    - "Token economy decisions require constitutional validation"
-    - "Performance optimization must maintain constitutional compliance"
-    - "Resource allocation governed by constitutional principles"
-  
+  - All token usage must be logged with constitutional hash
+  - Token economy decisions require constitutional validation
+  - Performance optimization must maintain constitutional compliance
+  - Resource allocation governed by constitutional principles
   governance_metrics:
-    - "Constitutional compliance rate per token usage"
-    - "Audit trail completeness for all operations"
-    - "Performance impact of constitutional validation"
-
+  - Constitutional compliance rate per token usage
+  - Audit trail completeness for all operations
+  - Performance impact of constitutional validation
 Evidence_Framework:
   constitutional_documentation:
-    - "All evidence must include constitutional hash validation"
-    - "Documentation decisions require constitutional context"
-    - "Evidence-based practices governed by constitutional principles"
-    - "Audit trail for all evidence collection and usage"
-  
+  - All evidence must include constitutional hash validation
+  - Documentation decisions require constitutional context
+  - Evidence-based practices governed by constitutional principles
+  - Audit trail for all evidence collection and usage
   validation_requirements:
-    - "Evidence must be constitutionally compliant"
-    - "Documentation must include constitutional hash"
-    - "All design decisions validated against constitutional framework"
-
+  - Evidence must be constitutionally compliant
+  - Documentation must include constitutional hash
+  - All design decisions validated against constitutional framework
 Security_Framework:
   constitutional_security:
-    - "Security measures must align with constitutional principles"
-    - "All security validations include constitutional hash verification"
-    - "Constitutional compliance is the highest security priority"
-    - "Security audit trail must maintain constitutional context"
-  
+  - Security measures must align with constitutional principles
+  - All security validations include constitutional hash verification
+  - Constitutional compliance is the highest security priority
+  - Security audit trail must maintain constitutional context
   threat_model:
-    - "Constitutional bypass attempts are critical security threats"
-    - "Hash tampering is highest severity security violation"
-    - "Compliance circumvention requires immediate escalation"
-
+  - Constitutional bypass attempts are critical security threats
+  - Hash tampering is highest severity security violation
+  - Compliance circumvention requires immediate escalation
 Error_Handling:
   constitutional_error_recovery:
-    - "All errors must preserve constitutional compliance"
-    - "Error recovery cannot bypass constitutional validation"
-    - "Constitutional violations require immediate escalation"
-    - "Error logs must include constitutional hash verification"
-  
+  - All errors must preserve constitutional compliance
+  - Error recovery cannot bypass constitutional validation
+  - Constitutional violations require immediate escalation
+  - Error logs must include constitutional hash verification
   escalation_protocols:
-    - "Constitutional violations: IMMEDIATE human oversight"
-    - "Hash validation failures: CRITICAL system alert"
-    - "Compliance circumvention: EMERGENCY response"
-
+  - 'Constitutional violations: IMMEDIATE human oversight'
+  - 'Hash validation failures: CRITICAL system alert'
+  - 'Compliance circumvention: EMERGENCY response'
 Session_Governance:
   constitutional_session_management:
-    - "Session state must include constitutional hash validation"
-    - "Session persistence requires constitutional compliance"
-    - "Session recovery must maintain constitutional context"
-    - "All session operations logged with constitutional hash"
-  
+  - Session state must include constitutional hash validation
+  - Session persistence requires constitutional compliance
+  - Session recovery must maintain constitutional context
+  - All session operations logged with constitutional hash
   compliance_tracking:
-    - "Per-session constitutional compliance metrics"
-    - "Session-level audit trail with constitutional context"
-    - "Constitutional hash verification for session continuity"
+  - Per-session constitutional compliance metrics
+  - Session-level audit trail with constitutional context
+  - Constitutional hash verification for session continuity
+constitutional_hash: cdd01ef066bc6cf2

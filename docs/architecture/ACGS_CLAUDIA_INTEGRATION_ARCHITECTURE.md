@@ -339,6 +339,8 @@ bun run tauri dev
 
 For a broader understanding of the ACGS platform and its components, refer to:
 
+- **Unified Architecture Guide**: For a comprehensive overview of the ACGS architecture, see the [ACGS Unified Architecture Guide](ACGS_UNIFIED_ARCHITECTURE_GUIDE.md).
+- **GEMINI.md**: For a comprehensive overview of the entire ACGS project, including development environment setup, testing commands, and service architecture, see the [GEMINI.md](../../GEMINI.md) file.
 - [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
 - [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
 - [ACGE Strategic Implementation Plan - 24 Month Roadmap](../../docs/ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md)

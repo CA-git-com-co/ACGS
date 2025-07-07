@@ -1,28 +1,29 @@
 """Mock services for multi-agent testing."""
+
 # Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
-from typing import Dict, Any, List, Optional
-from unittest.mock import AsyncMock, MagicMock
-from datetime import datetime, timedelta
-from uuid import uuid4
 import json
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
+from unittest.mock import AsyncMock, MagicMock
+from uuid import uuid4
 
 
 class MockRedis:
     """Mock Redis client for testing."""
-    
+
     def __init__(self):
         self._data = {}
         self._pub_sub_data = {}
-        
+
     async def get(self, key: str) -> Optional[bytes]:
         return self._data.get(key)
-        
+
     async def set(self, key: str, value: Any, ex: Optional[int] = None) -> bool:
         self._data[key] = value if isinstance(value, bytes) else str(value).encode()
         return True
-        
+
     async def delete(self, *keys: str) -> int:
         deleted = 0
         for key in keys:
@@ -30,14 +31,21 @@ class MockRedis:
                 del self._data[key]
                 deleted += 1
         return deleted
-        
+
     async def exists(self, key: str) -> bool:
         return key in self._data
-        
-    async def keys(self, pattern: str = '*') -> List[str]:
+
+    async def keys(self, pattern: str = "*") -> List[str]:
         return list(self._data.keys())
-    
-    async def hset(self, key: str, field: Optional[str] = None, value: Optional[str] = None, mapping: Optional[Dict[str, Any]] = None, **kwargs) -> int:
+
+    async def hset(
+        self,
+        key: str,
+        field: Optional[str] = None,
+        value: Optional[str] = None,
+        mapping: Optional[Dict[str, Any]] = None,
+        **kwargs,
+    ) -> int:
         """Mock Redis hset operation"""
         if key not in self._data:
             self._data[key] = {}
@@ -66,21 +74,21 @@ class MockRedis:
             count += len(kwargs)
 
         return count
-                
+
         return 1
-        
+
     async def hget(self, key: str, field: str) -> Optional[str]:
         """Mock Redis hget operation"""
         if key in self._data and isinstance(self._data[key], dict):
             return self._data[key].get(field)
         return None
-        
+
     async def hgetall(self, key: str) -> Dict[str, str]:
         """Mock Redis hgetall operation"""
         if key in self._data and isinstance(self._data[key], dict):
             return self._data[key]
         return {}
-        
+
     async def hdel(self, key: str, *fields: str) -> int:
         """Mock Redis hdel operation"""
         if key in self._data and isinstance(self._data[key], dict):
@@ -91,89 +99,91 @@ class MockRedis:
                     deleted += 1
             return deleted
         return 0
-        
+
     async def lpush(self, key: str, *values: Any) -> int:
         """Mock Redis lpush operation"""
         if key not in self._data:
             self._data[key] = []
         if not isinstance(self._data[key], list):
             self._data[key] = []
-        
+
         for value in reversed(values):
             self._data[key].insert(0, value)
         return len(self._data[key])
-        
+
     async def rpop(self, key: str) -> Optional[str]:
         """Mock Redis rpop operation"""
         if key in self._data and isinstance(self._data[key], list) and self._data[key]:
             return self._data[key].pop()
         return None
-        
+
     async def lrange(self, key: str, start: int, end: int) -> List[str]:
         """Mock Redis lrange operation"""
         if key in self._data and isinstance(self._data[key], list):
-            return self._data[key][start:end+1]
+            return self._data[key][start : end + 1]
         return []
-        
+
     async def zadd(self, key: str, mapping: Dict[str, float]) -> int:
         """Mock Redis zadd operation"""
         if key not in self._data:
             self._data[key] = {}
         if not isinstance(self._data[key], dict):
             self._data[key] = {}
-        
+
         added = 0
         for member, score in mapping.items():
             if member not in self._data[key]:
                 added += 1
             self._data[key][member] = score
         return added
-        
-    async def zrange(self, key: str, start: int, end: int, withscores: bool = False) -> List:
+
+    async def zrange(
+        self, key: str, start: int, end: int, withscores: bool = False
+    ) -> List:
         """Mock Redis zrange operation"""
         if key not in self._data or not isinstance(self._data[key], dict):
             return []
-        
+
         # Sort by score
         sorted_items = sorted(self._data[key].items(), key=lambda x: x[1])
-        result_items = sorted_items[start:end+1 if end >= 0 else None]
-        
+        result_items = sorted_items[start : end + 1 if end >= 0 else None]
+
         if withscores:
             return [(item[0], item[1]) for item in result_items]
         else:
             return [item[0] for item in result_items]
-            
+
     async def zrem(self, key: str, *members: str) -> int:
         """Mock Redis zrem operation"""
         if key not in self._data or not isinstance(self._data[key], dict):
             return 0
-        
+
         removed = 0
         for member in members:
             if member in self._data[key]:
                 del self._data[key][member]
                 removed += 1
         return removed
-        
+
     async def expire(self, key: str, seconds: int) -> bool:
         """Mock Redis expire operation (simplified)"""
         # For testing purposes, we'll just pretend it worked
         return True
-        
+
     async def sadd(self, key: str, *values: str) -> int:
         """Mock Redis sadd operation"""
         if key not in self._data:
             self._data[key] = set()
         if not isinstance(self._data[key], set):
             self._data[key] = set()
-        
+
         added = 0
         for value in values:
             if value not in self._data[key]:
                 self._data[key].add(value)
                 added += 1
         return added
-        
+
     async def smembers(self, key: str) -> set:
         """Mock Redis smembers operation"""
         if key in self._data and isinstance(self._data[key], set):
@@ -185,25 +195,25 @@ class MockRedis:
         if key in self._data and isinstance(self._data[key], set):
             return len(self._data[key])
         return 0
-        
+
     async def srem(self, key: str, *values: str) -> int:
         """Mock Redis srem operation"""
         if key not in self._data or not isinstance(self._data[key], set):
             return 0
-        
+
         removed = 0
         for value in values:
             if value in self._data[key]:
                 self._data[key].remove(value)
                 removed += 1
         return removed
-        
+
     async def publish(self, channel: str, message: str) -> int:
         if channel not in self._pub_sub_data:
             self._pub_sub_data[channel] = []
         self._pub_sub_data[channel].append(message)
         return 1
-        
+
     def pubsub(self):
         return MockPubSub(self._pub_sub_data)
 
@@ -251,9 +261,13 @@ class MockRedisPipeline:
         """Mock Redis hget in pipeline"""
         return await self.redis_client.hget(key, field)
 
-    async def hset(self, key: str, field: str = None, value: str = None, mapping=None, **kwargs):
+    async def hset(
+        self, key: str, field: str = None, value: str = None, mapping=None, **kwargs
+    ):
         """Mock Redis hset in pipeline"""
-        return await self.redis_client.hset(key, field=field, value=value, mapping=mapping, **kwargs)
+        return await self.redis_client.hset(
+            key, field=field, value=value, mapping=mapping, **kwargs
+        )
 
     async def zrem(self, key: str, *members):
         """Mock Redis zrem in pipeline"""
@@ -286,42 +300,44 @@ class MockPubSub:
     def __init__(self, data: Dict[str, List[str]]):
         self._data = data
         self._subscribed_channels = set()
-        
+
     async def subscribe(self, *channels: str):
         self._subscribed_channels.update(channels)
-        
-    async def get_message(self, timeout: Optional[float] = None) -> Optional[Dict[str, Any]]:
+
+    async def get_message(
+        self, timeout: Optional[float] = None
+    ) -> Optional[Dict[str, Any]]:
         for channel in self._subscribed_channels:
             if channel in self._data and self._data[channel]:
                 message = self._data[channel].pop(0)
                 return {
-                    'type': 'message',
-                    'channel': channel.encode(),
-                    'data': message.encode()
+                    "type": "message",
+                    "channel": channel.encode(),
+                    "data": message.encode(),
                 }
         return None
 
 
 class MockWINACore:
     """Mock WINA core service for testing."""
-    
+
     def __init__(self):
         self.optimization_history = []
         self.optimization_count = 0  # Track number of optimizations
         self.performance_improvements = []  # Track improvements
         self.performance_metrics = {
-            'response_time': 0.1,
-            'throughput': 1000,
-            'accuracy': 0.95,
-            'memory_usage': 512
+            "response_time": 0.1,
+            "throughput": 1000,
+            "accuracy": 0.95,
+            "memory_usage": 512,
         }
-        
+
     async def optimize_performance(
         self,
         current_metrics: Dict[str, Any] = None,
         historical_metrics: Dict[str, Any] = None,
         optimization_targets: Dict[str, Any] = None,
-        metrics: Dict[str, Any] = None  # For backward compatibility
+        metrics: Dict[str, Any] = None,  # For backward compatibility
     ) -> Dict[str, Any]:
         """Mock performance optimization with flexible parameter support."""
         # Use current_metrics if provided, otherwise fall back to metrics parameter
@@ -330,38 +346,44 @@ class MockWINACore:
         # Increment optimization count
         self.optimization_count += 1
 
-        self.optimization_history.append({
-            'timestamp': datetime.utcnow(),
-            'input_metrics': input_metrics,
-            'historical_metrics': historical_metrics,
-            'optimization_targets': optimization_targets,
-            'optimization_applied': True
-        })
+        self.optimization_history.append(
+            {
+                "timestamp": datetime.utcnow(),
+                "input_metrics": input_metrics,
+                "historical_metrics": historical_metrics,
+                "optimization_targets": optimization_targets,
+                "optimization_applied": True,
+            }
+        )
 
         # Simulate improvement
         optimized_metrics = input_metrics.copy()
-        optimized_metrics['response_time'] = max(0.05, input_metrics.get('response_time', 0.1) * 0.9)
-        optimized_metrics['throughput'] = input_metrics.get('throughput', 1000) * 1.1
-        optimized_metrics['performance_improvement'] = 0.1
-        optimized_metrics['resource_efficiency'] = 0.15
-        optimized_metrics['adaptation_effectiveness'] = 0.08
-        optimized_metrics['convergence_rate'] = 0.05
+        optimized_metrics["response_time"] = max(
+            0.05, input_metrics.get("response_time", 0.1) * 0.9
+        )
+        optimized_metrics["throughput"] = input_metrics.get("throughput", 1000) * 1.1
+        optimized_metrics["performance_improvement"] = 0.1
+        optimized_metrics["resource_efficiency"] = 0.15
+        optimized_metrics["adaptation_effectiveness"] = 0.08
+        optimized_metrics["convergence_rate"] = 0.05
 
         return optimized_metrics
-        
-    async def get_performance_recommendations(self, current_metrics: Dict[str, Any]) -> List[str]:
+
+    async def get_performance_recommendations(
+        self, current_metrics: Dict[str, Any]
+    ) -> List[str]:
         """Mock performance recommendations."""
         recommendations = []
-        
-        if current_metrics.get('response_time', 0) > 0.2:
-            recommendations.append('Optimize query performance')
-            
-        if current_metrics.get('memory_usage', 0) > 1024:
-            recommendations.append('Implement caching strategy')
-            
-        if current_metrics.get('throughput', 0) < 500:
-            recommendations.append('Scale horizontally')
-            
+
+        if current_metrics.get("response_time", 0) > 0.2:
+            recommendations.append("Optimize query performance")
+
+        if current_metrics.get("memory_usage", 0) > 1024:
+            recommendations.append("Implement caching strategy")
+
+        if current_metrics.get("throughput", 0) < 500:
+            recommendations.append("Scale horizontally")
+
         return recommendations
 
 
@@ -376,55 +398,59 @@ class TestDataGenerator:
             "model_info": {
                 "model_type": "language_model",
                 "parameters": "7B",
-                "training_data": "web_crawl_filtered"
+                "training_data": "web_crawl_filtered",
             },
             "deployment_context": {
                 "environment": "production",
                 "user_base": "general_public",
-                "expected_volume": "high"
+                "expected_volume": "high",
             },
             "constitutional_requirements": {
                 "safety": True,
                 "transparency": True,
                 "consent": True,
-                "data_privacy": True
+                "data_privacy": True,
             },
             "stakeholders": ["users", "developers", "society"],
-            "risk_level": "medium"
+            "risk_level": "medium",
         }
 
     @staticmethod
-    def generate_knowledge_item(agent_id: str = 'test-agent', space: str = 'governance') -> Dict[str, Any]:
+    def generate_knowledge_item(
+        agent_id: str = "test-agent", space: str = "governance"
+    ) -> Dict[str, Any]:
         """Generate a test knowledge item."""
         return {
-            'id': f'knowledge-{datetime.utcnow().timestamp()}',
-            'agent_id': agent_id,
-            'space': space,
-            'content': {'test': 'data', 'timestamp': datetime.utcnow().isoformat()},
-            'tags': ['test', 'generated'],
-            'created_at': datetime.utcnow().isoformat()
+            "id": f"knowledge-{datetime.utcnow().timestamp()}",
+            "agent_id": agent_id,
+            "space": space,
+            "content": {"test": "data", "timestamp": datetime.utcnow().isoformat()},
+            "tags": ["test", "generated"],
+            "created_at": datetime.utcnow().isoformat(),
         }
-        
+
     @staticmethod
-    def generate_task(agent_id: str = 'test-agent', priority: int = 5) -> Dict[str, Any]:
+    def generate_task(
+        agent_id: str = "test-agent", priority: int = 5
+    ) -> Dict[str, Any]:
         """Generate a test task."""
         return {
-            'id': f'task-{datetime.utcnow().timestamp()}',
-            'type': 'test_task',
-            'agent_id': agent_id,
-            'priority': priority,
-            'data': {'test': 'task_data'},
-            'created_at': datetime.utcnow().isoformat()
+            "id": f"task-{datetime.utcnow().timestamp()}",
+            "type": "test_task",
+            "agent_id": agent_id,
+            "priority": priority,
+            "data": {"test": "task_data"},
+            "created_at": datetime.utcnow().isoformat(),
         }
-        
+
     @staticmethod
-    def generate_performance_metrics(agent_id: str = 'test-agent') -> Dict[str, Any]:
+    def generate_performance_metrics(agent_id: str = "test-agent") -> Dict[str, Any]:
         """Generate test performance metrics."""
         return {
-            'agent_id': agent_id,
-            'response_time': 0.15,
-            'throughput': 750,
-            'memory_usage': 256,
-            'cpu_usage': 45.5,
-            'timestamp': datetime.utcnow().isoformat()
+            "agent_id": agent_id,
+            "response_time": 0.15,
+            "throughput": 750,
+            "memory_usage": 256,
+            "cpu_usage": 45.5,
+            "timestamp": datetime.utcnow().isoformat(),
         }

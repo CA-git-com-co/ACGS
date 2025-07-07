@@ -1,279 +1,246 @@
-# ACGS-1 Performance Alert Rules
-# Enterprise performance targets: >99.9% availability, <500ms response times, >1000 concurrent users
-
 groups:
-  - name: availability_targets
-    rules:
-      # Overall System Availability (Target: >99.9%)
-      - alert: SystemAvailabilityBelowTarget
-        expr: avg(up{job=~"acgs-.*-service"}) < 0.999
-        for: 1m
-        labels:
-          severity: critical
-          component: availability
-          target: '99.9%'
-        annotations:
-          summary: 'System availability below 99.9% target'
-          description: 'Current availability: {{ $value | humanizePercentage }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/availability-degradation'
-
-      # Service-Specific Availability
-      - alert: ServiceAvailabilityBelowTarget
-        expr: up{job=~"acgs-.*-service"} < 1
-        for: 30s
-        labels:
-          severity: critical
-          component: availability
-        annotations:
-          summary: 'Service {{ $labels.job }} availability compromised'
-          description: 'Service {{ $labels.job }} is not responding'
-
-      # Critical Service Availability (Auth, PGC, AC)
-      - alert: CriticalServiceDown
-        expr: up{job=~"acgs-(auth|pgc|ac)-service"} == 0
-        for: 15s
-        labels:
-          severity: critical
-          component: critical_services
-        annotations:
-          summary: 'Critical service {{ $labels.job }} is down'
-          description: 'Critical service {{ $labels.job }} must be restored immediately'
-
-  - name: response_time_targets
-    rules:
-      # Overall Response Time Target (<500ms for 95% of requests)
-      - alert: ResponseTimeAboveTarget
-        expr: histogram_quantile(0.95, rate(acgs_request_duration_seconds_bucket[5m])) > 0.5
-        for: 3m
-        labels:
-          severity: warning
-          component: response_time
-          target: '500ms'
-        annotations:
-          summary: 'Response time above 500ms target'
-          description: '95th percentile response time: {{ $value }}s for {{ $labels.service }}'
-
-      # Critical Response Time Alert (>2s)
-      - alert: CriticalResponseTime
-        expr: histogram_quantile(0.95, rate(acgs_request_duration_seconds_bucket[5m])) > 2.0
-        for: 1m
-        labels:
-          severity: critical
-          component: response_time
-        annotations:
-          summary: 'Critical response time detected'
-          description: '95th percentile response time: {{ $value }}s for {{ $labels.service }}'
-
-      # PGC Service Response Time (Target: <50ms)
-      - alert: PGCResponseTimeAboveTarget
-        expr: histogram_quantile(0.95, rate(acgs_pgc_response_duration_seconds_bucket[5m])) > 0.05
-        for: 2m
-        labels:
-          severity: warning
-          component: pgc_performance
-          target: '50ms'
-        annotations:
-          summary: 'PGC response time above 50ms target'
-          description: '95th percentile PGC response time: {{ $value }}s'
-
-      # LLM Response Time (GS Service)
-      - alert: LLMResponseTimeHigh
-        expr: histogram_quantile(0.95, rate(acgs_llm_response_duration_seconds_bucket[5m])) > 5.0
-        for: 5m
-        labels:
-          severity: warning
-          component: llm_performance
-        annotations:
-          summary: 'LLM response time high'
-          description: '95th percentile LLM response time: {{ $value }}s'
-
-  - name: throughput_targets
-    rules:
-      # Concurrent User Target (>1000 concurrent users)
-      - alert: ConcurrentUsersAboveCapacity
-        expr: sum(acgs_active_sessions) > 1000
-        for: 5m
-        labels:
-          severity: warning
-          component: capacity
-          target: '1000_users'
-        annotations:
-          summary: 'Concurrent users approaching capacity'
-          description: 'Current active sessions: {{ $value }}'
-
-      # Request Rate Monitoring
-      - alert: HighRequestRate
-        expr: sum(rate(acgs_requests_total[5m])) > 500
-        for: 5m
-        labels:
-          severity: warning
-          component: throughput
-        annotations:
-          summary: 'High request rate detected'
-          description: 'Current request rate: {{ $value }} requests/second'
-
-      # Database Query Rate
-      - alert: HighDatabaseQueryRate
-        expr: rate(pg_stat_database_xact_commit[5m]) + rate(pg_stat_database_xact_rollback[5m]) > 1000
-        for: 5m
-        labels:
-          severity: warning
-          component: database_throughput
-        annotations:
-          summary: 'High database query rate'
-          description: 'Database transaction rate: {{ $value }} transactions/second'
-
-  - name: resource_utilization
-    rules:
-      # CPU Utilization
-      - alert: HighCPUUtilization
-        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
-        for: 5m
-        labels:
-          severity: warning
-          component: cpu_utilization
-        annotations:
-          summary: 'High CPU utilization'
-          description: 'CPU utilization: {{ $value }}% on {{ $labels.instance }}'
-
-      # Memory Utilization
-      - alert: HighMemoryUtilization
-        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 85
-        for: 5m
-        labels:
-          severity: warning
-          component: memory_utilization
-        annotations:
-          summary: 'High memory utilization'
-          description: 'Memory utilization: {{ $value }}% on {{ $labels.instance }}'
-
-      # Disk Space Utilization
-      - alert: HighDiskUtilization
-        expr: (1 - (node_filesystem_avail_bytes / node_filesystem_size_bytes)) * 100 > 85
-        for: 5m
-        labels:
-          severity: warning
-          component: disk_utilization
-        annotations:
-          summary: 'High disk utilization'
-          description: 'Disk utilization: {{ $value }}% on {{ $labels.instance }}'
-
-  - name: cache_performance
-    rules:
-      # Redis Cache Hit Rate (Target: >80%)
-      - alert: LowCacheHitRate
-        expr: (redis_keyspace_hits_total / (redis_keyspace_hits_total + redis_keyspace_misses_total)) * 100 < 80
-        for: 10m
-        labels:
-          severity: warning
-          component: cache_performance
-          target: '80%'
-        annotations:
-          summary: 'Cache hit rate below 80% target'
-          description: 'Current cache hit rate: {{ $value }}%'
-
-      # Cache Memory Usage
-      - alert: HighCacheMemoryUsage
-        expr: redis_memory_used_bytes / redis_memory_max_bytes * 100 > 85
-        for: 5m
-        labels:
-          severity: warning
-          component: cache_memory
-        annotations:
-          summary: 'High Redis memory usage'
-          description: 'Redis memory usage: {{ $value }}%'
-
-      # Cache Connection Pool Exhaustion
-      - alert: CacheConnectionPoolExhaustion
-        expr: acgs_redis_connection_pool_active / acgs_redis_connection_pool_max > 0.9
-        for: 2m
-        labels:
-          severity: warning
-          component: cache_connections
-        annotations:
-          summary: 'Redis connection pool near exhaustion'
-          description: 'Active connections: {{ $value }}% of pool capacity'
-
-  - name: database_performance
-    rules:
-      # Database Connection Pool
-      - alert: DatabaseConnectionPoolExhaustion
-        expr: pg_stat_activity_count / pg_settings_max_connections > 0.8
-        for: 5m
-        labels:
-          severity: warning
-          component: database_connections
-        annotations:
-          summary: 'Database connection pool near exhaustion'
-          description: 'Active connections: {{ $value }}% of max connections'
-
-      # Long Running Queries
-      - alert: LongRunningQueries
-        expr: pg_stat_activity_max_tx_duration > 300
-        for: 2m
-        labels:
-          severity: warning
-          component: database_queries
-        annotations:
-          summary: 'Long running database queries detected'
-          description: 'Longest transaction duration: {{ $value }}s'
-
-      # Database Lock Contention
-      - alert: DatabaseLockContention
-        expr: pg_locks_count > 100
-        for: 5m
-        labels:
-          severity: warning
-          component: database_locks
-        annotations:
-          summary: 'High database lock contention'
-          description: 'Current lock count: {{ $value }}'
-
-  - name: network_performance
-    rules:
-      # Network Latency
-      - alert: HighNetworkLatency
-        expr: histogram_quantile(0.95, rate(acgs_network_latency_seconds_bucket[5m])) > 0.1
-        for: 5m
-        labels:
-          severity: warning
-          component: network_latency
-        annotations:
-          summary: 'High network latency detected'
-          description: '95th percentile network latency: {{ $value }}s'
-
-      # Network Error Rate
-      - alert: HighNetworkErrorRate
-        expr: rate(acgs_network_errors_total[5m]) / rate(acgs_network_requests_total[5m]) > 0.01
-        for: 3m
-        labels:
-          severity: warning
-          component: network_errors
-        annotations:
-          summary: 'High network error rate'
-          description: 'Network error rate: {{ $value | humanizePercentage }}'
-
-  - name: monitoring_overhead
-    rules:
-      # Monitoring System Overhead (Target: <1%)
-      - alert: MonitoringOverheadHigh
-        expr: rate(prometheus_tsdb_symbol_table_size_bytes[5m]) / rate(node_memory_MemTotal_bytes[5m]) > 0.01
-        for: 10m
-        labels:
-          severity: warning
-          component: monitoring_overhead
-          target: '1%'
-        annotations:
-          summary: 'Monitoring system overhead above 1% target'
-          description: 'Monitoring overhead: {{ $value | humanizePercentage }}'
-
-      # Metrics Collection Latency
-      - alert: MetricsCollectionLatency
-        expr: prometheus_rule_evaluation_duration_seconds > 1.0
-        for: 5m
-        labels:
-          severity: warning
-          component: metrics_collection
-        annotations:
-          summary: 'High metrics collection latency'
-          description: 'Rule evaluation duration: {{ $value }}s'
+- name: availability_targets
+  rules:
+  - alert: SystemAvailabilityBelowTarget
+    expr: avg(up{job=~"acgs-.*-service"}) < 0.999
+    for: 1m
+    labels:
+      severity: critical
+      component: availability
+      target: 99.9%
+    annotations:
+      summary: System availability below 99.9% target
+      description: 'Current availability: {{ $value | humanizePercentage }}'
+      runbook_url: https://docs.acgs.ai/runbooks/availability-degradation
+  - alert: ServiceAvailabilityBelowTarget
+    expr: up{job=~"acgs-.*-service"} < 1
+    for: 30s
+    labels:
+      severity: critical
+      component: availability
+    annotations:
+      summary: Service {{ $labels.job }} availability compromised
+      description: Service {{ $labels.job }} is not responding
+  - alert: CriticalServiceDown
+    expr: up{job=~"acgs-(auth|pgc|ac)-service"} == 0
+    for: 15s
+    labels:
+      severity: critical
+      component: critical_services
+    annotations:
+      summary: Critical service {{ $labels.job }} is down
+      description: Critical service {{ $labels.job }} must be restored immediately
+- name: response_time_targets
+  rules:
+  - alert: ResponseTimeAboveTarget
+    expr: histogram_quantile(0.95, rate(acgs_request_duration_seconds_bucket[5m]))
+      > 0.5
+    for: 3m
+    labels:
+      severity: warning
+      component: response_time
+      target: 500ms
+    annotations:
+      summary: Response time above 500ms target
+      description: '95th percentile response time: {{ $value }}s for {{ $labels.service
+        }}'
+  - alert: CriticalResponseTime
+    expr: histogram_quantile(0.95, rate(acgs_request_duration_seconds_bucket[5m]))
+      > 2.0
+    for: 1m
+    labels:
+      severity: critical
+      component: response_time
+    annotations:
+      summary: Critical response time detected
+      description: '95th percentile response time: {{ $value }}s for {{ $labels.service
+        }}'
+  - alert: PGCResponseTimeAboveTarget
+    expr: histogram_quantile(0.95, rate(acgs_pgc_response_duration_seconds_bucket[5m]))
+      > 0.05
+    for: 2m
+    labels:
+      severity: warning
+      component: pgc_performance
+      target: 50ms
+    annotations:
+      summary: PGC response time above 50ms target
+      description: '95th percentile PGC response time: {{ $value }}s'
+  - alert: LLMResponseTimeHigh
+    expr: histogram_quantile(0.95, rate(acgs_llm_response_duration_seconds_bucket[5m]))
+      > 5.0
+    for: 5m
+    labels:
+      severity: warning
+      component: llm_performance
+    annotations:
+      summary: LLM response time high
+      description: '95th percentile LLM response time: {{ $value }}s'
+- name: throughput_targets
+  rules:
+  - alert: ConcurrentUsersAboveCapacity
+    expr: sum(acgs_active_sessions) > 1000
+    for: 5m
+    labels:
+      severity: warning
+      component: capacity
+      target: 1000_users
+    annotations:
+      summary: Concurrent users approaching capacity
+      description: 'Current active sessions: {{ $value }}'
+  - alert: HighRequestRate
+    expr: sum(rate(acgs_requests_total[5m])) > 500
+    for: 5m
+    labels:
+      severity: warning
+      component: throughput
+    annotations:
+      summary: High request rate detected
+      description: 'Current request rate: {{ $value }} requests/second'
+  - alert: HighDatabaseQueryRate
+    expr: rate(pg_stat_database_xact_commit[5m]) + rate(pg_stat_database_xact_rollback[5m])
+      > 1000
+    for: 5m
+    labels:
+      severity: warning
+      component: database_throughput
+    annotations:
+      summary: High database query rate
+      description: 'Database transaction rate: {{ $value }} transactions/second'
+- name: resource_utilization
+  rules:
+  - alert: HighCPUUtilization
+    expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m]))
+      * 100) > 80
+    for: 5m
+    labels:
+      severity: warning
+      component: cpu_utilization
+    annotations:
+      summary: High CPU utilization
+      description: 'CPU utilization: {{ $value }}% on {{ $labels.instance }}'
+  - alert: HighMemoryUtilization
+    expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100
+      > 85
+    for: 5m
+    labels:
+      severity: warning
+      component: memory_utilization
+    annotations:
+      summary: High memory utilization
+      description: 'Memory utilization: {{ $value }}% on {{ $labels.instance }}'
+  - alert: HighDiskUtilization
+    expr: (1 - (node_filesystem_avail_bytes / node_filesystem_size_bytes)) * 100 >
+      85
+    for: 5m
+    labels:
+      severity: warning
+      component: disk_utilization
+    annotations:
+      summary: High disk utilization
+      description: 'Disk utilization: {{ $value }}% on {{ $labels.instance }}'
+- name: cache_performance
+  rules:
+  - alert: LowCacheHitRate
+    expr: (redis_keyspace_hits_total / (redis_keyspace_hits_total + redis_keyspace_misses_total))
+      * 100 < 80
+    for: 10m
+    labels:
+      severity: warning
+      component: cache_performance
+      target: 80%
+    annotations:
+      summary: Cache hit rate below 80% target
+      description: 'Current cache hit rate: {{ $value }}%'
+  - alert: HighCacheMemoryUsage
+    expr: redis_memory_used_bytes / redis_memory_max_bytes * 100 > 85
+    for: 5m
+    labels:
+      severity: warning
+      component: cache_memory
+    annotations:
+      summary: High Redis memory usage
+      description: 'Redis memory usage: {{ $value }}%'
+  - alert: CacheConnectionPoolExhaustion
+    expr: acgs_redis_connection_pool_active / acgs_redis_connection_pool_max > 0.9
+    for: 2m
+    labels:
+      severity: warning
+      component: cache_connections
+    annotations:
+      summary: Redis connection pool near exhaustion
+      description: 'Active connections: {{ $value }}% of pool capacity'
+- name: database_performance
+  rules:
+  - alert: DatabaseConnectionPoolExhaustion
+    expr: pg_stat_activity_count / pg_settings_max_connections > 0.8
+    for: 5m
+    labels:
+      severity: warning
+      component: database_connections
+    annotations:
+      summary: Database connection pool near exhaustion
+      description: 'Active connections: {{ $value }}% of max connections'
+  - alert: LongRunningQueries
+    expr: pg_stat_activity_max_tx_duration > 300
+    for: 2m
+    labels:
+      severity: warning
+      component: database_queries
+    annotations:
+      summary: Long running database queries detected
+      description: 'Longest transaction duration: {{ $value }}s'
+  - alert: DatabaseLockContention
+    expr: pg_locks_count > 100
+    for: 5m
+    labels:
+      severity: warning
+      component: database_locks
+    annotations:
+      summary: High database lock contention
+      description: 'Current lock count: {{ $value }}'
+- name: network_performance
+  rules:
+  - alert: HighNetworkLatency
+    expr: histogram_quantile(0.95, rate(acgs_network_latency_seconds_bucket[5m]))
+      > 0.1
+    for: 5m
+    labels:
+      severity: warning
+      component: network_latency
+    annotations:
+      summary: High network latency detected
+      description: '95th percentile network latency: {{ $value }}s'
+  - alert: HighNetworkErrorRate
+    expr: rate(acgs_network_errors_total[5m]) / rate(acgs_network_requests_total[5m])
+      > 0.01
+    for: 3m
+    labels:
+      severity: warning
+      component: network_errors
+    annotations:
+      summary: High network error rate
+      description: 'Network error rate: {{ $value | humanizePercentage }}'
+- name: monitoring_overhead
+  rules:
+  - alert: MonitoringOverheadHigh
+    expr: rate(prometheus_tsdb_symbol_table_size_bytes[5m]) / rate(node_memory_MemTotal_bytes[5m])
+      > 0.01
+    for: 10m
+    labels:
+      severity: warning
+      component: monitoring_overhead
+      target: 1%
+    annotations:
+      summary: Monitoring system overhead above 1% target
+      description: 'Monitoring overhead: {{ $value | humanizePercentage }}'
+  - alert: MetricsCollectionLatency
+    expr: prometheus_rule_evaluation_duration_seconds > 1.0
+    for: 5m
+    labels:
+      severity: warning
+      component: metrics_collection
+    annotations:
+      summary: High metrics collection latency
+      description: 'Rule evaluation duration: {{ $value }}s'
+constitutional_hash: cdd01ef066bc6cf2

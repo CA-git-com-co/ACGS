@@ -18,7 +18,6 @@ from .models import TaskDefinition
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class TaskManager:
     """
     Manages tasks on the blackboard system.

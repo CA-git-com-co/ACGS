@@ -12,6 +12,7 @@ Key Features:
 - Production-ready caching and optimization
 - Integration with constitutional AI for explanation compliance
 """
+
 # Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
@@ -168,14 +169,16 @@ class HybridExplainabilityEngine:
             initialization_success = shap_success and lime_success
 
             # Log initialization
-            await self.audit_logger.log_explainer_event({
-                "event_type": "hybrid_explainer_initialized",
-                "shap_success": shap_success,
-                "lime_success": lime_success,
-                "shap_type": shap_type.value,
-                "num_features": len(feature_names),
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_explainer_event(
+                {
+                    "event_type": "hybrid_explainer_initialized",
+                    "shap_success": shap_success,
+                    "lime_success": lime_success,
+                    "shap_type": shap_type.value,
+                    "num_features": len(feature_names),
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
             if not initialization_success:
                 logger.warning(
@@ -325,16 +328,18 @@ class HybridExplainabilityEngine:
             self._cache_explanation(cache_key, hybrid_explanation)
 
             # Log explanation generation
-            await self.audit_logger.log_explainer_event({
-                "event_type": "hybrid_explanation_generated",
-                "strategy": strategy.value,
-                "context": context.value,
-                "computation_time": computation_time,
-                "agreement_score": hybrid_explanation.explanation_agreement,
-                "confidence": hybrid_explanation.confidence,
-                "constitutional_compliant": validation.constitutional_compliance,
-                "timestamp": hybrid_explanation.timestamp.isoformat(),
-            })
+            await self.audit_logger.log_explainer_event(
+                {
+                    "event_type": "hybrid_explanation_generated",
+                    "strategy": strategy.value,
+                    "context": context.value,
+                    "computation_time": computation_time,
+                    "agreement_score": hybrid_explanation.explanation_agreement,
+                    "confidence": hybrid_explanation.confidence,
+                    "constitutional_compliant": validation.constitutional_compliance,
+                    "timestamp": hybrid_explanation.timestamp.isoformat(),
+                }
+            )
 
             # Send alerts for concerning explanations
             if not validation.constitutional_compliance:
@@ -817,9 +822,8 @@ class HybridExplainabilityEngine:
             },
             "avg_computation_time": self.metrics["avg_computation_time"],
             "avg_agreement_score": self.metrics["avg_agreement_score"],
-            "constitutional_violation_rate": self.metrics[
-                "constitutional_violations"
-            ] / max(1, total_explanations),
+            "constitutional_violation_rate": self.metrics["constitutional_violations"]
+            / max(1, total_explanations),
             "cache_size": len(self.explanation_cache),
             "shap_performance": self.shap_explainer.get_performance_summary(),
             "lime_performance": self.lime_explainer.get_performance_summary(),
@@ -828,7 +832,7 @@ class HybridExplainabilityEngine:
 
 # Factory function and example usage
 async def create_hybrid_explainability_engine(
-    config: Optional[dict[str, Any]] = None
+    config: Optional[dict[str, Any]] = None,
 ) -> HybridExplainabilityEngine:
     """
     Factory function to create and initialize the hybrid explainability engine

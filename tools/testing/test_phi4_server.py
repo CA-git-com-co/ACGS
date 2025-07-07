@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Constitutional Hash: cdd01ef066bc6cf2
 """
 Test script for Phi-4 reasoning model running on llama.cpp server
 """

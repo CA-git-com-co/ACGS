@@ -21,15 +21,14 @@ from fastapi import APIRouter, Body, Depends, HTTPException
 from pydantic import BaseModel, Field, field_validator
 
 # EC service imports
-from ...core.wina_oversight_coordinator import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from ...core.wina_oversight_coordinator import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     ECOversightContext,
     ECOversightRequest,
     ECOversightStrategy,
     WINAECOversightCoordinator,
+    "cdd01ef066bc6cf2",
+    =,
     get_wina_ec_oversight_coordinator,
 )
 

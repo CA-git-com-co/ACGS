@@ -1,0 +1,1362 @@
+categories:
+  legacy/unused: 40
+  missing host directory: 106
+  wrong relative root: 1491
+category_breakdown_by_file:
+  arxiv_submission_package/cli/README.md:
+    wrong relative root: 2
+  config/docker/docker-compose.yml:
+    wrong relative root: 12
+  docker-compose.postgresql.yml:
+    wrong relative root: 1
+  docs/CONTRIBUTING.md:
+    wrong relative root: 5
+  docs/DEPENDENCIES.md:
+    wrong relative root: 1
+  docs/DEPENDENCY_MANAGEMENT_COMPLETE.md:
+    wrong relative root: 5
+  docs/DOCUMENTATION_QUALITY_METRICS.md:
+    wrong relative root: 1
+  docs/DOCUMENTATION_REVIEW_REQUIREMENTS.md:
+    wrong relative root: 1
+  docs/DOCUMENTATION_SYNCHRONIZATION_PROCEDURES.md:
+    wrong relative root: 2
+  docs/HUNYUAN_INTEGRATION_STATUS.md:
+    wrong relative root: 1
+  docs/architecture/ACGS_CLAUDIA_INTEGRATION_ARCHITECTURE.md:
+    legacy/unused: 1
+    wrong relative root: 1
+  docs/architecture/ACGS_GITOPS_COMPREHENSIVE_VALIDATION_REPORT.md:
+    wrong relative root: 1
+  docs/architecture/ACGS_GITOPS_IMPLEMENTATION_SUMMARY.md:
+    wrong relative root: 3
+  docs/deployment/ACGS_CODE_ANALYSIS_ENGINE_DEPLOYMENT_GUIDE.md:
+    wrong relative root: 5
+  docs/deployment/ACGS_PGP_OPERATIONAL_DEPLOYMENT_GUIDE.md:
+    wrong relative root: 8
+  docs/deployment/ACGS_PGP_PRODUCTION_DEPLOYMENT_EXECUTIVE_SUMMARY.md:
+    wrong relative root: 2
+  docs/deployment/ACGS_PGP_SETUP_GUIDE.md:
+    wrong relative root: 8
+  docs/deployment/ACGS_PGP_TROUBLESHOOTING_GUIDE.md:
+    wrong relative root: 8
+  docs/deployment/GEMINI_CLI_DEPLOYMENT_SUCCESS.md:
+    wrong relative root: 1
+  docs/deployment/MIGRATION_GUIDE_OPENCODE.md:
+    wrong relative root: 3
+  docs/free_model_usage.md:
+    legacy/unused: 2
+  docs/security/SECURITY.md:
+    wrong relative root: 1
+  docs/training/ACGS_DOCUMENTATION_TEAM_TRAINING_GUIDE.md:
+    wrong relative root: 7
+  docs/training/constitutional_hash_reference.md:
+    wrong relative root: 1
+  docs/training/validation_tools_cheatsheet.md:
+    wrong relative root: 3
+  docs/workflows/DOCUMENTATION_UPDATE_WORKFLOWS.md:
+    wrong relative root: 1
+  infrastructure/chaos/docker-compose.chaos.yml:
+    missing host directory: 2
+    wrong relative root: 6
+  infrastructure/database/docker-compose.replicas.yml:
+    wrong relative root: 3
+  infrastructure/docker/dind/docker-compose.dind.yml:
+    missing host directory: 5
+    wrong relative root: 7
+  infrastructure/docker/docker-compose-monitoring.yml:
+    wrong relative root: 5
+  infrastructure/docker/docker-compose-test.yml:
+    missing host directory: 13
+  infrastructure/docker/docker-compose.acgs.yml:
+    missing host directory: 12
+  infrastructure/docker/docker-compose.cache-integrated.yml:
+    missing host directory: 17
+  infrastructure/docker/docker-compose.core.yml:
+    missing host directory: 2
+  infrastructure/docker/docker-compose.development.yml:
+    missing host directory: 1
+    wrong relative root: 9
+  infrastructure/docker/docker-compose.enterprise-stack.yml:
+    wrong relative root: 9
+  infrastructure/docker/docker-compose.fixed.yml:
+    missing host directory: 9
+  infrastructure/docker/docker-compose.kimi-swe.yml:
+    missing host directory: 8
+  infrastructure/docker/docker-compose.kimi.yml:
+    missing host directory: 2
+  infrastructure/docker/docker-compose.monitoring.yml:
+    missing host directory: 3
+  infrastructure/docker/docker-compose.nano-vllm-staging.yml:
+    missing host directory: 1
+    wrong relative root: 14
+  infrastructure/docker/docker-compose.nano-vllm.yml:
+    missing host directory: 1
+    wrong relative root: 3
+  infrastructure/docker/docker-compose.nats.yml:
+    missing host directory: 1
+    wrong relative root: 2
+  infrastructure/docker/docker-compose.nvidia-router.yml:
+    missing host directory: 2
+    wrong relative root: 3
+  infrastructure/docker/docker-compose.ocr.yml:
+    missing host directory: 1
+    wrong relative root: 1
+  infrastructure/docker/docker-compose.operational-excellence.yml:
+    wrong relative root: 9
+  infrastructure/docker/docker-compose.prod.yml:
+    missing host directory: 6
+  infrastructure/docker/docker-compose.production.yml:
+    missing host directory: 6
+  infrastructure/docker/docker-compose.security.yml:
+    wrong relative root: 1
+  infrastructure/docker/docker-compose.staging.yml:
+    missing host directory: 4
+  infrastructure/docker/docker-compose.testing.yml:
+    missing host directory: 1
+    wrong relative root: 5
+  infrastructure/docker/docker-compose.yml:
+    wrong relative root: 1
+  infrastructure/docker/secrets-init.sh:
+    missing host directory: 1
+  infrastructure/istio/dgm-service/security-policies.yaml:
+    wrong relative root: 1
+  infrastructure/kubernetes/PHASE_1_COMPLETION_REPORT.md:
+    wrong relative root: 2
+  infrastructure/kubernetes/PRODUCTION_READINESS_CHECKLIST.md:
+    wrong relative root: 2
+  infrastructure/kubernetes/VALIDATION_REPORT.md:
+    wrong relative root: 1
+  infrastructure/kubernetes/VALIDATION_SUCCESS_REPORT.md:
+    wrong relative root: 2
+  infrastructure/kubernetes/blue-green/migrate-ac-service.sh:
+    wrong relative root: 1
+  infrastructure/kubernetes/blue-green/migrate-auth-service.sh:
+    wrong relative root: 1
+  infrastructure/kubernetes/blue-green/migrate-ec-service.sh:
+    wrong relative root: 1
+  infrastructure/kubernetes/blue-green/migrate-fv-service.sh:
+    wrong relative root: 1
+  infrastructure/kubernetes/blue-green/migrate-gs-service.sh:
+    wrong relative root: 1
+  infrastructure/kubernetes/blue-green/migrate-integrity-service.sh:
+    wrong relative root: 1
+  infrastructure/kubernetes/blue-green/migrate-pgc-service.sh:
+    wrong relative root: 1
+  infrastructure/kubernetes/deployment-scripts.yaml:
+    wrong relative root: 1
+  infrastructure/kubernetes/operations/emergency-response.sh:
+    wrong relative root: 1
+  infrastructure/kubernetes/production/PRODUCTION_DEPLOYMENT_REPORT.md:
+    wrong relative root: 3
+  infrastructure/kubernetes/production/deploy-acge-infrastructure.sh:
+    wrong relative root: 2
+  infrastructure/kubernetes/staging/STAGING_DEPLOYMENT_SIMULATION.md:
+    wrong relative root: 1
+  infrastructure/kubernetes/staging/staging-deployment.sh:
+    wrong relative root: 1
+  infrastructure/load-balancer/MONITORING_INTEGRATION.md:
+    wrong relative root: 2
+  infrastructure/load-balancer/docker-compose.haproxy.yml:
+    wrong relative root: 4
+  infrastructure/monitoring/METRICS_DOCUMENTATION.md:
+    wrong relative root: 1
+  infrastructure/monitoring/OPERATIONAL_RUNBOOKS.md:
+    wrong relative root: 34
+  infrastructure/monitoring/PERFORMANCE_VALIDATION_GUIDE.md:
+    wrong relative root: 1
+  infrastructure/monitoring/PRODUCTION_DEPLOYMENT_GUIDE.md:
+    wrong relative root: 6
+  infrastructure/monitoring/SECURITY_GUIDE.md:
+    wrong relative root: 1
+  infrastructure/monitoring/TRAINING_GUIDE.md:
+    wrong relative root: 9
+  infrastructure/monitoring/docker-compose.ai-governance.yml:
+    wrong relative root: 12
+  infrastructure/monitoring/docker-compose.elk-security.yml:
+    wrong relative root: 8
+  infrastructure/monitoring/docker-compose.monitoring.yml:
+    wrong relative root: 5
+  infrastructure/monitoring/grafana/dashboards/README.md:
+    wrong relative root: 1
+  infrastructure/monitoring/jaeger/docker-compose-jaeger.yml:
+    wrong relative root: 2
+  infrastructure/monitoring/monitoring/docker-compose.yml:
+    wrong relative root: 4
+  infrastructure/monitoring/runbooks/change_management_runbook.md:
+    wrong relative root: 39
+  infrastructure/monitoring/runbooks/incident_response_playbook.md:
+    wrong relative root: 13
+  infrastructure/monitoring/start-ai-governance-monitoring.sh:
+    wrong relative root: 4
+  infrastructure/observability/docker-compose.observability.yml:
+    missing host directory: 2
+    wrong relative root: 9
+  infrastructure/opa/docker-compose.opa.yml:
+    missing host directory: 1
+    wrong relative root: 2
+  infrastructure/operational-excellence/PRODUCTION_READINESS_CHECKLIST.md:
+    wrong relative root: 2
+  infrastructure/operational-excellence/runbooks/ENTERPRISE_OPERATIONAL_RUNBOOK.md:
+    wrong relative root: 21
+  infrastructure/operational-excellence/scripts/production_deployment_orchestrator.py:
+    wrong relative root: 1
+  infrastructure/redis/docker-compose.redis-cluster.yml:
+    wrong relative root: 3
+  infrastructure/redis/redis-cluster-setup.sh:
+    wrong relative root: 1
+  infrastructure/security/ddos_protection.py:
+    wrong relative root: 1
+  infrastructure/security/penetration_testing_framework.py:
+    wrong relative root: 1
+  infrastructure/terraform/environments/development/main.tf:
+    wrong relative root: 1
+  infrastructure/terraform/environments/production/main.tf:
+    wrong relative root: 4
+  infrastructure/terraform/environments/staging/main.tf:
+    wrong relative root: 2
+  infrastructure/terraform/main.tf:
+    wrong relative root: 8
+  opencode_source/opencode.json:
+    wrong relative root: 1
+  opencode_source/package.json:
+    wrong relative root: 1
+  opencode_source/packages/opencode/package.json:
+    wrong relative root: 3
+  opencode_source/packages/opencode/script/publish.ts:
+    wrong relative root: 28
+  opencode_source/packages/opencode/script/schema.ts:
+    wrong relative root: 1
+  opencode_source/packages/opencode/src/app/app.ts:
+    wrong relative root: 4
+  opencode_source/packages/opencode/src/auth/anthropic.ts:
+    wrong relative root: 1
+  opencode_source/packages/opencode/src/auth/copilot.ts:
+    wrong relative root: 2
+  opencode_source/packages/opencode/src/auth/github-copilot.ts:
+    wrong relative root: 2
+  opencode_source/packages/opencode/src/auth/index.ts:
+    wrong relative root: 1
+  opencode_source/packages/opencode/src/bun/index.ts:
+    wrong relative root: 3
+  opencode_source/packages/opencode/src/bus/index.ts:
+    wrong relative root: 2
+  opencode_source/packages/opencode/src/cli/bootstrap.ts:
+    wrong relative root: 6
+  opencode_source/packages/opencode/src/cli/cmd/auth.ts:
+    wrong relative root: 7
+  opencode_source/packages/opencode/src/cli/cmd/debug/file.ts:
+    wrong relative root: 3
+  opencode_source/packages/opencode/src/cli/cmd/debug/index.ts:
+    wrong relative root: 6
+  opencode_source/packages/opencode/src/cli/cmd/debug/lsp.ts:
+    wrong relative root: 5
+  opencode_source/packages/opencode/src/cli/cmd/debug/ripgrep.ts:
+    wrong relative root: 4
+  opencode_source/packages/opencode/src/cli/cmd/debug/snapshot.ts:
+    wrong relative root: 3
+  opencode_source/packages/opencode/src/cli/cmd/generate.ts:
+    wrong relative root: 1
+  opencode_source/packages/opencode/src/cli/cmd/models.ts:
+    wrong relative root: 3
+  opencode_source/packages/opencode/src/cli/cmd/run.ts:
+    wrong relative root: 9
+  opencode_source/packages/opencode/src/cli/cmd/serve.ts:
+    wrong relative root: 5
+  opencode_source/packages/opencode/src/cli/cmd/tui.ts:
+    wrong relative root: 12
+  opencode_source/packages/opencode/src/cli/cmd/upgrade.ts:
+    wrong relative root: 2
+  opencode_source/packages/opencode/src/cli/error.ts:
+    wrong relative root: 3
+  opencode_source/packages/opencode/src/cli/ui.ts:
+    wrong relative root: 1
+  opencode_source/packages/opencode/src/config/config.ts:
+    wrong relative root: 7
+  opencode_source/packages/opencode/src/config/hooks.ts:
+    wrong relative root: 6
+  opencode_source/packages/opencode/src/file/fzf.ts:
+    wrong relative root: 4
+  opencode_source/packages/opencode/src/file/index.ts:
+    wrong relative root: 3
+  opencode_source/packages/opencode/src/file/ripgrep.ts:
+    wrong relative root: 4
+  opencode_source/packages/opencode/src/file/time.ts:
+    wrong relative root: 2
+  opencode_source/packages/opencode/src/file/watch.ts:
+    wrong relative root: 4
+  opencode_source/packages/opencode/src/format/formatter.ts:
+    wrong relative root: 2
+  opencode_source/packages/opencode/src/format/index.ts:
+    wrong relative root: 5
+  opencode_source/packages/opencode/src/index.ts:
+    wrong relative root: 13
+  opencode_source/packages/opencode/src/installation/index.ts:
+    wrong relative root: 3
+  opencode_source/packages/opencode/src/lsp/client.ts:
+    wrong relative root: 7
+  opencode_source/packages/opencode/src/lsp/index.ts:
+    wrong relative root: 5
+  opencode_source/packages/opencode/src/lsp/server.ts:
+    wrong relative root: 4
+  opencode_source/packages/opencode/src/mcp/index.ts:
+    wrong relative root: 6
+  opencode_source/packages/opencode/src/permission/index.ts:
+    wrong relative root: 3
+  opencode_source/packages/opencode/src/provider/models.ts:
+    wrong relative root: 3
+  opencode_source/packages/opencode/src/provider/provider.ts:
+    wrong relative root: 21
+  opencode_source/packages/opencode/src/server/server.ts:
+    wrong relative root: 12
+  opencode_source/packages/opencode/src/session/index.ts:
+    wrong relative root: 20
+  opencode_source/packages/opencode/src/session/message.ts:
+    wrong relative root: 3
+  opencode_source/packages/opencode/src/session/system.ts:
+    wrong relative root: 9
+  opencode_source/packages/opencode/src/share/share.ts:
+    wrong relative root: 5
+  opencode_source/packages/opencode/src/snapshot/index.ts:
+    wrong relative root: 3
+  opencode_source/packages/opencode/src/storage/storage.ts:
+    wrong relative root: 3
+  opencode_source/packages/opencode/src/tool/bash.ts:
+    wrong relative root: 2
+  opencode_source/packages/opencode/src/tool/edit.ts:
+    wrong relative root: 7
+  opencode_source/packages/opencode/src/tool/glob.ts:
+    wrong relative root: 3
+  opencode_source/packages/opencode/src/tool/grep.ts:
+    wrong relative root: 3
+  opencode_source/packages/opencode/src/tool/ls.ts:
+    wrong relative root: 2
+  opencode_source/packages/opencode/src/tool/lsp-diagnostics.ts:
+    wrong relative root: 3
+  opencode_source/packages/opencode/src/tool/lsp-hover.ts:
+    wrong relative root: 3
+  opencode_source/packages/opencode/src/tool/multiedit.ts:
+    wrong relative root: 3
+  opencode_source/packages/opencode/src/tool/patch.ts:
+    wrong relative root: 2
+  opencode_source/packages/opencode/src/tool/read.ts:
+    wrong relative root: 4
+  opencode_source/packages/opencode/src/tool/task.ts:
+    wrong relative root: 4
+  opencode_source/packages/opencode/src/tool/todo.ts:
+    wrong relative root: 3
+  opencode_source/packages/opencode/src/tool/webfetch.ts:
+    wrong relative root: 1
+  opencode_source/packages/opencode/src/tool/write.ts:
+    wrong relative root: 7
+  opencode_source/packages/opencode/src/util/error.ts:
+    wrong relative root: 1
+  opencode_source/packages/opencode/src/util/log.ts:
+    wrong relative root: 1
+  opencode_source/packages/opencode/test/tool/edit.test.ts:
+    wrong relative root: 1
+  opencode_source/packages/opencode/test/tool/tool.test.ts:
+    wrong relative root: 6
+  opencode_source/packages/tui/AGENTS.md:
+    wrong relative root: 1
+  opencode_source/packages/tui/sdk/CONTRIBUTING.md:
+    wrong relative root: 2
+  opencode_source/packages/web/README.md:
+    wrong relative root: 1
+  opencode_source/sst.config.ts:
+    wrong relative root: 1
+  reorganization-tools/documentation/TEAM_DOCUMENTATION_UPDATE.md:
+    wrong relative root: 4
+  reorganization-tools/reports/VALIDATION_RESULTS.md:
+    wrong relative root: 1
+  reorganization-tools/scripts/acgs_migration_utils.py:
+    wrong relative root: 2
+  reorganization-tools/scripts/setup_cicd_pipelines.py:
+    wrong relative root: 1
+  reorganization-tools/scripts/setup_monitoring.py:
+    wrong relative root: 5
+  services/blockchain/README.md:
+    wrong relative root: 4
+  services/blockchain/docs/OPERATIONAL_RUNBOOKS.md:
+    wrong relative root: 4
+  services/blockchain/scripts/Cargo.toml:
+    wrong relative root: 1
+  services/blockchain/scripts/deploy_quantumagi.py:
+    wrong relative root: 2
+  services/blockchain/scripts/deploy_to_devnet.sh:
+    wrong relative root: 2
+  services/blockchain/scripts/generate_program_ids.py:
+    wrong relative root: 2
+  services/blockchain/scripts/key_management.sh:
+    wrong relative root: 2
+  services/blockchain/scripts/run_comprehensive_tests.sh:
+    wrong relative root: 1
+  services/blockchain/scripts/test_rust_tools_ci.sh:
+    wrong relative root: 1
+  services/blockchain/test_anchor_program_coverage.js:
+    wrong relative root: 1
+  services/blockchain/test_end_to_end_integration.js:
+    wrong relative root: 1
+  services/blockchain/test_governance_init.js:
+    wrong relative root: 1
+  services/blockchain/test_pgc_validation.js:
+    wrong relative root: 1
+  services/blockchain/test_transaction_costs.js:
+    wrong relative root: 1
+  services/blockchain/tests/appeals_comprehensive.js:
+    wrong relative root: 1
+  services/blockchain/tests/appeals_comprehensive.ts:
+    wrong relative root: 1
+  services/blockchain/tests/logging_comprehensive.js:
+    wrong relative root: 1
+  services/blockchain/tests/logging_comprehensive.ts:
+    wrong relative root: 1
+  services/blockchain/tests/quantumagi-core_comprehensive.ts:
+    wrong relative root: 2
+  services/blockchain/tests/quantumagi_core.ts:
+    wrong relative root: 2
+  services/blockchain/tests/quantumagi_core_corrected.ts:
+    wrong relative root: 2
+  services/blockchain/tests/quantumagi_core_enhanced.ts:
+    wrong relative root: 2
+  services/blockchain/tests/transaction_optimization.ts:
+    wrong relative root: 2
+  services/blockchain/tests/validation_test.ts:
+    wrong relative root: 6
+  services/blockchain/tsconfig.json:
+    wrong relative root: 1
+  services/cli/opencode/package.json:
+    wrong relative root: 3
+  services/cli/opencode/script/publish.ts:
+    wrong relative root: 28
+  services/cli/opencode/script/schema.ts:
+    wrong relative root: 1
+  services/cli/opencode/src/acgs/index.ts:
+    wrong relative root: 3
+  services/cli/opencode/src/acgs/middleware.ts:
+    wrong relative root: 2
+  services/cli/opencode/src/app/app.ts:
+    wrong relative root: 4
+  services/cli/opencode/src/auth/anthropic.ts:
+    wrong relative root: 1
+  services/cli/opencode/src/auth/copilot.ts:
+    wrong relative root: 2
+  services/cli/opencode/src/auth/github-copilot.ts:
+    wrong relative root: 2
+  services/cli/opencode/src/auth/index.ts:
+    wrong relative root: 1
+  services/cli/opencode/src/bun/index.ts:
+    wrong relative root: 3
+  services/cli/opencode/src/bus/index.ts:
+    wrong relative root: 2
+  services/cli/opencode/src/cli/bootstrap.ts:
+    wrong relative root: 6
+  services/cli/opencode/src/cli/cmd/auth.ts:
+    wrong relative root: 7
+  services/cli/opencode/src/cli/cmd/debug/file.ts:
+    wrong relative root: 3
+  services/cli/opencode/src/cli/cmd/debug/index.ts:
+    wrong relative root: 6
+  services/cli/opencode/src/cli/cmd/debug/lsp.ts:
+    wrong relative root: 5
+  services/cli/opencode/src/cli/cmd/debug/ripgrep.ts:
+    wrong relative root: 4
+  services/cli/opencode/src/cli/cmd/debug/snapshot.ts:
+    wrong relative root: 3
+  services/cli/opencode/src/cli/cmd/generate.ts:
+    wrong relative root: 2
+  services/cli/opencode/src/cli/cmd/models.ts:
+    wrong relative root: 3
+  services/cli/opencode/src/cli/cmd/run.ts:
+    wrong relative root: 10
+  services/cli/opencode/src/cli/cmd/serve.ts:
+    wrong relative root: 5
+  services/cli/opencode/src/cli/cmd/tui.ts:
+    wrong relative root: 12
+  services/cli/opencode/src/cli/cmd/upgrade.ts:
+    wrong relative root: 2
+  services/cli/opencode/src/cli/error.ts:
+    wrong relative root: 3
+  services/cli/opencode/src/cli/ui.ts:
+    wrong relative root: 1
+  services/cli/opencode/src/config/config.ts:
+    wrong relative root: 7
+  services/cli/opencode/src/config/hooks.ts:
+    wrong relative root: 6
+  services/cli/opencode/src/file/fzf.ts:
+    wrong relative root: 4
+  services/cli/opencode/src/file/index.ts:
+    wrong relative root: 3
+  services/cli/opencode/src/file/ripgrep.ts:
+    wrong relative root: 4
+  services/cli/opencode/src/file/time.ts:
+    wrong relative root: 2
+  services/cli/opencode/src/file/watch.ts:
+    wrong relative root: 4
+  services/cli/opencode/src/format/formatter.ts:
+    wrong relative root: 2
+  services/cli/opencode/src/format/index.ts:
+    wrong relative root: 5
+  services/cli/opencode/src/index.ts:
+    wrong relative root: 15
+  services/cli/opencode/src/installation/index.ts:
+    wrong relative root: 3
+  services/cli/opencode/src/lsp/client.ts:
+    wrong relative root: 7
+  services/cli/opencode/src/lsp/index.ts:
+    wrong relative root: 5
+  services/cli/opencode/src/lsp/server.ts:
+    wrong relative root: 4
+  services/cli/opencode/src/mcp/index.ts:
+    wrong relative root: 6
+  services/cli/opencode/src/permission/index.ts:
+    wrong relative root: 3
+  services/cli/opencode/src/provider/models.ts:
+    wrong relative root: 3
+  services/cli/opencode/src/provider/provider.ts:
+    wrong relative root: 21
+  services/cli/opencode/src/server/server.ts:
+    wrong relative root: 12
+  services/cli/opencode/src/session/index.ts:
+    wrong relative root: 20
+  services/cli/opencode/src/session/message.ts:
+    wrong relative root: 3
+  services/cli/opencode/src/session/system.ts:
+    wrong relative root: 9
+  services/cli/opencode/src/share/share.ts:
+    wrong relative root: 5
+  services/cli/opencode/src/snapshot/index.ts:
+    wrong relative root: 3
+  services/cli/opencode/src/storage/storage.ts:
+    wrong relative root: 3
+  services/cli/opencode/src/tool/bash.ts:
+    wrong relative root: 2
+  services/cli/opencode/src/tool/edit.ts:
+    wrong relative root: 7
+  services/cli/opencode/src/tool/glob.ts:
+    wrong relative root: 3
+  services/cli/opencode/src/tool/grep.ts:
+    wrong relative root: 3
+  services/cli/opencode/src/tool/ls.ts:
+    wrong relative root: 2
+  services/cli/opencode/src/tool/lsp-diagnostics.ts:
+    wrong relative root: 3
+  services/cli/opencode/src/tool/lsp-hover.ts:
+    wrong relative root: 3
+  services/cli/opencode/src/tool/multiedit.ts:
+    wrong relative root: 3
+  services/cli/opencode/src/tool/patch.ts:
+    wrong relative root: 2
+  services/cli/opencode/src/tool/read.ts:
+    wrong relative root: 4
+  services/cli/opencode/src/tool/task.ts:
+    wrong relative root: 4
+  services/cli/opencode/src/tool/todo.ts:
+    wrong relative root: 3
+  services/cli/opencode/src/tool/webfetch.ts:
+    wrong relative root: 1
+  services/cli/opencode/src/tool/write.ts:
+    wrong relative root: 7
+  services/cli/opencode/src/util/error.ts:
+    wrong relative root: 1
+  services/cli/opencode/src/util/log.ts:
+    wrong relative root: 1
+  services/cli/opencode/sst-env.d.ts:
+    wrong relative root: 1
+  services/cli/opencode/test/tool/edit.test.ts:
+    wrong relative root: 1
+  services/cli/opencode/test/tool/tool.test.ts:
+    wrong relative root: 6
+  services/cli/tui/AGENTS.md:
+    wrong relative root: 1
+  services/cli/tui/sdk/CONTRIBUTING.md:
+    wrong relative root: 2
+  services/cli_backup_20250706_110222/opencode_adapter/tests/constitutional-wrapper.test.ts:
+    wrong relative root: 1
+  services/cli_backup_20250706_110222/opencode_adapter/tests/opencode-adapter.test.ts:
+    wrong relative root: 3
+  services/cli_backup_20250706_110222/opencode_adapter/tests/openrouter-integration.test.ts:
+    wrong relative root: 5
+  services/cli_backup_20250706_110222/opencode_adapter/tests/performance-monitor.test.ts:
+    wrong relative root: 1
+  services/cli_backup_20250706_110222/opencode_adapter/tsconfig.json:
+    wrong relative root: 2
+  services/core/code-analysis/docker-compose.yml:
+    wrong relative root: 8
+  services/core/code-analysis/phase2_staging_deployment_results.json:
+    wrong relative root: 2
+  services/core/formal-verification/fv_service/README.md:
+    wrong relative root: 1
+  services/core/governance-synthesis/advanced_opa_engine.py:
+    wrong relative root: 1
+  services/core/governance-synthesis/gs_service/README.md:
+    wrong relative root: 2
+  services/core/governance-synthesis/gs_service/app/core/wina_rego_synthesis.py:
+    wrong relative root: 1
+  services/core/governance-synthesis/gs_service/app/services/security_compliance.py:
+    wrong relative root: 1
+  services/core/governance-synthesis/gs_service/tests/security/test_security_compliance.py:
+    wrong relative root: 1
+  services/core/policy-governance/pgc_service/README.md:
+    wrong relative root: 1
+  services/core/policy-governance/pgc_service/app/core/real_database.py:
+    wrong relative root: 2
+  services/core/policy-governance/qpe_service/scripts/validation_test.sh:
+    wrong relative root: 1
+  services/platform_services/authentication/auth_service/README.md:
+    wrong relative root: 1
+  services/platform_services/authentication/auth_service/app/tests/conftest.py:
+    wrong relative root: 2
+  services/shared/security/unified_input_validation.py:
+    wrong relative root: 2
+  services/shared/streaming/docker-compose.kafka.yml:
+    wrong relative root: 1
+  tests/e2e/IMPLEMENTATION_SUMMARY.md:
+    wrong relative root: 1
+  tests/e2e/docker/docker-compose.e2e.yml:
+    missing host directory: 2
+    wrong relative root: 4
+  tests/e2e/tests/test_security.py:
+    legacy/unused: 1
+  tests/load_testing/distributed_config.py:
+    wrong relative root: 3
+  tests/load_testing/docker-compose.yml:
+    wrong relative root: 6
+  tests/services/test_formal_verification_service.py:
+    wrong relative root: 1
+  tests/services/test_governance_synthesis_service.py:
+    wrong relative root: 2
+  tests/test_integration_quick.py:
+    wrong relative root: 5
+  tests/validate_services.py:
+    wrong relative root: 1
+  tools/api_documentation_enhancement.py:
+    wrong relative root: 2
+  tools/audit_compliance_validator.py:
+    wrong relative root: 1
+  tools/automation/cross_reference_maintainer.py:
+    wrong relative root: 4
+  tools/automation/enhanced_auto_doc_generator.py:
+    wrong relative root: 5
+  tools/ci/constitutional-trainer-security-scan.yml:
+    wrong relative root: 1
+  tools/cicd/implement_cicd_pipeline.py:
+    wrong relative root: 8
+  tools/cicd/integration_pipeline.py:
+    wrong relative root: 2
+  tools/comprehensive_codebase_cleanup.py:
+    wrong relative root: 1
+  tools/comprehensive_production_monitoring.py:
+    wrong relative root: 7
+  tools/comprehensive_security_vulnerability_scanner.py:
+    wrong relative root: 1
+  tools/comprehensive_validation.py:
+    wrong relative root: 1
+  tools/configure_production_database.py:
+    wrong relative root: 1
+  tools/demo_security_compliance_tools.py:
+    wrong relative root: 1
+  tools/deploy-performance-testing.sh:
+    wrong relative root: 7
+  tools/deploy_mlops_system.sh:
+    wrong relative root: 1
+  tools/deploy_to_production.sh:
+    wrong relative root: 1
+  tools/deployment_automation.py:
+    wrong relative root: 2
+  tools/deployment_preparation.py:
+    wrong relative root: 2
+  tools/dgm-best-swe-agent/DGM_outer.py:
+    wrong relative root: 6
+  tools/dgm-best-swe-agent/README.md:
+    wrong relative root: 2
+  tools/dgm-best-swe-agent/analysis/plot_comparison.py:
+    wrong relative root: 2
+  tools/dgm-best-swe-agent/analysis/visualize_archive.py:
+    wrong relative root: 1
+  tools/dgm-best-swe-agent/coding_agent.py:
+    wrong relative root: 1
+  tools/dgm-best-swe-agent/coding_agent_polyglot.py:
+    wrong relative root: 3
+  tools/dgm-best-swe-agent/polyglot/benchmark.py:
+    wrong relative root: 1
+  tools/dgm-best-swe-agent/polyglot/constants.py:
+    wrong relative root: 2
+  tools/dgm-best-swe-agent/polyglot/dockerfiles.py:
+    wrong relative root: 3
+  tools/dgm-best-swe-agent/polyglot/harness.py:
+    wrong relative root: 3
+  tools/dgm-best-swe-agent/prompts/tooluse_prompt.py:
+    wrong relative root: 1
+  tools/dgm-best-swe-agent/self_improve_step.py:
+    wrong relative root: 4
+  tools/dgm-best-swe-agent/swe_bench/harness.py:
+    wrong relative root: 3
+  tools/dgm-best-swe-agent/swe_bench/report.py:
+    wrong relative root: 2
+  tools/dgm-best-swe-agent/tools/edit.py:
+    wrong relative root: 1
+  tools/dgm-best-swe-agent/utils/docker_utils.py:
+    wrong relative root: 1
+  tools/dgm-best-swe-agent/utils/evo_utils.py:
+    wrong relative root: 1
+  tools/docker/validate-dind-implementation.py:
+    wrong relative root: 1
+  tools/documentation/openapi_generator.py:
+    wrong relative root: 1
+  tools/documentation_synchronization.py:
+    wrong relative root: 1
+  tools/emergency_shutdown_test.sh:
+    wrong relative root: 1
+  tools/enhance_frontend_integration.py:
+    legacy/unused: 2
+    wrong relative root: 6
+  tools/execute_comprehensive_improvements.py:
+    wrong relative root: 2
+  tools/fix-github-actions-validation.sh:
+    wrong relative root: 1
+  tools/fix_github_actions_workflows.py:
+    wrong relative root: 2
+  tools/fix_gs_service_dependencies.py:
+    wrong relative root: 1
+  tools/fix_requirements_staging.sh:
+    wrong relative root: 1
+  tools/focused_reorganization.py:
+    wrong relative root: 2
+  tools/generate_api_docs.sh:
+    wrong relative root: 1
+  tools/generate_final_deployment_report.py:
+    wrong relative root: 2
+  tools/health-monitor-setup.sh:
+    missing host directory: 1
+  tools/implement-routine-maintenance.sh:
+    wrong relative root: 1
+  tools/kubernetes_migration_plan.py:
+    wrong relative root: 1
+  tools/load-testing/run-constitutional-trainer-load-tests.sh:
+    wrong relative root: 2
+  tools/load_test_data.py:
+    wrong relative root: 1
+  tools/maintenance/emergency_rollback.sh:
+    wrong relative root: 1
+  tools/maintenance/implement_reorganization_plan.py:
+    wrong relative root: 1
+  tools/maintenance/setup_dependencies.sh:
+    wrong relative root: 3
+  tools/mcp-inspector/cli/scripts/cli-tests.js:
+    wrong relative root: 3
+  tools/mcp-inspector/cli/src/cli.ts:
+    wrong relative root: 1
+  tools/mcp-inspector/cli/tsconfig.json:
+    wrong relative root: 2
+  tools/mcp-inspector/client/bin/client.js:
+    wrong relative root: 1
+  tools/mcp-inspector/client/src/lib/auth.ts:
+    wrong relative root: 1
+  tools/mcp-inspector/client/src/lib/constants.ts:
+    wrong relative root: 1
+  tools/mcp-inspector/client/src/lib/hooks/useConnection.ts:
+    wrong relative root: 5
+  tools/mcp-inspector/client/src/lib/oauth-state-machine.ts:
+    wrong relative root: 2
+  tools/mcp-inspector/client/src/utils/__tests__/escapeUnicode.test.ts:
+    wrong relative root: 1
+  tools/mcp-inspector/client/src/utils/__tests__/jsonUtils.test.ts:
+    wrong relative root: 1
+  tools/mcp-inspector/client/src/utils/__tests__/schemaUtils.test.ts:
+    wrong relative root: 2
+  tools/mcp-inspector/client/src/utils/schemaUtils.ts:
+    wrong relative root: 1
+  tools/mcp-inspector/client/tailwind.config.js:
+    wrong relative root: 2
+  tools/mcp-inspector/client/tsconfig.app.json:
+    wrong relative root: 1
+  tools/mcp-inspector/client/tsconfig.jest.json:
+    wrong relative root: 1
+  tools/mcp-inspector/client/tsconfig.json:
+    wrong relative root: 3
+  tools/mcp-inspector/client/vite.config.ts:
+    wrong relative root: 1
+  tools/mcp-inspector/package.json:
+    wrong relative root: 8
+  tools/mcp-inspector/server/tsconfig.json:
+    wrong relative root: 2
+  tools/monitoring/setup_basic_monitoring.py:
+    wrong relative root: 1
+  tools/observability/implement_comprehensive_observability.py:
+    wrong relative root: 1
+  tools/operations/disaster_recovery.sh:
+    wrong relative root: 1
+  tools/operations/implement_operational_excellence.py:
+    wrong relative root: 1
+  tools/penetration_testing.py:
+    legacy/unused: 1
+  tools/performance/implement_performance_scaling_optimization.py:
+    wrong relative root: 2
+  tools/phase3_production_infrastructure_setup.py:
+    wrong relative root: 3
+  tools/phase4_community_adoption.py:
+    legacy/unused: 1
+    wrong relative root: 5
+  tools/priority3_monitoring_infrastructure.py:
+    wrong relative root: 4
+  tools/production_blue_green_deployment.py:
+    wrong relative root: 1
+  tools/production_readiness/performance_optimization_implementation.py:
+    wrong relative root: 4
+  tools/quality/comprehensive_documentation_remediation.py:
+    wrong relative root: 1
+  tools/quick_start.sh:
+    wrong relative root: 2
+  tools/quick_start_kimi.sh:
+    wrong relative root: 1
+  tools/reasoning-models/migrate-to-nano-vllm.sh:
+    wrong relative root: 2
+  tools/reorganization/execute_reorganization.sh:
+    wrong relative root: 1
+  tools/reorganize_codebase.py:
+    wrong relative root: 16
+  tools/restructure_applications.py:
+    legacy/unused: 12
+  tools/run_all_setup_tests.sh:
+    wrong relative root: 1
+  tools/run_comprehensive_tests.sh:
+    legacy/unused: 1
+  tools/safe_cleanup.sh:
+    wrong relative root: 4
+  tools/security/run-constitutional-trainer-security-scan.sh:
+    wrong relative root: 2
+  tools/setup-test-environment.sh:
+    wrong relative root: 1
+  tools/setup/install_dependencies.sh:
+    wrong relative root: 2
+  tools/setup/onboard_developer.sh:
+    wrong relative root: 3
+  tools/setup/project_setup.sh:
+    wrong relative root: 5
+  tools/setup/setup_backup_disaster_recovery.py:
+    wrong relative root: 7
+  tools/setup/setup_mab_monitoring.py:
+    wrong relative root: 4
+  tools/setup/setup_monitoring_alerting.py:
+    wrong relative root: 5
+  tools/setup/setup_production_auth.py:
+    wrong relative root: 1
+  tools/setup/setup_redis_infrastructure.py:
+    wrong relative root: 1
+  tools/setup/start_development.sh:
+    wrong relative root: 3
+  tools/setup_automated_backups.sh:
+    wrong relative root: 3
+  tools/setup_monitoring_stack.py:
+    wrong relative root: 5
+  tools/setup_pgbouncer_monitoring.sh:
+    wrong relative root: 1
+  tools/setup_read_replicas.sh:
+    wrong relative root: 3
+  tools/simple_security_scanner.py:
+    wrong relative root: 1
+  tools/sla_dashboard.py:
+    wrong relative root: 1
+  tools/start_acgs_services_simple.sh:
+    wrong relative root: 1
+  tools/start_all_services.sh:
+    wrong relative root: 1
+  tools/start_service_isolated.py:
+    wrong relative root: 1
+  tools/swe_bench/setup_swe_environment.sh:
+    wrong relative root: 1
+  tools/test-emergency-response.sh:
+    wrong relative root: 2
+  tools/test_emergency_shutdown.sh:
+    wrong relative root: 1
+  tools/test_performance_validation.sh:
+    wrong relative root: 1
+  tools/test_restructured_applications.py:
+    legacy/unused: 6
+  tools/test_security_features.py:
+    legacy/unused: 1
+  tools/testing/critical_issue_resolver.py:
+    wrong relative root: 1
+  tools/training/certification_assessment.py:
+    wrong relative root: 4
+  tools/update-deps.sh:
+    legacy/unused: 1
+  tools/update_comprehensive_documentation.py:
+    wrong relative root: 6
+  tools/update_contributor_docs.py:
+    legacy/unused: 3
+    wrong relative root: 13
+  tools/update_dependency_managers.py:
+    wrong relative root: 1
+  tools/update_documentation.py:
+    legacy/unused: 1
+    wrong relative root: 2
+  tools/update_monitoring_config.py:
+    wrong relative root: 5
+  tools/update_running_services_pgbouncer.sh:
+    wrong relative root: 1
+  tools/validate-emergency-preparedness.sh:
+    wrong relative root: 2
+  tools/validate_cicd_pipeline.py:
+    legacy/unused: 1
+  tools/validation/test_builds.sh:
+    wrong relative root: 3
+  tools/validation/validate_enhanced_policy_synthesis.py:
+    wrong relative root: 1
+  tools/validation/validate_reorganization.py:
+    wrong relative root: 1
+  validation_reports/cross_reference_analysis_20250706_101926.md:
+    legacy/unused: 3
+    missing host directory: 1
+  validation_reports/unified_validation_20250706_103227.json:
+    legacy/unused: 3
+    missing host directory: 1
+compose_files_affected: 445
+top_problematic_compose_files:
+  arxiv_submission_package/cli/README.md: 2
+  config/docker/docker-compose.yml: 12
+  docker-compose.postgresql.yml: 1
+  docs/CONTRIBUTING.md: 5
+  docs/DEPENDENCIES.md: 1
+  docs/DEPENDENCY_MANAGEMENT_COMPLETE.md: 5
+  docs/DOCUMENTATION_QUALITY_METRICS.md: 1
+  docs/DOCUMENTATION_REVIEW_REQUIREMENTS.md: 1
+  docs/DOCUMENTATION_SYNCHRONIZATION_PROCEDURES.md: 2
+  docs/HUNYUAN_INTEGRATION_STATUS.md: 1
+  docs/architecture/ACGS_CLAUDIA_INTEGRATION_ARCHITECTURE.md: 2
+  docs/architecture/ACGS_GITOPS_COMPREHENSIVE_VALIDATION_REPORT.md: 1
+  docs/architecture/ACGS_GITOPS_IMPLEMENTATION_SUMMARY.md: 3
+  docs/deployment/ACGS_CODE_ANALYSIS_ENGINE_DEPLOYMENT_GUIDE.md: 5
+  docs/deployment/ACGS_PGP_OPERATIONAL_DEPLOYMENT_GUIDE.md: 8
+  docs/deployment/ACGS_PGP_PRODUCTION_DEPLOYMENT_EXECUTIVE_SUMMARY.md: 2
+  docs/deployment/ACGS_PGP_SETUP_GUIDE.md: 8
+  docs/deployment/ACGS_PGP_TROUBLESHOOTING_GUIDE.md: 8
+  docs/deployment/GEMINI_CLI_DEPLOYMENT_SUCCESS.md: 1
+  docs/deployment/MIGRATION_GUIDE_OPENCODE.md: 3
+  docs/free_model_usage.md: 2
+  docs/security/SECURITY.md: 1
+  docs/training/ACGS_DOCUMENTATION_TEAM_TRAINING_GUIDE.md: 7
+  docs/training/constitutional_hash_reference.md: 1
+  docs/training/validation_tools_cheatsheet.md: 3
+  docs/workflows/DOCUMENTATION_UPDATE_WORKFLOWS.md: 1
+  infrastructure/chaos/docker-compose.chaos.yml: 8
+  infrastructure/database/docker-compose.replicas.yml: 3
+  infrastructure/docker/dind/docker-compose.dind.yml: 12
+  infrastructure/docker/docker-compose-monitoring.yml: 5
+  infrastructure/docker/docker-compose-test.yml: 13
+  infrastructure/docker/docker-compose.acgs.yml: 12
+  infrastructure/docker/docker-compose.cache-integrated.yml: 17
+  infrastructure/docker/docker-compose.core.yml: 2
+  infrastructure/docker/docker-compose.development.yml: 10
+  infrastructure/docker/docker-compose.enterprise-stack.yml: 9
+  infrastructure/docker/docker-compose.fixed.yml: 9
+  infrastructure/docker/docker-compose.kimi-swe.yml: 8
+  infrastructure/docker/docker-compose.kimi.yml: 2
+  infrastructure/docker/docker-compose.monitoring.yml: 3
+  infrastructure/docker/docker-compose.nano-vllm-staging.yml: 15
+  infrastructure/docker/docker-compose.nano-vllm.yml: 4
+  infrastructure/docker/docker-compose.nats.yml: 3
+  infrastructure/docker/docker-compose.nvidia-router.yml: 5
+  infrastructure/docker/docker-compose.ocr.yml: 2
+  infrastructure/docker/docker-compose.operational-excellence.yml: 9
+  infrastructure/docker/docker-compose.prod.yml: 6
+  infrastructure/docker/docker-compose.production.yml: 6
+  infrastructure/docker/docker-compose.security.yml: 1
+  infrastructure/docker/docker-compose.staging.yml: 4
+  infrastructure/docker/docker-compose.testing.yml: 6
+  infrastructure/docker/docker-compose.yml: 1
+  infrastructure/docker/secrets-init.sh: 1
+  infrastructure/istio/dgm-service/security-policies.yaml: 1
+  infrastructure/kubernetes/PHASE_1_COMPLETION_REPORT.md: 2
+  infrastructure/kubernetes/PRODUCTION_READINESS_CHECKLIST.md: 2
+  infrastructure/kubernetes/VALIDATION_REPORT.md: 1
+  infrastructure/kubernetes/VALIDATION_SUCCESS_REPORT.md: 2
+  infrastructure/kubernetes/blue-green/migrate-ac-service.sh: 1
+  infrastructure/kubernetes/blue-green/migrate-auth-service.sh: 1
+  infrastructure/kubernetes/blue-green/migrate-ec-service.sh: 1
+  infrastructure/kubernetes/blue-green/migrate-fv-service.sh: 1
+  infrastructure/kubernetes/blue-green/migrate-gs-service.sh: 1
+  infrastructure/kubernetes/blue-green/migrate-integrity-service.sh: 1
+  infrastructure/kubernetes/blue-green/migrate-pgc-service.sh: 1
+  infrastructure/kubernetes/deployment-scripts.yaml: 1
+  infrastructure/kubernetes/operations/emergency-response.sh: 1
+  infrastructure/kubernetes/production/PRODUCTION_DEPLOYMENT_REPORT.md: 3
+  infrastructure/kubernetes/production/deploy-acge-infrastructure.sh: 2
+  infrastructure/kubernetes/staging/STAGING_DEPLOYMENT_SIMULATION.md: 1
+  infrastructure/kubernetes/staging/staging-deployment.sh: 1
+  infrastructure/load-balancer/MONITORING_INTEGRATION.md: 2
+  infrastructure/load-balancer/docker-compose.haproxy.yml: 4
+  infrastructure/monitoring/METRICS_DOCUMENTATION.md: 1
+  infrastructure/monitoring/OPERATIONAL_RUNBOOKS.md: 34
+  infrastructure/monitoring/PERFORMANCE_VALIDATION_GUIDE.md: 1
+  infrastructure/monitoring/PRODUCTION_DEPLOYMENT_GUIDE.md: 6
+  infrastructure/monitoring/SECURITY_GUIDE.md: 1
+  infrastructure/monitoring/TRAINING_GUIDE.md: 9
+  infrastructure/monitoring/docker-compose.ai-governance.yml: 12
+  infrastructure/monitoring/docker-compose.elk-security.yml: 8
+  infrastructure/monitoring/docker-compose.monitoring.yml: 5
+  infrastructure/monitoring/grafana/dashboards/README.md: 1
+  infrastructure/monitoring/jaeger/docker-compose-jaeger.yml: 2
+  infrastructure/monitoring/monitoring/docker-compose.yml: 4
+  infrastructure/monitoring/runbooks/change_management_runbook.md: 39
+  infrastructure/monitoring/runbooks/incident_response_playbook.md: 13
+  infrastructure/monitoring/start-ai-governance-monitoring.sh: 4
+  infrastructure/observability/docker-compose.observability.yml: 11
+  infrastructure/opa/docker-compose.opa.yml: 3
+  infrastructure/operational-excellence/PRODUCTION_READINESS_CHECKLIST.md: 2
+  infrastructure/operational-excellence/runbooks/ENTERPRISE_OPERATIONAL_RUNBOOK.md: 21
+  infrastructure/operational-excellence/scripts/production_deployment_orchestrator.py: 1
+  infrastructure/redis/docker-compose.redis-cluster.yml: 3
+  infrastructure/redis/redis-cluster-setup.sh: 1
+  infrastructure/security/ddos_protection.py: 1
+  infrastructure/security/penetration_testing_framework.py: 1
+  infrastructure/terraform/environments/development/main.tf: 1
+  infrastructure/terraform/environments/production/main.tf: 4
+  infrastructure/terraform/environments/staging/main.tf: 2
+  infrastructure/terraform/main.tf: 8
+  opencode_source/opencode.json: 1
+  opencode_source/package.json: 1
+  opencode_source/packages/opencode/package.json: 3
+  opencode_source/packages/opencode/script/publish.ts: 28
+  opencode_source/packages/opencode/script/schema.ts: 1
+  opencode_source/packages/opencode/src/app/app.ts: 4
+  opencode_source/packages/opencode/src/auth/anthropic.ts: 1
+  opencode_source/packages/opencode/src/auth/copilot.ts: 2
+  opencode_source/packages/opencode/src/auth/github-copilot.ts: 2
+  opencode_source/packages/opencode/src/auth/index.ts: 1
+  opencode_source/packages/opencode/src/bun/index.ts: 3
+  opencode_source/packages/opencode/src/bus/index.ts: 2
+  opencode_source/packages/opencode/src/cli/bootstrap.ts: 6
+  opencode_source/packages/opencode/src/cli/cmd/auth.ts: 7
+  opencode_source/packages/opencode/src/cli/cmd/debug/file.ts: 3
+  opencode_source/packages/opencode/src/cli/cmd/debug/index.ts: 6
+  opencode_source/packages/opencode/src/cli/cmd/debug/lsp.ts: 5
+  opencode_source/packages/opencode/src/cli/cmd/debug/ripgrep.ts: 4
+  opencode_source/packages/opencode/src/cli/cmd/debug/snapshot.ts: 3
+  opencode_source/packages/opencode/src/cli/cmd/generate.ts: 1
+  opencode_source/packages/opencode/src/cli/cmd/models.ts: 3
+  opencode_source/packages/opencode/src/cli/cmd/run.ts: 9
+  opencode_source/packages/opencode/src/cli/cmd/serve.ts: 5
+  opencode_source/packages/opencode/src/cli/cmd/tui.ts: 12
+  opencode_source/packages/opencode/src/cli/cmd/upgrade.ts: 2
+  opencode_source/packages/opencode/src/cli/error.ts: 3
+  opencode_source/packages/opencode/src/cli/ui.ts: 1
+  opencode_source/packages/opencode/src/config/config.ts: 7
+  opencode_source/packages/opencode/src/config/hooks.ts: 6
+  opencode_source/packages/opencode/src/file/fzf.ts: 4
+  opencode_source/packages/opencode/src/file/index.ts: 3
+  opencode_source/packages/opencode/src/file/ripgrep.ts: 4
+  opencode_source/packages/opencode/src/file/time.ts: 2
+  opencode_source/packages/opencode/src/file/watch.ts: 4
+  opencode_source/packages/opencode/src/format/formatter.ts: 2
+  opencode_source/packages/opencode/src/format/index.ts: 5
+  opencode_source/packages/opencode/src/index.ts: 13
+  opencode_source/packages/opencode/src/installation/index.ts: 3
+  opencode_source/packages/opencode/src/lsp/client.ts: 7
+  opencode_source/packages/opencode/src/lsp/index.ts: 5
+  opencode_source/packages/opencode/src/lsp/server.ts: 4
+  opencode_source/packages/opencode/src/mcp/index.ts: 6
+  opencode_source/packages/opencode/src/permission/index.ts: 3
+  opencode_source/packages/opencode/src/provider/models.ts: 3
+  opencode_source/packages/opencode/src/provider/provider.ts: 21
+  opencode_source/packages/opencode/src/server/server.ts: 12
+  opencode_source/packages/opencode/src/session/index.ts: 20
+  opencode_source/packages/opencode/src/session/message.ts: 3
+  opencode_source/packages/opencode/src/session/system.ts: 9
+  opencode_source/packages/opencode/src/share/share.ts: 5
+  opencode_source/packages/opencode/src/snapshot/index.ts: 3
+  opencode_source/packages/opencode/src/storage/storage.ts: 3
+  opencode_source/packages/opencode/src/tool/bash.ts: 2
+  opencode_source/packages/opencode/src/tool/edit.ts: 7
+  opencode_source/packages/opencode/src/tool/glob.ts: 3
+  opencode_source/packages/opencode/src/tool/grep.ts: 3
+  opencode_source/packages/opencode/src/tool/ls.ts: 2
+  opencode_source/packages/opencode/src/tool/lsp-diagnostics.ts: 3
+  opencode_source/packages/opencode/src/tool/lsp-hover.ts: 3
+  opencode_source/packages/opencode/src/tool/multiedit.ts: 3
+  opencode_source/packages/opencode/src/tool/patch.ts: 2
+  opencode_source/packages/opencode/src/tool/read.ts: 4
+  opencode_source/packages/opencode/src/tool/task.ts: 4
+  opencode_source/packages/opencode/src/tool/todo.ts: 3
+  opencode_source/packages/opencode/src/tool/webfetch.ts: 1
+  opencode_source/packages/opencode/src/tool/write.ts: 7
+  opencode_source/packages/opencode/src/util/error.ts: 1
+  opencode_source/packages/opencode/src/util/log.ts: 1
+  opencode_source/packages/opencode/test/tool/edit.test.ts: 1
+  opencode_source/packages/opencode/test/tool/tool.test.ts: 6
+  opencode_source/packages/tui/AGENTS.md: 1
+  opencode_source/packages/tui/sdk/CONTRIBUTING.md: 2
+  opencode_source/packages/web/README.md: 1
+  opencode_source/sst.config.ts: 1
+  reorganization-tools/documentation/TEAM_DOCUMENTATION_UPDATE.md: 4
+  reorganization-tools/reports/VALIDATION_RESULTS.md: 1
+  reorganization-tools/scripts/acgs_migration_utils.py: 2
+  reorganization-tools/scripts/setup_cicd_pipelines.py: 1
+  reorganization-tools/scripts/setup_monitoring.py: 5
+  services/blockchain/README.md: 4
+  services/blockchain/docs/OPERATIONAL_RUNBOOKS.md: 4
+  services/blockchain/scripts/Cargo.toml: 1
+  services/blockchain/scripts/deploy_quantumagi.py: 2
+  services/blockchain/scripts/deploy_to_devnet.sh: 2
+  services/blockchain/scripts/generate_program_ids.py: 2
+  services/blockchain/scripts/key_management.sh: 2
+  services/blockchain/scripts/run_comprehensive_tests.sh: 1
+  services/blockchain/scripts/test_rust_tools_ci.sh: 1
+  services/blockchain/test_anchor_program_coverage.js: 1
+  services/blockchain/test_end_to_end_integration.js: 1
+  services/blockchain/test_governance_init.js: 1
+  services/blockchain/test_pgc_validation.js: 1
+  services/blockchain/test_transaction_costs.js: 1
+  services/blockchain/tests/appeals_comprehensive.js: 1
+  services/blockchain/tests/appeals_comprehensive.ts: 1
+  services/blockchain/tests/logging_comprehensive.js: 1
+  services/blockchain/tests/logging_comprehensive.ts: 1
+  services/blockchain/tests/quantumagi-core_comprehensive.ts: 2
+  services/blockchain/tests/quantumagi_core.ts: 2
+  services/blockchain/tests/quantumagi_core_corrected.ts: 2
+  services/blockchain/tests/quantumagi_core_enhanced.ts: 2
+  services/blockchain/tests/transaction_optimization.ts: 2
+  services/blockchain/tests/validation_test.ts: 6
+  services/blockchain/tsconfig.json: 1
+  services/cli/opencode/package.json: 3
+  services/cli/opencode/script/publish.ts: 28
+  services/cli/opencode/script/schema.ts: 1
+  services/cli/opencode/src/acgs/index.ts: 3
+  services/cli/opencode/src/acgs/middleware.ts: 2
+  services/cli/opencode/src/app/app.ts: 4
+  services/cli/opencode/src/auth/anthropic.ts: 1
+  services/cli/opencode/src/auth/copilot.ts: 2
+  services/cli/opencode/src/auth/github-copilot.ts: 2
+  services/cli/opencode/src/auth/index.ts: 1
+  services/cli/opencode/src/bun/index.ts: 3
+  services/cli/opencode/src/bus/index.ts: 2
+  services/cli/opencode/src/cli/bootstrap.ts: 6
+  services/cli/opencode/src/cli/cmd/auth.ts: 7
+  services/cli/opencode/src/cli/cmd/debug/file.ts: 3
+  services/cli/opencode/src/cli/cmd/debug/index.ts: 6
+  services/cli/opencode/src/cli/cmd/debug/lsp.ts: 5
+  services/cli/opencode/src/cli/cmd/debug/ripgrep.ts: 4
+  services/cli/opencode/src/cli/cmd/debug/snapshot.ts: 3
+  services/cli/opencode/src/cli/cmd/generate.ts: 2
+  services/cli/opencode/src/cli/cmd/models.ts: 3
+  services/cli/opencode/src/cli/cmd/run.ts: 10
+  services/cli/opencode/src/cli/cmd/serve.ts: 5
+  services/cli/opencode/src/cli/cmd/tui.ts: 12
+  services/cli/opencode/src/cli/cmd/upgrade.ts: 2
+  services/cli/opencode/src/cli/error.ts: 3
+  services/cli/opencode/src/cli/ui.ts: 1
+  services/cli/opencode/src/config/config.ts: 7
+  services/cli/opencode/src/config/hooks.ts: 6
+  services/cli/opencode/src/file/fzf.ts: 4
+  services/cli/opencode/src/file/index.ts: 3
+  services/cli/opencode/src/file/ripgrep.ts: 4
+  services/cli/opencode/src/file/time.ts: 2
+  services/cli/opencode/src/file/watch.ts: 4
+  services/cli/opencode/src/format/formatter.ts: 2
+  services/cli/opencode/src/format/index.ts: 5
+  services/cli/opencode/src/index.ts: 15
+  services/cli/opencode/src/installation/index.ts: 3
+  services/cli/opencode/src/lsp/client.ts: 7
+  services/cli/opencode/src/lsp/index.ts: 5
+  services/cli/opencode/src/lsp/server.ts: 4
+  services/cli/opencode/src/mcp/index.ts: 6
+  services/cli/opencode/src/permission/index.ts: 3
+  services/cli/opencode/src/provider/models.ts: 3
+  services/cli/opencode/src/provider/provider.ts: 21
+  services/cli/opencode/src/server/server.ts: 12
+  services/cli/opencode/src/session/index.ts: 20
+  services/cli/opencode/src/session/message.ts: 3
+  services/cli/opencode/src/session/system.ts: 9
+  services/cli/opencode/src/share/share.ts: 5
+  services/cli/opencode/src/snapshot/index.ts: 3
+  services/cli/opencode/src/storage/storage.ts: 3
+  services/cli/opencode/src/tool/bash.ts: 2
+  services/cli/opencode/src/tool/edit.ts: 7
+  services/cli/opencode/src/tool/glob.ts: 3
+  services/cli/opencode/src/tool/grep.ts: 3
+  services/cli/opencode/src/tool/ls.ts: 2
+  services/cli/opencode/src/tool/lsp-diagnostics.ts: 3
+  services/cli/opencode/src/tool/lsp-hover.ts: 3
+  services/cli/opencode/src/tool/multiedit.ts: 3
+  services/cli/opencode/src/tool/patch.ts: 2
+  services/cli/opencode/src/tool/read.ts: 4
+  services/cli/opencode/src/tool/task.ts: 4
+  services/cli/opencode/src/tool/todo.ts: 3
+  services/cli/opencode/src/tool/webfetch.ts: 1
+  services/cli/opencode/src/tool/write.ts: 7
+  services/cli/opencode/src/util/error.ts: 1
+  services/cli/opencode/src/util/log.ts: 1
+  services/cli/opencode/sst-env.d.ts: 1
+  services/cli/opencode/test/tool/edit.test.ts: 1
+  services/cli/opencode/test/tool/tool.test.ts: 6
+  services/cli/tui/AGENTS.md: 1
+  services/cli/tui/sdk/CONTRIBUTING.md: 2
+  services/cli_backup_20250706_110222/opencode_adapter/tests/constitutional-wrapper.test.ts: 1
+  services/cli_backup_20250706_110222/opencode_adapter/tests/opencode-adapter.test.ts: 3
+  services/cli_backup_20250706_110222/opencode_adapter/tests/openrouter-integration.test.ts: 5
+  services/cli_backup_20250706_110222/opencode_adapter/tests/performance-monitor.test.ts: 1
+  services/cli_backup_20250706_110222/opencode_adapter/tsconfig.json: 2
+  services/core/code-analysis/docker-compose.yml: 8
+  services/core/code-analysis/phase2_staging_deployment_results.json: 2
+  services/core/formal-verification/fv_service/README.md: 1
+  services/core/governance-synthesis/advanced_opa_engine.py: 1
+  services/core/governance-synthesis/gs_service/README.md: 2
+  services/core/governance-synthesis/gs_service/app/core/wina_rego_synthesis.py: 1
+  services/core/governance-synthesis/gs_service/app/services/security_compliance.py: 1
+  services/core/governance-synthesis/gs_service/tests/security/test_security_compliance.py: 1
+  services/core/policy-governance/pgc_service/README.md: 1
+  services/core/policy-governance/pgc_service/app/core/real_database.py: 2
+  services/core/policy-governance/qpe_service/scripts/validation_test.sh: 1
+  services/platform_services/authentication/auth_service/README.md: 1
+  services/platform_services/authentication/auth_service/app/tests/conftest.py: 2
+  services/shared/security/unified_input_validation.py: 2
+  services/shared/streaming/docker-compose.kafka.yml: 1
+  tests/e2e/IMPLEMENTATION_SUMMARY.md: 1
+  tests/e2e/docker/docker-compose.e2e.yml: 6
+  tests/e2e/tests/test_security.py: 1
+  tests/load_testing/distributed_config.py: 3
+  tests/load_testing/docker-compose.yml: 6
+  tests/services/test_formal_verification_service.py: 1
+  tests/services/test_governance_synthesis_service.py: 2
+  tests/test_integration_quick.py: 5
+  tests/validate_services.py: 1
+  tools/api_documentation_enhancement.py: 2
+  tools/audit_compliance_validator.py: 1
+  tools/automation/cross_reference_maintainer.py: 4
+  tools/automation/enhanced_auto_doc_generator.py: 5
+  tools/ci/constitutional-trainer-security-scan.yml: 1
+  tools/cicd/implement_cicd_pipeline.py: 8
+  tools/cicd/integration_pipeline.py: 2
+  tools/comprehensive_codebase_cleanup.py: 1
+  tools/comprehensive_production_monitoring.py: 7
+  tools/comprehensive_security_vulnerability_scanner.py: 1
+  tools/comprehensive_validation.py: 1
+  tools/configure_production_database.py: 1
+  tools/demo_security_compliance_tools.py: 1
+  tools/deploy-performance-testing.sh: 7
+  tools/deploy_mlops_system.sh: 1
+  tools/deploy_to_production.sh: 1
+  tools/deployment_automation.py: 2
+  tools/deployment_preparation.py: 2
+  tools/dgm-best-swe-agent/DGM_outer.py: 6
+  tools/dgm-best-swe-agent/README.md: 2
+  tools/dgm-best-swe-agent/analysis/plot_comparison.py: 2
+  tools/dgm-best-swe-agent/analysis/visualize_archive.py: 1
+  tools/dgm-best-swe-agent/coding_agent.py: 1
+  tools/dgm-best-swe-agent/coding_agent_polyglot.py: 3
+  tools/dgm-best-swe-agent/polyglot/benchmark.py: 1
+  tools/dgm-best-swe-agent/polyglot/constants.py: 2
+  tools/dgm-best-swe-agent/polyglot/dockerfiles.py: 3
+  tools/dgm-best-swe-agent/polyglot/harness.py: 3
+  tools/dgm-best-swe-agent/prompts/tooluse_prompt.py: 1
+  tools/dgm-best-swe-agent/self_improve_step.py: 4
+  tools/dgm-best-swe-agent/swe_bench/harness.py: 3
+  tools/dgm-best-swe-agent/swe_bench/report.py: 2
+  tools/dgm-best-swe-agent/tools/edit.py: 1
+  tools/dgm-best-swe-agent/utils/docker_utils.py: 1
+  tools/dgm-best-swe-agent/utils/evo_utils.py: 1
+  tools/docker/validate-dind-implementation.py: 1
+  tools/documentation/openapi_generator.py: 1
+  tools/documentation_synchronization.py: 1
+  tools/emergency_shutdown_test.sh: 1
+  tools/enhance_frontend_integration.py: 8
+  tools/execute_comprehensive_improvements.py: 2
+  tools/fix-github-actions-validation.sh: 1
+  tools/fix_github_actions_workflows.py: 2
+  tools/fix_gs_service_dependencies.py: 1
+  tools/fix_requirements_staging.sh: 1
+  tools/focused_reorganization.py: 2
+  tools/generate_api_docs.sh: 1
+  tools/generate_final_deployment_report.py: 2
+  tools/health-monitor-setup.sh: 1
+  tools/implement-routine-maintenance.sh: 1
+  tools/kubernetes_migration_plan.py: 1
+  tools/load-testing/run-constitutional-trainer-load-tests.sh: 2
+  tools/load_test_data.py: 1
+  tools/maintenance/emergency_rollback.sh: 1
+  tools/maintenance/implement_reorganization_plan.py: 1
+  tools/maintenance/setup_dependencies.sh: 3
+  tools/mcp-inspector/cli/scripts/cli-tests.js: 3
+  tools/mcp-inspector/cli/src/cli.ts: 1
+  tools/mcp-inspector/cli/tsconfig.json: 2
+  tools/mcp-inspector/client/bin/client.js: 1
+  tools/mcp-inspector/client/src/lib/auth.ts: 1
+  tools/mcp-inspector/client/src/lib/constants.ts: 1
+  tools/mcp-inspector/client/src/lib/hooks/useConnection.ts: 5
+  tools/mcp-inspector/client/src/lib/oauth-state-machine.ts: 2
+  tools/mcp-inspector/client/src/utils/__tests__/escapeUnicode.test.ts: 1
+  tools/mcp-inspector/client/src/utils/__tests__/jsonUtils.test.ts: 1
+  tools/mcp-inspector/client/src/utils/__tests__/schemaUtils.test.ts: 2
+  tools/mcp-inspector/client/src/utils/schemaUtils.ts: 1
+  tools/mcp-inspector/client/tailwind.config.js: 2
+  tools/mcp-inspector/client/tsconfig.app.json: 1
+  tools/mcp-inspector/client/tsconfig.jest.json: 1
+  tools/mcp-inspector/client/tsconfig.json: 3
+  tools/mcp-inspector/client/vite.config.ts: 1
+  tools/mcp-inspector/package.json: 8
+  tools/mcp-inspector/server/tsconfig.json: 2
+  tools/monitoring/setup_basic_monitoring.py: 1
+  tools/observability/implement_comprehensive_observability.py: 1
+  tools/operations/disaster_recovery.sh: 1
+  tools/operations/implement_operational_excellence.py: 1
+  tools/penetration_testing.py: 1
+  tools/performance/implement_performance_scaling_optimization.py: 2
+  tools/phase3_production_infrastructure_setup.py: 3
+  tools/phase4_community_adoption.py: 6
+  tools/priority3_monitoring_infrastructure.py: 4
+  tools/production_blue_green_deployment.py: 1
+  tools/production_readiness/performance_optimization_implementation.py: 4
+  tools/quality/comprehensive_documentation_remediation.py: 1
+  tools/quick_start.sh: 2
+  tools/quick_start_kimi.sh: 1
+  tools/reasoning-models/migrate-to-nano-vllm.sh: 2
+  tools/reorganization/execute_reorganization.sh: 1
+  tools/reorganize_codebase.py: 16
+  tools/restructure_applications.py: 12
+  tools/run_all_setup_tests.sh: 1
+  tools/run_comprehensive_tests.sh: 1
+  tools/safe_cleanup.sh: 4
+  tools/security/run-constitutional-trainer-security-scan.sh: 2
+  tools/setup-test-environment.sh: 1
+  tools/setup/install_dependencies.sh: 2
+  tools/setup/onboard_developer.sh: 3
+  tools/setup/project_setup.sh: 5
+  tools/setup/setup_backup_disaster_recovery.py: 7
+  tools/setup/setup_mab_monitoring.py: 4
+  tools/setup/setup_monitoring_alerting.py: 5
+  tools/setup/setup_production_auth.py: 1
+  tools/setup/setup_redis_infrastructure.py: 1
+  tools/setup/start_development.sh: 3
+  tools/setup_automated_backups.sh: 3
+  tools/setup_monitoring_stack.py: 5
+  tools/setup_pgbouncer_monitoring.sh: 1
+  tools/setup_read_replicas.sh: 3
+  tools/simple_security_scanner.py: 1
+  tools/sla_dashboard.py: 1
+  tools/start_acgs_services_simple.sh: 1
+  tools/start_all_services.sh: 1
+  tools/start_service_isolated.py: 1
+  tools/swe_bench/setup_swe_environment.sh: 1
+  tools/test-emergency-response.sh: 2
+  tools/test_emergency_shutdown.sh: 1
+  tools/test_performance_validation.sh: 1
+  tools/test_restructured_applications.py: 6
+  tools/test_security_features.py: 1
+  tools/testing/critical_issue_resolver.py: 1
+  tools/training/certification_assessment.py: 4
+  tools/update-deps.sh: 1
+  tools/update_comprehensive_documentation.py: 6
+  tools/update_contributor_docs.py: 16
+  tools/update_dependency_managers.py: 1
+  tools/update_documentation.py: 3
+  tools/update_monitoring_config.py: 5
+  tools/update_running_services_pgbouncer.sh: 1
+  tools/validate-emergency-preparedness.sh: 2
+  tools/validate_cicd_pipeline.py: 1
+  tools/validation/test_builds.sh: 3
+  tools/validation/validate_enhanced_policy_synthesis.py: 1
+  tools/validation/validate_reorganization.py: 1
+  validation_reports/cross_reference_analysis_20250706_101926.md: 4
+  validation_reports/unified_validation_20250706_103227.json: 4
+total_broken_mounts: 1637

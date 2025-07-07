@@ -1,0 +1,27 @@
+{
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "timestamp": "2025-07-07T09:27:59-04:00",
+  "collection_type": "infrastructure_metrics",
+  "services": {
+    "postgresql": {
+      "status": "healthy",
+      "port": 5440,
+      "container": "acgs_postgres_production"
+    },
+    "redis": {
+      "status": "healthy",
+      "port": 6390,
+      "container": "acgs_redis_production"
+    },
+    "prometheus": {
+      "status": "healthy",
+      "port": 9091,
+      "container": "acgs_prometheus_production"
+    },
+    "grafana": {
+      "status": "healthy",
+      "port": 3001,
+      "container": "acgs_grafana_production"
+    }
+  }
+}

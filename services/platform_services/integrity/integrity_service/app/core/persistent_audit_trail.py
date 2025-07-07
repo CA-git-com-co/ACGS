@@ -219,12 +219,14 @@ class CryptographicAuditChain:
         """Get the current active audit block."""
         try:
             async with self.db_pool.acquire() as conn:
-                row = await conn.fetchrow("""
+                row = await conn.fetchrow(
+                    """
                     SELECT * FROM audit_blocks
                     WHERE finalized = FALSE
                     ORDER BY block_number DESC
                     LIMIT 1
-                """)
+                """
+                )
 
                 if row:
                     return await self._row_to_audit_block(row)
@@ -323,12 +325,14 @@ class CryptographicAuditChain:
         """Get events not yet included in a finalized block."""
         try:
             async with self.db_pool.acquire() as conn:
-                rows = await conn.fetch("""
+                rows = await conn.fetch(
+                    """
                     SELECT * FROM audit_events
                     WHERE block_id IS NULL
                     ORDER BY timestamp ASC
                     LIMIT 100
-                """)
+                """
+                )
 
                 events = []
                 for row in rows:
@@ -362,12 +366,14 @@ class CryptographicAuditChain:
         """Get hash of the last finalized block."""
         try:
             async with self.db_pool.acquire() as conn:
-                row = await conn.fetchrow("""
+                row = await conn.fetchrow(
+                    """
                     SELECT block_hash FROM audit_blocks
                     WHERE finalized = TRUE
                     ORDER BY block_number DESC
                     LIMIT 1
-                """)
+                """
+                )
 
                 if row:
                     return row["block_hash"]
@@ -385,9 +391,11 @@ class CryptographicAuditChain:
         """Get the next block number in sequence."""
         try:
             async with self.db_pool.acquire() as conn:
-                row = await conn.fetchrow("""
+                row = await conn.fetchrow(
+                    """
                     SELECT MAX(block_number) as max_number FROM audit_blocks
-                """)
+                """
+                )
 
                 if row and row["max_number"] is not None:
                     return row["max_number"] + 1
@@ -760,28 +768,34 @@ class CryptographicAuditChain:
         try:
             async with self.db_pool.acquire() as conn:
                 # Block statistics
-                block_stats = await conn.fetchrow("""
+                block_stats = await conn.fetchrow(
+                    """
                     SELECT
                         COUNT(*) as total_blocks,
                         MIN(block_number) as first_block,
                         MAX(block_number) as latest_block,
                         SUM(event_count) as total_events
                     FROM audit_blocks
-                """)
+                """
+                )
 
                 # Event statistics by type
-                event_type_stats = await conn.fetch("""
+                event_type_stats = await conn.fetch(
+                    """
                     SELECT event_type, COUNT(*) as count
                     FROM audit_events
                     GROUP BY event_type
                     ORDER BY count DESC
-                """)
+                """
+                )
 
                 # Recent activity
-                recent_events = await conn.fetchval("""
+                recent_events = await conn.fetchval(
+                    """
                     SELECT COUNT(*) FROM audit_events
                     WHERE timestamp > NOW() - INTERVAL '24 hours'
-                """)
+                """
+                )
 
                 return {
                     "constitutional_hash": CONSTITUTIONAL_HASH,
@@ -815,7 +829,8 @@ async def create_audit_tables(db_pool: asyncpg.Pool):
     try:
         async with db_pool.acquire() as conn:
             # Audit events table
-            await conn.execute("""
+            await conn.execute(
+                """
                 CREATE TABLE IF NOT EXISTS audit_events (
                     event_id UUID PRIMARY KEY,
                     event_type VARCHAR(50) NOT NULL,
@@ -836,10 +851,12 @@ async def create_audit_tables(db_pool: asyncpg.Pool):
                     block_id UUID REFERENCES audit_blocks(block_id),
                     created_at TIMESTAMPTZ DEFAULT NOW()
                 );
-            """)
+            """
+            )
 
             # Audit blocks table
-            await conn.execute("""
+            await conn.execute(
+                """
                 CREATE TABLE IF NOT EXISTS audit_blocks (
                     block_id UUID PRIMARY KEY,
                     block_number INTEGER UNIQUE NOT NULL,
@@ -853,7 +870,8 @@ async def create_audit_tables(db_pool: asyncpg.Pool):
                     finalized BOOLEAN DEFAULT FALSE,
                     created_at TIMESTAMPTZ DEFAULT NOW()
                 );
-            """)
+            """
+            )
 
             # Create indexes for performance
             await conn.execute(

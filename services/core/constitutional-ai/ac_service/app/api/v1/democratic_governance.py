@@ -21,18 +21,18 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from services.shared.database import get_async_db as get_db_session
 
-from ...services.democratic_governance import (
-
-# Security validation imports
-from services.shared.security_validation import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
-    validate_user_input,
+from ...services.democratic_governance import (  # Security validation imports; Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
+    "cdd01ef066bc6cf2",
+    =,
+    from,
+    import,
+    services.shared.security_validation,
+    validate_governance_input,
     validate_policy_input,
-    validate_governance_input
+    validate_user_input,
 )
+
     ApprovalLevel,
     GovernanceDecisionType,
     GovernanceStage,

@@ -10,10 +10,10 @@ This module provides a modular blackboard system with focused components:
 
 Example:
     from services.shared.blackboard import BlackboardService, KnowledgeItem
-    
+
     service = BlackboardService()
     await service.initialize()
-    
+
     knowledge = KnowledgeItem(
         space="governance",
         agent_id="ethics_agent",

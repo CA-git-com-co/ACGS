@@ -13,7 +13,6 @@ from pydantic import BaseModel, Field
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class EthicalAnalysisResult(BaseModel):
     """
     Result of ethical analysis performed by the ethics agent.

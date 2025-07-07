@@ -114,7 +114,9 @@ class TestFormalVerificationCompletion:
     async def test_policy_smt_compiler(self, sample_policy):
         """Test policy-to-SMT compiler functionality."""
         try:
-            from services.core.formal_verification.fv_service.app.core.policy_smt_compiler import PolicySMTCompiler
+            from services.core.formal_verification.fv_service.app.core.policy_smt_compiler import (
+                PolicySMTCompiler,
+            )
 
             compiler = PolicySMTCompiler()
 
@@ -148,7 +150,9 @@ class TestFormalVerificationCompletion:
     ):
         """Test constitutional principles compilation to SMT."""
         try:
-            from services.core.formal_verification.fv_service.app.core.policy_smt_compiler import PolicySMTCompiler
+            from services.core.formal_verification.fv_service.app.core.policy_smt_compiler import (
+                PolicySMTCompiler,
+            )
 
             compiler = PolicySMTCompiler()
 
@@ -196,7 +200,9 @@ class TestFormalVerificationCompletion:
     ):
         """Test enhanced policy verification with constitutional compliance."""
         try:
-            from services.core.formal_verification.fv_service.app.core.smt_solver_integration import Z3SMTSolverClient
+            from services.core.formal_verification.fv_service.app.core.smt_solver_integration import (
+                Z3SMTSolverClient,
+            )
 
             solver_client = Z3SMTSolverClient()
 
@@ -276,7 +282,9 @@ class TestFormalVerificationCompletion:
     ):
         """Test that formal verification achieves 99.92% reliability target."""
         try:
-            from services.core.formal_verification.fv_service.app.core.smt_solver_integration import Z3SMTSolverClient
+            from services.core.formal_verification.fv_service.app.core.smt_solver_integration import (
+                Z3SMTSolverClient,
+            )
 
             solver_client = Z3SMTSolverClient()
 
@@ -326,7 +334,9 @@ class TestFormalVerificationCompletion:
     async def test_safety_critical_requirements(self, constitutional_principles):
         """Test safety-critical application requirements."""
         try:
-            from services.core.formal_verification.fv_service.app.core.policy_smt_compiler import PolicySMTCompiler
+            from services.core.formal_verification.fv_service.app.core.policy_smt_compiler import (
+                PolicySMTCompiler,
+            )
 
             compiler = PolicySMTCompiler()
 

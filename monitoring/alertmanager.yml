@@ -1,92 +1,83 @@
-# Alertmanager Configuration for ACGS
-# Constitutional Hash: cdd01ef066bc6cf2
-
 global:
-  smtp_smarthost: 'localhost:587'
-  smtp_from: 'acgs-alerts@example.com'
-
+  smtp_smarthost: localhost:587
+  smtp_from: acgs-alerts@example.com
 route:
-  group_by: ['alertname', 'constitutional_hash']
+  group_by:
+  - alertname
+  - constitutional_hash
   group_wait: 10s
   group_interval: 10s
   repeat_interval: 1h
-  receiver: 'acgs-alerts'
+  receiver: acgs-alerts
   routes:
-    - match:
-        severity: critical
-      receiver: 'acgs-critical'
-      group_wait: 5s
-      repeat_interval: 30m
-    - match:
-        alertname: ConstitutionalHashMismatch
-      receiver: 'constitutional-compliance'
-      group_wait: 0s
-      repeat_interval: 5m
-
+  - match:
+      severity: critical
+    receiver: acgs-critical
+    group_wait: 5s
+    repeat_interval: 30m
+  - match:
+      alertname: ConstitutionalHashMismatch
+    receiver: constitutional-compliance
+    group_wait: 0s
+    repeat_interval: 5m
 receivers:
-  - name: 'acgs-alerts'
-    webhook_configs:
-      - url: 'http://localhost:8080/webhook/alerts'
-        send_resolved: true
-        http_config:
-          basic_auth:
-            username: 'acgs'
-            password: 'monitoring'
-        title: 'ACGS Alert: {{ .GroupLabels.alertname }}'
-        text: |
-          Constitutional Hash: {{ .GroupLabels.constitutional_hash }}
-          Alert: {{ .GroupLabels.alertname }}
-          Severity: {{ .GroupLabels.severity }}
-          
-          {{ range .Alerts }}
-          Instance: {{ .Labels.instance }}
-          Description: {{ .Annotations.description }}
-          {{ end }}
+- name: acgs-alerts
+  webhook_configs:
+  - url: http://localhost:8080/webhook/alerts
+    send_resolved: true
+    http_config:
+      basic_auth:
+        username: acgs
+        password: monitoring
+    title: 'ACGS Alert: {{ .GroupLabels.alertname }}'
+    text: 'Constitutional Hash: {{ .GroupLabels.constitutional_hash }}
 
-  - name: 'acgs-critical'
-    webhook_configs:
-      - url: 'http://localhost:8080/webhook/critical'
-        send_resolved: true
-        http_config:
-          basic_auth:
-            username: 'acgs'
-            password: 'monitoring'
-        title: 'CRITICAL ACGS Alert: {{ .GroupLabels.alertname }}'
-        text: |
-          🚨 CRITICAL ALERT 🚨
-          Constitutional Hash: {{ .GroupLabels.constitutional_hash }}
-          Alert: {{ .GroupLabels.alertname }}
-          
-          {{ range .Alerts }}
-          Instance: {{ .Labels.instance }}
-          Description: {{ .Annotations.description }}
-          Started: {{ .StartsAt }}
-          {{ end }}
+      Alert: {{ .GroupLabels.alertname }}
 
-  - name: 'constitutional-compliance'
-    webhook_configs:
-      - url: 'http://localhost:8080/webhook/constitutional'
-        send_resolved: true
-        http_config:
-          basic_auth:
-            username: 'acgs'
-            password: 'monitoring'
-        title: '⚖️ Constitutional Compliance Alert'
-        text: |
-          ⚖️ CONSTITUTIONAL COMPLIANCE VIOLATION ⚖️
-          Expected Hash: cdd01ef066bc6cf2
-          
-          {{ range .Alerts }}
-          Service: {{ .Labels.instance }}
-          Issue: {{ .Annotations.description }}
-          Started: {{ .StartsAt }}
-          {{ end }}
-          
-          Immediate action required to restore constitutional compliance.
+      Severity: {{ .GroupLabels.severity }}
 
+
+      {{ range .Alerts }}
+
+      Instance: {{ .Labels.instance }}
+
+      Description: {{ .Annotations.description }}
+
+      {{ end }}
+
+      '
+- name: acgs-critical
+  webhook_configs:
+  - url: http://localhost:8080/webhook/critical
+    send_resolved: true
+    http_config:
+      basic_auth:
+        username: acgs
+        password: monitoring
+    title: 'CRITICAL ACGS Alert: {{ .GroupLabels.alertname }}'
+    text: "\U0001F6A8 CRITICAL ALERT \U0001F6A8\nConstitutional Hash: {{ .GroupLabels.constitutional_hash\
+      \ }}\nAlert: {{ .GroupLabels.alertname }}\n\n{{ range .Alerts }}\nInstance:\
+      \ {{ .Labels.instance }}\nDescription: {{ .Annotations.description }}\nStarted:\
+      \ {{ .StartsAt }}\n{{ end }}\n"
+- name: constitutional-compliance
+  webhook_configs:
+  - url: http://localhost:8080/webhook/constitutional
+    send_resolved: true
+    http_config:
+      basic_auth:
+        username: acgs
+        password: monitoring
+    title: "\u2696\uFE0F Constitutional Compliance Alert"
+    text: "\u2696\uFE0F CONSTITUTIONAL COMPLIANCE VIOLATION \u2696\uFE0F\nExpected\
+      \ Hash: cdd01ef066bc6cf2\n\n{{ range .Alerts }}\nService: {{ .Labels.instance\
+      \ }}\nIssue: {{ .Annotations.description }}\nStarted: {{ .StartsAt }}\n{{ end\
+      \ }}\n\nImmediate action required to restore constitutional compliance.\n"
 inhibit_rules:
-  - source_match:
-      severity: 'critical'
-    target_match:
-      severity: 'warning'
-    equal: ['alertname', 'instance']
+- source_match:
+    severity: critical
+  target_match:
+    severity: warning
+  equal:
+  - alertname
+  - instance
+constitutional_hash: cdd01ef066bc6cf2

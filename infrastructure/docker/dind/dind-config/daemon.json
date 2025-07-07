@@ -1,5 +1,8 @@
 {
-  "hosts": ["tcp://0.0.0.0:2376", "unix:///var/run/docker.sock"],
+  "hosts": [
+    "tcp://0.0.0.0:2376",
+    "unix:///var/run/docker.sock"
+  ],
   "tls": true,
   "tlscert": "/certs/server/cert.pem",
   "tlskey": "/certs/server/key.pem",
@@ -20,7 +23,9 @@
       "path": "runc"
     }
   },
-  "exec-opts": ["native.cgroupdriver=systemd"],
+  "exec-opts": [
+    "native.cgroupdriver=systemd"
+  ],
   "live-restore": true,
   "userland-proxy": false,
   "experimental": false,
@@ -39,5 +44,7 @@
   "debug": false,
   "max-concurrent-downloads": 3,
   "max-concurrent-uploads": 5,
-  "shutdown-timeout": 15
+  "shutdown-timeout": 15,
+  "_constitutional_hash": "cdd01ef066bc6cf2",
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }

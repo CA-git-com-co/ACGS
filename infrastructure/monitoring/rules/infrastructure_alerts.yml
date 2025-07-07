@@ -1,303 +1,266 @@
-# ACGS-1 Infrastructure Alert Rules - Subtask 13.5
-# Comprehensive alerting for infrastructure components
-# Target: >99.9% availability, load balancing, caching, database performance
-
 groups:
-  # ============================================================================
-  # LOAD BALANCING AND CIRCUIT BREAKER ALERTS
-  # ============================================================================
-  - name: acgs_load_balancing
-    rules:
-      # HAProxy Down
-      - alert: HAProxyDown
-        expr: up{job="haproxy-exporter"} == 0 or up{job="haproxy-stats"} == 0
-        for: 30s
-        labels:
-          severity: critical
-          component: load_balancer
-          team: infrastructure
-          escalation: immediate
-        annotations:
-          summary: 'HAProxy load balancer is down'
-          description: 'HAProxy has been down for more than 30 seconds'
-          runbook_url: 'https://docs.acgs.ai/runbooks/haproxy-down'
-          impact: 'Load balancing unavailable - service disruption imminent'
-
-      # HAProxy Backend Server Down
-      - alert: HAProxyBackendServerDown
-        expr: haproxy_server_status{job="haproxy-exporter"} == 0
-        for: 1m
-        labels:
-          severity: warning
-          component: backend_server
-          team: infrastructure
-        annotations:
-          summary: 'HAProxy backend server is down'
-          description: 'Backend server {{ $labels.server }} in {{ $labels.proxy }} is down'
-          runbook_url: 'https://docs.acgs.ai/runbooks/backend-server-down'
-
-      # HAProxy High Response Time
-      - alert: HAProxyHighResponseTime
-        expr: haproxy_server_response_time_average_seconds{job="haproxy-exporter"} > 0.5
-        for: 3m
-        labels:
-          severity: warning
-          component: load_balancer_performance
-          team: infrastructure
-        annotations:
-          summary: 'HAProxy high response time'
-          description: 'Average response time is {{ $value }}s for {{ $labels.server }} in {{ $labels.proxy }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/haproxy-high-response-time'
-
-      # HAProxy High Connection Count
-      - alert: HAProxyHighConnectionCount
-        expr: haproxy_server_current_sessions{job="haproxy-exporter"} > 100
-        for: 5m
-        labels:
-          severity: warning
-          component: load_balancer_capacity
-          team: infrastructure
-        annotations:
-          summary: 'HAProxy high connection count'
-          description: 'Current sessions: {{ $value }} for {{ $labels.server }} in {{ $labels.proxy }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/haproxy-high-connections'
-
-      # Backend Server Health Issues
-      - alert: BackendServerHealthIssues
-        expr: acgs_backend_server_health == 0
-        for: 1m
-        labels:
-          severity: warning
-          component: backend_health
-          team: infrastructure
-        annotations:
-          summary: 'Backend server health issues detected'
-          description: 'Backend server {{ $labels.service }}:{{ $labels.port }} is unhealthy'
-          runbook_url: 'https://docs.acgs.ai/runbooks/backend-health-issues'
-
-      # Circuit Breaker Open
-      - alert: CircuitBreakerOpen
-        expr: acgs_circuit_breaker_status == 1
-        for: 2m
-        labels:
-          severity: warning
-          component: circuit_breaker
-          team: infrastructure
-        annotations:
-          summary: 'Circuit breaker open for {{ $labels.service }}'
-          description: 'Circuit breaker is open, blocking requests to {{ $labels.service }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/circuit-breaker-open'
-
-      # High Load Balancer Response Time
-      - alert: HighLoadBalancerResponseTime
-        expr: histogram_quantile(0.95, rate(acgs_load_balancer_response_time_seconds_bucket[5m])) > 1.0
-        for: 3m
-        labels:
-          severity: warning
-          component: load_balancer_performance
-          team: infrastructure
-        annotations:
-          summary: 'High load balancer response time'
-          description: '95th percentile response time is {{ $value }}s for {{ $labels.backend_service }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/lb-high-response-time'
-
-      # Failover Events
-      - alert: FailoverEvents
-        expr: rate(acgs_failover_events_total[5m]) > 0.1
-        for: 1m
-        labels:
-          severity: warning
-          component: failover
-          team: infrastructure
-        annotations:
-          summary: 'Failover events detected'
-          description: '{{ $value }} failover events per second for {{ $labels.service }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/failover-events'
-
-      # Session Affinity Issues
-      - alert: SessionAffinityIssues
-        expr: rate(acgs_session_affinity_operations_total{result="failed"}[5m]) > 0.1
-        for: 3m
-        labels:
-          severity: warning
-          component: session_affinity
-          team: infrastructure
-        annotations:
-          summary: 'Session affinity issues detected'
-          description: '{{ $value }} session affinity failures per second'
-          runbook_url: 'https://docs.acgs.ai/runbooks/session-affinity-issues'
-
-  # ============================================================================
-  # REDIS CACHING ALERTS
-  # ============================================================================
-  - name: acgs_redis_caching
-    rules:
-      # Redis Down
-      - alert: RedisDown
-        expr: up{job="redis"} == 0
-        for: 30s
-        labels:
-          severity: critical
-          component: redis
-          team: infrastructure
-          escalation: immediate
-        annotations:
-          summary: 'Redis cache server is down'
-          description: 'Redis has been down for more than 30 seconds'
-          runbook_url: 'https://docs.acgs.ai/runbooks/redis-down'
-          impact: 'Caching unavailable - performance degradation expected'
-
-      # Low Cache Hit Rate
-      - alert: LowCacheHitRate
-        expr: rate(acgs_cache_operations_total{operation="hit"}[5m]) / rate(acgs_cache_operations_total{operation=~"hit|miss"}[5m]) < 0.8
-        for: 5m
-        labels:
-          severity: warning
-          component: cache_performance
-          team: infrastructure
-        annotations:
-          summary: 'Low cache hit rate'
-          description: 'Cache hit rate is {{ $value | humanizePercentage }} for {{ $labels.service }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/low-cache-hit-rate'
-
-      # High Cache Response Time
-      - alert: HighCacheResponseTime
-        expr: histogram_quantile(0.95, rate(acgs_cache_response_time_seconds_bucket[5m])) > 0.1
-        for: 3m
-        labels:
-          severity: warning
-          component: cache_performance
-          team: infrastructure
-        annotations:
-          summary: 'High cache response time'
-          description: '95th percentile cache response time is {{ $value }}s for {{ $labels.service }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/high-cache-response-time'
-
-      # Redis Connection Pool Exhaustion
-      - alert: RedisConnectionPoolExhaustion
-        expr: acgs_redis_connection_pool_usage{pool_status="active"} / acgs_redis_connection_pool_usage{pool_status="total"} > 0.9
-        for: 2m
-        labels:
-          severity: warning
-          component: redis_connections
-          team: infrastructure
-        annotations:
-          summary: 'Redis connection pool near exhaustion'
-          description: 'Connection pool usage is {{ $value | humanizePercentage }} for {{ $labels.service }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/redis-connection-exhaustion'
-
-      # High Cache Memory Usage
-      - alert: HighCacheMemoryUsage
-        expr: acgs_cache_memory_usage_bytes / (1024*1024*1024) > 8
-        for: 5m
-        labels:
-          severity: warning
-          component: cache_memory
-          team: infrastructure
-        annotations:
-          summary: 'High cache memory usage'
-          description: 'Cache memory usage is {{ $value }}GB for {{ $labels.service }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/high-cache-memory'
-
-      # High Cache Eviction Rate
-      - alert: HighCacheEvictionRate
-        expr: rate(acgs_cache_evictions_total[5m]) > 10
-        for: 3m
-        labels:
-          severity: warning
-          component: cache_evictions
-          team: infrastructure
-        annotations:
-          summary: 'High cache eviction rate'
-          description: '{{ $value }} cache evictions per second for {{ $labels.service }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/high-cache-evictions'
-
-  # ============================================================================
-  # DATABASE PERFORMANCE ALERTS
-  # ============================================================================
-  - name: acgs_database_performance
-    rules:
-      # Database Connection Issues
-      - alert: DatabaseConnectionIssues
-        expr: acgs_database_connections{pool_status="failed"} > 5
-        for: 2m
-        labels:
-          severity: warning
-          component: database_connections
-          team: infrastructure
-        annotations:
-          summary: 'Database connection issues detected'
-          description: '{{ $value }} failed database connections for {{ $labels.service }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/database-connection-issues'
-
-      # High Database Query Time
-      - alert: HighDatabaseQueryTime
-        expr: histogram_quantile(0.95, rate(acgs_database_query_duration_seconds_bucket[5m])) > 1.0
-        for: 3m
-        labels:
-          severity: warning
-          component: database_performance
-          team: infrastructure
-        annotations:
-          summary: 'High database query time'
-          description: '95th percentile query time is {{ $value }}s'
-          runbook_url: 'https://docs.acgs.ai/runbooks/high-database-query-time'
-
-      # Database Connection Pool Exhaustion
-      - alert: DatabaseConnectionPoolExhaustion
-        expr: acgs_database_connections{pool_status="active"} / acgs_database_connections{pool_status="total"} > 0.9
-        for: 2m
-        labels:
-          severity: warning
-          component: database_connections
-          team: infrastructure
-        annotations:
-          summary: 'Database connection pool near exhaustion'
-          description: 'Connection pool usage is {{ $value | humanizePercentage }} for {{ $labels.service }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/db-connection-exhaustion'
-
-  # ============================================================================
-  # SYSTEM PERFORMANCE ALERTS
-  # ============================================================================
-  - name: acgs_system_performance
-    rules:
-      # System Availability Below SLA
-      - alert: SystemAvailabilityBelowSLA
-        expr: avg(up{job=~"acgs-.*-service"}) < 0.999
-        for: 1m
-        labels:
-          severity: critical
-          component: system_availability
-          team: platform
-          escalation: immediate
-        annotations:
-          summary: 'System availability below 99.9% SLA'
-          description: 'System availability is {{ $value | humanizePercentage }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/availability-sla-breach'
-          impact: 'SLA breach - immediate attention required'
-
-      # High Concurrent Governance Actions
-      - alert: HighConcurrentGovernanceActions
-        expr: sum(acgs_active_governance_actions) > 1000
-        for: 5m
-        labels:
-          severity: warning
-          component: capacity
-          team: platform
-        annotations:
-          summary: 'High number of concurrent governance actions'
-          description: '{{ $value }} concurrent governance actions - approaching capacity limit'
-          runbook_url: 'https://docs.acgs.ai/runbooks/high-concurrent-actions'
-
-      # Resource Exhaustion Warning
-      - alert: ResourceExhaustionWarning
-        expr: (rate(acgs_resource_usage_total[5m]) > 0.8) or (acgs_memory_usage_ratio > 0.8) or (acgs_cpu_usage_ratio > 0.8)
-        for: 5m
-        labels:
-          severity: warning
-          component: resource_usage
-          team: infrastructure
-        annotations:
-          summary: 'Resource exhaustion warning'
-          description: 'High resource usage detected - {{ $labels.resource_type }}'
-          runbook_url: 'https://docs.acgs.ai/runbooks/resource-exhaustion'
+- name: acgs_load_balancing
+  rules:
+  - alert: HAProxyDown
+    expr: up{job="haproxy-exporter"} == 0 or up{job="haproxy-stats"} == 0
+    for: 30s
+    labels:
+      severity: critical
+      component: load_balancer
+      team: infrastructure
+      escalation: immediate
+    annotations:
+      summary: HAProxy load balancer is down
+      description: HAProxy has been down for more than 30 seconds
+      runbook_url: https://docs.acgs.ai/runbooks/haproxy-down
+      impact: Load balancing unavailable - service disruption imminent
+  - alert: HAProxyBackendServerDown
+    expr: haproxy_server_status{job="haproxy-exporter"} == 0
+    for: 1m
+    labels:
+      severity: warning
+      component: backend_server
+      team: infrastructure
+    annotations:
+      summary: HAProxy backend server is down
+      description: Backend server {{ $labels.server }} in {{ $labels.proxy }} is down
+      runbook_url: https://docs.acgs.ai/runbooks/backend-server-down
+  - alert: HAProxyHighResponseTime
+    expr: haproxy_server_response_time_average_seconds{job="haproxy-exporter"} > 0.5
+    for: 3m
+    labels:
+      severity: warning
+      component: load_balancer_performance
+      team: infrastructure
+    annotations:
+      summary: HAProxy high response time
+      description: Average response time is {{ $value }}s for {{ $labels.server }}
+        in {{ $labels.proxy }}
+      runbook_url: https://docs.acgs.ai/runbooks/haproxy-high-response-time
+  - alert: HAProxyHighConnectionCount
+    expr: haproxy_server_current_sessions{job="haproxy-exporter"} > 100
+    for: 5m
+    labels:
+      severity: warning
+      component: load_balancer_capacity
+      team: infrastructure
+    annotations:
+      summary: HAProxy high connection count
+      description: 'Current sessions: {{ $value }} for {{ $labels.server }} in {{
+        $labels.proxy }}'
+      runbook_url: https://docs.acgs.ai/runbooks/haproxy-high-connections
+  - alert: BackendServerHealthIssues
+    expr: acgs_backend_server_health == 0
+    for: 1m
+    labels:
+      severity: warning
+      component: backend_health
+      team: infrastructure
+    annotations:
+      summary: Backend server health issues detected
+      description: Backend server {{ $labels.service }}:{{ $labels.port }} is unhealthy
+      runbook_url: https://docs.acgs.ai/runbooks/backend-health-issues
+  - alert: CircuitBreakerOpen
+    expr: acgs_circuit_breaker_status == 1
+    for: 2m
+    labels:
+      severity: warning
+      component: circuit_breaker
+      team: infrastructure
+    annotations:
+      summary: Circuit breaker open for {{ $labels.service }}
+      description: Circuit breaker is open, blocking requests to {{ $labels.service
+        }}
+      runbook_url: https://docs.acgs.ai/runbooks/circuit-breaker-open
+  - alert: HighLoadBalancerResponseTime
+    expr: histogram_quantile(0.95, rate(acgs_load_balancer_response_time_seconds_bucket[5m]))
+      > 1.0
+    for: 3m
+    labels:
+      severity: warning
+      component: load_balancer_performance
+      team: infrastructure
+    annotations:
+      summary: High load balancer response time
+      description: 95th percentile response time is {{ $value }}s for {{ $labels.backend_service
+        }}
+      runbook_url: https://docs.acgs.ai/runbooks/lb-high-response-time
+  - alert: FailoverEvents
+    expr: rate(acgs_failover_events_total[5m]) > 0.1
+    for: 1m
+    labels:
+      severity: warning
+      component: failover
+      team: infrastructure
+    annotations:
+      summary: Failover events detected
+      description: '{{ $value }} failover events per second for {{ $labels.service
+        }}'
+      runbook_url: https://docs.acgs.ai/runbooks/failover-events
+  - alert: SessionAffinityIssues
+    expr: rate(acgs_session_affinity_operations_total{result="failed"}[5m]) > 0.1
+    for: 3m
+    labels:
+      severity: warning
+      component: session_affinity
+      team: infrastructure
+    annotations:
+      summary: Session affinity issues detected
+      description: '{{ $value }} session affinity failures per second'
+      runbook_url: https://docs.acgs.ai/runbooks/session-affinity-issues
+- name: acgs_redis_caching
+  rules:
+  - alert: RedisDown
+    expr: up{job="redis"} == 0
+    for: 30s
+    labels:
+      severity: critical
+      component: redis
+      team: infrastructure
+      escalation: immediate
+    annotations:
+      summary: Redis cache server is down
+      description: Redis has been down for more than 30 seconds
+      runbook_url: https://docs.acgs.ai/runbooks/redis-down
+      impact: Caching unavailable - performance degradation expected
+  - alert: LowCacheHitRate
+    expr: rate(acgs_cache_operations_total{operation="hit"}[5m]) / rate(acgs_cache_operations_total{operation=~"hit|miss"}[5m])
+      < 0.8
+    for: 5m
+    labels:
+      severity: warning
+      component: cache_performance
+      team: infrastructure
+    annotations:
+      summary: Low cache hit rate
+      description: Cache hit rate is {{ $value | humanizePercentage }} for {{ $labels.service
+        }}
+      runbook_url: https://docs.acgs.ai/runbooks/low-cache-hit-rate
+  - alert: HighCacheResponseTime
+    expr: histogram_quantile(0.95, rate(acgs_cache_response_time_seconds_bucket[5m]))
+      > 0.1
+    for: 3m
+    labels:
+      severity: warning
+      component: cache_performance
+      team: infrastructure
+    annotations:
+      summary: High cache response time
+      description: 95th percentile cache response time is {{ $value }}s for {{ $labels.service
+        }}
+      runbook_url: https://docs.acgs.ai/runbooks/high-cache-response-time
+  - alert: RedisConnectionPoolExhaustion
+    expr: acgs_redis_connection_pool_usage{pool_status="active"} / acgs_redis_connection_pool_usage{pool_status="total"}
+      > 0.9
+    for: 2m
+    labels:
+      severity: warning
+      component: redis_connections
+      team: infrastructure
+    annotations:
+      summary: Redis connection pool near exhaustion
+      description: Connection pool usage is {{ $value | humanizePercentage }} for
+        {{ $labels.service }}
+      runbook_url: https://docs.acgs.ai/runbooks/redis-connection-exhaustion
+  - alert: HighCacheMemoryUsage
+    expr: acgs_cache_memory_usage_bytes / (1024*1024*1024) > 8
+    for: 5m
+    labels:
+      severity: warning
+      component: cache_memory
+      team: infrastructure
+    annotations:
+      summary: High cache memory usage
+      description: Cache memory usage is {{ $value }}GB for {{ $labels.service }}
+      runbook_url: https://docs.acgs.ai/runbooks/high-cache-memory
+  - alert: HighCacheEvictionRate
+    expr: rate(acgs_cache_evictions_total[5m]) > 10
+    for: 3m
+    labels:
+      severity: warning
+      component: cache_evictions
+      team: infrastructure
+    annotations:
+      summary: High cache eviction rate
+      description: '{{ $value }} cache evictions per second for {{ $labels.service
+        }}'
+      runbook_url: https://docs.acgs.ai/runbooks/high-cache-evictions
+- name: acgs_database_performance
+  rules:
+  - alert: DatabaseConnectionIssues
+    expr: acgs_database_connections{pool_status="failed"} > 5
+    for: 2m
+    labels:
+      severity: warning
+      component: database_connections
+      team: infrastructure
+    annotations:
+      summary: Database connection issues detected
+      description: '{{ $value }} failed database connections for {{ $labels.service
+        }}'
+      runbook_url: https://docs.acgs.ai/runbooks/database-connection-issues
+  - alert: HighDatabaseQueryTime
+    expr: histogram_quantile(0.95, rate(acgs_database_query_duration_seconds_bucket[5m]))
+      > 1.0
+    for: 3m
+    labels:
+      severity: warning
+      component: database_performance
+      team: infrastructure
+    annotations:
+      summary: High database query time
+      description: 95th percentile query time is {{ $value }}s
+      runbook_url: https://docs.acgs.ai/runbooks/high-database-query-time
+  - alert: DatabaseConnectionPoolExhaustion
+    expr: acgs_database_connections{pool_status="active"} / acgs_database_connections{pool_status="total"}
+      > 0.9
+    for: 2m
+    labels:
+      severity: warning
+      component: database_connections
+      team: infrastructure
+    annotations:
+      summary: Database connection pool near exhaustion
+      description: Connection pool usage is {{ $value | humanizePercentage }} for
+        {{ $labels.service }}
+      runbook_url: https://docs.acgs.ai/runbooks/db-connection-exhaustion
+- name: acgs_system_performance
+  rules:
+  - alert: SystemAvailabilityBelowSLA
+    expr: avg(up{job=~"acgs-.*-service"}) < 0.999
+    for: 1m
+    labels:
+      severity: critical
+      component: system_availability
+      team: platform
+      escalation: immediate
+    annotations:
+      summary: System availability below 99.9% SLA
+      description: System availability is {{ $value | humanizePercentage }}
+      runbook_url: https://docs.acgs.ai/runbooks/availability-sla-breach
+      impact: SLA breach - immediate attention required
+  - alert: HighConcurrentGovernanceActions
+    expr: sum(acgs_active_governance_actions) > 1000
+    for: 5m
+    labels:
+      severity: warning
+      component: capacity
+      team: platform
+    annotations:
+      summary: High number of concurrent governance actions
+      description: '{{ $value }} concurrent governance actions - approaching capacity
+        limit'
+      runbook_url: https://docs.acgs.ai/runbooks/high-concurrent-actions
+  - alert: ResourceExhaustionWarning
+    expr: (rate(acgs_resource_usage_total[5m]) > 0.8) or (acgs_memory_usage_ratio
+      > 0.8) or (acgs_cpu_usage_ratio > 0.8)
+    for: 5m
+    labels:
+      severity: warning
+      component: resource_usage
+      team: infrastructure
+    annotations:
+      summary: Resource exhaustion warning
+      description: High resource usage detected - {{ $labels.resource_type }}
+      runbook_url: https://docs.acgs.ai/runbooks/resource-exhaustion
+constitutional_hash: cdd01ef066bc6cf2

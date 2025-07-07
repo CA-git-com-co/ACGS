@@ -1,184 +1,173 @@
-# ACGS-1 Redis Cluster Docker Compose Configuration
-# Phase 2 - Enterprise Scalability & Performance
-# 6-node Redis cluster (3 masters + 3 replicas) for high availability
-
 version: '3.8'
-
 services:
-  # Redis Master Nodes
   redis-master-1:
     image: redis:7-alpine
     container_name: acgs_redis_master_1
-    command: redis-server /usr/local/etc/redis/redis.conf --port 7001 --cluster-announce-port 7001 --cluster-announce-bus-port 17001
+    command: redis-server /usr/local/etc/redis/redis.conf --port 7001 --cluster-announce-port
+      7001 --cluster-announce-bus-port 17001
     ports:
-      - '7001:7001'
-      - '17001:17001'
+    - 7001:7001
+    - 17001:17001
     volumes:
-      - ./redis-cluster-config.conf:/usr/local/etc/redis/redis.conf:ro
-      - redis_master_1_data:/data
-      - redis_logs:/var/log/redis
+    - ./redis-cluster-config.conf:/usr/local/etc/redis/redis.conf:ro
+    - redis_master_1_data:/data
+    - redis_logs:/var/log/redis
     networks:
-      - acgs_redis_cluster
+    - acgs_redis_cluster
     environment:
-      - REDIS_PORT=7001
+    - REDIS_PORT=7001
     restart: unless-stopped
     sysctls:
-      - net.core.somaxconn=65535
+    - net.core.somaxconn=65535
     ulimits:
       memlock: -1
       nofile: 65535
-
   redis-master-2:
     image: redis:7-alpine
     container_name: acgs_redis_master_2
-    command: redis-server /usr/local/etc/redis/redis.conf --port 7002 --cluster-announce-port 7002 --cluster-announce-bus-port 17002
+    command: redis-server /usr/local/etc/redis/redis.conf --port 7002 --cluster-announce-port
+      7002 --cluster-announce-bus-port 17002
     ports:
-      - '7002:7002'
-      - '17002:17002'
+    - 7002:7002
+    - 17002:17002
     volumes:
-      - ./redis-cluster-config.conf:/usr/local/etc/redis/redis.conf:ro
-      - redis_master_2_data:/data
-      - redis_logs:/var/log/redis
+    - ./redis-cluster-config.conf:/usr/local/etc/redis/redis.conf:ro
+    - redis_master_2_data:/data
+    - redis_logs:/var/log/redis
     networks:
-      - acgs_redis_cluster
+    - acgs_redis_cluster
     environment:
-      - REDIS_PORT=7002
+    - REDIS_PORT=7002
     restart: unless-stopped
     sysctls:
-      - net.core.somaxconn=65535
+    - net.core.somaxconn=65535
     ulimits:
       memlock: -1
       nofile: 65535
-
   redis-master-3:
     image: redis:7-alpine
     container_name: acgs_redis_master_3
-    command: redis-server /usr/local/etc/redis/redis.conf --port 7003 --cluster-announce-port 7003 --cluster-announce-bus-port 17003
+    command: redis-server /usr/local/etc/redis/redis.conf --port 7003 --cluster-announce-port
+      7003 --cluster-announce-bus-port 17003
     ports:
-      - '7003:7003'
-      - '17003:17003'
+    - 7003:7003
+    - 17003:17003
     volumes:
-      - ./redis-cluster-config.conf:/usr/local/etc/redis/redis.conf:ro
-      - redis_master_3_data:/data
-      - redis_logs:/var/log/redis
+    - ./redis-cluster-config.conf:/usr/local/etc/redis/redis.conf:ro
+    - redis_master_3_data:/data
+    - redis_logs:/var/log/redis
     networks:
-      - acgs_redis_cluster
+    - acgs_redis_cluster
     environment:
-      - REDIS_PORT=7003
+    - REDIS_PORT=7003
     restart: unless-stopped
     sysctls:
-      - net.core.somaxconn=65535
+    - net.core.somaxconn=65535
     ulimits:
       memlock: -1
       nofile: 65535
-
-  # Redis Replica Nodes
   redis-replica-1:
     image: redis:7-alpine
     container_name: acgs_redis_replica_1
-    command: redis-server /usr/local/etc/redis/redis.conf --port 7004 --cluster-announce-port 7004 --cluster-announce-bus-port 17004
+    command: redis-server /usr/local/etc/redis/redis.conf --port 7004 --cluster-announce-port
+      7004 --cluster-announce-bus-port 17004
     ports:
-      - '7004:7004'
-      - '17004:17004'
+    - 7004:7004
+    - 17004:17004
     volumes:
-      - ./redis-cluster-config.conf:/usr/local/etc/redis/redis.conf:ro
-      - redis_replica_1_data:/data
-      - redis_logs:/var/log/redis
+    - ./redis-cluster-config.conf:/usr/local/etc/redis/redis.conf:ro
+    - redis_replica_1_data:/data
+    - redis_logs:/var/log/redis
     networks:
-      - acgs_redis_cluster
+    - acgs_redis_cluster
     environment:
-      - REDIS_PORT=7004
+    - REDIS_PORT=7004
     restart: unless-stopped
     sysctls:
-      - net.core.somaxconn=65535
+    - net.core.somaxconn=65535
     ulimits:
       memlock: -1
       nofile: 65535
-
   redis-replica-2:
     image: redis:7-alpine
     container_name: acgs_redis_replica_2
-    command: redis-server /usr/local/etc/redis/redis.conf --port 7005 --cluster-announce-port 7005 --cluster-announce-bus-port 17005
+    command: redis-server /usr/local/etc/redis/redis.conf --port 7005 --cluster-announce-port
+      7005 --cluster-announce-bus-port 17005
     ports:
-      - '7005:7005'
-      - '17005:17005'
+    - 7005:7005
+    - 17005:17005
     volumes:
-      - ./redis-cluster-config.conf:/usr/local/etc/redis/redis.conf:ro
-      - redis_replica_2_data:/data
-      - redis_logs:/var/log/redis
+    - ./redis-cluster-config.conf:/usr/local/etc/redis/redis.conf:ro
+    - redis_replica_2_data:/data
+    - redis_logs:/var/log/redis
     networks:
-      - acgs_redis_cluster
+    - acgs_redis_cluster
     environment:
-      - REDIS_PORT=7005
+    - REDIS_PORT=7005
     restart: unless-stopped
     sysctls:
-      - net.core.somaxconn=65535
+    - net.core.somaxconn=65535
     ulimits:
       memlock: -1
       nofile: 65535
-
   redis-replica-3:
     image: redis:7-alpine
     container_name: acgs_redis_replica_3
-    command: redis-server /usr/local/etc/redis/redis.conf --port 7006 --cluster-announce-port 7006 --cluster-announce-bus-port 17006
+    command: redis-server /usr/local/etc/redis/redis.conf --port 7006 --cluster-announce-port
+      7006 --cluster-announce-bus-port 17006
     ports:
-      - '7006:7006'
-      - '17006:17006'
+    - 7006:7006
+    - 17006:17006
     volumes:
-      - ./redis-cluster-config.conf:/usr/local/etc/redis/redis.conf:ro
-      - redis_replica_3_data:/data
-      - redis_logs:/var/log/redis
+    - ./redis-cluster-config.conf:/usr/local/etc/redis/redis.conf:ro
+    - redis_replica_3_data:/data
+    - redis_logs:/var/log/redis
     networks:
-      - acgs_redis_cluster
+    - acgs_redis_cluster
     environment:
-      - REDIS_PORT=7006
+    - REDIS_PORT=7006
     restart: unless-stopped
     sysctls:
-      - net.core.somaxconn=65535
+    - net.core.somaxconn=65535
     ulimits:
       memlock: -1
       nofile: 65535
-
-  # Redis Cluster Manager (for initialization and management)
   redis-cluster-manager:
     image: redis:7-alpine
     container_name: acgs_redis_cluster_manager
     command: sleep infinity
     volumes:
-      - ./cluster-init.sh:/cluster-init.sh:ro
-      - ./cluster-health-check.sh:/cluster-health-check.sh:ro
+    - ./cluster-init.sh:/cluster-init.sh:ro
+    - ./cluster-health-check.sh:/cluster-health-check.sh:ro
     networks:
-      - acgs_redis_cluster
+    - acgs_redis_cluster
     depends_on:
-      - redis-master-1
-      - redis-master-2
-      - redis-master-3
-      - redis-replica-1
-      - redis-replica-2
-      - redis-replica-3
+    - redis-master-1
+    - redis-master-2
+    - redis-master-3
+    - redis-replica-1
+    - redis-replica-2
+    - redis-replica-3
     restart: unless-stopped
-
-  # Redis Exporter for Prometheus monitoring
   redis-exporter:
     image: oliver006/redis_exporter:latest
     container_name: acgs_redis_exporter
     command:
-      - '--redis.addr=redis://redis-master-1:7001,redis://redis-master-2:7002,redis://redis-master-3:7003'
-      - '--web.listen-address=:9121'
-      - '--log-format=txt'
+    - --redis.addr=redis://redis-master-1:7001,redis://redis-master-2:7002,redis://redis-master-3:7003
+    - --web.listen-address=:9121
+    - --log-format=txt
     ports:
-      - '9121:9121'
+    - 9121:9121
     networks:
-      - acgs_redis_cluster
+    - acgs_redis_cluster
     depends_on:
-      - redis-master-1
-      - redis-master-2
-      - redis-master-3
+    - redis-master-1
+    - redis-master-2
+    - redis-master-3
     restart: unless-stopped
     environment:
-      - REDIS_EXPORTER_LOG_FORMAT=txt
-      - REDIS_EXPORTER_DEBUG=false
-
+    - REDIS_EXPORTER_LOG_FORMAT=txt
+    - REDIS_EXPORTER_DEBUG=false
 volumes:
   redis_master_1_data:
     driver: local
@@ -194,10 +183,10 @@ volumes:
     driver: local
   redis_logs:
     driver: local
-
 networks:
   acgs_redis_cluster:
     driver: bridge
     ipam:
       config:
-        - subnet: 172.20.0.0/16
+      - subnet: 172.20.0.0/16
+constitutional_hash: cdd01ef066bc6cf2

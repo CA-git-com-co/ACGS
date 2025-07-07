@@ -27,11 +27,10 @@ import numpy as np
 from web3 import Web3
 
 from ..core.metrics import get_metrics
-from .collective_constitutional_ai import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from .collective_constitutional_ai import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
+    "cdd01ef066bc6cf2",
+    =,
     get_collective_constitutional_ai,
 )
 

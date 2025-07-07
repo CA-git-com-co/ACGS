@@ -780,3 +780,6 @@ cache/
 # Embedded git repositories (should be submodules if needed)
 claudia/
 claudia-acgs/
+
+# ACGS Research Paper Archives (Constitutional Hash: cdd01ef066bc6cf2)
+docs/research/papers_archive/\n# ACGS Security - Environment files\n.env.production\nvault_tokens/

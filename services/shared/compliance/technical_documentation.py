@@ -12,6 +12,7 @@ Key Features:
 - Multi-format document export (PDF, HTML, JSON)
 - Integration with system monitoring for real-time updates
 """
+
 # Constitutional Hash: cdd01ef066bc6cf2
 
 import hashlib
@@ -676,15 +677,17 @@ class TechnicalDocumentationManager:
             await self._save_documentation_package(package)
 
             # Log package generation
-            await self.audit_logger.log_compliance_event({
-                "event_type": "documentation_package_generated",
-                "package_id": package_id,
-                "system_name": self.system_name,
-                "compliance_score": compliance_score,
-                "documents_generated": len(documents),
-                "missing_elements": len(missing_elements),
-                "timestamp": current_time.isoformat(),
-            })
+            await self.audit_logger.log_compliance_event(
+                {
+                    "event_type": "documentation_package_generated",
+                    "package_id": package_id,
+                    "system_name": self.system_name,
+                    "compliance_score": compliance_score,
+                    "documents_generated": len(documents),
+                    "missing_elements": len(missing_elements),
+                    "timestamp": current_time.isoformat(),
+                }
+            )
 
             return package
 
@@ -809,9 +812,7 @@ class TechnicalDocumentationManager:
 
             # Save individual documents
             for doc_type, document in package.documents.items():
-                doc_filename = (
-                    f"{doc_type.value if isinstance(doc_type, DocumentationType) else str(doc_type)}.md"
-                )
+                doc_filename = f"{doc_type.value if isinstance(doc_type, DocumentationType) else str(doc_type)}.md"
                 doc_file = package_dir / doc_filename
 
                 with open(doc_file, "w") as f:
@@ -856,24 +857,28 @@ class TechnicalDocumentationManager:
                 package.next_review_date = updates["next_review_date"]
 
             # Add to approval history
-            package.approval_history.append({
-                "action": "updated",
-                "timestamp": package.last_updated,
-                "updated_by": updates.get("updated_by", "system"),
-                "changes": updates.get("changes", []),
-            })
+            package.approval_history.append(
+                {
+                    "action": "updated",
+                    "timestamp": package.last_updated,
+                    "updated_by": updates.get("updated_by", "system"),
+                    "changes": updates.get("changes", []),
+                }
+            )
 
             # Save updated package
             await self._save_documentation_package(package)
 
             # Log update
-            await self.audit_logger.log_compliance_event({
-                "event_type": "documentation_package_updated",
-                "package_id": package_id,
-                "updates": list(updates.keys()),
-                "new_compliance_score": package.compliance_score,
-                "timestamp": package.last_updated.isoformat(),
-            })
+            await self.audit_logger.log_compliance_event(
+                {
+                    "event_type": "documentation_package_updated",
+                    "package_id": package_id,
+                    "updates": list(updates.keys()),
+                    "new_compliance_score": package.compliance_score,
+                    "timestamp": package.last_updated.isoformat(),
+                }
+            )
 
             return package
 
@@ -956,14 +961,16 @@ class TechnicalDocumentationManager:
             )
 
             # Log validation
-            await self.audit_logger.log_compliance_event({
-                "event_type": "documentation_validation_completed",
-                "package_id": package_id,
-                "overall_compliant": validation_results["overall_compliant"],
-                "compliance_score": validation_results["compliance_score"],
-                "critical_issues_count": len(validation_results["critical_issues"]),
-                "timestamp": validation_results["validation_date"].isoformat(),
-            })
+            await self.audit_logger.log_compliance_event(
+                {
+                    "event_type": "documentation_validation_completed",
+                    "package_id": package_id,
+                    "overall_compliant": validation_results["overall_compliant"],
+                    "compliance_score": validation_results["compliance_score"],
+                    "critical_issues_count": len(validation_results["critical_issues"]),
+                    "timestamp": validation_results["validation_date"].isoformat(),
+                }
+            )
 
             return validation_results
 
@@ -996,9 +1003,9 @@ class TechnicalDocumentationManager:
 
             if missing_elements:
                 validation_result["compliant"] = False
-                validation_result["issues"].extend([
-                    f"Missing mandatory element: {elem}" for elem in missing_elements
-                ])
+                validation_result["issues"].extend(
+                    [f"Missing mandatory element: {elem}" for elem in missing_elements]
+                )
                 validation_result["recommendations"].append(
                     "Add missing mandatory elements"
                 )
@@ -1107,13 +1114,15 @@ class TechnicalDocumentationManager:
                 raise ValueError(f"Unsupported export format: {format_type}")
 
             # Log export
-            await self.audit_logger.log_compliance_event({
-                "event_type": "documentation_exported",
-                "package_id": package_id,
-                "format": format_type,
-                "export_file": str(export_file),
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_compliance_event(
+                {
+                    "event_type": "documentation_exported",
+                    "package_id": package_id,
+                    "format": format_type,
+                    "export_file": str(export_file),
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
             return str(export_file)
 
@@ -1301,12 +1310,14 @@ class TechnicalDocumentationManager:
 async def example_usage():
     """Example of using the technical documentation manager"""
     # Initialize documentation manager
-    doc_manager = TechnicalDocumentationManager({
-        "system_name": "ACGS",
-        "system_version": "1.0.0",
-        "organization": "Constitutional AI Research Institute",
-        "documentation_dir": "./acgs_documentation",
-    })
+    doc_manager = TechnicalDocumentationManager(
+        {
+            "system_name": "ACGS",
+            "system_version": "1.0.0",
+            "organization": "Constitutional AI Research Institute",
+            "documentation_dir": "./acgs_documentation",
+        }
+    )
 
     # Prepare system details
     system_details = {

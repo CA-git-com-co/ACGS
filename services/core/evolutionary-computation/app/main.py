@@ -26,6 +26,53 @@ from .api.v1.oversight import router as oversight_router
 from .api.v1.reporting import router as reporting_router
 from .api.v1.wina_oversight import router as wina_oversight_router
 
+# ACGS Standardized Error Handling
+try:
+    import sys
+    from pathlib import Path
+    shared_middleware_path = Path(__file__).parent.parent.parent.parent.parent / "shared" / "middleware"
+    sys.path.insert(0, str(shared_middleware_path))
+    
+    from error_handling import (
+        ACGSException,
+        AuthenticationError,
+        ConstitutionalComplianceError,
+        ErrorContext,
+        ErrorHandlingMiddleware,
+        SecurityValidationError,
+        ValidationError,
+        log_error_with_context,
+        setup_error_handlers,
+    )
+    ACGS_ERROR_HANDLING_AVAILABLE = True
+    print(f"✅ ACGS Error handling loaded for {service_name}")
+except ImportError as e:
+    print(f"⚠️ ACGS Error handling not available for {service_name}: {e}")
+    ACGS_ERROR_HANDLING_AVAILABLE = False
+
+
+# ACGS Security Middleware Integration
+try:
+    import sys
+    from pathlib import Path
+    shared_security_path = Path(__file__).parent.parent.parent.parent.parent / "shared" / "security"
+    sys.path.insert(0, str(shared_security_path))
+    
+    from middleware_integration import (
+        SecurityLevel,
+        apply_acgs_security_middleware,
+        create_secure_endpoint_decorator,
+        get_security_headers,
+        setup_security_monitoring,
+        validate_request_body,
+    )
+    ACGS_SECURITY_AVAILABLE = True
+    print(f"✅ ACGS Security middleware loaded for {service_name}")
+except ImportError as e:
+    print(f"⚠️ ACGS Security middleware not available for {service_name}: {e}")
+    ACGS_SECURITY_AVAILABLE = False
+
+
 # Import production security middleware
 try:
     import sys
@@ -157,8 +204,8 @@ def get_config():
 
 # Import local components
 try:
+    from services.shared.wina.performance_api import router as wina_performance_router
     from services.shared.wina.performance_api import (
-        router as wina_performance_router,
         set_collector_getter,
     )
 except ImportError:
@@ -222,6 +269,7 @@ async def lifespan(app: FastAPI):
         yield
 
     except Exception as e:
+        # TODO: Consider using ACGS error handling: log_error_with_context()
         logger.error(f"Failed to start EC Service: {e}")
         raise
     finally:
@@ -262,11 +310,26 @@ async def background_monitoring():
             logger.info("Background monitoring task cancelled")
             break
         except Exception as e:
+        # TODO: Consider using ACGS error handling: log_error_with_context()
             logger.error(f"Background monitoring error: {e}")
             await asyncio.sleep(60)  # Wait longer on error
 
 
 app = FastAPI(
+
+
+# Apply ACGS Error Handling
+if ACGS_ERROR_HANDLING_AVAILABLE:
+    import os
+    development_mode = os.getenv("ENVIRONMENT", "development") != "production"
+    setup_error_handlers(app, "evolutionary-computation", include_traceback=development_mode)
+
+# Apply ACGS Security Middleware
+if ACGS_SECURITY_AVAILABLE:
+    environment = os.getenv("ENVIRONMENT", "development")
+    apply_acgs_security_middleware(app, "evolutionary-computation", environment)
+    setup_security_monitoring(app, "evolutionary-computation")
+
     title="ACGS-PGP Evolutionary Computation (EC) Service",
     description="WINA-optimized oversight and governance for evolutionary computation systems",
     version=config.get("api_version", "v1"),
@@ -439,6 +502,7 @@ async def health_check():
                 "healthy" if wina_coordinator.enable_wina else "disabled"
             )
         except Exception as e:
+        # TODO: Consider using ACGS error handling: log_error_with_context()
             coordinator_status = f"error: {e!s}"
 
     return {

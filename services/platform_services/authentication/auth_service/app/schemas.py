@@ -6,7 +6,6 @@ from pydantic import BaseModel, EmailStr, Field
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 # Schema for token response
 class Token(BaseModel):
     access_token: str

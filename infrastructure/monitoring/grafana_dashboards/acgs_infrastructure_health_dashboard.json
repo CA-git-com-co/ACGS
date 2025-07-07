@@ -90,5 +90,7 @@
   "timezone": "",
   "title": "ACGS Infrastructure Health Dashboard",
   "uid": "acgs-infrastructure-health",
-  "version": 1
+  "version": 1,
+  "_constitutional_hash": "cdd01ef066bc6cf2",
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }

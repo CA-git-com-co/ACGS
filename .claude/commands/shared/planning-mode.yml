@@ -1,7 +1,9 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 # Planning Mode Config
 
 ## Universal Planning Control
 
+# Constitutional Hash: cdd01ef066bc6cf2
 ```yaml
 Planning_Flags:
   --plan: "Force planning mode for any command"

@@ -1,6 +1,5 @@
 ---
-type: "agent_coordination"
-constitutional_hash: "cdd01ef066bc6cf2"
+type: "always_apply"
 ---
 
 # ACGS Multi-Agent Rules

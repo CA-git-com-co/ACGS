@@ -23,15 +23,14 @@ from sqlalchemy import and_, desc, func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from services.shared.database import get_async_db
-from services.shared.models import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from services.shared.models import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     AuditLog,
     ConstitutionalViolation,
     User,
     ViolationEscalation,
+    "cdd01ef066bc6cf2",
+    =,
 )
 
 logger = logging.getLogger(__name__)

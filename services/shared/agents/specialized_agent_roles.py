@@ -130,16 +130,18 @@ class SpecializedAgentRole(ABC):
             self.is_active = True
 
             # Log role activation
-            await self.audit_logger.log_security_event({
-                "event_type": "specialized_role_activated",
-                "role_id": self.role_id,
-                "role_type": self.role_spec.role_type.value,
-                "capabilities": [
-                    cap.capability_id for cap in self.role_spec.capabilities
-                ],
-                "constitutional_hash": CONSTITUTIONAL_HASH,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
-            })
+            await self.audit_logger.log_security_event(
+                {
+                    "event_type": "specialized_role_activated",
+                    "role_id": self.role_id,
+                    "role_type": self.role_spec.role_type.value,
+                    "capabilities": [
+                        cap.capability_id for cap in self.role_spec.capabilities
+                    ],
+                    "constitutional_hash": CONSTITUTIONAL_HASH,
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                }
+            )
 
             logger.info(
                 f"Specialized role {self.role_spec.role_type.value} activated:"
@@ -198,11 +200,13 @@ class SpecializedAgentRole(ABC):
         """Validate task against constitutional constraints"""
         try:
             # Check constitutional requirements
-            compliance_result = await self.safety_validator.validate_content({
-                "task_type": task_data.get("task_type"),
-                "parameters": task_data.get("parameters", {}),
-                "role_constraints": self.role_spec.constitutional_constraints,
-            })
+            compliance_result = await self.safety_validator.validate_content(
+                {
+                    "task_type": task_data.get("task_type"),
+                    "parameters": task_data.get("parameters", {}),
+                    "role_constraints": self.role_spec.constitutional_constraints,
+                }
+            )
 
             return compliance_result.get("is_compliant", False)
 

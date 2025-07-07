@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Constitutional Hash: cdd01ef066bc6cf2
 """
 Simple test script for Microsoft Phi-4 reasoning model with ONNX Runtime GenAI
 """

@@ -1,96 +1,84 @@
-# ACGS-1 Prometheus Configuration
-# Monitors all 7 core services with constitutional governance metrics
-
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
   external_labels:
-    cluster: 'acgs-1'
-    environment: 'development'
-
-rule_files:
-  # - "first_rules.yml"
-  # - "second_rules.yml"
-
+    cluster: acgs-1
+    environment: development
+rule_files: null
 scrape_configs:
-  # Prometheus self-monitoring
-  - job_name: 'prometheus'
-    static_configs:
-      - targets: ['localhost:9090']
-
-  # ACGS Core Services
-  - job_name: 'auth_service'
-    static_configs:
-      - targets: ['auth_service:8000']
-    metrics_path: '/metrics'
-    scrape_interval: 10s
-    scrape_timeout: 5s
-
-  - job_name: 'ac_service'
-    static_configs:
-      - targets: ['ac_service:8001']
-    metrics_path: '/metrics'
-    scrape_interval: 10s
-    scrape_timeout: 5s
-
-  - job_name: 'integrity_service'
-    static_configs:
-      - targets: ['integrity_service:8002']
-    metrics_path: '/metrics'
-    scrape_interval: 10s
-    scrape_timeout: 5s
-
-  - job_name: 'fv_service'
-    static_configs:
-      - targets: ['fv_service:8003']
-    metrics_path: '/metrics'
-    scrape_interval: 10s
-    scrape_timeout: 5s
-
-  - job_name: 'gs_service'
-    static_configs:
-      - targets: ['gs_service:8004']
-    metrics_path: '/metrics'
-    scrape_interval: 10s
-    scrape_timeout: 5s
-
-  - job_name: 'pgc_service'
-    static_configs:
-      - targets: ['pgc_service:8005']
-    metrics_path: '/metrics'
-    scrape_interval: 5s # More frequent for compliance monitoring
-    scrape_timeout: 3s
-
-  - job_name: 'ec_service'
-    static_configs:
-      - targets: ['ec_service:8006']
-    metrics_path: '/metrics'
-    scrape_interval: 10s
-    scrape_timeout: 5s
-
-  # Infrastructure Services
-  - job_name: 'postgres'
-    static_configs:
-      - targets: ['postgres:5432']
-    metrics_path: '/metrics'
-    scrape_interval: 30s
-
-  - job_name: 'redis'
-    static_configs:
-      - targets: ['redis:6379']
-    metrics_path: '/metrics'
-    scrape_interval: 30s
-
-  - job_name: 'haproxy'
-    static_configs:
-      - targets: ['haproxy:8080']
-    metrics_path: '/stats'
-    scrape_interval: 15s
-
-# Alerting rules for constitutional governance
+- job_name: prometheus
+  static_configs:
+  - targets:
+    - localhost:9090
+- job_name: auth_service
+  static_configs:
+  - targets:
+    - auth_service:8000
+  metrics_path: /metrics
+  scrape_interval: 10s
+  scrape_timeout: 5s
+- job_name: ac_service
+  static_configs:
+  - targets:
+    - ac_service:8001
+  metrics_path: /metrics
+  scrape_interval: 10s
+  scrape_timeout: 5s
+- job_name: integrity_service
+  static_configs:
+  - targets:
+    - integrity_service:8002
+  metrics_path: /metrics
+  scrape_interval: 10s
+  scrape_timeout: 5s
+- job_name: fv_service
+  static_configs:
+  - targets:
+    - fv_service:8003
+  metrics_path: /metrics
+  scrape_interval: 10s
+  scrape_timeout: 5s
+- job_name: gs_service
+  static_configs:
+  - targets:
+    - gs_service:8004
+  metrics_path: /metrics
+  scrape_interval: 10s
+  scrape_timeout: 5s
+- job_name: pgc_service
+  static_configs:
+  - targets:
+    - pgc_service:8005
+  metrics_path: /metrics
+  scrape_interval: 5s
+  scrape_timeout: 3s
+- job_name: ec_service
+  static_configs:
+  - targets:
+    - ec_service:8006
+  metrics_path: /metrics
+  scrape_interval: 10s
+  scrape_timeout: 5s
+- job_name: postgres
+  static_configs:
+  - targets:
+    - postgres:5432
+  metrics_path: /metrics
+  scrape_interval: 30s
+- job_name: redis
+  static_configs:
+  - targets:
+    - redis:6379
+  metrics_path: /metrics
+  scrape_interval: 30s
+- job_name: haproxy
+  static_configs:
+  - targets:
+    - haproxy:8080
+  metrics_path: /stats
+  scrape_interval: 15s
 alerting:
   alertmanagers:
-    - static_configs:
-        - targets:
-          # - alertmanager:9093
-# Recording rules for ACGS metrics (configured above)
+  - static_configs:
+    - targets: null
+constitutional_hash: cdd01ef066bc6cf2

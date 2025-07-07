@@ -260,11 +260,17 @@ class PerformanceBenchmark:
                 try:
                     # Alternate between valid and invalid credentials for realistic testing
                     if iteration % 3 == 0:
-                        username, password = "admin", "admin_password"
+                        username, password = os.getenv("PASSWORD", ""), "admin_password"
                     elif iteration % 3 == 1:
-                        username, password = "council_member", "council_password"
+                        username, password = (
+                            os.getenv("PASSWORD", ""),
+                            "council_password",
+                        )
                     else:
-                        username, password = "invalid_user", "invalid_password"
+                        username, password = (
+                            os.getenv("PASSWORD", ""),
+                            "invalid_password",
+                        )
 
                     await enhanced_auth_service.authenticate_user(
                         username=username,

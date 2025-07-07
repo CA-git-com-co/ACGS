@@ -17,7 +17,6 @@ from .models import KnowledgeItem
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 class KnowledgeManager:
     """
     Manages knowledge items on the blackboard.

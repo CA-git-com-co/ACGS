@@ -18,15 +18,14 @@ from typing import Any
 
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import ed25519
-from cryptography.hazmat.primitives.serialization import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from cryptography.hazmat.primitives.serialization import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     Encoding,
     NoEncryption,
     PrivateFormat,
     PublicFormat,
+    "cdd01ef066bc6cf2",
+    =,
 )
 from pydantic import BaseModel, Field
 

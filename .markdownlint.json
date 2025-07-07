@@ -1,0 +1,24 @@
+{
+  "default": true,
+  "MD013": {
+    "line_length": 120,
+    "code_blocks": false,
+    "tables": false
+  },
+  "MD033": {
+    "allowed_elements": [
+      "details",
+      "summary",
+      "br",
+      "sup",
+      "sub"
+    ]
+  },
+  "MD041": false,
+  "MD001": false,
+  "MD024": {
+    "allow_different_nesting": true
+  },
+  "_constitutional_hash": "cdd01ef066bc6cf2",
+  "constitutional_hash": "cdd01ef066bc6cf2"
+}

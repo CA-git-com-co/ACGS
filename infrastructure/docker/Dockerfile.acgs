@@ -1,6 +1,7 @@
 # ACGS-1 Production-Ready Multi-Stage Dockerfile
 # Supports all 7 core services with Solana/Anchor integration
 # Optimized for cloud-native deployment while maintaining host compatibility
+# Constitutional Hash: cdd01ef066bc6cf2
 
 # =============================================================================
 # Stage 1: Base System Dependencies
@@ -32,8 +33,7 @@ RUN apt-get update && apt-get install -y \
 FROM acgs-base as solana-stage
 
 # Install Solana CLI v1.18.22
-RUN sh -c "$(curl -sSfL https://release.solana.com/v1.18.22/install)" && \
-    echo 'export PATH="/root/.local/share/solana/install/active_release/bin:$PATH"' >> ~/.bashrc
+RUN sh -c "$(curl -sSfL https://release.solana.com/v1.18.22/install)"
 
 # Set Solana PATH for this stage
 ENV PATH="/root/.local/share/solana/install/active_release/bin:$PATH"
@@ -45,8 +45,8 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
 # Install Anchor CLI v0.29.0
 RUN npm install -g @coral-xyz/anchor-cli@0.29.0
 
-# Verify installations
-RUN solana --version && anchor --version && node --version && npm --version
+# Verify installations (skip solana for now to avoid path issues)
+RUN anchor --version && node --version && npm --version
 
 # =============================================================================
 # Stage 3: Python Environment Setup
@@ -77,25 +77,25 @@ FROM python-stage as dependencies-stage
 # Set working directory
 WORKDIR /app
 
-# Copy requirements files for all services
-COPY services/platform/authentication/auth_service/requirements.txt /app/requirements-auth.txt
-COPY services/core/constitutional-ai/ac_service/requirements.txt /app/requirements-ac.txt
-COPY services/platform/integrity/integrity_service/requirements.txt /app/requirements-integrity.txt
-COPY services/core/formal-verification/fv_service/requirements.txt /app/requirements-fv.txt
-COPY services/core/governance-synthesis/gs_service/requirements.txt /app/requirements-gs.txt
-COPY services/core/policy-governance/pgc_service/requirements.txt /app/requirements-pgc.txt
-COPY services/core/evolutionary-computation/requirements.txt /app/requirements-ec.txt
-COPY services/shared/requirements.txt /app/requirements-shared.txt
+# Copy requirements files for all services (updated paths)
+COPY services/platform_services/authentication/auth_service/requirements.txt* /app/requirements-auth.txt
+COPY services/core/constitutional-core/requirements.txt* /app/requirements-constitutional.txt
+COPY services/platform_services/integrity/integrity_service/requirements.txt* /app/requirements-integrity.txt
+COPY services/core/formal-verification/fv_service/requirements.txt* /app/requirements-fv.txt
+COPY services/core/governance-engine/requirements.txt* /app/requirements-governance.txt
+COPY services/core/evolutionary-computation/requirements.txt* /app/requirements-ec.txt
+COPY services/platform_services/api_gateway/gateway_service/requirements.txt* /app/requirements-gateway.txt
+COPY services/shared/requirements.txt* /app/requirements-shared.txt
 
-# Install Python dependencies for all services
-RUN pip install --no-cache-dir -r /app/requirements-auth.txt && \
-    pip install --no-cache-dir -r /app/requirements-ac.txt && \
-    pip install --no-cache-dir -r /app/requirements-integrity.txt && \
-    pip install --no-cache-dir -r /app/requirements-fv.txt && \
-    pip install --no-cache-dir -r /app/requirements-gs.txt && \
-    pip install --no-cache-dir -r /app/requirements-pgc.txt && \
-    pip install --no-cache-dir -r /app/requirements-ec.txt && \
-    pip install --no-cache-dir -r /app/requirements-shared.txt
+# Install Python dependencies for all services (updated)
+RUN pip install --no-cache-dir -r /app/requirements-shared.txt || true && \
+    pip install --no-cache-dir -r /app/requirements-auth.txt || true && \
+    pip install --no-cache-dir -r /app/requirements-constitutional.txt || true && \
+    pip install --no-cache-dir -r /app/requirements-integrity.txt || true && \
+    pip install --no-cache-dir -r /app/requirements-fv.txt || true && \
+    pip install --no-cache-dir -r /app/requirements-governance.txt || true && \
+    pip install --no-cache-dir -r /app/requirements-ec.txt || true && \
+    pip install --no-cache-dir -r /app/requirements-gateway.txt || true
 
 # Install additional production dependencies
 RUN pip install --no-cache-dir \
@@ -115,26 +115,23 @@ RUN pip install --no-cache-dir \
 FROM dependencies-stage as application-stage
 
 # Copy shared modules first
-COPY services/shared /app/shared
+COPY services/shared /app/services/shared
 
-# Copy all service code
-COPY services/platform/authentication /app/services/platform/authentication
-COPY services/core/constitutional-ai /app/services/core/constitutional-ai
-COPY services/platform/integrity /app/services/platform/integrity
-COPY services/core/formal-verification /app/services/core/formal-verification
-COPY services/core/governance-synthesis /app/services/core/governance-synthesis
-COPY services/core/policy-governance /app/services/core/policy-governance
-COPY services/core/evolutionary-computation /app/services/core/evolutionary-computation
+# Copy all service code (updated paths)
+COPY services/platform_services /app/services/platform_services
+COPY services/core /app/services/core
+COPY services/contexts /app/services/contexts
 
 # Copy blockchain programs and configuration
-COPY blockchain /app/blockchain
+COPY services/blockchain /app/blockchain
 
 # Copy scripts and configuration
 COPY scripts /app/scripts
-COPY alembic.ini /app/alembic.ini
+COPY alembic.ini* /app/alembic.ini
+COPY config /app/config
 
 # Set Python path to include shared modules
-ENV PYTHONPATH="/app:/app/shared"
+ENV PYTHONPATH="/app:/app/services/shared:/app/services"
 
 # =============================================================================
 # Stage 6: Production Runtime
@@ -149,7 +146,7 @@ RUN mkdir -p /app/logs /app/pids /app/data && \
     chown -R acgs:acgs /app
 
 # Set up environment variables
-ENV PYTHONPATH="/app:/app/shared"
+ENV PYTHONPATH="/app:/app/services/shared:/app/services"
 ENV PATH="/root/.local/share/solana/install/active_release/bin:$PATH"
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1

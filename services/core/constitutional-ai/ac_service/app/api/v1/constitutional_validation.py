@@ -112,8 +112,14 @@ async def _perform_constitutional_validation(
 
     # Pre-compiled patterns for O(1) lookup performance
     critical_violations = {
-        "DROP TABLE", "DELETE FROM", "TRUNCATE", "ALTER TABLE",
-        "EXEC", "EXECUTE", "SCRIPT", "EVAL"
+        "DROP TABLE",
+        "DELETE FROM",
+        "TRUNCATE",
+        "ALTER TABLE",
+        "EXEC",
+        "EXECUTE",
+        "SCRIPT",
+        "EVAL",
     }
 
     violations = []
@@ -122,7 +128,9 @@ async def _perform_constitutional_validation(
     # Optimized violation detection with early termination
     for violation_pattern in critical_violations:
         if violation_pattern in policy_content_upper:
-            violations.append(f"Critical security pattern detected: {violation_pattern}")
+            violations.append(
+                f"Critical security pattern detected: {violation_pattern}"
+            )
             break  # Early termination for performance
 
     # Fast scoring calculation with minimal computation

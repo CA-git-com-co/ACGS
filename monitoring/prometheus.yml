@@ -10,7 +10,7 @@ global:
     cluster: 'acgs-main'
 
 rule_files:
-  - "alert_rules.yml"
+  - "/etc/prometheus/alert_rules.yml"
 
 alerting:
   alertmanagers:

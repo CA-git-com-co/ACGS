@@ -14,6 +14,7 @@ Key Features:
 - Integration with existing NATS for lightweight events
 - Graceful degradation and circuit breaker patterns
 """
+
 # Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
@@ -406,14 +407,16 @@ class EventStreamingManager:
             self.running = True
 
             # Log initialization
-            await self.audit_logger.log_streaming_event({
-                "event_type": "streaming_manager_initialized",
-                "cluster_id": self.cluster_id,
-                "environment": self.environment.value,
-                "kafka_healthy": kafka_success,
-                "nats_healthy": nats_success,
-                "timestamp": datetime.utcnow().isoformat(),
-            })
+            await self.audit_logger.log_streaming_event(
+                {
+                    "event_type": "streaming_manager_initialized",
+                    "cluster_id": self.cluster_id,
+                    "environment": self.environment.value,
+                    "kafka_healthy": kafka_success,
+                    "nats_healthy": nats_success,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
 
             logger.info("Event Streaming Manager initialized successfully")
             return True
@@ -547,14 +550,16 @@ class EventStreamingManager:
 
             if success:
                 # Log successful event publication
-                await self.audit_logger.log_streaming_event({
-                    "event_type": "event_published",
-                    "streaming_event_id": event.event_id,
-                    "streaming_event_type": event.event_type.value,
-                    "routing_strategy": routing_strategy.value,
-                    "routing_latency_ms": routing_latency,
-                    "timestamp": datetime.utcnow().isoformat(),
-                })
+                await self.audit_logger.log_streaming_event(
+                    {
+                        "event_type": "event_published",
+                        "streaming_event_id": event.event_id,
+                        "streaming_event_type": event.event_type.value,
+                        "routing_strategy": routing_strategy.value,
+                        "routing_latency_ms": routing_latency,
+                        "timestamp": datetime.utcnow().isoformat(),
+                    }
+                )
             else:
                 # Handle publication failure
                 await self._handle_publication_failure(event, "routing_failed")
@@ -1007,13 +1012,15 @@ class EventStreamingManager:
         await self._send_to_dlq(event, error)
 
         # Log failure
-        await self.audit_logger.log_streaming_event({
-            "event_type": "event_publication_failed",
-            "streaming_event_id": event.event_id,
-            "streaming_event_type": event.event_type.value,
-            "error": error,
-            "timestamp": datetime.utcnow().isoformat(),
-        })
+        await self.audit_logger.log_streaming_event(
+            {
+                "event_type": "event_publication_failed",
+                "streaming_event_id": event.event_id,
+                "streaming_event_type": event.event_type.value,
+                "error": error,
+                "timestamp": datetime.utcnow().isoformat(),
+            }
+        )
 
     async def _update_publishing_metrics(
         self, success: bool, routing_latency_ms: float
@@ -1130,11 +1137,13 @@ class EventStreamingManager:
 
                 # Log metrics periodically
                 if time_elapsed > 300:  # Every 5 minutes
-                    await self.audit_logger.log_streaming_event({
-                        "event_type": "streaming_metrics",
-                        "metrics": asdict(self.metrics),
-                        "timestamp": datetime.utcnow().isoformat(),
-                    })
+                    await self.audit_logger.log_streaming_event(
+                        {
+                            "event_type": "streaming_metrics",
+                            "metrics": asdict(self.metrics),
+                            "timestamp": datetime.utcnow().isoformat(),
+                        }
+                    )
 
                     # Reset metrics for next period
                     self.metrics.last_reset = datetime.utcnow()

@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 from coding_agent import is_patch_valid
 
 

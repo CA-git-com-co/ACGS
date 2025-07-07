@@ -12,7 +12,6 @@ from pathlib import Path
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 def create_init_files():
     """Create __init__.py files to make directories proper Python packages."""
     print("🔧 Creating __init__.py files for Python packages...")

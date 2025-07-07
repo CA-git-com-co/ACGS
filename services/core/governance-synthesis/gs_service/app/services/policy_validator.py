@@ -16,14 +16,13 @@ from enum import Enum
 from typing import Any
 
 from ..config.opa_config import get_opa_config
-from ..core.opa_integration import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from ..core.opa_integration import (  # Constitutional compliance hash for ACGS
+    CONSTITUTIONAL_HASH,
     OPAIntegrationError,
     PolicyDecisionRequest,
     PolicyValidationResult,
+    "cdd01ef066bc6cf2",
+    =,
     get_opa_client,
 )
 
