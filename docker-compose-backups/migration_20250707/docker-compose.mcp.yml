@@ -1,0 +1,343 @@
+# ACGS Multi-Agent Coordination System - MCP Server Stack
+# Production-Ready Docker Compose v3.8 Configuration
+# Constitutional Hash: cdd01ef066bc6cf2
+version: "3.8"
+
+# Custom network for MCP service communication
+networks:
+  mcp_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.0.0/16
+    labels:
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+      - "acgs.network_type=mcp_coordination"
+
+# Named volumes for persistent data storage
+volumes:
+  mcp_workspace:
+    driver: local
+    labels:
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+      - "acgs.volume_type=workspace"
+  mcp_logs:
+    driver: local
+    labels:
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+      - "acgs.volume_type=logs"
+  mcp_cache:
+    driver: local
+    labels:
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+      - "acgs.volume_type=cache"
+
+services:
+  # =============================================================================
+  # MCP Aggregator Service - Central HTTP Interface
+  # =============================================================================
+  mcp_aggregator:
+    image: nazar256/combine-mcp:latest
+    container_name: acgs_mcp_aggregator
+    hostname: mcp-aggregator
+
+    # Network configuration - exposed port for external access
+    ports:
+      - "127.0.0.1:3000:3000"  # Bind to localhost only for security
+    networks:
+      - mcp_network
+
+    # Environment configuration
+    environment:
+      - SERVICE_NAME=mcp_aggregator
+      - SERVICE_PORT=3000
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+
+      # MCP Service URLs
+      - MCP_FILESYSTEM_URL=http://mcp_filesystem:3001
+      - MCP_GITHUB_URL=http://mcp_github:3002
+      - MCP_BROWSER_URL=http://mcp_browser:3003
+
+      # ACGS Service Integration URLs
+      - ACGS_AUTH_SERVICE_URL=http://host.docker.internal:8016
+      - ACGS_CONSTITUTIONAL_AI_URL=http://host.docker.internal:8001
+      - ACGS_INTEGRITY_SERVICE_URL=http://host.docker.internal:8002
+      - ACGS_MULTI_AGENT_COORDINATOR_URL=http://host.docker.internal:8008
+      - ACGS_BLACKBOARD_SERVICE_URL=http://host.docker.internal:8010
+      - ACGS_GOVERNANCE_SYNTHESIS_URL=http://host.docker.internal:8004
+
+      # Performance and coordination settings
+      - AGGREGATOR_TIMEOUT=30s
+      - AGGREGATOR_RETRY_COUNT=3
+      - CLAUDE_MCP_INTEGRATION_ENABLED=true
+      - PERFORMANCE_MONITORING_ENABLED=true
+      - AUDIT_ALL_OPERATIONS=true
+    
+    # Volume mounts for logging and caching
+    volumes:
+      - mcp_logs:/app/logs
+      - mcp_cache:/app/cache
+    
+    # Health check configuration
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    
+    # Restart policy and resource limits
+    restart: on-failure
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "0.5"
+        reservations:
+          memory: 256M
+          cpus: "0.25"
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    
+    # Security context
+    user: "1000:1000"
+    read_only: false  # Aggregator needs write access for caching
+    
+    # Service dependencies
+    depends_on:
+      mcp_filesystem:
+        condition: service_healthy
+      mcp_github:
+        condition: service_healthy
+      mcp_browser:
+        condition: service_healthy
+    
+    # Labels for service discovery and monitoring
+    labels:
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+      - "acgs.service_type=mcp_aggregator"
+      - "acgs.monitoring.enabled=true"
+      - "acgs.security.level=high"
+
+  # =============================================================================
+  # Filesystem MCP Service - File System Operations
+  # =============================================================================
+  mcp_filesystem:
+    image: mcp/filesystem:latest
+    container_name: acgs_mcp_filesystem
+    hostname: mcp-filesystem
+    
+    # Internal network only - no external ports
+    networks:
+      - mcp_network
+    
+    # Environment configuration
+    environment:
+      - SERVICE_NAME=mcp_filesystem
+      - SERVICE_PORT=3001
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - ALLOWED_PATH=/workspace
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - MAX_FILE_SIZE=100MB
+      - ALLOWED_EXTENSIONS=.txt,.md,.json,.yaml,.yml,.py,.js,.ts
+    
+    # Volume mounts - workspace and logging
+    volumes:
+      - mcp_workspace:/workspace
+      - mcp_logs:/app/logs
+      - ./workspace:/workspace/host:ro  # Read-only host workspace mount
+    
+    # Health check configuration
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    
+    # Restart policy and resource limits
+    restart: on-failure
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.25"
+        reservations:
+          memory: 128M
+          cpus: "0.1"
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    
+    # Security context - non-root user with limited capabilities
+    user: "1000:1000"
+    read_only: true
+    tmpfs:
+      - /tmp:size=100M,noexec,nosuid,nodev
+    
+    # Labels for service discovery and monitoring
+    labels:
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+      - "acgs.service_type=mcp_filesystem"
+      - "acgs.monitoring.enabled=true"
+      - "acgs.security.level=medium"
+
+  # =============================================================================
+  # GitHub MCP Service - GitHub API Operations
+  # =============================================================================
+  mcp_github:
+    image: mcp/github:latest
+    container_name: acgs_mcp_github
+    hostname: mcp-github
+    
+    # Internal network only - no external ports
+    networks:
+      - mcp_network
+    
+    # Environment configuration
+    environment:
+      - SERVICE_NAME=mcp_github
+      - SERVICE_PORT=3002
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - GITHUB_TOKEN=${GITHUB_TOKEN}  # Required - set in .env file
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - GITHUB_API_BASE_URL=https://api.github.com
+      - RATE_LIMIT_REQUESTS=5000
+      - RATE_LIMIT_WINDOW=3600
+    
+    # Volume mounts for logging and caching
+    volumes:
+      - mcp_logs:/app/logs
+      - mcp_cache:/app/cache
+    
+    # Health check configuration
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    
+    # Restart policy and resource limits
+    restart: on-failure
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "0.5"
+        reservations:
+          memory: 256M
+          cpus: "0.25"
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    
+    # Security context
+    user: "1000:1000"
+    read_only: true
+    tmpfs:
+      - /tmp:size=100M,noexec,nosuid,nodev
+    
+    # Labels for service discovery and monitoring
+    labels:
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+      - "acgs.service_type=mcp_github"
+      - "acgs.monitoring.enabled=true"
+      - "acgs.security.level=high"
+
+  # =============================================================================
+  # Browser MCP Service - Headless Browser Operations
+  # =============================================================================
+  mcp_browser:
+    image: mcp/browser:latest
+    container_name: acgs_mcp_browser
+    hostname: mcp-browser
+    
+    # Internal network only - no external ports
+    networks:
+      - mcp_network
+    
+    # Environment configuration
+    environment:
+      - SERVICE_NAME=mcp_browser
+      - SERVICE_PORT=3003
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - HEADLESS=true
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - BROWSER_TIMEOUT=30000
+      - MAX_CONCURRENT_PAGES=5
+      - DISABLE_IMAGES=true
+      - DISABLE_JAVASCRIPT=false
+    
+    # Volume mounts for logging and temporary files
+    volumes:
+      - mcp_logs:/app/logs
+      - /tmp:/tmp:rw,noexec,nosuid,nodev
+    
+    # Health check configuration
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3003/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    
+    # Restart policy and resource limits
+    restart: on-failure
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "0.75"
+        reservations:
+          memory: 512M
+          cpus: "0.5"
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    
+    # Security context with additional browser security
+    user: "1000:1000"
+    read_only: false  # Browser needs write access for cache/temp files
+    cap_drop:
+      - ALL
+    cap_add:
+      - SYS_ADMIN  # Required for Chrome sandbox
+    security_opt:
+      - seccomp:unconfined  # Required for Chrome
+    
+    # Shared memory for Chrome
+    shm_size: 2gb
+    
+    # Labels for service discovery and monitoring
+    labels:
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+      - "acgs.service_type=mcp_browser"
+      - "acgs.monitoring.enabled=true"
+      - "acgs.security.level=high"
+
+# =============================================================================
+# Additional Configuration
+# =============================================================================
+
+# Global service defaults
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
+    labels: "acgs.constitutional_hash,acgs.service_type"
+
+# Apply logging configuration to all services
+x-service-defaults: &service-defaults
+  logging: *default-logging

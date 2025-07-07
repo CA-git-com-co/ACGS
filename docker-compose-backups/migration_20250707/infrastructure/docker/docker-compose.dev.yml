@@ -1,0 +1,266 @@
+# ACGS Development Environment
+# Constitutional Hash: cdd01ef066bc6cf2
+version: "3.8"
+
+# Custom network for service communication
+networks:
+  acgs_dev:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+# Persistent volumes for data storage
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  acgs_logs:
+    driver: local
+
+services:
+  # =============================================================================
+  # Infrastructure Services
+  # =============================================================================
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: acgs_postgres_dev
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-acgs_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-acgs_password}
+      POSTGRES_DB: ${POSTGRES_DB:-acgs_db}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5439:5432"
+    networks:
+      - acgs_dev
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-acgs_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: acgs_redis_dev
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6389:6379"
+    networks:
+      - acgs_dev
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  # Open Policy Agent
+  opa:
+    image: openpolicyagent/opa:latest-envoy
+    container_name: acgs_opa_dev
+    command: >
+      run --server --log-level=info
+      --set=decision_logs.console=true
+      --set=status.console=true
+    ports:
+      - "8181:8181"
+    networks:
+      - acgs_dev
+    environment:
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8181/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # =============================================================================
+  # ACGS Core Services
+  # =============================================================================
+
+  # Enhanced API Gateway with Integrated Auth
+  api_gateway:
+    build:
+      context: ../..
+      dockerfile: infrastructure/docker/Dockerfile.acgs
+      target: development
+    container_name: acgs_api_gateway_dev
+    environment:
+      - SERVICE_NAME=api_gateway
+      - SERVICE_PORT=8080
+      - ENVIRONMENT=development
+      - LOG_LEVEL=DEBUG
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - JWT_SECRET_KEY=acgs-dev-secret-2024
+      - ENABLE_DOCS=true
+      # Service URLs
+      - CONSTITUTIONAL_CORE_URL=http://constitutional_core:8001
+      - GOVERNANCE_ENGINE_URL=http://governance_engine:8004
+      - INTEGRITY_SERVICE_URL=http://integrity_service:8002
+    working_dir: /app/services/platform_services/api_gateway/gateway_service
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080", "--reload"]
+    ports:
+      - "8080:8080"
+    volumes:
+      - ../../:/app:delegated
+      - acgs_logs:/app/logs
+    networks:
+      - acgs_dev
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      opa:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Constitutional Core Service
+  constitutional_core:
+    build:
+      context: ../..
+      dockerfile: infrastructure/docker/Dockerfile.acgs
+      target: development
+    container_name: acgs_constitutional_core_dev
+    environment:
+      - SERVICE_NAME=constitutional_core
+      - SERVICE_PORT=8001
+      - ENVIRONMENT=development
+      - LOG_LEVEL=DEBUG
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - API_GATEWAY_URL=http://api_gateway:8080
+    working_dir: /app/services/core/constitutional-core
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001", "--reload"]
+    ports:
+      - "8001:8001"
+    volumes:
+      - ../../:/app:delegated
+      - acgs_logs:/app/logs
+    networks:
+      - acgs_dev
+    depends_on:
+      api_gateway:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Integrity Service
+  integrity_service:
+    build:
+      context: ../..
+      dockerfile: infrastructure/docker/Dockerfile.acgs
+      target: development
+    container_name: acgs_integrity_service_dev
+    environment:
+      - SERVICE_NAME=integrity_service
+      - SERVICE_PORT=8002
+      - ENVIRONMENT=development
+      - LOG_LEVEL=DEBUG
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - CONSTITUTIONAL_CORE_URL=http://constitutional_core:8001
+    working_dir: /app/services/platform_services/integrity
+    command: ["uvicorn", "simple_integrity_main:app", "--host", "0.0.0.0", "--port", "8002", "--reload"]
+    ports:
+      - "8002:8002"
+    volumes:
+      - ../../:/app:delegated
+      - acgs_logs:/app/logs
+    networks:
+      - acgs_dev
+    depends_on:
+      constitutional_core:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Governance Engine Service
+  governance_engine:
+    build:
+      context: ../..
+      dockerfile: infrastructure/docker/Dockerfile.acgs
+      target: development
+    container_name: acgs_governance_engine_dev
+    environment:
+      - SERVICE_NAME=governance_engine
+      - SERVICE_PORT=8004
+      - ENVIRONMENT=development
+      - LOG_LEVEL=DEBUG
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - CONSTITUTIONAL_CORE_URL=http://constitutional_core:8001
+    working_dir: /app/services/core/governance-engine
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8004", "--reload"]
+    ports:
+      - "8004:8004"
+    volumes:
+      - ../../:/app:delegated
+      - acgs_logs:/app/logs
+    networks:
+      - acgs_dev
+    depends_on:
+      constitutional_core:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # =============================================================================
+  # Development Tools
+  # =============================================================================
+
+  # pgAdmin for database management
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: acgs_pgadmin_dev
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@acgs.dev
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80"
+    networks:
+      - acgs_dev
+    depends_on:
+      - postgres
+    volumes:
+      - ./pgadmin_servers.json:/pgadmin4/servers.json:ro
+    restart: unless-stopped
+    profiles: ["dev-tools"]
+
+  # Redis Commander for cache management
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: acgs_redis_commander_dev
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    ports:
+      - "8081:8081"
+    networks:
+      - acgs_dev
+    depends_on:
+      - redis
+    restart: unless-stopped
+    profiles: ["dev-tools"]
+
+  # Swagger UI for API documentation aggregation
+  swagger-ui:
+    image: swaggerapi/swagger-ui:latest
+    container_name: acgs_swagger_ui_dev
+    environment:
+      URLS: |
+        [
+          { "url": "http://localhost:8080/api/v1/openapi.json", "name": "API Gateway" },
+          { "url": "http://localhost:8001/api/v1/openapi.json", "name": "Constitutional Core" },
+          { "url": "http://localhost:8004/api/v1/openapi.json", "name": "Governance Engine" }
+        ]
+    ports:
+      - "8082:8080"
+    networks:
+      - acgs_dev
+    restart: unless-stopped
+    profiles: ["dev-tools"]

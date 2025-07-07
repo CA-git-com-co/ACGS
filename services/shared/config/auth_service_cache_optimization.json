@@ -1,0 +1,48 @@
+{
+  "service_name": "auth_service",
+  "cache_type": "session_auth",
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "optimization": {
+    "ttl_seconds": 3600,
+    "max_size": 5000,
+    "warming_enabled": true,
+    "warming_keys": [
+      "active_sessions",
+      "user_permissions",
+      "auth_tokens"
+    ]
+  },
+  "deployment_timestamp": 1751898091.806093,
+  "cache_strategies": {
+    "multi_tier_enabled": true,
+    "l1_memory_cache": {
+      "enabled": true,
+      "max_size": 1000,
+      "ttl_seconds": 300
+    },
+    "l2_redis_cache": {
+      "enabled": true,
+      "max_size": 5000,
+      "ttl_seconds": 3600
+    },
+    "cache_warming": {
+      "enabled": true,
+      "warming_keys": [
+        "active_sessions",
+        "user_permissions",
+        "auth_tokens"
+      ],
+      "warming_frequency_minutes": 30
+    }
+  },
+  "performance_targets": {
+    "hit_rate_target": 0.85,
+    "latency_target_ms": 2.0,
+    "throughput_target_rps": 100
+  },
+  "monitoring": {
+    "metrics_enabled": true,
+    "hit_rate_alerts": true,
+    "latency_alerts": true
+  }
+}

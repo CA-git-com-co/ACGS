@@ -1,0 +1,13 @@
+{
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "timestamp": "2025-07-07T09:27:59-04:00",
+  "collection_type": "prometheus_metrics",
+  "metrics": {
+    "prometheus_health": 14,
+    "active_alerts": 13,
+    "rule_groups": 4,
+    "targets_up": 1,
+    "targets_total": 14,
+    "target_health_percentage": 7
+  }
+}

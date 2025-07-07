@@ -70,6 +70,16 @@ Our comprehensive collection covers key areas relevant to ACGS:
    - Refusal and moderation systems for harmful requests
    - Robustness testing under adversarial conditions
 
+## Key Definitions
+
+- **Constitutional AI**: AI systems designed to align with a set of explicit principles or a "constitution" to ensure harmlessness and helpfulness.
+- **Reward Modeling**: The process of training a model to predict human preferences or desired behaviors, often used in Reinforcement Learning from Human Feedback (RLHF).
+- **Preference Optimization**: Techniques used to align AI models with human preferences, such as Direct Preference Optimization (DPO), by directly optimizing a policy to satisfy preferences.
+- **Causal Reasoning**: The ability of an AI to understand cause-and-effect relationships, allowing it to reason about why certain events occur and predict the outcomes of interventions.
+- **Alignment & Safety**: Ensuring that AI systems operate in accordance with human values and intentions, and preventing unintended or harmful behaviors.
+- **Machine Learning**: A field of AI that enables systems to learn from data, identify patterns, and make decisions with minimal human intervention.
+- **NLP & Language Models**: Natural Language Processing (NLP) is a field of AI that focuses on enabling computers to understand, interpret, and generate human language. Language Models are a type of AI model trained on vast amounts of text data to generate human-like text and perform various language tasks.
+
 ## LaTeX Research Environment
 
 ### 🛠️ **Complete LaTeX Setup**
@@ -93,7 +103,30 @@ Our comprehensive collection covers key areas relevant to ACGS:
 
 ## Getting Started
 
-### 1. Setup LaTeX Environment
+### Option 1: OCR Conversion (Recommended for Repository Optimization)
+
+Convert PDF papers to markdown format for better Git integration and searchability:
+
+```bash
+# Setup OCR tools
+cd docs/research/conversion_tools
+./setup_ocr_tools.sh
+
+# Convert all papers to markdown
+python convert_all_papers.py
+
+# Result: 90% size reduction (568MB → ~52MB)
+```
+
+**Benefits:**
+- 📉 **90% size reduction** from 568MB to ~52MB
+- 🔍 **Full-text searchable** across all papers
+- 🤝 **Git-friendly** for collaboration and version control
+- ⚡ **ACGS optimized** for <5ms P99 latency targets
+
+See [OCR Conversion Guide](CONVERSION_GUIDE.md) for detailed instructions.
+
+### Option 2: LaTeX Environment (For Academic Writing)
 
 ```bash
 # Install LaTeX packages
@@ -139,11 +172,36 @@ python download_arxiv_papers.py
 
 ### 🏗️ **Architecture Alignment**
 
-The research directly supports ACGS core services:
+The research directly supports and is integrated with the following ACGS core services:
 
-- **Constitutional AI Service (8001)**: Constitutional frameworks and governance
-- **Governance Service (8004)**: Multi-objective preference optimization
-- **Policy Governance Coordinator (8005)**: Reward models and policy evaluation
+- **Constitutional AI Service** (Port 8001): Focuses on constitutional frameworks and governance, ensuring all AI operations adhere to defined principles.
+  - [Service Directory](../../services/core/constitutional-ai/ac_service/)
+- **Integrity Service** (Port 8002): Provides database audit trails with cryptographic hash chaining, crucial for verifying the integrity of research outcomes and compliance.
+  - [Service Directory](../../services/platform_services/integrity/integrity_service/)
+- **API Gateway Service** (Port 8010): Handles production routing, rate limiting, and security middleware for all service interactions, including research-related API calls.
+  - [Service Directory](../../services/platform_services/api_gateway/gateway_service/)
+- **Code Analysis Service** (Port 8007): Performs static analysis with tenant routing, which can be used to analyze research code for quality and compliance.
+  - [Service Directory](../../services/core/code-analysis/code_analysis_service/)
+- **Context Service** (Port 8012): Integrates governance workflows and provides contextual information for research tasks.
+  - [Service Directory](../../services/core/context/context_service/)
+- **Consensus Engine** (Port 8003): Enables agreement between different AI agents, vital for resolving conflicts in multi-agent research simulations.
+  - [Service Directory](../../services/core/consensus_engine/)
+- **Governance Synthesis** (Port 8004): Synthesizes governance rules from various sources, directly applying research on policy generation and optimization.
+  - [Service Directory](../../services/core/governance-synthesis/gs_service/)
+- **Multi-Agent Coordinator** (Port 8008): Orchestrates the actions of multiple AI agents, facilitating complex research experiments involving agent collaboration.
+  - [Service Directory](../../services/core/multi_agent_coordinator/)
+- **Worker Agents** (Port 8009): Perform various tasks as directed by the coordinator, executing research-specific computations and data processing.
+  - [Service Directory](../../services/core/worker_agents/)
+- **Formal Verification Service** (Port 8011): Integrates Z3 SMT solver for formal verification, crucial for mathematically proving the correctness and safety of research algorithms.
+  - [Service Directory](../../services/core/formal-verification/fv_service/)
+- **Policy Governance Service** (Port 8014): Manages multi-framework compliance, applying research on policy enforcement and evaluation.
+  - [Service Directory](../../services/core/policy-governance/pgc_service/)
+- **Evolutionary Computation Service** (Port 8013): Tracks constitutional evolution, directly implementing research on adaptive governance and AI system evolution.
+  - [Service Directory](../../services/core/evolutionary-computation/ec_service/)
+- **Authentication Service** (Port 8016): Provides JWT multi-tenant authentication, securing access to research data and services.
+  - [Service Directory](../../services/platform_services/authentication/auth_service/)
+- **Blackboard Service** (Shared Service): Redis-based shared knowledge, used for inter-agent communication and data sharing in research simulations.
+  - [Service Directory](../../services/shared/blackboard/)
 
 ### 🎯 **Performance Targets**
 
@@ -228,6 +286,25 @@ All research activities maintain constitutional compliance:
 - `download_arxiv_papers.py` - Automated paper downloading
 - `install_latex_packages.sh` - LaTeX environment setup
 - `compiler.py` - Research paper compilation
+
+## Related Code and Configuration
+
+This section provides direct links to relevant code and configuration files within the ACGS repository that are pertinent to the research topics discussed.
+
+- **Constitutional AI Service Implementation**: [services/core/constitutional-ai/ac_service/app/main.py](../../services/core/constitutional-ai/ac_service/app/main.py)
+- **Integrity Service Implementation**: [services/platform_services/integrity/integrity_service/app/main.py](../../services/platform_services/integrity/integrity_service/app/main.py)
+- **API Gateway Service Configuration**: [infrastructure/docker/docker-compose.acgs.yml](../../infrastructure/docker/docker-compose.acgs.yml) (See `api-gateway-service` section)
+- **Code Analysis Service Settings**: [services/core/code-analysis/code_analysis_service/config/settings.py](../../services/core/code-analysis/code_analysis_service/config/settings.py)
+- **Context Service Models**: [services/core/context/context_service/app/models/__init__.py](../../services/core/context/context_service/app/models/__init__.py)
+- **Consensus Engine Mechanisms**: [services/core/consensus_engine/consensus_mechanisms.py](../../services/core/consensus_engine/consensus_mechanisms.py)
+- **Governance Synthesis OPA Engine**: [services/core/governance-synthesis/advanced_opa_engine.py](../../services/core/governance-synthesis/advanced_opa_engine.py)
+- **Multi-Agent Coordinator Agent**: [services/core/multi_agent_coordinator/coordinator_agent.py](../../services/core/multi_agent_coordinator/coordinator_agent.py)
+- **Worker Agents Ethics Agent**: [services/core/worker_agents/ethics/ethics_agent.py](../../services/core/worker_agents/ethics/ethics_agent.py)
+- **Formal Verification Service Main**: [services/core/formal-verification/fv_service/main.py](../../services/core/formal-verification/fv_service/main.py)
+- **Policy Governance Service Performance Optimizer**: [services/core/policy-governance/pgc_service/app/performance_optimizer.py](../../services/core/policy-governance/pgc_service/app/performance_optimizer.py)
+- **Evolutionary Computation Service Evolution Engine**: [services/core/evolutionary-computation/ec_service/evolution_engine.py](../../services/core/evolutionary-computation/ec_service/evolution_engine.py)
+- **Authentication Service Main**: [services/platform_services/authentication/auth_service/app/main.py](../../services/platform_services/authentication/auth_service/app/main.py)
+- **Blackboard Service Core**: [services/shared/blackboard/core_service.py](../../services/shared/blackboard/core_service.py)
 
 ## References
 

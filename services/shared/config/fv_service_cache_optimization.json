@@ -1,0 +1,48 @@
+{
+  "service_name": "fv_service",
+  "cache_type": "governance_rules",
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "optimization": {
+    "ttl_seconds": 7200,
+    "max_size": 2000,
+    "warming_enabled": true,
+    "warming_keys": [
+      "active_rules",
+      "policy_framework",
+      "governance_policies"
+    ]
+  },
+  "deployment_timestamp": 1751898091.8124197,
+  "cache_strategies": {
+    "multi_tier_enabled": true,
+    "l1_memory_cache": {
+      "enabled": true,
+      "max_size": 1000,
+      "ttl_seconds": 300
+    },
+    "l2_redis_cache": {
+      "enabled": true,
+      "max_size": 2000,
+      "ttl_seconds": 7200
+    },
+    "cache_warming": {
+      "enabled": true,
+      "warming_keys": [
+        "active_rules",
+        "policy_framework",
+        "governance_policies"
+      ],
+      "warming_frequency_minutes": 30
+    }
+  },
+  "performance_targets": {
+    "hit_rate_target": 0.85,
+    "latency_target_ms": 2.0,
+    "throughput_target_rps": 100
+  },
+  "monitoring": {
+    "metrics_enabled": true,
+    "hit_rate_alerts": true,
+    "latency_alerts": true
+  }
+}

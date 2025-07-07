@@ -21,6 +21,53 @@ from contextlib import asynccontextmanager
 
 import asyncpg
 
+# ACGS Standardized Error Handling
+try:
+    import sys
+    from pathlib import Path
+    shared_middleware_path = Path(__file__).parent.parent.parent.parent.parent / "shared" / "middleware"
+    sys.path.insert(0, str(shared_middleware_path))
+    
+    from error_handling import (
+        setup_error_handlers,
+        ErrorHandlingMiddleware,
+        ACGSException,
+        ConstitutionalComplianceError,
+        SecurityValidationError,
+        AuthenticationError,
+        ValidationError,
+        log_error_with_context,
+        ErrorContext
+    )
+    ACGS_ERROR_HANDLING_AVAILABLE = True
+    print(f"✅ ACGS Error handling loaded for {service_name}")
+except ImportError as e:
+    print(f"⚠️ ACGS Error handling not available for {service_name}: {e}")
+    ACGS_ERROR_HANDLING_AVAILABLE = False
+
+
+# ACGS Security Middleware Integration
+try:
+    import sys
+    from pathlib import Path
+    shared_security_path = Path(__file__).parent.parent.parent.parent.parent / "shared" / "security"
+    sys.path.insert(0, str(shared_security_path))
+    
+    from middleware_integration import (
+        apply_acgs_security_middleware,
+        setup_security_monitoring,
+        get_security_headers,
+        SecurityLevel,
+        validate_request_body,
+        create_secure_endpoint_decorator
+    )
+    ACGS_SECURITY_AVAILABLE = True
+    print(f"✅ ACGS Security middleware loaded for {service_name}")
+except ImportError as e:
+    print(f"⚠️ ACGS Security middleware not available for {service_name}: {e}")
+    ACGS_SECURITY_AVAILABLE = False
+
+
 # Import multi-tenant components
 try:
     import os
@@ -202,6 +249,7 @@ async def lifespan(app: FastAPI):
         logger.info("✅ Integrity Service initialized successfully")
         yield
     except Exception as e:
+        # TODO: Consider using ACGS error handling: log_error_with_context()
         logger.error(f"❌ Service initialization failed: {e}")
         yield
     finally:
@@ -213,14 +261,24 @@ async def lifespan(app: FastAPI):
 
 # Create FastAPI application with enhanced configuration
 app = FastAPI(
-    title="ACGS-1 Production Integrity Service",
-    description="Enterprise-grade cryptographic integrity and audit trail management",
-    version=SERVICE_VERSION,
+    title="ACGS Integrity Service",
+    description="Constitutional compliance and integrity validation service",
+    version="1.0.0",
     docs_url="/docs",
-    redoc_url="/redoc",
-    openapi_url="/openapi.json",
-    lifespan=lifespan,
+    redoc_url="/redoc"
 )
+
+# Apply ACGS Error Handling
+if ACGS_ERROR_HANDLING_AVAILABLE:
+    import os
+    development_mode = os.getenv("ENVIRONMENT", "development") != "production"
+    setup_error_handlers(app, "integrity", include_traceback=development_mode)
+
+# Apply ACGS Security Middleware
+if ACGS_SECURITY_AVAILABLE:
+    environment = os.getenv("ENVIRONMENT", "development")
+    apply_acgs_security_middleware(app, "integrity", environment)
+    setup_security_monitoring(app, "integrity")
 
 # Add multi-tenant middleware
 if MULTI_TENANT_AVAILABLE:
@@ -399,6 +457,7 @@ async def metrics():
             endpoint_func = create_enhanced_metrics_endpoint(SERVICE_NAME)
             return await endpoint_func()
         except Exception as e:
+        # TODO: Consider using ACGS error handling: log_error_with_context()
             logger.warning(f"Metrics endpoint error: {e}")
             return {"status": "metrics_error", "service": SERVICE_NAME}
     else:
@@ -617,6 +676,7 @@ async def get_constitutional_hash_validation():
         }
 
     except Exception as e:
+        # TODO: Consider using ACGS error handling: log_error_with_context()
         logger.error(f"Constitutional hash validation failed: {e}")
         return {
             "constitutional_hash": "cdd01ef066bc6cf2",
@@ -651,6 +711,7 @@ if ROUTERS_AVAILABLE:
         )
         logger.info("✅ All API routers included successfully")
     except Exception as e:
+        # TODO: Consider using ACGS error handling: log_error_with_context()
         logger.warning(f"⚠️ Failed to include some routers: {e}")
 
 

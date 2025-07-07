@@ -1,3 +1,4 @@
+import os
 """
 Unit Tests for ACGS Auth Service
 
@@ -107,7 +108,7 @@ class TestInputValidation:
         """Test valid secure login request."""
         request = SecureLoginRequest(
             username="testuser",
-            password="Password123!"
+            password = os.getenv("PASSWORD", "")
         )
         
         assert request.username == "testuser"
@@ -118,7 +119,7 @@ class TestInputValidation:
         with pytest.raises(ValueError):
             SecureLoginRequest(
                 username="ab",  # Too short
-                password="weak"  # Weak password
+                password = os.getenv("PASSWORD", "")  # Weak password
             )
 
 class TestJWTSecurity:
@@ -128,7 +129,7 @@ class TestJWTSecurity:
     def jwt_manager(self):
         """Create JWT security manager for testing."""
         return JWTSecurityManager(
-            primary_secret="test-secret-key-for-testing-only",
+            primary_secret = os.getenv("SECRET_KEY", ""),
             algorithm=JWTAlgorithm.HS256,
             access_token_expire_minutes=30,
             refresh_token_expire_days=7
@@ -258,7 +259,7 @@ class TestAuthServiceIntegration:
         # Test valid login
         request = SecureLoginRequest(
             username="testuser",
-            password="Password123!"
+            password = os.getenv("PASSWORD", "")
         )
         
         # Simulate authentication logic
@@ -267,7 +268,7 @@ class TestAuthServiceIntegration:
         
         # Create JWT manager
         jwt_manager = JWTSecurityManager(
-            primary_secret="test-secret-key",
+            primary_secret = os.getenv("SECRET_KEY", ""),
             algorithm=JWTAlgorithm.HS256
         )
         
@@ -287,7 +288,7 @@ class TestAuthServiceIntegration:
     async def test_constitutional_compliance_validation(self):
         """Test constitutional compliance validation."""
         jwt_manager = JWTSecurityManager(
-            primary_secret="test-secret-key",
+            primary_secret = os.getenv("SECRET_KEY", ""),
             algorithm=JWTAlgorithm.HS256
         )
         
@@ -326,7 +327,7 @@ class TestAuthServicePerformance:
     def test_jwt_creation_performance(self):
         """Test JWT creation performance."""
         jwt_manager = JWTSecurityManager(
-            primary_secret="test-secret-key",
+            primary_secret = os.getenv("SECRET_KEY", ""),
             algorithm=JWTAlgorithm.HS256
         )
         
@@ -354,12 +355,12 @@ class TestConstitutionalCompliance:
         # Test in input validation
         request = SecureLoginRequest(
             username="testuser",
-            password="Password123!"
+            password = os.getenv("PASSWORD", "")
         )
         
         # Test in JWT security
         jwt_manager = JWTSecurityManager(
-            primary_secret="test-secret-key",
+            primary_secret = os.getenv("SECRET_KEY", ""),
             algorithm=JWTAlgorithm.HS256
         )
         
@@ -378,7 +379,7 @@ class TestConstitutionalCompliance:
     async def test_constitutional_compliance_validation(self):
         """Test constitutional compliance validation."""
         jwt_manager = JWTSecurityManager(
-            primary_secret="test-secret-key",
+            primary_secret = os.getenv("SECRET_KEY", ""),
             algorithm=JWTAlgorithm.HS256
         )
 

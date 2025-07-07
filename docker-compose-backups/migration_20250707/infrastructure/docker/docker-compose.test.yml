@@ -1,0 +1,304 @@
+version: '3.8'
+
+# ACGS Test Environment Docker Compose
+# Constitutional Hash: cdd01ef066bc6cf2
+#
+# This compose file sets up a complete ACGS testing environment including:
+# - All ACGS services with test configurations
+# - PostgreSQL database for testing
+# - Redis cache for testing
+# - Test-specific networking and volumes
+
+services:
+  # PostgreSQL Database for Testing
+  postgres-test:
+    image: postgres:15-alpine
+    container_name: acgs-postgres-test
+    environment:
+      POSTGRES_DB: acgs_test
+      POSTGRES_USER: acgs_test
+      POSTGRES_PASSWORD: acgs_test_password
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U acgs_test -d acgs_test"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - acgs-test-network
+
+  # Redis Cache for Testing
+  redis-test:
+    image: redis:7-alpine
+    container_name: acgs-redis-test
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_test_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - acgs-test-network
+
+  # Authentication Service
+  auth-service-test:
+    build:
+      context: ../../
+      dockerfile: infrastructure/docker/Dockerfile.auth
+    container_name: acgs-auth-service-test
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://acgs_test:acgs_test_password@postgres-test:5432/acgs_test
+      - REDIS_URL=redis://redis-test:6379/0
+      - JWT_SECRET_KEY=test-jwt-secret-key-for-ci
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - LOG_LEVEL=INFO
+      - ENVIRONMENT=test
+    ports:
+      - "8016:8016"
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+      redis-test:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8016/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - acgs-test-network
+
+  # Constitutional AI Service
+  constitutional-ai-test:
+    build:
+      context: ../../
+      dockerfile: infrastructure/docker/Dockerfile.constitutional-ai
+    container_name: acgs-constitutional-ai-test
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://acgs_test:acgs_test_password@postgres-test:5432/acgs_test
+      - REDIS_URL=redis://redis-test:6379/1
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - LOG_LEVEL=INFO
+      - ENVIRONMENT=test
+    ports:
+      - "8001:8001"
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+      redis-test:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - acgs-test-network
+
+  # Integrity Service
+  integrity-service-test:
+    build:
+      context: ../../
+      dockerfile: infrastructure/docker/Dockerfile.integrity
+    container_name: acgs-integrity-service-test
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://acgs_test:acgs_test_password@postgres-test:5432/acgs_test
+      - REDIS_URL=redis://redis-test:6379/2
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - LOG_LEVEL=INFO
+      - ENVIRONMENT=test
+    ports:
+      - "8002:8002"
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+      redis-test:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - acgs-test-network
+
+  # Formal Verification Service
+  formal-verification-test:
+    build:
+      context: ../../
+      dockerfile: infrastructure/docker/Dockerfile.formal-verification
+    container_name: acgs-formal-verification-test
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://acgs_test:acgs_test_password@postgres-test:5432/acgs_test
+      - REDIS_URL=redis://redis-test:6379/3
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - LOG_LEVEL=INFO
+      - ENVIRONMENT=test
+    ports:
+      - "8003:8003"
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+      redis-test:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - acgs-test-network
+
+  # Governance Synthesis Service
+  governance-synthesis-test:
+    build:
+      context: ../../
+      dockerfile: infrastructure/docker/Dockerfile.governance-synthesis
+    container_name: acgs-governance-synthesis-test
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://acgs_test:acgs_test_password@postgres-test:5432/acgs_test
+      - REDIS_URL=redis://redis-test:6379/4
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - LOG_LEVEL=INFO
+      - ENVIRONMENT=test
+    ports:
+      - "8004:8004"
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+      redis-test:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8004/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - acgs-test-network
+
+  # Policy Governance Service
+  policy-governance-test:
+    build:
+      context: ../../
+      dockerfile: infrastructure/docker/Dockerfile.policy-governance
+    container_name: acgs-policy-governance-test
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://acgs_test:acgs_test_password@postgres-test:5432/acgs_test
+      - REDIS_URL=redis://redis-test:6379/5
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - LOG_LEVEL=INFO
+      - ENVIRONMENT=test
+    ports:
+      - "8005:8005"
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+      redis-test:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8005/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - acgs-test-network
+
+  # Evolutionary Computation Service
+  evolutionary-computation-test:
+    build:
+      context: ../../
+      dockerfile: infrastructure/docker/Dockerfile.evolutionary-computation
+    container_name: acgs-evolutionary-computation-test
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://acgs_test:acgs_test_password@postgres-test:5432/acgs_test
+      - REDIS_URL=redis://redis-test:6379/6
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - LOG_LEVEL=INFO
+      - ENVIRONMENT=test
+    ports:
+      - "8006:8006"
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+      redis-test:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8006/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - acgs-test-network
+
+  # Test Runner Service
+  test-runner:
+    build:
+      context: ../../
+      dockerfile: infrastructure/docker/Dockerfile.test-runner
+    container_name: acgs-test-runner
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://acgs_test:acgs_test_password@postgres-test:5432/acgs_test
+      - REDIS_URL=redis://redis-test:6379/7
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - AUTH_SERVICE_URL=http://auth-service-test:8016
+      - CONSTITUTIONAL_AI_URL=http://constitutional-ai-test:8001
+      - INTEGRITY_SERVICE_URL=http://integrity-service-test:8002
+      - FORMAL_VERIFICATION_URL=http://formal-verification-test:8003
+      - GOVERNANCE_SYNTHESIS_URL=http://governance-synthesis-test:8004
+      - POLICY_GOVERNANCE_URL=http://policy-governance-test:8005
+      - EVOLUTIONARY_COMPUTATION_URL=http://evolutionary-computation-test:8006
+      - LOG_LEVEL=INFO
+      - ENVIRONMENT=test
+    volumes:
+      - ../../tests:/app/tests
+      - ../../scripts:/app/scripts
+      - test_reports:/app/test_reports
+    depends_on:
+      auth-service-test:
+        condition: service_healthy
+      constitutional-ai-test:
+        condition: service_healthy
+      integrity-service-test:
+        condition: service_healthy
+      formal-verification-test:
+        condition: service_healthy
+      governance-synthesis-test:
+        condition: service_healthy
+      policy-governance-test:
+        condition: service_healthy
+      evolutionary-computation-test:
+        condition: service_healthy
+    command: >
+      sh -c "
+        echo 'Waiting for all services to be ready...' &&
+        sleep 30 &&
+        echo 'Running comprehensive test suite...' &&
+        python tests/run_acgs_comprehensive_tests.py --coverage --target-coverage 80 --verbose &&
+        echo 'Test suite completed successfully!'
+      "
+    networks:
+      - acgs-test-network
+
+volumes:
+  postgres_test_data:
+    driver: local
+  redis_test_data:
+    driver: local
+  test_reports:
+    driver: local
+
+networks:
+  acgs-test-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

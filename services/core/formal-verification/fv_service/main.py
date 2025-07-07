@@ -28,6 +28,7 @@ logger = logging.getLogger("fv_service")
 SERVICE_NAME = "fv_service"
 SERVICE_VERSION = "2.0.0"
 SERVICE_PORT = 8003
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 service_start_time = time.time()
 
 app = FastAPI(
@@ -117,6 +118,7 @@ async def health_check():
         "service": SERVICE_NAME,
         "version": SERVICE_VERSION,
         "port": SERVICE_PORT,
+        "constitutional_hash": CONSTITUTIONAL_HASH,
         "uptime_seconds": uptime_seconds,
         "components": {
             "z3_solver": "operational",

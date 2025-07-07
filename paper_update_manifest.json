@@ -1,0 +1,165 @@
+
+{
+  "research_paper": [
+    {
+      "path": "docs/research/arxiv_submission_package/main.tex",
+      "type": "latex_source",
+      "intended_use": "Main research paper file"
+    },
+    {
+      "path": "docs/research/arxiv_submission_package/appendix_lipschitz_estimation.tex",
+      "type": "latex_source",
+      "intended_use": "Appendix section of the research paper"
+    }
+  ],
+  "metrics_and_certification": [
+    {
+      "path": "reports/ACGS_PRODUCTION_DEPLOYMENT_FINAL_REPORT.md",
+      "type": "markdown",
+      "intended_use": "Metrics and certification report"
+    },
+    {
+      "path": "reports/acgs_production_readiness_certification.md",
+      "type": "markdown",
+      "intended_use": "Metrics and certification report"
+    },
+    {
+      "path": "reports/acgs_production_readiness_final_certification.md",
+      "type": "markdown",
+      "intended_use": "Metrics and certification report"
+    },
+    {
+      "path": "reports/cache_optimization_deployment.md",
+      "type": "markdown",
+      "intended_use": "Metrics and certification report"
+    },
+    {
+      "path": "reports/performance_validation_report.md",
+      "type": "markdown",
+      "intended_use": "Metrics and certification report"
+    },
+    {
+      "path": "reports/security_hardening_assessment.md",
+      "type": "markdown",
+      "intended_use": "Metrics and certification report"
+    },
+    {
+      "path": "reports/ACGS_COMPREHENSIVE_VALIDATION_REPORT.md",
+      "type": "markdown",
+      "intended_use": "Metrics and certification report"
+    },
+    {
+      "path": "reports/ACGS_PRODUCTION_READINESS_ASSESSMENT.md",
+      "type": "markdown",
+      "intended_use": "Metrics and certification report"
+    },
+    {
+      "path": "reports/ACGS_TOOL_CONSOLIDATION_SUMMARY.md",
+      "type": "markdown",
+      "intended_use": "Metrics and certification report"
+    },
+    {
+      "path": "reports/compliance/compliance_result_20250707_085954.json",
+      "type": "json",
+      "intended_use": "Metrics and certification report"
+    },
+    {
+      "path": "reports/unified_orchestrator/acgs_comprehensive_suite_20250707_090004.json",
+      "type": "json",
+      "intended_use": "Metrics and certification report"
+    },
+    {
+      "path": "reports/unified_orchestrator/latest_comprehensive_suite.json",
+      "type": "json",
+      "intended_use": "Metrics and certification report"
+    }
+  ],
+  "source_code": [
+    {
+      "path": "services/core/constitutional-core/app/main.py",
+      "type": "python_source",
+      "intended_use": "Source code for referenced services"
+    },
+    {
+      "path": "services/core/governance-engine/app/main.py",
+      "type": "python_source",
+      "intended_use": "Source code for referenced services"
+    },
+    {
+      "path": "services/core/constitutional-ai/ac_service/app/main.py",
+      "type": "python_source",
+      "intended_use": "Source code for referenced services"
+    },
+    {
+      "path": "services/core/evolutionary-computation/app/main.py",
+      "type": "python_source",
+      "intended_use": "Source code for referenced services"
+    },
+    {
+      "path": "services/core/governance-synthesis/gs_service/app/main.py",
+      "type": "python_source",
+      "intended_use": "Source code for referenced services"
+    },
+    {
+      "path": "services/core/policy-governance/pgc_service/app/main.py",
+      "type": "python_source",
+      "intended_use": "Source code for referenced services"
+    },
+    {
+      "path": "services/platform_services/api_gateway/gateway_service/app/main.py",
+      "type": "python_source",
+      "intended_use": "Source code for referenced services"
+    },
+    {
+      "path": "services/platform_services/authentication/auth_service/app/main.py",
+      "type": "python_source",
+      "intended_use": "Source code for referenced services"
+    },
+    {
+      "path": "services/platform_services/integrity/integrity_service/app/main.py",
+      "type": "python_source",
+      "intended_use": "Source code for referenced services"
+    },
+    {
+      "path": "docker-compose.yml",
+      "type": "yaml",
+      "intended_use": "Source code for referenced services"
+    },
+    {
+      "path": "docker-compose-backups/migration_20250707/infrastructure/docker/docker-compose.yml",
+      "type": "yaml",
+      "intended_use": "Source code for referenced services"
+    },
+    {
+      "path": "config/docker/docker-compose.yml",
+      "type": "yaml",
+      "intended_use": "Source code for referenced services"
+    },
+    {
+      "path": "infrastructure/docker/docker-compose.yml",
+      "type": "yaml",
+      "intended_use": "Source code for referenced services"
+    },
+    {
+      "path": "infrastructure/monitoring/monitoring/docker-compose.yml",
+      "type": "yaml",
+      "intended_use": "Source code for referenced services"
+    },
+    {
+      "path": "monitoring/docker-compose.yml",
+      "type": "yaml",
+      "intended_use": "Source code for referenced services"
+    },
+    {
+      "path": "services/core/code-analysis/docker-compose.yml",
+      "type": "yaml",
+      "intended_use": "Source code for referenced services"
+    },
+    {
+      "path": "tests/load_testing/docker-compose.yml",
+      "type": "yaml",
+      "intended_use": "Source code for referenced services"
+    }
+  ]
+}
+

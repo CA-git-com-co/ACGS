@@ -1,0 +1,143 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "ACGS Multi-tenant Monitoring Dashboard",
+    "tags": ["acgs", "multitenant", "security", "constitutional_hash:cdd01ef066bc6cf2"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Tenant Isolation Score",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "avg(acgs_tenant_isolation_score)",
+            "legendFormat": "Isolation Score",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": null},
+                {"color": "yellow", "value": 0.95},
+                {"color": "green", "value": 1.0}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Active Tenants",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "count(count by (tenant_id) (acgs_requests_total))",
+            "legendFormat": "Active Tenants",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "yellow", "value": 50},
+                {"color": "red", "value": 100}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 8, "x": 8, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Unauthorized Access Attempts",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(rate(acgs_unauthorized_access_attempts_total[5m]))",
+            "legendFormat": "Unauthorized/min",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "yellow", "value": 1},
+                {"color": "red", "value": 5}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 8, "x": 16, "y": 0}
+      },
+      {
+        "id": 4,
+        "title": "Resource Usage by Tenant",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "sum by (tenant_id) (acgs_cpu_usage_seconds_total)",
+            "legendFormat": "CPU - {{tenant_id}}",
+            "refId": "A"
+          },
+          {
+            "expr": "sum by (tenant_id) (acgs_memory_usage_bytes)",
+            "legendFormat": "Memory - {{tenant_id}}",
+            "refId": "B"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short"
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+      },
+      {
+        "id": 5,
+        "title": "Tenant Request Rate",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "sum by (tenant_id) (rate(acgs_requests_total[5m]))",
+            "legendFormat": "{{tenant_id}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "reqps"
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+      },
+      {
+        "id": 6,
+        "title": "Data Isolation Violations",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "acgs_data_isolation_violations_total",
+            "legendFormat": "",
+            "refId": "A",
+            "format": "table"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 16}
+      }
+    ],
+    "time": {"from": "now-1h", "to": "now"},
+    "refresh": "5s"
+  },
+  "overwrite": true
+}

@@ -1,0 +1,10 @@
+{
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "timestamp": "2025-07-07T09:27:59-04:00",
+  "collection_type": "grafana_metrics",
+  "metrics": {
+    "dashboards_count": 3,
+    "datasources_count": 1,
+    "health_status": "ok"
+  }
+}

@@ -22,6 +22,53 @@ import redis.asyncio as redis
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
+# ACGS Standardized Error Handling
+try:
+    import sys
+    from pathlib import Path
+    shared_middleware_path = Path(__file__).parent.parent.parent.parent.parent / "shared" / "middleware"
+    sys.path.insert(0, str(shared_middleware_path))
+    
+    from error_handling import (
+        setup_error_handlers,
+        ErrorHandlingMiddleware,
+        ACGSException,
+        ConstitutionalComplianceError,
+        SecurityValidationError,
+        AuthenticationError,
+        ValidationError,
+        log_error_with_context,
+        ErrorContext
+    )
+    ACGS_ERROR_HANDLING_AVAILABLE = True
+    print(f"✅ ACGS Error handling loaded for {service_name}")
+except ImportError as e:
+    print(f"⚠️ ACGS Error handling not available for {service_name}: {e}")
+    ACGS_ERROR_HANDLING_AVAILABLE = False
+
+
+# ACGS Security Middleware Integration
+try:
+    import sys
+    from pathlib import Path
+    shared_security_path = Path(__file__).parent.parent.parent.parent.parent / "shared" / "security"
+    sys.path.insert(0, str(shared_security_path))
+    
+    from middleware_integration import (
+        apply_acgs_security_middleware,
+        setup_security_monitoring,
+        get_security_headers,
+        SecurityLevel,
+        validate_request_body,
+        create_secure_endpoint_decorator
+    )
+    ACGS_SECURITY_AVAILABLE = True
+    print(f"✅ ACGS Security middleware loaded for {service_name}")
+except ImportError as e:
+    print(f"⚠️ ACGS Security middleware not available for {service_name}: {e}")
+    ACGS_SECURITY_AVAILABLE = False
+
+
 # Import shared components
 try:
     from services.shared.audit.compliance_audit_logger import (
@@ -45,6 +92,20 @@ logger = logging.getLogger(__name__)
 
 # Initialize FastAPI app
 app = FastAPI(
+
+
+# Apply ACGS Error Handling
+if ACGS_ERROR_HANDLING_AVAILABLE:
+    import os
+    development_mode = os.getenv("ENVIRONMENT", "development") != "production"
+    setup_error_handlers(app, "audit_aggregator", include_traceback=development_mode)
+
+# Apply ACGS Security Middleware
+if ACGS_SECURITY_AVAILABLE:
+    environment = os.getenv("ENVIRONMENT", "development")
+    apply_acgs_security_middleware(app, "audit_aggregator", environment)
+    setup_security_monitoring(app, "audit_aggregator")
+
     title="ACGS Audit Aggregation Service",
     description="Centralized audit event collection and analysis for ACGS",
     version="2.0.0",
@@ -158,6 +219,7 @@ async def startup_event():
         logger.info(f"Audit Aggregation Service started with constitutional hash: {CONSTITUTIONAL_HASH}")
         
     except Exception as e:
+        # TODO: Consider using ACGS error handling: log_error_with_context()
         logger.error(f"Failed to start audit aggregation service: {e}")
         raise
 
@@ -184,6 +246,7 @@ async def shutdown_event():
             await audit_redis.close()
             
     except Exception as e:
+        # TODO: Consider using ACGS error handling: log_error_with_context()
         logger.error(f"Error during shutdown: {e}")
 
 @app.get("/health")
@@ -208,6 +271,7 @@ async def health_check():
             "timestamp": datetime.now(timezone.utc).isoformat()
         }
     except Exception as e:
+        # TODO: Consider using ACGS error handling: log_error_with_context()
         logger.error(f"Health check failed: {e}")
         raise HTTPException(status_code=503, detail="Service unhealthy")
 
@@ -286,8 +350,9 @@ async def submit_audit_event(
         )
         
     except Exception as e:
+        # TODO: Consider using ACGS error handling: log_error_with_context()
         logger.error(f"Failed to submit audit event: {e}")
-        raise HTTPException(status_code=500, detail="Failed to process audit event")
+        raise ACGSException(status_code=500, error_code="INTERNAL_ERROR", detail="Failed to process audit event")
 
 @app.post("/api/v1/audit/query", response_model=AuditQueryResponse)
 async def query_audit_events(query_request: AuditQueryRequest):
@@ -318,8 +383,9 @@ async def query_audit_events(query_request: AuditQueryRequest):
         )
         
     except Exception as e:
+        # TODO: Consider using ACGS error handling: log_error_with_context()
         logger.error(f"Failed to query audit events: {e}")
-        raise HTTPException(status_code=500, detail="Failed to query audit events")
+        raise ACGSException(status_code=500, error_code="INTERNAL_ERROR", detail="Failed to query audit events")
 
 @app.get("/api/v1/audit/compliance-metrics", response_model=ComplianceMetricsResponse)
 async def get_compliance_metrics():
@@ -343,8 +409,9 @@ async def get_compliance_metrics():
         )
         
     except Exception as e:
+        # TODO: Consider using ACGS error handling: log_error_with_context()
         logger.error(f"Failed to get compliance metrics: {e}")
-        raise HTTPException(status_code=500, detail="Failed to get compliance metrics")
+        raise ACGSException(status_code=500, error_code="INTERNAL_ERROR", detail="Failed to get compliance metrics")
 
 @app.get("/api/v1/audit/correlations/{event_id}")
 async def get_event_correlations(event_id: str):
@@ -370,8 +437,9 @@ async def get_event_correlations(event_id: str):
     except HTTPException:
         raise
     except Exception as e:
+        # TODO: Consider using ACGS error handling: log_error_with_context()
         logger.error(f"Failed to get event correlations: {e}")
-        raise HTTPException(status_code=500, detail="Failed to get correlations")
+        raise ACGSException(status_code=500, error_code="INTERNAL_ERROR", detail="Failed to get correlations")
 
 @app.get("/api/v1/audit/stats")
 async def get_aggregation_statistics():
@@ -405,6 +473,7 @@ async def process_audit_event_background(audit_event: Dict[str, Any]):
         await update_real_time_metrics(audit_event)
         
     except Exception as e:
+        # TODO: Consider using ACGS error handling: log_error_with_context()
         logger.error(f"Background processing failed for event {audit_event.get('event_id')}: {e}")
 
 async def background_aggregation_task():
@@ -421,6 +490,7 @@ async def background_aggregation_task():
             await asyncio.sleep(300)
             
         except Exception as e:
+        # TODO: Consider using ACGS error handling: log_error_with_context()
             logger.error(f"Background aggregation task error: {e}")
             await asyncio.sleep(60)  # Wait 1 minute before retrying
 
@@ -438,6 +508,7 @@ async def detect_event_correlation(audit_event: Dict[str, Any]) -> Optional[str]
         return f"corr_{hash(correlation_key) % 10000}"
         
     except Exception as e:
+        # TODO: Consider using ACGS error handling: log_error_with_context()
         logger.error(f"Correlation detection failed: {e}")
         return None
 
@@ -471,6 +542,7 @@ async def query_events_from_redis(query_request: AuditQueryRequest) -> tuple[Lis
         events = events[query_request.offset:query_request.offset + query_request.limit]
         
     except Exception as e:
+        # TODO: Consider using ACGS error handling: log_error_with_context()
         logger.error(f"Redis query failed: {e}")
     
     return events, total_count
@@ -528,6 +600,7 @@ async def calculate_constitutional_compliance_score() -> float:
         return max(0.0, min(1.0, compliance_rate))
         
     except Exception as e:
+        # TODO: Consider using ACGS error handling: log_error_with_context()
         logger.error(f"Failed to calculate compliance score: {e}")
         return 0.5  # Default to neutral score on error
 
@@ -549,6 +622,7 @@ async def calculate_service_compliance_scores() -> Dict[str, float]:
             service_scores[service] = 0.95 + (hash(service) % 10) * 0.005
     
     except Exception as e:
+        # TODO: Consider using ACGS error handling: log_error_with_context()
         logger.error(f"Failed to calculate service scores: {e}")
     
     return service_scores
@@ -574,6 +648,7 @@ async def get_24h_audit_statistics() -> Dict[str, int]:
         }
         
     except Exception as e:
+        # TODO: Consider using ACGS error handling: log_error_with_context()
         logger.error(f"Failed to get 24h statistics: {e}")
         return {"total_events": 0, "violations": 0, "critical_alerts": 0}
 
@@ -601,6 +676,7 @@ async def check_constitutional_compliance(audit_event: Dict[str, Any]):
             )
         
     except Exception as e:
+        # TODO: Consider using ACGS error handling: log_error_with_context()
         logger.error(f"Constitutional compliance check failed: {e}")
 
 async def analyze_event_correlations(audit_event: Dict[str, Any]) -> List[str]:
@@ -627,6 +703,7 @@ async def cleanup_old_events():
             # Implementation would clean up old date indices
             pass
     except Exception as e:
+        # TODO: Consider using ACGS error handling: log_error_with_context()
         logger.error(f"Cleanup failed: {e}")
 
 async def update_aggregated_statistics():

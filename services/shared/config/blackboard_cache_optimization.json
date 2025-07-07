@@ -1,0 +1,48 @@
+{
+  "service_name": "blackboard",
+  "cache_type": "audit_logs",
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "optimization": {
+    "ttl_seconds": 600,
+    "max_size": 5000,
+    "warming_enabled": true,
+    "warming_keys": [
+      "audit_cache",
+      "log_summaries",
+      "compliance_logs"
+    ]
+  },
+  "deployment_timestamp": 1751898091.8144019,
+  "cache_strategies": {
+    "multi_tier_enabled": true,
+    "l1_memory_cache": {
+      "enabled": true,
+      "max_size": 1000,
+      "ttl_seconds": 300
+    },
+    "l2_redis_cache": {
+      "enabled": true,
+      "max_size": 5000,
+      "ttl_seconds": 600
+    },
+    "cache_warming": {
+      "enabled": true,
+      "warming_keys": [
+        "audit_cache",
+        "log_summaries",
+        "compliance_logs"
+      ],
+      "warming_frequency_minutes": 30
+    }
+  },
+  "performance_targets": {
+    "hit_rate_target": 0.85,
+    "latency_target_ms": 2.0,
+    "throughput_target_rps": 100
+  },
+  "monitoring": {
+    "metrics_enabled": true,
+    "hit_rate_alerts": true,
+    "latency_alerts": true
+  }
+}

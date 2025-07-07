@@ -42,7 +42,7 @@ TEST_DATABASE_URL = "postgresql+asyncpg://test_user:test_pass@localhost:5439/tes
 TEST_REDIS_URL = "redis://localhost:6389/0"
 
 # JWT configuration for testing
-TEST_JWT_SECRET = "test_jwt_secret_key_for_acgs_testing"
+TEST_JWT_SECRET = os.getenv("SECRET_KEY", "test_jwt_secret_for_acgs_testing")
 TEST_JWT_ALGORITHM = "HS256"
 
 

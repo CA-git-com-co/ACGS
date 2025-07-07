@@ -1,0 +1,255 @@
+version: '3.8'
+
+# ACGS Development Environment Overrides
+# Constitutional Hash: cdd01ef066bc6cf2
+#
+# Development-specific configurations for easier debugging and development.
+# Use with: docker-compose -f docker-compose.base.yml -f docker-compose.services.yml -f docker-compose.development.override.yml up
+
+services:
+  # Development PostgreSQL with debugging
+  postgres:
+    environment:
+      POSTGRES_PASSWORD: acgs_dev_password
+      CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ./infrastructure/database/init:/docker-entrypoint-initdb.d
+      - ./sql_dumps:/sql_dumps  # For easy database dumps/restores
+    ports:
+      - "5439:5432"  # Expose for external connections
+    command: postgres -c log_statement=all -c log_min_duration_statement=0
+
+  # Development Redis with debugging
+  redis:
+    environment:
+      REDIS_PASSWORD: acgs_dev_redis
+      CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+    volumes:
+      - redis_dev_data:/data
+    ports:
+      - "6389:6379"  # Expose for external connections
+    command: redis-server --appendonly yes --requirepass acgs_dev_redis --loglevel debug
+
+  # Development Constitutional AI with hot reload
+  constitutional-ai:
+    environment:
+      - DATABASE_URL=postgresql://acgs_user:acgs_dev_password@postgres:5432/acgs
+      - REDIS_URL=redis://:acgs_dev_redis@redis:6379/0
+      - OPA_URL=http://opa:8181
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - SERVICE_NAME=constitutional-ai
+      - ENVIRONMENT=development
+      - DEBUG=true
+      - LOG_LEVEL=DEBUG
+      - RELOAD=true  # Enable hot reload
+      - PYTHONPATH=/app
+    volumes:
+      - ./services/core/constitutional-ai:/app:delegated  # Hot reload
+      - ./services/shared:/app/services/shared:delegated
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Development Integrity Service with hot reload
+  integrity:
+    environment:
+      - DATABASE_URL=postgresql://acgs_user:acgs_dev_password@postgres:5432/acgs
+      - REDIS_URL=redis://:acgs_dev_redis@redis:6379/1
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - SERVICE_NAME=integrity
+      - ENVIRONMENT=development
+      - DEBUG=true
+      - LOG_LEVEL=DEBUG
+      - RELOAD=true
+      - PYTHONPATH=/app
+    volumes:
+      - ./services/platform_services/integrity:/app:delegated
+      - ./services/shared:/app/services/shared:delegated
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Development API Gateway with hot reload
+  api-gateway:
+    environment:
+      - CONSTITUTIONAL_AI_URL=http://constitutional-ai:8000
+      - INTEGRITY_URL=http://integrity:8000
+      - GOVERNANCE_SYNTHESIS_URL=http://governance-synthesis:8000
+      - AUTH_URL=http://auth:8000
+      - REDIS_URL=redis://:acgs_dev_redis@redis:6379/2
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - SERVICE_NAME=api-gateway
+      - ENVIRONMENT=development
+      - DEBUG=true
+      - LOG_LEVEL=DEBUG
+      - RELOAD=true
+      - RATE_LIMIT_PER_MINUTE=1000  # Higher for development
+      - CORS_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+      - PYTHONPATH=/app
+    volumes:
+      - ./services/platform_services/api_gateway:/app:delegated
+      - ./services/shared:/app/services/shared:delegated
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Development Governance Synthesis with hot reload
+  governance-synthesis:
+    environment:
+      - DATABASE_URL=postgresql://acgs_user:acgs_dev_password@postgres:5432/acgs
+      - REDIS_URL=redis://:acgs_dev_redis@redis:6379/3
+      - OPA_URL=http://opa:8181
+      - NATS_URL=nats://nats:4222
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - SERVICE_NAME=governance-synthesis
+      - ENVIRONMENT=development
+      - DEBUG=true
+      - LOG_LEVEL=DEBUG
+      - RELOAD=true
+      - PYTHONPATH=/app
+    volumes:
+      - ./services/core/governance-synthesis:/app:delegated
+      - ./services/shared:/app/services/shared:delegated
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Development Authentication with hot reload
+  auth:
+    environment:
+      - DATABASE_URL=postgresql://acgs_user:acgs_dev_password@postgres:5432/acgs
+      - REDIS_URL=redis://:acgs_dev_redis@redis:6379/4
+      - SECRET_KEY=dev-secret-key-32-chars-long-minimum
+      - JWT_SECRET_KEY=dev-jwt-secret-key-64-chars-long-for-development-only
+      - CSRF_SECRET_KEY=dev-csrf-secret-key-32-chars-long
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - SERVICE_NAME=auth
+      - ENVIRONMENT=development
+      - DEBUG=true
+      - LOG_LEVEL=DEBUG
+      - RELOAD=true
+      - ACCESS_TOKEN_EXPIRE_MINUTES=480  # 8 hours for development
+      - REFRESH_TOKEN_EXPIRE_DAYS=30  # Longer for development
+      - PYTHONPATH=/app
+    volumes:
+      - ./services/platform_services/authentication:/app:delegated
+      - ./services/shared:/app/services/shared:delegated
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Development Code Analysis with hot reload
+  code-analysis:
+    environment:
+      - DATABASE_URL=postgresql://acgs_user:acgs_dev_password@postgres:5432/acgs
+      - REDIS_URL=redis://:acgs_dev_redis@redis:6379/5
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - SERVICE_NAME=code-analysis
+      - ENVIRONMENT=development
+      - DEBUG=true
+      - LOG_LEVEL=DEBUG
+      - RELOAD=true
+      - PYTHONPATH=/app
+    volumes:
+      - ./services/core/code-analysis:/app:delegated
+      - ./services/shared:/app/services/shared:delegated
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Development Context Service with hot reload
+  context:
+    environment:
+      - DATABASE_URL=postgresql://acgs_user:acgs_dev_password@postgres:5432/acgs
+      - REDIS_URL=redis://:acgs_dev_redis@redis:6379/6
+      - NATS_URL=nats://nats:4222
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - SERVICE_NAME=context
+      - ENVIRONMENT=development
+      - DEBUG=true
+      - LOG_LEVEL=DEBUG
+      - RELOAD=true
+      - PYTHONPATH=/app
+    volumes:
+      - ./services/core/context:/app:delegated
+      - ./services/shared:/app/services/shared:delegated
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Development tools container
+  dev-tools:
+    image: python:3.11-slim
+    container_name: acgs_dev_tools
+    volumes:
+      - .:/workspace:delegated
+      - dev_tools_cache:/root/.cache
+    working_dir: /workspace
+    environment:
+      - PYTHONPATH=/workspace
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    command: tail -f /dev/null  # Keep container running
+    networks:
+      - acgs_network
+    labels:
+      - "acgs.service=development"
+      - "acgs.component=tools"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+  # Development database admin (pgAdmin)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: acgs_pgadmin_dev
+    ports:
+      - "5050:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@acgs.dev
+      - PGADMIN_DEFAULT_PASSWORD=admin123
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    volumes:
+      - pgadmin_dev_data:/var/lib/pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - acgs_network
+    labels:
+      - "acgs.service=development"
+      - "acgs.component=database-admin"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+  # Development Redis admin (Redis Commander)
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: acgs_redis_commander_dev
+    ports:
+      - "8081:8081"
+    environment:
+      - REDIS_HOSTS=local:redis:6379:0:acgs_dev_redis
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - acgs_network
+    labels:
+      - "acgs.service=development"
+      - "acgs.component=redis-admin"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+# Development volumes
+volumes:
+  postgres_dev_data:
+    driver: local
+    labels:
+      - "acgs.volume=database"
+      - "acgs.environment=development"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+  
+  redis_dev_data:
+    driver: local
+    labels:
+      - "acgs.volume=cache"
+      - "acgs.environment=development"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+  
+  pgadmin_dev_data:
+    driver: local
+    labels:
+      - "acgs.volume=admin"
+      - "acgs.environment=development"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+  
+  dev_tools_cache:
+    driver: local
+    labels:
+      - "acgs.volume=cache"
+      - "acgs.environment=development"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"

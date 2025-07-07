@@ -1,3 +1,4 @@
+import os
 #!/usr/bin/env python3
 """
 ACGS Grafana Dashboard Setup Script
@@ -18,7 +19,7 @@ def setup_grafana_dashboard():
     # Grafana configuration
     grafana_url = "http://localhost:3001"
     grafana_user = "admin"
-    grafana_password = "acgs_admin_2024"
+    grafana_password = os.getenv("PASSWORD", "")
     
     print(f"🔧 Setting up ACGS Constitutional Compliance Dashboard")
     print(f"📊 Grafana URL: {grafana_url}")

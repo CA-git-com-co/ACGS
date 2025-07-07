@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 # OpenTelemetry Collector Configuration for ACGS-1
 # Advanced trace processing, sampling, and export configuration
 # Target: <1% performance overhead, intelligent sampling, multi-backend export

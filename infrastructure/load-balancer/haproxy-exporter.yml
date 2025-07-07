@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 # HAProxy Prometheus Exporter Configuration for ACGS-1
 # Enterprise-grade metrics collection for load balancing infrastructure
 # Target: >99.9% availability, <500ms response times, >1000 concurrent users

@@ -1,0 +1,14 @@
+{
+  "cache_optimization": {
+    "enabled": true,
+    "constitutional_hash": "cdd01ef066bc6cf2",
+    "target_hit_rate": 0.85,
+    "service_specific": {
+      "cache_types": [
+        "governance_rules",
+        "policy_decisions"
+      ],
+      "priority": "medium"
+    }
+  }
+}

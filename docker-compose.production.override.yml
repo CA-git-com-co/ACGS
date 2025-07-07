@@ -1,0 +1,291 @@
+version: '3.8'
+
+# ACGS Production Environment Overrides
+# Constitutional Hash: cdd01ef066bc6cf2
+#
+# Production-specific configurations and optimizations.
+# Use with: docker-compose -f docker-compose.base.yml -f docker-compose.services.yml -f docker-compose.production.override.yml up
+
+services:
+  # Production PostgreSQL optimizations
+  postgres:
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}  # Required in production
+      POSTGRES_SHARED_PRELOAD_LIBRARIES: pg_stat_statements
+      POSTGRES_MAX_CONNECTIONS: 200
+      POSTGRES_SHARED_BUFFERS: 1GB
+      POSTGRES_EFFECTIVE_CACHE_SIZE: 3GB
+      POSTGRES_WORK_MEM: 16MB
+      POSTGRES_MAINTENANCE_WORK_MEM: 256MB
+      CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+      - ./infrastructure/database/init:/docker-entrypoint-initdb.d
+      - ./infrastructure/database/postgresql-performance.conf:/etc/postgresql/postgresql.conf
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+        reservations:
+          memory: 1G
+          cpus: '0.5'
+
+  # Production Redis optimizations
+  redis:
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}  # Required in production
+      CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+    volumes:
+      - redis_prod_data:/data
+      - ./infrastructure/redis/redis-production.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+
+  # Production Constitutional AI optimizations
+  constitutional-ai:
+    environment:
+      - DATABASE_URL=postgresql://acgs_user:${POSTGRES_PASSWORD}@postgres:5432/acgs
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379/0
+      - OPA_URL=http://opa:8181
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - SERVICE_NAME=constitutional-ai
+      - ENVIRONMENT=production
+      - DEBUG=false
+      - LOG_LEVEL=INFO
+      - WORKERS=4
+      - MAX_REQUESTS=1000
+      - MAX_REQUESTS_JITTER=100
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+
+  # Production Integrity Service optimizations
+  integrity:
+    environment:
+      - DATABASE_URL=postgresql://acgs_user:${POSTGRES_PASSWORD}@postgres:5432/acgs
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379/1
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - SERVICE_NAME=integrity
+      - ENVIRONMENT=production
+      - DEBUG=false
+      - LOG_LEVEL=INFO
+      - WORKERS=2
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+
+  # Production API Gateway optimizations
+  api-gateway:
+    environment:
+      - CONSTITUTIONAL_AI_URL=http://constitutional-ai:8000
+      - INTEGRITY_URL=http://integrity:8000
+      - GOVERNANCE_SYNTHESIS_URL=http://governance-synthesis:8000
+      - AUTH_URL=http://auth:8000
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379/2
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - SERVICE_NAME=api-gateway
+      - ENVIRONMENT=production
+      - DEBUG=false
+      - LOG_LEVEL=INFO
+      - WORKERS=4
+      - RATE_LIMIT_PER_MINUTE=500  # Higher for production
+      - RATE_LIMIT_BURST=1000
+      - CORS_ORIGINS=${CORS_ORIGINS}
+      - TRUSTED_HOSTS=${TRUSTED_HOSTS}
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+
+  # Production Governance Synthesis optimizations
+  governance-synthesis:
+    environment:
+      - DATABASE_URL=postgresql://acgs_user:${POSTGRES_PASSWORD}@postgres:5432/acgs
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379/3
+      - OPA_URL=http://opa:8181
+      - NATS_URL=nats://nats:4222
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - SERVICE_NAME=governance-synthesis
+      - ENVIRONMENT=production
+      - DEBUG=false
+      - LOG_LEVEL=INFO
+      - WORKERS=3
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+
+  # Production Authentication optimizations
+  auth:
+    environment:
+      - DATABASE_URL=postgresql://acgs_user:${POSTGRES_PASSWORD}@postgres:5432/acgs
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379/4
+      - SECRET_KEY=${SECRET_KEY}  # Required in production
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}  # Required in production
+      - CSRF_SECRET_KEY=${CSRF_SECRET_KEY}  # Required in production
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - SERVICE_NAME=auth
+      - ENVIRONMENT=production
+      - DEBUG=false
+      - LOG_LEVEL=INFO
+      - WORKERS=2
+      - ACCESS_TOKEN_EXPIRE_MINUTES=30  # Shorter for security
+      - REFRESH_TOKEN_EXPIRE_DAYS=7
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+
+  # Production Code Analysis optimizations
+  code-analysis:
+    environment:
+      - DATABASE_URL=postgresql://acgs_user:${POSTGRES_PASSWORD}@postgres:5432/acgs
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379/5
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - SERVICE_NAME=code-analysis
+      - ENVIRONMENT=production
+      - DEBUG=false
+      - LOG_LEVEL=INFO
+      - WORKERS=2
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+
+  # Production Context Service optimizations
+  context:
+    environment:
+      - DATABASE_URL=postgresql://acgs_user:${POSTGRES_PASSWORD}@postgres:5432/acgs
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379/6
+      - NATS_URL=nats://nats:4222
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - SERVICE_NAME=context
+      - ENVIRONMENT=production
+      - DEBUG=false
+      - LOG_LEVEL=INFO
+      - WORKERS=2
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+
+  # Production Load Balancer
+  haproxy:
+    image: haproxy:2.8-alpine
+    container_name: acgs_haproxy_prod
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8404:8404"  # Stats page
+    volumes:
+      - ./infrastructure/load-balancer/haproxy-production.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+      - ./infrastructure/ssl:/etc/ssl/certs:ro
+    environment:
+      CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+    depends_on:
+      - api-gateway
+      - constitutional-ai
+      - governance-synthesis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8404/stats"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - acgs_network
+    labels:
+      - "acgs.service=platform"
+      - "acgs.component=load-balancer"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+# Production volumes with specific drivers and options
+volumes:
+  postgres_prod_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${POSTGRES_DATA_PATH:-/var/lib/acgs/postgres}
+    labels:
+      - "acgs.volume=database"
+      - "acgs.environment=production"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+  
+  redis_prod_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${REDIS_DATA_PATH:-/var/lib/acgs/redis}
+    labels:
+      - "acgs.volume=cache"
+      - "acgs.environment=production"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"

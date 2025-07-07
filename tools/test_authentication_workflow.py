@@ -1,3 +1,4 @@
+import os
 #!/usr/bin/env python3
 """
 Authentication workflow testing script for ACGS-PGP Phase 1 remediation.
@@ -19,7 +20,7 @@ class AuthenticationTester:
         self.refresh_token = None
         self.test_username = f"auth_test_{int(time.time())}"
         self.test_email = f"{self.test_username}@example.com"
-        self.test_password = "AuthTest123!"
+        self.test_password = os.getenv("PASSWORD", "")
 
     def run_curl_command(
         self,

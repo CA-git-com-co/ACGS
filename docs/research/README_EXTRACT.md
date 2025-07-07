@@ -1,4 +1,5 @@
 # Research Materials Extraction Guide
+**Constitutional Hash:** `cdd01ef066bc6cf2`
 
 Due to Git repository size constraints, the research materials are stored as compressed archives.
 

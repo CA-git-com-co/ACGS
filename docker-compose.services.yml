@@ -1,0 +1,259 @@
+version: '3.8'
+
+# ACGS Core Services
+# Constitutional Hash: cdd01ef066bc6cf2
+#
+# This file contains all core ACGS services.
+# Requires docker-compose.base.yml for infrastructure components.
+# Usage: docker-compose -f docker-compose.base.yml -f docker-compose.services.yml up
+
+services:
+  # Constitutional AI Service - Core compliance validation
+  constitutional-ai:
+    build:
+      context: ./services/core/constitutional-ai
+      dockerfile: Dockerfile
+    container_name: acgs_constitutional_ai
+    ports:
+      - "${CONSTITUTIONAL_AI_PORT:-8001}:8000"
+    environment:
+      - DATABASE_URL=postgresql://acgs_user:${POSTGRES_PASSWORD:-acgs_dev_password}@postgres:5432/acgs
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-acgs_dev_redis}@redis:6379/0
+      - OPA_URL=http://opa:8181
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - SERVICE_NAME=constitutional-ai
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      opa:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - acgs_network
+    labels:
+      - "acgs.service=core"
+      - "acgs.component=constitutional-ai"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+  # Integrity Service - Audit and hash chaining
+  integrity:
+    build:
+      context: ./services/platform_services/integrity
+      dockerfile: Dockerfile
+    container_name: acgs_integrity
+    ports:
+      - "${INTEGRITY_PORT:-8002}:8000"
+    environment:
+      - DATABASE_URL=postgresql://acgs_user:${POSTGRES_PASSWORD:-acgs_dev_password}@postgres:5432/acgs
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-acgs_dev_redis}@redis:6379/1
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - SERVICE_NAME=integrity
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - acgs_network
+    labels:
+      - "acgs.service=platform"
+      - "acgs.component=integrity"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+  # API Gateway - Routing and security
+  api-gateway:
+    build:
+      context: ./services/platform_services/api_gateway
+      dockerfile: Dockerfile
+    container_name: acgs_api_gateway
+    ports:
+      - "${API_GATEWAY_PORT:-8010}:8000"
+    environment:
+      - CONSTITUTIONAL_AI_URL=http://constitutional-ai:8000
+      - INTEGRITY_URL=http://integrity:8000
+      - GOVERNANCE_SYNTHESIS_URL=http://governance-synthesis:8000
+      - AUTH_URL=http://auth:8000
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-acgs_dev_redis}@redis:6379/2
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - SERVICE_NAME=api-gateway
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      - RATE_LIMIT_PER_MINUTE=${RATE_LIMIT_PER_MINUTE:-100}
+    depends_on:
+      constitutional-ai:
+        condition: service_healthy
+      integrity:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - acgs_network
+    labels:
+      - "acgs.service=platform"
+      - "acgs.component=api-gateway"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+  # Governance Synthesis Service - Policy synthesis
+  governance-synthesis:
+    build:
+      context: ./services/core/governance-synthesis
+      dockerfile: Dockerfile
+    container_name: acgs_governance_synthesis
+    ports:
+      - "${GOVERNANCE_SYNTHESIS_PORT:-8008}:8000"
+    environment:
+      - DATABASE_URL=postgresql://acgs_user:${POSTGRES_PASSWORD:-acgs_dev_password}@postgres:5432/acgs
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-acgs_dev_redis}@redis:6379/3
+      - OPA_URL=http://opa:8181
+      - NATS_URL=nats://nats:4222
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - SERVICE_NAME=governance-synthesis
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      opa:
+        condition: service_healthy
+      nats:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - acgs_network
+    labels:
+      - "acgs.service=core"
+      - "acgs.component=governance-synthesis"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+  # Authentication Service - User authentication and authorization
+  auth:
+    build:
+      context: ./services/platform_services/authentication
+      dockerfile: Dockerfile
+    container_name: acgs_auth
+    ports:
+      - "${AUTH_PORT:-8016}:8000"
+    environment:
+      - DATABASE_URL=postgresql://acgs_user:${POSTGRES_PASSWORD:-acgs_dev_password}@postgres:5432/acgs
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-acgs_dev_redis}@redis:6379/4
+      - SECRET_KEY=${SECRET_KEY}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - CSRF_SECRET_KEY=${CSRF_SECRET_KEY}
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - SERVICE_NAME=auth
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - acgs_network
+    labels:
+      - "acgs.service=platform"
+      - "acgs.component=auth"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+  # Code Analysis Service - Static analysis and security scanning
+  code-analysis:
+    build:
+      context: ./services/core/code-analysis
+      dockerfile: Dockerfile
+    container_name: acgs_code_analysis
+    ports:
+      - "${CODE_ANALYSIS_PORT:-8007}:8000"
+    environment:
+      - DATABASE_URL=postgresql://acgs_user:${POSTGRES_PASSWORD:-acgs_dev_password}@postgres:5432/acgs
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-acgs_dev_redis}@redis:6379/5
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - SERVICE_NAME=code-analysis
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - acgs_network
+    labels:
+      - "acgs.service=core"
+      - "acgs.component=code-analysis"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+  # Context Service - Workflow context and state management
+  context:
+    build:
+      context: ./services/core/context
+      dockerfile: Dockerfile
+    container_name: acgs_context
+    ports:
+      - "${CONTEXT_PORT:-8012}:8000"
+    environment:
+      - DATABASE_URL=postgresql://acgs_user:${POSTGRES_PASSWORD:-acgs_dev_password}@postgres:5432/acgs
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-acgs_dev_redis}@redis:6379/6
+      - NATS_URL=nats://nats:4222
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - SERVICE_NAME=context
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      nats:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - acgs_network
+    labels:
+      - "acgs.service=core"
+      - "acgs.component=context"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+# Import networks from base
+networks:
+  acgs_network:
+    external: true

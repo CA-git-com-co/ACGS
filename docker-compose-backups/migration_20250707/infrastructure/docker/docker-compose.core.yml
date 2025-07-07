@@ -1,0 +1,27 @@
+  # AICI Controller Service
+  aici-controller:
+    image: acgs/aici-controller:latest
+    container_name: acgs-aici-controller
+    restart: unless-stopped
+    ports:
+      - "8007:8007"
+    environment:
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - OPA_SERVICE_URL=http://opa:8181
+      - REDIS_URL=redis://redis:6379/0
+    volumes:
+      - ./config/opa/policies:/policies
+      - ./wasm:/wasm
+    depends_on:
+      - opa
+      - redis
+    networks:
+      - acgs-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.2'
+          memory: 256M

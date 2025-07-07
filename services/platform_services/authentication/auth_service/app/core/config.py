@@ -12,9 +12,9 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
 
-    # SECURITY: JWT secret key MUST be loaded from environment variable
-    # NEVER use default values in production - will raise error if not set
-    SECRET_KEY: str = "acgs-development-secret-key-2024-constitutional-ai-governance"
+    # SECURITY: JWT secret key loaded from environment variable
+    # No hardcoded secrets - fails fast if not properly configured
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "")
 
     # SECURITY: Reduced token lifetime from 8 days to 30 minutes for security
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
@@ -22,10 +22,18 @@ class Settings(BaseSettings):
 
     # Refresh Token settings
     REFRESH_TOKEN_EXPIRE_DAYS: int = int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", "7"))
-    CSRF_SECRET_KEY: str = os.getenv(
-        "CSRF_SECRET_KEY",
-        "acgs-development-csrf-secret-key-2024-phase1-infrastructure-stabilization",
-    )
+    CSRF_SECRET_KEY: str = os.getenv("CSRF_SECRET_KEY", "")
+
+    @model_validator(mode='after')
+    def validate_secrets(self):
+        """Validate that required secrets are configured."""
+        if not self.SECRET_KEY:
+            raise ValueError("SECRET_KEY environment variable must be set. Never use hardcoded secrets.")
+        if not self.CSRF_SECRET_KEY:
+            raise ValueError("CSRF_SECRET_KEY environment variable must be set. Never use hardcoded secrets.")
+        if len(self.SECRET_KEY) < 32:
+            raise ValueError("SECRET_KEY must be at least 32 characters long for security.")
+        return self
 
     # Backend CORS origins
     # Can accept either a comma-separated string or a list of URLs
