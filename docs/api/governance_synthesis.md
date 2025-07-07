@@ -245,5 +245,7 @@ Standard HTTP status codes are used. All error responses include a constitutiona
 
 ## 5. Related Information
 
+- **Constitutional AI Service**: For information on how constitutional principles are validated, see the [Constitutional AI Service API](constitutional-ai.md).
+- **Policy Governance Service**: For information on how policies are evaluated and governed, see the [Policy Governance Service API](policy-governance.md).
 - [ACGS Service Architecture Overview](../ACGS_SERVICE_OVERVIEW.md)
 - [ACGS System Overview](../../SYSTEM_OVERVIEW.md)
