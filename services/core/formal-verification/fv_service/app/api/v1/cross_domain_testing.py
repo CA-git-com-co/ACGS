@@ -16,16 +16,11 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from services.shared.database import get_async_db
-from services.shared.models import (
-
-# Constitutional compliance hash for ACGS
-CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
-
+from app.models.cross_domain_models import (
     CrossDomainTestResult,
     CrossDomainTestScenario,
     DomainContext,
 )
-
 from .core.auth import User, require_verification_triggerer
 from .core.cross_domain_testing_engine import cross_domain_testing_engine
 from .schemas import (
@@ -39,6 +34,9 @@ from .schemas import (
     DomainContextUpdate,
 )
 from .services.ac_client import ac_service_client
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 logger = logging.getLogger(__name__)
 router = APIRouter()

@@ -1,0 +1,23 @@
+# PostgreSQL Research Papers Knowledge Base Requirements
+
+# Database connectivity
+psycopg2-binary>=2.9.7
+
+# Environment configuration
+python-dotenv>=1.0.0
+
+# Web requests for arXiv API
+requests>=2.31.0
+
+# CLI table formatting
+tabulate>=0.9.0
+
+# Optional: For advanced PDF processing
+PyPDF2>=3.0.1
+
+# Optional: For better text extraction
+pdfplumber>=0.9.0
+
+# Optional: For web API (if needed)
+fastapi>=0.104.0
+uvicorn>=0.24.0
