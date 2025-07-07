@@ -428,6 +428,16 @@ Your service must meet these ACGS performance requirements:
 
 ## 📚 Next Steps
 
+### Key Architectural Concepts
+
+Before diving deep into service development, it's important to understand the core architectural principles that govern the ACGS ecosystem. These concepts are crucial for building compliant, secure, and performant services.
+
+- **Constitutional Compliance**: The entire system operates under a set of constitutional principles, enforced by the constitutional hash (`cdd01ef066bc6cf2`). All services must adhere to these principles. For more details, see the [ACGS Unified Architecture Guide](../architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md#constitutional-compliance-first).
+- **Multi-Tenancy**: The system is designed to support multiple tenants, with strict data isolation enforced at the database and application levels. For more information on how multi-tenancy is implemented, see the [ACGS Unified Architecture Guide](../architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md#multi-tenant-architecture).
+- **API Standardization**: All services follow a standardized API design, based on the FastAPI service template. This ensures consistency and predictability across the entire ecosystem. For more details, see the [ACGS Unified Architecture Guide](../architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md#api-standardization).
+
+
+
 ### Advanced Topics
 - **Performance Optimization**: Caching strategies and database optimization
 - **Security Hardening**: Advanced security patterns and vulnerability testing

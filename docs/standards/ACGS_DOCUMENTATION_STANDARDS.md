@@ -253,6 +253,21 @@ async def create_resource(
 
 ## 🚀 Migration Guide
 
+### Related Documents
+
+- **Unified Architecture Guide**: For a comprehensive overview of the ACGS architecture, see the [ACGS Unified Architecture Guide](../architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md).
+- **Developer Onboarding Guide**: For a step-by-step guide on how to get started with ACGS development, see the [ACGS Developer Onboarding Guide](../development/ACGS_DEVELOPER_ONBOARDING_GUIDE.md).
+
+### How to Contribute to Documentation
+
+Contributing to the ACGS documentation is a great way to help improve the project. Here's how you can contribute:
+
+1.  **Identify an area for improvement**: Whether it's a typo, a missing explanation, or an outdated code example, any improvement is welcome.
+2.  **Create a new branch**: Create a new branch in your local repository to work on your changes.
+3.  **Make your changes**: Make your changes to the documentation, following the standards outlined in this guide.
+4.  **Submit a pull request**: Once you're happy with your changes, submit a pull request to the main repository. Your changes will be reviewed by the documentation team before being merged.
+
+
 ### Updating Existing Documentation
 
 1. **Add Constitutional Hash**: Include `<!-- Constitutional Hash: cdd01ef066bc6cf2 -->` at the top
