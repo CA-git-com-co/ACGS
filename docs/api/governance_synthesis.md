@@ -1,453 +1,249 @@
-# Governance Synthesis API Documentation
-
-## Service Overview
-
-This service provides core functionality for the ACGS platform with constitutional compliance validation.
-
-**Service**: Governance_Synthesis
-**Port**: 8XXX
-**Constitutional Hash**: `cdd01ef066bc6cf2`
-
+# Governance Synthesis Service API
 
 <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 
-**Service**: Governance Synthesis Service
-**Port**: 8004
-**Base URL**: `http://localhost:8004/api/v1`
-**Constitutional Hash**: `cdd01ef066bc6cf2`
-**Version**: 3.0.0
+## 1. Overview
 
-## Overview
+This document provides comprehensive documentation for the **Governance Synthesis Service (Port 8004)** API. This service is a core component of the ACGS system, responsible for synthesizing governance policies from constitutional principles using advanced AI model integration.
 
-The Governance Synthesis Service is a core component of the ACGS system, responsible for synthesizing governance policies from constitutional principles using advanced AI model integration. It employs a multi-model LLM consensus mechanism with Google Gemini, DeepSeek-R1, NVIDIA Qwen, and Nano-vLLM to ensure robust and reliable policy generation.
+- **Service Name**: Governance Synthesis Service
+- **Port**: 8004
+- **Base URL**: `/api/v1`
 
-### Key Features
+## 2. Service Endpoints
 
-- **Multi-Model AI Integration**: Google Gemini, DeepSeek-R1, NVIDIA Qwen, Nano-vLLM
-- **Constitutional Policy Generation**: Synthesis from constitutional principles
-- **Multi-Stakeholder Coordination**: Stakeholder interest representation
-- **Democratic Process Management**: Voting and deliberation tools
-- **Policy Validation**: Constitutional compliance verification
-- **Conflict Resolution**: Automated policy conflict detection and resolution
+### 2.1. Health and Metrics
 
-### Base URL
+- **GET /health**: Returns the health status of the service.
+- **GET /metrics**: Provides Prometheus-compatible performance metrics.
 
-`http://localhost:8004`
+### 2.2. Policy Synthesis
 
-### Health Check
+#### POST /synthesis/generate
 
-`GET /health`
+Generates a governance policy from a set of constitutional principles and stakeholder requirements.
 
-### Metrics
+**Request Body**:
 
-`GET /metrics`
-
-## Authentication
-
-All API endpoints require proper authentication. Include the authentication token in the request headers:
-
-```
-Authorization: Bearer <your-token>
-```
-
-## API Endpoints
-
-### Policy Synthesis
-
-#### Generate Governance Policy
-
-**Endpoint:** `POST /api/v1/synthesis/generate`
-
-**Description:** Generate governance policy from constitutional principles
-
-**Request Body:**
 ```json
 {
-  "constitutional_principles": [
-    "transparency",
-    "accountability",
-    "democratic_legitimacy"
-  ],
-  "policy_domain": "data_governance",
-  "stakeholder_requirements": [
-    "privacy_protection",
-    "data_accessibility"
-  ],
-  "use_consensus": true,
+  "constitutional_principles": ["string"],
+  "policy_domain": "string",
+  "stakeholder_requirements": ["string"],
+  "use_consensus": boolean,
   "constitutional_hash": "cdd01ef066bc6cf2"
 }
 ```
 
-**Response:**
+**Response (200 OK)**:
+
 ```json
 {
-  "policy_id": "pol_12345",
+  "policy_id": "string",
   "generated_policy": {
-    "title": "Data Governance Policy",
-    "content": "Policy content here...",
-    "principles_applied": ["transparency", "accountability"],
-    "compliance_score": 0.95
-  ,
-  "constitutional_hash": "cdd01ef066bc6cf2"
-},
+    "title": "string",
+    "content": "string",
+    "principles_applied": ["string"],
+    "compliance_score": float
+  },
   "synthesis_metadata": {
-    "models_used": ["gemini-2.5-pro", "deepseek-r1"],
-    "consensus_score": 0.87,
-    "generation_time_ms": 1250
+    "models_used": ["string"],
+    "consensus_score": float,
+    "generation_time_ms": int
   },
   "constitutional_hash": "cdd01ef066bc6cf2",
-  "timestamp": "2025-07-05T10:30:00Z"
+  "timestamp": "string"
 }
 ```
 
-#### Validate Policy
+#### POST /synthesis/validate
 
-**Endpoint:** `POST /api/v1/synthesis/validate`
+Validates a given policy against a set of constitutional principles.
 
-**Description:** Validate policy against constitutional principles
+**Request Body**:
 
-**Request Body:**
 ```json
 {
-  "policy_text": "Policy content to validate",
-  "constitutional_principles": ["transparency", "accountability"],
-  "validation_level": "comprehensive",
+  "policy_text": "string",
+  "constitutional_principles": ["string"],
+  "validation_level": "string",
   "constitutional_hash": "cdd01ef066bc6cf2"
 }
 ```
 
-**Response:**
+**Response (200 OK)**:
+
 ```json
 {
   "validation_result": {
-    "is_compliant": true,
-    "compliance_score": 0.92,
-    "violations": [],
-    "recommendations": [
-      "Consider adding explicit privacy protections"
-    ]
-  ,
-  "constitutional_hash": "cdd01ef066bc6cf2"
-},
+    "is_compliant": boolean,
+    "compliance_score": float,
+    "violations": ["string"],
+    "recommendations": ["string"]
+  },
   "constitutional_hash": "cdd01ef066bc6cf2",
-  "validated_at": "2025-07-05T10:30:00Z"
+  "validated_at": "string"
 }
 ```
 
-#### Multi-Model Consensus
+#### POST /synthesis/consensus
 
-**Endpoint:** `POST /api/v1/synthesis/consensus`
+Generates a policy using a multi-model consensus approach.
 
-**Description:** Generate policy using multi-model consensus
+**Request Body**:
 
-**Request Body:**
 ```json
 {
-  "policy_text": "Proposed governance policy",
-  "models": ["gemini-2.5-pro", "deepseek-r1", "nvidia-qwen"],
-  "consensus_threshold": 0.8,
+  "policy_text": "string",
+  "models": ["string"],
+  "consensus_threshold": float,
   "constitutional_hash": "cdd01ef066bc6cf2"
 }
 ```
 
-**Response:**
+**Response (200 OK)**:
+
 ```json
 {
   "consensus_result": {
-    "consensus_achieved": true,
-    "consensus_score": 0.85,
-    "model_agreements": {
-      "gemini-2.5-pro": 0.87,
-      "deepseek-r1": 0.83,
-      "nvidia-qwen": 0.85
-    ,
-  "constitutional_hash": "cdd01ef066bc6cf2"
-},
-    "final_policy": "Consensus policy text..."
+    "consensus_achieved": boolean,
+    "consensus_score": float,
+    "model_agreements": {},
+    "final_policy": "string"
   },
   "constitutional_hash": "cdd01ef066bc6cf2",
-  "processed_at": "2025-07-05T10:30:00Z"
+  "processed_at": "string"
 }
 ```
 
-### Constitutional Analysis
+### 2.3. Constitutional Analysis
 
-#### Analyze Constitutional Compliance
+#### POST /constitutional/analyze
 
-**Endpoint:** `POST /api/v1/constitutional/analyze`
+Analyzes the constitutional compliance of a given policy.
 
-**Description:** Analyze constitutional compliance of policies
+**Request Body**:
 
-**Request Body:**
 ```json
 {
-  "policy_content": "Policy text to analyze",
-  "analysis_depth": "comprehensive",
+  "policy_content": "string",
+  "analysis_depth": "string",
   "constitutional_hash": "cdd01ef066bc6cf2"
 }
 ```
 
-**Response:**
+**Response (200 OK)**:
+
 ```json
 {
   "analysis_result": {
-    "compliance_score": 0.94,
-    "constitutional_alignment": "high",
-    "principle_coverage": {
-      "transparency": 0.95,
-      "accountability": 0.93,
-      "democratic_legitimacy": 0.94
-    ,
-  "constitutional_hash": "cdd01ef066bc6cf2"
-},
-    "recommendations": []
+    "compliance_score": float,
+    "constitutional_alignment": "string",
+    "principle_coverage": {},
+    "recommendations": ["string"]
   },
   "constitutional_hash": "cdd01ef066bc6cf2",
-  "analyzed_at": "2025-07-05T10:30:00Z"
+  "analyzed_at": "string"
 }
 ```
 
-### Stakeholder Management
+### 2.4. Stakeholder Management
 
-#### Register Stakeholder
+#### POST /stakeholders/register
 
-**Endpoint:** `POST /api/v1/stakeholders/register`
+Registers a new stakeholder in the governance process.
 
-**Description:** Register a new stakeholder in the governance process
+**Request Body**:
 
-**Request Body:**
 ```json
 {
-  "name": "Privacy Advocacy Group",
-  "type": "civil_society",
-  "interests": ["privacy", "transparency"],
-  "contact": "privacy@example.org",
+  "name": "string",
+  "type": "string",
+  "interests": ["string"],
+  "contact": "string",
   "constitutional_hash": "cdd01ef066bc6cf2"
 }
 ```
 
-**Response:**
+**Response (201 Created)**:
+
 ```json
 {
-  "stakeholder_id": "stake_12345",
-  "registration_status": "active",
-  "assigned_roles": ["policy_reviewer"],
+  "stakeholder_id": "string",
+  "registration_status": "string",
+  "assigned_roles": ["string"],
   "constitutional_hash": "cdd01ef066bc6cf2",
-  "registered_at": "2025-07-05T10:30:00Z"
+  "registered_at": "string"
 }
 ```
 
-### Democratic Processes
+### 2.5. Democratic Processes
 
-#### Create Democratic Vote
+#### POST /democracy/create-vote
 
-**Endpoint:** `POST /api/v1/democracy/create-vote`
+Creates a democratic voting process for a given policy.
 
-**Description:** Create a democratic voting process
+**Request Body**:
 
-**Request Body:**
 ```json
 {
-  "title": "Data Governance Policy Vote",
-  "description": "Vote on proposed data governance policy",
-  "policy_id": "pol_12345",
-  "voting_period_hours": 168,
-  "eligible_stakeholders": ["stake_12345", "stake_67890"],
+  "title": "string",
+  "description": "string",
+  "policy_id": "string",
+  "voting_period_hours": int,
+  "eligible_stakeholders": ["string"],
   "constitutional_hash": "cdd01ef066bc6cf2"
 }
 ```
 
-**Response:**
-```json
-{
-  "vote_id": "vote_12345",
-  "status": "active",
-  "voting_deadline": "2025-07-12T10:30:00Z",
-  "participation_url": "http://localhost:8004/vote/vote_12345",
-  "constitutional_hash": "cdd01ef066bc6cf2",
-  "created_at": "2025-07-05T10:30:00Z"
-}
-```
-
-### AI Model Management
-
-#### Get Model Status
-
-**Endpoint:** `GET /api/v1/models/status`
-
-**Description:** Get status and health of AI models
-
-**Response:**
-```json
-{
-  "models": {
-    "gemini-2.5-pro": {
-      "status": "healthy",
-      "response_time_ms": 245,
-      "availability": 0.99
-    ,
-  "constitutional_hash": "cdd01ef066bc6cf2"
-},
-    "deepseek-r1": {
-      "status": "healthy",
-      "response_time_ms": 312,
-      "availability": 0.98
-    },
-    "nvidia-qwen": {
-      "status": "healthy",
-      "response_time_ms": 189,
-      "availability": 0.99
-    }
-  },
-  "overall_health": "healthy",
-  "constitutional_hash": "cdd01ef066bc6cf2",
-  "checked_at": "2025-07-05T10:30:00Z"
-}
-```
-
-## Error Handling
-
-All endpoints return standardized error responses:
+**Response (201 Created)**:
 
 ```json
 {
-  "error": {
-    "code": "VALIDATION_ERROR",
-    "message": "Constitutional hash validation failed",
-    "details": {
-      "expected_hash": "cdd01ef066bc6cf2",
-      "provided_hash": "invalid_hash"
-    }
-  },
+  "vote_id": "string",
+  "status": "string",
+  "voting_deadline": "string",
+  "participation_url": "string",
   "constitutional_hash": "cdd01ef066bc6cf2",
-  "timestamp": "2025-07-05T10:30:00Z"
+  "created_at": "string"
 }
 ```
 
-## Performance Targets
+### 2.6. AI Model Management
 
-- **Test Coverage**: ≥ 80%
+#### GET /models/status
 
+Gets the status and health of the AI models used by the service.
 
-- **Latency**: P99 ≤ 5ms for cached queries (latency_p99: ≤5ms)
+**Response (200 OK)**:
+
+```json
+{
+  "models": {},
+  "overall_health": "string",
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "checked_at": "string"
+}
+```
+
+## 3. Performance Targets
+
+- **Latency**: P99 ≤ 5ms for cached queries
 - **Throughput**: ≥ 100 RPS sustained
-- **Cache Hit Rate**: ≥ 85%
 - **Availability**: 99.9% uptime
 - **Constitutional Compliance**: 100% validation
 
-## Rate Limiting
+## 4. Error Handling
 
-- **Standard endpoints**: 1000 requests/hour per API key
-- **Synthesis endpoints**: 100 requests/hour per API key
-- **Consensus endpoints**: 50 requests/hour per API key
+Standard HTTP status codes are used. All error responses include a constitutional compliance validation status.
 
-## Monitoring
+- `400 Bad Request`: Invalid request parameters.
+- `401 Unauthorized`: Authentication required.
+- `403 Forbidden`: Insufficient permissions.
+- `404 Not Found`: Resource not found.
+- `500 Internal Server Error`: Server error.
 
-### Health Endpoints
+## 5. Related Information
 
-- `GET /health` - Basic health check
-- `GET /api/v1/status` - Detailed service status
-- `GET /metrics` - Prometheus metrics
-
-### Key Metrics
-
-- `gs_synthesis_requests_total` - Total policy synthesis requests
-- `gs_synthesis_duration_seconds` - Policy synthesis processing time
-- `gs_constitutional_compliance_score` - Constitutional compliance scores
-- `gs_consensus_accuracy` - Multi-model consensus accuracy
-- `gs_active_stakeholders` - Currently active stakeholders
-
-## Examples
-
-### Python Client Example
-
-```python
-import httpx
-
-async def synthesize_policy():
-    async with httpx.AsyncClient() as client:
-        response = await client.post(
-            "http://localhost:8004/api/v1/synthesis/generate",
-            json={
-                "constitutional_principles": ["transparency", "accountability"],
-                "policy_domain": "data_governance",
-                "use_consensus": True,
-                "constitutional_hash": "cdd01ef066bc6cf2"
-            },
-            headers={"Authorization": "Bearer your-token"}
-        )
-        return response.json()
-```
-
-### cURL Example
-
-```bash
-curl -X POST http://localhost:8004/api/v1/synthesis/generate \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer your-token" \
-  -d '{
-    "constitutional_principles": ["transparency", "accountability"],
-    "policy_domain": "data_governance",
-    "constitutional_hash": "cdd01ef066bc6cf2"
-  }'
-```
-
-## Examples
-
-### Python Client Example
-
-```python
-import httpx
-
-async def synthesize_policy():
-    async with httpx.AsyncClient() as client:
-        response = await client.post(
-            "http://localhost:8004/api/v1/synthesis/generate",
-            json={
-                "constitutional_principles": ["transparency", "accountability"],
-                "policy_domain": "data_governance",
-                "use_consensus": True,
-                "constitutional_hash": "cdd01ef066bc6cf2"
-            },
-            headers={"Authorization": "Bearer your-token"}
-        )
-        return response.json()
-```
-
-### cURL Example
-
-```bash
-curl -X POST http://localhost:8004/api/v1/synthesis/generate \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer your-token" \
-  -d '{
-    "constitutional_principles": ["transparency", "accountability"],
-    "policy_domain": "data_governance",
-    "constitutional_hash": "cdd01ef066bc6cf2"
-  }'
-```
-
-## Related Information
-
-For a broader understanding of the ACGS platform and its components, refer to:
-
-- [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
-- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
-- [ACGE Strategic Implementation Plan - 24 Month Roadmap](../../docs/ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md)
-- [ACGE Testing and Validation Framework](../../docs/ACGE_TESTING_VALIDATION_FRAMEWORK.md)
-- [ACGE Cost Analysis and ROI Projections](../../docs/ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md)
-- [ACGS Comprehensive Task Completion - Final Report](../architecture/ACGS_COMPREHENSIVE_TASK_COMPLETION_FINAL_REPORT.md)
-- [ACGS-Claudia Integration Architecture Plan](../architecture/ACGS_CLAUDIA_INTEGRATION_ARCHITECTURE.md)
-- [ACGS Implementation Guide](../deployment/ACGS_IMPLEMENTATION_GUIDE.md)
-- [ACGS-PGP Operational Deployment Guide](../deployment/ACGS_PGP_OPERATIONAL_DEPLOYMENT_GUIDE.md)
-- [ACGS-PGP Troubleshooting Guide](../deployment/ACGS_PGP_TROUBLESHOOTING_GUIDE.md)
-- [ACGS-PGP Setup Guide](../deployment/ACGS_PGP_SETUP_GUIDE.md)
-- [Service Status Dashboard](../operations/SERVICE_STATUS.md)
-- [ACGS Configuration Guide](../configuration/README.md)
-- [ACGS-2 Technical Specifications - 2025 Edition](../TECHNICAL_SPECIFICATIONS_2025.md)
-
----
-
-**Last Updated**: 2025-07-05
-**API Version**: 3.0.0
-**Constitutional Hash**: `cdd01ef066bc6cf2` ✅
+- [ACGS Service Architecture Overview](../ACGS_SERVICE_OVERVIEW.md)
+- [ACGS System Overview](../../SYSTEM_OVERVIEW.md)

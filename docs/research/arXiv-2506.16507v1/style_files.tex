@@ -1,0 +1,375 @@
+
+\usepackage{tcolorbox}
+\tcbuselibrary{listings, skins, breakable, xparse}
+
+% Define pastel color palette
+\definecolor{pastelBlue}{RGB}{173, 216, 230}
+\definecolor{pastelPink}{RGB}{255, 209, 220}
+\definecolor{pastelLavender}{RGB}{230, 230, 250}
+\definecolor{pastelMint}{RGB}{204, 255, 204}
+\definecolor{softPurple}{RGB}{209, 195, 240}
+\definecolor{softGray}{RGB}{240, 240, 245}
+\definecolor{deepPurple}{RGB}{95, 75, 139}
+\definecolor{darkGray}{RGB}{80, 80, 80}
+
+% Create beautiful prompt box with pastel colors
+\newtcolorbox{promptbox}[2][]{%
+  enhanced,
+  breakable,
+  colback=softGray,
+  colframe=softPurple,
+  fonttitle=\bfseries\rmfamily,
+  coltitle=white,
+  colbacktitle=deepPurple,
+  attach boxed title to top left={xshift=0.5cm, yshift=-\tcboxedtitleheight/5},
+  boxed title style={size=small, sharp corners},
+  top=2mm,
+  bottom=2mm,
+  left=2mm,
+  right=2mm,
+  arc=2mm,
+  boxrule=0.8pt,
+  titlerule=0mm,
+  toptitle=1mm,
+  bottomtitle=1mm,
+  title={#2},
+  overlay={
+    \begin{tcbclipinterior}
+      \fill[pastelLavender!30] (interior.south west) -- (interior.north west) -- (interior.north east) -- cycle;
+    \end{tcbclipinterior}
+  },
+  listing only,
+  listing options={
+    basicstyle=\small\ttfamily,
+    breaklines=true,
+    columns=flexible,
+    backgroundcolor=\color{softGray},
+    xleftmargin=2pt,
+    framexleftmargin=2pt,
+    numbers=left,
+    numberstyle=\tiny\color{darkGray},
+    numbersep=5pt,
+    tabsize=2,
+    commentstyle=\color{deepPurple},
+    keywordstyle=\color{blue!70!black},
+    stringstyle=\color{red!70!black},
+  },
+  #1
+}
+
+
+% ────  PREAMBLE ADD-ONS  ────────────────────────────────────────────────────────
+% Already loaded: tcolorbox, listings, skins, breakable, xparse + your colors
+% (pastelBlue, pastelPink, …) and \newtcolorbox{promptbox}
+
+% Generic table/figure box
+\newtcolorbox{tablebox}[2][]{%
+  enhanced, breakable, colback=pastelLavender!15, colframe=softPurple,
+  fonttitle=\bfseries\rmfamily, coltitle=white, colbacktitle=deepPurple,
+  attach boxed title to top left={xshift=0.5cm,yshift=-\tcboxedtitleheight/5},
+  boxed title style={size=small, sharp corners},
+  top=2mm,bottom=2mm,left=2mm,right=2mm,arc=2mm,boxrule=0.8pt,
+  title={#2}, #1}
+
+% Answer / prose block
+\newtcolorbox{answerbox}[2][]{%
+  enhanced, breakable, colback=softGray, colframe=pastelMint,
+  fonttitle=\bfseries\rmfamily, coltitle=darkGray, colbacktitle=pastelMint!40!white,
+  attach boxed title to top left={xshift=0.5cm,yshift=-\tcboxedtitleheight/5},
+  boxed title style={size=small, sharp corners},
+  top=2mm,bottom=2mm,left=2mm,right=2mm,arc=2mm,boxrule=0.8pt,
+  title={#2}, #1}
+
+% Metrics / scores box (compact, two-column layout)
+\newtcolorbox{metricsbox}[1][]{%
+  enhanced, breakable, colback=pastelBlue!15, colframe=pastelBlue!70!black,
+  fonttitle=\bfseries\rmfamily, coltitle=white, colbacktitle=pastelBlue!70!black,
+  attach boxed title to top left={xshift=0.5cm,yshift=-\tcboxedtitleheight/5},
+  boxed title style={size=small, sharp corners},
+  top=1.5mm,bottom=1.5mm,left=1.5mm,right=1.5mm,arc=2mm,boxrule=0.6pt,
+  title={Attributes and their Relative Importance Scores}, #1}
+
+% JSON-style listing box
+\newtcolorbox{jsonbox}[2][]{%
+  enhanced, breakable,
+  colback=softGray, colframe=softPurple, arc=1.5mm, boxrule=0.6pt,
+  title={#2}, fonttitle=\bfseries\rmfamily, coltitle=white,
+  colbacktitle=deepPurple!90!black,
+  attach boxed title to top left={xshift=0.5cm,yshift=-\tcboxedtitleheight/5},
+  boxed title style={size=small, sharp corners},
+  listing only,
+  listing options={basicstyle=\scriptsize\ttfamily,
+                   breaklines=true, numbers=left,
+                   numberstyle=\tiny\color{darkGray},
+                   xleftmargin=2pt, framexleftmargin=2pt,
+                   showstringspaces=false},
+  #1}
+  
+
+% Define lighter pastel color palette
+\definecolor{questionBlue}{RGB}{208, 235, 250}       % Lighter blue
+\definecolor{questionBorder}{RGB}{121, 182, 242}     % Lighter blue border
+\definecolor{questionTitle}{RGB}{70, 130, 180}       % Soft blue title
+
+\definecolor{acceptGreen}{RGB}{225, 250, 225}        % Lighter green
+\definecolor{acceptBorder}{RGB}{150, 200, 150}       % Lighter green border
+\definecolor{acceptTitle}{RGB}{76, 156, 80}          % Soft green title
+
+\definecolor{rejectPink}{RGB}{255, 233, 233}         % Lighter pink/red
+\definecolor{rejectBorder}{RGB}{244, 162, 160}       % Lighter red border 
+\definecolor{rejectTitle}{RGB}{175, 70, 70}          % Soft red title
+
+\definecolor{remarkViolet}{RGB}{240, 230, 252}       % Light violet
+\definecolor{remarkBorder}{RGB}{190, 158, 230}       % Light violet border
+\definecolor{remarkTitle}{RGB}{130, 94, 180}         % Soft purple title
+
+\definecolor{darkGray}{RGB}{100, 100, 100}           % Text color
+
+\newtcolorbox{questionbox}[2][]{%
+  enhanced,
+  breakable,
+  colback=questionBlue!70,
+  colframe=questionBorder,
+  fonttitle=\bfseries\rmfamily,
+  coltitle=white,
+  colbacktitle=questionTitle,
+  attach boxed title to top left={xshift=0.5cm, yshift=-\tcboxedtitleheight/5},
+  boxed title style={size=small, sharp corners},
+  top=2mm,
+  bottom=2mm,
+  left=2mm,
+  right=2mm,
+  arc=3mm,
+  boxrule=0.8pt,
+  titlerule=0mm,
+  toptitle=1mm,
+  bottomtitle=1mm,
+  title={#2},
+  overlay={
+    \begin{tcbclipinterior}
+      \fill[questionBlue!40] (interior.south west) -- (interior.north west) -- (interior.north east) -- cycle;
+    \end{tcbclipinterior}
+  },
+  #1
+}
+
+% Create accepted answer box
+\newtcolorbox{acceptedbox}[2][]{%
+  enhanced,
+  breakable,
+  colback=acceptGreen!80,
+  colframe=acceptBorder,
+  fonttitle=\bfseries\rmfamily,
+  coltitle=white,
+  colbacktitle=acceptTitle,
+  attach boxed title to top right={xshift=-0.5cm, yshift=-\tcboxedtitleheight/5},
+  boxed title style={size=small, sharp corners},
+  top=2mm,
+  bottom=2mm,
+  left=2mm,
+  right=2mm,
+  arc=3mm,
+  boxrule=0.8pt,
+  titlerule=0mm,
+  toptitle=1mm,
+  bottomtitle=1mm,
+  title={#2},
+  overlay={
+    \begin{tcbclipinterior}
+      \fill[acceptGreen!40] (interior.north east) -- (interior.south east) -- (interior.south west) -- cycle;
+    \end{tcbclipinterior}
+  },
+  #1
+}
+
+% Create rejected answer box
+\newtcolorbox{rejectedbox}[2][]{%
+  enhanced,
+  breakable,
+  colback=rejectPink!80,
+  colframe=rejectBorder,
+  fonttitle=\bfseries\rmfamily,
+  coltitle=white,
+  colbacktitle=rejectTitle,
+  attach boxed title to top right={xshift=-0.5cm, yshift=-\tcboxedtitleheight/5},
+  boxed title style={size=small, sharp corners},
+  top=2mm,
+  bottom=2mm,
+  left=2mm,
+  right=2mm,
+  arc=3mm,
+  boxrule=0.8pt,
+  titlerule=0mm,
+  toptitle=1mm,
+  bottomtitle=1mm,
+  title={#2},
+  overlay={
+    \begin{tcbclipinterior}
+      \fill[rejectPink!40] (interior.north east) -- (interior.south east) -- (interior.south west) -- cycle;
+    \end{tcbclipinterior}
+  },
+  #1
+}
+
+
+% Create remarks box
+\newtcolorbox{remarksbox}[2][]{%
+  enhanced,
+  breakable,
+  colback=remarkViolet!70,
+  colframe=remarkBorder,
+  fonttitle=\bfseries\rmfamily,
+  coltitle=white,
+  colbacktitle=remarkTitle,
+  attach boxed title to top center={yshift=-\tcboxedtitleheight/5},
+  boxed title style={size=small, sharp corners},
+  top=2mm,
+  bottom=2mm,
+  left=2mm,
+  right=2mm,
+  arc=3mm,
+  boxrule=0.8pt,
+  titlerule=0mm,
+  toptitle=1mm,
+  bottomtitle=1mm,
+  title={#2},
+  overlay={
+    \begin{tcbclipinterior}
+      \fill[remarkViolet!40] (interior.north east) -- (interior.south east) -- (interior.south west) -- cycle;
+    \end{tcbclipinterior}
+  },
+  #1
+}
+
+% Content versions
+\newtcolorbox{questionboxverbatim}[2][]{%
+  % Copy visual styles from questionbox
+  enhanced, breakable, colback=questionBlue!70, colframe=questionBorder,
+  fonttitle=\bfseries\rmfamily, coltitle=white, colbacktitle=questionTitle,
+  attach boxed title to top left={xshift=0.5cm, yshift=-\tcboxedtitleheight/5},
+  boxed title style={size=small, sharp corners},
+  top=2mm, bottom=2mm, left=2mm, right=2mm, arc=3mm, boxrule=0.8pt,
+  titlerule=0mm, toptitle=1mm, bottomtitle=1mm,
+  overlay={\begin{tcbclipinterior}\fill[questionBlue!40] (interior.south west) -- (interior.north west) -- (interior.north east) -- cycle;\end{tcbclipinterior}},
+  % Add title and listing options
+  title={#2}, % Use the standard 'title' key
+  listing only,
+  listing options={
+    basicstyle=\small\ttfamily, breaklines=true, columns=flexible,
+    % backgroundcolor is implicitly set by colback
+    xleftmargin=5pt, framexleftmargin=2pt, numbers=left,
+    numberstyle=\tiny\color{darkGray}, numbersep=5pt, tabsize=2,
+  },
+  #1 % Optional arguments
+}
+
+\newtcolorbox{acceptedboxverbatim}[2][]{%
+  % Copy visual styles from acceptedbox
+  enhanced, breakable, colback=acceptGreen!80, colframe=acceptBorder,
+  fonttitle=\bfseries\rmfamily, coltitle=white, colbacktitle=acceptTitle,
+  attach boxed title to top right={xshift=-0.5cm, yshift=-\tcboxedtitleheight/5},
+  boxed title style={size=small, sharp corners},
+  top=2mm, bottom=2mm, left=2mm, right=2mm, arc=3mm, boxrule=0.8pt,
+  titlerule=0mm, toptitle=1mm, bottomtitle=1mm,
+  overlay={\begin{tcbclipinterior}\fill[acceptGreen!40] (interior.north east) -- (interior.south east) -- (interior.south west) -- cycle;\end{tcbclipinterior}},
+  % Add title and listing options
+  title={#2}, % Use the standard 'title' key
+  listing only,
+  listing options={
+    basicstyle=\small\ttfamily, breaklines=true, columns=flexible,
+    % backgroundcolor is implicitly set by colback
+    xleftmargin=5pt, framexleftmargin=2pt, numbers=left,
+    numberstyle=\tiny\color{darkGray}, numbersep=5pt, tabsize=2,
+  },
+  #1 % Optional arguments
+}
+
+\newtcolorbox{rejectedboxverbatim}[2][]{%
+  % Copy visual styles from rejectedbox
+  enhanced, breakable, colback=rejectPink!80, colframe=rejectBorder,
+  fonttitle=\bfseries\rmfamily, coltitle=white, colbacktitle=rejectTitle,
+  attach boxed title to top right={xshift=-0.5cm, yshift=-\tcboxedtitleheight/5},
+  boxed title style={size=small, sharp corners},
+  top=2mm, bottom=2mm, left=2mm, right=2mm, arc=3mm, boxrule=0.8pt,
+  titlerule=0mm, toptitle=1mm, bottomtitle=1mm,
+  overlay={\begin{tcbclipinterior}\fill[rejectPink!40] (interior.north east) -- (interior.south east) -- (interior.south west) -- cycle;\end{tcbclipinterior}},
+  % Add title and listing options
+  title={#2}, % Use the standard 'title' key
+  listing only,
+  listing options={
+    basicstyle=\small\ttfamily, breaklines=true, columns=flexible,
+    % backgroundcolor is implicitly set by colback
+    xleftmargin=5pt, framexleftmargin=2pt, numbers=left,
+    numberstyle=\tiny\color{darkGray}, numbersep=5pt, tabsize=2,
+  },
+  #1 % Optional arguments
+}
+
+\newtcolorbox{remarksboxverbatim}[2][]{%
+  remarksbox={#2},
+  listing only,
+  listing options={
+    basicstyle=\small\ttfamily,
+    breaklines=true,
+    columns=flexible,
+    backgroundcolor=\color{remarkViolet!70},
+    xleftmargin=2pt,
+    framexleftmargin=2pt,
+    numbers=left,
+    numberstyle=\tiny\color{darkGray},
+    numbersep=5pt,
+    tabsize=2,
+  },
+  #1
+}
+
+% Define convenient commands with additional parameters - text versions
+\NewDocumentCommand{\Question}{O{} m m}{%
+  \begin{questionbox}[#1]{#2}
+#3
+  \end{questionbox}
+}
+
+\NewDocumentCommand{\Accepted}{O{} m m}{%
+  \begin{acceptedbox}[#1]{#2}
+#3
+  \end{acceptedbox}
+}
+
+\NewDocumentCommand{\Rejected}{O{} m m}{%
+  \begin{rejectedbox}[#1]{#2}
+#3
+  \end{rejectedbox}
+}
+
+\NewDocumentCommand{\Remarks}{O{} m m}{%
+  \begin{remarksbox}[#1]{#2}
+#3
+  \end{remarksbox}
+}
+
+% Define convenient commands with additional parameters - verbatim versions
+\NewDocumentCommand{\QuestionV}{O{} m m}{%
+  \begin{questionboxverbatim}[#1]{#2}
+#3
+  \end{questionboxverbatim}
+}
+
+\NewDocumentCommand{\AcceptedV}{O{} m m}{%
+  \begin{acceptedboxverbatim}[#1]{#2}
+#3
+  \end{acceptedboxverbatim}
+}
+
+\NewDocumentCommand{\RejectedV}{O{} m m}{%
+  \begin{rejectedboxverbatim}[#1]{#2}
+#3
+  \end{rejectedboxverbatim}
+}
+
+\NewDocumentCommand{\RemarksV}{O{} m m}{%
+  \begin{remarksboxverbatim}[#1]{#2}
+#3
+  \end{remarksboxverbatim}
+}
+

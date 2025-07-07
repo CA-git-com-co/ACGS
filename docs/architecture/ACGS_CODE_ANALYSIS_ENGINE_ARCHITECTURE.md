@@ -572,87 +572,12 @@ async def performance_monitoring_middleware(request: Request, call_next):
         raise
 ```
 
-## Deployment Configuration
+## Related Information
 
-### Environment Variables
-```bash
-# Service Configuration
-ACGS_CODE_ANALYSIS_PORT=8007
-ACGS_CODE_ANALYSIS_HOST=0.0.0.0
-ACGS_CODE_ANALYSIS_WORKERS=4
+For a broader understanding of the ACGS platform and its components, refer to:
 
-# Database Configuration (Existing ACGS Infrastructure)
-POSTGRESQL_HOST=localhost
-POSTGRESQL_PORT=5439
-POSTGRESQL_DATABASE=acgs
-POSTGRESQL_USER=acgs_user
-POSTGRESQL_PASSWORD=${ACGS_DB_PASSWORD}
-POSTGRESQL_POOL_SIZE=20
-POSTGRESQL_MAX_OVERFLOW=10
-
-# Redis Configuration (Existing ACGS Infrastructure)
-REDIS_HOST=localhost
-REDIS_PORT=6389
-REDIS_DB=3
-REDIS_PASSWORD=${ACGS_REDIS_PASSWORD}
-REDIS_POOL_SIZE=10
-
-# Service Integration
-AUTH_SERVICE_URL=http://localhost:8016
-CONTEXT_SERVICE_URL=http://localhost:8012
-SERVICE_REGISTRY_URL=http://localhost:8001/registry
-
-# Constitutional Compliance
-CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-AUDIT_ENABLED=true
-COMPLIANCE_STRICT_MODE=true
-
-# Performance Configuration
-CACHE_TTL_DEFAULT=1800
-EMBEDDING_BATCH_SIZE=32
-MAX_CONCURRENT_REQUESTS=100
-REQUEST_TIMEOUT_SECONDS=30
-
-# Monitoring
-PROMETHEUS_ENABLED=true
-PROMETHEUS_PORT=9091
-LOG_LEVEL=INFO
-STRUCTURED_LOGGING=true
-```
-
-### Docker Configuration
-```dockerfile
-# Dockerfile for ACGS Code Analysis Engine
-FROM python:3.11-slim
-
-# Set working directory
-WORKDIR /app
-
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    git \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy requirements and install Python dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy application code
-COPY . .
-
-# Create non-root user
-RUN useradd -m -u 1000 acgs && chown -R acgs:acgs /app
-USER acgs
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8007/health || exit 1
-
-# Expose port
-EXPOSE 8007
-
-# Run application
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8007", "--workers", "4"]
-```
-```
+- [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
+- [ACGS Code Analysis Engine Implementation Plan](../../docs/implementation/ACGS_CODE_ANALYSIS_ENGINE_IMPLEMENTATION_PLAN.md)
+- [ACGS Code Analysis Engine Deployment Guide](../../docs/deployment/ACGS_CODE_ANALYSIS_ENGINE_DEPLOYMENT_GUIDE.md)
+- [ACGS Code Analysis Engine Integration Guide](../../docs/integration/ACGS_CODE_ANALYSIS_ENGINE_INTEGRATION_GUIDE.md)
+- [ACGS System Overview](../../SYSTEM_OVERVIEW.md)

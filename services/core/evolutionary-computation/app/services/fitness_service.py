@@ -8,10 +8,13 @@ performance optimization, and automated scoring for evolutionary computation.
 import asyncio
 import logging
 import time
-from typing import Any, Dict, List, Optional, Tuple
+import statistics
+import numpy as np
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional, Tuple, NamedTuple
 
 import redis.asyncio as aioredis
-from prometheus_client import Counter, Histogram
+from prometheus_client import Counter, Histogram, Gauge
 
 from ..models.evolution import FitnessMetrics, Individual
 from ..core.constitutional_validator import ConstitutionalValidator
@@ -20,6 +23,210 @@ from ..core.constitutional_validator import ConstitutionalValidator
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 logger = logging.getLogger(__name__)
+
+
+class RegressionAlert(NamedTuple):
+    """Regression detection alert."""
+    metric_name: str
+    current_value: float
+    historical_mean: float
+    severity: str  # "warning", "critical"
+    threshold_violated: float
+    timestamp: datetime
+
+
+class RegressionDetector:
+    """
+    Advanced regression detection for policy evolution fitness metrics.
+    
+    Monitors fitness trends and alerts on significant degradations.
+    """
+    
+    def __init__(self, lookback_days: int = 30, alert_threshold: float = 0.15):
+        """
+        Initialize regression detector.
+        
+        Args:
+            lookback_days: Days of history to consider for baseline
+            alert_threshold: Threshold for triggering alerts (15% degradation default)
+        """
+        self.lookback_days = lookback_days
+        self.alert_threshold = alert_threshold
+        self.fitness_history: Dict[str, List[Tuple[datetime, float]]] = {}
+        self.alerts: List[RegressionAlert] = []
+        
+        logger.info(f"RegressionDetector initialized with {lookback_days}d lookback, {alert_threshold} threshold")
+    
+    def record_fitness_metric(self, metric_name: str, value: float) -> None:
+        """Record a fitness metric for regression analysis."""
+        timestamp = datetime.utcnow()
+        
+        if metric_name not in self.fitness_history:
+            self.fitness_history[metric_name] = []
+        
+        self.fitness_history[metric_name].append((timestamp, value))
+        
+        # Cleanup old data
+        cutoff = timestamp - timedelta(days=self.lookback_days)
+        self.fitness_history[metric_name] = [
+            (ts, val) for ts, val in self.fitness_history[metric_name]
+            if ts > cutoff
+        ]
+    
+    def detect_regression(self, metric_name: str, current_value: float) -> Optional[RegressionAlert]:
+        """
+        Detect regression in fitness metrics.
+        
+        Args:
+            metric_name: Name of the metric to check
+            current_value: Current value to compare against historical data
+            
+        Returns:
+            RegressionAlert if regression detected, None otherwise
+        """
+        if metric_name not in self.fitness_history:
+            # No history to compare against
+            return None
+        
+        history = self.fitness_history[metric_name]
+        if len(history) < 10:  # Need at least 10 data points
+            return None
+        
+        # Calculate historical statistics
+        historical_values = [val for _, val in history]
+        historical_mean = statistics.mean(historical_values)
+        historical_std = statistics.stdev(historical_values) if len(historical_values) > 1 else 0
+        
+        # Check for regression
+        degradation = (historical_mean - current_value) / historical_mean if historical_mean > 0 else 0
+        
+        if degradation > self.alert_threshold:
+            severity = "critical" if degradation > 0.25 else "warning"
+            
+            alert = RegressionAlert(
+                metric_name=metric_name,
+                current_value=current_value,
+                historical_mean=historical_mean,
+                severity=severity,
+                threshold_violated=degradation,
+                timestamp=datetime.utcnow()
+            )
+            
+            self.alerts.append(alert)
+            logger.warning(f"Regression detected in {metric_name}: {degradation:.2%} degradation")
+            
+            return alert
+        
+        return None
+    
+    def get_recent_alerts(self, hours: int = 24) -> List[RegressionAlert]:
+        """Get alerts from the last N hours."""
+        cutoff = datetime.utcnow() - timedelta(hours=hours)
+        return [alert for alert in self.alerts if alert.timestamp > cutoff]
+
+
+class MLFitnessPredictor:
+    """
+    Machine Learning-based fitness prediction for policy evolution.
+    
+    Uses historical data to predict and recommend fitness improvements.
+    """
+    
+    def __init__(self):
+        """Initialize ML fitness predictor."""
+        self.training_data: List[Tuple[Dict[str, Any], float]] = []
+        self.model_weights: Dict[str, float] = {}
+        self.is_trained = False
+        
+        logger.info("MLFitnessPredictor initialized")
+    
+    def add_training_data(self, genotype: Dict[str, Any], fitness: float) -> None:
+        """Add training data for the ML model."""
+        self.training_data.append((genotype.copy(), fitness))
+        
+        # Keep only recent data (last 1000 samples)
+        if len(self.training_data) > 1000:
+            self.training_data = self.training_data[-1000:]
+    
+    def train_simple_model(self) -> None:
+        """Train a simple linear model for fitness prediction."""
+        if len(self.training_data) < 50:
+            logger.warning("Insufficient training data for ML model")
+            return
+        
+        # Extract features and targets
+        all_features = set()
+        for genotype, _ in self.training_data:
+            all_features.update(genotype.keys())
+        
+        feature_list = sorted(all_features)
+        
+        # Create feature matrix
+        X = []
+        y = []
+        
+        for genotype, fitness in self.training_data:
+            features = [genotype.get(feat, 0.0) for feat in feature_list]
+            X.append(features)
+            y.append(fitness)
+        
+        X = np.array(X)
+        y = np.array(y)
+        
+        # Simple linear regression using normal equation
+        try:
+            # Add bias term
+            X_with_bias = np.column_stack([np.ones(X.shape[0]), X])
+            
+            # Normal equation: w = (X^T X)^(-1) X^T y
+            XtX = X_with_bias.T @ X_with_bias
+            Xty = X_with_bias.T @ y
+            
+            weights = np.linalg.solve(XtX, Xty)
+            
+            # Store weights
+            self.model_weights = {"bias": weights[0]}
+            for i, feature in enumerate(feature_list):
+                self.model_weights[feature] = weights[i + 1]
+            
+            self.is_trained = True
+            logger.info(f"ML model trained with {len(self.training_data)} samples")
+            
+        except np.linalg.LinAlgError:
+            logger.error("Failed to train ML model - singular matrix")
+    
+    def predict_fitness(self, genotype: Dict[str, Any]) -> Optional[float]:
+        """Predict fitness score using the trained model."""
+        if not self.is_trained:
+            return None
+        
+        # Calculate prediction
+        prediction = self.model_weights.get("bias", 0.0)
+        
+        for feature, weight in self.model_weights.items():
+            if feature != "bias":
+                feature_value = genotype.get(feature, 0.0)
+                prediction += weight * feature_value
+        
+        # Clamp to valid range
+        return min(1.0, max(0.0, prediction))
+    
+    def suggest_improvements(self, genotype: Dict[str, Any]) -> Dict[str, float]:
+        """Suggest improvements to genotype for better fitness."""
+        if not self.is_trained:
+            return {}
+        
+        suggestions = {}
+        
+        for feature, weight in self.model_weights.items():
+            if feature != "bias" and weight > 0:
+                current_value = genotype.get(feature, 0.0)
+                # Suggest increasing positive-weight features
+                if current_value < 0.9:
+                    improvement = min(0.1, 1.0 - current_value)
+                    suggestions[feature] = current_value + improvement
+        
+        return suggestions
 
 
 class FitnessService:
@@ -34,6 +241,10 @@ class FitnessService:
         """Initialize fitness service."""
         self.redis = redis_client
         self.constitutional_validator = ConstitutionalValidator()
+        
+        # Initialize advanced components
+        self.regression_detector = RegressionDetector()
+        self.ml_predictor = MLFitnessPredictor()
         
         self.setup_metrics()
         
@@ -53,7 +264,7 @@ class FitnessService:
             "user_satisfaction": 0.05
         }
         
-        logger.info("FitnessService initialized with constitutional compliance")
+        logger.info("FitnessService initialized with constitutional compliance, regression detection, and ML prediction")
     
     def setup_metrics(self) -> None:
         """Setup Prometheus metrics."""
@@ -74,6 +285,31 @@ class FitnessService:
             "Distribution of fitness scores",
             ["score_type"],
             buckets=[0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+        )
+        
+        # Regression detection metrics
+        self.regression_alerts_total = Counter(
+            "regression_alerts_total",
+            "Total regression alerts generated",
+            ["metric_name", "severity"]
+        )
+        
+        self.fitness_regression_gauge = Gauge(
+            "fitness_regression_degradation",
+            "Current fitness metric degradation percentage",
+            ["metric_name"]
+        )
+        
+        # ML prediction metrics
+        self.ml_predictions_total = Counter(
+            "ml_fitness_predictions_total",
+            "Total ML fitness predictions",
+            ["status"]
+        )
+        
+        self.ml_training_samples = Gauge(
+            "ml_fitness_training_samples",
+            "Number of samples in ML training dataset"
         )
     
     async def evaluate_comprehensive_fitness(self, individual: Individual) -> FitnessMetrics:
@@ -170,6 +406,39 @@ class FitnessService:
                 self.fitness_score_histogram.labels(score_type=component).observe(score)
             
             self.fitness_score_histogram.labels(score_type="overall").observe(overall_fitness)
+            
+            # Record fitness metrics for regression detection
+            for component, score in scores.items():
+                self.regression_detector.record_fitness_metric(component, score)
+                
+                # Check for regressions
+                regression_alert = self.regression_detector.detect_regression(component, score)
+                if regression_alert:
+                    self.regression_alerts_total.labels(
+                        metric_name=component,
+                        severity=regression_alert.severity
+                    ).inc()
+                    
+                    self.fitness_regression_gauge.labels(
+                        metric_name=component
+                    ).set(regression_alert.threshold_violated)
+            
+            # Record overall fitness for regression detection
+            self.regression_detector.record_fitness_metric("overall_fitness", overall_fitness)
+            overall_regression = self.regression_detector.detect_regression("overall_fitness", overall_fitness)
+            if overall_regression:
+                self.regression_alerts_total.labels(
+                    metric_name="overall_fitness",
+                    severity=overall_regression.severity
+                ).inc()
+            
+            # Add to ML training data
+            self.ml_predictor.add_training_data(individual.genotype, overall_fitness)
+            self.ml_training_samples.set(len(self.ml_predictor.training_data))
+            
+            # Periodically retrain ML model
+            if len(self.ml_predictor.training_data) % 100 == 0:
+                self.ml_predictor.train_simple_model()
             
             return fitness_metrics
             
@@ -369,3 +638,172 @@ class FitnessService:
         
         genotype_str = json.dumps(genotype, sort_keys=True)
         return hashlib.md5(genotype_str.encode()).hexdigest()
+    
+    async def predict_fitness_ml(self, individual: Individual) -> Optional[float]:
+        """
+        Predict fitness using ML model.
+        
+        Args:
+            individual: Individual to predict fitness for
+            
+        Returns:
+            Predicted fitness score or None if model not trained
+        """
+        try:
+            prediction = self.ml_predictor.predict_fitness(individual.genotype)
+            
+            if prediction is not None:
+                self.ml_predictions_total.labels(status="success").inc()
+            else:
+                self.ml_predictions_total.labels(status="no_model").inc()
+            
+            return prediction
+            
+        except Exception as e:
+            logger.error(f"ML fitness prediction failed: {e}")
+            self.ml_predictions_total.labels(status="error").inc()
+            return None
+    
+    def get_fitness_improvement_suggestions(self, individual: Individual) -> Dict[str, float]:
+        """
+        Get suggestions for improving individual fitness.
+        
+        Args:
+            individual: Individual to suggest improvements for
+            
+        Returns:
+            Dictionary of suggested genotype improvements
+        """
+        try:
+            return self.ml_predictor.suggest_improvements(individual.genotype)
+        except Exception as e:
+            logger.error(f"Failed to generate improvement suggestions: {e}")
+            return {}
+    
+    def get_regression_alerts(self, hours: int = 24) -> List[RegressionAlert]:
+        """
+        Get recent regression alerts.
+        
+        Args:
+            hours: Hours of history to consider
+            
+        Returns:
+            List of recent regression alerts
+        """
+        return self.regression_detector.get_recent_alerts(hours)
+    
+    def get_fitness_trends(self, metric_name: str, days: int = 7) -> Dict[str, Any]:
+        """
+        Get fitness trends for a specific metric.
+        
+        Args:
+            metric_name: Name of the fitness metric
+            days: Days of history to analyze
+            
+        Returns:
+            Dictionary containing trend analysis
+        """
+        try:
+            history = self.regression_detector.fitness_history.get(metric_name, [])
+            
+            if not history:
+                return {"status": "no_data"}
+            
+            # Filter by time range
+            cutoff = datetime.utcnow() - timedelta(days=days)
+            recent_history = [(ts, val) for ts, val in history if ts > cutoff]
+            
+            if len(recent_history) < 2:
+                return {"status": "insufficient_data"}
+            
+            values = [val for _, val in recent_history]
+            timestamps = [ts for ts, _ in recent_history]
+            
+            # Calculate trend statistics
+            mean_value = statistics.mean(values)
+            std_dev = statistics.stdev(values) if len(values) > 1 else 0
+            min_value = min(values)
+            max_value = max(values)
+            
+            # Simple trend calculation (slope)
+            if len(values) >= 2:
+                # Convert timestamps to numeric values (days since earliest)
+                time_diffs = [(ts - timestamps[0]).total_seconds() / 86400 for ts in timestamps]
+                
+                # Calculate simple linear trend
+                n = len(values)
+                sum_x = sum(time_diffs)
+                sum_y = sum(values)
+                sum_xy = sum(x * y for x, y in zip(time_diffs, values))
+                sum_x2 = sum(x * x for x in time_diffs)
+                
+                if n * sum_x2 - sum_x * sum_x != 0:
+                    trend_slope = (n * sum_xy - sum_x * sum_y) / (n * sum_x2 - sum_x * sum_x)
+                else:
+                    trend_slope = 0
+            else:
+                trend_slope = 0
+            
+            return {
+                "status": "success",
+                "metric_name": metric_name,
+                "days_analyzed": days,
+                "data_points": len(recent_history),
+                "mean": mean_value,
+                "std_dev": std_dev,
+                "min": min_value,
+                "max": max_value,
+                "trend_slope": trend_slope,
+                "trend_direction": "improving" if trend_slope > 0.01 else "declining" if trend_slope < -0.01 else "stable"
+            }
+            
+        except Exception as e:
+            logger.error(f"Failed to analyze fitness trends for {metric_name}: {e}")
+            return {"status": "error", "error": str(e)}
+    
+    async def evaluate_with_prediction_comparison(self, individual: Individual) -> Dict[str, Any]:
+        """
+        Evaluate fitness and compare with ML prediction for model validation.
+        
+        Args:
+            individual: Individual to evaluate
+            
+        Returns:
+            Dictionary with actual fitness, prediction, and accuracy metrics
+        """
+        try:
+            # Get ML prediction first
+            predicted_fitness = await self.predict_fitness_ml(individual)
+            
+            # Get actual fitness
+            actual_metrics = await self.evaluate_comprehensive_fitness(individual)
+            actual_fitness = actual_metrics.overall_fitness
+            
+            result = {
+                "actual_fitness": actual_fitness,
+                "predicted_fitness": predicted_fitness,
+                "fitness_metrics": actual_metrics
+            }
+            
+            # Calculate prediction accuracy if we have a prediction
+            if predicted_fitness is not None:
+                prediction_error = abs(actual_fitness - predicted_fitness)
+                prediction_accuracy = 1.0 - prediction_error
+                
+                result.update({
+                    "prediction_error": prediction_error,
+                    "prediction_accuracy": prediction_accuracy,
+                    "has_prediction": True
+                })
+            else:
+                result.update({
+                    "prediction_error": None,
+                    "prediction_accuracy": None,
+                    "has_prediction": False
+                })
+            
+            return result
+            
+        except Exception as e:
+            logger.error(f"Failed to evaluate with prediction comparison: {e}")
+            return {"status": "error", "error": str(e)}

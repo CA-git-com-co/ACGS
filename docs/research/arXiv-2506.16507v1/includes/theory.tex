@@ -1,0 +1,36 @@
+\section{Theoretical Analysis}
+\label{sec:theory}
+
+We provide a theoretical analysis, detailed in Appendix~\ref{sec:theoretical_analysis_detailed}, to formalize how \carma{}'s causal augmentation isolates true reward drivers from spurious correlates. Under an idealized model, we show that training on data with targeted interventions on causal attributes enables the learned reward model to accurately identify causal reward determinants, even in the presence of numerous, unspecified spurious features.
+
+\paragraph{Intuition and Analytical Approach}
+When only a specific causal attribute is intervened to vary, and all other causal attributes are fixed to their factual versions, and spurious factors are ancestral to all causal attributes,  then the reward model is forced to learn the true impact of that causal attribute in an approximate sense.
+To formalize this, we consider a setting where:
+
+\begin{enumerate}[label=(\arabic*)]
+    \item Causal attributes $\mathrm{C}(\mathrm{A})$ and spurious attributes $\mathrm{SP}(\mathrm{A})$ are modeled as boolean variables.
+    \item True reward $\mathrm{R}^*$ is a sparse quadratic polynomial of $\mathrm{C}(\mathrm{A})$ only.
+    \item The learned $\hat{\mathrm{R}}_\theta$ can be a denser quadratic polynomial including $\mathrm{SP}(\mathrm{A})$ and $\mathrm{C}(\mathrm{A})\mathrm{SP}(\mathrm{A})$ terms.
+    \item Spurious attributes $\mathrm{SP}(\mathrm{A})$ are not descendants of causal attributes $\mathrm{C}(\mathrm{A})$.
+    \item Causal augmentation is an ideal counterfactual that (given same exogenous factors leading to the answer)  intervenes one $C_i \to \neg C_i$, leaving other $C_j$ intervened to be their factual versions.
+\end{enumerate}
+
+\vspace{-0.1in}
+We frame learning the coefficients  of $\mathrm{R}^*$ as an $\ell_1$-constrained linear regression (Lasso) on features derived from attribute differences between an augmented answer $A^{\mathrm{aug}}$ and its original $A$. The key insight is that the feature matrix $\mathbf{F}$ from such augmented pairs exhibits properties conducive to sparse recovery, such as low column coherence or satisfying a Restricted Isometry Property (RIP) variant. Specifcally, compared to the original training set, the augmented one has a much lower RIP.
+\vspace{-0.2in}
+\subsection{Main Theoretical Result (Informal)}
+
+This structure leads to the following result (formalized as Theorem~\ref{thm:appendix_lasso_recovery} in Appendix~\ref{sec:theoretical_analysis_detailed}):
+
+\vspace{0.03in}
+\begin{takeawaybox}
+\vspace{-0.1in}
+\begin{theorem}[\textbf{Informal Statement}]
+\label{thm:main_body_lasso_recovery}
+Under the idealized model assumptions, $\ell_1$-constrained regression on $m$ causally augmented examples recovers the true causal reward coefficients  $\mathbf{a}$ with an $\ell_2$-error $\lVert \mathbf{\theta} - \hat{\mathbf{\theta}} \rVert_2$ that scales (ignoring constants and terms related to imperfect sparsity recovery) roughly as $O\left( \lVert \theta_{{\cal N}^c}\rVert_ 1 (\frac{1}{k} + \sqrt{\frac{\log(k+\ell)}{m}})\right)$ where ${\cal N}$ is the top $O(k)$ coefficients in the $R^{*}$ true reward model. This highlights a primary dependence on the number of causal attributes $k$ and samples $m$, and only a weak, logarithmic dependence on the spurious attribute dimension $\ell$.
+\end{theorem}
+\end{takeawaybox}
+
+\vspace{0.03in}
+
+\textbf{Implications:} This theorem suggests that \carma{}'s causal augmentation, by promoting favorable properties (like RIP or low incoherence) in the effective design matrix, guides the reward model towards genuine causal drivers. Further, the error vector has $\ell_2$ norm is linear in the causal dimension $k$ in the worst case and zero in the best case where $R^{*}$ has sparser dependence on the causal factors.  If it was the preference training dataset, the error could be proportional to $\lVert \theta \rVert_1$ (which is $O(k^2)$).

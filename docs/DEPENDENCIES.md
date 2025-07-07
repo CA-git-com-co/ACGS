@@ -327,6 +327,14 @@ npm update --save
 
 For a broader understanding of the ACGS platform and its components, refer to:
 
+- [Dependency Management Completion Report](</home/dislove/ACGS-2/docs/DEPENDENCY_MANAGEMENT_COMPLETE.md>)
+- [Dependency Managers Update Summary](</home/dislove/ACGS-2/docs/DEPENDENCY_MANAGERS_UPDATE_SUMMARY.md>)
+- [CI/CD Fixes Report](</home/dislove/ACGS-2/docs/CI_CD_FIXES_REPORT.md>)
+- [Workflow Fixes Summary](</home/dislove/ACGS-2/docs/workflow_fixes_summary.md>)
+- [Workflow Systematic Fixes Final Report](</home/dislove/ACGS-2/docs/workflow_systematic_fixes_final_report.md>)
+- [Workflow Optimization Report](</home/dislove/ACGS-2/docs/WORKFLOW_OPTIMIZATION_REPORT.md>)
+- [Workflow Modernization Report](</home/dislove/ACGS-2/docs/WORKFLOW_MODERNIZATION_REPORT.md>)
+- [ACGS Reorganization Guide](</home/dislove/ACGS-2/reorganization-tools/reports/ACGS_REORGANIZATION_GUIDE.md>)
 - [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
 - [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
 - [ACGE Strategic Implementation Plan - 24 Month Roadmap](../../docs/ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md)

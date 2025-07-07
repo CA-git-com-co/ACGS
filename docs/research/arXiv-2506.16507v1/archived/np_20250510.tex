@@ -1,0 +1,119 @@
+\section{Causal Framework for Reward Modeling}
+\label{sec:preliminaries}
+
+We aim to develop a reward model that accurately assesses the quality of an answer $\mathrm{A}$ provided in response to a query $\mathrm{Q}$. Our approach is grounded in a causal framework designed to distinguish genuine quality drivers from spurious correlates often present in preference data.
+
+\subsection{Reward Model and Pairwise Preferences}
+Let $\hat{\mathrm{R}}(\mathrm{Q}, \mathrm{A})$ denote the learned reward model, which assigns a scalar score reflecting the quality of answer $\mathrm{A}$ for query $\mathrm{Q}$. While $\hat{\mathrm{R}}$ provides a pointwise score, it is typically trained using pairwise preference data. Given two answers $\mathrm{A}_1$ and $\mathrm{A}_2$ for the same query $\mathrm{Q}$, we relate the reward scores to preference probabilities using the Bradley-Terry model \citep{bradley1952rank}:
+\begin{equation}
+\mathrm{P}(\mathrm{A}_1 \succ \mathrm{A}_2 | \mathrm{Q}; \theta) = \sigmoid(\hat{\mathrm{R}}_\theta(\mathrm{Q}, \mathrm{A}_1) - \hat{\mathrm{R}}_\theta(\mathrm{Q}, \mathrm{A}_2)) = \frac{\exp(\hat{\mathrm{R}}_\theta(\mathrm{Q}, \mathrm{A}_1))}{\exp(\hat{\mathrm{R}}_\theta(\mathrm{Q}, \mathrm{A}_1)) + \exp(\hat{\mathrm{R}}_\theta(\mathrm{Q}, \mathrm{A}_2))}
+\label{eq:bt_prob_roman}
+\end{equation}
+where $\hat{\mathrm{R}}_\theta$ explicitly denotes the model parameterized by $\theta$, and $\sigmoid(\cdot)$ is the logistic sigmoid function. The parameters $\theta$ are optimized using a dataset of observed preferences $\mathcal{D}_{\mathrm{pref}} = \{(\mathrm{Q}^{(i)}, \mathrm{y}_w^{(i)}, \mathrm{y}_l^{(i)})\}_{i=1}^N$, typically by minimizing the negative log-likelihood based on Eq. \ref{eq:bt_prob_roman}.
+
+\subsection{Causal Framework for Reward Modeling}
+\label{subsec:causal_graph}
+
+We propose a causal model (Figure \ref{fig:causal_graph}) to analyze the generation and evaluation of answers. The process begins with a query $\mathrm{Q}$, which stimulates a latent \textit{intent} $\mathcal{I}$. We define \textit{Intent} $\mathcal{I}$ as an unobserved latent variable representing the core, high-quality information and goals the generator (human or LLM) aims to convey in response to $\mathrm{Q}$, before stylistic choices or other potentially spurious elements arise in the final textual manifestation. This intent $\mathcal{I}$ is then realized as the textual answer $\mathrm{A}$.
+
+From the answer $\mathrm{A}$, we derive two sets of attributes:
+\begin{itemize}[itemsep=0pt,left=0pt]
+    \item \textbf{Causal Attributes} $\mathrm{C}(\mathrm{A}) = \{\mathrm{C}_1(\mathrm{A}), \dots, \mathrm{C}_\ell(\mathrm{A})\}$: These are the \textit{Principal Causal Components} representing fundamental quality dimensions (e.g., factuality, relevance, safety) that genuinely determine the response's quality relative to the query $\mathrm{Q}$.
+    \item \textbf{Spurious Attributes} $\mathrm{SP}(\mathrm{A}) = \{\mathrm{SP}_1(\mathrm{A}), \dots, \mathrm{SP}_k(\mathrm{A})\}$: These are features (e.g., length, formatting, politeness, specific phrasing) that might be statistically correlated with human preferences in $\mathcal{D}_{\mathrm{pref}}$ but do not intrinsically determine the answer's true quality. We note that the set of all spurious features is (a) greater than the causal feature set and (b) \emph{not} known a priori, and hence directly controlling for them is challenging.
+\end{itemize}
+We assume an idealized \textit{ground-truth reward} $\mathrm{R}^*(\mathrm{Q}, \mathrm{A})$ exists, which is a function solely of the query and the causal attributes: $\mathrm{R}^*(\mathrm{Q}, \mathrm{A}) = f^*(\mathrm{Q}, \mathrm{C}(\mathrm{A}))$. This implies $\mathrm{R}^*$ is conditionally independent of $\mathrm{SP}(\mathrm{A})$ given $\mathrm{Q}$ and $\mathrm{C}(\mathrm{A})$. The causal relationships are depicted in Figure \ref{fig:causal_graph} and interpreted in Table \ref{tab:causal_arrows}.
+
+\begin{figure}[t!]
+\centering
+\includegraphics[width=\linewidth]{images/causalDiagram.pdf} 
+\caption{Conceptual Causal Graph for Reward Modeling. $\mathrm{Q}$ is the query, $\mathcal{I}$ is the latent intent for the response, $\mathcal{U}$ is the set of unknown confounders from the generator, $\mathrm{A}$ is the generated answer, $\mathrm{C}(\mathrm{A})$ are causal attributes, $\mathrm{SP}(\mathrm{A})$ are spurious attributes, and $\mathrm{R}$ is the ground-truth reward. The goal is to train $\hat{\mathrm{R}}_\theta$ to estimate $\mathrm{R}$, such that $\mathrm{SP}(\mathrm{A})$ is conditionally independent of $\mathrm{R}$ given $\mathrm{C}(\mathrm{A})$ and $\mathrm{Q}$.}
+\label{fig:causal_graph}
+\end{figure}
+
+\begin{table}[ht!]
+\centering
+\caption{Interpretation of Causal Arrows in the Assumed DAG}
+\label{tab:causal_arrows}
+\vspace{1em}
+\begin{tabular}{p{3cm} p{9cm}} % Adjusted widths
+\toprule
+\textbf{Arrow} & \textbf{Interpretation} \\
+\midrule
+$\mathrm{Q} \;\to\; \mathcal{I}$ & The query shapes the generator's intent. \\
+$\mathcal{I}, \mathcal{U} \;\to\; \mathrm{A}$ & The answer text is generated based on the intent but is shaped by the generator's internal latent state. \\$\mathrm{A} \;\to\; \mathrm{C}(\mathrm{A})$ & The answer text manifests causal quality attributes. \\
+$\mathrm{A} \;\to\; \mathrm{SP}(\mathrm{A})$ & The answer text also manifests spurious attributes. \\
+$\mathrm{C}(\mathrm{A}) \;\to\; \mathrm{R}$ & The ground-truth reward $\mathrm{R}$ is solely determined by the causal attributes $\mathrm{C}(\mathrm{A})$ (given $\mathrm{Q}$). \\
+\midrule
+\multicolumn{2}{p{12cm}}{\textbf{Note:} There is no direct arrow $\mathrm{SP}(\mathrm{A}) \to \mathrm{R}$. The challenge is that standard training of $\hat{\mathrm{R}}_\theta$ on $\mathcal{D}_{\mathrm{pref}}$ might induce a spurious dependence on $\mathrm{SP}(\mathrm{A})$ because $\mathrm{SP}(\mathrm{A})$ and $\mathrm{C}(\mathrm{A})$ share a common cause $\mathrm{A}$, leading to non-causal correlations between $\mathrm{SP}(\mathrm{A})$ and preference labels derived from $\mathrm{R}^*$.} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The primary challenge arises because standard training procedures for $\hat{\mathrm{R}}_\theta$ may inadvertently learn sensitivity to $\mathrm{SP}(\mathrm{A})$ due to correlations present in $\mathcal{D}_{\mathrm{pref}}$. Since $\mathrm{A}$ generates both $\mathrm{C}(\mathrm{A})$ and $\mathrm{SP}(\mathrm{A})$, these attributes can be statistically associated. A model $\hat{\mathrm{R}}_\theta$ optimized solely to fit observed preferences might exploit the correlation between $\mathrm{SP}(\mathrm{A})$ and preference labels, leading to undesirable dependencies. Our goal is to train $\hat{\mathrm{R}}_\theta$ such that its functional dependence on $\mathrm{A}$ is primarily mediated through the causal attributes $\mathrm{C}(\mathrm{A})$, rendering it robust to variations in the spurious attributes $\mathrm{SP}(\mathrm{A})$.
+
+\subsection{Counterfactuals via Causal Interventions}
+\label{subsec:interventions}
+
+To instill causal awareness and robustness in $\hat{\mathrm{R}}_\theta$, we leverage the concept of causal interventions \citep{pearl2009causality}, formally denoted by the $do(\cdot)$ operator. An intervention $do(X=x)$ represents setting a variable $X$ to a specific value $x$, potentially breaking its dependence on its usual causes. In our context, we consider hypothetical interventions on the attributes of an answer $\mathrm{A}$. For instance, $A_{do(\mathrm{C}_i=c)}$ represents the ideal counterfactual answer that would manifest if the $i$-th causal attribute $\mathrm{C}_i$ were set to value $c$, while all other causal attributes $\mathrm{C}_{j \neq i}$ and all spurious attributes $\mathrm{SP}$ remained unchanged from their original values in $\mathrm{A}$. Similarly, $A_{do(\mathrm{SP}=sp')}$ would be the result of altering only the spurious attributes to $sp'$, holding $\mathrm{C}(\mathrm{A})$ constant, and $A_{do(\mathrm{C}=\mathbf{c}')}$ represents intervening on the entire vector of causal attributes.
+
+Since we cannot perform these ideal interventions directly on generated text, we use Large Language Models (LLMs) to approximate them. We prompt an LLM to rewrite an existing answer $\mathrm{A}$ according to specific instructions aimed at modifying a target attribute (e.g., setting $\mathrm{C}_i$ to 1 or 0) while explicitly instructing the LLM to preserve all other aspects ("minimal change"). We denote these LLM-generated approximations of counterfactuals as $\tilde{\mathrm{A}}_{do(\cdot)}$. The CARMA methodology relies on strategically generating and utilizing these imperfect counterfactuals within the training process.
+
+\subsection{Augmented Training Data for Causal Disentanglement}
+\label{subsec:data_augmentation}
+
+\begin{table}[!thbp]
+\centering
+\caption{Summary of Synthetic Data Augmentation Strategies in CARMA.}
+\label{tab:augmentation_summary}
+\vspace{1em} % space between caption and table
+%  column widths
+\newcolumntype{L}{>{\raggedright\arraybackslash}p{2.5cm}} % Left-aligned paragraph
+\newcolumntype{P}{>{\raggedright\arraybackslash}p{4.5cm}} % Left-aligned paragraph for pairs
+\newcolumntype{C}{>{\centering\arraybackslash}p{1.3cm}}  % Centered paragraph
+\newcolumntype{R}{>{\raggedleft\arraybackslash}p{2.2cm}}   % Right-aligned paragraph
+
+\begin{tabular}{@{}l L P C R@{}}
+\toprule
+\textbf{Category} & \textbf{Strategy} & \textbf{Generation Pair Example} & \textbf{Assigned Label} & \textbf{Training Objective ($\mathrm{P}_\theta$)} \\
+\midrule
+\multicolumn{5}{l}{\textit{Causal Augmentation ($\mathcal{D}_{\mathrm{causal}}$) - Enhancing Sensitivity to C}} \\
+\midrule
+Causal & Attribute Upgradation & $(\tilde{\mathrm{A}}_{do(\mathrm{C}_j=1)}, \mathrm{A})$ & $\tilde{\mathrm{A}} \succ \mathrm{A}$ & $\to 1$ \\
+Causal & Attribute Degradation & $(\mathrm{A}, \tilde{\mathrm{A}}_{do(\mathrm{C}_j=0)})$ & $\mathrm{A} \succ \tilde{\mathrm{A}}$ & $\to 1$ \\
+Causal & Relevance Contrast & $(\mathrm{A}_1, \mathrm{B}_2)$ \newline \footnotesize{where $\mathrm{C}(\mathrm{A}_1)\neq \mathbf{0}, \mathrm{C}(\mathrm{B}_2)=\mathbf{0}$} & $\mathrm{A}_1 \succ \mathrm{B}_2$ & $\to 1$ \\
+\midrule
+\multicolumn{5}{l}{\textit{Neutral Augmentation ($\mathcal{D}_{\mathrm{neutral}}$) - Enforcing Invariance to SP}} \\
+\midrule
+Neutral & Causally-Aligned Reconstruction & $(\mathrm{A}_1, \tilde{\mathrm{A}}_{2, do(\mathrm{C}=\mathrm{C}(\mathrm{A}_1))})$ \newline and symmetric pair for $\mathrm{A}_2$  & $ \approx $ (tie) & $\approx 0.5$ \\
+Neutral & Spurious Feature Perturbation & $(\mathrm{A}, \tilde{\mathrm{A}}_{do(\mathrm{SP}=sp')})$ & $ \approx $ (tie) & $\approx 0.5$ \\
+Neutral & Irrelevant Pair Comparison & $(\mathrm{B}_1, \mathrm{B}_2)$ \newline \footnotesize{where $\mathrm{C}(\mathrm{B}_1)=\mathrm{C}(\mathrm{B}_2)=\mathbf{0}$} & $ \approx $ (tie) & $\approx 0.5$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+We augment the original preference dataset $\mathcal{D}_{\mathrm{pref}}$ with synthetically generated examples $\mathcal{D}_{\mathrm{aug}}$ designed to enforce specific causal properties on $\hat{\mathrm{R}}_\theta$. This augmented dataset $\mathcal{D}_{\mathrm{aug}}$ comprises two principal categories: Causal Augmentation Pairs ($\mathcal{D}_{\mathrm{causal}}$) and Neutral Augmentation Pairs ($\mathcal{D}_{\mathrm{neutral}}$).
+
+\subsubsection{Causal Augmentation Pairs (\texorpdfstring{$\mathcal{D}_{\mathrm{causal}}$}{D-causal})}
+These pairs are designed to explicitly teach $\hat{\mathrm{R}}_\theta$ sensitivity to changes in the principal causal attributes $\mathrm{C}(\mathrm{A})$. They are incorporated into the standard preference loss term.
+
+\paragraph{1. Attribute Isolation via Intervention.}
+For an original answer $\mathrm{A}$ (drawn from $\mathcal{D}_{\mathrm{pref}}$, being either $\mathrm{y}_w^{(i)}$ or $\mathrm{y}_l^{(i)}$) and a specific causal attribute $\mathrm{C}_j$, we generate LLM-approximated counterfactuals $\tilde{\mathrm{A}}_{do(\mathrm{C}_j=c)}$. If $\mathrm{A}$ is a preferred answer ($\mathrm{y}_w^{(i)}$), we generate its degraded version $\tilde{\mathrm{A}}_{do(\mathrm{C}_j=0)}$ and add the pair $(\mathrm{A}, \tilde{\mathrm{A}}_{do(\mathrm{C}_j=0)})$ to $\mathcal{D}_{\mathrm{causal}}$ with the preference label $\mathrm{A} \succ \tilde{\mathrm{A}}_{do(\mathrm{C}_j=0)}$. If $\mathrm{A}$ is a rejected answer ($\mathrm{y}_l^{(i)}$), we generate its upgraded version $\tilde{\mathrm{A}}_{do(\mathrm{C}_j=1)}$ and add the pair $(\tilde{\mathrm{A}}_{do(\mathrm{C}_j=1)}, \mathrm{A})$ to $\mathcal{D}_{\mathrm{causal}}$ with the label $\tilde{\mathrm{A}}_{do(\mathrm{C}_j=1)} \succ \mathrm{A}$. Training on these pairs forces the model $\hat{\mathrm{R}}_\theta$ to assign higher scores to responses with improvements along individual causal dimensions, satisfying $P_\theta(\mathrm{A} \succ \tilde{\mathrm{A}}_{do(\mathrm{C}_j=0)}) \to 1$ and $P_\theta(\tilde{\mathrm{A}}_{do(\mathrm{C}_j=1)} \succ \mathrm{A}) \to 1$.
+
+\paragraph{2. Relevance Contrast Augmentation.}
+To further reinforce the importance of overall causal quality, we create pairs contrasting relevant and irrelevant answers. For a preferred answer $\mathrm{A}_1 = \mathrm{y}_w^{(i)}$ from $\mathcal{D}_{\mathrm{pref}}$ (assumed to be causally relevant, i.e., $\mathrm{C}(\mathrm{A}_1) \neq \mathbf{0}$) and an answer $\mathrm{B}_2$ known to be irrelevant to the query $\mathrm{Q}^{(i)}$ (i.e., $\mathrm{C}(\mathrm{B}_2) = \mathbf{0}$, such as an answer from a different query), we add the pair $(\mathrm{A}_1, \mathrm{B}_2)$ to $\mathcal{D}_{\mathrm{causal}}$ with the label $\mathrm{A}_1 \succ \mathrm{B}_2$. This encourages the model to strongly prefer relevant answers over irrelevant ones, driving $P_\theta(\mathrm{A}_1 \succ \mathrm{B}_2) \to 1$.
+
+\subsubsection{Neutral Augmentation Pairs (\texorpdfstring{$\mathcal{D}_{\mathrm{neutral}}$}{D-neutral})}
+These pairs are designed to teach $\hat{\mathrm{R}}_\theta$ invariance to spurious attributes $\mathrm{SP}(\mathrm{A})$ when the causal attributes $\mathrm{C}(\mathrm{A})$ are held constant. They are assigned a "tie" label ($y=\text{tie}$) and are handled by a specific term in the loss function (Section \ref{subsec:training_phase}), encouraging $\hat{\mathrm{R}}_\theta(\mathrm{A}_1) \approx \hat{\mathrm{R}}_\theta(\mathrm{A}_2)$ for neutral pairs $(\mathrm{A}_1, \mathrm{A}_2)$.
+
+\paragraph{1. Causally-Aligned Reconstruction.}
+Given an original preference pair $(\mathrm{A}_1, \mathrm{A}_2)$ from $\mathcal{D}_{\mathrm{pref}}$ with $\mathrm{A}_1 \succ \mathrm{A}_2$, we first identify the difference in their causal attribute profiles $\Delta \mathrm{C} = \mathrm{C}(\mathrm{A}_1) - \mathrm{C}(\mathrm{A}_2)$ (using an LLM analysis based on the identified attributes and causal elements). We then prompt the LLM to rewrite $\mathrm{A}_2$ to match the causal profile of $\mathrm{A}_1$, yielding an approximation $\tilde{\mathrm{A}}_{2, do(\mathrm{C} = \mathrm{C}(\mathrm{A}_1))}$. The prompt instructs the LLM to preserve the original spurious characteristics (style, formatting) of $\mathrm{A}_2$ during this rewrite. The pair $(\mathrm{A}_1, \tilde{\mathrm{A}}_{2, do(\mathrm{C} = \mathrm{C}(\mathrm{A}_1))})$ is added to $\mathcal{D}_{\mathrm{neutral}}$ with $y=\text{tie}$. A symmetric pair $(\mathrm{A}_2, \tilde{\mathrm{A}}_{1, do(\mathrm{C} = \mathrm{C}(\mathrm{A}_2))})$ is also generated and added. Training on these encourages $P_\theta(\mathrm{A}_1 \succ \tilde{\mathrm{A}}_{2, do(\mathrm{C}=\mathrm{C}(\mathrm{A}_1))}) \approx 0.5$.
+
+\paragraph{2. Spurious Feature Perturbation.}
+For an original answer $\mathrm{A}$, we generate an approximation $\tilde{\mathrm{A}}_{do(\mathrm{SP}=sp')}$ by applying a meaning-preserving transformation that primarily affects spurious attributes $\mathrm{SP}$ while holding causal attributes $\mathrm{C}$ constant (e.g., paraphrasing, changing list format to paragraph format). The pair $(\mathrm{A}, \tilde{\mathrm{A}}_{do(\mathrm{SP}=sp')})$ is added to $\mathcal{D}_{\mathrm{neutral}}$ with $y=\text{tie}$, encouraging $P_\theta(\mathrm{A} \succ \tilde{\mathrm{A}}_{do(\mathrm{SP}=sp')}) \approx 0.5$.
+
+\paragraph{3. Irrelevant Pair Comparison.}
+We select two answers, $\mathrm{B}_1$ and $\mathrm{B}_2$, both irrelevant to the query $\mathrm{Q}$ (ideally $\mathrm{C}(\mathrm{B}_1) = \mathrm{C}(\mathrm{B}_2) = \mathbf{0}$), which may differ arbitrarily in their spurious attributes $\mathrm{SP}(\mathrm{B}_1)$ and $\mathrm{SP}(\mathrm{B}_2)$. The pair $(\mathrm{B}_1, \mathrm{B}_2)$ is added to $\mathcal{D}_{\mathrm{neutral}}$ with $y=\text{tie}$. This reinforces that irrelevant responses should receive similar (low) scores regardless of their spurious features, encouraging $P_\theta(\mathrm{B}_1 \succ \mathrm{B}_2) \approx 0.5$.
+
+The specific LLM prompts used to implement these generation strategies are detailed in Appendix \ref{sec:prompt_templates}. The combined dataset $\mathcal{D} = \mathcal{D}_{\mathrm{pref}} \cup \mathcal{D}_{\mathrm{causal}} \cup \mathcal{D}_{\mathrm{neutral}}$ (after filtering, see Section \ref{subsec:filtering_appendix}) provides the necessary signal to train a causally robust reward model.
+The crucial insight that we want to leave the reader with, is that a reward model learns to disentangle causal attributes from spurious ones, only when shown examples of such disentanglement.

@@ -1,0 +1,453 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "ACGS Unified Operations Dashboard",
+    "tags": ["acgs", "constitutional", "monitoring"],
+    "style": "dark",
+    "timezone": "UTC",
+    "refresh": "30s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "annotations": {
+      "list": [
+        {
+          "name": "Constitutional Compliance Violations",
+          "datasource": "Prometheus",
+          "enable": true,
+          "expr": "acgs_constitutional_compliance_violations_total",
+          "iconColor": "red",
+          "titleFormat": "Constitutional Violation",
+          "textFormat": "Hash: cdd01ef066bc6cf2"
+        }
+      ]
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "🏛️ Constitutional Compliance Status",
+        "type": "stat",
+        "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0},
+        "targets": [
+          {
+            "expr": "acgs_constitutional_compliance_score",
+            "legendFormat": "Compliance Score"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100,
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 95},
+                {"color": "green", "value": 100}
+              ]
+            }
+          }
+        },
+        "options": {
+          "colorMode": "background",
+          "graphMode": "area",
+          "justifyMode": "center",
+          "orientation": "horizontal"
+        }
+      },
+      {
+        "id": 2,
+        "title": "⚡ Performance Metrics",
+        "type": "stat",
+        "gridPos": {"h": 8, "w": 6, "x": 6, "y": 0},
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.99, rate(acgs_request_duration_seconds_bucket[5m])) * 1000",
+            "legendFormat": "P99 Latency (ms)"
+          },
+          {
+            "expr": "rate(acgs_requests_total[5m])",
+            "legendFormat": "Throughput (RPS)"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": 0},
+                {"color": "yellow", "value": 4},
+                {"color": "red", "value": 5}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 3,
+        "title": "💾 Cache Performance",
+        "type": "stat",
+        "gridPos": {"h": 8, "w": 6, "x": 12, "y": 0},
+        "targets": [
+          {
+            "expr": "acgs_cache_hit_rate",
+            "legendFormat": "Cache Hit Rate"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1,
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 0.85},
+                {"color": "green", "value": 0.90}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 4,
+        "title": "🔒 Security Status",
+        "type": "stat",
+        "gridPos": {"h": 8, "w": 6, "x": 18, "y": 0},
+        "targets": [
+          {
+            "expr": "acgs_security_score",
+            "legendFormat": "Security Score"
+          },
+          {
+            "expr": "acgs_vulnerabilities_critical_total + acgs_vulnerabilities_high_total",
+            "legendFormat": "Critical/High Vulnerabilities"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 90},
+                {"color": "green", "value": 95}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 5,
+        "title": "📊 Constitutional Compliance Trend",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+        "targets": [
+          {
+            "expr": "acgs_constitutional_compliance_score",
+            "legendFormat": "Compliance Score"
+          },
+          {
+            "expr": "rate(acgs_constitutional_hash_validation_failures_total[5m]) * 100",
+            "legendFormat": "Hash Validation Failures (%)"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100
+          }
+        },
+        "options": {
+          "legend": {"displayMode": "table", "placement": "bottom"}
+        }
+      },
+      {
+        "id": 6,
+        "title": "🎯 Performance Targets",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.99, rate(acgs_request_duration_seconds_bucket[5m])) * 1000",
+            "legendFormat": "P99 Latency (ms)"
+          },
+          {
+            "expr": "rate(acgs_requests_total[5m])",
+            "legendFormat": "Throughput (RPS)"
+          },
+          {
+            "expr": "acgs_cache_hit_rate * 100",
+            "legendFormat": "Cache Hit Rate (%)"
+          }
+        ],
+        "fieldConfig": {
+          "overrides": [
+            {
+              "matcher": {"id": "byName", "options": "P99 Latency (ms)"},
+              "properties": [
+                {"id": "custom.axisPlacement", "value": "left"},
+                {"id": "max", "value": 10}
+              ]
+            },
+            {
+              "matcher": {"id": "byName", "options": "Throughput (RPS)"},
+              "properties": [
+                {"id": "custom.axisPlacement", "value": "right"},
+                {"id": "min", "value": 0}
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": 7,
+        "title": "🛠️ ACGS Orchestrators Status",
+        "type": "table",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
+        "targets": [
+          {
+            "expr": "up{job=~\"acgs-.*\"}",
+            "format": "table",
+            "instant": true
+          }
+        ],
+        "transformations": [
+          {
+            "id": "organize",
+            "options": {
+              "excludeByName": {"Time": true, "__name__": true},
+              "renameByName": {
+                "job": "Orchestrator",
+                "instance": "Instance",
+                "Value": "Status"
+              }
+            }
+          }
+        ],
+        "fieldConfig": {
+          "overrides": [
+            {
+              "matcher": {"id": "byName", "options": "Status"},
+              "properties": [
+                {
+                  "id": "custom.displayMode",
+                  "value": "color-background"
+                },
+                {
+                  "id": "mappings",
+                  "value": [
+                    {"options": {"0": {"color": "red", "text": "DOWN"}}, "type": "value"},
+                    {"options": {"1": {"color": "green", "text": "UP"}}, "type": "value"}
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": 8,
+        "title": "🚨 Active Alerts",
+        "type": "table",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16},
+        "targets": [
+          {
+            "expr": "ALERTS{constitutional_hash=\"cdd01ef066bc6cf2\"}",
+            "format": "table",
+            "instant": true
+          }
+        ],
+        "transformations": [
+          {
+            "id": "organize",
+            "options": {
+              "excludeByName": {"Time": true, "__name__": true},
+              "renameByName": {
+                "alertname": "Alert",
+                "severity": "Severity",
+                "alertstate": "State"
+              }
+            }
+          }
+        ],
+        "fieldConfig": {
+          "overrides": [
+            {
+              "matcher": {"id": "byName", "options": "Severity"},
+              "properties": [
+                {
+                  "id": "custom.displayMode",
+                  "value": "color-background"
+                },
+                {
+                  "id": "mappings",
+                  "value": [
+                    {"options": {"critical": {"color": "red"}}, "type": "value"},
+                    {"options": {"warning": {"color": "yellow"}}, "type": "value"},
+                    {"options": {"info": {"color": "blue"}}, "type": "value"}
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": 9,
+        "title": "💻 System Resources",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 24},
+        "targets": [
+          {
+            "expr": "acgs_cpu_usage_percent",
+            "legendFormat": "CPU Usage (%)"
+          },
+          {
+            "expr": "acgs_memory_usage_percent",
+            "legendFormat": "Memory Usage (%)"
+          },
+          {
+            "expr": "acgs_disk_usage_percent",
+            "legendFormat": "Disk Usage (%)"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100
+          }
+        }
+      },
+      {
+        "id": 10,
+        "title": "🔄 Request Rate by Service",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 8, "x": 8, "y": 24},
+        "targets": [
+          {
+            "expr": "rate(acgs_requests_total[5m])",
+            "legendFormat": "{{service}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "reqps"
+          }
+        }
+      },
+      {
+        "id": 11,
+        "title": "❌ Error Rate by Service",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 8, "x": 16, "y": 24},
+        "targets": [
+          {
+            "expr": "rate(acgs_errors_total[5m]) / rate(acgs_requests_total[5m]) * 100",
+            "legendFormat": "{{service}} Error Rate (%)"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0
+          }
+        }
+      },
+      {
+        "id": 12,
+        "title": "🏛️ Constitutional Hash Validation",
+        "type": "timeseries",
+        "gridPos": {"h": 6, "w": 24, "x": 0, "y": 32},
+        "targets": [
+          {
+            "expr": "rate(acgs_constitutional_hash_validations_total[5m])",
+            "legendFormat": "Hash Validations/sec"
+          },
+          {
+            "expr": "rate(acgs_constitutional_hash_validation_failures_total[5m])",
+            "legendFormat": "Hash Validation Failures/sec"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "ops"
+          }
+        },
+        "options": {
+          "legend": {"displayMode": "table", "placement": "bottom"}
+        }
+      }
+    ],
+    "templating": {
+      "list": [
+        {
+          "name": "constitutional_hash",
+          "type": "constant",
+          "current": {
+            "value": "cdd01ef066bc6cf2",
+            "text": "cdd01ef066bc6cf2"
+          },
+          "hide": 2,
+          "options": [
+            {
+              "value": "cdd01ef066bc6cf2",
+              "text": "cdd01ef066bc6cf2"
+            }
+          ]
+        },
+        {
+          "name": "service",
+          "type": "query",
+          "datasource": "Prometheus",
+          "query": "label_values(acgs_requests_total, service)",
+          "refresh": 1,
+          "includeAll": true,
+          "allValue": ".*"
+        }
+      ]
+    },
+    "links": [
+      {
+        "title": "ACGS Documentation",
+        "url": "https://docs.acgs.gov",
+        "type": "link",
+        "icon": "doc"
+      },
+      {
+        "title": "Constitutional Compliance Framework",
+        "url": "https://docs.acgs.gov/constitutional-compliance",
+        "type": "link",
+        "icon": "bolt"
+      },
+      {
+        "title": "Emergency Runbooks",
+        "url": "https://docs.acgs.gov/runbooks",
+        "type": "link",
+        "icon": "question"
+      }
+    ]
+  },
+  "meta": {
+    "type": "db",
+    "canSave": true,
+    "canEdit": true,
+    "canAdmin": true,
+    "canStar": true,
+    "slug": "acgs-unified-dashboard",
+    "url": "/d/acgs-unified/acgs-unified-operations-dashboard",
+    "expires": "0001-01-01T00:00:00Z",
+    "created": "2025-01-07T00:00:00Z",
+    "updated": "2025-01-07T00:00:00Z",
+    "updatedBy": "ACGS Operations Team",
+    "version": 1,
+    "hasAcl": false,
+    "isFolder": false,
+    "folderId": 0,
+    "folderTitle": "ACGS Dashboards",
+    "folderUrl": "/dashboards/f/acgs/acgs-dashboards",
+    "provisioned": true,
+    "provisionedExternalId": "acgs-unified-dashboard.json"
+  }
+}

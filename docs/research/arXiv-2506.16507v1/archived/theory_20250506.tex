@@ -1,0 +1,70 @@
+
+\section{Theoretical Analysis}
+\label{sec:theory}
+
+We provide a theoretical justification for why our data augmentation strategy mitigates reward hacking. The core idea is that by explicitly adding constraints related to causal and spurious attributes, we guide the learned reward model $\hat{R}_\phi$ to align more closely with the ground-truth reward structure $R^*$.
+
+\subsection{Formal Setup}
+We use the notation established in Section \ref{sec:preliminaries}. Key variables include the query $Q$, answer $A$, causal attributes $C(A)$, spurious attributes $SP(A)$, the ground-truth reward $R^*(Q, A) = f^*(Q, C(A))$, and the learned reward model $\hat{R}_\phi(Q, A)$. The training minimizes a combined loss $\mathcal{L}(\phi)$ (Eq. \ref{eq:combined_loss_methodology}) over the dataset $\mathcal{D} = \mathcal{D}_{hf} \cup \mathcal{D}_{aug}$.
+
+\subsection{Definition of Spurious Reward Hacking}
+We reiterate the formal definition for clarity.
+
+\begin{definition}[Spurious Reward Hacking]
+\label{def:reward_hacking_formal_simple}
+A learned reward model $\hat{R}_\phi$ exhibits \emph{spurious reward hacking} if there exist $Q, A_{high}, A_{low}$ with $R^*(Q, A_{high}) > R^*(Q, A_{low})$, and $\tilde{A}_{low}$ such that $C(\tilde{A}_{low}) = C(A_{low})$, $SP(\tilde{A}_{low}) \neq SP(A_{low})$, but $\hat{R}_\phi(Q, \tilde{A}_{low}) > \hat{R}_\phi(Q, A_{high})$.
+\end{definition}
+
+\subsection{Impact of Augmented Data Constraints}
+
+Our methodology introduces specific constraints via the augmented data $\mathcal{D}_{aug}$, which consists of causal pairs ($\mathcal{D}_{causal}$) and neutral pairs ($\mathcal{D}_{neutral}$). The combined loss function $\mathcal{L}(\phi)$ aims to satisfy these constraints.
+
+\begin{proposition}[Neutral Constraint Encourages Spurious Invariance]
+\label{prop:neutral_constraint}
+The neutral loss term in $\mathcal{L}(\phi)$,
+\[ \mathcal{L}_{tie}(\phi) = - \lambda \sum_{(Q, A_1, A_2, y=\text{tie})\in \mathcal{D}_{neutral}} [ \log \sigmoid(\Delta_{12}) + \log \sigmoid(-\Delta_{12}) ] \]
+where $\Delta_{12} = \hat{R}_\phi(Q, A_1) - \hat{R}_\phi(Q, A_2)$, is minimized when $\hat{R}_\phi(Q, A_1) = \hat{R}_\phi(Q, A_2)$ for all neutral pairs $(A_1, A_2)$ in $\mathcal{D}_{neutral}$. By construction, neutral pairs aim to satisfy $C(A_1) = C(A_2)$ while $SP(A_1) \neq SP(A_2)$. Therefore, minimizing $\mathcal{L}_{tie}$ explicitly incentivizes the learned model $\hat{R}_\phi$ to be invariant to the specific spurious variations present in $\mathcal{D}_{neutral}$ when causal attributes are held constant.
+
+\begin{proof}
+The term inside the summation, $-[\log \sigmoid(\Delta_{12}) + \log \sigmoid(-\Delta_{12})]$, can be rewritten as $-[\log(P(A_1 \succ A_2)) + \log(P(A_2 \succ A_1))]$. This expression represents the negative log-likelihood of observing a tie under the Bradley-Terry model if we interpret a tie as equal probability for both outcomes. This loss is minimized when $P(A_1 \succ A_2) = P(A_2 \succ A_1) = 0.5$, which occurs precisely when $\Delta_{12} = \hat{R}_\phi(Q, A_1) - \hat{R}_\phi(Q, A_2) = 0$. Thus, the loss term drives $\hat{R}_\phi(Q, A_1) = \hat{R}_\phi(Q, A_2)$ for pairs designed to differ only in $SP$.
+\end{proof}
+\end{proposition}
+
+\begin{proposition}[Causal Constraint Encourages Causal Sensitivity]
+\label{prop:causal_constraint}
+The standard preference loss term in $\mathcal{L}(\phi)$,
+\[ \mathcal{L}_{pref}(\phi) = - \sum_{(Q, y_w, y_l) \in \mathcal{D}_{hf} \cup \mathcal{D}_{causal}} \log \sigmoid(\hat{R}_\phi(Q, y_w) - \hat{R}_\phi(Q, y_l)) \]
+when applied to causal augmentation pairs $(y_w, y_l) \in \mathcal{D}_{causal}$, directly incentivizes the model $\hat{R}_\phi$ to assign higher scores to answers with improved causal attributes. Specifically, if $(A', A)$ is a causal pair constructed such that $A'$ is an improvement over $A$ only along causal attribute $C_j$ (i.e., $R^*(Q, A') > R^*(Q, A)$) and is labeled $A' \succ A$, minimizing the corresponding loss term $-\log \sigmoid(\hat{R}_\phi(Q, A') - \hat{R}_\phi(Q, A))$ encourages $\hat{R}_\phi(Q, A') > \hat{R}_\phi(Q, A)$.
+
+\begin{proof}
+The term $-\log \sigmoid(\Delta)$ is minimized as $\Delta \to \infty$. For a pair labeled $y_w \succ y_l$, the loss encourages the difference $\hat{R}_\phi(Q, y_w) - \hat{R}_\phi(Q, y_l)$ to be positive and large. When applied to causal pairs $(A', A)$ labeled $A' \succ A$ designed to isolate an improvement in a causal attribute $C_j$, this directly pushes the model to reflect that improvement with a higher score.
+\end{proof}
+\end{proposition}
+
+\subsection{Mitigating Reward Hacking}
+
+The combination of these two types of constraints directly counteracts the conditions required for spurious manipulation reward hacking.
+
+\begin{theorem}[Mitigation of Spurious Manipulation Reward Hacking]
+\label{thm:mitigation}
+Training a reward model $\hat{R}_\phi$ by minimizing the combined loss $\mathcal{L}(\phi)$ (Eq. \ref{eq:combined_loss_methodology}) mitigates spurious manipulation reward hacking (Definition \ref{def:reward_hacking_formal_simple}). Specifically:
+\begin{enumerate}
+    \item The neutral loss term ($\mathcal{L}_{tie}$) penalizes differences in $\hat{R}_\phi$ arising solely from spurious attribute variations present in $\mathcal{D}_{neutral}$.
+    \item The preference loss term ($\mathcal{L}_{pref}$) applied to $\mathcal{D}_{causal}$ rewards sensitivity to genuine causal attribute variations.
+\end{enumerate}
+Therefore, the optimization objective actively discourages the scenario where a spuriously modified answer $\tilde{A}_{low}$ (with $C(\tilde{A}_{low}) = C(A_{low})$) achieves a higher score than a causally superior answer $A_{high}$.
+
+\begin{proof}
+Consider the conditions for reward hacking: we need $\hat{R}_\phi(Q, \tilde{A}_{low}) > \hat{R}_\phi(Q, A_{high})$ despite $R^*(Q, A_{high}) > R^*(Q, A_{low})$ and $C(\tilde{A}_{low}) = C(A_{low})$.
+Proposition \ref{prop:neutral_constraint} shows that the training objective encourages $\hat{R}_\phi(Q, \tilde{A}_{low}) \approx \hat{R}_\phi(Q, A_{low})$ if the specific spurious difference between $\tilde{A}_{low}$ and $A_{low}$ is covered by neutral pairs.
+Proposition \ref{prop:causal_constraint} shows that the objective encourages $\hat{R}_\phi(Q, A_{high}) > \hat{R}_\phi(Q, A_{low})$ if the causal difference between $A_{high}$ and $A_{low}$ is covered by causal pairs.
+Combining these, the objective encourages $\hat{R}_\phi(Q, A_{high}) > \hat{R}_\phi(Q, A_{low}) \approx \hat{R}_\phi(Q, \tilde{A}_{low})$. This directly opposes the inequality $\hat{R}_\phi(Q, \tilde{A}_{low}) > \hat{R}_\phi(Q, A_{high})$ required for reward hacking. The extent of mitigation depends on the coverage and quality of $\mathcal{D}_{aug}$ and the effectiveness of the optimization in satisfying the loss components.
+\end{proof}
+\end{theorem}
+
+This analysis demonstrates that our proposed data augmentation strategy provides principled mechanisms for improving reward model robustness. The neutral augmentation specifically targets and penalizes reliance on spurious features by enforcing invariance, while the causal augmentation ensures sensitivity to genuine quality dimensions. Together, these components guide the learned reward model $\hat{R}_\phi$ towards the properties of the desired ground-truth reward $R^*$, thereby mitigating the potential for spurious manipulation reward hacking. 
+
+\begin{rem}
+The effectiveness in practice hinges on the quality of attribute identification and counterfactual generation, issues we investigate empirically in the upcoming Section \ref{sec:experiments}.    
+\end{rem}
+

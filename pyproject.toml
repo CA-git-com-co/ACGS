@@ -147,7 +147,7 @@ allow-direct-references = true
 
 [tool.pytest.ini_options]
 minversion = "7.4"
-addopts = [ "-ra", "-q", "--strict-markers", "--strict-config", "--tb=short", "--maxfail=10", "--cov=services", "--cov-report=term-missing", "--cov-report=html:htmlcov", "--cov-report=xml", "--cov-fail-under=80", "--durations=10", "--junitxml=reports/junit.xml",]
+addopts = [ "-ra", "-q", "--strict-markers", "--strict-config", "--tb=short", "--maxfail=10", "--cov=services", "--cov=tests/shared", "--cov=infrastructure/monitoring", "--cov-report=term-missing", "--cov-report=html:test_reports/htmlcov", "--cov-report=xml:test_reports/coverage.xml", "--cov-report=json:test_reports/coverage.json", "--cov-fail-under=90", "--cov-branch", "--durations=10", "--junitxml=test_reports/junit.xml",]
 testpaths = [ "tests", "services",]
 python_files = [ "test_*.py", "*_test.py",]
 python_classes = [ "Test*",]
@@ -175,7 +175,7 @@ precision = 2
 skip_covered = false
 skip_empty = false
 sort = "cover"
-fail_under = 80
+fail_under = 90
 show_missing = true
 exclude_lines = [ "pragma: no cover", "pragma: nocover", "def __repr__", "def __str__", "if self.debug:", "if settings.DEBUG", "if TYPE_CHECKING:", "raise AssertionError", "raise NotImplementedError", "raise ValueError", "if 0:", "if False:", "if __name__ == .__main__.:", "class .*\\bProtocol\\):", "@(abc\\.)?abstractmethod", "@overload", "except ImportError:", "except ModuleNotFoundError:", "\\.\\.\\.", "pass",]
 

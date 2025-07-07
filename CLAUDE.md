@@ -2,6 +2,28 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Multi-Agent Coordination Guidelines
+
+### Constitutional Compliance (CRITICAL)
+- **ALWAYS** validate constitutional hash `cdd01ef066bc6cf2` in all agent communications
+- **NEVER** bypass constitutional compliance validation for any operation
+- **ALWAYS** implement pre-execution, runtime, and post-execution compliance checks
+- **ESCALATE** to human oversight immediately for constitutional violations
+
+### Agent Communication Patterns
+- Use hierarchical coordination: Claude agents for strategic planning, OpenCode agents for execution
+- Implement document-based communication following MetaGPT assembly line paradigm
+- Use MCP (Model Context Protocol) for Claude agent integration with services
+- Follow A2A (Agent2Agent) protocol for external framework interoperability
+- Maintain complete audit trail for all agent interactions
+
+### Performance Requirements (NON-NEGOTIABLE)
+- **P99 Latency**: <5ms for coordination operations, <2ms for cached decisions
+- **Throughput**: >100 RPS for task handoffs between agents
+- **Cache Hit Rate**: >85% for constitutional decisions and agent capabilities
+- **Constitutional Compliance Rate**: 100% (no exceptions)
+- **Escalation Response**: <30 seconds for human-in-the-loop triggers
+
 ## Development Environment Setup
 
 ```bash

@@ -1,0 +1,87 @@
+\section{Preliminaries and Causal Framework}
+\label{sec:preliminaries}
+
+We aim to develop a reward model that accurately assesses the quality of an answer $A$ provided in response to a query $Q$. Our approach is grounded in a causal framework designed to distinguish genuine quality drivers from spurious correlates often present in preference data.
+
+\subsection{Reward Model and Pairwise Preferences}
+Let $\hat{R}(Q, A)$ denote the learned reward model, which assigns a scalar score reflecting the quality of answer $A$ for query $Q$. While $\hat{R}$ provides a pointwise score, it is typically trained using pairwise preference data. Given two answers $A_1$ and $A_2$ for the same query $Q$, we relate the reward scores to preference probabilities using the Bradley-Terry model \cite{bradley1952rank}:
+\begin{equation}
+P(A_1 \succ A_2 | Q; \phi) = \sigmoid(\hat{R}_\phi(Q, A_1) - \hat{R}_\phi(Q, A_2)) = \frac{\exp(\hat{R}_\phi(Q, A_1))}{\exp(\hat{R}_\phi(Q, A_1)) + \exp(\hat{R}_\phi(Q, A_2))}
+\label{eq:bt_prob_revised}
+\end{equation}
+where $\hat{R}_\phi$ explicitly denotes the model parameterized by $\phi$, and $\sigmoid(\cdot)$ is the logistic sigmoid function. The parameters $\phi$ are optimized using a dataset of observed preferences, typically by minimizing the negative log-likelihood based on Eq. \ref{eq:bt_prob_revised}.
+
+\subsection{Causal Graph of Answer Generation and Evaluation}
+\label{subsec:causal_graph_revised}
+
+We propose a causal model to analyze the generation and evaluation of answers. The process begins with a query \(Q\), which stimulates a latent \emph{intent} \(\mathcal{I}\)—the core information the generator aims to convey. This intent \(\mathcal{I}\) is then realized as the textual \emph{answer} \(A\). From $A$, we derive two sets of attributes: the \emph{causal attributes} \(C = (C_1,\dots,C_{\ell})\), which represent fundamental quality dimensions like factuality or clarity and serve as the Principal Causal Components driving the reward, and the \emph{spurious attributes} \(SP = (SP_1,\dots,SP_{k})\), such as verbosity or style, which are features potentially correlated with preferences but are not intrinsically determinants of quality for query \(Q\). The idealized \emph{ground-truth reward} \(R\) is assumed to be a function solely of the causal attributes $C$ (and possibly $Q$), formally $R = f(Q, C)$, implying $R$ is conditionally independent of $SP$ given $C$ and $Q$.
+
+
+We postulate the causal relationships shown in Figure \ref{fig:causal_graph} (conceptual) and described in Table \ref{tab:causal_arrows_revised}.
+
+% Placeholder for Figure - replace with actual figure if needed
+\begin{figure}[t!]
+\centering
+% \includegraphics[width=0.6\textwidth]{your_dag_figure.png} % Or use TikZ
+\includegraphics[width=0.8\linewidth]{images/CausalDiagram.pdf}
+\caption{Conceptual Causal Graph for Reward Modeling. This will be changed.}
+\label{fig:causal_graph}
+\end{figure}
+
+\begin{table}[ht!]
+\centering
+\caption{Interpretation of Causal Arrows in the Assumed DAG}
+\label{tab:causal_arrows_revised}
+\vspace{1em}
+\begin{tabular}{p{3cm} p{9cm}} % Adjusted widths
+\toprule
+\textbf{Arrow} & \textbf{Interpretation} \\
+\midrule
+\(Q \;\to\; \mathcal{I}\) & The query shapes the intended content. \\
+\(\mathcal{I} \;\to\; A\) & The answer text is generated based on the intent. \\
+\(A \;\to\; C\) & The answer text manifests causal quality attributes (e.g., accuracy is determined by the stated facts). \\
+\(A \;\to\; SP\) & The answer text also manifests spurious attributes (e.g., formatting, length). \\
+\(C \;\to\; R\) & The ground-truth reward $R$ is solely determined by the causal attributes $C$ (given $Q$). \\
+\midrule
+\multicolumn{2}{p{12cm}}{\textbf{Note:} There is no direct arrow $SP \to R$. The core challenge is that naive training of $\hat{R}$ might induce a spurious dependence on $SP$ because $SP$ and $C$ share a common cause $A$, leading to non-causal correlations in the training data.} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The primary challenge is that standard training procedures for $\hat{R}_\phi$ using preference data may inadvertently learn sensitivity to $SP$. Because $A$ generates both $C$ and $SP$, these attributes can be correlated. A model maximizing fit to preference data might exploit the correlation between $SP$ and preference labels, learning a reward function $\hat{R}_\phi$ that depends undesirably on $SP$. Our goal is to train $\hat{R}_\phi$ such that its functional dependence on $A$ is mediated primarily through $C$, making it robust to variations in $SP$.
+
+\subsection{Training Data and Counterfactual Augmentation}
+\label{subsec:data_augmentation}
+
+Reward models are typically trained on datasets of pairwise preferences $\mathcal{D}_{pref} = \{(Q^{(i)}, y_w^{(i)}, y_l^{(i)})\}_{i=1}^N$. To mitigate the influence of spurious attributes $SP$ and reinforce the role of causal attributes $C$, we augment $\mathcal{D}_{pref}$ with synthetically generated examples, forming an augmented dataset $\mathcal{D}_{aug}$. This augmentation targets two types of causal enforcement:
+
+\begin{itemize}[itemsep=0pt,left=2pt]
+    \item \textbf{Isolating Causal Effects:} We generate pairs of answers $(A, B)$ that differ minimally, ideally only along a single causal attribute $C_j$. For instance, if $B$ represents an improvement in $C_j$ over $A$, the pair $(Q, B, A)$ is added to $\mathcal{D}_{aug}$ with the label $B \succ A$. This forces $\hat{R}_\phi$ to assign higher scores to improvements in causal dimensions.
+    \item \textbf{Neutralizing Spurious Effects (Neutrals):} We generate pairs $(A1, A2)$ where $A2$ differs from $A1$ primarily in spurious attributes $SP$ (e.g., through paraphrasing or style transfer that preserves $C$) but is intended to have the same ground-truth quality $R$. These pairs are added to $\mathcal{D}_{aug}$ with a "tie" label ($y=\text{tie}$), encouraging $\hat{R}_\phi(Q, A1) \approx \hat{R}_\phi(Q, A2)$. This promotes invariance to spurious variations.
+\end{itemize}
+The process involves generating candidate augmentations using LLMs prompted with specific instructions to manipulate attributes (based on identified causal elements, as described later) and filtering them for quality and effectiveness. Training on the combined dataset $\mathcal{D}_{pref} \cup \mathcal{D}_{aug}$ using the pairwise objective derived from Eq. \ref{eq:bt_prob_revised} allows the model to disentangle $C$ from $SP$. The specific generation, filtering, and training procedures are detailed in Section \ref{sec:methodology}. % Link to Methodology
+
+% \paragraph{Notation Summary.} For clarity, Table~\ref{tab:notation_revised} recapitulates the key symbols.
+
+% \begin{table}[h!]
+% \centering
+% \caption{Key Symbols and Descriptions (Revised)}
+% \label{tab:notation_revised}
+% \vspace{1em}
+% \begin{tabular}{ll}
+% \toprule
+% \textbf{Symbol} & \textbf{Meaning} \\
+% \midrule
+% \(Q\) & Query or user prompt \\
+% \(\mathcal{I}\) & Latent intent (unobserved) \\
+% \(A\), \(A_1, A_2\) & Candidate answer(s) in response to \(Q\) \\
+% \(C = (C_1,\dots,C_{\ell})\) & Vector of Causal attributes of \(A\) \\
+% \(SP = (SP_1,\dots,SP_{k})\) & Vector of Spurious attributes of \(A\) \\
+% \(R\) & Ground-truth (ideal) reward, function of $Q, C$ \\
+% \(\hat{R}_\phi(Q,A)\) & Learned reward model score, parameterized by $\phi$ \\
+% $\mathcal{D}_{pref}$ & Human feedback dataset (pairwise preferences) \\
+% $\mathcal{D}_{aug}$ & Augmented dataset (causal/neutral pairs) \\
+% $P(A_1 \succ A_2 | Q; \phi)$ & Modeled preference probability using $\hat{R}_\phi$ \\
+% \bottomrule
+% \end{tabular}
+% \end{table}

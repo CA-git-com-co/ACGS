@@ -1,54 +1,40 @@
-# Authentication API Documentation
+# Authentication Service API
 
-## Service Overview
-
-This service provides core functionality for the ACGS platform with constitutional compliance validation.
-
-**Service**: Authentication
-**Port**: 8XXX
-**Constitutional Hash**: `cdd01ef066bc6cf2`
-
-
-**Service**: Authentication Service
-**Port**: 8016
-**Base URL**: `http://localhost:8016/api/v1`
 <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 
-## Overview
+## 1. Overview
 
-This document provides comprehensive documentation for the Authentication Service (Port 8016) API, including endpoints for user authentication, token management, and profile retrieval.
+This document provides comprehensive documentation for the **Authentication Service (Port 8016)** API. This service is responsible for user authentication, token management, and profile retrieval, ensuring all operations are compliant with the constitutional hash `cdd01ef066bc6cf2`.
 
-### Base URL
+- **Service Name**: Authentication Service
+- **Port**: 8016
+- **Base URL**: `/api/v1`
 
-`http://localhost:8001`
+## 2. Service Endpoints
 
-### Health Check
+### 2.1. Health and Metrics
 
-`GET /health`
+- **GET /health**: Returns the health status of the service.
+- **GET /metrics**: Provides Prometheus-compatible performance metrics.
 
-### Metrics
+### 2.2. User Authentication
 
-`GET /metrics`
+#### POST /auth/login
 
-## Key Endpoints
+Authenticates a user and returns a JWT token upon success.
 
-### User Authentication
+**Request Body**:
 
-**Endpoint:** `POST /auth/login`
-
-**Description:** User login and token issuance
-
-**Request Body:**
 ```json
 {
   "username": "string",
-  "password": "string"
-,
-  "constitutional_hash": "[cdd01ef066bc6cf2](docs/architecture/ACGS_CODE_ANALYSIS_ENGINE_ARCHITECTURE.md#constitutional-compliance)"
+  "password": "string",
+  "constitutional_hash": "cdd01ef066bc6cf2"
 }
 ```
 
-**Response:**
+**Response (200 OK)**:
+
 ```json
 {
   "token": "string",
@@ -57,62 +43,28 @@ This document provides comprehensive documentation for the Authentication Servic
     "id": "string",
     "username": "string",
     "roles": ["string"]
-  ,
-  "constitutional_hash": "cdd01ef066bc6cf2"
-},
-  "constitutional_hash": "cdd01ef066bc6cf2"
-}
-```
-
-**Example Request:**
-```javascript
-const auth = await fetch('http://localhost:8001/auth/login', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
   },
-  body: JSON.stringify({
-    username: 'user123',
-    password: 'password123'
-  })
-});
-
-const result = await auth.json();
-console.log(result);
-```
-
-**Example Response:**
-```json
-{
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
-  "expires_in": 3600,
-  "user": {
-    "id": "1234567890",
-    "username": "user123",
-    "roles": ["user", "admin"]
-  ,
-  "constitutional_hash": "cdd01ef066bc6cf2"
-},
   "constitutional_hash": "cdd01ef066bc6cf2"
 }
 ```
 
-### Token Refresh
+### 2.3. Token Management
 
-**Endpoint:** `POST /auth/refresh`
+#### POST /auth/refresh
 
-**Description:** Refresh a stale access token
+Refreshes an expired access token using a valid refresh token.
 
-**Request Body:**
+**Request Body**:
+
 ```json
 {
-  "refresh_token": "string"
-,
+  "refresh_token": "string",
   "constitutional_hash": "cdd01ef066bc6cf2"
 }
 ```
 
-**Response:**
+**Response (200 OK)**:
+
 ```json
 {
   "access_token": "string",
@@ -121,58 +73,28 @@ console.log(result);
 }
 ```
 
-**Example Request:**
-```javascript
-const refresh = await fetch('http://localhost:8001/auth/refresh', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer <refresh_token>'
-  },
-  body: JSON.stringify({
-    refresh_token: 'refresh_token_here'
-  })
-});
+#### POST /auth/logout
 
-const result = await refresh.json();
-console.log(result);
-```
+Invalidates the user's current access token.
 
-**Example Response:**
-```json
-{
-  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
-  "expires_in": 3600,
-  "constitutional_hash": "cdd01ef066bc6cf2"
-}
-```
+**Request Headers**:
 
-### User Logout
+- `Authorization`: `Bearer <access_token>`
 
-**Endpoint:** `POST /auth/logout`
+**Response (204 No Content)**
 
-**Description:** Invalidate existing access tokens
+### 2.4. User Profile
 
-**Request Headers:**
-```http
-Authorization: Bearer <access_token>
-```
+#### GET /auth/profile
 
-**Response Status:**
-`204 No Content`
+Retrieves the profile of the currently authenticated user.
 
-### Get User Profile
+**Request Headers**:
 
-**Endpoint:** `GET /auth/profile`
+- `Authorization`: `Bearer <access_token>`
 
-**Description:** Retrieve current user profile data
+**Response (200 OK)**:
 
-**Request Headers:**
-```http
-Authorization: Bearer <access_token>
-```
-
-**Response:**
 ```json
 {
   "id": "string",
@@ -184,91 +106,28 @@ Authorization: Bearer <access_token>
 }
 ```
 
-**Example Request:**
-```javascript
-const profile = await fetch('http://localhost:8001/auth/profile', {
-  headers: {
-    'Authorization': 'Bearer <access_token>'
-  }
-});
-
-const result = await profile.json();
-console.log(result);
-```
-
-**Example Response:**
-```json
-{
-  "id": "1234567890",
-  "username": "user123",
-  "email": "user@example.com",
-  "roles": ["user", "admin"],
-  "mfa_enabled": false,
-  "constitutional_hash": "cdd01ef066bc6cf2"
-}
-```
-
-## Additional Resources
-
-- [API Documentation Index](index.md)
-- [JWT Token Reference](#JWT Token Reference)
-- [Role-based Access Control (RBAC) Design](#Role-based Access Control (RBAC) Design)
-
-For detailed specifications and implementation guidelines, see the Auth Service documentation repository.
-## Performance Targets
+## 3. Performance Targets
 
 - **Latency**: P99 ≤ 5ms for cached queries
 - **Throughput**: ≥ 100 RPS sustained
-- **Cache Hit Rate**: ≥ 85%
-- **Test Coverage**: ≥ 80%
 - **Availability**: 99.9% uptime
 - **Constitutional Compliance**: 100% validation
 
-## Error Handling
+## 4. Error Handling
 
-Standard HTTP status codes are used with detailed error messages:
+Standard HTTP status codes are used to indicate the success or failure of a request. All error responses include a constitutional compliance validation status.
 
-- `400 Bad Request`: Invalid request parameters
-- `401 Unauthorized`: Authentication required
-- `403 Forbidden`: Insufficient permissions
-- `404 Not Found`: Resource not found
-- `500 Internal Server Error`: Server error
+- `400 Bad Request`: Invalid request parameters.
+- `401 Unauthorized`: Authentication required or token is invalid.
+- `403 Forbidden`: Insufficient permissions for the requested operation.
+- `404 Not Found`: The requested resource does not exist.
+- `500 Internal Server Error`: An unexpected server-side error occurred.
 
-All errors include constitutional compliance validation status.
-
-
-## Monitoring
-
-Service health and performance metrics:
-
-- Health check endpoint: `/health`
-- Metrics endpoint: `/metrics`
-- Constitutional compliance status: `/compliance`
-- Performance dashboard integration available
-
-## Detailed Explanation of Constitutional Hash
-
-The constitutional hash 'cdd01ef066bc6cf2' is a core identifier for the ACGS platform's constitutional compliance mechanism. It ensures that all authentication processes adhere to predefined rules and standards for security and governance. This hash is referenced throughout the API to validate operations against the platform's architectural guidelines.
-
-For further details, refer to the [ACGS Code Analysis Engine Architecture](docs/architecture/ACGS_CODE_ANALYSIS_ENGINE_ARCHITECTURE.md).
-
-This addition integrates the researched references without impacting other sections of the document.
-
-## Related Information
+## 5. Related Information
 
 For a broader understanding of the ACGS platform and its components, refer to:
 
-- [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
-- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
-- [ACGE Strategic Implementation Plan - 24 Month Roadmap](../../docs/ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md)
-- [ACGE Testing and Validation Framework](../../docs/ACGE_TESTING_VALIDATION_FRAMEWORK.md)
-- [ACGE Cost Analysis and ROI Projections](../../docs/ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md)
-- [ACGS Comprehensive Task Completion - Final Report](../architecture/ACGS_COMPREHENSIVE_TASK_COMPLETION_FINAL_REPORT.md)
-- [ACGS-Claudia Integration Architecture Plan](../architecture/ACGS_CLAUDIA_INTEGRATION_ARCHITECTURE.md)
-- [ACGS Implementation Guide](../deployment/ACGS_IMPLEMENTATION_GUIDE.md)
-- [ACGS-PGP Operational Deployment Guide](../deployment/ACGS_PGP_OPERATIONAL_DEPLOYMENT_GUIDE.md)
-- [ACGS-PGP Troubleshooting Guide](../deployment/ACGS_PGP_TROUBLESHOOTING_GUIDE.md)
-- [ACGS-PGP Setup Guide](../deployment/ACGS_PGP_SETUP_GUIDE.md)
-- [Service Status Dashboard](../operations/SERVICE_STATUS.md)
-- [ACGS Configuration Guide](../configuration/README.md)
-- [ACGS-2 Technical Specifications - 2025 Edition](../TECHNICAL_SPECIFICATIONS_2025.md)
+- [ACGS Service Architecture Overview](../ACGS_SERVICE_OVERVIEW.md)
+- [ACGS System Overview](../../SYSTEM_OVERVIEW.md)
+- [JWT Token Reference](jwt.md)
+- [Role-Based Access Control (RBAC) Design](rbac.md)

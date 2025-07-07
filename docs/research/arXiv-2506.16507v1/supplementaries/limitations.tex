@@ -1,0 +1,20 @@
+\section{Limitations and Future Work}
+\label{sec:limitations_future_work}
+
+While \carma{} demonstrates significant improvements, we acknowledge certain limitations which also suggest avenues for future research:
+
+\begin{itemize}[left=10pt, itemsep=2pt, topsep=3pt]
+    \item \textbf{Idealized Assumptions in Theoretical Analysis:}
+    Our theoretical justification (Section~\ref{sec:theory}, Appendix~\ref{sec:theoretical_analysis_detailed}) relies on simplifying assumptions such as boolean attributes, quadratic reward models, and perfect counterfactual interventions. These idealizations, necessary for analytical tractability, mean our formal guarantees are indicative of \carma{}'s potential mechanism rather than absolute predictions of real-world performance, where the complexities of LLM behavior and data are greater.
+
+    \item \textbf{Scalability and Cost of Data Augmentation:}
+    The generation of targeted causal and neutral augmentations, while effective, involves multiple LLM inference calls per original data point. Although filtering helps optimize the final dataset size, the initial augmentation phase can be computationally intensive and potentially costly for extremely large-scale applications. Future work could explore more sample-efficient augmentation strategies or methods to distill the benefits of augmentation into smaller datasets.
+
+    \item \textbf{Generalization to Highly Novel Spurious Correlations:}
+    \carma{} is designed to be robust against unspecified spurious correlations by focusing on causal signals and diverse neutral examples. However, its ability to generalize to entirely novel types of spuriousness, drastically different from any patterns implicitly covered or contrasted during augmentation, remains an empirical question. The breadth and nature of the neutral augmentations play a role here, and continuous adaptation or more abstract invariance learning might be needed for extreme out-of-distribution spuriousness.
+
+    \item \textbf{Fidelity of LLM-Generated Counterfactuals:}
+    The efficacy of \carma{} is linked to the quality of the LLM-generated counterfactuals. While current LLMs are powerful, ensuring perfect attribute isolation in causal augmentations or complete causal content preservation in neutral pairs is challenging. Imperfections in these LLM-approximated interventions can introduce noise. While our empirical results show strong benefits, further research into enhancing the precision and verifiability of LLM-driven textual counterfactual generation could yield additional improvements.
+\end{itemize}
+
+Future research could focus on extending the theoretical framework to encompass more realistic settings, developing more cost-effective and adaptive augmentation techniques, and further exploring the boundaries of generalization against emergent spurious correlations.

@@ -1,0 +1,328 @@
+\vspace{-0.6in}
+\section{Qualitative Example Walkthrough} 
+\label{sec:qualitative_example_walkthrough}
+
+In this section, we show qualitative examples of augmented data created from original data using which is used to train \carma{}.
+
+\begin{promptbox}{User Prompt}
+Question: \textbf{Can you provide a table showing two potential causes for global warming?}
+
+
+\end{promptbox}
+
+\begin{promptbox}{Chosen Response}
+Sure, here is a table showing two potential causes for global warming:
+\vspace{0.15in}
+\begin{center}
+\begin{tabular}{|p{0.30\textwidth}|p{0.62\textwidth}|}
+\hline
+\textbf{Potential Causes} & \textbf{Description}\\\hline
+Greenhouse Gas Emissions &
+Release of gases such as carbon dioxide, methane, and nitrous oxide from human activities like burning fossil fuels, deforestation, and agriculture. These gases trap heat in the atmosphere, causing the planet to warm.\\\hline
+Land Use Changes &
+Alteration of the earth's surface for human activities like urbanization, agriculture, and forestry can result in changes in albedo, water cycling, and energy balance, leading to warming effects. For example, when forests are cleared, the land reflects less sunlight back into space, which leads to more warming.\\\hline
+\end{tabular}
+\end{center}
+
+It is important to note that global warming is a complex issue with multiple causes. The two potential causes listed above are just a few of the many factors that contribute to climate change.
+\end{promptbox}
+
+\begin{promptbox}{Rejected Response}
+\begin{center}
+\begin{tabular}{|p{0.30\textwidth}|p{0.62\textwidth}|}
+\hline
+\textbf{Potential Causes} & \textbf{Description}\\\hline
+Greenhouse Gas Emissions &
+Release of gases such as carbon dioxide, methane, and nitrous oxide from human activities like burning fossil fuels, deforestation, and agriculture.\\\hline
+Land Use Changes &
+Alteration of the earth's surface for human activities like urbanization, agriculture, and forestry can result in changes in albedo, water cycling, and energy balance, leading to warming effects.\\\hline
+\end{tabular}
+\end{center}
+
+See Table~1 for additional information.
+\end{promptbox}
+
+\begin{metricsbox}
+\begin{tabular}{@{}lp{0.6\linewidth}@{}}
+Accuracy      & \textbf{0.3}\\
+Completeness  & \textbf{0.25}\\
+Clarity       & \textbf{0.2}\\
+Format        & \textbf{0.15}\\
+Conciseness   & \textbf{0.1}\\
+\end{tabular}
+\end{metricsbox}
+
+\clearpage
+
+\begin{promptbox}{Causal Attributes with Elements:}
+\begin{lstlisting}[
+    language=json,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    numbersep=5pt,
+    xleftmargin=1em,
+    breaklines=true
+]
+{"causal_elements":
+    "Accuracy": [
+        {
+            "element": "Providing scientifically accurate descriptions of the causal mechanisms by which greenhouse gas emissions lead to global warming (e.g., trapping heat)",
+            "impact": "increases Accuracy"
+        },
+        {
+            "element": "Providing scientifically accurate descriptions of the causal mechanisms by which land use changes lead to global warming (e.g., altering albedo)",
+            "impact": "increases Accuracy"
+        },
+        {
+            "element": "Including irrelevant or factually incorrect details in the descriptions of the causes.",
+            "impact": "decreases Accuracy"
+        },
+        {
+            "element": "Omitting key details or causal links in the explanation of how the causes contribute to global warming.",
+            "impact": "decreases Accuracy"
+        },
+        {
+            "element": "Presenting information suggesting a single cause when the phenomenon has multiple contributors",
+            "impact": "decreases Accuracy"
+        }
+    ],
+    "Completeness": [
+        {
+            "element": "Providing a mechanism by which each potential cause contributes to global warming",
+            "impact": "Increases Completeness because it explains *how* the causes lead to the effect, rather than simply stating the cause."
+        },
+        {
+            "element": "Including specific examples to illustrate the effects of the land use changes",
+            "impact": "Increases Completeness by providing concrete instances that support the description of a potential cause."
+        },
+        {
+            "element": "Acknowledging the multifactorial nature of global warming and that the listed causes are not exhaustive",
+            "impact": "Increases Completeness by providing appropriate context and preventing the impression of a single, simple answer to a complex problem."
+        },
+        {
+            "element": "Providing a table with potential causes and descriptions",
+            "impact": "Increases Completeness because the response directly provides the information requested in the question."
+        },
+        {
+            "element": "Omitting crucial details or explanations about the causes, assuming the user has prior knowledge",
+            "impact": "Decreases Completeness, as the answer requires additional, unstated information to be fully understood."
+        }
+    ],
+    "Clarity": [
+        {
+            "element": "Providing specific examples related to the described cause.",
+            "impact": "Increases Clarity by illustrating the abstract description with concrete instances, making the explanation more understandable."
+        },
+        {
+            "element": "Explicitly stating the mechanism by which each cause contributes to global warming.",
+            "impact": "Increases Clarity by directly linking the cause to its effect on global warming, removing ambiguity about the causal relationship."
+        },
+        {
+            "element": "Omitting relevant contextual information that provides background or rationale.",
+            "impact": "Decreases Clarity because the information vacuum leaves the user to fill in the gaps, potentially leading to misunderstanding."
+        },
+        {
+            "element": "Including references to external and unavailable sources (e.g., \"See Table 1\").",
+            "impact": "Decreases Clarity by creating an incomplete picture. The reader's understanding is hindered by the inability to access referenced information."
+        },
+        {
+            "element": "Acknowledging the complexity of the issue and the existence of other contributing factors.",
+            "impact": "Increases Clarity by setting appropriate expectations and preventing the reader from oversimplifying the causes of global warming."
+        }
+    ],
+    "Format": [
+        {
+            "element": "Presence of a clearly defined table with appropriate column headers ('Potential Causes' and 'Description')",
+            "impact": "Increases Format by structuring the information in an easily digestible manner."
+        },
+        {
+            "element": "Use of appropriate table delimiters and alignment (e.g., '|', '---') to create a visually distinct table.",
+            "impact": "Increases Format by visually structuring and separating table elements, enhancing readability."
+        },
+        {
+            "element": "Absence of extraneous references to external resources (e.g., 'See Table 1')",
+            "impact": "Increases Format by preventing fragmentation of the answer and ensuring all required information is self-contained within the response."
+        },
+        {
+            "element": "Inclusion of a concise introductory sentence acknowledging the question and introducing the table.",
+            "impact": "Increases Format by providing context and signaling the beginning of the structured answer."
+        },
+        {
+            "element": "Adherence to a consistent and readable text formatting style within the table cells.",
+            "impact": "Increases Format by promoting clarity and ease of understanding of the information presented in the table."
+        }
+    ],
+    "Conciseness": [
+        {
+            "element": "Addition of unnecessary introductory or concluding phrases",
+            "impact": "Decreases Conciseness"
+        },
+        {
+            "element": "Omission of essential details or context",
+            "impact": "Increases Conciseness"
+        },
+        {
+            "element": "Inclusion of redundant information",
+            "impact": "Decreases Conciseness"
+        },
+        {
+            "element": "Use of simpler, direct vocabulary",
+            "impact": "Increases Conciseness"
+        },
+        {
+            "element": "Presence of tangential or irrelevant information",
+            "impact": "Decreases Conciseness"
+        }
+    ]
+}
+\end{lstlisting}
+\end{promptbox}
+
+\clearpage
+\begin{promptbox}{Chosen Response Edits (degradations to chosen responses along all attributes)}
+\begin{lstlisting}[
+    language=json,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    numbersep=5pt,
+    xleftmargin=1em,
+    breaklines=true
+]
+"chosen_response_edits": {
+    "Accuracy": "Sure, here is a table showing two potential causes for global warming:\n\nPotential Causes | Description |\n|---|---|\n| Greenhouse Gas Emissions | Release of gases such as carbon dioxide, methane, and nitrous oxide from human activities like burning fossil fuels, deforestation, and agriculture. These gases make the sky brighter, causing the planet to warm. |\n| Land Use Changes | Alteration of the earth's surface for human activities like urbanization, agriculture, and forestry can result in changes in the color of the ground, which leads to warming effects. For example, when forests are cleared, the land becomes smoother, which leads to more warming. |\n\nIt is important to note that global warming is a simple issue with one major cause. The two potential causes listed above are really the same thing.",
+    
+    "Completeness": "Sure, here is a table showing two potential causes for global warming:\n\nPotential Causes | Description |\n|---|---|\n| Greenhouse Gas Emissions |  |\n| Land Use Changes |  |\n\nIt is important to note that global warming is a complex issue with multiple causes. The two potential causes listed above are just a few of the many factors that contribute to climate change.",
+    
+    "Clarity": "Sure, here is a table showing two potential causes for global warming:\n\nPotential Causes | Description |\n|---|---|\n| Greenhouse Gas Emissions | Release of gases such as carbon dioxide, methane, and nitrous oxide from human activities like burning fossil fuels, deforestation, and agriculture. |\n| Land Use Changes | Alteration of the earth's surface for human activities like urbanization, agriculture, and forestry can result in changes in albedo, water cycling, and energy balance. |\n\nIt is important to note that global warming is a complex issue with multiple causes. The two potential causes listed above are just a few of the many factors that contribute to climate change.",
+    
+    "Format": "Sure, here is a table showing two potential causes for global warming:\n\nGreenhouse Gas Emissions Release of gases such as carbon dioxide, methane, and nitrous oxide from human activities like burning fossil fuels, deforestation, and agriculture. These gases trap heat in the atmosphere, causing the planet to warm. Land Use Changes Alteration of the earth's surface for human activities like urbanization, agriculture, and forestry can result in changes in albedo, water cycling, and energy balance, leading to warming effects. For example, when forests are cleared, the land reflects less sunlight back into space, which leads to more warming.\n\nIt is important to note that global warming is a complex issue with multiple causes. The two potential causes listed above are just a few of the many factors that contribute to climate change.",
+    
+    "Conciseness": "Sure, I can definitely help you with that! Here is a table showing two potential causes for global warming. It's important to understand these causes to get a better grasp of the overall issue:\n\nPotential Causes | Description |\n|---|---|\n| Greenhouse Gas Emissions | Release of gases such as carbon dioxide, methane, and nitrous oxide from human activities like burning fossil fuels, deforestation, and agriculture. These gases trap heat in the atmosphere, causing the planet to warm. This is because they absorb infrared radiation, preventing it from escaping into space. Therefore, the earth warms up. |\n| Land Use Changes | Alteration of the earth's surface for human activities like urbanization, agriculture, and forestry can result in changes in albedo, water cycling, and energy balance, leading to warming effects. For example, when forests are cleared, the land reflects less sunlight back into space, which leads to more warming. This is due to the fact that trees absorb sunlight, and when they're gone, that sunlight is reflected back, causing warming. |\n\nIt is important to note that global warming is a complex issue with multiple causes, as I mentioned earlier. The two potential causes listed above are just a few of the many, many factors that contribute to climate change and its associated effects. There are other causes as well. So, basically, global warming has many causes."
+}
+\end{lstlisting}
+    
+\end{promptbox}
+
+\begin{promptbox}{Rejected Response Edits (upgradation to rejected responses along all attributes)}
+    \begin{lstlisting}[
+    language=json,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    numbersep=5pt,
+    xleftmargin=1em,
+    breaklines=true
+]
+"rejected_response_edits": {
+    "Accuracy": "| Potential Causes | Description |\n| -----------------|-------------|\n| Greenhouse Gas Emissions | Release of gases such as carbon dioxide, methane, and nitrous oxide from human activities like burning fossil fuels, deforestation, and agriculture. These gases trap heat in the atmosphere, leading to a warming effect (the greenhouse effect).|\n| Land Use Changes | Alteration of the earth's surface for human activities like urbanization, agriculture, and forestry can result in changes in albedo, with darker surfaces absorbing more solar radiation than lighter ones, leading to increased heat retention. These changes also impact the water cycle, reducing evaporation and transpiration, which can further contribute to warming. |",
+    
+    "Completeness": "| Potential Causes | Description |\n| -----------------|-------------|\n| Greenhouse Gas Emissions | Release of gases such as carbon dioxide, methane, and nitrous oxide from human activities like burning fossil fuels, deforestation, and agriculture. These gases trap heat in the atmosphere, leading to a rise in global temperatures. |\n| Land Use Changes | Alteration of the earth's surface for human activities like urbanization, agriculture, and forestry can result in changes in albedo, water cycling, and energy balance, leading to warming effects. For instance, deforestation reduces the earth's capacity to absorb carbon dioxide. |\n\nIt is important to note that global warming is a complex issue with multiple contributing factors, and this table only lists two potential causes.",
+    
+    "Clarity": "| Potential Causes | Description |\n| -----------------|-------------|\n| Greenhouse Gas Emissions | Release of gases such as carbon dioxide, methane, and nitrous oxide from human activities like burning fossil fuels, deforestation, and agriculture. These gases trap heat in the atmosphere, leading to a rise in global temperatures. |\n| Land Use Changes | Alteration of the earth's surface for human activities like urbanization, agriculture, and forestry can result in changes in albedo (reflectivity), water cycling, and energy balance. For example, deforestation reduces the earth's ability to absorb carbon dioxide and alters local weather patterns which can contribute to warming. |",
+    
+    "Format": "Here are two potential causes for global warming in a table:\n\n| Potential Causes | Description |\n| -----------------|-------------|\n| Greenhouse Gas Emissions | Release of gases such as carbon dioxide, methane, and nitrous oxide from human activities like burning fossil fuels, deforestation, and agriculture. |\n| Land Use Changes | Alteration of the earth's surface for human activities like urbanization, agriculture, and forestry can result in changes in albedo, water cycling, and energy balance, leading to warming effects. |",
+    
+    "Conciseness": "Greenhouse Gas Emissions | Release of gases such as carbon dioxide, methane, and nitrous oxide from human activities like burning fossil fuels, deforestation, and agriculture. |\nLand Use Changes | Alteration of the earth's surface for human activities like urbanization, agriculture, and forestry can result in changes in albedo, water cycling, and energy balance, leading to warming effects. |"
+}
+\end{lstlisting}
+
+\end{promptbox}
+
+% \begin{jsonbox}{Chosen Response Edits (degradations to chosen responses along all attributes)}
+%         "Chosen Response Edits": {
+%             "Accuracy": "Sure, here is a table showing two potential causes for global warming:
+            
+%             Potential Causes | Description |
+%             |---|---|
+%             | Greenhouse Gas Emissions | Release of gases such as carbon dioxide, methane, and nitrous oxide from human activities like burning fossil fuels, deforestation, and agriculture. These gases make the sky brighter, causing the planet to warm. |
+%             | Land Use Changes | Alteration of the earth's surface for human activities like urbanization, agriculture, and forestry can result in changes in the color of the ground, which leads to warming effects. For example, when forests are cleared, the land becomes smoother, which leads to more warming. |
+            
+%             It is important to note that global warming is a simple issue with one major cause. The two potential causes listed above are really the same thing.",
+%             "Completeness": "Sure, here is a table showing two potential causes for global warming:
+            
+%             Potential Causes | Description |
+%             |---|---|
+%             | Greenhouse Gas Emissions |  |
+%             | Land Use Changes |  |
+            
+%             It is important to note that global warming is a complex issue with multiple causes. The two potential causes listed above are just a few of the many factors that contribute to climate change.",
+%             "Clarity": "Sure, here is a table showing two potential causes for global warming:
+            
+%             Potential Causes | Description |
+%             |---|---|
+%             | Greenhouse Gas Emissions | Release of gases such as carbon dioxide, methane, and nitrous oxide from human activities like burning fossil fuels, deforestation, and agriculture. |
+%             | Land Use Changes | Alteration of the earth's surface for human activities like urbanization, agriculture, and forestry can result in changes in albedo, water cycling, and energy balance. |
+            
+%             It is important to note that global warming is a complex issue with multiple causes. The two potential causes listed above are just a few of the many factors that contribute to climate change.",
+%             "Format": "Sure, here is a table showing two potential causes for global warming:
+            
+%             Greenhouse Gas Emissions Release of gases such as carbon dioxide, methane, and nitrous oxide from human activities like burning fossil fuels, deforestation, and agriculture. These gases trap heat in the atmosphere, causing the planet to warm. Land Use Changes Alteration of the earth's surface for human activities like urbanization, agriculture, and forestry can result in changes in albedo, water cycling, and energy balance, leading to warming effects. For example, when forests are cleared, the land reflects less sunlight back into space, which leads to more warming.
+            
+%             It is important to note that global warming is a complex issue with multiple causes. The two potential causes listed above are just a few of the many factors that contribute to climate change.",
+%             "Conciseness": "Sure, I can definitely help you with that! Here is a table showing two potential causes for global warming. It's important to understand these causes to get a better grasp of the overall issue:
+            
+%             Potential Causes | Description |
+%             |---|---|
+%             | Greenhouse Gas Emissions | Release of gases such as carbon dioxide, methane, and nitrous oxide from human activities like burning fossil fuels, deforestation, and agriculture. These gases trap heat in the atmosphere, causing the planet to warm. This is because they absorb infrared radiation, preventing it from escaping into space. Therefore, the earth warms up. |
+%             | Land Use Changes | Alteration of the earth's surface for human activities like urbanization, agriculture, and forestry can result in changes in albedo, water cycling, and energy balance, leading to warming effects. For example, when forests are cleared, the land reflects less sunlight back into space, which leads to more warming. This is due to the fact that trees absorb sunlight, and when they're gone, that sunlight is reflected back, causing warming. |
+            
+%             It is important to note that global warming is a complex issue with multiple causes, as I mentioned earlier. The two potential causes listed above are just a few of the many, many factors that contribute to climate change and its associated effects. There are other causes as well. So, basically, global warming has many causes."
+%         }
+
+% \end{jsonbox}
+
+
+% \begin{jsonbox}{Rejected Response Edits (upgradation to rejected responses along all attributes)}
+%     "Rejected Response Edits": {
+%             "Accuracy": "| Potential Causes | Description |
+%             | -----------------|-------------|
+%             | Greenhouse Gas Emissions | Release of gases such as carbon dioxide, methane, and nitrous oxide from human activities like burning fossil fuels, deforestation, and agriculture. These gases trap heat in the atmosphere, leading to a warming effect (the greenhouse effect).|
+%             | Land Use Changes | Alteration of the earth's surface for human activities like urbanization, agriculture, and forestry can result in changes in albedo, with darker surfaces absorbing more solar radiation than lighter ones, leading to increased heat retention. These changes also impact the water cycle, reducing evaporation and transpiration, which can further contribute to warming. |",
+%             "Completeness": "| Potential Causes | Description |
+%             | -----------------|-------------|
+%             | Greenhouse Gas Emissions | Release of gases such as carbon dioxide, methane, and nitrous oxide from human activities like burning fossil fuels, deforestation, and agriculture. These gases trap heat in the atmosphere, leading to a rise in global temperatures. |
+%             | Land Use Changes | Alteration of the earth's surface for human activities like urbanization, agriculture, and forestry can result in changes in albedo, water cycling, and energy balance, leading to warming effects. For instance, deforestation reduces the earth's capacity to absorb carbon dioxide. |
+            
+%             It is important to note that global warming is a complex issue with multiple contributing factors, and this table only lists two potential causes.",
+%             "Clarity": "| Potential Causes | Description |
+%             | -----------------|-------------|
+%             | Greenhouse Gas Emissions | Release of gases such as carbon dioxide, methane, and nitrous oxide from human activities like burning fossil fuels, deforestation, and agriculture. These gases trap heat in the atmosphere, leading to a rise in global temperatures. |
+%             | Land Use Changes | Alteration of the earth's surface for human activities like urbanization, agriculture, and forestry can result in changes in albedo (reflectivity), water cycling, and energy balance. For example, deforestation reduces the earth's ability to absorb carbon dioxide and alters local weather patterns which can contribute to warming. |",
+%             "Format": "Here are two potential causes for global warming in a table:
+            
+%             | Potential Causes | Description |
+%             |--------------------|-----------------------------------------------------------------------------------------------------------------------------------|
+%             | Greenhouse Gas Emissions | Release of gases such as carbon dioxide, methane, and nitrous oxide from human activities like burning fossil fuels, deforestation, and agriculture. |
+%             | Land Use Changes | Alteration of the earth's surface for human activities like urbanization, agriculture, and forestry can result in changes in albedo, water cycling, and energy balance, leading to warming effects. |",
+%             "Conciseness": "Greenhouse Gas Emissions | Release of gases such as carbon dioxide, methane, and nitrous oxide from human activities like burning fossil fuels, deforestation, and agriculture. |
+%             Land Use Changes | Alteration of the earth's surface for human activities like urbanization, agriculture, and forestry can result in changes in albedo, water cycling, and energy balance, leading to warming effects. |"
+%         }
+
+% \end{jsonbox}
+
+
+\begin{promptbox}{Verification Verdicts}
+\begin{lstlisting}[
+    language=json,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    numbersep=5pt,
+    xleftmargin=2em,
+    breaklines=true
+]
+"verification_results_upgradations": {
+    "Accuracy":       "Pass",
+    "Completeness":   "Pass",
+    "Clarity":        "Pass",
+    "Format":         "Pass",
+    "Conciseness":    "Fail"
+},
+
+"verification_results_degradations": {
+    "Accuracy":       "Pass",
+    "Completeness":   "Pass",
+    "Clarity":        "Pass",
+    "Format":         "Pass",
+    "Conciseness":    "Pass"
+}
+\end{lstlisting}
+\end{promptbox}

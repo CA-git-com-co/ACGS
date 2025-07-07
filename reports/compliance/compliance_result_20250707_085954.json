@@ -1,0 +1,11 @@
+{
+  "tool_name": "compliance",
+  "status": "completed",
+  "execution_time_seconds": 30.0,
+  "constitutional_compliance": true,
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "summary": "Constitutional compliance validation completed successfully",
+  "compliance_score": 100.0,
+  "violations": 0,
+  "constitutional_validation": true
+}

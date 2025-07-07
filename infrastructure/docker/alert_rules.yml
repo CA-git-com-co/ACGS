@@ -103,3 +103,222 @@ groups:
         annotations:
           summary: "HITL queue backlog detected"
           description: "HITL queue size {{ $value }} exceeds 100 pending decisions"
+
+  - name: audit_compliance_enhanced
+    rules:
+      - alert: AuditEventViolationSpike
+        expr: increase(audit_events_total{outcome="violation"}[5m]) > 10
+        for: 1m
+        labels:
+          severity: critical
+          service: audit-aggregator
+          constitutional_hash: "cdd01ef066bc6cf2"
+        annotations:
+          summary: "Spike in audit violations detected"
+          description: "{{ $value }} audit violations in last 5 minutes on {{ $labels.instance }}"
+
+      - alert: ConstitutionalComplianceScoreDropped
+        expr: constitutional_compliance_score < 0.8
+        for: 30s
+        labels:
+          severity: critical
+          service: constitutional-ai
+          constitutional_hash: "cdd01ef066bc6cf2"
+        annotations:
+          summary: "Constitutional compliance score critically low"
+          description: "Compliance score {{ $value }} below 80% threshold on {{ $labels.instance }}"
+
+      - alert: MultiTenantIsolationBreach
+        expr: increase(audit_events_total{event_type=~".*isolation.*breach.*"}[1m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+          service: multi-tenant-isolation
+          constitutional_hash: "cdd01ef066bc6cf2"
+        annotations:
+          summary: "Multi-tenant isolation breach detected"
+          description: "Tenant isolation violation on {{ $labels.instance }}: {{ $labels.event_type }}"
+
+      - alert: PolicySynthesisFailure
+        expr: increase(audit_events_total{event_type="policy_synthesis_completed",outcome="failure"}[5m]) > 3
+        for: 2m
+        labels:
+          severity: high
+          service: governance-synthesis
+          constitutional_hash: "cdd01ef066bc6cf2"
+        annotations:
+          summary: "Policy synthesis failures detected"
+          description: "{{ $value }} policy synthesis failures in 5 minutes on {{ $labels.instance }}"
+
+      - alert: AgentCoordinationFailure
+        expr: increase(audit_events_total{event_type=~"agent_.*_failed"}[5m]) > 5
+        for: 2m
+        labels:
+          severity: high
+          service: multi-agent-coordinator
+          constitutional_hash: "cdd01ef066bc6cf2"
+        annotations:
+          summary: "Agent coordination failures detected"
+          description: "{{ $value }} agent coordination failures in 5 minutes on {{ $labels.instance }}"
+
+      - alert: ConstitutionalHashVerificationFailure
+        expr: increase(audit_events_total{event_type="constitutional_hash_mismatch"}[1m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+          service: audit-aggregator
+          constitutional_hash: "cdd01ef066bc6cf2"
+        annotations:
+          summary: "Constitutional hash verification failure"
+          description: "Constitutional hash mismatch detected on {{ $labels.instance }}"
+
+  - name: multi_agent_coordination
+    rules:
+      - alert: ConsensusFailureRate
+        expr: rate(audit_events_total{event_type="consensus_failed"}[5m]) > 0.1
+        for: 3m
+        labels:
+          severity: high
+          service: multi-agent-coordinator
+          constitutional_hash: "cdd01ef066bc6cf2"
+        annotations:
+          summary: "High consensus failure rate"
+          description: "Consensus failure rate {{ $value }}/min above threshold on {{ $labels.instance }}"
+
+      - alert: BlackboardServiceUnresponsive
+        expr: increase(audit_events_total{service_name="blackboard-service",outcome="failure"}[2m]) > 5
+        for: 1m
+        labels:
+          severity: high
+          service: blackboard-service
+          constitutional_hash: "cdd01ef066bc6cf2"
+        annotations:
+          summary: "Blackboard service experiencing failures"
+          description: "{{ $value }} blackboard service failures in 2 minutes on {{ $labels.instance }}"
+
+      - alert: AgentConflictEscalation
+        expr: increase(audit_events_total{event_type="agent_conflict_detected"}[10m]) > 3
+        for: 5m
+        labels:
+          severity: warning
+          service: multi-agent-coordinator
+          constitutional_hash: "cdd01ef066bc6cf2"
+        annotations:
+          summary: "Agent conflicts escalating"
+          description: "{{ $value }} agent conflicts detected in 10 minutes on {{ $labels.instance }}"
+
+  - name: resource_isolation_monitoring
+    rules:
+      - alert: MemoryLimitExceeded
+        expr: increase(audit_events_total{event_type="memory_limit_exceeded"}[1m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+          service: memory-isolation
+          constitutional_hash: "cdd01ef066bc6cf2"
+        annotations:
+          summary: "Memory limit exceeded for tenant"
+          description: "Tenant memory limit exceeded on {{ $labels.instance }}"
+
+      - alert: RedisTenantIsolationBreach
+        expr: increase(audit_events_total{event_type="redis_tenant_isolation_breach"}[1m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+          service: redis-isolation
+          constitutional_hash: "cdd01ef066bc6cf2"
+        annotations:
+          summary: "Redis tenant isolation breach"
+          description: "Redis tenant isolation breach detected on {{ $labels.instance }}"
+
+      - alert: DatabaseRLSViolation
+        expr: increase(audit_events_total{event_type="database_rls_violation"}[1m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+          service: database-rls
+          constitutional_hash: "cdd01ef066bc6cf2"
+        annotations:
+          summary: "Database RLS violation"
+          description: "Database Row-Level Security violation on {{ $labels.instance }}"
+
+      - alert: NetworkPolicyViolation
+        expr: increase(audit_events_total{event_type="network_policy_violation"}[1m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+          service: network-isolation
+          constitutional_hash: "cdd01ef066bc6cf2"
+        annotations:
+          summary: "Network policy violation"
+          description: "Kubernetes network policy violation on {{ $labels.instance }}"
+
+  - name: governance_workflow_monitoring
+    rules:
+      - alert: GovernanceWorkflowStalled
+        expr: time() - max(audit_events_timestamp{event_type="governance_workflow_started"}) > 1800
+        for: 5m
+        labels:
+          severity: high
+          service: governance-synthesis
+          constitutional_hash: "cdd01ef066bc6cf2"
+        annotations:
+          summary: "Governance workflow stalled"
+          description: "No governance workflow activity for 30 minutes on {{ $labels.instance }}"
+
+      - alert: PolicyConflictEscalation
+        expr: increase(audit_events_total{event_type="policy_conflict_detected"}[15m]) > 5
+        for: 5m
+        labels:
+          severity: high
+          service: governance-synthesis
+          constitutional_hash: "cdd01ef066bc6cf2"
+        annotations:
+          summary: "Policy conflicts escalating"
+          description: "{{ $value }} policy conflicts in 15 minutes on {{ $labels.instance }}"
+
+      - alert: ConstitutionalPrincipleViolated
+        expr: increase(audit_events_total{event_type="constitutional_principle_violated"}[1m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+          service: constitutional-ai
+          constitutional_hash: "cdd01ef066bc6cf2"
+        annotations:
+          summary: "Constitutional principle violation"
+          description: "Constitutional principle violation detected on {{ $labels.instance }}"
+
+  - name: audit_system_health
+    rules:
+      - alert: AuditAggregatorDown
+        expr: up{job="audit-aggregator"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: audit-aggregator
+          constitutional_hash: "cdd01ef066bc6cf2"
+        annotations:
+          summary: "Audit aggregator service down"
+          description: "Audit aggregation service is down on {{ $labels.instance }}"
+
+      - alert: AuditEventProcessingBacklog
+        expr: audit_event_processing_queue_size > 1000
+        for: 5m
+        labels:
+          severity: high
+          service: audit-aggregator
+          constitutional_hash: "cdd01ef066bc6cf2"
+        annotations:
+          summary: "Audit event processing backlog"
+          description: "Audit event queue size {{ $value }} exceeds threshold on {{ $labels.instance }}"
+
+      - alert: AuditStorageFailure
+        expr: increase(audit_storage_errors_total[5m]) > 10
+        for: 2m
+        labels:
+          severity: high
+          service: audit-aggregator
+          constitutional_hash: "cdd01ef066bc6cf2"
+        annotations:
+          summary: "Audit storage failures"
+          description: "{{ $value }} audit storage failures in 5 minutes on {{ $labels.instance }}"

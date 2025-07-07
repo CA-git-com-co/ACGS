@@ -56,6 +56,7 @@ class AuditEventType(Enum):
     CONSTITUTIONAL_VALIDATION = "constitutional_validation"
     CONSTITUTIONAL_VIOLATION = "constitutional_violation"
     CONSTITUTIONAL_OVERRIDE = "constitutional_override"
+    CONSTITUTIONAL_COMPLIANCE = "constitutional_compliance"
     FORMAL_VERIFICATION = "formal_verification"
     COMPLIANCE_SCORE_CHANGE = "compliance_score_change"
 
@@ -88,6 +89,59 @@ class AuditEventType(Enum):
     PRIVILEGE_ESCALATION = "privilege_escalation"
     SUSPICIOUS_ACTIVITY = "suspicious_activity"
     ENCRYPTION_EVENT = "encryption_event"
+    
+    # Multi-Agent Coordination Events
+    AGENT_SPAWNED = "agent_spawned"
+    AGENT_TERMINATED = "agent_terminated"
+    AGENT_TASK_ASSIGNED = "agent_task_assigned"
+    AGENT_TASK_COMPLETED = "agent_task_completed"
+    AGENT_TASK_FAILED = "agent_task_failed"
+    AGENT_COMMUNICATION = "agent_communication"
+    AGENT_COORDINATION_DECISION = "agent_coordination_decision"
+    BLACKBOARD_UPDATE = "blackboard_update"
+    BLACKBOARD_READ = "blackboard_read"
+    CONSENSUS_INITIATED = "consensus_initiated"
+    CONSENSUS_REACHED = "consensus_reached"
+    CONSENSUS_FAILED = "consensus_failed"
+    AGENT_CONFLICT_DETECTED = "agent_conflict_detected"
+    AGENT_CONFLICT_RESOLVED = "agent_conflict_resolved"
+    
+    # Policy Synthesis & Governance Events  
+    POLICY_SYNTHESIS_INITIATED = "policy_synthesis_initiated"
+    POLICY_SYNTHESIS_COMPLETED = "policy_synthesis_completed"
+    POLICY_CONFLICT_DETECTED = "policy_conflict_detected"
+    POLICY_CONFLICT_RESOLVED = "policy_conflict_resolved"
+    GOVERNANCE_WORKFLOW_STARTED = "governance_workflow_started"
+    GOVERNANCE_WORKFLOW_COMPLETED = "governance_workflow_completed"
+    GOVERNANCE_ESCALATION = "governance_escalation"
+    CONSTITUTIONAL_PRINCIPLE_VIOLATED = "constitutional_principle_violated"
+    CONSTITUTIONAL_PRINCIPLE_ENFORCED = "constitutional_principle_enforced"
+    
+    # Resource Management & Isolation Events
+    MEMORY_LIMIT_EXCEEDED = "memory_limit_exceeded"
+    MEMORY_OPTIMIZATION_PERFORMED = "memory_optimization_performed"
+    REDIS_TENANT_ISOLATION_BREACH = "redis_tenant_isolation_breach"
+    REDIS_CACHE_OPERATION = "redis_cache_operation"
+    DATABASE_RLS_VIOLATION = "database_rls_violation"
+    DATABASE_RLS_POLICY_APPLIED = "database_rls_policy_applied"
+    NETWORK_POLICY_VIOLATION = "network_policy_violation"
+    CROSS_SERVICE_COMMUNICATION = "cross_service_communication"
+    
+    # Constitutional Compliance Events (Enhanced)
+    CONSTITUTIONAL_HASH_VERIFICATION = "constitutional_hash_verification"
+    CONSTITUTIONAL_HASH_MISMATCH = "constitutional_hash_mismatch"
+    CONSTITUTIONAL_COMPLIANCE_SCORE_CALCULATED = "constitutional_compliance_score_calculated"
+    CONSTITUTIONAL_EMERGENCY_OVERRIDE = "constitutional_emergency_override"
+    HUMAN_OVERSIGHT_TRIGGERED = "human_oversight_triggered"
+    HUMAN_OVERSIGHT_COMPLETED = "human_oversight_completed"
+    
+    # Performance & Monitoring Events
+    PERFORMANCE_THRESHOLD_BREACH = "performance_threshold_breach"
+    ANOMALY_DETECTED = "anomaly_detected"
+    ALERT_TRIGGERED = "alert_triggered"
+    ALERT_RESOLVED = "alert_resolved"
+    HEALTH_CHECK_FAILED = "health_check_failed"
+    HEALTH_CHECK_RECOVERED = "health_check_recovered"
 
 
 class ComplianceStandard(Enum):
@@ -651,4 +705,306 @@ async def log_data_access_event(
         tenant_id=tenant_id,
         resource=resource,
         details=details or {},
+    )
+
+
+# Enhanced convenience functions for new event types
+
+async def log_multi_agent_event(
+    event_type: AuditEventType,
+    action: str,
+    agent_id: str,
+    coordinator_id: str = None,
+    task_id: str = None,
+    tenant_id: str = None,
+    outcome: str = "success",
+    details: dict[str, Any] = None,
+) -> str:
+    """Log multi-agent coordination audit event."""
+    audit_logger = get_audit_logger()
+    
+    # Determine severity based on event type
+    severity = AuditSeverity.LOW
+    if event_type in [
+        AuditEventType.AGENT_TASK_FAILED,
+        AuditEventType.CONSENSUS_FAILED,
+        AuditEventType.AGENT_CONFLICT_DETECTED
+    ]:
+        severity = AuditSeverity.HIGH
+    elif event_type in [
+        AuditEventType.AGENT_COORDINATION_DECISION,
+        AuditEventType.CONSENSUS_REACHED,
+        AuditEventType.AGENT_CONFLICT_RESOLVED
+    ]:
+        severity = AuditSeverity.MEDIUM
+    
+    event_details = {
+        "agent_id": agent_id,
+        "coordinator_id": coordinator_id,
+        "task_id": task_id,
+        "constitutional_hash": CONSTITUTIONAL_HASH,
+        **(details or {})
+    }
+    
+    return await audit_logger.log_event(
+        event_type=event_type,
+        action=action,
+        outcome=outcome,
+        severity=severity,
+        tenant_id=tenant_id,
+        resource=f"agent:{agent_id}",
+        details=event_details,
+        compliance_tags=[ComplianceStandard.ACGS_CONSTITUTIONAL]
+    )
+
+
+async def log_policy_synthesis_event(
+    event_type: AuditEventType,
+    action: str,
+    policy_id: str,
+    policy_type: str,
+    synthesis_engine: str,
+    user_id: str = None,
+    tenant_id: str = None,
+    outcome: str = "success",
+    compliance_score: float = None,
+    conflicts_detected: list[str] = None,
+    details: dict[str, Any] = None,
+) -> str:
+    """Log policy synthesis and governance audit event."""
+    audit_logger = get_audit_logger()
+    
+    # Determine severity based on outcome and compliance
+    severity = AuditSeverity.LOW
+    if outcome != "success":
+        severity = AuditSeverity.HIGH
+    elif compliance_score and compliance_score < 0.8:
+        severity = AuditSeverity.MEDIUM
+    elif conflicts_detected and len(conflicts_detected) > 0:
+        severity = AuditSeverity.MEDIUM
+    
+    event_details = {
+        "policy_id": policy_id,
+        "policy_type": policy_type,
+        "synthesis_engine": synthesis_engine,
+        "compliance_score": compliance_score,
+        "conflicts_detected": conflicts_detected or [],
+        "constitutional_hash": CONSTITUTIONAL_HASH,
+        **(details or {})
+    }
+    
+    return await audit_logger.log_event(
+        event_type=event_type,
+        action=action,
+        outcome=outcome,
+        severity=severity,
+        user_id=user_id,
+        tenant_id=tenant_id,
+        resource=f"policy:{policy_id}",
+        details=event_details,
+        compliance_tags=[
+            ComplianceStandard.ACGS_CONSTITUTIONAL,
+            ComplianceStandard.SOC2_TYPE_II
+        ]
+    )
+
+
+async def log_constitutional_compliance_event(
+    event_type: AuditEventType,
+    action: str,
+    compliance_score: float,
+    hash_verified: bool = True,
+    violations: list[str] = None,
+    principles_checked: list[str] = None,
+    user_id: str = None,
+    tenant_id: str = None,
+    service_name: str = None,
+    details: dict[str, Any] = None,
+) -> str:
+    """Log constitutional compliance audit event with enhanced tracking."""
+    audit_logger = get_audit_logger()
+    
+    # Determine severity and outcome
+    if not hash_verified:
+        severity = AuditSeverity.CRITICAL
+        outcome = "hash_mismatch"
+    elif compliance_score < 0.6:
+        severity = AuditSeverity.CRITICAL
+        outcome = "critical_violation"
+    elif compliance_score < 0.8:
+        severity = AuditSeverity.HIGH
+        outcome = "violation"
+    elif compliance_score < 0.95:
+        severity = AuditSeverity.MEDIUM
+        outcome = "warning"
+    else:
+        severity = AuditSeverity.LOW
+        outcome = "compliant"
+    
+    event_details = {
+        "compliance_score": compliance_score,
+        "hash_verified": hash_verified,
+        "constitutional_hash": CONSTITUTIONAL_HASH,
+        "violations": violations or [],
+        "principles_checked": principles_checked or [
+            "safety_first",
+            "operational_transparency", 
+            "user_consent",
+            "data_privacy",
+            "resource_constraints",
+            "operation_reversibility",
+            "least_privilege",
+            "constitutional_compliance"
+        ],
+        "service_name": service_name,
+        **(details or {})
+    }
+    
+    return await audit_logger.log_event(
+        event_type=event_type,
+        action=action,
+        outcome=outcome,
+        severity=severity,
+        user_id=user_id,
+        tenant_id=tenant_id,
+        details=event_details,
+        compliance_tags=[ComplianceStandard.ACGS_CONSTITUTIONAL]
+    )
+
+
+async def log_tenant_isolation_event(
+    event_type: AuditEventType,
+    action: str,
+    tenant_id: str,
+    isolation_type: str,  # redis, database, memory, network
+    resource_accessed: str,
+    user_id: str = None,
+    outcome: str = "success",
+    violation_details: dict[str, Any] = None,
+    details: dict[str, Any] = None,
+) -> str:
+    """Log tenant isolation and resource management audit event."""
+    audit_logger = get_audit_logger()
+    
+    # Determine severity based on event type
+    severity = AuditSeverity.LOW
+    if event_type in [
+        AuditEventType.REDIS_TENANT_ISOLATION_BREACH,
+        AuditEventType.DATABASE_RLS_VIOLATION,
+        AuditEventType.NETWORK_POLICY_VIOLATION,
+        AuditEventType.MEMORY_LIMIT_EXCEEDED
+    ]:
+        severity = AuditSeverity.CRITICAL
+        outcome = "violation"
+    elif event_type in [
+        AuditEventType.MEMORY_OPTIMIZATION_PERFORMED,
+        AuditEventType.DATABASE_RLS_POLICY_APPLIED
+    ]:
+        severity = AuditSeverity.MEDIUM
+    
+    event_details = {
+        "isolation_type": isolation_type,
+        "resource_accessed": resource_accessed,
+        "violation_details": violation_details or {},
+        "constitutional_hash": CONSTITUTIONAL_HASH,
+        **(details or {})
+    }
+    
+    return await audit_logger.log_event(
+        event_type=event_type,
+        action=action,
+        outcome=outcome,
+        severity=severity,
+        user_id=user_id,
+        tenant_id=tenant_id,
+        resource=resource_accessed,
+        details=event_details,
+        compliance_tags=[
+            ComplianceStandard.ACGS_CONSTITUTIONAL,
+            ComplianceStandard.SOC2_TYPE_II,
+            ComplianceStandard.ISO27001
+        ]
+    )
+
+
+async def log_performance_monitoring_event(
+    event_type: AuditEventType,
+    action: str,
+    metric_name: str,
+    metric_value: float,
+    threshold: float = None,
+    service_name: str = None,
+    tenant_id: str = None,
+    outcome: str = "success",
+    details: dict[str, Any] = None,
+) -> str:
+    """Log performance monitoring and anomaly detection audit event."""
+    audit_logger = get_audit_logger()
+    
+    # Determine severity based on threshold breach
+    severity = AuditSeverity.LOW
+    if event_type == AuditEventType.PERFORMANCE_THRESHOLD_BREACH:
+        if threshold and metric_value > threshold * 2:
+            severity = AuditSeverity.CRITICAL
+        elif threshold and metric_value > threshold * 1.5:
+            severity = AuditSeverity.HIGH
+        else:
+            severity = AuditSeverity.MEDIUM
+    elif event_type in [
+        AuditEventType.HEALTH_CHECK_FAILED,
+        AuditEventType.ALERT_TRIGGERED
+    ]:
+        severity = AuditSeverity.HIGH
+    
+    event_details = {
+        "metric_name": metric_name,
+        "metric_value": metric_value,
+        "threshold": threshold,
+        "service_name": service_name,
+        "constitutional_hash": CONSTITUTIONAL_HASH,
+        **(details or {})
+    }
+    
+    return await audit_logger.log_event(
+        event_type=event_type,
+        action=action,
+        outcome=outcome,
+        severity=severity,
+        tenant_id=tenant_id,
+        resource=f"metric:{metric_name}",
+        details=event_details,
+        compliance_tags=[ComplianceStandard.ACGS_CONSTITUTIONAL]
+    )
+
+
+async def log_blackboard_event(
+    event_type: AuditEventType,
+    action: str,
+    knowledge_item_id: str,
+    agent_id: str,
+    tenant_id: str = None,
+    data_type: str = None,
+    outcome: str = "success",
+    details: dict[str, Any] = None,
+) -> str:
+    """Log blackboard service audit event."""
+    audit_logger = get_audit_logger()
+    
+    event_details = {
+        "knowledge_item_id": knowledge_item_id,
+        "agent_id": agent_id,
+        "data_type": data_type,
+        "constitutional_hash": CONSTITUTIONAL_HASH,
+        **(details or {})
+    }
+    
+    return await audit_logger.log_event(
+        event_type=event_type,
+        action=action,
+        outcome=outcome,
+        severity=AuditSeverity.LOW,
+        tenant_id=tenant_id,
+        resource=f"blackboard:{knowledge_item_id}",
+        details=event_details,
+        compliance_tags=[ComplianceStandard.ACGS_CONSTITUTIONAL]
     )

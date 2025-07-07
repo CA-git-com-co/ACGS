@@ -2,52 +2,57 @@
 
 <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 
-**Service**: Evolutionary Computation Service
-**Port**: 8006
-**Base URL**: `http://localhost:8006/api/v1`
+## 1. Overview
 
-## Overview
+This document provides comprehensive documentation for the **Evolutionary Computation Service (Port 8006)** API. This service provides WINA (Weight Informed Neuron Activation) optimization, genetic algorithms, and evolutionary policy optimization for the ACGS system.
 
-The Evolutionary Computation Service provides WINA (Weight Informed Neuron Activation) optimization, genetic algorithms, and evolutionary policy optimization for the ACGS system.
+- **Service Name**: Evolutionary Computation Service
+- **Port**: 8006
+- **Base URL**: `/api/v1`
 
-## Authentication
+## 2. Service Endpoints
 
-All endpoints require JWT authentication:
+### 2.1. Health and Metrics
 
-```http
-Authorization: Bearer <jwt_token>
-X-Constitutional-Hash: cdd01ef066bc6cf2
-```
+- **GET /health**: Returns the health status of the service.
+- **GET /metrics**: Provides Prometheus-compatible performance metrics.
 
-## Endpoints
+### 2.2. WINA Optimization
+
+#### POST /wina/optimize
 
 (Documentation pending)
 
-## Performance Targets
+### 2.3. Genetic Algorithms
+
+#### POST /ga/run
+
+(Documentation pending)
+
+### 2.4. Policy Optimization
+
+#### POST /policy/evolve
+
+(Documentation pending)
+
+## 3. Performance Targets
 
 - **Latency**: P99 ≤ 5ms for cached queries
 - **Throughput**: ≥ 100 RPS sustained
-- **Cache Hit Rate**: ≥ 85%
-- **Test Coverage**: ≥ 80%
 - **Availability**: 99.9% uptime
 - **Constitutional Compliance**: 100% validation
 
-## Related Information
+## 4. Error Handling
 
-For a broader understanding of the ACGS platform and its components, refer to:
+Standard HTTP status codes are used. All error responses include a constitutional compliance validation status.
 
-- [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
-- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
-- [ACGE Strategic Implementation Plan - 24 Month Roadmap](../../docs/ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md)
-- [ACGE Testing and Validation Framework](../../docs/ACGE_TESTING_VALIDATION_FRAMEWORK.md)
-- [ACGE Cost Analysis and ROI Projections](../../docs/ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md)
-- [ACGS Comprehensive Task Completion - Final Report](../architecture/ACGS_COMPREHENSIVE_TASK_COMPLETION_FINAL_REPORT.md)
-- [ACGS-Claudia Integration Architecture Plan](../architecture/ACGS_CLAUDIA_INTEGRATION_ARCHITECTURE.md)
-- [ACGS Implementation Guide](../deployment/ACGS_IMPLEMENTATION_GUIDE.md)
-- [ACGS-PGP Operational Deployment Guide](../deployment/ACGS_PGP_OPERATIONAL_DEPLOYMENT_GUIDE.md)
-- [ACGS-PGP Troubleshooting Guide](../deployment/ACGS_PGP_TROUBLESHOOTING_GUIDE.md)
-- [ACGS-PGP Setup Guide](../deployment/ACGS_PGP_SETUP_GUIDE.md)
-- [Service Status Dashboard](../operations/SERVICE_STATUS.md)
-- [ACGS Configuration Guide](../configuration/README.md)
-- [ACGS-2 Technical Specifications - 2025 Edition](../TECHNICAL_SPECIFICATIONS_2025.md)
+- `400 Bad Request`: Invalid request parameters.
+- `401 Unauthorized`: Authentication required.
+- `403 Forbidden`: Insufficient permissions.
+- `404 Not Found`: Resource not found.
+- `500 Internal Server Error`: Server error.
 
+## 5. Related Information
+
+- [ACGS Service Architecture Overview](../ACGS_SERVICE_OVERVIEW.md)
+- [ACGS System Overview](../../SYSTEM_OVERVIEW.md)

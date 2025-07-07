@@ -1,0 +1,113 @@
+\section{Experiments}
+\label{sec:experiments}
+
+\begin{table}[h]
+    \centering
+    \caption{Performance Comparison of Pairwise Preference Model and Bradley-Terry Reward Model on RewardBench trained using various base models}
+    \label{tab:performance_bt_pairpm_rewardbench_extended_final} % Updated label
+    % Adjusts width to text width, height is scaled proportionally
+    \resizebox{\linewidth}{!}{%
+    \renewcommand{\arraystretch}{1.3}% Increase row spacing for this table
+    \begin{tabular}{@{}llHccccHccccc@{}}
+        \toprule
+        & \multirow{2}{*}{\textbf{Method}} & \multicolumn{5}{c}{\textbf{PairPM}} & \multicolumn{5}{c}{\textbf{BT}} \\
+        \cmidrule(lr){3-7} \cmidrule(lr){8-12}
+        & & \textbf{Average} & \textbf{Chat} & \textbf{Chat-Hard} & \textbf{Safety} & \textbf{Reasoning} & \textbf{Average} & \textbf{Chat} & \textbf{Chat-Hard} & \textbf{Safety} & \textbf{Reasoning} \\
+        \midrule
+        \multirow{4}{*}{\rotatebox[origin=c]{90}{\small\gemmait{9}}}
+        & Vanilla RM & 80.61 & \textbf{98.18} & 63.38 & 76.08 & 84.80 & 79.23 & \textbf{97.49} & 59.49 & 68.25 & 91.71 \\
+        & RRM        & 82.53 & 96.93 & 72.04 & 73.78 & 87.36 & 83.22 & 97.49 & \textbf{68.53} & 73.18 & 93.68 \\
+        & \textbf{\carma{}} & \textbf{87.93} & 97.49 & \textbf{72.70} & \textbf{86.96} & \textbf{94.55} & \textbf{85.33} & 96.09 & 66.12 & \textbf{82.84} & \textbf{96.27} \\
+        \cmidrule(lr){2-12} 
+        & $\Delta_{\text{\carma{} - RRM}}$ &
+        \changeUp{+5.40} & 
+        \changeUp{+0.56} &  
+        \changeUp{+0.66} & 
+        \changeUp{+13.18} & 
+        \changeUp{+7.19} & 
+        \changeUp{+2.11} &
+        \changeDown{-1.40} & 
+        \changeDown{-2.41} &
+        \changeUp{+9.66} & 
+        \changeUp{+2.59} \\ 
+        \midrule
+        \multirow{4}{*}{\rotatebox[origin=c]{90}{\small\qwen{}}}
+        & Vanilla RM & 78.18 & \textbf{97.21} & 52.85 & 73.99 & 88.68 & 72.73 & 97.21 & 46.27 & 68.04 & 79.39 \\
+        & RRM        & 82.04 & 97.21 & \textbf{64.80} & 75.27 & 90.86 & 78.20 & \textbf{98.04} & \textbf{59.65} & 72.43 & 82.66 \\
+        & \textbf{\carma{}} & \textbf{83.15} & 96.37 & 61.73 & \textbf{82.23} & \textbf{92.26} & \textbf{80.81} & 96.93 & 58.66 & \textbf{78.92} & \textbf{88.71} \\
+        \cmidrule(lr){2-12} 
+        & $\Delta_{\text{\carma{} - RRM}}$ &
+        \changeUp{+1.11} &
+        \changeDown{-0.84} &
+        \changeDown{-3.07} &
+        \changeUp{+6.96} &
+        \changeUp{+1.40} &
+        \changeUp{+2.61} &
+        \changeDown{-1.11} &
+        \changeDown{-0.99} & 
+        \changeUp{+6.49} &
+        \changeUp{+6.05} \\
+        \midrule % Added midrule for separation
+        \multirow{4}{*}{\rotatebox[origin=c]{90}{\small\gemma{2}}} % New model block
+        & Vanilla RM & 53.75 & 92.88 & 33.33 & 42.03 & 46.74 & 65.52 & 94.27 & 38.27 & 50.20 & 79.34 \\
+        & RRM        & 66.23 & \textbf{94.13} & 43.75 & 47.64 & 79.38 & 66.95 & \textbf{94.97} & 49.34 & 50.07 & 73.42 \\
+        & \textbf{\carma{}} & \textbf{70.69} & 92.18 & \textbf{50.00} & \textbf{55.14} & \textbf{85.42} & \textbf{72.45} & 92.74 & \textbf{53.62} & \textbf{60.00} & \textbf{83.45} \\
+        \cmidrule(lr){2-12} 
+        & $\Delta_{\text{\carma{} - RRM}}$ &
+        \changeUp{+4.46} &
+        \changeDown{-1.95} &  
+        \changeUp{+6.25} & 
+        \changeUp{+7.50} & 
+        \changeUp{+6.04} & 
+        \changeUp{+5.50} &
+        \changeDown{-2.23} & 
+        \changeUp{+4.28} &
+        \changeUp{+9.93} & 
+        \changeUp{+10.03} \\ 
+        \bottomrule
+    \end{tabular}%
+    }
+\end{table}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=1.0\columnwidth]{images/reword_absolute_robustness_gemma9b_pairpm_sorted.pdf}
+  \caption{Absolute robustness comparison of RM, RRM and \carma{} on reWordBench.
+  % in the PairPM setup, for reward models built over \texttt{Gemma-2-9B-IT}.
+  }
+  \label{fig:reword_absolute_robustness_gemma9b_pairpm}
+  
+\end{figure}
+
+In this section we evaluate \carma{}'s reduced reliance on spurious attributes and closer alignment of the learned reward model with true causal attributes. We empirically evaluate improvements obtained by \carma{} in standard preference classification settings, tests designed to evaluate reward model robustness and how gains in robustness translate to better language model alignment.
+
+Our experiments are designed to addreess the following research questions:
+
+
+% We empirically evaluate CARMA's causal data augmentation strategy (Section \ref{sec:methodology}). Our experiments investigate if CARMA improves reward model (RM) performance, enhances robustness against spurious attributes, and leads to better downstream policy alignment compared to baselines.
+
+% \label{list:research_questions}
+% \begin{itemize}[left=18pt,itemsep=2pt]
+%     \item[\textbf{RQ1}] \textbf{Effectiveness of Augmentation Components} How do the causal and neutral augmentation components individually contribute to the performance and robustness of \carma{} Specifically, does neutral augmentation enhance SP-invariance, and does causal augmentation maintain C-sensitivity?
+%     \item[\textbf{RQ2}] \textbf{Robustness} Does \carma{} improve the robustness of the learned reward model against known spurious correlations (e.g., length, formatting bias) compared to a standard RM trained only on $\mathcal{D}_{pref}$ and the RRM baseline?
+%     \item[\textbf{RQ3}] \textbf{Downstream Policy Alignment} Do policies aligned using $\hat{R}_{\carma}$ (via DPO) achieve better performance on standard alignment benchmarks (e.g., MT-Bench, AlpacaEval-2) and exhibit less reward hacking behavior compared to policies aligned using baseline RMs?
+%     \item[\textbf{RQ4}] \textbf{Assessing Performance of Neutrals} 
+%     How do different type of Neutral generations, viz. paraphrasing, rewrites, question-independence, affect downstream performance for reward modeling?
+% \end{itemize}
+
+\label{list:research_questions}
+\begin{itemize}[left=18pt,itemsep=2pt, topsep=0pt, parsep=2pt]
+    % \item[\textbf{RQ1:}] \textbf{RM Performance and Robustness:} How does \carma{} perform on standard preference benchmark \textbf{RewardBench} and how robust is it against \textit{ranking-preserving} adversarial transformations proposed in \textbf{reWordBench} designed to expose reliance on spurious correlations compared to baselines?
+    \item[\textbf{RQ1:}] \textbf{RM Performance and Robustness:} How does \carma{} perform on standard preference prediction tasks and how robust is it against spurious correlations compared to a standard RM and strong baselines trained on $\mathcal{D}_{pref}$ (Table \ref{tab:performance_bt_pairpm_rewardbench_extended_final}, Figure \ref{fig:reword_absolute_robustness_gemma9b_pairpm})?    
+
+    \item[\textbf{RQ2:}] \textbf{Policy Alignment:} Does the robustness achieved by \carma{} lead to more favorable results in a Best-of-N policy alignment setup, compared to strong baselines (Figure \ref{fig:bon_asr_reduction_gsm8k_gemma9b})? \todohs{Pragya to add BoN rewordbench fig reference here} 
+    
+    % Whaten policies are aligned using \carma{} RMs via Best-of-N response selection, do they achieve superior performance and, crucially, exhibit less reward hacking across a diverse suite of benchmarks — spanning general helpfulness (\textbf{AlpacaEval 2}), mathematical reasoning (\textbf{GSM8K}) and robustness to adversarial prompts (\textbf{WildGuardTest}) as compared to policies aligned with baseline RMs?
+    % {\color{orange}: PS: Update this after we have all the BoN numbers}
+    \item[\textbf{RQ3:}] \textbf{Neutral Augmentations:} How effective are the different neutrals augmentation strategies in enforcing \textit{invariance} to unknown spurious correlates (Figures \ref{fig:rewardbench_subsets_neutral_ablations}, \ref{fig:rewordbench-avg_neutral_ablations})?
+\end{itemize}
+
+
+\input{includes/experimental_settings}
+\input{includes/experimental_results}
+

@@ -12,6 +12,10 @@ import rego.v1
 
 # Import all policy modules
 import data.acgs.constitutional as constitutional
+import data.acgs.transparency as transparency
+import data.acgs.accountability as accountability
+import data.acgs.fairness as fairness
+import data.acgs.human_dignity as human_dignity
 import data.acgs.multi_tenant_security as multi_tenant
 import data.acgs.evolutionary_governance as evolutionary
 import data.acgs.data_governance as data_gov
@@ -27,6 +31,42 @@ policy_catalog := {
         "scope": ["policy_synthesis", "governance_decisions", "constitutional_compliance"],
         "priority": "critical",
         "dependencies": [],
+        "constitutional_hash": "cdd01ef066bc6cf2"
+    },
+    "transparency_governance": {
+        "package": "acgs.transparency",
+        "version": "1.0.0",
+        "description": "Transparency requirements enforcement including explainability and auditability",
+        "scope": ["decision_transparency", "public_accountability", "information_access"],
+        "priority": "high",
+        "dependencies": ["constitutional_principles"],
+        "constitutional_hash": "cdd01ef066bc6cf2"
+    },
+    "accountability_governance": {
+        "package": "acgs.accountability",
+        "version": "1.0.0",
+        "description": "Accountability mechanisms including responsibility assignment and remediation",
+        "scope": ["responsibility_assignment", "oversight_mechanisms", "remediation_processes"],
+        "priority": "high",
+        "dependencies": ["constitutional_principles"],
+        "constitutional_hash": "cdd01ef066bc6cf2"
+    },
+    "fairness_governance": {
+        "package": "acgs.fairness",
+        "version": "1.0.0",
+        "description": "Fairness enforcement including bias prevention and equal treatment",
+        "scope": ["bias_prevention", "equal_treatment", "outcome_equity"],
+        "priority": "critical",
+        "dependencies": ["constitutional_principles"],
+        "constitutional_hash": "cdd01ef066bc6cf2"
+    },
+    "human_dignity_governance": {
+        "package": "acgs.human_dignity",
+        "version": "1.0.0",
+        "description": "Human dignity protection including respect for persons and autonomy",
+        "scope": ["human_autonomy", "fundamental_rights", "dignity_preservation"],
+        "priority": "critical",
+        "dependencies": ["constitutional_principles"],
         "constitutional_hash": "cdd01ef066bc6cf2"
     },
     "governance_compliance": {
@@ -107,6 +147,46 @@ policy_decision := decision if {
 route_policy_decision(request, "constitutional_validation", context) := decision if {
     decision := constitutional.compliance_score with input as {
         "policy": request.policy,
+        "context": context
+    }
+}
+
+route_policy_decision(request, "transparency_validation", context) := decision if {
+    decision := transparency.transparency_report with input as {
+        "decision_id": request.decision_id,
+        "decision_type": request.decision_type,
+        "transparency_metadata": request.transparency_metadata,
+        "audit_metadata": request.audit_metadata,
+        "context": context
+    }
+}
+
+route_policy_decision(request, "accountability_validation", context) := decision if {
+    decision := accountability.accountability_report with input as {
+        "action_type": request.action_type,
+        "responsible_parties": request.responsible_parties,
+        "oversight_framework": request.oversight_framework,
+        "remediation_process": request.remediation_process,
+        "context": context
+    }
+}
+
+route_policy_decision(request, "fairness_validation", context) := decision if {
+    decision := fairness.fairness_report with input as {
+        "policy_type": request.policy_type,
+        "bias_assessment": request.bias_assessment,
+        "protected_characteristics_analysis": request.protected_characteristics_analysis,
+        "fairness_monitoring": request.fairness_monitoring,
+        "context": context
+    }
+}
+
+route_policy_decision(request, "human_dignity_validation", context) := decision if {
+    decision := human_dignity.dignity_report with input as {
+        "action_type": request.action_type,
+        "dignity_impact_assessment": request.dignity_impact_assessment,
+        "human_agency": request.human_agency,
+        "safeguards": request.safeguards,
         "context": context
     }
 }
@@ -223,6 +303,42 @@ run_policy_validation(policy_name, request) := result if {
     result := {
         "policy": policy_name,
         "result": constitutional.compliance_score with input as request,
+        "timestamp": time.now_ns()
+    }
+}
+
+run_policy_validation(policy_name, request) := result if {
+    policy_name == "transparency_governance"
+    result := {
+        "policy": policy_name,
+        "result": transparency.transparency_score with input as request,
+        "timestamp": time.now_ns()
+    }
+}
+
+run_policy_validation(policy_name, request) := result if {
+    policy_name == "accountability_governance"
+    result := {
+        "policy": policy_name,
+        "result": accountability.accountability_score with input as request,
+        "timestamp": time.now_ns()
+    }
+}
+
+run_policy_validation(policy_name, request) := result if {
+    policy_name == "fairness_governance"
+    result := {
+        "policy": policy_name,
+        "result": fairness.fairness_score with input as request,
+        "timestamp": time.now_ns()
+    }
+}
+
+run_policy_validation(policy_name, request) := result if {
+    policy_name == "human_dignity_governance"
+    result := {
+        "policy": policy_name,
+        "result": human_dignity.dignity_score with input as request,
         "timestamp": time.now_ns()
     }
 }

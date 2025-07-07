@@ -1,0 +1,653 @@
+# Kubernetes NetworkPolicies for ACGS Tenant Isolation
+# Constitutional Hash: cdd01ef066bc6cf2
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: acgs-tenant-isolation-default-deny
+  namespace: acgs-system
+  labels:
+    app.kubernetes.io/name: acgs
+    app.kubernetes.io/component: network-security
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+  # Default deny all - services must explicitly allow traffic
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: acgs-api-gateway-ingress
+  namespace: acgs-system
+  labels:
+    app.kubernetes.io/name: acgs
+    app.kubernetes.io/component: api-gateway
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  podSelector:
+    matchLabels:
+      app: api-gateway
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow ingress from load balancer and external clients
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-system
+    ports:
+    - protocol: TCP
+      port: 8010
+  # Allow health checks
+  - from: []
+    ports:
+    - protocol: TCP
+      port: 8010
+      # Health check endpoint
+  egress:
+  # Allow egress to all ACGS services
+  - to:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/part-of: acgs
+    ports:
+    - protocol: TCP
+      port: 8001  # Constitutional AI
+    - protocol: TCP
+      port: 8002  # Integrity
+    - protocol: TCP
+      port: 8007  # Code Analysis
+    - protocol: TCP
+      port: 8008  # Multi-Agent Coordinator
+    - protocol: TCP
+      port: 8009  # Worker Agents
+    - protocol: TCP
+      port: 8010  # Blackboard
+    - protocol: TCP
+      port: 8011  # Formal Verification
+    - protocol: TCP
+      port: 8012  # Context
+    - protocol: TCP
+      port: 8013  # Evolutionary Computation
+    - protocol: TCP
+      port: 8014  # Policy Governance
+    - protocol: TCP
+      port: 8016  # Authentication
+  # Allow DNS resolution
+  - to: []
+    ports:
+    - protocol: UDP
+      port: 53
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: acgs-constitutional-ai-service
+  namespace: acgs-system
+  labels:
+    app.kubernetes.io/name: acgs
+    app.kubernetes.io/component: constitutional-ai
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  podSelector:
+    matchLabels:
+      app: constitutional-ai
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow from API Gateway
+  - from:
+    - podSelector:
+        matchLabels:
+          app: api-gateway
+    ports:
+    - protocol: TCP
+      port: 8001
+  # Allow from other ACGS services for constitutional validation
+  - from:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/part-of: acgs
+    ports:
+    - protocol: TCP
+      port: 8001
+  egress:
+  # Allow to Integrity Service for audit logging
+  - to:
+    - podSelector:
+        matchLabels:
+          app: integrity-service
+    ports:
+    - protocol: TCP
+      port: 8002
+  # Allow to database
+  - to:
+    - podSelector:
+        matchLabels:
+          app: postgresql
+    ports:
+    - protocol: TCP
+      port: 5432
+  # Allow to Redis
+  - to:
+    - podSelector:
+        matchLabels:
+          app: redis
+    ports:
+    - protocol: TCP
+      port: 6379
+  # Allow DNS
+  - to: []
+    ports:
+    - protocol: UDP
+      port: 53
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: acgs-integrity-service
+  namespace: acgs-system
+  labels:
+    app.kubernetes.io/name: acgs
+    app.kubernetes.io/component: integrity
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  podSelector:
+    matchLabels:
+      app: integrity-service
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow from all ACGS services for audit logging
+  - from:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/part-of: acgs
+    ports:
+    - protocol: TCP
+      port: 8002
+  egress:
+  # Allow to database for audit storage
+  - to:
+    - podSelector:
+        matchLabels:
+          app: postgresql
+    ports:
+    - protocol: TCP
+      port: 5432
+  # Allow DNS
+  - to: []
+    ports:
+    - protocol: UDP
+      port: 53
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: acgs-authentication-service
+  namespace: acgs-system
+  labels:
+    app.kubernetes.io/name: acgs
+    app.kubernetes.io/component: authentication
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  podSelector:
+    matchLabels:
+      app: authentication-service
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow from API Gateway for authentication
+  - from:
+    - podSelector:
+        matchLabels:
+          app: api-gateway
+    ports:
+    - protocol: TCP
+      port: 8016
+  # Allow from all ACGS services for token validation
+  - from:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/part-of: acgs
+    ports:
+    - protocol: TCP
+      port: 8016
+  egress:
+  # Allow to database for user/tenant data
+  - to:
+    - podSelector:
+        matchLabels:
+          app: postgresql
+    ports:
+    - protocol: TCP
+      port: 5432
+  # Allow to Redis for session storage
+  - to:
+    - podSelector:
+        matchLabels:
+          app: redis
+    ports:
+    - protocol: TCP
+      port: 6379
+  # Allow to Integrity Service for audit logging
+  - to:
+    - podSelector:
+        matchLabels:
+          app: integrity-service
+    ports:
+    - protocol: TCP
+      port: 8002
+  # Allow DNS
+  - to: []
+    ports:
+    - protocol: UDP
+      port: 53
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: acgs-multi-agent-coordinator
+  namespace: acgs-system
+  labels:
+    app.kubernetes.io/name: acgs
+    app.kubernetes.io/component: multi-agent-coordinator
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  podSelector:
+    matchLabels:
+      app: multi-agent-coordinator
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow from API Gateway
+  - from:
+    - podSelector:
+        matchLabels:
+          app: api-gateway
+    ports:
+    - protocol: TCP
+      port: 8008
+  egress:
+  # Allow to Worker Agents
+  - to:
+    - podSelector:
+        matchLabels:
+          app: worker-agents
+    ports:
+    - protocol: TCP
+      port: 8009
+  # Allow to Blackboard Service
+  - to:
+    - podSelector:
+        matchLabels:
+          app: blackboard-service
+    ports:
+    - protocol: TCP
+      port: 8010
+  # Allow to Constitutional AI for compliance checks
+  - to:
+    - podSelector:
+        matchLabels:
+          app: constitutional-ai
+    ports:
+    - protocol: TCP
+      port: 8001
+  # Allow to Integrity Service for audit logging
+  - to:
+    - podSelector:
+        matchLabels:
+          app: integrity-service
+    ports:
+    - protocol: TCP
+      port: 8002
+  # Allow to Redis for coordination state
+  - to:
+    - podSelector:
+        matchLabels:
+          app: redis
+    ports:
+    - protocol: TCP
+      port: 6379
+  # Allow DNS
+  - to: []
+    ports:
+    - protocol: UDP
+      port: 53
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: acgs-worker-agents
+  namespace: acgs-system
+  labels:
+    app.kubernetes.io/name: acgs
+    app.kubernetes.io/component: worker-agents
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  podSelector:
+    matchLabels:
+      app: worker-agents
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow from Multi-Agent Coordinator
+  - from:
+    - podSelector:
+        matchLabels:
+          app: multi-agent-coordinator
+    ports:
+    - protocol: TCP
+      port: 8009
+  egress:
+  # Allow to Blackboard Service for knowledge sharing
+  - to:
+    - podSelector:
+        matchLabels:
+          app: blackboard-service
+    ports:
+    - protocol: TCP
+      port: 8010
+  # Allow to specialized services for analysis
+  - to:
+    - podSelector:
+        matchLabels:
+          app: formal-verification
+    ports:
+    - protocol: TCP
+      port: 8011
+  - to:
+    - podSelector:
+        matchLabels:
+          app: evolutionary-computation
+    ports:
+    - protocol: TCP
+      port: 8013
+  - to:
+    - podSelector:
+        matchLabels:
+          app: policy-governance
+    ports:
+    - protocol: TCP
+      port: 8014
+  # Allow to Constitutional AI for compliance validation
+  - to:
+    - podSelector:
+        matchLabels:
+          app: constitutional-ai
+    ports:
+    - protocol: TCP
+      port: 8001
+  # Allow to Redis for state management
+  - to:
+    - podSelector:
+        matchLabels:
+          app: redis
+    ports:
+    - protocol: TCP
+      port: 6379
+  # Allow DNS
+  - to: []
+    ports:
+    - protocol: UDP
+      port: 53
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: acgs-blackboard-service
+  namespace: acgs-system
+  labels:
+    app.kubernetes.io/name: acgs
+    app.kubernetes.io/component: blackboard
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  podSelector:
+    matchLabels:
+      app: blackboard-service
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow from Multi-Agent Coordinator and Worker Agents
+  - from:
+    - podSelector:
+        matchLabels:
+          app: multi-agent-coordinator
+    - podSelector:
+        matchLabels:
+          app: worker-agents
+    ports:
+    - protocol: TCP
+      port: 8010
+  egress:
+  # Allow to Redis for knowledge storage
+  - to:
+    - podSelector:
+        matchLabels:
+          app: redis
+    ports:
+    - protocol: TCP
+      port: 6379
+  # Allow to Integrity Service for audit logging
+  - to:
+    - podSelector:
+        matchLabels:
+          app: integrity-service
+    ports:
+    - protocol: TCP
+      port: 8002
+  # Allow DNS
+  - to: []
+    ports:
+    - protocol: UDP
+      port: 53
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: acgs-database-access
+  namespace: acgs-system
+  labels:
+    app.kubernetes.io/name: acgs
+    app.kubernetes.io/component: database
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  podSelector:
+    matchLabels:
+      app: postgresql
+  policyTypes:
+  - Ingress
+  ingress:
+  # Allow from ACGS services that need database access
+  - from:
+    - podSelector:
+        matchLabels:
+          app: constitutional-ai
+    - podSelector:
+        matchLabels:
+          app: integrity-service
+    - podSelector:
+        matchLabels:
+          app: authentication-service
+    - podSelector:
+        matchLabels:
+          app: policy-governance
+    - podSelector:
+        matchLabels:
+          app: formal-verification
+    ports:
+    - protocol: TCP
+      port: 5432
+  # Allow from database management tools
+  - from:
+    - podSelector:
+        matchLabels:
+          app: pgbouncer
+    - podSelector:
+        matchLabels:
+          app: database-backup
+    ports:
+    - protocol: TCP
+      port: 5432
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: acgs-redis-access
+  namespace: acgs-system
+  labels:
+    app.kubernetes.io/name: acgs
+    app.kubernetes.io/component: redis
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  podSelector:
+    matchLabels:
+      app: redis
+  policyTypes:
+  - Ingress
+  ingress:
+  # Allow from all ACGS services for caching and state management
+  - from:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/part-of: acgs
+    ports:
+    - protocol: TCP
+      port: 6379
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: acgs-monitoring-access
+  namespace: acgs-system
+  labels:
+    app.kubernetes.io/name: acgs
+    app.kubernetes.io/component: monitoring
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: prometheus
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow from Grafana
+  - from:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: grafana
+    ports:
+    - protocol: TCP
+      port: 9090
+  # Allow from external monitoring tools
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: monitoring-system
+    ports:
+    - protocol: TCP
+      port: 9090
+  egress:
+  # Allow to scrape metrics from all ACGS services
+  - to:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/part-of: acgs
+    ports:
+    - protocol: TCP
+      port: 8001  # Metrics endpoints
+    - protocol: TCP
+      port: 8002
+    - protocol: TCP
+      port: 8007
+    - protocol: TCP
+      port: 8008
+    - protocol: TCP
+      port: 8009
+    - protocol: TCP
+      port: 8010
+    - protocol: TCP
+      port: 8011
+    - protocol: TCP
+      port: 8012
+    - protocol: TCP
+      port: 8013
+    - protocol: TCP
+      port: 8014
+    - protocol: TCP
+      port: 8016
+  # Allow DNS
+  - to: []
+    ports:
+    - protocol: UDP
+      port: 53
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: acgs-tenant-data-isolation
+  namespace: acgs-system
+  labels:
+    app.kubernetes.io/name: acgs
+    app.kubernetes.io/component: tenant-isolation
+    constitutional-hash: cdd01ef066bc6cf2
+  annotations:
+    description: "Ensures tenant data cannot flow between different tenant workloads"
+spec:
+  podSelector:
+    matchLabels:
+      tenant-isolation: "required"
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Only allow traffic from same tenant or system services
+  - from:
+    - podSelector:
+        matchLabels:
+          tenant-id: "${TENANT_ID}"  # Templated by deployment
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/component: system-service
+  egress:
+  # Only allow traffic to same tenant, system services, or infrastructure
+  - to:
+    - podSelector:
+        matchLabels:
+          tenant-id: "${TENANT_ID}"  # Templated by deployment
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/component: system-service
+    - podSelector:
+        matchLabels:
+          app: postgresql
+    - podSelector:
+        matchLabels:
+          app: redis
+  # Allow DNS resolution
+  - to: []
+    ports:
+    - protocol: UDP
+      port: 53

@@ -2,29 +2,43 @@
 
 <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 
-## Overview
+## 1. Overview
 
-This document provides a reference for the JSON Web Token (JWT) structure used in the ACGS platform.
+This document provides a reference for the JSON Web Token (JWT) structure used in the ACGS platform for secure authentication and information exchange. JWTs are a compact, URL-safe means of representing claims to be transferred between two parties.
 
-## JWT Structure
+## 2. JWT Structure
 
-(Documentation pending)
+A JWT consists of three parts separated by dots (`.`):
 
-## Related Information
+- **Header**: Contains the token type (JWT) and the signing algorithm (e.g., HMAC SHA256 or RSA).
+- **Payload**: Contains the claims (statements about an entity, typically the user, and additional data).
+- **Signature**: Used to verify that the sender of the JWT is who it says it is and to ensure that the message hasn't been tampered with.
 
-For a broader understanding of the ACGS platform and its components, refer to:
+Example Structure:
 
-- [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
-- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
-- [ACGE Strategic Implementation Plan - 24 Month Roadmap](../../docs/ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md)
-- [ACGE Testing and Validation Framework](../../docs/ACGE_TESTING_VALIDATION_FRAMEWORK.md)
-- [ACGE Cost Analysis and ROI Projections](../../docs/ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md)
-- [ACGS Comprehensive Task Completion - Final Report](../architecture/ACGS_COMPREHENSIVE_TASK_COMPLETION_FINAL_REPORT.md)
-- [ACGS-Claudia Integration Architecture Plan](../architecture/ACGS_CLAUDIA_INTEGRATION_ARCHITECTURE.md)
-- [ACGS Implementation Guide](../deployment/ACGS_IMPLEMENTATION_GUIDE.md)
-- [ACGS-PGP Operational Deployment Guide](../deployment/ACGS_PGP_OPERATIONAL_DEPLOYMENT_GUIDE.md)
-- [ACGS-PGP Troubleshooting Guide](../deployment/ACGS_PGP_TROUBLESHOOTING_GUIDE.md)
-- [ACGS-PGP Setup Guide](../deployment/ACGS_PGP_SETUP_GUIDE.md)
-- [Service Status Dashboard](../operations/SERVICE_STATUS.md)
-- [ACGS Configuration Guide](../configuration/README.md)
-- [ACGS-2 Technical Specifications - 2025 Edition](../TECHNICAL_SPECIFICATIONS_2025.md)
+```
+xxxxx.yyyyy.zzzzz
+```
+
+Where:
+- `xxxxx` is the Base64Url encoded Header
+- `yyyyy` is the Base64Url encoded Payload
+- `zzzzz` is the Signature
+
+## 3. Claims
+
+The payload of a JWT typically contains claims. These can be:
+
+- **Registered claims**: A set of predefined claims which are not mandatory but recommended (e.g., `iss` (issuer), `exp` (expiration time), `sub` (subject)).
+- **Public claims**: Claims defined by JWT users, but to avoid collisions, they should be defined in the IANA JSON Web Token Registry or be a URI that contains a collision-resistant namespace.
+- **Private claims**: Custom claims created to share information between parties that agree on their meaning.
+
+## 4. Constitutional Compliance
+
+All JWTs issued and validated within the ACGS platform must adhere to the constitutional hash `cdd01ef066bc6cf2`. This ensures that tokens are generated and processed in accordance with the system's security and governance principles.
+
+## 5. Related Information
+
+- [ACGS Service Architecture Overview](../ACGS_SERVICE_OVERVIEW.md)
+- [ACGS System Overview](../../SYSTEM_OVERVIEW.md)
+- [Authentication Service API](authentication.md)

@@ -45,14 +45,24 @@ The ACGS (Autonomous Coding Governance System) consists of 13 core services that
 
 All services maintain the following performance standards, aligned with academic quality standards:
 
-- **Latency**: P99 ≤ 5ms for cached queries
-- **Throughput**: ≥ 100 RPS sustained
-- **Cache Hit Rate**: ≥ 85%
+- **Latency**: P99 ≤ 5ms for cached queries (Current: 3.49ms)
+- **Throughput**: ≥ 100 RPS sustained (Current: 172.98 RPS)
+- **Cache Hit Rate**: ≥ 85% (Current: 100%)
 - **Test Coverage**: ≥ 80%
 - **Availability**: 99.9% uptime
 - **Constitutional Compliance**: 100% validation
 
 For detailed performance metrics standardization and WINA (Weight Informed Neuron Activation) algorithm specifications, refer to the [ACGS-2 Academic Paper Enhancement Guide](ACADEMIC_PAPER_ENHANCEMENT_GUIDE.md).
+
+### References
+
+- [System Overview](../../SYSTEM_OVERVIEW.md)
+- [ACGE API Documentation](../../ACGE_API_DOCUMENTATION.yaml)
+- [Constitutional Compliance Validation Framework](../../docs/constitutional_compliance_validation_framework.md)
+- [Docker Infrastructure README](../../infrastructure/docker/README.md)
+- [Kubernetes Infrastructure README](../../infrastructure/kubernetes/README.md)
+- [Monitoring Stack Configuration](../../monitoring-stack.yml)
+- [Performance Metrics Results](../../performance_metrics_results.json)
 
 ### Service Dependencies
 
@@ -131,27 +141,30 @@ The Evolutionary Computation Service (Port 8006) provides WINA (Weight Informed 
 
 ### Consensus Engine Details
 
-The Consensus Engine (Port 8007) enables agreement between different AI agents within the ACGS system.
+The Consensus Engine service (Port 8007) is responsible for resolving conflicts between multiple AI agents. It implements a variety of consensus algorithms to facilitate agreement and decision-making, including `MajorityVoteConsensus`, `WeightedVoteConsensus`, and `RankedChoiceConsensus`. The service integrates with the Blackboard Service to share information and ensures that all consensus outcomes adhere to the system's constitutional principles.
 
 ### Multi-Agent Coordinator Details
 
-The Multi-Agent Coordinator (Port 8008) coordinates the actions of multiple AI agents within the ACGS system.
+The Multi-Agent Coordinator (Port 8008) orchestrates the collaboration of multiple AI agents to address complex governance requests. It employs a hybrid hierarchical-blackboard policy, combining a structured agent hierarchy (Orchestrator, Domain Specialist, Worker) with a flexible knowledge-sharing system. The coordinator is responsible for dynamic task decomposition, adaptive hierarchy creation, and ensuring constitutional safety.
 
 ### Worker Agents Details
 
-The Worker Agents (Port 8009) perform various tasks as directed by the Multi-Agent Coordinator.
+The Worker Agents service (Port 8009) is a collection of specialized agents that perform the core analysis and assessment tasks required for governance. Each agent is an expert in a specific domain and works under the direction of the Multi-Agent Coordinator. The specialized agents include:
+- **Ethics Agent**: Conducts in-depth ethical analysis, including bias and fairness assessments.
+- **Legal Agent**: Ensures compliance with legal and regulatory requirements.
+- **Operational Agent**: Focuses on the practical aspects of deploying and managing AI systems.
 
 ### Blackboard Service Details
 
-The Blackboard Service (Port 8010) provides Redis-based shared knowledge for the ACGS system.
+The Blackboard Service (Port 8010) is a Redis-based shared knowledge store that enables communication and coordination between AI agents. It provides a central location for agents to post tasks, share information, and track the progress of governance requests. The service is located in `services/shared/blackboard`.
 
 ### Code Analysis Service Details
 
-The Code Analysis Service (Port 8011) provides static analysis with tenant routing for the ACGS system.
+The Code Analysis Service (Port 8011) provides static analysis with tenant routing for the ACGS system. It is designed to provide real-time, deep contextual understanding of the ACGS codebase through intelligent code analysis, semantic search, and dependency mapping.
 
 ### Context Service Details
 
-The Context Service (Port 8012) provides governance workflow integration for the ACGS system.
+The Context Service (Port 8012) provides governance workflow integration for the ACGS system. It complements the Code Analysis Service by focusing on the broader context of governance, including policies, regulations, and operational procedures.
 
 ### Constitutional Compliance
 

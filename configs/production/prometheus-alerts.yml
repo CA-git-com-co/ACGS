@@ -1,0 +1,355 @@
+# ACGS Production Monitoring and Alerting Configuration
+# Constitutional Hash: cdd01ef066bc6cf2
+
+groups:
+  - name: acgs_constitutional_compliance
+    rules:
+      # Critical Constitutional Compliance Alerts
+      - alert: ConstitutionalHashMismatch
+        expr: acgs_constitutional_hash_validation_failures_total > 0
+        for: 0s
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+          team: constitutional_compliance
+        annotations:
+          summary: "Constitutional hash mismatch detected"
+          description: "Service {{ $labels.service }} returned response without constitutional hash cdd01ef066bc6cf2"
+          runbook_url: "https://docs.acgs.gov/runbooks/constitutional-compliance"
+
+      - alert: ConstitutionalComplianceViolation
+        expr: acgs_constitutional_compliance_score < 100
+        for: 30s
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+          team: constitutional_compliance
+        annotations:
+          summary: "Constitutional compliance violation detected"
+          description: "Constitutional compliance score is {{ $value }}%, expected 100%"
+          runbook_url: "https://docs.acgs.gov/runbooks/constitutional-compliance"
+
+      - alert: ConstitutionalAuditTrailCorruption
+        expr: acgs_audit_trail_constitutional_context_missing_total > 0
+        for: 0s
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+          team: constitutional_compliance
+        annotations:
+          summary: "Constitutional audit trail corruption detected"
+          description: "Audit logs missing constitutional context for {{ $value }} entries"
+          runbook_url: "https://docs.acgs.gov/runbooks/audit-trail-recovery"
+
+      # Warning Constitutional Compliance Alerts
+      - alert: ConstitutionalComplianceDegradation
+        expr: acgs_constitutional_compliance_score < 99
+        for: 5m
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+          team: constitutional_compliance
+        annotations:
+          summary: "Constitutional compliance degradation"
+          description: "Constitutional compliance score degraded to {{ $value }}%"
+
+      - alert: ConstitutionalHashValidationFailures
+        expr: rate(acgs_constitutional_hash_validation_failures_total[5m]) > 0.01
+        for: 2m
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+          team: constitutional_compliance
+        annotations:
+          summary: "High constitutional hash validation failure rate"
+          description: "{{ $value | humanizePercentage }} of requests failing hash validation"
+
+  - name: acgs_performance
+    rules:
+      # Critical Performance Alerts
+      - alert: HighP99Latency
+        expr: histogram_quantile(0.99, rate(acgs_request_duration_seconds_bucket[5m])) > 0.005
+        for: 2m
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+          team: sre
+        annotations:
+          summary: "P99 latency exceeds target"
+          description: "P99 latency is {{ $value | humanizeDuration }}, target <5ms"
+          runbook_url: "https://docs.acgs.gov/runbooks/performance-optimization"
+
+      - alert: LowThroughput
+        expr: rate(acgs_requests_total[5m]) < 100
+        for: 1m
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+          team: sre
+        annotations:
+          summary: "Throughput below target"
+          description: "Current throughput {{ $value }} RPS, target >100 RPS"
+          runbook_url: "https://docs.acgs.gov/runbooks/throughput-optimization"
+
+      - alert: LowCacheHitRate
+        expr: acgs_cache_hit_rate < 0.85
+        for: 5m
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+          team: sre
+        annotations:
+          summary: "Cache hit rate below target"
+          description: "Cache hit rate {{ $value | humanizePercentage }}, target >85%"
+          runbook_url: "https://docs.acgs.gov/runbooks/cache-optimization"
+
+      - alert: ServiceUnavailable
+        expr: up{job=~"acgs-.*"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+          team: sre
+        annotations:
+          summary: "ACGS service unavailable"
+          description: "Service {{ $labels.job }} is down"
+          runbook_url: "https://docs.acgs.gov/runbooks/service-recovery"
+
+      # Warning Performance Alerts
+      - alert: ElevatedP99Latency
+        expr: histogram_quantile(0.99, rate(acgs_request_duration_seconds_bucket[5m])) > 0.004
+        for: 5m
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+          team: sre
+        annotations:
+          summary: "Elevated P99 latency"
+          description: "P99 latency is {{ $value | humanizeDuration }}, approaching 5ms limit"
+
+      - alert: ReducedThroughput
+        expr: rate(acgs_requests_total[5m]) < 120
+        for: 3m
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+          team: sre
+        annotations:
+          summary: "Reduced throughput"
+          description: "Throughput {{ $value }} RPS, below optimal 120 RPS"
+
+  - name: acgs_security
+    rules:
+      # Critical Security Alerts
+      - alert: LowSecurityScore
+        expr: acgs_security_score < 90
+        for: 0s
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+          team: security
+        annotations:
+          summary: "Security score below critical threshold"
+          description: "Security score {{ $value }}/100, minimum required 90/100"
+          runbook_url: "https://docs.acgs.gov/runbooks/security-incident"
+
+      - alert: VulnerabilityDetected
+        expr: acgs_vulnerabilities_critical_total > 0 or acgs_vulnerabilities_high_total > 0
+        for: 0s
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+          team: security
+        annotations:
+          summary: "Critical or high severity vulnerability detected"
+          description: "{{ $labels.severity }} vulnerability found in {{ $labels.component }}"
+          runbook_url: "https://docs.acgs.gov/runbooks/vulnerability-response"
+
+      - alert: UnauthorizedAccess
+        expr: rate(acgs_authentication_failures_total[1m]) > 10
+        for: 1m
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+          team: security
+        annotations:
+          summary: "High authentication failure rate"
+          description: "{{ $value }} authentication failures per minute"
+          runbook_url: "https://docs.acgs.gov/runbooks/security-incident"
+
+      - alert: ConstitutionalSecurityBreach
+        expr: acgs_constitutional_security_validation_failures_total > 0
+        for: 0s
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+          team: security
+        annotations:
+          summary: "Constitutional security validation failure"
+          description: "Security validation failed for constitutional compliance"
+          runbook_url: "https://docs.acgs.gov/runbooks/constitutional-security"
+
+  - name: acgs_infrastructure
+    rules:
+      # Critical Infrastructure Alerts
+      - alert: DatabaseConnectionFailure
+        expr: acgs_database_connections_failed_total > 0
+        for: 30s
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+          team: sre
+        annotations:
+          summary: "Database connection failures"
+          description: "{{ $value }} database connection failures detected"
+          runbook_url: "https://docs.acgs.gov/runbooks/database-recovery"
+
+      - alert: RedisClusterDown
+        expr: acgs_redis_cluster_nodes_down > 0
+        for: 30s
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+          team: sre
+        annotations:
+          summary: "Redis cluster nodes down"
+          description: "{{ $value }} Redis cluster nodes are down"
+          runbook_url: "https://docs.acgs.gov/runbooks/redis-recovery"
+
+      - alert: HighMemoryUsage
+        expr: acgs_memory_usage_percent > 90
+        for: 5m
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+          team: sre
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage {{ $value }}% on {{ $labels.instance }}"
+
+      - alert: HighCPUUsage
+        expr: acgs_cpu_usage_percent > 80
+        for: 10m
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+          team: sre
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage {{ $value }}% on {{ $labels.instance }}"
+
+  - name: acgs_orchestrators
+    rules:
+      # Orchestrator-specific alerts
+      - alert: OrchestratorExecutionFailure
+        expr: rate(acgs_orchestrator_execution_failures_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+          team: sre
+        annotations:
+          summary: "Orchestrator execution failure"
+          description: "{{ $labels.orchestrator }} failing at {{ $value }} failures/sec"
+          runbook_url: "https://docs.acgs.gov/runbooks/orchestrator-recovery"
+
+      - alert: UnifiedOrchestratorDown
+        expr: up{job="acgs-unified-orchestrator"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+          team: sre
+        annotations:
+          summary: "Unified orchestrator unavailable"
+          description: "Master unified orchestrator is down"
+          runbook_url: "https://docs.acgs.gov/runbooks/unified-orchestrator-recovery"
+
+      - alert: ConstitutionalComplianceFrameworkDown
+        expr: up{job="acgs-constitutional-compliance"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+          team: constitutional_compliance
+        annotations:
+          summary: "Constitutional compliance framework unavailable"
+          description: "Constitutional compliance framework is down"
+          runbook_url: "https://docs.acgs.gov/runbooks/constitutional-framework-recovery"
+
+# Alertmanager routing configuration
+route:
+  group_by: ['alertname', 'constitutional_hash']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 1h
+  receiver: 'acgs-default'
+  routes:
+    - match:
+        severity: critical
+        team: constitutional_compliance
+      receiver: 'constitutional-compliance-critical'
+      group_wait: 0s
+      repeat_interval: 5m
+    
+    - match:
+        severity: critical
+        team: security
+      receiver: 'security-critical'
+      group_wait: 0s
+      repeat_interval: 5m
+    
+    - match:
+        severity: critical
+        team: sre
+      receiver: 'sre-critical'
+      group_wait: 0s
+      repeat_interval: 15m
+
+receivers:
+  - name: 'acgs-default'
+    slack_configs:
+      - api_url: '{{ .SlackWebhookURL }}'
+        channel: '#acgs-alerts'
+        title: 'ACGS Alert - {{ .GroupLabels.constitutional_hash }}'
+        text: '{{ range .Alerts }}{{ .Annotations.summary }}{{ end }}'
+
+  - name: 'constitutional-compliance-critical'
+    slack_configs:
+      - api_url: '{{ .SlackWebhookURL }}'
+        channel: '#acgs-constitutional-critical'
+        title: 'CRITICAL: Constitutional Compliance Violation'
+        text: 'Constitutional Hash: {{ .GroupLabels.constitutional_hash }}\n{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
+    pagerduty_configs:
+      - service_key: '{{ .PagerDutyServiceKey }}'
+        description: 'Constitutional compliance violation - {{ .GroupLabels.constitutional_hash }}'
+
+  - name: 'security-critical'
+    slack_configs:
+      - api_url: '{{ .SlackWebhookURL }}'
+        channel: '#acgs-security-critical'
+        title: 'CRITICAL: Security Alert'
+        text: 'Constitutional Hash: {{ .GroupLabels.constitutional_hash }}\n{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
+    pagerduty_configs:
+      - service_key: '{{ .PagerDutyServiceKey }}'
+        description: 'Security incident - {{ .GroupLabels.constitutional_hash }}'
+
+  - name: 'sre-critical'
+    slack_configs:
+      - api_url: '{{ .SlackWebhookURL }}'
+        channel: '#acgs-sre-critical'
+        title: 'CRITICAL: Infrastructure Alert'
+        text: 'Constitutional Hash: {{ .GroupLabels.constitutional_hash }}\n{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
+    pagerduty_configs:
+      - service_key: '{{ .PagerDutyServiceKey }}'
+        description: 'Infrastructure incident - {{ .GroupLabels.constitutional_hash }}'
+
+# Constitutional compliance validation
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+      constitutional_hash: 'cdd01ef066bc6cf2'
+    target_match:
+      severity: 'warning'
+      constitutional_hash: 'cdd01ef066bc6cf2'
+    equal: ['alertname', 'instance']

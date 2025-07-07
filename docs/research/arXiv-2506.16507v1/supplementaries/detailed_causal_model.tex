@@ -1,0 +1,58 @@
+\section{Causal Model and Augmentation Details}
+\label{sec:causal_model_details}
+
+This appendix provides further details on the causal framework underpinning \carma{} and discusses various data augmentation strategies in the context of robust reward modeling.
+
+\subsection{Elaboration on the Causal Model}
+The causal graph presented in Figure \ref{fig:causal_graph} (Section \ref{subsec:causal_graph}) models the generation of an answer $\mathrm{A}$ and the formation of its attributes. The query $\mathrm{Q}$ influences the generator's latent \textit{intent} $\mathcal{I}$. This intent, along with unobserved generator-specific confounders $\mathcal{U}$ (e.g., inherent stylistic preferences, verbosity tendencies, pre-existing biases), leads to the textual answer $\mathrm{A}$. The answer $\mathrm{A}$ then manifests both \textit{causal attributes} $\mathrm{C}(\mathrm{A})$ (e.g., factuality, relevance) and \textit{spurious attributes} $\mathrm{SP}(\mathrm{A})$ (e.g., length, specific formatting, politeness). The true, idealized reward $\mathrm{R}^*$ is assumed to be a function only of $\mathrm{Q}$ and $\mathrm{C}(\mathrm{A})$.
+
+The challenge in training a reward model $\hat{\mathrm{R}}_\theta$ arises because $\mathrm{SP}(\mathrm{A})$ can become correlated with $\mathrm{R}^*$ in the training data. This correlation can occur if $\mathcal{U}$ influences both the choice of spurious features and the aspects that contribute to causal quality, or simply because certain spurious features happen to co-occur with preferred answers in $\mathcal{D}_{\mathrm{pref}}$. Without explicit guidance, $\hat{\mathrm{R}}_\theta$ may learn to rely on these spurious correlations, leading to reward hacking. \carma{}'s data augmentation strategy aims to provide this explicit guidance by generating new answer pairs that help $\hat{\mathrm{R}}_\theta$ disentangle $\mathrm{C}(\mathrm{A})$ from $\mathrm{SP}(\mathrm{A})$.
+
+\subsection{\carma{}'s Causal Augmentation: Attribute Isolation}
+\label{app:carma_causal_aug}
+\carma{}'s primary strategy for enhancing sensitivity to causal attributes involves \textit{Attribute Upgradation/Degradation}. This generates pairs $(\tilde{\mathrm{A}}^{(C_j \leftarrow \text{upgraded/degraded})}, \mathrm{A})$ or $(\mathrm{A}, \tilde{\mathrm{A}}^{(C_j \leftarrow \text{upgraded/degraded})})$ by prompting an LLM to modify an original answer $\mathrm{A}$ (from $\mathcal{D}_{\mathrm{pref}}$) along a single causal attribute $C_j$ while attempting to keep other attributes constant. This provides a targeted signal about the marginal contribution of $C_j$.
+
+\subsubsection{Comparison with Relevance Contrast Augmentation}
+An alternative strategy, \textit{Relevance Contrast Augmentation} (used in RRM-style approaches \citep{liu2024rrm}, termed ``non-contextuals'' therein), involves pairing a relevant answer $\mathrm{A}_1$ (for query $\mathrm{Q}$) with an irrelevant answer $\mathrm{B}_2$ (e.g., an answer to a different query, so $C(B_2 \mid \mathrm{Q}) \approx \mathbf{0}$), labeled $\mathrm{A}_1 \succ \mathrm{B}_2$.
+
+While Relevance Contrast establishes a baseline understanding of relevance, \carma{}'s Attribute Isolation offers:
+\begin{itemize}[itemsep=0pt,left=8pt]
+    \item \textbf{Specificity and Nuance:} It directly teaches about individual causal attributes ($C_j$), enabling the RM to learn a compositional understanding of quality and distinguish between relevant answers differing subtly in one dimension.
+    \item \textbf{Data Efficiency for Complex Attributes:} Focusing changes along one attribute creates diverse, targeted examples for each quality facet.
+\end{itemize}
+\carma{}'s attribute-specific counterfactuals thus provide a richer, more disentangled signal than broad relevance contrasts alone.
+
+\subsection{Neutral Augmentation Strategies}
+Neutral augmentations aim to make the reward model invariant to spurious attributes when causal content is held constant or is irrelevant.
+
+\subsubsection{Common Spurious Perturbation Methods (Not a primary \carma{} strategy)}
+Several methods focus on general spurious perturbations:
+\paragraph{1. Direct Spurious Feature Perturbation (e.g., Paraphrasing, Formatting Changes):}
+This involves taking an answer $\mathrm{A}$ and generating $\tilde{\mathrm{A}}^{(SP \leftarrow sp')}$ by applying meaning-preserving transformations (e.g., paraphrasing) intended to alter only $\mathrm{SP}(\mathrm{A})$ while preserving $\mathrm{C}(\mathrm{A})$. The pair $(\mathrm{A}, \tilde{\mathrm{A}}^{(SP \leftarrow sp')})$ is labeled as a tie. This is central to benchmarks like reWordBench \citep{wu2025rewordbench}.
+
+\paragraph{2. Rewrites of Rewrites (e.g., RATE \citep{reber2024rate}):}
+RATE uses sequential rewrites for robust causal effect estimation. Adapted for augmentation, multiple causally-equivalent rewrites of an answer could form neutral pairs.
+
+\textit{Challenges with these General Methods:}
+\begin{itemize}[itemsep=0pt,left=8pt]
+    \item \textbf{Unknown/Unspecified Spurious Features:} It's hard to a priori identify and target all spurious features an RM might exploit.
+    \item \textbf{Preserving Causal Content:} Ensuring "spurious" perturbations don't inadvertently alter causal meaning is difficult.
+\end{itemize}
+
+\subsubsection{Neutral Augmentation Strategies developed in this work}
+We developed the following two strategies for neutral augmentation.
+
+\paragraph{1. Irrelevant Query Neutrals (IQN):}
+\carma{} generates these neutral pairs efficiently by leveraging its existing pool of answers (original or causally augmented). Given two answers, $\mathrm{B}_1$ and $\mathrm{B}_2$, that were generated or selected for a specific query $\mathrm{Q}_{\text{orig}}$, \carma{} creates a neutral pair by associating them with a \textit{new, unrelated query} $\mathrm{Q}_{\text{irrelevant}}$.
+For this $\mathrm{Q}_{\text{irrelevant}}$, both $\mathrm{B}_1$ and $\mathrm{B}_2$ are now contextually irrelevant; their causal attribute scores $C(B_1 | \mathrm{Q}_{\text{irrelevant}})$ and $C(B_2 | \mathrm{Q}_{\text{irrelevant}})$ are effectively zero (or very low). Despite potentially different spurious attributes $SP(B_1)$ and $SP(B_2)$, the pair $(\mathrm{B}_1, \mathrm{B}_2)$ is presented to the reward model with query $\mathrm{Q}_{\text{irrelevant}}$ and labeled as a tie.
+This teaches the RM that when answers are equally and maximally irrelevant to the current query, their differing spurious features should not induce a preference.
+
+\paragraph{2. Causally-Aligned Neutrals (CAN):}
+This method directly leverages the original preference pairs or the outputs of causal augmentation.
+\begin{itemize}[itemsep=0pt,left=8pt]
+    \item Given an original preference pair from $\mathcal{D}_{\mathrm{pref}}$, say $(\mathrm{A}_1, \mathrm{A}_2)$ where $\mathrm{A}_1 \succ \mathrm{A}_2$, we generate $\tilde{\mathrm{A}}_{2}^{(C \leftarrow C(A_1))}$ by rewriting $\mathrm{A}_2$ to match the causal attribute profile of $\mathrm{A}_1$, while instructing the LLM to retain the spurious characteristics $SP(A_2)$ of the original $\mathrm{A}_2$. The pair $(\mathrm{A}_1, \tilde{\mathrm{A}}_{2}^{(C \leftarrow C(A_1))})$ is then labeled as a tie. A symmetric pair can also be generated.
+    \item Similarly, if we have an answer $\mathrm{A}$ and its causally degraded version $\tilde{\mathrm{A}}^{(C_j \leftarrow \text{degraded})}$ (from $\mathcal{D}_{\mathrm{causal}}$), we can attempt to reconstruct the degraded version by prompting an LLM to restore $C_j$ to its state in $\mathrm{A}$, while aiming to preserve the spurious features of $\tilde{\mathrm{A}}^{(C_j \leftarrow \text{degraded})}$. If successful, this reconstructed version, $\tilde{\mathrm{A}}'_{\text{reconstr}}$, would form a neutral pair $(\mathrm{A}, \tilde{\mathrm{A}}'_{\text{reconstr}})$ labeled as a tie.
+\end{itemize}
+The core idea is to teach invariance to the spurious differences that remain \textit{after} causal attributes have been aligned or restored.
+Moreover, applying CAN to counterfactually generated data from $\mathcal{D}_{\mathrm{causal}}$ helps mitigate imperfections in oracle rewrites—an issue highlighted in the RATE paper \citep{reber2024rate}, which notes that LLM edits often unintentionally modify "off-target attributes" (e.g., introducing formality, removing HTML tags). CAN thereby enhances robustness on two fronts: (1) disentangling spurious correlations in original data, and (2)  neutralizing new biases introduced during causal augmentation.
+This helps in enhancing model's robustness against confounding signals in the data. While this method is sound theoretically, we qualitatively find that the approximation of $C(A_w)$ by $C(\tilde{A}_l)$ is not perfect. Furthermore, some spurious attributes $SP'(\tilde{A}_l) \subset SP(\tilde{A}_l)$ vary when we move causal attributes. Invariance to these attributes $SP'(\tilde{A}_l)$ is not captured by CAN. For these reasons, we encourage future work for improving this neutral augmentation strategy.

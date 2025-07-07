@@ -496,3 +496,15 @@ curl -X POST http://localhost:3000/acgs/coordinate \
 ```
 
 This integration architecture ensures seamless coordination between Claude agents, MCP tools, and ACGS services while maintaining constitutional compliance, performance targets, and operational excellence.
+
+---
+
+## 📚 **References**
+
+- **[Integration Summary](</home/dislove/ACGS-2/docs/integration/INTEGRATION_SUMMARY.md>)**: A high-level overview of the Claude-MCP-ACGS integration.
+- **[Multi-Agent Coordination Policy Blueprint](</home/dislove/ACGS-2/docs/coordination-policy.md>)**: Detailed specifications for state, action, and reward schemas, RPC protocols, and fault tolerance.
+- **[Production-Ready Docker Compose Stack](</home/dislove/ACGS-2/docker-compose.yml>)**: The complete Docker Compose file for deploying the MCP server stack.
+- **[Environment Configuration](</home/dislove/ACGS-2/.env.template>)**: The template for configuring the environment variables for the MCP server stack.
+- **[Operational Runbook](</home/dislove/ACGS-2/DEPLOYMENT.md>)**: Step-by-step instructions for deploying, validating, and troubleshooting the integration.
+- **[Integration Validation Script](</home/dislove/ACGS-2/scripts/validate_claude_mcp_integration.sh>)**: The script for automated health checks, performance testing, and constitutional compliance validation.
+- **[CLAUDE.md](</home/dislove/ACGS-2/CLAUDE.md>)**: Guidance for Claude when working with code in this repository.

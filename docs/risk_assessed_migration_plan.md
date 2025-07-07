@@ -88,9 +88,14 @@ This risk-assessed migration plan provides a roadmap for the successful transiti
 
 For a broader understanding of the ACGS platform and its components, refer to:
 
+- [ACGS Enterprise Architecture Migration Plan](</home/dislove/ACGS-2/docs/migration_plan.md)
+- [ACGS Architecture Gap Analysis Report](</home/dislove/ACGS-2/docs/gap_analysis_report.md)
+- [ACGE Strategic Implementation Plan - 24 Month Roadmap](</home/dislove/ACGS-2/docs/ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md)
+- [ACGS Performance Benchmarking Plan](</home/dislove/ACGS-2/docs/performance_benchmarking_plan.md)
+- [ACGS System Overview](</home/dislove/ACGS-2/SYSTEM_OVERVIEW.md)
+- [ACGS README](</home/dislove/ACGS-2/README.md)
 - [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
 - [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
-- [ACGE Strategic Implementation Plan - 24 Month Roadmap](../../docs/ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md)
 - [ACGE Testing and Validation Framework](../../docs/ACGE_TESTING_VALIDATION_FRAMEWORK.md)
 - [ACGE Cost Analysis and ROI Projections](../../docs/ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md)
 - [ACGS Comprehensive Task Completion - Final Report](../architecture/ACGS_COMPREHENSIVE_TASK_COMPLETION_FINAL_REPORT.md)

@@ -1,0 +1,115 @@
+\section{Theoretical Analysis}
+\label{sec:theoretical_analysis_detailed}
+
+In this section, we provide a formal justification for why the \carma{} training framework, specifically the composite loss function operating on causally augmented data, mitigates spurious reward hacking. We demonstrate that the optimization objective inherently discourages the reward model from relying on spurious correlations, guiding it towards the true causal drivers of quality.
+
+\subsection{Formal Setup}
+\label{subsec:theory_setup}
+
+We adopt the notation and causal framework established in Section \ref{sec:preliminaries}. Our analysis considers a query $\mathrm{Q}$, an answer $\mathrm{A}$ with corresponding Principal Causal Components $\mathrm{C}(\mathrm{A})$ and spurious attributes $\mathrm{SP}(\mathrm{A})$. The idealized ground-truth reward is $\mathrm{R}^*(\mathrm{Q}, \mathrm{A}) = f^*(\mathrm{Q}, \mathrm{C}(\mathrm{A}))$, and the learned reward model is denoted $\hat{\mathrm{R}}_{\theta}(\mathrm{Q}, \mathrm{A})$. The model parameters $\theta$ are optimized by minimizing the composite loss function $\mathcal{L}(\theta) = \mathcal{L}_{\mathrm{pref}}(\theta) + \lambda \mathcal{L}_{\mathrm{tie}}(\theta)$ (Eq. \ref{eq:combined_loss_methodology}) over the training dataset $\mathcal{D} = \mathcal{D}_{\mathrm{pref}} \cup \mathcal{D}_{\mathrm{aug\_filtered}}$, which combines original preferences $\mathcal{D}_{\mathrm{pref}}$ with filtered causal $\mathcal{D}_{\mathrm{causal}}$ and neutral $\mathcal{D}_{\mathrm{neutral}}$ augmentations. For theoretical analysis, $\mathcal{L}_{\mathrm{pref}}$ and $\mathcal{L}_{\mathrm{tie}}$ represent expectations over the respective data distributions:
+\begin{align*}
+\mathcal{L}_{\mathrm{pref}}(\theta) &= - \mathbb{E}_{(\mathrm{Q}, \mathrm{y}_w, \mathrm{y}_l) \sim \mathcal{D}_{\mathrm{pref}} \cup \mathcal{D}_{\mathrm{causal}}} \left[ \log \sigmoid(\hat{\mathrm{R}}_\theta(\mathrm{Q}, \mathrm{y}_w) - \hat{\mathrm{R}}_\theta(\mathrm{Q}, \mathrm{y}_l)) \right] \\
+\mathcal{L}_{\mathrm{tie}}(\theta) &= - \mathbb{E}_{(\mathrm{Q}, \mathrm{A}_1, \mathrm{A}_2, y=\text{tie}) \sim \mathcal{D}_{\mathrm{neutral}}} \left[ -\frac{1}{2} \left( \log \sigmoid(\Delta_{12}) + \log \sigmoid(-\Delta_{12}) \right) \right]
+\end{align*}
+where $\Delta_{12} = \hat{\mathrm{R}}_\theta(\mathrm{Q}, \mathrm{A}_1) - \hat{\mathrm{R}}_\theta(\mathrm{Q}, \mathrm{A}_2)$.
+
+\subsection{Justification under the Boolean variable causal model for attributes}
+
+\begin{assumption}\label{assum:model}
+Assume that:
+\begin{enumerate}
+\item Causal attributes $\{C_i(Q,A)\}_{i=1}^k$
+and spurious attributes $\{ S_j(A)\}_{j=1}^{\ell}$ are all boolean variables taking values in $\{+1,-1\}$
+
+\item All spurious variables are non-descendants of all causal variables.
+
+\item Reward function is trying to fit a quadratic polynomial in causal and spurious attributes, i.e. 
+\begin{align}\label{eq:quad_model}
+\hat{R} & = \sum_i \alpha_i C_i(Q,A) + \sum_j \beta_j S_j(A) + \sum \limits_{i \neq i'} \alpha_{i,i'} C_i(Q,A) C_{i'}(Q,A) + \nonumber \\
+\hfill & \sum \limits_{j \neq j'} \beta_{j,j'} S_j(A) S_{j'}(A) + \sum \limits_{i \neq j} \gamma_{i,j} C_i(Q,A) S_j(A) .
+\end{align}
+\item Assume that the true reward function is a sparse quadratic polynomial depend on only the causal attributes.
+ \begin{align}\label{eq:true_model}
+R^{*} & = \sum_i \theta_i C_i(Q,A) + \sum \limits_{i \neq i'} \theta_{i,i'} C_i(Q,A) C_{i'}(Q,A) 
+\end{align}
+
+Here, $\lVert \mathbf{\theta} \rVert_0 \leq s << k^2$ and $\theta_i$ and $\theta_{i,i'}$ variables form the vector $\mathbf{\theta}$. All other coefficients for other features that involves the spurious variables are set to $0$ in $\theta$. Let ${\cal I}$ be the support set of the true coefficient.
+
+\end{enumerate}
+\end{assumption}
+
+From the reward modeling objective, we try to fit a model $\Delta(\hat{R}) $ to a target which is the difference between true rewards to two answers $A_1$ and $A_2$ for the same question, i.e. $R^{*}(Q,A_1) - R^{*}(Q,A_2)$. From the assumption in \ref{eq:quad_model}, this is equivalent to fitting a linear model with coefficients $\alpha_i,\alpha_{i,i'}, \beta_{j}, \beta_{j,j'}, \gamma_{i,j}$  and differences in features (across the two answers), i.e. $C_i(Q,A_1)- C_i(Q,A_2), S_j(A_1)- S_j(A_2), S_j(A_1) S_{j'}(A_1)- S_j(A_2) S_{j'}(A_2), C_i(Q,A_1) C_{i'}(Q,A_1)- C_i(Q,A_2) C_{i'}(Q,A_2),  C_i(Q,A_1) S_{j}(A_1)- C_{i'}(Q,A_2) S_j(A_2)$ respectively. To simplify notation, we drop the reference to $A_1, A_2$ and $Q$ and call $C_i(Q,A_1)- C_i(Q,A_2)$ as $\Delta C_i$. Similarly, we use $\Delta S_j, \Delta C_{i,i'}, \Delta S_{j,j'}$  and $\Delta (C_iS_j)$. The dependence of these features on the $A_1,A_2$ and $Q$ are understood. 
+
+Let $F_{q,a_1,a_2} \in \{+1,-1\}^{k + \ell + k \ell + \binom{k}{2} + \binom{\ell}{2}}$ be the boolean vector with features 
+
+$ \{\Delta C_i\} , \{\Delta S_j\}, \{\Delta C_{i,i'} \}, \{\Delta S_{j,j'}\}, \{\Delta (C_iS_j)\}$ stacked row wise for the triplet $q,a_1,a_2$.
+
+Consider two types of triplets, one drawn from the natural distribution of the preference training dataset $D_{\mathrm{pref}}$ and the others drawn from augmented distribution $D_{\mathrm{aug}}$. Let us assume for the sake of the theoretical results to follow, that we upgrade/degrade answer $a_2$ to $a^{aug}_1$ by changing only \textit{one causal factor at a time while all the other causal factors are fixed to their factual version and all things remaining the same} to form $D_{\mathrm{aug}}$. The degradation aspect only serves to reinforce the phenomenon we seek to show formally below.
+
+
+\begin{assumption}(Model for Counterfactual Generation)\label{assum:gen}
+
+We assume that: 
+\begin{enumerate}
+\item $a^{aug}_1$ is formed by generating $C_i(Q,A)$ and $S_j(A)$ following an counterfactual generation where the following set of intervention is made  $C_i(Q,A) \leftarrow   \neg C_i(Q,A), ~ C_{j}(Q,A) \leftarrow C_j(Q,A),~ \forall j \neq i$ which propagates to potential descendants of variable $C_i$ and not affecting $S_j$ (due to no $S_j$ being a descendant of $C_j$) with all other factors remaining as in answer $a_2$. 
+\item Let us assume that we have $m$ augmentations where a triplet is randomly sampled from the training preference data distribution ${\cal D}_{\mathrm{pref}}$ and then augmented using the above counterfactual with a randomly chosen causal attribute negated.
+\end{enumerate}
+\end{assumption}
+
+\textbf{Remark} There are the main assumptions - 1) $S_j$ being a non-descendant of $C_i$, 2) Reward model is a quadratic sparse boolean model (The treatment could be extended to boolean polynomials of higher degree too with lot more algebraic technical work).
+
+\begin{theorem}
+\label{thm:appendix_lasso_recovery}
+  Let the feature matrix of the counterfactually augmented triplets, that is formed by stacking feature vectors $F_{q,a^\mathrm{aug}_1,a_2}$ row wise, be denoted $\mathbf{F}$. Consider the following $\ell_1$ constrained regression problem:
+  \begin{align}
+   \hat{\mathbf{\theta}} = \arg \min \limits_{\mathbf{b}} \lVert \mathbf{b} \rVert_1~s.t. \mathbf{F}b = \Delta R^{*}
+  \end{align}    
+
+Here, $\Delta R^{*}$ is vector of the difference in the true reward between the reward applied to the augmented answer and the non-augmented one across augmented triplets. Let ${\cal N}$ be the top $c_2 k$ non zero entries of vector $\mathbf{a}$ by magnitude. Then, we have:
+
+ $\lVert \Delta \mathbf{\theta} \rVert_2  = \lVert \mathbf{\theta} - \hat{\mathbf{\theta}} \rVert_2 \leq c_3 \lVert \theta_{{\cal I}-{\cal N}} \rVert_1 \left( \frac{4}{k} +  \sqrt{\frac{8 \log(k+\ell)}{m}} \right)  $ w.h.p.
+\end{theorem}
+
+\textbf{Remark:} If the true sparsity $s < c_2 k$, then it ensures perfect recovery since ${\cal I}- {\cal N} = \emptyset$. Since $s < k^2$, and if every coefficient is $O(1)$, the bound becomes $O(k)$ which is independent of the spurious dimension.
+ \begin{proof} 
+  Under the model assumptions \ref{assum:model} and assumptions on counterfactual generation \ref{assum:gen}, we seek to show that $\mathbf{F}$ when restricted to feature set $\Delta C_i, \Delta C_{i,i'}, \Delta_{C_iS_j}$  has smaller incoherence (by multiplicative factor of $k$) than an feature matrix made of i.i.d triplets sampled  from the preference distribution. This accommodates recovering the $s=O(k)$ sparse solutions exactly and in the general case, the error in coefficient estimation is $O(k)$ independent of spurious dimension $\ell$. 
+
+  First, we show that features $\Delta(S_{j,j'})=0, \Delta(S_j)=0$ for the augmented triplets. This is because all $S_j$ variables are ancestors to $C_i$ variables. Therefore, a counterfactual intervention on the answer $a_2$ leaves the two spurious attribute sets (for the original and its counterfactual) unchanged. 
+
+  Intervention fixed all causal variables to the factual ones (but fixed through intervention) and intervenes on variable to change. There are many types of correlation between non zero features because of this. We consider them one by one:
+
+  1) $\Delta C_i =0$ if is $C_i$ is not intervened. This occurs with probability $1-1/k$. 
+  2) $\Delta C_i \Delta C_j = 0$ with probability $1-2/k$.
+  3) $\Delta C_{i,i'} \Delta C_{j,j'} = 0$ if all $i,i',j,j'$ are distinct indices. 
+  4) $\Delta C_{i,j} \Delta C_{j,k} = 0$, with probability $1-1/k$. 
+  5) $\Delta C_{i,j} \Delta C_iS_j = 0 $ with probability $1-1/k$.
+  6) $\Delta C_{i,i'} \Delta C_jS_k = 0 $ always if all four indices not equal.
+  7) $\Delta C_{i} \Delta C_jS_k = 0 $ always. 
+  8) $\Delta C_i \Delta C_i S_k  = 0$ with probability 1-1/k. 
+
+If any of the these products is non zero, conditioned on that event, they equal the correlation on the preference training dataset (every correlation between features is bounded by at most $4$).
+
+Therefore, expected pairwise correlation amongst two features for a randomly chosen augmented triple is at most $4/k$. Given every augmented triple is obtained by counterfactual generation applied to an i.i.d sample from preference dataset, there is a deviation of at most $\frac{8 \log (k+ \ell)}{ \sqrt{m}}$ with probability $1- \frac{1}{(k+l)^4}$.
+
+Therefore,
+\begin{align}
+  \lVert 
+  \frac{1}{m}\mathbf{F}^T  \mathbf{F} - \mathbf{I}\rVert_{\infty} \leq \frac{4}{k} + \frac{8 \log (k+\ell) }{\sqrt{m}} ~ w.p. ~ 1- (k+\ell)^{-4}
+\end{align}
+
+This means that the data matrix is incoherent with high probability. We now follow standard Lasso analysis. Recall the \textit{cone condition \cite{negahban2009unified}}: For a subset ${\cal N}$ of indices that have non zero values in $\mathbf{\theta}$, $ \lVert \Delta \mathbf{\theta}_{N^c} \rVert_1 \leq \lVert \Delta \mathbf{\theta}_{N} \rVert_1  + 2 \lVert \mathbf{\theta}_{N^c}  \rVert_1$. This implies:
+\begin{align}\label{eq:cone}
+\lVert \Delta \mathbf{\theta} \rVert_1 \leq 2 \sqrt{|N|} \lVert \Delta \mathbf{\theta} \rVert_2 + 2 \lVert \mathbf{\theta}_{N^c}  \rVert_1.
+\end{align}
+
+We have the following chain:
+\begin{align}\label{incoherence}
+0 = \frac{1}{m} \lVert A \Delta \mathbf{\theta} \rVert^2 & \geq  \lVert \Delta \mathbf{\theta} \rVert_2^2  -  \lVert \Delta \mathbf{\theta} \rVert_1^2 \lVert \frac{1}{m}\mathbf{F}^T  \mathbf{F} - \mathbf{I} \rVert_{\infty} \nonumber \\
+\hfill & \geq \lVert \Delta \mathbf{\theta} \rVert_2^2  -  \left( 8 |{\cal N}| \lVert \Delta \mathbf{\theta} \rVert_2^2  - 8 \lVert  \mathbf{\theta}_{{\cal N}^c} \rVert_1^2 \right)\lVert \frac{1}{m}\mathbf{F}^T  \mathbf{F} - \mathbf{I} \rVert_{\infty}
+\end{align}
+
+Let us set $m$ such that $\frac{1}{\sqrt{m}} < \frac{8 \log(k+\ell)}{k}$
+. Let $|N| < k/80$, $c_2 <1/80$ in the theorem. Substituting these parameters in \ref{incoherence}, we get:
+$ \lVert \Delta \mathbf{\theta} \rVert_2  = \lVert \mathbf{\theta} - \hat{\mathbf{\theta}} \rVert_2 \leq 4\sqrt{2} \lVert \theta_{{\cal I}-{\cal N}} \rVert_1 \left( \frac{4}{k} +  \sqrt{\frac{8 \log(k+\ell)}{m}} \right)  $
+
+\end{proof}

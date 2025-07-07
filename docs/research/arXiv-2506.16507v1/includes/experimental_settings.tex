@@ -1,0 +1,7 @@
+\subsection{Experimental Settings}
+\label{subsec:experimental_settings}
+
+
+\carma{} and baseline reward models (Vanilla RM, RRM \citep{liu2024rrm}) are trained on the UltraFeedback dataset \citep{cui2023ultrafeedback}, with counterfactuals generated using Gemini 2.0 Flash.
+We evaluate performance on RewardBench \citep{lambert2024rewardbench} and robustness on reWordBench \citep{wu2025rewordbench} \footnote{Since reWordBench has not been released, we follow the paper and communicated with the authors to reproduce it, see Appendix Section \ref{app:rewordbench_creation}}. Experiments utilize diverse base LLMs (\gemmait{9}, \qwen{}, \gemma{2}) for both Pairwise Preference (PairPM) and Bradley-Terry (BT) reward models. Downstream alignment impact is assessed via Best-of-N selection on tasks including RewardBench, GSM8K, and WildGuardTest.
+Comprehensive details on datasets, model specifics, augmentation procedures, filtering, training hyperparameters, and all experimental configurations are provided in Appendix \ref{sec:experimental_details}.

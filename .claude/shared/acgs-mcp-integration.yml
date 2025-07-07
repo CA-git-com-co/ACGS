@@ -1,0 +1,32 @@
+# ACGS-MCP Integration Framework
+# Constitutional Hash: cdd01ef066bc6cf2
+
+Constitutional_MCP_Framework:
+  mcp_services_integration:
+    - "MCP Aggregator (port 3000): Constitutional coordination hub"
+    - "Filesystem MCP (port 3001): Constitutional file operations"
+    - "GitHub MCP (port 3002): Constitutional repository management"
+    - "Browser MCP (port 3003): Constitutional web automation"
+  
+  constitutional_requirements:
+    - "ALL MCP operations MUST validate constitutional hash cdd01ef066bc6cf2"
+    - "MCP tools cannot bypass constitutional compliance"
+    - "MCP coordination requires constitutional validation"
+    - "MCP audit trails must include constitutional context"
+
+  service_coordination:
+    - "Constitutional AI Service (8001) validates MCP requests"
+    - "Integrity Service (8002) logs MCP operations"
+    - "Multi-Agent Coordinator (8008) manages MCP workflow"
+    - "Worker Agents (8009) execute MCP tasks with constitutional oversight"
+
+  performance_requirements:
+    - "MCP operations: P99 <5ms with constitutional validation"
+    - "Constitutional compliance: 100% for all MCP tools"
+    - "Audit completeness: 100% for MCP coordination"
+    - "Cache hit rate: >85% for constitutional MCP decisions"
+
+  error_handling:
+    - "MCP constitutional violations: IMMEDIATE escalation"
+    - "MCP compliance failures: CRITICAL system alert"
+    - "Constitutional hash validation errors: EMERGENCY response"

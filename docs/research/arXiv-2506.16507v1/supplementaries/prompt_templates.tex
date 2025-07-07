@@ -1,0 +1,428 @@
+\section{Prompt Templates}
+\label{sec:prompt_templates}
+
+This section details the prompt templates used for identifying attributes and generating counterfactual examples in the \carma{} framework. Placeholders like \texttt{\{question\}} are replaced with actual content during the process.
+
+
+\subsection{Prompt for Attribute Identification}
+
+
+\begin{promptbox}{Identifying Causal Attributes\\\\}
+You are a reward model which means you have to rate answers for a given question across multiple different attributes.
+The first step is to identify these attributes as well as give an importance score between 0 and 1 for all these attributes, based on how important they are for rating a response for that question.
+The importance score for all attributes should sum up to 1.
+
+The following is a Question and 2 Candidate Answer for it.\\
+
+Question: {question}\\\\
+Example Answer 1: {answer1}\\
+Example Answer 2: {answer2}\\
+
+Task: Give me 5 **mutually exclusive** and important attributes that are required to rate an answer for the give question holistically, along with their importance score. These important attributes should be independent of each other, and should largely depend on the Question given above.\\
+\\
+Answer Format: Give your answer in JSON format, for example:\\
+\\
+\{\\
+ Attributes: \{\\
+ "attribute\_1": attribute\_1\_score,\\
+ "attribute\_2": attribute\_2\_score,\\
+ "attribute\_3": attribute\_3\_score,\\
+ "attribute\_4": attribute\_4\_score,\\
+ "attribute\_5": attribute\_5\_score\\
+ \}\\
+\}
+\\
+Where attribute\_i is the name of the i'th attribute, attribute\_i\_score is the importance score of the i'th attribute, and the Key "Attributes" is a fixed constant string you should output.\\
+\\
+Summation of attribute\_i\_score across all i's should be 1.\\
+\\
+Strictly adhere to the format and only give the json string as output (i.e. start with "{" and end your response with "}"). Do not include any commentary, explanations, chattiness, any extra words, or additional keys outside of the specified JSON structure.\\
+\\
+Answer:
+\end{promptbox}
+
+
+
+\clearpage
+\subsection{Prompt for Identifying Causal Elements}
+\vspace{-0.15in}
+\begin{promptbox}{Identifying Causal Elements per Attribute}
+You are an expert in causal reasoning and response evaluation.\\\\
+\\
+You are given:\\\\
+- A question\\
+- Two example answers\\\\
+\\
+Your task is to identify generalizable causal elements that directly affect the strength of the attribute "\{attribute\}" in a response to the given question.\\\\
+\\
+The two example answers are provided to help you understand how the attribute manifests in this specific context. Do not restrict your analysis to these examples—use them only to inform your understanding of the attribute in this setting.\\\\
+\\
+Question: \{question\}\\\\
+Accepted Answer: \{answer1\}\\\\
+Rejected Answer: \{answer2\}\\\\
+\\
+\#\#\# Instructions:\\\\
+- Identify exactly five causal elements that impact \{attribute\} in the response.\\
+- Each element must have a clear role in either increasing or decreasing \{attribute\}. Clearly explain its direct causal impact on \{attribute\}.\\
+- Do not include any non-causal heuristics.\\
+- Do not include unnecessary explanations, disclaimers, or formatting—return only the structured JSON output.\\
+\\
+\#\#\# Format:\\\\
+Return a raw JSON object only without additional text, explanations, or formatting:\\
+\textasciigrave\textasciigrave\textasciigrave json\\\\
+\{causal\_elements\_format\}\\\\
+\textasciigrave\textasciigrave\textasciigrave
+\end{promptbox}
+
+\clearpage
+\subsection{Prompts for Generating Counterfactuals (Causal Augmentation)}
+
+\begin{promptbox}{Generating Upgraded Responses}
+**Task:** Given a question and a model's response, generate a new response with a significantly improved response for the specified **\{ATTRIBUTE\}**, while *strictly preserving* all other aspects of the original response.\\\\
+\\\\
+\#\#\# **Input:**\\\\
+- **Question:** \{QUESTION\}\\\\
+- **Original Response:** \{RESPONSE\}\\\\
+- **Causal Elements for \{ATTRIBUTE\}:**\\\\
+   \{CAUSAL\_ELEMENTS\}\\\\
+\\\\
+\#\#\# **Instructions:**\\\\
+\\\\
+1. **Understand the Context:** Carefully read the question and original response and examine the provided causal elements that influence \{ATTRIBUTE\}.\\\\
+2. **Identify the strength of \{ATTRIBUTE\}:** Determine which causal elements are **present** and their **direction of effect** (i.e., whether they increase or decrease \{ATTRIBUTE\}).\\\\
+3. **Improve the Response:** Modify the causal elements to significantly improve \{ATTRIBUTE\}. Ensure that the improvement is **significant but isolated** to \{ATTRIBUTE\} leaving the other attributes intact.\\\\
+4. **Verify the New Response:** Reassess whether \{ATTRIBUTE\} has been significantly improved. Confirm that all **other attributes remain unchanged**. If necessary, improve the response further to better meet the improvement goal for \{ATTRIBUTE\}.\\\\
+5. **Return the New Response:** Provide the final modified response with a significantly improved \{ATTRIBUTE\} score. Format your response according to the format given below and in no other format.\\\\
+\\\\
+\#\#\# **Output Format:**\\\\
+\\\\
+Chain of Thoughts: <Your analysis of the original response, identification of causal elements, and strategy for improvement.>\\\\
+New Response: <The final modified response which is significantly improved on \{ATTRIBUTE\}.>
+\end{promptbox}
+
+\begin{promptbox}{Generating Degraded Responses (Non-Safety)}
+**Task:** Given a question and a model's response, generate a new response with a significantly degraded response for the specified **\{ATTRIBUTE\}**, while *strictly preserving* all other aspects of the original response.\\\\
+\\\\
+\#\#\# **Input:**\\\\
+- **Question:** \{QUESTION\}\\\\
+- **Original Response:** \{RESPONSE\}\\\\
+- **Causal Elements for \{ATTRIBUTE\}:**\\\\
+   \{CAUSAL\_ELEMENTS\}\\\\
+\\\\
+\#\#\# **Instructions:**\\\\
+\\\\
+1. **Understand the Context:** Carefully read the question and original response and examine the provided causal elements that influence \{ATTRIBUTE\}.\\\\
+2. **Identify the strength of \{ATTRIBUTE\}:** Determine which causal elements are **present** and their **direction of effect** (i.e., whether they increase or decrease \{ATTRIBUTE\}).\\\\
+3. **Degrade the Response:** Distort the causal elements to significantly degrade \{ATTRIBUTE\}. Ensure that the degradation is **significant but isolated** to \{ATTRIBUTE\} leaving the other attributes intact.\\\\
+4. **Verify the New Response:** Reassess whether \{ATTRIBUTE\} has been significantly degraded. Confirm that all **other attributes remain unchanged**. If necessary, degrade the response further to better meet the degradation goal for the \{ATTRIBUTE\}.\\\\
+5. **Return the New Response:** Provide the final modified response with a significantly degraded \{ATTRIBUTE\} score. Format your response according to the format given below and in no other format.\\\\
+\\\\
+\#\#\# **Output Format:**\\\\
+\\\\
+Chain of Thoughts: <Your analysis of the original response, identification of causal elements, and strategy for degradation.>\\\\
+New Response: <The final modified response which is significantly degraded on \{ATTRIBUTE\}.>
+\end{promptbox}
+
+\subsection{Prompts for Generating Causally-Aligned Neutrals}
+\subsubsection{Prompt for Comparing Responses via Causal Elements}
+
+\begin{promptbox}{Generating Differences} % Use the promptbox environment with your title
+\textless{}\textbar{}
+You compare two responses based on content differences using a set of defined attributes and their causal elements.
+\textless{}\textbar{}im\_end\textbar{}\textgreater{}
+\textless{}\textbar{}im\_start\textbar{}\textgreater{}user
+I will give you a question, two responses, and a list of attributes with their causal elements.
+
+\textbf{Here is the question:}
+\begin{lstlisting}[
+    language=json,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    numbersep=5pt,
+    xleftmargin=2em,
+    breaklines=true
+]
+{
+    "question": """{QUESTION}"""
+}
+\end{lstlisting}
+
+\textbf{Here are the responses:}
+\begin{lstlisting}[
+    language=json,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    numbersep=5pt,
+    xleftmargin=2em,
+    breaklines=true
+]
+[
+    {
+        "model": "Response_1",
+        "answer": """{RESPONSE1}"""
+    },
+    {
+        "model": "Response_2",
+        "answer": """{RESPONSE2}"""
+    }
+]
+\end{lstlisting}
+
+\textbf{Here are the attributes and causal elements:}
+\begin{verbatim}
+{CAUSAL_ELEMENTS}
+\end{verbatim}
+
+Please compare the responses for each attribute:
+- Identify key content differences.
+- Explain those differences using the causal elements only.
+- Do not quote the responses directly.
+- Focus only on what is said, not how it's said.
+
+Return your output in this format:
+\begin{lstlisting}[
+    language=json,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    numbersep=5pt,
+    xleftmargin=2em,
+    breaklines=true
+]
+{
+    "differences": [
+        {
+            "attribute": "<attribute>",
+            "difference": "<summary>",
+            "analysis": {
+                "Response_1": "...",
+                "Response_2": "..."
+            }
+        }
+    ]
+}
+\end{lstlisting}
+
+No extra text or explanation outside the JSON object.
+
+\end{promptbox}
+
+
+
+
+\clearpage
+\subsubsection{Prompt for Generating Causally-Aligned Reconstruction}
+\begin{promptbox}{Modifying Response Using Attribute-wise Causal Analysis}
+
+You modify a given response by adjusting its causal elements to match a target profile based on attribute-wise analysis.
+\textless{}\textbar{}im\_end\textbar{}\textgreater{}
+\textless{}\textbar{}im\_start\textbar{}\textgreater{}user
+I will provide you a question, a given response, and an attribute-based comparison analysis describing how to transform the given response into a target response.
+
+\textbf{Inputs:}
+1. \textbf{Question:}
+\begin{verbatim}
+{PLACEHOLDER_FOR_QUESTION}
+\end{verbatim}
+
+2. \textbf{Given Response:}
+\begin{verbatim}
+{PLACEHOLDER_FOR_GIVEN_RESPONSE}
+\end{verbatim}
+
+3. \textbf{Attribute-wise Differences Analysis:}
+\begin{verbatim}
+{PLACEHOLDER_FOR_ATTRIBUTE_DIFFERENCES_ANALYSIS}
+\end{verbatim}
+
+This analysis shows the differences between the given and target responses, broken down per attribute.
+
+Each attribute section contains:
+\begin{itemize}[leftmargin=2em] % Adjust left margin for better indentation
+    \item \texttt{- Difference:} A summary of how the responses differ in content or emphasis.
+    \item \texttt{- Analysis:}
+    \begin{itemize}[leftmargin=2em] % Adjust left margin for nested list
+        \item \texttt{- Given Response:} Describes its content elements, grounding causal elements, and how they lead to the observed attribute.
+        \item \texttt{- New Response:} Describes the content and causal elements the target response should exhibit instead.
+    \end{itemize}
+\end{itemize}
+
+\textbf{Instructions:}
+1.  Read the question and given response.
+2.  Carefully study each attribute in the analysis and identify the causal elements needed to change.
+3.  Generate a rewritten response that:
+    \begin{itemize}[leftmargin=2em] % Adjust left margin for better indentation
+        \item Retains the original meaning and structure.
+        \item Implements the target causal elements.
+        \item Removes or alters original ones as needed.
+    \end{itemize}
+4.  Do not introduce changes beyond the specified elements.
+5.  Ensure the new response fully reflects the target causal profile across all attributes.
+
+\textbf{Output Format:}
+\begin{verbatim}
+{{
+    "Final Response": "<Write the transformed response here>"
+}}
+\end{verbatim}
+
+Return only the final response JSON. Do not include any explanations or commentary.
+
+\end{promptbox}
+
+\subsection{Prompt for Generating Paraphrasing-Based Neutrals}
+\begin{promptbox}{Prompt for Paraphrasing Responses}
+
+\texttt{"""}
+
+Paraphrase the following text while maintaining the \textbf{style}:
+
+\texttt{{\{text\}}}
+
+Make sure the meaning is \textbf{completely} the same without any changes.
+
+Respond \textbf{only with the paraphrase} and \textbf{no extra text} at all;  
+for example, do \textbf{NOT} preface with anything like:
+
+\texttt{"Here is the paraphrased text:"}
+
+\texttt{"""}
+
+\end{promptbox}
+\clearpage
+
+\subsection{Prompt for Verifying the Counterfactual Quality}
+\begin{promptbox}{Prompt for verifying the causal degradations}
+You are an expert evaluator verifying whether the degraded response significantly weakens \{ATTRIBUTE\} while keeping all other aspects unchanged.
+\\\\
+\#\#\# Input Data
+\\\\
+- Query: \{QUESTION\}
+
+- Original Response: \{RESPONSE\}
+
+- Modified Response: \{NEW\_RESPONSE\}
+
+- Causal Elements for \{ATTRIBUTE\}: \{CAUSAL\_ELEMENTS\}
+\\\\
+\#\#\# Verification Steps
+\begin{enumerate}
+    \item Identify Changes: Compare the original and modified responses to determine which causal elements were altered.
+    \item Ensure Significant Degradation: Confirm that \{ATTRIBUTE\} is noticeably weakened, not subtly reduced.
+    \item Check for Unintended Changes: Verify that the degradation is done by distorting the causal elements for \{ATTRIBUTE\} alone while keeping the other attributes unaffected.
+    \item Determine Verdict: If only \{ATTRIBUTE\} is degraded significantly while all else remains unchanged, return **Pass**; otherwise, return **Fail**. *Strictly* adhere to the provided format.
+\end{enumerate}
+
+\#\#\# Output Format
+\\\\
+- If the modified response meets all requirements, return:
+
+Verdict: Pass
+
+- If the modified response does not meet the criteria, return:
+
+Verdict: Fail
+\end{promptbox}
+\begin{promptbox}{Prompt for verifying the causal upgradations}
+You are an expert evaluator verifying whether the degraded response significantly strengthens \{ATTRIBUTE\} while keeping all other aspects unchanged.
+
+\#\#\# Input Data
+- Query: \{QUESTION\}
+- Original Response: \{RESPONSE\}
+- Modified Response: \{NEW\_RESPONSE\}
+- Causal Elements for \{ATTRIBUTE\}: \{CAUSAL\_ELEMENTS\}
+
+\#\#\# Verification Steps
+\begin{enumerate}
+    \item Identify Changes: Compare the original and modified responses to determine which causal elements were altered.
+    \item Ensure Significant Improvement: Confirm that \{ATTRIBUTE\} is noticeably improved, not subtly improved.
+    \item Check for Unintended Changes: Verify that the improvement is done by modifying the causal elements for \{ATTRIBUTE\} alone while keeping the other attributes unaffected.
+    \item Determine Verdict: If only \{ATTRIBUTE\} is improved significantly while all else remains unchanged, return **Pass**; otherwise, return **Fail**. *Strictly* adhere to the provided format.
+\end{enumerate}
+
+\#\#\# Output Format
+- If the modified response meets all requirements, return:
+
+Verdict: Pass
+
+- If the modified response does not meet the criteria, return:
+
+Verdict: Fail
+\end{promptbox}
+
+\subsection{GPT4-as-a-Judge Prompt}
+\vspace{-0.15in}
+\begin{promptbox}{LLM-as-a-Judge Prompt}
+\textless{}|im\_start|\textgreater{}system
+
+You are a helpful assistant, that ranks models by the quality of their answers, prioritizing substantive content and relevance to the query.
+
+\textless{}|im\_end|\textgreater{}
+\textless{}|im\_start|\textgreater{}user
+
+I want you to create a leaderboard of different large-language models. To do so, I will give you the instructions (prompts) given to the models, and the responses of two models. All inputs and outputs should be Python dictionaries.
+
+\textbf{Here is the prompt:}
+\begin{lstlisting}[
+    language=json,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    numbersep=5pt,
+    xleftmargin=2em,
+    breaklines=true
+]
+{
+    "instruction": """{instruction}"""
+}
+\end{lstlisting}
+
+\textbf{Here are the outputs of the models:}
+\begin{lstlisting}[
+    language=json,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    numbersep=5pt,
+    xleftmargin=2em,
+    breaklines=true
+]
+[
+    {
+        "model": "model_1",
+        "answer": """{output_1}"""
+    },
+    {
+        "model": "model_2",
+        "answer": """{output_2}"""
+    }
+]
+\end{lstlisting}
+
+\textbf{Now please rank the models by the quality of their answers}, so that the model with rank 1 has the best output. Your ranking should be based primarily on which response \textbf{provides the most accurate, relevant, and comprehensive content in direct relation to the query}.
+
+Focus on the core information and how well the query's intent is addressed, rather than on aspects like writing style, formatting, length, or politeness, unless these directly impact the clarity or usefulness of the core content requested by the query.
+
+\textbf{Your response MUST be a valid JSON object.}  
+This JSON object must contain \textbf{ONLY ONE} key named \texttt{"ranking\_list"}.  
+The value of the \texttt{"ranking\_list"} key MUST be a list of two dictionaries, where each dictionary contains the model name and its rank.
+
+The structure should be \textbf{exactly} as follows:
+\begin{lstlisting}[
+    language=json,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    numbersep=5pt,
+    xleftmargin=2em,
+    breaklines=true
+]
+{
+    "ranking_list": [
+        {"model": "<model-name>", "rank": <model-rank>},
+        {"model": "<model-name>", "rank": <model-rank>}
+    ]
+}
+\end{lstlisting}
+
+Do \textbf{not} include any other text, explanations, or additional keys in the JSON object.  
+Please provide the ranking that a well-informed human, focusing on these content-centric criteria, would likely give.
+
+\textless{}|im\_end|\textgreater{}
+\end{promptbox}

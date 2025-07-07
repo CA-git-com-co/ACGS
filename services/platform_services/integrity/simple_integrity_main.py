@@ -86,6 +86,7 @@ async def health_check():
         "service": SERVICE_NAME,
         "version": SERVICE_VERSION,
         "port": SERVICE_PORT,
+        "constitutional_hash": "cdd01ef066bc6cf2",
         "uptime_seconds": uptime_seconds,
         "components": {
             "crypto_service": "operational",

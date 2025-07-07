@@ -1,50 +1,49 @@
 # RBAC (Role-Based Access Control) in ACGS
+
 <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 
-## Overview
+## 1. Overview
 
-This document describes the Role-Based Access Control (RBAC) system used in ACGS for managing user permissions and access to resources.
+This document describes the Role-Based Access Control (RBAC) system used in the ACGS platform for managing user permissions and access to resources. RBAC ensures that users only have access to the resources and functionalities necessary for their roles, adhering to the principle of least privilege.
 
-## Constitutional Compliance
+## 2. Constitutional Compliance
 
-All RBAC operations must comply with constitutional principles:
-- **Constitutional Hash**: `cdd01ef066bc6cf2`
-- **Least Privilege**: Users are granted minimum necessary permissions
-- **Operational Transparency**: All access decisions are logged and auditable
-- **User Consent**: Users must consent to permission grants
+All RBAC operations and role definitions must comply with the constitutional principles of the ACGS platform, enforced by the constitutional hash `cdd01ef066bc6cf2`. Key principles include:
 
-## Role Definitions
+- **Least Privilege**: Users are granted the minimum necessary permissions to perform their tasks.
+- **Operational Transparency**: All access decisions and permission grants are logged and auditable.
+- **User Consent**: Where applicable, users must explicitly consent to permission grants or role assignments.
+- **Separation of Duties**: Critical operations may require multiple roles to prevent a single point of failure or malicious activity.
 
-### Admin Role
-- Full system access
-- Constitutional compliance oversight
-- User management capabilities
+## 3. Role Definitions
 
-### User Role
-- Limited access to assigned resources
-- Constitutional compliance validation required
-- Audit trail for all actions
+ACGS defines several roles, each with specific permissions and responsibilities:
 
-## Implementation
+### 3.1. Admin Role
 
-The RBAC system integrates with the constitutional compliance framework to ensure all access decisions align with ACGS constitutional principles.
+- Full system access and administrative privileges.
+- Constitutional compliance oversight and enforcement.
+- User and role management capabilities.
+- Access to audit logs and security configurations.
 
-## Related Information
+### 3.2. User Role
 
-For a broader understanding of the ACGS platform and its components, refer to:
+- Limited access to resources and functionalities based on assigned permissions.
+- All actions are subject to constitutional compliance validation.
+- Activities are recorded in the audit trail.
 
-- [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
-- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
-- [ACGE Strategic Implementation Plan - 24 Month Roadmap](../../docs/ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md)
-- [ACGE Testing and Validation Framework](../../docs/ACGE_TESTING_VALIDATION_FRAMEWORK.md)
-- [ACGE Cost Analysis and ROI Projections](../../docs/ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md)
-- [ACGS Comprehensive Task Completion - Final Report](../architecture/ACGS_COMPREHENSIVE_TASK_COMPLETION_FINAL_REPORT.md)
-- [ACGS-Claudia Integration Architecture Plan](../architecture/ACGS_CLAUDIA_INTEGRATION_ARCHITECTURE.md)
-- [ACGS Implementation Guide](../deployment/ACGS_IMPLEMENTATION_GUIDE.md)
-- [ACGS-PGP Operational Deployment Guide](../deployment/ACGS_PGP_OPERATIONAL_DEPLOYMENT_GUIDE.md)
-- [ACGS-PGP Troubleshooting Guide](../deployment/ACGS_PGP_TROUBLESHOOTING_GUIDE.md)
-- [ACGS-PGP Setup Guide](../deployment/ACGS_PGP_SETUP_GUIDE.md)
-- [Service Status Dashboard](../operations/SERVICE_STATUS.md)
-- [ACGS Configuration Guide](../configuration/README.md)
-- [ACGS-2 Technical Specifications - 2025 Edition](../TECHNICAL_SPECIFICATIONS_2025.md)
+### 3.3. Other Roles (Examples)
 
+- **Auditor Role**: Read-only access to audit logs and compliance reports.
+- **Developer Role**: Access to code repositories and development tools, with restrictions on production environments.
+- **Policy Editor Role**: Permissions to create, modify, and propose governance policies.
+
+## 4. Implementation
+
+The RBAC system is tightly integrated with the Authentication Service and the Constitutional AI Service. When a user authenticates, their roles and associated permissions are retrieved. Every action they attempt is then checked against these permissions and the system's constitutional principles.
+
+## 5. Related Information
+
+- [ACGS Service Architecture Overview](../ACGS_SERVICE_OVERVIEW.md)
+- [ACGS System Overview](../../SYSTEM_OVERVIEW.md)
+- [Authentication Service API](authentication.md)

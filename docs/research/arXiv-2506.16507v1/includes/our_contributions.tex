@@ -1,0 +1,13 @@
+\vspace{0.05in}
+We list the key contributions in this work below.
+
+\begin{enumerate}[itemsep=0pt,left=2pt]
+    \item \textbf{Spurious-Unaware Causal Framework.}
+    We propose a causal framework for training reward models (Sec.~\ref{sec:preliminaries}) that requires intervention only on LLM-identified causal quality rubrics, \textit{eliminating the need for prior specification of or intervention on any of the spurious attributes}.
+    \item \textbf{Targeted Counterfactual Augmentations along Causal Attributes.}
+    We propose to train reward models on the available preference data and the proposed data augmentations (Sec.~\ref{sec:methodology}) along LLM-identified causal attributes: 1) \textit{Causal Augmentations} create minimal pairs isolating specific causal dimensions for precise sensitivity. 2) \textit{Neutral Augmentations} create variations in spurious features (preserving causal content) with tie-labels for invariance.  Notably, we \textit{do not} assume any explicit knowledge of spurious factors nor do we perturb them directly to create these augmentations. We show that interventions along causal rubrics alone is primarily sufficient to mitigate sensitivity to a \textit{much larger set of spurious correlates}.
+     \item \textbf{State-of-the-Art RM Robustness.}
+    \carma{} significantly outperforms baselines on RewardBench (Sec.~\ref{sec:experiments}), improving average accuracy by up to 5.4\% (Safety +13.18\%, Reasoning +7.19\%) (Table~\ref{tab:performance_bt_pairpm_rewardbench_extended_final}), and shows superior robustness on reWordBench (Figures ~\ref{fig:reword_absolute_robustness_gemma9b_pairpm}).
+    \item \textbf{Improved BoN results.} 
+    Best-of-N selection using \carma-RM shows consistent gains across different values of N when compared to baselines on the popular RewardBench, WildGuardTest and GSM8K benchmarks. This highlights the robustness of \carma~ in the presence of rare (or long tailed) spurious factors as well, which typically appear at large values of N.
+\end{enumerate}

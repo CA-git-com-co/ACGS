@@ -303,11 +303,23 @@ This enhancement guide ensures ACGS-2 academic papers meet the highest standards
 - Complete reproducibility documentation
 - Statistical rigor and effect size reporting
 
+## References
+
+- [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
+- [ACGS System Overview](../../SYSTEM_OVERVIEW.md)
+- [Constitutional Compliance Validation Framework](../../docs/constitutional_compliance_validation_framework.md)
+- [ACGS Code Analysis Engine Architecture](../../docs/architecture/ACGS_CODE_ANALYSIS_ENGINE_ARCHITECTURE.md)
+- [ACGS Code Analysis Engine Deployment Guide](../../docs/deployment/ACGS_CODE_ANALYSIS_ENGINE_DEPLOYMENT_GUIDE.md)
+- [ACGS Code Analysis Engine Integration Guide](../../docs/integration/ACGS_CODE_ANALYSIS_ENGINE_INTEGRATION_GUIDE.md)
+- [ACGS Configuration Guide](../../docs/configuration/README.md)
+- [ACGS-PGP Setup Guide](../../docs/deployment/ACGS_PGP_SETUP_GUIDE.md)
+- [ACGS Service Status Dashboard](../../docs/operations/SERVICE_STATUS.md)
+
+
 ## Related Information
 
 For a broader understanding of the ACGS platform and its components, refer to:
 
-- [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
 - [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
 - [ACGE Strategic Implementation Plan - 24 Month Roadmap](../../docs/ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md)
 - [ACGE Testing and Validation Framework](../../docs/ACGE_TESTING_VALIDATION_FRAMEWORK.md)
@@ -317,9 +329,6 @@ For a broader understanding of the ACGS platform and its components, refer to:
 - [ACGS Implementation Guide](../deployment/ACGS_IMPLEMENTATION_GUIDE.md)
 - [ACGS-PGP Operational Deployment Guide](../deployment/ACGS_PGP_OPERATIONAL_DEPLOYMENT_GUIDE.md)
 - [ACGS-PGP Troubleshooting Guide](../deployment/ACGS_PGP_TROUBLESHOOTING_GUIDE.md)
-- [ACGS-PGP Setup Guide](../deployment/ACGS_PGP_SETUP_GUIDE.md)
-- [Service Status Dashboard](../operations/SERVICE_STATUS.md)
-- [ACGS Configuration Guide](../configuration/README.md)
 - [ACGS-2 Technical Specifications - 2025 Edition](../TECHNICAL_SPECIFICATIONS_2025.md)
 - [ACGS GitOps Task Completion Report](../architecture/ACGS_GITOPS_TASK_COMPLETION_REPORT.md)
 - [ACGS GitOps Comprehensive Validation Report](../architecture/ACGS_GITOPS_COMPREHENSIVE_VALIDATION_REPORT.md)

@@ -1,0 +1,55 @@
+\section{Methodology: Causal Data Augmentation for Robust Reward Modeling}
+\label{sec:methodology}
+
+Building upon the causal framework established in Section \ref{sec:preliminaries}, we introduce our methodology for training a robust reward model, $\hat{R}_\phi$. The central objective is to guide the model to learn preferences based on the true causal drivers of response quality ($C$) while remaining invariant to spurious attributes ($SP$). This is crucial because reliance on spurious attributes often leads to reward hacking, overfitting, and poor generalization to out-of-distribution prompts or response styles. Our approach achieves this by augmenting the standard preference dataset $\mathcal{D}_{pref}$ with synthetically generated examples $\mathcal{D}_{aug}$ designed to explicitly disentangle these factors.
+
+
+Our approach consists of four sequential steps. First, we identify the relevant causal and potential spurious attributes for evaluating answers to a given query. Second, we leverage Large Language Models (LLMs) to generate counterfactual answer pairs that selectively manipulate these attributes. Third, we filter the generated data to ensure quality and focus on informative examples. Finally, we train the reward model $\hat{R}_\phi$ on the combined dataset using a modified pairwise preference loss function. We detail each step subsequently.
+
+\subsection{Step 1: Attribute Identification}
+\label{subsec:attribute_identification}
+
+The foundation of our causal approach lies in identifying the attributes that genuinely determine answer quality versus those that are merely correlated with it. For a given query $Q$, potentially informed by example answers $(y_w, y_l)$ from $\mathcal{D}_{pref}$, we define two sets of attributes: \emph{Causal attributes} $C = (C_1, \dots, C_\ell)$, which fundamentally impact the ground-truth reward $R$ (e.g., \textit{factuality}, \textit{relevance}), and \emph{Spurious attributes} $SP = (SP_1, \dots, SP_k)$, which do not intrinsically affect $R$ but might influence preferences (e.g., \textit{verbosity}, \textit{use of markdown}).
+
+\paragraph{Automated Attribute Extraction.} We employ an LLM, prompted with $Q$ and example responses, to propose a set of candidate causal attributes relevant to evaluating answers for $Q$. The prompt (see Appendix [Reference]) encourages the identification of key quality dimensions. Although the prompt may also produce importance scores for analysis, the primary output used in subsequent steps is the set of attributes $C$ and potential spurious attributes $SP$.
+
+\paragraph{Refinement and Verification.} The LLM-generated attribute lists are reviewed for coherence and consistency. Semantically overlapping attributes may be merged, and automated checks can be applied to ensure the identified attributes align with the intended causal/spurious distinction.
+
+\subsection{Step 2: Generating Counterfactual Augmented Data}
+\label{subsec:counterfactual_generation}
+
+Using the identified attributes, we generate synthetic data pairs designed to isolate the influence of $C$ and neutralize the influence of $SP$. This involves creating variations of existing answers $A$ (e.g., $y_w$ or $y_l$ from $\mathcal{D}_{pref}$).
+
+\paragraph{Causal Augmentation.} To teach the model sensitivity to $C$, we generate pairs $(A, A')$ intended to differ primarily along a single causal attribute $C_j$. This is done through \emph{upgradation} (improving $A$ along $C_j$ to get $A'$) or \emph{degradation} (worsening $A$ along $C_j$ to get $A'$). For instance, given a factually correct answer $A$, we might generate a degraded version $A'$ containing a factual error but preserving style and length. The pair $(Q, A, A')$ would be labeled $A \succ A'$. Conversely, upgrading a poor answer $A$ to $A'$ yields a label $A' \succ A$. We use LLM prompts (Appendix [Reference]) that specify the target attribute $C_j$ and instruct the LLM to make "significant but isolated" modifications, aiming to keep other attributes $C_{k \neq j}$ and $SP$ constant.
+
+\paragraph{Neutral Augmentation.} To teach the model invariance to $SP$, we generate pairs $(A_1, A_2)$ that ideally share the same causal attributes $C$ but differ in spurious attributes $SP$. These pairs are assigned a "tie" label ($y = \text{tie}$), helping the model learn to assign \emph{equal} reward when only spurious features differ. Our primary technique is \emph{causally-aligned reconstruction}. We first use an LLM to analyze the differences in causal attributes between two answers $A_1$ and $A_2$ (Appendix [Reference]). Then, we prompt the LLM (Appendix [Reference]) to rewrite $A_2$ to match the causal profile of $A_1$ while retaining the original style and spurious features of $A_2$ as much as possible. Let this reconstructed answer be $A'_{2 \to 1}$. The pair $(Q, A_1, A'_{2 \to 1})$ is labeled as $y = \text{tie}$. Symmetrically generating $A'_{1 \to 2}$ yields another tie pair $(Q, A_2, A'_{1 \to 2})$.
+
+\subsection{Step 3: Filtering Augmented Data}
+\label{subsec:filtering_revised}
+
+The generation process in Step 2 can yield imperfect or uninformative examples. We apply filtering to refine the augmented dataset $\mathcal{D}_{aug}$ before training.
+
+\paragraph{Model-based Confidence Filtering.} We prioritize augmentations that represent challenging or incorrectly assessed cases for a baseline model. Using a pre-trained baseline reward model, $\hat{R}_{base}$, we compute its prediction for each augmented pair. Let $p = P_{base}(B \succ A)$ for a pair $(A, B)$.
+\begin{itemize}[itemsep=0pt,left=2pt]
+    \item If the pair was generated with label $B \succ A$ (causal upgrade/degradation), we retain it only if the baseline model is not confident in the correct label, i.e., $|p - 1.0| > \tau$.
+    \item If the pair was generated as a neutral tie ($y=\text{tie}$), we retain it only if the baseline model incorrectly assigns a strong preference, i.e., $|p - 0.5| > \tau$.
+\end{itemize}
+We use a threshold $\tau=0.2$, empirically chosen for consistency with related work \cite{liu2024rrm} and to focus training on pairs where the augmentation provides the most learning signal relative to the baseline.
+
+\paragraph{Quality Verification.} We use further model based verification steps using automated scoring (e.g., fluency) to verify the validity of the generated pairs and their labels.
+
+The result is the filtered augmented dataset, $\mathcal{D}_{aug\_filtered}$.
+
+\subsection{Step 4: Training the Robust Reward Model}
+\label{subsec:training_revised}
+
+The final robust reward model $\hat{R}_\phi$ is trained on the combined dataset $\mathcal{D} = \mathcal{D}_{pref} \cup \mathcal{D}_{aug\_filtered}$. We minimize a composite loss function based on the Bradley-Terry framework that handles both standard preference pairs and the neutral tie pairs:
+\begin{align}
+\mathcal{L}(\phi) = &- \sum_{(Q, y_w, y_l) \in \mathcal{D}_{pref} \cup \mathcal{D}_{causal}} \log \sigmoid(\hat{R}_\phi(Q, y_w) - \hat{R}_\phi(Q, y_l)) \nonumber \\
+&- \lambda \sum_{(Q, A_1, A_2, y=\text{tie})\in \mathcal{D}_{neutral}} [ \log \sigmoid(\Delta_{12}) + \log \sigmoid(-\Delta_{12}) ]
+\label{eq:combined_loss_methodology_final_revised}
+\end{align}
+where $\Delta_{12} = \hat{R}_\phi(Q, A_1) - \hat{R}_\phi(Q, A_2)$. The first term is the standard negative log-likelihood loss. The second term, weighted by hyperparameter $\lambda \ge 0$, applies to the neutral pairs. This term encourages $\Delta_{12} \approx 0$ (equivalent to pushing $\sigma(\Delta_{12}) \to 0.5$), penalizing the model for assigning different scores to answers deemed causally equivalent. We tune $\lambda$ on a validation set (see Section \ref{sec:experiments}) to balance spurious invariance with causal sensitivity.
+
+By optimizing $\mathcal{L}(\phi)$, the model internalizes the distinctions enforced by the augmentations. Creating pairs that vary $C$ while holding $SP$ constant (causal augmentation) and pairs that vary $SP$ while holding $C$ constant (neutral augmentation) helps break the spurious correlation path $(A \to SP \to \hat{y})$ present in naive training, guiding $\hat{R}_\phi$ to align more closely with the true causal path $(A \to C \to R)$.
+

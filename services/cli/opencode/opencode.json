@@ -1,0 +1,26 @@
+{
+  "$schema": "./config.schema.json",
+  "_constitutional_hash": "cdd01ef066bc6cf2",
+  "provider": {
+    "openrouter": {
+      "models": {
+        "anthropic/claude-3.5-sonnet": {
+          "name": "Claude 3.5 Sonnet",
+          "tool_call": true,
+          "reasoning": true,
+          "temperature": true
+        },
+        "openai/gpt-4": {
+          "name": "GPT-4",
+          "tool_call": true,
+          "reasoning": true,
+          "temperature": true
+        }
+      },
+      "options": {
+        "apiKey": "YOUR_OPENROUTER_API_KEY_HERE"
+      }
+    }
+  },
+  "model": "openrouter/anthropic/claude-3.5-sonnet"
+}
