@@ -1,0 +1,84 @@
+# Mapping table for transforming theoretical placeholders to production metrics
+# Each entry maps a theoretical metric in the paper to actual production data
+
+theoretical_placeholders:
+  # Performance metrics from production_metrics.yml
+  "3\\.2ms":
+    production_metric: "latency.p99"
+    formatted_value: "3.2ms"
+    citation: "\\cite{perf-report}"
+    appendix_ref: " (see Appendix B)"
+    description: "P99 latency measurement"
+    
+  "95ms":
+    production_metric: "latency.p95"
+    formatted_value: "95ms"
+    citation: "\\cite{perf-report}"
+    appendix_ref: " (see Appendix B)"
+    description: "P95 latency measurement"
+    
+  "1\\.79ms":
+    production_metric: "latency.p50"
+    formatted_value: "1.79ms"
+    citation: "\\cite{perf-report}"
+    appendix_ref: " (see Appendix B)"
+    description: "P50 latency measurement"
+    
+  "150":
+    production_metric: "throughput_rps"
+    formatted_value: "150 RPS"
+    citation: "\\cite{perf-report}"
+    appendix_ref: " (see Appendix B)"
+    description: "Requests per second throughput"
+    
+  "87%":
+    production_metric: "cache_hit_rate"
+    formatted_value: "87%"
+    citation: "\\cite{perf-report}"
+    appendix_ref: ""
+    description: "Cache hit rate"
+    
+  # Security metrics
+  "OWASP score: A":
+    production_metric: "security.owasp_score"
+    formatted_value: "OWASP score: A"
+    citation: "\\cite{perf-report}"
+    appendix_ref: ""
+    description: "OWASP security score"
+    
+  "hardening: passed":
+    production_metric: "security.hardening"
+    formatted_value: "hardening: passed"
+    citation: "\\cite{perf-report}"
+    appendix_ref: ""
+    description: "Security hardening status"
+    
+  # Constitutional hash - exact replacement
+  "cdd01ef066bc6cf2":
+    production_metric: "certification.acgs_hash"
+    formatted_value: "cdd01ef066bc6cf2"
+    citation: "\\cite{perf-report}"
+    appendix_ref: ""
+    description: "Constitutional compliance hash"
+
+# Historical placeholders that were already updated but need verification
+historical_placeholders:
+  "172\\.98":
+    production_metric: "throughput_rps"
+    note: "Already updated in paper, verify consistency"
+    
+  "3\\.49ms":
+    production_metric: "latency.p99"
+    note: "Already updated in paper, verify consistency"
+    
+  "88\\.9%":
+    note: "Constitutional compliance - may need updating"
+    
+  "96\\.5%":
+    note: "Test success rate - derived metric"
+
+# Date and metadata
+metadata:
+  generated_at: "2025-07-07T12:07:57.855851"
+  paper_source: "/home/dislove/ACGS-2/docs/research/arxiv_submission_package/main.tex"
+  metrics_source: "/home/dislove/ACGS-2/production_metrics.yml"
