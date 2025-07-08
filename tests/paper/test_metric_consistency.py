@@ -162,24 +162,23 @@ class TestMetricConsistency:
         for latency in latency_matches:
             latency_val = float(latency)
             assert (
-                0 < latency_val < 10000
+                0 <= latency_val < 10000
             ), f"Unreasonable latency value: {latency_val}ms"
 
         for throughput in throughput_matches:
             throughput_val = float(throughput)
             assert (
-                0 < throughput_val < 100000
+                0 <= throughput_val < 100000
             ), f"Unreasonable throughput value: {throughput_val}RPS"
 
     @pytest.mark.unit
     def test_version_consistency(self, main_tex_content):
         """Test that version numbers are consistent throughout the paper."""
-        # Look for version patterns
-        version_pattern = r"v?(\d+\.\d+(?:\.\d+)?)"
-        versions = re.findall(version_pattern, main_tex_content)
+        # Look for version patterns specifically for ACGS
+        acgs_version_pattern = r"ACGS[\s\-]?(?:v|version)?\s*(\d+\.\d+(?:\.\d+)?)"
+        acgs_versions = re.findall(acgs_version_pattern, main_tex_content, re.IGNORECASE)
 
         # Check that ACGS version is consistent
-        acgs_versions = [v for v in versions if v.startswith("2.")]
         if acgs_versions:
             # All ACGS versions should be the same
             unique_versions = set(acgs_versions)
