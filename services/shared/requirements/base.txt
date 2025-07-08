@@ -1,0 +1,39 @@
+# ACGS Shared Base Requirements
+# Constitutional Hash: cdd01ef066bc6cf2
+# 
+# This file contains common dependencies used across all ACGS services
+# Include this in service-specific requirements with: -r ../shared/requirements/base.txt
+
+# Core FastAPI Framework (standardized versions)
+fastapi>=0.104.1
+pydantic>=2.5.0
+uvicorn[standard]>=0.24.0
+
+# Database & ORM (standardized)
+asyncpg>=0.29.0
+sqlalchemy[asyncio]>=2.0.23
+alembic>=1.13.1
+
+# Cache & Redis (standardized)
+redis>=5.0.0
+aioredis>=2.0.1
+
+# HTTP Client (standardized)
+httpx>=0.25.2
+
+# Security & Authentication (standardized, fixed duplicates)
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+cryptography>=41.0.8
+
+# Monitoring & Observability (standardized)
+prometheus-client>=0.19.0
+structlog>=23.2.0
+
+# Utility Libraries
+python-multipart>=0.0.6
+python-dotenv>=1.0.0
+tenacity>=8.2.3
+
+# Constitutional Compliance
+pydantic-settings>=2.0.0

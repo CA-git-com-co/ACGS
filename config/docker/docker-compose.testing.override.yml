@@ -1,0 +1,219 @@
+version: '3.8'
+services:
+  postgres:
+    environment:
+      POSTGRES_PASSWORD: acgs_test_password
+      POSTGRES_DB: acgs_test
+      CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+    volumes:
+    - postgres_test_data:/var/lib/postgresql/data
+    - ./infrastructure/database/init:/docker-entrypoint-initdb.d
+    - ./tests/fixtures/sql:/test-fixtures
+    command: postgres -c fsync=off -c synchronous_commit=off -c full_page_writes=off
+  redis:
+    environment:
+      REDIS_PASSWORD: acgs_test_redis
+      CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+    volumes:
+    - redis_test_data:/data
+    command: redis-server --appendonly no --save "" --requirepass acgs_test_redis
+  constitutional-ai:
+    environment:
+    - DATABASE_URL=postgresql://acgs_user:acgs_test_password@postgres:5432/acgs_test
+    - REDIS_URL=redis://:acgs_test_redis@redis:6379/0
+    - OPA_URL=http://opa:8181
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - SERVICE_NAME=constitutional-ai
+    - ENVIRONMENT=testing
+    - DEBUG=true
+    - LOG_LEVEL=DEBUG
+    - TESTING=true
+    - PYTHONPATH=/app
+    volumes:
+    - ./services/core/constitutional-ai:/app:delegated
+    - ./services/shared:/app/services/shared:delegated
+    - ./tests:/app/tests:ro
+    command: python -m pytest tests/ -v --tb=short
+  integrity:
+    environment:
+    - DATABASE_URL=postgresql://acgs_user:acgs_test_password@postgres:5432/acgs_test
+    - REDIS_URL=redis://:acgs_test_redis@redis:6379/1
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - SERVICE_NAME=integrity
+    - ENVIRONMENT=testing
+    - DEBUG=true
+    - LOG_LEVEL=DEBUG
+    - TESTING=true
+    - PYTHONPATH=/app
+    volumes:
+    - ./services/platform_services/integrity:/app:delegated
+    - ./services/shared:/app/services/shared:delegated
+    - ./tests:/app/tests:ro
+  api-gateway:
+    environment:
+    - CONSTITUTIONAL_AI_URL=http://constitutional-ai:8000
+    - INTEGRITY_URL=http://integrity:8000
+    - GOVERNANCE_SYNTHESIS_URL=http://governance-synthesis:8000
+    - AUTH_URL=http://auth:8000
+    - REDIS_URL=redis://:acgs_test_redis@redis:6379/2
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - SERVICE_NAME=api-gateway
+    - ENVIRONMENT=testing
+    - DEBUG=true
+    - LOG_LEVEL=DEBUG
+    - TESTING=true
+    - RATE_LIMIT_PER_MINUTE=10000
+    - PYTHONPATH=/app
+    volumes:
+    - ./services/platform_services/api_gateway:/app:delegated
+    - ./services/shared:/app/services/shared:delegated
+    - ./tests:/app/tests:ro
+  governance-synthesis:
+    environment:
+    - DATABASE_URL=postgresql://acgs_user:acgs_test_password@postgres:5432/acgs_test
+    - REDIS_URL=redis://:acgs_test_redis@redis:6379/3
+    - OPA_URL=http://opa:8181
+    - NATS_URL=nats://nats:4222
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - SERVICE_NAME=governance-synthesis
+    - ENVIRONMENT=testing
+    - DEBUG=true
+    - LOG_LEVEL=DEBUG
+    - TESTING=true
+    - PYTHONPATH=/app
+    volumes:
+    - ./services/core/governance-synthesis:/app:delegated
+    - ./services/shared:/app/services/shared:delegated
+    - ./tests:/app/tests:ro
+  auth:
+    environment:
+    - DATABASE_URL=postgresql://acgs_user:acgs_test_password@postgres:5432/acgs_test
+    - REDIS_URL=redis://:acgs_test_redis@redis:6379/4
+    - SECRET_KEY=test-secret-key-32-chars-long-minimum
+    - JWT_SECRET_KEY=test-jwt-secret-key-64-chars-long-for-testing-only-use
+    - CSRF_SECRET_KEY=test-csrf-secret-key-32-chars-long
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - SERVICE_NAME=auth
+    - ENVIRONMENT=testing
+    - DEBUG=true
+    - LOG_LEVEL=DEBUG
+    - TESTING=true
+    - ACCESS_TOKEN_EXPIRE_MINUTES=5
+    - REFRESH_TOKEN_EXPIRE_DAYS=1
+    - PYTHONPATH=/app
+    volumes:
+    - ./services/platform_services/authentication:/app:delegated
+    - ./services/shared:/app/services/shared:delegated
+    - ./tests:/app/tests:ro
+  code-analysis:
+    environment:
+    - DATABASE_URL=postgresql://acgs_user:acgs_test_password@postgres:5432/acgs_test
+    - REDIS_URL=redis://:acgs_test_redis@redis:6379/5
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - SERVICE_NAME=code-analysis
+    - ENVIRONMENT=testing
+    - DEBUG=true
+    - LOG_LEVEL=DEBUG
+    - TESTING=true
+    - PYTHONPATH=/app
+    volumes:
+    - ./services/core/code-analysis:/app:delegated
+    - ./services/shared:/app/services/shared:delegated
+    - ./tests:/app/tests:ro
+  context:
+    environment:
+    - DATABASE_URL=postgresql://acgs_user:acgs_test_password@postgres:5432/acgs_test
+    - REDIS_URL=redis://:acgs_test_redis@redis:6379/6
+    - NATS_URL=nats://nats:4222
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - SERVICE_NAME=context
+    - ENVIRONMENT=testing
+    - DEBUG=true
+    - LOG_LEVEL=DEBUG
+    - TESTING=true
+    - PYTHONPATH=/app
+    volumes:
+    - ./services/core/context:/app:delegated
+    - ./services/shared:/app/services/shared:delegated
+    - ./tests:/app/tests:ro
+  test-runner:
+    image: python:3.11-slim
+    container_name: acgs_test_runner
+    volumes:
+    - .:/workspace:delegated
+    - test_runner_cache:/root/.cache
+    working_dir: /workspace
+    environment:
+    - PYTHONPATH=/workspace
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - DATABASE_URL=postgresql://acgs_user:acgs_test_password@postgres:5432/acgs_test
+    - REDIS_URL=redis://:acgs_test_redis@redis:6379/0
+    - TESTING=true
+    command: "bash -c \"\n  pip install -r requirements.txt &&\n  python -m pytest\
+      \ tests/ -v --tb=short --cov=services --cov-report=html --cov-report=term &&\n\
+      \  python -m pytest tests/integration/ -v --tb=short\n\"\n"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      opa:
+        condition: service_healthy
+      nats:
+        condition: service_healthy
+    networks:
+    - acgs_network
+    labels:
+    - acgs.service=testing
+    - acgs.component=test-runner
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
+  load-tester:
+    image: python:3.11-slim
+    container_name: acgs_load_tester
+    volumes:
+    - ./tests/load_testing:/workspace:delegated
+    - load_test_cache:/root/.cache
+    working_dir: /workspace
+    environment:
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - API_GATEWAY_URL=http://api-gateway:8000
+    - CONSTITUTIONAL_AI_URL=http://constitutional-ai:8000
+    command: "bash -c \"\n  pip install locust requests &&\n  locust -f load_test.py\
+      \ --headless -u 100 -r 10 -t 60s --host=http://api-gateway:8000\n\"\n"
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+      constitutional-ai:
+        condition: service_healthy
+    networks:
+    - acgs_network
+    labels:
+    - acgs.service=testing
+    - acgs.component=load-testing
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
+volumes:
+  postgres_test_data:
+    driver: local
+    labels:
+    - acgs.volume=database
+    - acgs.environment=testing
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
+  redis_test_data:
+    driver: local
+    labels:
+    - acgs.volume=cache
+    - acgs.environment=testing
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
+  test_runner_cache:
+    driver: local
+    labels:
+    - acgs.volume=cache
+    - acgs.environment=testing
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
+  load_test_cache:
+    driver: local
+    labels:
+    - acgs.volume=cache
+    - acgs.environment=testing
+    - acgs.constitutional_hash=cdd01ef066bc6cf2
+constitutional_hash: cdd01ef066bc6cf2

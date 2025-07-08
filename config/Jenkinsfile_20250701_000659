@@ -1,0 +1,97 @@
+
+pipeline {
+    agent any
+    
+    environment {
+        CONSTITUTIONAL_HASH = 'cdd01ef066bc6cf2'
+        DATABASE_URL = 'postgresql://postgres:postgres@localhost:5432/acgs_test'
+        REDIS_URL = 'redis://localhost:6379/0'
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        
+        stage('Setup') {
+            steps {
+                sh 'pip install -r requirements.txt'
+                sh 'pip install -r requirements-test.txt'
+            }
+        }
+        
+        stage('Unit Tests') {
+            steps {
+                sh 'python -m pytest tests/unit/ -v --cov=services --cov-report=xml --junitxml=unit-test-results.xml'
+            }
+            post {
+                always {
+                    junit 'unit-test-results.xml'
+                    publishCoverage adapters: [coberturaAdapter('coverage.xml')], sourceFileResolver: sourceFiles('STORE_LAST_BUILD')
+                }
+            }
+        }
+        
+        stage('Integration Tests') {
+            steps {
+                sh 'python -m pytest tests/integration/ -v --junitxml=integration-test-results.xml'
+            }
+            post {
+                always {
+                    junit 'integration-test-results.xml'
+                }
+            }
+        }
+        
+        stage('Security Tests') {
+            steps {
+                sh 'python -m pytest tests/security/ -v --junitxml=security-test-results.xml'
+                sh 'python security/audit/comprehensive_security_audit.py'
+            }
+            post {
+                always {
+                    junit 'security-test-results.xml'
+                    archiveArtifacts artifacts: 'security_audit_report_*.json', fingerprint: true
+                }
+            }
+        }
+        
+        stage('Constitutional Tests') {
+            steps {
+                sh 'python tests/policies/test_constitutional_policies.py'
+            }
+        }
+        
+        stage('Performance Tests') {
+            when {
+                anyOf {
+                    branch 'main'
+                    triggeredBy 'TimerTrigger'
+                }
+            }
+            steps {
+                sh 'python performance/validation/latency_validation_suite.py'
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: 'latency_validation_results_*.json', fingerprint: true
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            cleanWs()
+        }
+        failure {
+            emailext (
+                subject: "ACGS Pipeline Failed: ${env.JOB_NAME} - ${env.BUILD_NUMBER}",
+                body: "Build failed. Check console output at ${env.BUILD_URL}",
+                to: "${env.CHANGE_AUTHOR_EMAIL}"
+            )
+        }
+    }
+}

@@ -1,0 +1,523 @@
+# ACGS-2 Complete Production Kubernetes Deployment
+# Constitutional Hash: cdd01ef066bc6cf2
+# Performance Targets: P99 <5ms, >100 RPS, >85% cache hit
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: acgs-production-config
+  namespace: acgs-production
+  labels:
+    app: acgs
+    environment: production
+    constitutional-hash: cdd01ef066bc6cf2
+data:
+  CONSTITUTIONAL_HASH: "cdd01ef066bc6cf2"
+  ENVIRONMENT: "production"
+  DEBUG: "false"
+  LOG_LEVEL: "INFO"
+  TARGET_P99_LATENCY_MS: "5.0"
+  TARGET_CACHE_HIT_RATE: "0.85"
+  TARGET_THROUGHPUT_RPS: "100.0"
+  PROMETHEUS_URL: "http://prometheus:9090"
+  GRAFANA_URL: "http://grafana:3000"
+  HEALTH_CHECK_INTERVAL: "30s"
+  HEALTH_CHECK_TIMEOUT: "10s"
+  HEALTH_CHECK_RETRIES: "3"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: acgs-production-secrets
+  namespace: acgs-production
+  labels:
+    app: acgs
+    environment: production
+    constitutional-hash: cdd01ef066bc6cf2
+type: Opaque
+stringData:
+  POSTGRES_PASSWORD: "CHANGE_ME_SECURE_PASSWORD_32_CHARS_MIN"
+  REDIS_PASSWORD: "CHANGE_ME_REDIS_SECURE_PASSWORD"
+  SECRET_KEY: "CHANGE_ME_SUPER_SECURE_JWT_KEY_MINIMUM_32_CHARACTERS_LONG_PRODUCTION_SECRET"
+  JWT_SECRET_KEY: "CHANGE_ME_JWT_SIGNING_KEY_MUST_BE_DIFFERENT_AND_SECURE_32_CHARS_MIN"
+  CSRF_SECRET_KEY: "CHANGE_ME_CSRF_PROTECTION_KEY_MUST_BE_SECURE_AND_UNIQUE_32_CHARS"
+  GRAFANA_ADMIN_PASSWORD: "CHANGE_ME_GRAFANA_ADMIN_PASSWORD"
+  ANTHROPIC_API_KEY: "CHANGE_ME_ANTHROPIC_API_KEY_IF_NEEDED"
+  OPENAI_API_KEY: "CHANGE_ME_OPENAI_API_KEY_IF_NEEDED"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-data-pvc
+  namespace: acgs-production
+  labels:
+    app: postgres
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+  storageClassName: fast-ssd
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-data-pvc
+  namespace: acgs-production
+  labels:
+    app: redis
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: fast-ssd
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: acgs-production
+  labels:
+    app: postgres
+    tier: database
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+        tier: database
+        constitutional-hash: cdd01ef066bc6cf2
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        fsGroup: 999
+      containers:
+      - name: postgres
+        image: postgres:15-alpine
+        env:
+        - name: POSTGRES_USER
+          value: "acgs_production_user"
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: acgs-production-secrets
+              key: POSTGRES_PASSWORD
+        - name: POSTGRES_DB
+          value: "acgs_production"
+        - name: CONSTITUTIONAL_HASH
+          valueFrom:
+            configMapKeyRef:
+              name: acgs-production-config
+              key: CONSTITUTIONAL_HASH
+        ports:
+        - containerPort: 5432
+          name: postgres
+        volumeMounts:
+        - name: postgres-data
+          mountPath: /var/lib/postgresql/data
+        resources:
+          limits:
+            cpu: 2000m
+            memory: 4Gi
+          requests:
+            cpu: 500m
+            memory: 1Gi
+        livenessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - acgs_production_user
+            - -d
+            - acgs_production
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - acgs_production_user
+            - -d
+            - acgs_production
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+      volumes:
+      - name: postgres-data
+        persistentVolumeClaim:
+          claimName: postgres-data-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: acgs-production
+  labels:
+    app: postgres
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  type: ClusterIP
+  ports:
+  - port: 5432
+    targetPort: 5432
+    name: postgres
+  selector:
+    app: postgres
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: acgs-production
+  labels:
+    app: redis
+    tier: cache
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+        tier: cache
+        constitutional-hash: cdd01ef066bc6cf2
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        fsGroup: 999
+      containers:
+      - name: redis
+        image: redis:7-alpine
+        command:
+        - redis-server
+        - --requirepass
+        - $(REDIS_PASSWORD)
+        - --maxmemory
+        - 512mb
+        - --maxmemory-policy
+        - allkeys-lru
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: acgs-production-secrets
+              key: REDIS_PASSWORD
+        - name: CONSTITUTIONAL_HASH
+          valueFrom:
+            configMapKeyRef:
+              name: acgs-production-config
+              key: CONSTITUTIONAL_HASH
+        ports:
+        - containerPort: 6379
+          name: redis
+        volumeMounts:
+        - name: redis-data
+          mountPath: /data
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 256Mi
+        livenessProbe:
+          exec:
+            command:
+            - redis-cli
+            - --raw
+            - incr
+            - ping
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
+        readinessProbe:
+          exec:
+            command:
+            - redis-cli
+            - --raw
+            - incr
+            - ping
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+      volumes:
+      - name: redis-data
+        persistentVolumeClaim:
+          claimName: redis-data-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: acgs-production
+  labels:
+    app: redis
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  type: ClusterIP
+  ports:
+  - port: 6379
+    targetPort: 6379
+    name: redis
+  selector:
+    app: redis
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+  namespace: acgs-production
+  labels:
+    app: auth-service
+    tier: backend
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+        tier: backend
+        constitutional-hash: cdd01ef066bc6cf2
+    spec:
+      serviceAccountName: acgs-service-account
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+      - name: auth-service
+        image: acgs/auth-service:latest
+        env:
+        - name: CONSTITUTIONAL_HASH
+          valueFrom:
+            configMapKeyRef:
+              name: acgs-production-config
+              key: CONSTITUTIONAL_HASH
+        - name: ENVIRONMENT
+          valueFrom:
+            configMapKeyRef:
+              name: acgs-production-config
+              key: ENVIRONMENT
+        - name: DATABASE_URL
+          value: "postgresql://acgs_production_user:$(POSTGRES_PASSWORD)@postgres:5432/acgs_production"
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: acgs-production-secrets
+              key: POSTGRES_PASSWORD
+        - name: REDIS_URL
+          value: "redis://:$(REDIS_PASSWORD)@redis:6379/0"
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: acgs-production-secrets
+              key: REDIS_PASSWORD
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: acgs-production-secrets
+              key: SECRET_KEY
+        - name: JWT_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: acgs-production-secrets
+              key: JWT_SECRET_KEY
+        ports:
+        - containerPort: 8016
+          name: http
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+          requests:
+            cpu: 200m
+            memory: 512Mi
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8016
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8016
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 5
+          failureThreshold: 3
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+  namespace: acgs-production
+  labels:
+    app: auth-service
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8016
+    targetPort: 8016
+    name: http
+  selector:
+    app: auth-service
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: constitutional-ai-service
+  namespace: acgs-production
+  labels:
+    app: constitutional-ai-service
+    tier: backend
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: constitutional-ai-service
+  template:
+    metadata:
+      labels:
+        app: constitutional-ai-service
+        tier: backend
+        constitutional-hash: cdd01ef066bc6cf2
+    spec:
+      serviceAccountName: acgs-service-account
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+      - name: constitutional-ai-service
+        image: acgs/constitutional-ai-service:latest
+        env:
+        - name: CONSTITUTIONAL_HASH
+          valueFrom:
+            configMapKeyRef:
+              name: acgs-production-config
+              key: CONSTITUTIONAL_HASH
+        - name: ENVIRONMENT
+          valueFrom:
+            configMapKeyRef:
+              name: acgs-production-config
+              key: ENVIRONMENT
+        - name: DATABASE_URL
+          value: "postgresql://acgs_production_user:$(POSTGRES_PASSWORD)@postgres:5432/acgs_production"
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: acgs-production-secrets
+              key: POSTGRES_PASSWORD
+        - name: REDIS_URL
+          value: "redis://:$(REDIS_PASSWORD)@redis:6379/1"
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: acgs-production-secrets
+              key: REDIS_PASSWORD
+        - name: AUTH_SERVICE_URL
+          value: "http://auth-service:8016"
+        - name: ANTHROPIC_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: acgs-production-secrets
+              key: ANTHROPIC_API_KEY
+        ports:
+        - containerPort: 8001
+          name: http
+        resources:
+          limits:
+            cpu: 2000m
+            memory: 2Gi
+          requests:
+            cpu: 500m
+            memory: 1Gi
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8001
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8001
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 5
+          failureThreshold: 3
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: constitutional-ai-service
+  namespace: acgs-production
+  labels:
+    app: constitutional-ai-service
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8001
+    targetPort: 8001
+    name: http
+  selector:
+    app: constitutional-ai-service

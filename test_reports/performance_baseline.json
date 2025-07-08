@@ -1,0 +1,186 @@
+{
+  "timestamp": "2025-07-08T21:11:57.702557+00:00",
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "service_metrics": {
+    "constitutional-ai": {
+      "service_name": "constitutional-ai",
+      "base_url": "http://localhost:8001",
+      "latency_metrics": {
+        "p50_ms": 0.4771289986820193,
+        "p95_ms": 0.6012659978296142,
+        "p99_ms": 0.7331540000450332,
+        "mean_ms": 0.48426573994220234,
+        "min_ms": 0.2975080024043564,
+        "max_ms": 0.7331540000450332,
+        "samples": 100
+      },
+      "throughput_metrics": {
+        "rps": 95.69304367261819,
+        "total_requests": 960,
+        "successful_requests": 960,
+        "failed_requests": 0,
+        "error_rate": 0.0,
+        "test_duration_s": 10.032077183001093
+      },
+      "resource_metrics": {
+        "cpu_percent": 25.2,
+        "memory_percent": 42.2,
+        "memory_available_mb": 74254.87109375,
+        "disk_percent": 3.6,
+        "load_average": 4.00341796875
+      },
+      "constitutional_compliance": {
+        "status_code": 200,
+        "hash_in_response": true,
+        "hash_in_headers": true,
+        "constitutional_compliant": true,
+        "response_size": 317
+      },
+      "status": "tested"
+    },
+    "integrity": {
+      "service_name": "integrity",
+      "base_url": "http://localhost:8002",
+      "latency_metrics": {},
+      "throughput_metrics": {},
+      "resource_metrics": {},
+      "constitutional_compliance": {},
+      "status": "unavailable"
+    },
+    "formal-verification": {
+      "service_name": "formal-verification",
+      "base_url": "http://localhost:8003",
+      "latency_metrics": {},
+      "throughput_metrics": {},
+      "resource_metrics": {},
+      "constitutional_compliance": {},
+      "status": "unavailable"
+    },
+    "governance-synthesis": {
+      "service_name": "governance-synthesis",
+      "base_url": "http://localhost:8004",
+      "latency_metrics": {},
+      "throughput_metrics": {},
+      "resource_metrics": {},
+      "constitutional_compliance": {},
+      "status": "unavailable"
+    },
+    "policy-governance": {
+      "service_name": "policy-governance",
+      "base_url": "http://localhost:8005",
+      "latency_metrics": {},
+      "throughput_metrics": {},
+      "resource_metrics": {},
+      "constitutional_compliance": {},
+      "status": "unavailable"
+    },
+    "evolutionary-computation": {
+      "service_name": "evolutionary-computation",
+      "base_url": "http://localhost:8006",
+      "latency_metrics": {},
+      "throughput_metrics": {},
+      "resource_metrics": {},
+      "constitutional_compliance": {},
+      "status": "unavailable"
+    },
+    "code-analysis": {
+      "service_name": "code-analysis",
+      "base_url": "http://localhost:8007",
+      "latency_metrics": {},
+      "throughput_metrics": {},
+      "resource_metrics": {},
+      "constitutional_compliance": {},
+      "status": "unavailable"
+    },
+    "multi-agent-coordinator": {
+      "service_name": "multi-agent-coordinator",
+      "base_url": "http://localhost:8008",
+      "latency_metrics": {
+        "p50_ms": 0.37327700192690827,
+        "p95_ms": 1.0385610003140755,
+        "p99_ms": 3.816794000158552,
+        "mean_ms": 0.5046569599289796,
+        "min_ms": 0.2932069983216934,
+        "max_ms": 3.816794000158552,
+        "samples": 100
+      },
+      "throughput_metrics": {
+        "rps": 8.69411973492894,
+        "total_requests": 90,
+        "successful_requests": 90,
+        "failed_requests": 0,
+        "error_rate": 0.0,
+        "test_duration_s": 10.351824306999333
+      },
+      "resource_metrics": {
+        "cpu_percent": 31.0,
+        "memory_percent": 42.7,
+        "memory_available_mb": 73643.6796875,
+        "disk_percent": 3.6,
+        "load_average": 4.00927734375
+      },
+      "constitutional_compliance": {
+        "status_code": 200,
+        "hash_in_response": true,
+        "hash_in_headers": false,
+        "constitutional_compliant": true,
+        "response_size": 64
+      },
+      "status": "tested"
+    },
+    "worker-agents": {
+      "service_name": "worker-agents",
+      "base_url": "http://localhost:8009",
+      "latency_metrics": {},
+      "throughput_metrics": {},
+      "resource_metrics": {},
+      "constitutional_compliance": {},
+      "status": "unavailable"
+    },
+    "blackboard": {
+      "service_name": "blackboard",
+      "base_url": "http://localhost:8010",
+      "latency_metrics": {},
+      "throughput_metrics": {},
+      "resource_metrics": {},
+      "constitutional_compliance": {},
+      "status": "unavailable"
+    },
+    "context": {
+      "service_name": "context",
+      "base_url": "http://localhost:8012",
+      "latency_metrics": {},
+      "throughput_metrics": {},
+      "resource_metrics": {},
+      "constitutional_compliance": {},
+      "status": "unavailable"
+    },
+    "audit-aggregator": {
+      "service_name": "audit-aggregator",
+      "base_url": "http://localhost:8015",
+      "latency_metrics": {},
+      "throughput_metrics": {},
+      "resource_metrics": {},
+      "constitutional_compliance": {},
+      "status": "unavailable"
+    },
+    "authentication": {
+      "service_name": "authentication",
+      "base_url": "http://localhost:8016",
+      "latency_metrics": {},
+      "throughput_metrics": {},
+      "resource_metrics": {},
+      "constitutional_compliance": {},
+      "status": "unavailable"
+    }
+  },
+  "performance_targets": {
+    "p99_latency_ms": 5.0,
+    "p95_latency_ms": 3.0,
+    "p50_latency_ms": 2.0,
+    "throughput_rps": 100,
+    "cache_hit_rate": 0.85,
+    "memory_usage_mb": 500,
+    "cpu_usage_percent": 80
+  }
+}

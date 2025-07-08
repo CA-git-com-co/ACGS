@@ -1,0 +1,295 @@
+# ACGS-2 Constitutional Compliance Alerting Rules
+# Constitutional Hash: cdd01ef066bc6cf2
+# Performance Targets: P99 <5ms, >100 RPS, >85% cache hit
+
+groups:
+  - name: constitutional_compliance
+    interval: 30s
+    rules:
+      # Constitutional Hash Validation
+      - alert: ConstitutionalHashMismatch
+        expr: |
+          (
+            count by (service_name) (
+              {constitutional_hash!="cdd01ef066bc6cf2"}
+            )
+          ) > 0
+        for: 1m
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+          compliance_type: hash_validation
+        annotations:
+          summary: "Constitutional hash mismatch detected"
+          description: "Service {{ $labels.service_name }} is reporting incorrect constitutional hash. Expected: cdd01ef066bc6cf2"
+          runbook_url: "https://docs.acgs.io/runbooks/constitutional-compliance"
+
+      # Service Health Compliance
+      - alert: ServiceHealthComplianceFailure
+        expr: |
+          (
+            up{constitutional_hash="cdd01ef066bc6cf2"} == 0
+          )
+        for: 2m
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+          compliance_type: service_health
+        annotations:
+          summary: "Service health compliance failure"
+          description: "Service {{ $labels.service_name }} is down and not meeting constitutional compliance requirements"
+          runbook_url: "https://docs.acgs.io/runbooks/service-health"
+
+      # Performance Target Compliance - P99 Latency
+      - alert: P99LatencyComplianceViolation
+        expr: |
+          (
+            histogram_quantile(0.99, 
+              rate(http_request_duration_seconds_bucket{constitutional_hash="cdd01ef066bc6cf2"}[5m])
+            ) * 1000
+          ) > 5
+        for: 3m
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+          compliance_type: performance_latency
+          target: "5ms"
+        annotations:
+          summary: "P99 latency compliance violation"
+          description: "Service {{ $labels.service_name }} P99 latency is {{ $value }}ms, exceeding 5ms target"
+          runbook_url: "https://docs.acgs.io/runbooks/performance-latency"
+
+      # Performance Target Compliance - Throughput
+      - alert: ThroughputComplianceViolation
+        expr: |
+          (
+            rate(http_requests_total{constitutional_hash="cdd01ef066bc6cf2"}[5m])
+          ) < 100
+        for: 5m
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+          compliance_type: performance_throughput
+          target: "100rps"
+        annotations:
+          summary: "Throughput compliance violation"
+          description: "Service {{ $labels.service_name }} throughput is {{ $value }}rps, below 100rps target"
+          runbook_url: "https://docs.acgs.io/runbooks/performance-throughput"
+
+      # Cache Hit Rate Compliance
+      - alert: CacheHitRateComplianceViolation
+        expr: |
+          (
+            rate(redis_keyspace_hits_total{constitutional_hash="cdd01ef066bc6cf2"}[5m]) /
+            (
+              rate(redis_keyspace_hits_total{constitutional_hash="cdd01ef066bc6cf2"}[5m]) +
+              rate(redis_keyspace_misses_total{constitutional_hash="cdd01ef066bc6cf2"}[5m])
+            )
+          ) < 0.85
+        for: 5m
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+          compliance_type: performance_cache
+          target: "85%"
+        annotations:
+          summary: "Cache hit rate compliance violation"
+          description: "Redis cache hit rate is {{ $value | humanizePercentage }}, below 85% target"
+          runbook_url: "https://docs.acgs.io/runbooks/cache-performance"
+
+  - name: constitutional_governance
+    interval: 60s
+    rules:
+      # Multi-Agent Coordination Compliance
+      - alert: MultiAgentCoordinationFailure
+        expr: |
+          (
+            increase(acgs_agent_coordination_failures_total{constitutional_hash="cdd01ef066bc6cf2"}[10m])
+          ) > 5
+        for: 2m
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+          compliance_type: agent_coordination
+        annotations:
+          summary: "Multi-agent coordination compliance failure"
+          description: "{{ $labels.coordinator_id }} has {{ $value }} coordination failures in the last 10 minutes"
+          runbook_url: "https://docs.acgs.io/runbooks/agent-coordination"
+
+      # Constitutional AI Processing Compliance
+      - alert: ConstitutionalAIProcessingFailure
+        expr: |
+          (
+            rate(acgs_constitutional_ai_processing_errors_total{constitutional_hash="cdd01ef066bc6cf2"}[5m])
+          ) > 0.01
+        for: 3m
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+          compliance_type: ai_processing
+        annotations:
+          summary: "Constitutional AI processing compliance failure"
+          description: "Constitutional AI service error rate is {{ $value | humanizePercentage }}, exceeding 1% threshold"
+          runbook_url: "https://docs.acgs.io/runbooks/constitutional-ai"
+
+      # Integrity Service Compliance
+      - alert: IntegrityServiceComplianceFailure
+        expr: |
+          (
+            rate(acgs_integrity_validation_failures_total{constitutional_hash="cdd01ef066bc6cf2"}[5m])
+          ) > 0.001
+        for: 2m
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+          compliance_type: integrity_validation
+        annotations:
+          summary: "Integrity service compliance failure"
+          description: "Integrity service validation failure rate is {{ $value | humanizePercentage }}, exceeding 0.1% threshold"
+          runbook_url: "https://docs.acgs.io/runbooks/integrity-service"
+
+  - name: constitutional_security
+    interval: 30s
+    rules:
+      # Authentication Compliance
+      - alert: AuthenticationComplianceFailure
+        expr: |
+          (
+            rate(acgs_auth_failures_total{constitutional_hash="cdd01ef066bc6cf2"}[5m])
+          ) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+          compliance_type: authentication
+        annotations:
+          summary: "Authentication compliance failure"
+          description: "Authentication failure rate is {{ $value | humanizePercentage }}, exceeding 5% threshold"
+          runbook_url: "https://docs.acgs.io/runbooks/authentication"
+
+      # Authorization Compliance
+      - alert: AuthorizationComplianceFailure
+        expr: |
+          (
+            rate(acgs_authorization_failures_total{constitutional_hash="cdd01ef066bc6cf2"}[5m])
+          ) > 0.02
+        for: 2m
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+          compliance_type: authorization
+        annotations:
+          summary: "Authorization compliance failure"
+          description: "Authorization failure rate is {{ $value | humanizePercentage }}, exceeding 2% threshold"
+          runbook_url: "https://docs.acgs.io/runbooks/authorization"
+
+      # Security Headers Compliance
+      - alert: SecurityHeadersComplianceFailure
+        expr: |
+          (
+            rate(acgs_security_headers_violations_total{constitutional_hash="cdd01ef066bc6cf2"}[5m])
+          ) > 0
+        for: 1m
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+          compliance_type: security_headers
+        annotations:
+          summary: "Security headers compliance failure"
+          description: "Security headers violations detected on {{ $labels.service_name }}"
+          runbook_url: "https://docs.acgs.io/runbooks/security-headers"
+
+  - name: constitutional_infrastructure
+    interval: 60s
+    rules:
+      # Database Compliance
+      - alert: DatabaseComplianceFailure
+        expr: |
+          (
+            pg_up{constitutional_hash="cdd01ef066bc6cf2"} == 0
+          )
+        for: 1m
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+          compliance_type: database
+        annotations:
+          summary: "Database compliance failure"
+          description: "PostgreSQL database is down, violating constitutional compliance requirements"
+          runbook_url: "https://docs.acgs.io/runbooks/database"
+
+      # Redis Compliance
+      - alert: RedisComplianceFailure
+        expr: |
+          (
+            redis_up{constitutional_hash="cdd01ef066bc6cf2"} == 0
+          )
+        for: 1m
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+          compliance_type: cache
+        annotations:
+          summary: "Redis compliance failure"
+          description: "Redis cache is down, violating constitutional compliance requirements"
+          runbook_url: "https://docs.acgs.io/runbooks/redis"
+
+      # Resource Utilization Compliance
+      - alert: ResourceUtilizationComplianceViolation
+        expr: |
+          (
+            (
+              rate(container_cpu_usage_seconds_total{constitutional_hash="cdd01ef066bc6cf2"}[5m]) * 100
+            ) > 80
+          ) or (
+            (
+              container_memory_usage_bytes{constitutional_hash="cdd01ef066bc6cf2"} / 
+              container_spec_memory_limit_bytes{constitutional_hash="cdd01ef066bc6cf2"} * 100
+            ) > 80
+          )
+        for: 5m
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+          compliance_type: resource_utilization
+        annotations:
+          summary: "Resource utilization compliance violation"
+          description: "Container {{ $labels.name }} resource utilization exceeds 80% threshold"
+          runbook_url: "https://docs.acgs.io/runbooks/resource-utilization"
+
+  - name: constitutional_monitoring
+    interval: 120s
+    rules:
+      # Monitoring Stack Compliance
+      - alert: MonitoringStackComplianceFailure
+        expr: |
+          (
+            up{job="prometheus", constitutional_hash="cdd01ef066bc6cf2"} == 0
+          ) or (
+            up{job="grafana", constitutional_hash="cdd01ef066bc6cf2"} == 0
+          )
+        for: 2m
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+          compliance_type: monitoring
+        annotations:
+          summary: "Monitoring stack compliance failure"
+          description: "Critical monitoring component {{ $labels.job }} is down"
+          runbook_url: "https://docs.acgs.io/runbooks/monitoring"
+
+      # Metrics Collection Compliance
+      - alert: MetricsCollectionComplianceFailure
+        expr: |
+          (
+            increase(prometheus_tsdb_symbol_table_size_bytes{constitutional_hash="cdd01ef066bc6cf2"}[10m]) == 0
+          )
+        for: 5m
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+          compliance_type: metrics_collection
+        annotations:
+          summary: "Metrics collection compliance failure"
+          description: "Prometheus is not collecting new metrics, potential data loss"
+          runbook_url: "https://docs.acgs.io/runbooks/metrics-collection"

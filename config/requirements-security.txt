@@ -1,0 +1,20 @@
+# ACGS Security Dependencies
+# Constitutional Hash: cdd01ef066bc6cf2
+
+# Security scanning and monitoring
+bandit>=1.7.5
+safety>=2.3.0
+pip-audit>=2.6.0
+
+# Cryptography and security
+cryptography>=41.0.0
+pyjwt[crypto]>=2.8.0
+passlib[bcrypt]>=1.7.4
+
+# Rate limiting and protection
+slowapi>=0.1.9
+python-multipart>=0.0.6
+
+# Input validation and sanitization
+bleach>=6.0.0
+validators>=0.20.0

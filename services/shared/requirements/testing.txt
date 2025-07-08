@@ -1,0 +1,22 @@
+# ACGS Shared Testing Requirements
+# Constitutional Hash: cdd01ef066bc6cf2
+
+# Core Testing Framework
+pytest>=7.4.3
+pytest-asyncio>=0.21.1
+pytest-cov>=4.1.0
+pytest-mock>=3.12.0
+
+# Test Utilities
+factory-boy>=3.3.0
+faker>=20.1.0
+
+# Code Quality & Linting
+black>=23.9.0
+ruff>=0.1.0
+mypy>=1.6.0
+pre-commit>=3.5.0
+
+# Type Checking
+types-redis>=4.6.0
+types-requests>=2.31.0

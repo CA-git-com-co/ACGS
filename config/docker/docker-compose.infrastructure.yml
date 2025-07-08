@@ -1,0 +1,49 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15
+    container_name: acgs_postgres
+    environment:
+      - POSTGRES_DB=acgs
+      - POSTGRES_USER=acgs_user
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-acgs_dev_password}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U acgs_user -d acgs"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - acgs_network
+    labels:
+      - acgs.service=infrastructure
+      - acgs.constitutional_hash=cdd01ef066bc6cf2
+
+  redis:
+    image: redis:7-alpine
+    container_name: acgs_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - acgs_network
+    labels:
+      - acgs.service=infrastructure
+      - acgs.constitutional_hash=cdd01ef066bc6cf2
+
+networks:
+  acgs_network:
+    external: true
+
+volumes:
+  postgres_data:
+  redis_data:

@@ -1,0 +1,56 @@
+# ACGS-PGP Multi-stage Dockerfile with UV package manager
+# Constitutional Hash: cdd01ef066bc6cf2
+
+FROM python:3.11-slim as base
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    build-essential \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install UV
+RUN pip install uv
+
+# Set working directory
+WORKDIR /app
+
+# Copy UV configuration
+COPY uv.toml pyproject.toml ./
+COPY requirements.txt ./
+
+# Install dependencies with UV
+RUN uv venv && \
+    uv pip install -r requirements.txt
+
+# Production stage
+FROM python:3.11-slim as production
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy virtual environment from base
+COPY --from=base /app/.venv /app/.venv
+
+# Set environment
+ENV PATH="/app/.venv/bin:$PATH"
+ENV PYTHONPATH="/app"
+
+# Copy application code
+COPY . /app
+WORKDIR /app
+
+# Create non-root user
+RUN useradd --create-home --shell /bin/bash app && \
+    chown -R app:app /app
+USER app
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+# Default command
+CMD ["python", "-m", "services.main"]

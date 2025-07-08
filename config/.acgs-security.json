@@ -1,0 +1,14 @@
+{
+  "acgs_security": {
+    "constitutional_hash": "cdd01ef066bc6cf2",
+    "security_scan_enabled": true,
+    "vulnerability_monitoring": true,
+    "last_security_update": "2025-07-02T20:21:24.458022+00:00",
+    "critical_packages": [
+      "cryptography>=45.0.4",
+      "urllib3>=2.5.0",
+      "certifi>=2025.6.15",
+      "torch>=2.7.1"
+    ]
+  }
+}

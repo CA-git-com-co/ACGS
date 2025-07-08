@@ -1,0 +1,29 @@
+# ACGS Shared Quantum Computing Requirements
+# Constitutional Hash: cdd01ef066bc6cf2
+# For quantum computing services
+
+# Core Quantum Computing Libraries
+cirq>=1.5.0
+openfermion>=1.7.1
+tensorflow-quantum>=0.7.3
+qsim>=0.15.0
+qualtran>=0.1.0
+
+# Quantum-specific Scientific Computing
+tensorflow-probability>=0.21.0
+matplotlib>=3.7.0
+networkx>=3.1.0
+sympy>=1.12.0
+
+# High-Performance Computing for Quantum
+numba>=0.58.0
+cython>=3.0.0
+
+# Documentation for Quantum Algorithms
+mkdocs>=1.5.0
+mkdocs-material>=9.4.0
+
+# Quantum Hardware Integration (optional)
+# cirq-google>=1.5.0  # Google Quantum AI hardware
+# cirq-ionq>=1.5.0    # IonQ hardware integration
+# cirq-rigetti>=1.5.0 # Rigetti hardware integration

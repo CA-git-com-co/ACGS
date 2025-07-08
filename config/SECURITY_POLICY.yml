@@ -1,0 +1,21 @@
+critical_packages:
+- python-jose>=3.5.1
+- ecdsa>=0.20.0
+- torch>=2.7.3
+- cryptography>=45.0.4
+- requests>=2.32.4
+- urllib3>=2.5.0
+- certifi>=2025.6.15
+scanning:
+  frequency: daily
+  tools:
+  - safety
+  - pip-audit
+  - bandit
+thresholds:
+  critical: 0
+  high: 0
+  medium: 5
+  low: 10
+ignored: null
+constitutional_hash: cdd01ef066bc6cf2

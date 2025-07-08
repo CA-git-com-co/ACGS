@@ -1,0 +1,138 @@
+{
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "version": "1.0.0",
+  "description": "Centralized cache optimization configuration registry for all ACGS services",
+  "services": {
+    "ac_service": {
+      "service_name": "ac_service",
+      "cache_type": "constitutional_hash",
+      "ttl_seconds": 86400,
+      "max_size": 1000,
+      "warming_keys": [
+        "constitutional_hash:cdd01ef066bc6cf2",
+        "compliance_framework",
+        "validation_rules"
+      ]
+    },
+    "pgc_service": {
+      "service_name": "pgc_service", 
+      "cache_type": "governance_rules",
+      "ttl_seconds": 7200,
+      "max_size": 2000,
+      "warming_keys": [
+        "active_rules",
+        "policy_framework", 
+        "governance_policies"
+      ]
+    },
+    "ec_service": {
+      "service_name": "ec_service",
+      "cache_type": "evolutionary_computation",
+      "ttl_seconds": 3600,
+      "max_size": 1500,
+      "warming_keys": [
+        "optimization_algorithms",
+        "computational_models",
+        "performance_metrics"
+      ]
+    },
+    "blackboard_service": {
+      "service_name": "blackboard_service",
+      "cache_type": "shared_knowledge",
+      "ttl_seconds": 1800,
+      "max_size": 2500,
+      "warming_keys": [
+        "active_agents",
+        "coordination_state",
+        "knowledge_base"
+      ]
+    },
+    "coordinator_service": {
+      "service_name": "coordinator_service",
+      "cache_type": "coordination_state",
+      "ttl_seconds": 1800,
+      "max_size": 1200,
+      "warming_keys": [
+        "agent_registry",
+        "task_distribution",
+        "coordination_metrics"
+      ]
+    },
+    "fv_service": {
+      "service_name": "fv_service",
+      "cache_type": "formal_verification",
+      "ttl_seconds": 10800,
+      "max_size": 800,
+      "warming_keys": [
+        "verification_rules",
+        "proof_templates",
+        "validation_results"
+      ]
+    },
+    "gs_service": {
+      "service_name": "gs_service",
+      "cache_type": "governance_synthesis",
+      "ttl_seconds": 7200,
+      "max_size": 1800,
+      "warming_keys": [
+        "synthesis_policies",
+        "governance_frameworks",
+        "decision_trees"
+      ]
+    },
+    "code_analysis_service": {
+      "service_name": "code_analysis_service",
+      "cache_type": "code_analysis",
+      "ttl_seconds": 3600,
+      "max_size": 2000,
+      "warming_keys": [
+        "analysis_patterns",
+        "code_templates",
+        "optimization_rules"
+      ]
+    },
+    "auth_service": {
+      "service_name": "auth_service",
+      "cache_type": "authentication",
+      "ttl_seconds": 1800,
+      "max_size": 3000,
+      "warming_keys": [
+        "auth_tokens",
+        "user_sessions",
+        "permission_cache"
+      ]
+    },
+    "integrity_service": {
+      "service_name": "integrity_service",
+      "cache_type": "integrity_validation",
+      "ttl_seconds": 3600,
+      "max_size": 1000,
+      "warming_keys": [
+        "integrity_checks",
+        "audit_patterns",
+        "validation_cache"
+      ]
+    }
+  },
+  "default_settings": {
+    "performance_targets": {
+      "hit_rate_target": 0.85,
+      "latency_target_ms": 2.0,
+      "throughput_target_rps": 100
+    },
+    "cache_strategies": {
+      "multi_tier_enabled": true,
+      "l1_memory_cache": {
+        "enabled": true,
+        "max_size": 1000,
+        "ttl_seconds": 300
+      },
+      "warming_frequency_minutes": 30
+    },
+    "monitoring": {
+      "metrics_enabled": true,
+      "hit_rate_alerts": true,
+      "latency_alerts": true
+    }
+  }
+}

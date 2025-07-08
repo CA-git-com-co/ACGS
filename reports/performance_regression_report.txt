@@ -1,0 +1,29 @@
+📊 ACGS PERFORMANCE REGRESSION REPORT
+================================================================================
+Constitutional Hash: cdd01ef066bc6cf2
+Timestamp: 2025-07-06T21:28:39.488163
+
+🔍 LATENCY CHECK
+----------------------------------------
+✅ No regressions detected
+
+🔍 CACHE CHECK
+----------------------------------------
+✅ No regressions detected
+
+🔍 THROUGHPUT CHECK
+----------------------------------------
+✅ No regressions detected
+
+🔍 CONSTITUTIONAL COMPLIANCE
+----------------------------------------
+🚨 Integrity Service: constitutional_hash
+   Current: missing
+   Target:  cdd01ef066bc6cf2
+
+📈 REGRESSION SUMMARY
+================================================================================
+Total Regressions: 1
+Critical Regressions: 1
+Warning Regressions: 0
+🚨 CRITICAL PERFORMANCE ISSUES DETECTED

@@ -1,0 +1,46 @@
+{
+  "_template_info": {
+    "description": "ACGS Cache Optimization Configuration Template",
+    "constitutional_hash": "cdd01ef066bc6cf2",
+    "version": "1.0.0",
+    "usage": "This template should be customized per service with service-specific values"
+  },
+  "service_name": "{{SERVICE_NAME}}",
+  "cache_type": "{{CACHE_TYPE}}",
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "optimization": {
+    "ttl_seconds": "{{TTL_SECONDS}}",
+    "max_size": "{{MAX_SIZE}}",
+    "warming_enabled": true,
+    "warming_keys": "{{WARMING_KEYS_ARRAY}}"
+  },
+  "deployment_timestamp": "{{DEPLOYMENT_TIMESTAMP}}",
+  "cache_strategies": {
+    "multi_tier_enabled": true,
+    "l1_memory_cache": {
+      "enabled": true,
+      "max_size": "{{L1_MAX_SIZE}}",
+      "ttl_seconds": 300
+    },
+    "l2_redis_cache": {
+      "enabled": true,
+      "max_size": "{{L2_MAX_SIZE}}",
+      "ttl_seconds": "{{L2_TTL_SECONDS}}"
+    },
+    "cache_warming": {
+      "enabled": true,
+      "warming_keys": "{{WARMING_KEYS_ARRAY}}",
+      "warming_frequency_minutes": 30
+    }
+  },
+  "performance_targets": {
+    "hit_rate_target": 0.85,
+    "latency_target_ms": 2.0,
+    "throughput_target_rps": 100
+  },
+  "monitoring": {
+    "metrics_enabled": true,
+    "hit_rate_alerts": true,
+    "latency_alerts": true
+  }
+}

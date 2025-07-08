@@ -1,0 +1,8 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+[workspace]
+members = [ "blockchain/programs/quantumagi-core", "blockchain/programs/appeals", "blockchain/programs/logging",]
+
+[workspace.dependencies]
+anchor-lang = "0.29.0"
+anchor-spl = "0.29.0"
+solana-program = "~1.18.22"

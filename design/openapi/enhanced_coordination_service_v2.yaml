@@ -1,0 +1,1250 @@
+openapi: 3.0.3
+info:
+  title: Enhanced Multi-Agent Coordination Service API
+  description: |
+    Enhanced Multi-Agent Coordination Service for ACGS-2 providing scalable coordination 
+    of hundreds to thousands of AI agents with constitutional compliance oversight.
+    
+    **Constitutional Hash**: `cdd01ef066bc6cf2`
+    
+    Supports event-driven coordination, advanced consensus algorithms, and distributed 
+    agent management with sub-30s coordination latency and 98% success rate.
+  version: 2.0.0
+  contact:
+    name: ACGS Coordination Team
+    email: coordination@acgs.ai
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+servers:
+  - url: http://localhost:8008
+    description: Development server
+  - url: https://coordination.acgs.ai
+    description: Production server
+
+security:
+  - BearerAuth: []
+  - ApiKeyAuth: []
+
+paths:
+  /health:
+    get:
+      summary: Health check endpoint
+      description: Returns coordination service health with agent pool status
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoordinationHealthResponse'
+
+  /api/v1/coordination/agents/register:
+    post:
+      summary: Register agent for coordination
+      description: |
+        Register an AI agent in the distributed coordination system with capability
+        indexing and constitutional clearance validation.
+      tags:
+        - Agent Management
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AgentRegistrationRequest'
+            example:
+              constitutional_context:
+                hash: cdd01ef066bc6cf2
+                tenant_id: healthcare-org-001
+              data:
+                agent:
+                  id: agent_ethics_001
+                  type: ethics
+                  capabilities:
+                    - bias_detection
+                    - fairness_evaluation
+                    - harm_assessment
+                  constitutional_clearance_level: 4
+                  performance_score: 0.94
+                  specialization: healthcare_bias
+                service_endpoint:
+                  host: 10.0.1.42
+                  port: 9001
+                  health_path: /health
+      responses:
+        '200':
+          description: Agent registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentRegistrationResponse'
+        '400':
+          $ref: '#/components/responses/RegistrationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/InsufficientClearanceError'
+
+  /api/v1/coordination/agents/discover:
+    post:
+      summary: Discover agents for task
+      description: |
+        Discover suitable agents for a coordination task using capability-based
+        matching and performance scoring.
+      tags:
+        - Agent Management
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AgentDiscoveryRequest'
+      responses:
+        '200':
+          description: Suitable agents discovered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentDiscoveryResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/v1/coordination/sessions/create:
+    post:
+      summary: Create coordination session
+      description: |
+        Create a new multi-agent coordination session with specified task,
+        agent requirements, and consensus parameters.
+      tags:
+        - Coordination Sessions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CoordinationSessionRequest'
+            example:
+              constitutional_context:
+                hash: cdd01ef066bc6cf2
+                tenant_id: research-lab-002
+              data:
+                coordination_request:
+                  task_id: task_98765
+                  task_type: constitutional_analysis
+                  complexity: high
+                  agents_required:
+                    - type: ethics
+                      specialization: bias_detection
+                    - type: legal
+                      specialization: healthcare_regulation
+                    - type: operational
+                      specialization: deployment_safety
+                  consensus_threshold: 0.85
+                  timeout_seconds: 300
+                  constitutional_requirements:
+                    minimum_clearance_level: 3
+                    required_principles:
+                      - fairness
+                      - transparency
+                      - accountability
+      responses:
+        '201':
+          description: Coordination session created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoordinationSessionResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/InsufficientClearanceError'
+
+  /api/v1/coordination/sessions/{sessionId}/execute:
+    post:
+      summary: Execute coordination session
+      description: |
+        Execute a coordination session, orchestrating task distribution,
+        agent coordination, and consensus building.
+      tags:
+        - Coordination Sessions
+      parameters:
+        - in: path
+          name: sessionId
+          required: true
+          schema:
+            type: string
+          description: Coordination session identifier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CoordinationExecutionRequest'
+      responses:
+        '200':
+          description: Coordination session executed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoordinationExecutionResponse'
+        '400':
+          $ref: '#/components/responses/CoordinationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/SessionNotFoundError'
+        '409':
+          $ref: '#/components/responses/SessionStateError'
+
+  /api/v1/coordination/sessions/{sessionId}/status:
+    get:
+      summary: Get coordination session status
+      description: Real-time status of coordination session including agent states and progress
+      tags:
+        - Coordination Sessions
+      parameters:
+        - in: path
+          name: sessionId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Session status retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoordinationSessionStatus'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/SessionNotFoundError'
+
+  /api/v1/coordination/consensus:
+    post:
+      summary: Execute consensus algorithm
+      description: |
+        Execute consensus algorithm on collected agent decisions with
+        constitutional compliance validation.
+      tags:
+        - Consensus Management
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConsensusRequest'
+      responses:
+        '200':
+          description: Consensus reached successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsensusResponse'
+        '400':
+          $ref: '#/components/responses/ConsensusError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          $ref: '#/components/responses/ConstitutionalViolationError'
+
+  /api/v1/coordination/metrics:
+    get:
+      summary: Get coordination performance metrics
+      description: |
+        Retrieve comprehensive coordination performance metrics including
+        latency, throughput, success rates, and constitutional compliance.
+      tags:
+        - Monitoring
+      parameters:
+        - in: query
+          name: tenant_id
+          schema:
+            type: string
+          description: Tenant ID for tenant-specific metrics
+        - in: query
+          name: time_range
+          schema:
+            type: string
+            enum: [1h, 24h, 7d, 30d]
+            default: 24h
+        - in: query
+          name: agent_type
+          schema:
+            type: string
+          description: Filter metrics by agent type
+      responses:
+        '200':
+          description: Coordination metrics retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoordinationMetricsResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/v1/coordination/agents/pools:
+    get:
+      summary: Get agent pool status
+      description: Current status of agent pools including availability and performance
+      tags:
+        - Agent Management
+      parameters:
+        - in: query
+          name: capability
+          schema:
+            type: string
+          description: Filter by agent capability
+        - in: query
+          name: tenant_id
+          schema:
+            type: string
+          description: Tenant-specific pool status
+      responses:
+        '200':
+          description: Agent pool status retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentPoolStatusResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+  schemas:
+    CoordinationHealthResponse:
+      type: object
+      required:
+        - status
+        - constitutional_compliance
+        - service
+        - coordination_status
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+        constitutional_compliance:
+          $ref: '#/components/schemas/ConstitutionalCompliance'
+        service:
+          type: string
+          example: enhanced-coordination
+        version:
+          type: string
+          example: 2.0.0
+        coordination_status:
+          type: object
+          properties:
+            active_sessions:
+              type: integer
+            registered_agents:
+              type: integer
+            coordination_bus_healthy:
+              type: boolean
+            agent_registry_healthy:
+              type: boolean
+        performance_metrics:
+          type: object
+          properties:
+            avg_coordination_latency_ms:
+              type: number
+            success_rate:
+              type: number
+            agent_availability_rate:
+              type: number
+
+    ConstitutionalCompliance:
+      type: object
+      required:
+        - hash
+        - validated
+      properties:
+        hash:
+          type: string
+          enum: [cdd01ef066bc6cf2]
+        validated:
+          type: boolean
+        compliance_score:
+          type: number
+          minimum: 0.0
+          maximum: 1.0
+        validation_time_ms:
+          type: number
+
+    ConstitutionalContext:
+      type: object
+      required:
+        - hash
+        - tenant_id
+      properties:
+        hash:
+          type: string
+          enum: [cdd01ef066bc6cf2]
+        tenant_id:
+          type: string
+
+    Agent:
+      type: object
+      required:
+        - id
+        - type
+        - capabilities
+        - constitutional_clearance_level
+      properties:
+        id:
+          type: string
+          description: Unique agent identifier
+        type:
+          type: string
+          enum: [ethics, legal, operational, technical, domain_expert]
+        capabilities:
+          type: array
+          items:
+            type: string
+          description: Agent capabilities and specializations
+        constitutional_clearance_level:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: Constitutional clearance level (1=basic, 5=highest)
+        performance_score:
+          type: number
+          minimum: 0.0
+          maximum: 1.0
+        specialization:
+          type: string
+          description: Agent domain specialization
+        tenant_id:
+          type: string
+        version:
+          type: string
+
+    ServiceEndpoint:
+      type: object
+      required:
+        - host
+        - port
+      properties:
+        host:
+          type: string
+          description: Agent service host
+        port:
+          type: integer
+          minimum: 1
+          maximum: 65535
+          description: Agent service port
+        health_path:
+          type: string
+          default: /health
+          description: Health check endpoint path
+
+    AgentRegistrationRequest:
+      type: object
+      required:
+        - constitutional_context
+        - data
+      properties:
+        constitutional_context:
+          $ref: '#/components/schemas/ConstitutionalContext'
+        data:
+          type: object
+          required:
+            - agent
+            - service_endpoint
+          properties:
+            agent:
+              $ref: '#/components/schemas/Agent'
+            service_endpoint:
+              $ref: '#/components/schemas/ServiceEndpoint'
+
+    AgentRegistrationResponse:
+      type: object
+      required:
+        - constitutional_compliance
+        - data
+      properties:
+        constitutional_compliance:
+          $ref: '#/components/schemas/ConstitutionalCompliance'
+        data:
+          type: object
+          properties:
+            agent_id:
+              type: string
+            registration_successful:
+              type: boolean
+            constitutional_clearance:
+              type: integer
+            assigned_pools:
+              type: array
+              items:
+                type: string
+
+    TaskRequirements:
+      type: object
+      required:
+        - required_capabilities
+      properties:
+        required_capabilities:
+          type: array
+          items:
+            type: string
+        optional_capabilities:
+          type: array
+          items:
+            type: string
+        minimum_performance_score:
+          type: number
+          minimum: 0.0
+          maximum: 1.0
+        domain_specialization:
+          type: string
+
+    ConstitutionalRequirements:
+      type: object
+      required:
+        - minimum_clearance_level
+      properties:
+        minimum_clearance_level:
+          type: integer
+          minimum: 1
+          maximum: 5
+        required_principles:
+          type: array
+          items:
+            type: string
+            enum: [fairness, transparency, accountability, human_dignity, privacy]
+        compliance_threshold:
+          type: number
+          minimum: 0.0
+          maximum: 1.0
+          default: 0.95
+
+    AgentDiscoveryRequest:
+      type: object
+      required:
+        - constitutional_context
+        - data
+      properties:
+        constitutional_context:
+          $ref: '#/components/schemas/ConstitutionalContext'
+        data:
+          type: object
+          required:
+            - task_requirements
+          properties:
+            task_requirements:
+              $ref: '#/components/schemas/TaskRequirements'
+            constitutional_requirements:
+              $ref: '#/components/schemas/ConstitutionalRequirements'
+            max_agents:
+              type: integer
+              minimum: 1
+              maximum: 1000
+              default: 10
+
+    AgentDiscoveryResponse:
+      type: object
+      required:
+        - constitutional_compliance
+        - data
+      properties:
+        constitutional_compliance:
+          $ref: '#/components/schemas/ConstitutionalCompliance'
+        data:
+          type: object
+          properties:
+            suitable_agents:
+              type: array
+              items:
+                type: object
+                properties:
+                  agent:
+                    $ref: '#/components/schemas/Agent'
+                  capability_match_score:
+                    type: number
+                  availability_status:
+                    type: string
+                    enum: [available, busy, unavailable]
+            discovery_metadata:
+              type: object
+              properties:
+                total_agents_evaluated:
+                  type: integer
+                discovery_time_ms:
+                  type: number
+
+    CoordinationTask:
+      type: object
+      required:
+        - task_id
+        - task_type
+        - complexity
+      properties:
+        task_id:
+          type: string
+        task_type:
+          type: string
+          enum: [constitutional_analysis, policy_evaluation, decision_validation, compliance_audit]
+        complexity:
+          type: string
+          enum: [low, medium, high, critical]
+        description:
+          type: string
+        sub_tasks:
+          type: array
+          items:
+            type: object
+        deadline:
+          type: string
+          format: date-time
+        priority:
+          type: string
+          enum: [low, medium, high, critical]
+
+    CoordinationSessionRequest:
+      type: object
+      required:
+        - constitutional_context
+        - data
+      properties:
+        constitutional_context:
+          $ref: '#/components/schemas/ConstitutionalContext'
+        data:
+          type: object
+          required:
+            - coordination_request
+          properties:
+            coordination_request:
+              type: object
+              required:
+                - task_id
+                - task_type
+                - agents_required
+                - consensus_threshold
+              properties:
+                task_id:
+                  type: string
+                task_type:
+                  type: string
+                complexity:
+                  type: string
+                  enum: [low, medium, high, critical]
+                agents_required:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                      specialization:
+                        type: string
+                      count:
+                        type: integer
+                        default: 1
+                consensus_threshold:
+                  type: number
+                  minimum: 0.5
+                  maximum: 1.0
+                timeout_seconds:
+                  type: integer
+                  minimum: 30
+                  maximum: 3600
+                  default: 300
+                constitutional_requirements:
+                  $ref: '#/components/schemas/ConstitutionalRequirements'
+
+    CoordinationSessionResponse:
+      type: object
+      required:
+        - constitutional_compliance
+        - data
+      properties:
+        constitutional_compliance:
+          $ref: '#/components/schemas/ConstitutionalCompliance'
+        data:
+          type: object
+          properties:
+            session_id:
+              type: string
+            task:
+              $ref: '#/components/schemas/CoordinationTask'
+            selected_agents:
+              type: array
+              items:
+                $ref: '#/components/schemas/Agent'
+            hierarchy:
+              $ref: '#/components/schemas/CoordinationHierarchy'
+            execution_plan:
+              $ref: '#/components/schemas/ExecutionPlan'
+
+    CoordinationHierarchy:
+      type: object
+      properties:
+        hierarchy_type:
+          type: string
+          enum: [simple, specialized, complex, constitutional_review]
+        orchestrator:
+          type: object
+          properties:
+            agent_id:
+              type: string
+            capabilities:
+              type: array
+              items:
+                type: string
+        specialists:
+          type: array
+          items:
+            type: object
+            properties:
+              agent_id:
+                type: string
+              domain:
+                type: string
+              assigned_tasks:
+                type: array
+                items:
+                  type: string
+        worker_pools:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+
+    ExecutionPlan:
+      type: object
+      properties:
+        phases:
+          type: array
+          items:
+            type: object
+            properties:
+              phase:
+                type: string
+              duration_estimate:
+                type: string
+              parallel_execution:
+                type: boolean
+        estimated_completion_time:
+          type: string
+          format: date-time
+
+    CoordinationExecutionRequest:
+      type: object
+      required:
+        - execution_options
+      properties:
+        execution_options:
+          type: object
+          properties:
+            parallel_processing:
+              type: boolean
+              default: true
+            real_time_monitoring:
+              type: boolean
+              default: true
+            auto_escalation:
+              type: boolean
+              default: true
+
+    CoordinationExecutionResponse:
+      type: object
+      required:
+        - constitutional_compliance
+        - data
+      properties:
+        constitutional_compliance:
+          $ref: '#/components/schemas/ConstitutionalCompliance'
+        data:
+          type: object
+          properties:
+            session_id:
+              type: string
+            execution_status:
+              type: string
+              enum: [started, in_progress, consensus_pending, completed, failed]
+            participating_agents:
+              type: array
+              items:
+                type: string
+            progress:
+              type: object
+              properties:
+                completed_phases:
+                  type: integer
+                total_phases:
+                  type: integer
+                agent_responses_received:
+                  type: integer
+                agents_pending:
+                  type: integer
+            estimated_completion:
+              type: string
+              format: date-time
+
+    CoordinationSessionStatus:
+      type: object
+      required:
+        - session_id
+        - status
+        - constitutional_compliance
+      properties:
+        session_id:
+          type: string
+        status:
+          type: string
+          enum: [created, executing, consensus_pending, completed, failed, timeout]
+        constitutional_compliance:
+          $ref: '#/components/schemas/ConstitutionalCompliance'
+        progress:
+          type: object
+          properties:
+            current_phase:
+              type: string
+            completion_percentage:
+              type: number
+              minimum: 0.0
+              maximum: 100.0
+        agent_states:
+          type: array
+          items:
+            type: object
+            properties:
+              agent_id:
+                type: string
+              status:
+                type: string
+                enum: [assigned, working, completed, failed]
+              last_update:
+                type: string
+                format: date-time
+        execution_metrics:
+          type: object
+          properties:
+            start_time:
+              type: string
+              format: date-time
+            elapsed_time_seconds:
+              type: number
+            remaining_time_seconds:
+              type: number
+
+    ConsensusRequest:
+      type: object
+      required:
+        - constitutional_context
+        - data
+      properties:
+        constitutional_context:
+          $ref: '#/components/schemas/ConstitutionalContext'
+        data:
+          type: object
+          required:
+            - session_id
+            - agent_decisions
+            - consensus_algorithm
+          properties:
+            session_id:
+              type: string
+            agent_decisions:
+              type: array
+              items:
+                $ref: '#/components/schemas/AgentDecision'
+            consensus_algorithm:
+              type: string
+              enum: [simple_majority, weighted_vote, constitutional_priority, expert_mediation, ml_based]
+            consensus_requirements:
+              type: object
+              properties:
+                minimum_agreement:
+                  type: number
+                  minimum: 0.5
+                  maximum: 1.0
+                constitutional_threshold:
+                  type: number
+                  minimum: 0.95
+                  maximum: 1.0
+
+    AgentDecision:
+      type: object
+      required:
+        - agent_id
+        - decision_content
+        - confidence_score
+        - constitutional_compliance_score
+      properties:
+        agent_id:
+          type: string
+        decision_content:
+          type: object
+          description: The actual decision made by the agent
+        confidence_score:
+          type: number
+          minimum: 0.0
+          maximum: 1.0
+        constitutional_compliance_score:
+          type: number
+          minimum: 0.0
+          maximum: 1.0
+        reasoning:
+          type: string
+        supporting_evidence:
+          type: array
+          items:
+            type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    ConsensusResponse:
+      type: object
+      required:
+        - constitutional_compliance
+        - data
+      properties:
+        constitutional_compliance:
+          $ref: '#/components/schemas/ConstitutionalCompliance'
+        data:
+          type: object
+          properties:
+            consensus_result:
+              type: object
+              properties:
+                achieved:
+                  type: boolean
+                consensus_decision:
+                  type: object
+                  description: Final consensus decision
+                algorithm_used:
+                  type: string
+                confidence_score:
+                  type: number
+                participating_decisions:
+                  type: integer
+                constitutional_validation:
+                  type: object
+                  properties:
+                    compliant:
+                      type: boolean
+                    compliance_score:
+                      type: number
+            consensus_metrics:
+              type: object
+              properties:
+                consensus_time_ms:
+                  type: number
+                iterations_required:
+                  type: integer
+                agreement_percentage:
+                  type: number
+
+    CoordinationMetricsResponse:
+      type: object
+      required:
+        - constitutional_compliance
+        - data
+      properties:
+        constitutional_compliance:
+          $ref: '#/components/schemas/ConstitutionalCompliance'
+        data:
+          type: object
+          properties:
+            performance_metrics:
+              type: object
+              properties:
+                coordination_latency_p99_ms:
+                  type: number
+                consensus_success_rate:
+                  type: number
+                agent_availability_rate:
+                  type: number
+                throughput_sessions_per_minute:
+                  type: number
+                constitutional_compliance_rate:
+                  type: number
+            scalability_metrics:
+              type: object
+              properties:
+                max_concurrent_sessions:
+                  type: integer
+                active_agent_count:
+                  type: integer
+                coordination_bus_throughput:
+                  type: number
+            trend_analysis:
+              type: object
+              properties:
+                hourly_performance:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      timestamp:
+                        type: string
+                        format: date-time
+                      success_rate:
+                        type: number
+                      avg_latency_ms:
+                        type: number
+
+    AgentPoolStatusResponse:
+      type: object
+      required:
+        - constitutional_compliance
+        - data
+      properties:
+        constitutional_compliance:
+          $ref: '#/components/schemas/ConstitutionalCompliance'
+        data:
+          type: object
+          properties:
+            pool_status:
+              type: array
+              items:
+                type: object
+                properties:
+                  capability:
+                    type: string
+                  total_agents:
+                    type: integer
+                  available_agents:
+                    type: integer
+                  average_performance_score:
+                    type: number
+                  load_percentage:
+                    type: number
+            scaling_recommendations:
+              type: array
+              items:
+                type: object
+                properties:
+                  capability:
+                    type: string
+                  recommendation:
+                    type: string
+                    enum: [scale_up, scale_down, maintain]
+                  reason:
+                    type: string
+
+  responses:
+    RegistrationError:
+      description: Agent registration failed
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              constitutional_compliance:
+                $ref: '#/components/schemas/ConstitutionalCompliance'
+              error:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    enum: [REGISTRATION_FAILED]
+                  message:
+                    type: string
+                  details:
+                    type: object
+
+    UnauthorizedError:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    enum: [UNAUTHORIZED]
+                  message:
+                    type: string
+
+    InsufficientClearanceError:
+      description: Insufficient constitutional clearance
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              constitutional_compliance:
+                $ref: '#/components/schemas/ConstitutionalCompliance'
+              error:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    enum: [INSUFFICIENT_CLEARANCE]
+                  message:
+                    type: string
+                  required_clearance_level:
+                    type: integer
+                  agent_clearance_level:
+                    type: integer
+
+    ValidationError:
+      description: Request validation failed
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    enum: [VALIDATION_FAILED]
+                  message:
+                    type: string
+                  validation_errors:
+                    type: array
+                    items:
+                      type: object
+
+    CoordinationError:
+      description: Coordination execution failed
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              constitutional_compliance:
+                $ref: '#/components/schemas/ConstitutionalCompliance'
+              error:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    enum: [COORDINATION_FAILED]
+                  message:
+                    type: string
+                  session_id:
+                    type: string
+                  failure_reason:
+                    type: string
+
+    SessionNotFoundError:
+      description: Coordination session not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    enum: [SESSION_NOT_FOUND]
+                  message:
+                    type: string
+                  session_id:
+                    type: string
+
+    SessionStateError:
+      description: Invalid session state for operation
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    enum: [INVALID_SESSION_STATE]
+                  message:
+                    type: string
+                  current_state:
+                    type: string
+                  expected_states:
+                    type: array
+                    items:
+                      type: string
+
+    ConsensusError:
+      description: Consensus algorithm failed
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              constitutional_compliance:
+                $ref: '#/components/schemas/ConstitutionalCompliance'
+              error:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    enum: [CONSENSUS_FAILED]
+                  message:
+                    type: string
+                  failure_reason:
+                    type: string
+                    enum: [insufficient_responses, constitutional_violation, timeout, algorithm_error]
+
+    ConstitutionalViolationError:
+      description: Constitutional compliance violation detected
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              constitutional_compliance:
+                type: object
+                properties:
+                  hash:
+                    type: string
+                    enum: [cdd01ef066bc6cf2]
+                  validated:
+                    type: boolean
+                    enum: [false]
+                  violations:
+                    type: array
+                    items:
+                      type: object
+              error:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    enum: [CONSTITUTIONAL_VIOLATION]
+                  message:
+                    type: string
+
+tags:
+  - name: Health
+    description: Service health and status endpoints
+  - name: Agent Management
+    description: Agent registration, discovery, and pool management
+  - name: Coordination Sessions
+    description: Multi-agent coordination session management
+  - name: Consensus Management
+    description: Consensus algorithm execution and management
+  - name: Monitoring
+    description: Performance and operational monitoring
+
+externalDocs:
+  description: ACGS-2 Enhanced Coordination Documentation
+  url: https://docs.acgs.ai/enhanced-coordination

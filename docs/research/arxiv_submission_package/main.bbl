@@ -2,7 +2,7 @@
 %%% Do NOT edit. File created by BibTeX with style
 %%% ACM-Reference-Format-Journals [18-Jan-2012].
 
-\begin{thebibliography}{56}
+\begin{thebibliography}{57}
 
 %%% ====================================================================
 %%% NOTE TO THE USER: you can override these defaults by providing
@@ -497,6 +497,18 @@
 \url{https://ojs.aaai.org/index.php/AAAI/article/download/34717/36872}
 \showURL{%
 \tempurl}
+
+
+\bibitem[Lyu(2025)]%
+        {perf-report}
+\bibfield{author}{\bibinfo{person}{Martin~Honglin Lyu}.}
+  \bibinfo{year}{2025}\natexlab{}.
+\newblock \bibinfo{booktitle}{\emph{ACGS Performance Report}}.
+\newblock \bibinfo{type}{Technical Report}. \bibinfo{institution}{Independent
+  Research}.
+\newblock
+\newblock
+\shownote{Available with source code upon publication}.
 
 
 \bibitem[Martinez et~al\mbox{.}(2025)]%

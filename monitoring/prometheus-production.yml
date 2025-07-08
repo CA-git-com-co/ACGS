@@ -1,0 +1,225 @@
+# ACGS-2 Production Prometheus Configuration
+# Constitutional Hash: cdd01ef066bc6cf2
+# Performance Targets: P99 <5ms, >100 RPS, >85% cache hit
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    constitutional_hash: 'cdd01ef066bc6cf2'
+    environment: 'production'
+    cluster: 'acgs-production'
+
+rule_files:
+  - "alert_rules.yml"
+  - "constitutional_compliance_rules.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 15s
+    metrics_path: /metrics
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: constitutional_hash
+        replacement: 'cdd01ef066bc6cf2'
+
+  # ACGS Core Services
+  - job_name: 'acgs-auth-service'
+    static_configs:
+      - targets: ['auth-service:8016']
+    scrape_interval: 15s
+    metrics_path: /metrics
+    scrape_timeout: 10s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: service_name
+        replacement: 'auth-service'
+      - source_labels: [__address__]
+        target_label: constitutional_hash
+        replacement: 'cdd01ef066bc6cf2'
+      - source_labels: [__address__]
+        target_label: performance_target_p99
+        replacement: '5ms'
+
+  - job_name: 'acgs-constitutional-ai'
+    static_configs:
+      - targets: ['constitutional-ai-service:8001']
+    scrape_interval: 15s
+    metrics_path: /metrics
+    scrape_timeout: 10s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: service_name
+        replacement: 'constitutional-ai-service'
+      - source_labels: [__address__]
+        target_label: constitutional_hash
+        replacement: 'cdd01ef066bc6cf2'
+      - source_labels: [__address__]
+        target_label: performance_target_p99
+        replacement: '5ms'
+
+  - job_name: 'acgs-integrity-service'
+    static_configs:
+      - targets: ['integrity-service:8002']
+    scrape_interval: 15s
+    metrics_path: /metrics
+    scrape_timeout: 10s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: service_name
+        replacement: 'integrity-service'
+      - source_labels: [__address__]
+        target_label: constitutional_hash
+        replacement: 'cdd01ef066bc6cf2'
+
+  - job_name: 'acgs-multi-agent-coordinator'
+    static_configs:
+      - targets: ['multi-agent-coordinator:8008']
+    scrape_interval: 15s
+    metrics_path: /metrics
+    scrape_timeout: 10s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: service_name
+        replacement: 'multi-agent-coordinator'
+      - source_labels: [__address__]
+        target_label: constitutional_hash
+        replacement: 'cdd01ef066bc6cf2'
+
+  - job_name: 'acgs-blackboard-service'
+    static_configs:
+      - targets: ['blackboard-service:8010']
+    scrape_interval: 15s
+    metrics_path: /metrics
+    scrape_timeout: 10s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: service_name
+        replacement: 'blackboard-service'
+      - source_labels: [__address__]
+        target_label: constitutional_hash
+        replacement: 'cdd01ef066bc6cf2'
+
+  # Infrastructure Services
+  - job_name: 'postgres-exporter'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+    scrape_interval: 30s
+    metrics_path: /metrics
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: service_name
+        replacement: 'postgresql'
+      - source_labels: [__address__]
+        target_label: constitutional_hash
+        replacement: 'cdd01ef066bc6cf2'
+
+  - job_name: 'redis-exporter'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+    scrape_interval: 30s
+    metrics_path: /metrics
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: service_name
+        replacement: 'redis'
+      - source_labels: [__address__]
+        target_label: constitutional_hash
+        replacement: 'cdd01ef066bc6cf2'
+      - source_labels: [__address__]
+        target_label: performance_target_cache_hit
+        replacement: '85%'
+
+  # Node Exporter for system metrics
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 30s
+    metrics_path: /metrics
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: service_name
+        replacement: 'system'
+      - source_labels: [__address__]
+        target_label: constitutional_hash
+        replacement: 'cdd01ef066bc6cf2'
+
+  # cAdvisor for container metrics
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+    scrape_interval: 30s
+    metrics_path: /metrics
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: service_name
+        replacement: 'containers'
+      - source_labels: [__address__]
+        target_label: constitutional_hash
+        replacement: 'cdd01ef066bc6cf2'
+
+  # Nginx metrics
+  - job_name: 'nginx-exporter'
+    static_configs:
+      - targets: ['nginx-exporter:9113']
+    scrape_interval: 30s
+    metrics_path: /metrics
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: service_name
+        replacement: 'nginx'
+      - source_labels: [__address__]
+        target_label: constitutional_hash
+        replacement: 'cdd01ef066bc6cf2'
+
+  # Blackbox exporter for external monitoring
+  - job_name: 'blackbox'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+        - http://auth-service:8016/health
+        - http://constitutional-ai-service:8001/health
+        - http://integrity-service:8002/health
+        - http://multi-agent-coordinator:8008/health
+        - http://blackboard-service:8010/health
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+      - source_labels: [__param_target]
+        target_label: constitutional_hash
+        replacement: 'cdd01ef066bc6cf2'
+
+# Storage configuration
+storage:
+  tsdb:
+    path: /prometheus
+    retention.time: 30d
+    retention.size: 10GB
+    wal-compression: true
+
+# Remote write configuration for long-term storage (optional)
+# remote_write:
+#   - url: "https://your-remote-storage/api/v1/write"
+#     headers:
+#       constitutional_hash: 'cdd01ef066bc6cf2'
+
+# Remote read configuration (optional)
+# remote_read:
+#   - url: "https://your-remote-storage/api/v1/read"
+#     headers:
+#       constitutional_hash: 'cdd01ef066bc6cf2'

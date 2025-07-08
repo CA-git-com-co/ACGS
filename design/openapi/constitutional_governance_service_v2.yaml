@@ -1,0 +1,1057 @@
+openapi: 3.0.3
+info:
+  title: Constitutional Governance Service API
+  description: |
+    Enhanced Constitutional Governance Service for ACGS-2 providing centralized constitutional 
+    compliance validation, policy synthesis, and governance workflows with sub-5ms P99 latency.
+    
+    **Constitutional Hash**: `cdd01ef066bc6cf2`
+    
+    This service maintains 100% constitutional compliance while providing high-performance 
+    governance operations at enterprise scale.
+  version: 2.0.0
+  contact:
+    name: ACGS Team
+    email: constitutional-governance@acgs.ai
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+servers:
+  - url: http://localhost:8001
+    description: Development server
+  - url: https://constitutional-governance.acgs.ai
+    description: Production server
+
+security:
+  - BearerAuth: []
+  - ApiKeyAuth: []
+
+paths:
+  /health:
+    get:
+      summary: Health check endpoint
+      description: Returns service health status with constitutional compliance verification
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              example:
+                status: healthy
+                constitutional_compliance:
+                  hash: cdd01ef066bc6cf2
+                  validated: true
+                service: constitutional-governance
+                version: 2.0.0
+                timestamp: "2025-01-08T10:30:00Z"
+
+  /api/v1/constitutional/validate:
+    post:
+      summary: Validate constitutional compliance of a decision
+      description: |
+        Validates a governance decision against constitutional principles with comprehensive 
+        compliance scoring and recommendations.
+      tags:
+        - Constitutional Validation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConstitutionalValidationRequest'
+            example:
+              constitutional_context:
+                hash: cdd01ef066bc6cf2
+                tenant_id: healthcare-org-001
+                compliance_level: strict
+                audit_required: true
+              request_metadata:
+                request_id: req_12345
+                timestamp: "2025-01-08T10:30:00Z"
+                version: v1
+                client_context:
+                  user_id: user_456
+                  session_id: session_789
+                  source_service: governance-ui
+              data:
+                decision:
+                  id: decision_12345
+                  description: Deploy AI diagnostic tool for radiology
+                  domain: healthcare
+                  impact_assessment:
+                    scope: hospital_patients
+                    risk_level: high
+                    affected_populations:
+                      - patients
+                      - radiologists
+                    regulatory_frameworks:
+                      - HIPAA
+                      - FDA
+                  ai_model:
+                    type: deep_learning
+                    training_data: anonymized_xrays
+                    accuracy_metrics:
+                      sensitivity: 0.92
+                      specificity: 0.88
+                      auc_roc: 0.94
+                context:
+                  deployment_environment: production
+                  user_consent_required: true
+                  explainability_required: true
+      responses:
+        '200':
+          description: Constitutional validation completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConstitutionalValidationResponse'
+              example:
+                constitutional_compliance:
+                  hash: cdd01ef066bc6cf2
+                  validated: true
+                  compliance_score: 0.94
+                  validation_time_ms: 3.2
+                  audit_id: audit_789xyz
+                response_metadata:
+                  request_id: req_12345
+                  timestamp: "2025-01-08T10:30:01Z"
+                  processing_time_ms: 45.2
+                  cache_hit: false
+                  service_version: 2.0.0
+                data:
+                  decision_id: decision_12345
+                  validation_result:
+                    approved: true
+                    compliance_details:
+                      fairness_score: 0.91
+                      transparency_score: 0.96
+                      accountability_score: 0.95
+                      human_dignity_score: 0.93
+                    requirements:
+                      - type: technical
+                        description: Implement bias monitoring dashboard
+                        priority: high
+                        deadline: "2025-02-01"
+                      - type: procedural
+                        description: Establish patient consent workflow
+                        priority: critical
+                        deadline: "2025-01-15"
+                    monitoring_requirements:
+                      - Real-time bias detection
+                      - Patient outcome tracking
+                      - Model performance monitoring
+                errors: []
+                warnings: []
+        '400':
+          $ref: '#/components/responses/ConstitutionalViolationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/constitutional/validate/batch:
+    post:
+      summary: Batch validate multiple decisions
+      description: |
+        Validates multiple governance decisions in a single request for improved performance.
+        Supports up to 50 decisions per batch.
+      tags:
+        - Constitutional Validation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchValidationRequest'
+      responses:
+        '200':
+          description: Batch validation completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchValidationResponse'
+        '400':
+          $ref: '#/components/responses/BatchValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /api/v1/constitutional/policies/synthesize:
+    post:
+      summary: Synthesize constitutional policies
+      description: |
+        Dynamically synthesize constitutional policies based on domain requirements,
+        regulatory frameworks, and use case specifications.
+      tags:
+        - Policy Management
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PolicySynthesisRequest'
+      responses:
+        '200':
+          description: Policy synthesis completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicySynthesisResponse'
+        '400':
+          $ref: '#/components/responses/ConstitutionalViolationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /api/v1/constitutional/audit:
+    get:
+      summary: Query constitutional audit trail
+      description: |
+        Query constitutional compliance audit trail with filtering, pagination,
+        and export capabilities.
+      tags:
+        - Audit Management
+      parameters:
+        - in: query
+          name: tenant_id
+          required: true
+          schema:
+            type: string
+          description: Tenant ID for multi-tenant isolation
+        - in: query
+          name: from
+          schema:
+            type: string
+            format: date
+          description: Start date for audit query (YYYY-MM-DD)
+        - in: query
+          name: to
+          schema:
+            type: string
+            format: date
+          description: End date for audit query (YYYY-MM-DD)
+        - in: query
+          name: event_type
+          schema:
+            type: string
+            enum: [constitutional_validation, policy_synthesis, compliance_violation]
+          description: Filter by event type
+        - in: query
+          name: compliance_threshold
+          schema:
+            type: number
+            minimum: 0.0
+            maximum: 1.0
+          description: Filter by minimum compliance score
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number for pagination
+        - in: query
+          name: size
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 50
+          description: Page size for pagination
+      responses:
+        '200':
+          description: Audit query completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditQueryResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+
+  /api/v1/constitutional/metrics:
+    get:
+      summary: Get constitutional compliance metrics
+      description: |
+        Retrieve real-time constitutional compliance metrics including performance
+        statistics, compliance rates, and trend analysis.
+      tags:
+        - Monitoring
+      parameters:
+        - in: query
+          name: tenant_id
+          schema:
+            type: string
+          description: Tenant ID for tenant-specific metrics
+        - in: query
+          name: time_range
+          schema:
+            type: string
+            enum: [1h, 24h, 7d, 30d]
+            default: 24h
+          description: Time range for metrics aggregation
+      responses:
+        '200':
+          description: Constitutional metrics retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConstitutionalMetricsResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token with constitutional context
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key for service-to-service authentication
+
+  schemas:
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - constitutional_compliance
+        - service
+        - version
+        - timestamp
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+        constitutional_compliance:
+          $ref: '#/components/schemas/ConstitutionalCompliance'
+        service:
+          type: string
+          example: constitutional-governance
+        version:
+          type: string
+          example: 2.0.0
+        timestamp:
+          type: string
+          format: date-time
+        checks:
+          type: object
+          description: Detailed health check results
+          additionalProperties:
+            type: object
+
+    ConstitutionalCompliance:
+      type: object
+      required:
+        - hash
+        - validated
+      properties:
+        hash:
+          type: string
+          enum: [cdd01ef066bc6cf2]
+          description: Immutable constitutional hash
+        validated:
+          type: boolean
+          description: Whether constitutional compliance was validated
+        compliance_score:
+          type: number
+          minimum: 0.0
+          maximum: 1.0
+          description: Overall compliance score
+        validation_time_ms:
+          type: number
+          minimum: 0
+          description: Time taken for validation in milliseconds
+        audit_id:
+          type: string
+          description: Unique audit trail identifier
+
+    ConstitutionalContext:
+      type: object
+      required:
+        - hash
+        - tenant_id
+      properties:
+        hash:
+          type: string
+          enum: [cdd01ef066bc6cf2]
+        tenant_id:
+          type: string
+          description: Tenant identifier for multi-tenant isolation
+        compliance_level:
+          type: string
+          enum: [strict, standard, permissive]
+          default: standard
+        audit_required:
+          type: boolean
+          default: true
+
+    RequestMetadata:
+      type: object
+      required:
+        - request_id
+        - timestamp
+        - version
+      properties:
+        request_id:
+          type: string
+          format: uuid
+          description: Unique request identifier
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+          enum: [v1]
+        client_context:
+          type: object
+          properties:
+            user_id:
+              type: string
+            session_id:
+              type: string
+            source_service:
+              type: string
+
+    ResponseMetadata:
+      type: object
+      required:
+        - request_id
+        - timestamp
+        - processing_time_ms
+        - service_version
+      properties:
+        request_id:
+          type: string
+          format: uuid
+        timestamp:
+          type: string
+          format: date-time
+        processing_time_ms:
+          type: number
+          minimum: 0
+        cache_hit:
+          type: boolean
+        service_version:
+          type: string
+
+    Decision:
+      type: object
+      required:
+        - id
+        - description
+        - domain
+      properties:
+        id:
+          type: string
+          description: Unique decision identifier
+        description:
+          type: string
+          description: Human-readable decision description
+        domain:
+          type: string
+          enum: [healthcare, finance, education, manufacturing, retail, government]
+        impact_assessment:
+          $ref: '#/components/schemas/ImpactAssessment'
+        ai_model:
+          $ref: '#/components/schemas/AIModelInfo'
+
+    ImpactAssessment:
+      type: object
+      properties:
+        scope:
+          type: string
+          description: Scope of impact
+        risk_level:
+          type: string
+          enum: [low, medium, high, critical]
+        affected_populations:
+          type: array
+          items:
+            type: string
+        regulatory_frameworks:
+          type: array
+          items:
+            type: string
+
+    AIModelInfo:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [deep_learning, machine_learning, rule_based, hybrid]
+        training_data:
+          type: string
+        accuracy_metrics:
+          type: object
+          properties:
+            sensitivity:
+              type: number
+              minimum: 0.0
+              maximum: 1.0
+            specificity:
+              type: number
+              minimum: 0.0
+              maximum: 1.0
+            auc_roc:
+              type: number
+              minimum: 0.0
+              maximum: 1.0
+
+    ConstitutionalValidationRequest:
+      type: object
+      required:
+        - constitutional_context
+        - request_metadata
+        - data
+      properties:
+        constitutional_context:
+          $ref: '#/components/schemas/ConstitutionalContext'
+        request_metadata:
+          $ref: '#/components/schemas/RequestMetadata'
+        data:
+          type: object
+          required:
+            - decision
+          properties:
+            decision:
+              $ref: '#/components/schemas/Decision'
+            context:
+              type: object
+              description: Additional decision context
+
+    ConstitutionalValidationResponse:
+      type: object
+      required:
+        - constitutional_compliance
+        - response_metadata
+        - data
+      properties:
+        constitutional_compliance:
+          $ref: '#/components/schemas/ConstitutionalCompliance'
+        response_metadata:
+          $ref: '#/components/schemas/ResponseMetadata'
+        data:
+          type: object
+          required:
+            - decision_id
+            - validation_result
+          properties:
+            decision_id:
+              type: string
+            validation_result:
+              $ref: '#/components/schemas/ValidationResult'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Error'
+        warnings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Warning'
+
+    ValidationResult:
+      type: object
+      required:
+        - approved
+        - compliance_details
+      properties:
+        approved:
+          type: boolean
+        compliance_details:
+          type: object
+          properties:
+            fairness_score:
+              type: number
+              minimum: 0.0
+              maximum: 1.0
+            transparency_score:
+              type: number
+              minimum: 0.0
+              maximum: 1.0
+            accountability_score:
+              type: number
+              minimum: 0.0
+              maximum: 1.0
+            human_dignity_score:
+              type: number
+              minimum: 0.0
+              maximum: 1.0
+        requirements:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComplianceRequirement'
+        monitoring_requirements:
+          type: array
+          items:
+            type: string
+
+    ComplianceRequirement:
+      type: object
+      required:
+        - type
+        - description
+        - priority
+      properties:
+        type:
+          type: string
+          enum: [technical, procedural, governance, legal]
+        description:
+          type: string
+        priority:
+          type: string
+          enum: [low, medium, high, critical]
+        deadline:
+          type: string
+          format: date
+
+    BatchValidationRequest:
+      type: object
+      required:
+        - constitutional_context
+        - request_metadata
+        - data
+      properties:
+        constitutional_context:
+          $ref: '#/components/schemas/ConstitutionalContext'
+        request_metadata:
+          $ref: '#/components/schemas/RequestMetadata'
+        data:
+          type: object
+          required:
+            - decisions
+          properties:
+            decisions:
+              type: array
+              maxItems: 50
+              items:
+                $ref: '#/components/schemas/Decision'
+            batch_options:
+              type: object
+              properties:
+                fail_fast:
+                  type: boolean
+                  default: false
+                parallel_processing:
+                  type: boolean
+                  default: true
+
+    BatchValidationResponse:
+      type: object
+      required:
+        - constitutional_compliance
+        - response_metadata
+        - data
+      properties:
+        constitutional_compliance:
+          $ref: '#/components/schemas/ConstitutionalCompliance'
+        response_metadata:
+          $ref: '#/components/schemas/ResponseMetadata'
+        data:
+          type: object
+          required:
+            - batch_results
+          properties:
+            batch_results:
+              type: array
+              items:
+                type: object
+                properties:
+                  decision_id:
+                    type: string
+                  validation_result:
+                    $ref: '#/components/schemas/ValidationResult'
+                  processing_time_ms:
+                    type: number
+            summary:
+              type: object
+              properties:
+                total_decisions:
+                  type: integer
+                approved_decisions:
+                  type: integer
+                rejected_decisions:
+                  type: integer
+                average_compliance_score:
+                  type: number
+
+    PolicySynthesisRequest:
+      type: object
+      required:
+        - constitutional_context
+        - data
+      properties:
+        constitutional_context:
+          $ref: '#/components/schemas/ConstitutionalContext'
+        data:
+          type: object
+          required:
+            - context
+            - requirements
+          properties:
+            context:
+              type: object
+              properties:
+                domain:
+                  type: string
+                regulations:
+                  type: array
+                  items:
+                    type: string
+                use_case:
+                  type: string
+            requirements:
+              type: array
+              items:
+                type: string
+
+    PolicySynthesisResponse:
+      type: object
+      required:
+        - constitutional_compliance
+        - data
+      properties:
+        constitutional_compliance:
+          $ref: '#/components/schemas/ConstitutionalCompliance'
+        data:
+          type: object
+          properties:
+            synthesized_policy:
+              $ref: '#/components/schemas/SynthesizedPolicy'
+
+    SynthesizedPolicy:
+      type: object
+      required:
+        - policy_id
+        - rules
+      properties:
+        policy_id:
+          type: string
+        rules:
+          type: array
+          items:
+            type: object
+            properties:
+              condition:
+                type: string
+              action:
+                type: string
+        compliance_checks:
+          type: array
+          items:
+            type: string
+
+    AuditQueryResponse:
+      type: object
+      required:
+        - constitutional_compliance
+        - data
+      properties:
+        constitutional_compliance:
+          $ref: '#/components/schemas/ConstitutionalCompliance'
+        data:
+          type: object
+          properties:
+            audit_entries:
+              type: array
+              items:
+                $ref: '#/components/schemas/AuditEntry'
+            total_count:
+              type: integer
+            query_metadata:
+              type: object
+              properties:
+                execution_time_ms:
+                  type: number
+                cache_hit:
+                  type: boolean
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    AuditEntry:
+      type: object
+      required:
+        - audit_id
+        - event_type
+        - timestamp
+      properties:
+        audit_id:
+          type: string
+        event_type:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        event_data:
+          type: object
+        hash_chain:
+          type: string
+
+    ConstitutionalMetricsResponse:
+      type: object
+      required:
+        - constitutional_compliance
+        - data
+      properties:
+        constitutional_compliance:
+          $ref: '#/components/schemas/ConstitutionalCompliance'
+        data:
+          type: object
+          properties:
+            performance_metrics:
+              type: object
+              properties:
+                validation_latency_p99_ms:
+                  type: number
+                throughput_rps:
+                  type: number
+                cache_hit_rate:
+                  type: number
+                constitutional_compliance_rate:
+                  type: number
+            compliance_trends:
+              type: object
+              properties:
+                hourly_compliance_scores:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      timestamp:
+                        type: string
+                        format: date-time
+                      compliance_score:
+                        type: number
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          minimum: 1
+        size:
+          type: integer
+          minimum: 1
+        total:
+          type: integer
+          minimum: 0
+        has_next:
+          type: boolean
+
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+        timestamp:
+          type: string
+          format: date-time
+        request_id:
+          type: string
+
+    Warning:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+
+  responses:
+    ConstitutionalViolationError:
+      description: Constitutional compliance violation detected
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - constitutional_compliance
+              - error
+            properties:
+              constitutional_compliance:
+                type: object
+                properties:
+                  hash:
+                    type: string
+                    enum: [cdd01ef066bc6cf2]
+                  validated:
+                    type: boolean
+                    enum: [false]
+                  violations:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        principle:
+                          type: string
+                        severity:
+                          type: string
+                        description:
+                          type: string
+                        recommendation:
+                          type: string
+              error:
+                $ref: '#/components/schemas/Error'
+              data:
+                type: object
+                nullable: true
+
+    BatchValidationError:
+      description: Batch validation failed
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              constitutional_compliance:
+                $ref: '#/components/schemas/ConstitutionalCompliance'
+              error:
+                $ref: '#/components/schemas/Error'
+              data:
+                type: object
+                properties:
+                  partial_results:
+                    type: array
+                    items:
+                      type: object
+                  failed_decisions:
+                    type: array
+                    items:
+                      type: string
+
+    UnauthorizedError:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              constitutional_compliance:
+                $ref: '#/components/schemas/ConstitutionalCompliance'
+              error:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    enum: [UNAUTHORIZED]
+                  message:
+                    type: string
+                    example: Authentication required
+
+    ForbiddenError:
+      description: Insufficient permissions
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              constitutional_compliance:
+                $ref: '#/components/schemas/ConstitutionalCompliance'
+              error:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    enum: [FORBIDDEN]
+                  message:
+                    type: string
+                    example: Insufficient constitutional clearance level
+
+    ValidationError:
+      description: Request validation failed
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              constitutional_compliance:
+                $ref: '#/components/schemas/ConstitutionalCompliance'
+              error:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    enum: [VALIDATION_FAILED]
+                  message:
+                    type: string
+                  validation_errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        field:
+                          type: string
+                        error:
+                          type: string
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              constitutional_compliance:
+                $ref: '#/components/schemas/ConstitutionalCompliance'
+              error:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    enum: [INTERNAL_SERVER_ERROR]
+                  message:
+                    type: string
+                    example: An unexpected error occurred
+                  request_id:
+                    type: string
+
+tags:
+  - name: Health
+    description: Service health and status endpoints
+  - name: Constitutional Validation
+    description: Constitutional compliance validation operations
+  - name: Policy Management
+    description: Constitutional policy synthesis and management
+  - name: Audit Management
+    description: Constitutional audit trail operations
+  - name: Monitoring
+    description: Performance and compliance monitoring
+
+externalDocs:
+  description: ACGS-2 Constitutional Governance Documentation
+  url: https://docs.acgs.ai/constitutional-governance
