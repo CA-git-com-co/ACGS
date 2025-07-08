@@ -1,0 +1,74 @@
+metadata:
+  generated_at: '2025-07-08T16:21:57.283090'
+  source_report: /home/dislove/ACGS-2/reports/paper_validation/latest_validation.md
+  parser_version: 1.0.0
+issues:
+  latex_errors_warning:
+    severity: medium
+    category: latex_errors
+    section: LaTeX Syntax
+    status: WARNING
+    message: 'Unmatched braces: 1 difference'
+    details:
+      raw: "- **Details**: {\n  \"total_entries\": 61,\n  \"bib_files\": [\n    \"\
+        ACGS-PGP.bib\"\n  ]\n}"
+      parsed: false
+    action_items:
+    - Fix LaTeX syntax errors
+    - Check for unmatched braces
+    - Validate LaTeX compilation
+  missing_figures_fail:
+    severity: high
+    category: missing_figures
+    section: Figures
+    status: FAIL
+    message: Missing referenced figures
+    details:
+      raw: "- **Details**: {\n  \"total_size_mb\": 2.75,\n  \"file_count\": 88\n}"
+      parsed: false
+    action_items:
+    - Add missing figure files
+    - Fix figure references in LaTeX
+    - Verify figure paths are correct
+  content_issues_warning:
+    severity: medium
+    category: content_issues
+    section: Content Quality
+    status: WARNING
+    message: 'Content quality issues detected: Abstract too long (406 words)'
+    details:
+      raw: "    \"\\\\@startsection{section\",\n    \"Introduction\",\n    \"Related\
+        \ Work\",\n    \"Methods: ACGS-PGP Research Framework and Prototype Implementation\"\
+        ,\n    \"Quantum-Inspired Semantic Fault Tolerance (QEC-SFT): Theoretical\
+        \ Framework\",\n    \"Results and Evaluation\",\n    \"Competitive Analysis\
+        \ and Positioning\",\n    \"Discussion\",\n    \"Future Development Directions\
+        \ and Applications\",\n    \"Methodology\",\n    \"Conclusion\",\n    \"Delphi\
+        \ Method for Risk Assessment Weights\",\n    \"Supplementary Materials Overview\"\
+        ,\n    \"Key Technical Examples\",\n    \"Methodology and Reproducibility\
+        \ Details\",\n    \"Core Algorithms Summary\",\n    \"Evaluation Frameworks\
+        \ Summary\",\n    \"Ethics Statement\",\n    \"Reproducibility Documentation\"\
+        ,\n    \"Mathematical Proofs\"\n  ],\n  \"issues\": [\n    \"Abstract too\
+        \ long (406 words)\"\n  ]\n}"
+      parsed: false
+      issues: &id001
+      - Abstract too long (406 words)
+    action_items:
+    - Reduce abstract length
+    - Review content quality standards
+    - Check word count limits
+    content_problems: *id001
+  accessibility_warnings_warning:
+    severity: medium
+    category: accessibility_warnings
+    section: Accessibility
+    status: WARNING
+    message: Accessibility issues detected
+    details:
+      raw: "- **Details**: {\n  \"reproducibility_score\": 10,\n  \"max_score\": 10,\n\
+        \  \"percentage\": 100.0,\n  \"readme_present\": true,\n  \"code_files\":\
+        \ 7\n}"
+      parsed: false
+    action_items:
+    - Add captions to figures
+    - Reduce reliance on color-only information
+    - Improve accessibility compliance
