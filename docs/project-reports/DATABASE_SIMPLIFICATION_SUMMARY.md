@@ -9,7 +9,7 @@ This document outlines the simplification of ACGS Row-Level Security (RLS) imple
 ## Simplification Goals
 
 1. **Reduce Complexity**: Streamline complex multi-function RLS setup
-2. **Maintain Security**: Preserve all tenant isolation guarantees  
+2. **Maintain Security**: Preserve all tenant isolation guarantees
 3. **Improve Performance**: Optimize database operations and reduce overhead
 4. **Enhance Maintainability**: Easier to understand and debug
 5. **Constitutional Compliance**: Maintain constitutional hash validation where needed
@@ -86,7 +86,7 @@ CREATE TABLE rls_audit_events (
 ```sql
 -- tenant_access_log table: 8 fields, security events only
 CREATE TABLE tenant_access_log (
-    id, tenant_id, user_id, action, resource, 
+    id, tenant_id, user_id, action, resource,
     result, ip_address, constitutional_hash, created_at
 );
 -- Result: ~50-100 log entries per hour for moderate usage
@@ -116,7 +116,7 @@ USING (
 CREATE POLICY simple_tenant_policy ON table_name
 FOR ALL TO PUBLIC
 USING (
-    tenant_id = current_setting('app.current_tenant_id', true)::uuid 
+    tenant_id = current_setting('app.current_tenant_id', true)::uuid
     OR current_setting('app.bypass_rls', true) = 'true'
     OR current_setting('app.is_admin', true) = 'true'
 )

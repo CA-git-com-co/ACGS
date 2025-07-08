@@ -21,7 +21,7 @@ def run_ruff_check(path: str) -> dict:
             ["ruff", "check", path, "--output-format=json"],
             capture_output=True,
             text=True,
-            check=False
+            check=False,
         )
 
         if result.stdout:
@@ -53,7 +53,7 @@ def analyze_dead_code(base_path: str) -> dict[str, list[dict]]:
         "unused_imports": [],
         "unused_variables": [],
         "unreachable_code": [],
-        "redundant_code": []
+        "redundant_code": [],
     }
 
     for issue in issues:
@@ -63,7 +63,13 @@ def analyze_dead_code(base_path: str) -> dict[str, list[dict]]:
             dead_code_patterns["unused_imports"].append(issue)
         elif code == "F841":  # Unused variables
             dead_code_patterns["unused_variables"].append(issue)
-        elif code in ["F401", "F811", "F821", "F822", "F823"]:  # Various unused patterns
+        elif code in [
+            "F401",
+            "F811",
+            "F821",
+            "F822",
+            "F823",
+        ]:  # Various unused patterns
             dead_code_patterns["redundant_code"].append(issue)
 
     return dead_code_patterns
@@ -76,10 +82,19 @@ def get_python_files(base_path: str) -> list[str]:
 
     for file_path in path_obj.rglob("*.py"):
         # Skip test files and certain directories
-        if any(skip in str(file_path) for skip in [
-            "__pycache__", ".venv", ".git", "node_modules",
-            ".pytest_cache", ".mypy_cache", "build", "dist"
-        ]):
+        if any(
+            skip in str(file_path)
+            for skip in [
+                "__pycache__",
+                ".venv",
+                ".git",
+                "node_modules",
+                ".pytest_cache",
+                ".mypy_cache",
+                "build",
+                "dist",
+            ]
+        ):
             continue
         python_files.append(str(file_path))
 
@@ -88,12 +103,7 @@ def get_python_files(base_path: str) -> list[str]:
 
 def clean_file(file_path: str, dry_run: bool = True) -> dict:
     """Clean a single file and return statistics."""
-    stats = {
-        "file": file_path,
-        "issues_found": 0,
-        "issues_fixed": 0,
-        "errors": []
-    }
+    stats = {"file": file_path, "issues_found": 0, "issues_fixed": 0, "errors": []}
 
     # Get issues before fixing
     issues_before = run_ruff_check(file_path)
@@ -147,7 +157,7 @@ def generate_report(dead_code_analysis: dict, cleanup_stats: list[dict]) -> str:
     problematic_files = sorted(
         [stat for stat in cleanup_stats if stat["issues_found"] > 0],
         key=lambda x: x["issues_found"],
-        reverse=True
+        reverse=True,
     )[:10]
 
     if problematic_files:
@@ -178,11 +188,13 @@ def main():
     """Main function."""
     parser = argparse.ArgumentParser(description="Clean up dead code in ACGS codebase")
     parser.add_argument("path", help="Path to the codebase directory")
-    parser.add_argument("--dry-run", action="store_true",
-                       help="Only analyze, don't fix issues")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Only analyze, don't fix issues"
+    )
     parser.add_argument("--output", "-o", help="Output file for report")
-    parser.add_argument("--fix", action="store_true",
-                       help="Actually fix issues (opposite of dry-run)")
+    parser.add_argument(
+        "--fix", action="store_true", help="Actually fix issues (opposite of dry-run)"
+    )
 
     args = parser.parse_args()
 

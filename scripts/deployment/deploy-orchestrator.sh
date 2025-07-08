@@ -77,33 +77,33 @@ EOF
 # Validation functions
 validate_prerequisites() {
     log_info "🔍 Validating prerequisites..."
-    
+
     # Check required tools
     local required_tools=("docker" "docker-compose" "curl" "jq")
     if [[ "$DEPLOYMENT_MODE" == "kubernetes" ]]; then
         required_tools+=("kubectl" "helm")
     fi
-    
+
     for tool in "${required_tools[@]}"; do
         if ! command -v "$tool" &> /dev/null; then
             log_error "Required tool not found: $tool"
             return 1
         fi
     done
-    
+
     # Check constitutional hash
     if [[ -z "$CONSTITUTIONAL_HASH" || "$CONSTITUTIONAL_HASH" != "cdd01ef066bc6cf2" ]]; then
         log_error "Invalid constitutional hash: $CONSTITUTIONAL_HASH"
         return 1
     fi
-    
+
     # Check environment file
     local env_file="${PROJECT_ROOT}/.env.${ENVIRONMENT}-complete"
     if [[ ! -f "$env_file" ]]; then
         log_error "Environment file not found: $env_file"
         return 1
     fi
-    
+
     log_success "Prerequisites validation passed"
     return 0
 }
@@ -114,13 +114,13 @@ deploy_acgs() {
     log_info "Constitutional Hash: $CONSTITUTIONAL_HASH"
     log_info "Deployment Mode: $DEPLOYMENT_MODE"
     log_info "Environment: $ENVIRONMENT"
-    
+
     # Validate prerequisites
     if ! validate_prerequisites; then
         log_error "Prerequisites validation failed"
         return 1
     fi
-    
+
     # Run deployment script
     log_info "Executing deployment script..."
     if [[ -x "${SCRIPT_DIR}/deploy-production.sh" ]]; then
@@ -129,7 +129,7 @@ deploy_acgs() {
         log_error "Deployment script not found or not executable"
         return 1
     fi
-    
+
     # Perform health checks
     log_info "Performing post-deployment health checks..."
     if [[ -x "${SCRIPT_DIR}/health-check.sh" ]]; then
@@ -137,14 +137,14 @@ deploy_acgs() {
     else
         log_warning "Health check script not found"
     fi
-    
+
     log_success "🎉 ACGS-2 deployment completed successfully!"
 }
 
 # Health check function
 check_health() {
     log_header "🏥 Performing ACGS-2 Health Checks"
-    
+
     if [[ -x "${SCRIPT_DIR}/health-check.sh" ]]; then
         "${SCRIPT_DIR}/health-check.sh" "$DEPLOYMENT_MODE" "$ENVIRONMENT"
     else
@@ -157,7 +157,7 @@ check_health() {
 perform_rollback() {
     log_header "🔄 Performing ACGS-2 Rollback"
     log_warning "This will rollback the current deployment"
-    
+
     # Confirmation for production
     if [[ "$ENVIRONMENT" == "production" ]]; then
         read -p "Are you sure you want to rollback production? (yes/no): " -r
@@ -166,7 +166,7 @@ perform_rollback() {
             return 0
         fi
     fi
-    
+
     if [[ -x "${SCRIPT_DIR}/rollback.sh" ]]; then
         "${SCRIPT_DIR}/rollback.sh" "$DEPLOYMENT_MODE" "previous"
     else
@@ -181,13 +181,13 @@ show_status() {
     log_info "Constitutional Hash: $CONSTITUTIONAL_HASH"
     log_info "Deployment Mode: $DEPLOYMENT_MODE"
     log_info "Environment: $ENVIRONMENT"
-    
+
     # Service status
     log_info "Checking service status..."
-    
+
     local services=("8016" "8001" "8002" "8008" "8010")
     local healthy_services=0
-    
+
     for port in "${services[@]}"; do
         if curl -f -s --max-time 3 "http://localhost:$port/health" > /dev/null 2>&1; then
             log_success "Port $port: Healthy"
@@ -196,12 +196,12 @@ show_status() {
             log_error "Port $port: Unhealthy"
         fi
     done
-    
+
     log_info "Service Health: $healthy_services/${#services[@]} services healthy"
-    
+
     # Infrastructure status
     log_info "Checking infrastructure status..."
-    
+
     if [[ "$DEPLOYMENT_MODE" == "docker" ]]; then
         # Docker status
         if docker ps --filter "name=acgs_" --format "table {{.Names}}\t{{.Status}}" | grep -q "Up"; then
@@ -217,7 +217,7 @@ show_status() {
             log_error "Kubernetes pods are not running"
         fi
     fi
-    
+
     # Performance metrics
     log_info "Performance Targets:"
     log_info "  - P99 Latency: <5ms"
@@ -229,17 +229,17 @@ show_status() {
 # Validation function
 validate_compliance() {
     log_header "⚖️  Validating Constitutional Compliance"
-    
+
     local compliance_score=0
     local total_checks=0
-    
+
     # Check constitutional hash in files
     local files=(
         ".env.${ENVIRONMENT}-complete"
         "docker-compose.production-complete.yml"
         "infrastructure/kubernetes/production/acgs-production-complete.yaml"
     )
-    
+
     for file in "${files[@]}"; do
         total_checks=$((total_checks + 1))
         if [[ -f "$file" ]] && grep -q "$CONSTITUTIONAL_HASH" "$file"; then
@@ -249,7 +249,7 @@ validate_compliance() {
             log_error "$file: Constitutional hash missing or incorrect"
         fi
     done
-    
+
     # Check service compliance
     local services=("8016" "8001" "8002" "8008" "8010")
     for port in "${services[@]}"; do
@@ -261,10 +261,10 @@ validate_compliance() {
             log_warning "Port $port: Constitutional compliance check failed"
         fi
     done
-    
+
     local compliance_percentage=$((compliance_score * 100 / total_checks))
     log_info "Constitutional Compliance Score: $compliance_score/$total_checks ($compliance_percentage%)"
-    
+
     if [[ $compliance_percentage -eq 100 ]]; then
         log_success "🎉 Constitutional compliance: PERFECT"
     elif [[ $compliance_percentage -ge 80 ]]; then
@@ -278,22 +278,22 @@ validate_compliance() {
 # Monitoring function
 start_monitoring() {
     log_header "📊 Starting ACGS-2 Monitoring Stack"
-    
+
     if [[ "$DEPLOYMENT_MODE" == "docker" ]]; then
         # Start monitoring with Docker Compose
         log_info "Starting Prometheus and Grafana..."
         docker-compose -f docker-compose.production-complete.yml up -d prometheus grafana
-        
+
         # Wait for services
         sleep 30
-        
+
         # Check monitoring health
         if curl -f -s "http://localhost:9090/-/healthy" > /dev/null; then
             log_success "Prometheus is healthy: http://localhost:9090"
         else
             log_error "Prometheus health check failed"
         fi
-        
+
         if curl -f -s "http://localhost:3000/api/health" > /dev/null; then
             log_success "Grafana is healthy: http://localhost:3000"
         else
@@ -303,12 +303,12 @@ start_monitoring() {
         # Start monitoring with Kubernetes
         log_info "Deploying monitoring stack to Kubernetes..."
         kubectl apply -f infrastructure/kubernetes/monitoring/ -n acgs-production
-        
+
         log_info "Waiting for monitoring pods to be ready..."
         kubectl wait --for=condition=ready pod -l app=prometheus -n acgs-production --timeout=120s
         kubectl wait --for=condition=ready pod -l app=grafana -n acgs-production --timeout=120s
     fi
-    
+
     log_success "Monitoring stack is running"
     log_info "Access URLs:"
     log_info "  - Prometheus: http://localhost:9090"
@@ -318,14 +318,14 @@ start_monitoring() {
 # Backup function
 create_backup() {
     log_header "💾 Creating ACGS-2 Deployment Backup"
-    
+
     local backup_dir="${PROJECT_ROOT}/backups/$(date +%Y%m%d-%H%M%S)"
     mkdir -p "$backup_dir"
-    
+
     # Backup configuration files
     cp .env.${ENVIRONMENT}-complete "$backup_dir/" 2>/dev/null || true
     cp docker-compose.production-complete.yml "$backup_dir/" 2>/dev/null || true
-    
+
     # Backup deployment state
     if [[ "$DEPLOYMENT_MODE" == "docker" ]]; then
         docker-compose -f docker-compose.production-complete.yml config > "$backup_dir/docker-compose-resolved.yml"
@@ -333,7 +333,7 @@ create_backup() {
     else
         kubectl get all -n acgs-production -o yaml > "$backup_dir/kubernetes-state.yaml"
     fi
-    
+
     # Create backup metadata
     cat > "$backup_dir/backup-metadata.json" << EOF
 {
@@ -345,7 +345,7 @@ create_backup() {
   "git_branch": "$(git branch --show-current 2>/dev/null || echo 'unknown')"
 }
 EOF
-    
+
     log_success "Backup created: $backup_dir"
 }
 

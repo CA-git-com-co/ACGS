@@ -40,7 +40,7 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 class ConstitutionalValidationService(ConstitutionalValidator):
     """
     Main service for constitutional validation.
-    
+
     Implements the business logic for validating content and compliance
     against constitutional principles.
     """
@@ -59,13 +59,15 @@ class ConstitutionalValidationService(ConstitutionalValidator):
 
         logger.debug("ConstitutionalValidationService initialized")
 
-    async def validate_content(self, request: ContentValidationRequest) -> ValidationResult:
+    async def validate_content(
+        self, request: ContentValidationRequest
+    ) -> ValidationResult:
         """
         Validate content against constitutional rules.
-        
+
         Args:
             request: Content validation request
-            
+
         Returns:
             ValidationResult with compliance information
         """
@@ -106,18 +108,20 @@ class ConstitutionalValidationService(ConstitutionalValidator):
                 result.add_recommendation(rec)
 
             # Log audit event
-            await self.audit_service.log_event(AuditEvent(
-                event_type="content_validation",
-                entity_type="content",
-                entity_id=request.request_id,
-                action="validate",
-                actor_id=request.requester_id,
-                metadata={
-                    "compliance_score": result.compliance_score,
-                    "violations_count": len(result.violations),
-                    "content_type": request.content_type,
-                }
-            ))
+            await self.audit_service.log_event(
+                AuditEvent(
+                    event_type="content_validation",
+                    entity_type="content",
+                    entity_id=request.request_id,
+                    action="validate",
+                    actor_id=request.requester_id,
+                    metadata={
+                        "compliance_score": result.compliance_score,
+                        "violations_count": len(result.violations),
+                        "content_type": request.content_type,
+                    },
+                )
+            )
 
             logger.info(
                 f"Content validation completed for {request.request_id}: "
@@ -131,14 +135,16 @@ class ConstitutionalValidationService(ConstitutionalValidator):
             logger.error(f"Content validation failed for {request.request_id}: {e}")
 
             # Log error event
-            await self.audit_service.log_event(AuditEvent(
-                event_type="validation_error",
-                entity_type="content",
-                entity_id=request.request_id,
-                action="validate_failed",
-                actor_id=request.requester_id,
-                metadata={"error": str(e)}
-            ))
+            await self.audit_service.log_event(
+                AuditEvent(
+                    event_type="validation_error",
+                    entity_type="content",
+                    entity_id=request.request_id,
+                    action="validate_failed",
+                    actor_id=request.requester_id,
+                    metadata={"error": str(e)},
+                )
+            )
 
             raise
 
@@ -147,10 +153,10 @@ class ConstitutionalValidationService(ConstitutionalValidator):
     ) -> ValidationResult:
         """
         Validate constitutional compliance.
-        
+
         Args:
             request: Constitutional compliance request
-            
+
         Returns:
             ValidationResult with compliance information
         """
@@ -173,7 +179,9 @@ class ConstitutionalValidationService(ConstitutionalValidator):
                 violation = ConstitutionalViolation(
                     violation_type=ViolationType.POLICY_VIOLATION,
                     severity=1.0 - policy_decision.confidence,
-                    description=f"Policy violation: {'; '.join(policy_decision.reasoning)}",
+                    description=(
+                        f"Policy violation: {'; '.join(policy_decision.reasoning)}"
+                    ),
                     context=request.policy_context,
                 )
                 result.add_violation(violation)
@@ -202,18 +210,20 @@ class ConstitutionalValidationService(ConstitutionalValidator):
                 result.add_recommendation(rec)
 
             # Log audit event
-            await self.audit_service.log_event(AuditEvent(
-                event_type="compliance_validation",
-                entity_type="policy",
-                entity_id=request.request_id,
-                action="validate_compliance",
-                actor_id=request.requester_id,
-                metadata={
-                    "compliance_score": result.compliance_score,
-                    "policy_decision": policy_decision.decision,
-                    "strict_mode": request.strict_mode,
-                }
-            ))
+            await self.audit_service.log_event(
+                AuditEvent(
+                    event_type="compliance_validation",
+                    entity_type="policy",
+                    entity_id=request.request_id,
+                    action="validate_compliance",
+                    actor_id=request.requester_id,
+                    metadata={
+                        "compliance_score": result.compliance_score,
+                        "policy_decision": policy_decision.decision,
+                        "strict_mode": request.strict_mode,
+                    },
+                )
+            )
 
             logger.info(
                 f"Compliance validation completed for {request.request_id}: "
@@ -230,7 +240,7 @@ class ConstitutionalValidationService(ConstitutionalValidator):
     def validate_constitutional_hash(self) -> dict[str, Any]:
         """
         Validate constitutional hash integrity.
-        
+
         Returns:
             Dict with validation results
         """
@@ -289,28 +299,32 @@ class ConstitutionalValidationService(ConstitutionalValidator):
 
         # Example strict checks
         if len(content) > 10000:  # Very long content
-            violations.append(ConstitutionalViolation(
-                violation_type=ViolationType.POLICY_VIOLATION,
-                severity=0.3,
-                description="Content exceeds recommended length limits",
-                context=context,
-            ))
+            violations.append(
+                ConstitutionalViolation(
+                    violation_type=ViolationType.POLICY_VIOLATION,
+                    severity=0.3,
+                    description="Content exceeds recommended length limits",
+                    context=context,
+                )
+            )
 
         return violations
 
-    async def _generate_recommendations(
-        self, result: ValidationResult
-    ) -> list[str]:
+    async def _generate_recommendations(self, result: ValidationResult) -> list[str]:
         """Generate recommendations based on validation result."""
         recommendations = []
 
         if result.compliance_score < 0.8:
             recommendations.append("Consider revising content to improve compliance")
 
-        if any(v.violation_type == ViolationType.CONTENT_HARMFUL for v in result.violations):
+        if any(
+            v.violation_type == ViolationType.CONTENT_HARMFUL for v in result.violations
+        ):
             recommendations.append("Remove harmful content before proceeding")
 
-        if any(v.violation_type == ViolationType.BIAS_DETECTED for v in result.violations):
+        if any(
+            v.violation_type == ViolationType.BIAS_DETECTED for v in result.violations
+        ):
             recommendations.append("Review content for potential bias")
 
         return recommendations
@@ -322,12 +336,16 @@ class ConstitutionalValidationService(ConstitutionalValidator):
         recommendations = []
 
         if policy_decision.decision == "deny":
-            recommendations.append("Content violates constitutional policies and cannot be approved")
+            recommendations.append(
+                "Content violates constitutional policies and cannot be approved"
+            )
         elif policy_decision.decision == "review":
             recommendations.append("Content requires manual review before approval")
 
         if result.compliance_score < 0.9:
-            recommendations.append("Consider policy updates to improve compliance framework")
+            recommendations.append(
+                "Consider policy updates to improve compliance framework"
+            )
 
         return recommendations
 
@@ -355,7 +373,10 @@ class ConstitutionalPolicyServiceImpl(ConstitutionalPolicyService):
         )
 
         # Check for obvious violations
-        if any(keyword in content.lower() for keyword in ["harmful", "illegal", "violation"]):
+        if any(
+            keyword in content.lower()
+            for keyword in ["harmful", "illegal", "violation"]
+        ):
             decision.decision = "deny"
             decision.confidence = 0.9
             decision.reasoning = ["Content contains prohibited keywords"]
@@ -395,7 +416,9 @@ class AuditServiceImpl(AuditService):
         """Log an audit event."""
         try:
             await self.audit_repo.save_event(event)
-            logger.debug(f"Audit event logged: {event.event_type} for {event.entity_id}")
+            logger.debug(
+                f"Audit event logged: {event.event_type} for {event.entity_id}"
+            )
         except Exception as e:
             logger.error(f"Failed to log audit event: {e}")
             # Don't fail the main operation if audit logging fails

@@ -165,7 +165,7 @@ pytest
 - **Risk**: Breaking dependencies in production
   - **Mitigation**: Staged rollout with careful monitoring
 
-- **Risk**: Removing code needed for future features  
+- **Risk**: Removing code needed for future features
   - **Mitigation**: Git history preserves all code; can be restored if needed
 
 ## Conclusion

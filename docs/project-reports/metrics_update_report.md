@@ -25,4 +25,3 @@
 - **Replaced with**: cdd01ef066bc6cf2\cite{perf-report}
 - **Instances**: 16
 - **Description**: Constitutional compliance hash
-

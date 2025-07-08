@@ -75,7 +75,7 @@ class CacheConfigLoader:
             registry_hash = self._registry_data.get("constitutional_hash")
             if registry_hash != self.constitutional_hash:
                 logger.warning(
-                    f"Constitutional hash mismatch in cache registry: "
+                    "Constitutional hash mismatch in cache registry: "
                     f"{registry_hash} != {self.constitutional_hash}"
                 )
 
@@ -111,15 +111,17 @@ class CacheConfigLoader:
             ttl_seconds=service_config["ttl_seconds"],
             max_size=service_config["max_size"],
             warming_keys=service_config["warming_keys"],
-            l1_memory_cache=defaults.get("cache_strategies", {}).get("l1_memory_cache", {}),
+            l1_memory_cache=defaults.get("cache_strategies", {}).get(
+                "l1_memory_cache", {}
+            ),
             l2_redis_cache={
                 "enabled": True,
                 "max_size": service_config["max_size"],
-                "ttl_seconds": service_config["ttl_seconds"]
+                "ttl_seconds": service_config["ttl_seconds"],
             },
             performance_targets=defaults.get("performance_targets", {}),
             monitoring=defaults.get("monitoring", {}),
-            constitutional_hash=self.constitutional_hash
+            constitutional_hash=self.constitutional_hash,
         )
 
         logger.debug(f"Loaded cache config for {service_name}: {config.cache_type}")
@@ -138,8 +140,10 @@ class CacheConfigLoader:
         strategy = CacheStrategy(
             multi_tier_enabled=cache_strategies.get("multi_tier_enabled", True),
             cache_warming_enabled=bool(config.warming_keys),
-            warming_frequency_minutes=cache_strategies.get("warming_frequency_minutes", 30),
-            constitutional_validation=True
+            warming_frequency_minutes=cache_strategies.get(
+                "warming_frequency_minutes", 30
+            ),
+            constitutional_validation=True,
         )
 
         return strategy
@@ -158,7 +162,7 @@ class CacheConfigLoader:
             l2_redis_cache={"enabled": True, "max_size": 1000, "ttl_seconds": 3600},
             performance_targets={"hit_rate_target": 0.85, "latency_target_ms": 2.0},
             monitoring={"metrics_enabled": True, "hit_rate_alerts": True},
-            constitutional_hash=self.constitutional_hash
+            constitutional_hash=self.constitutional_hash,
         )
 
     def _create_default_strategy(self) -> CacheStrategy:
@@ -167,7 +171,7 @@ class CacheConfigLoader:
             multi_tier_enabled=True,
             cache_warming_enabled=False,
             warming_frequency_minutes=30,
-            constitutional_validation=True
+            constitutional_validation=True,
         )
 
     def get_all_service_configs(self) -> dict[str, CacheConfig]:
@@ -191,7 +195,7 @@ class CacheConfigLoader:
             "compliant": True,
             "constitutional_hash": self.constitutional_hash,
             "services_checked": 0,
-            "issues": []
+            "issues": [],
         }
 
         if not self._registry_data:

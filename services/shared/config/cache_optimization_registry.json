@@ -15,13 +15,13 @@
       ]
     },
     "pgc_service": {
-      "service_name": "pgc_service", 
+      "service_name": "pgc_service",
       "cache_type": "governance_rules",
       "ttl_seconds": 7200,
       "max_size": 2000,
       "warming_keys": [
         "active_rules",
-        "policy_framework", 
+        "policy_framework",
         "governance_policies"
       ]
     },
@@ -41,11 +41,7 @@
       "cache_type": "shared_knowledge",
       "ttl_seconds": 1800,
       "max_size": 2500,
-      "warming_keys": [
-        "active_agents",
-        "coordination_state",
-        "knowledge_base"
-      ]
+      "warming_keys": ["active_agents", "coordination_state", "knowledge_base"]
     },
     "coordinator_service": {
       "service_name": "coordinator_service",
@@ -96,22 +92,14 @@
       "cache_type": "authentication",
       "ttl_seconds": 1800,
       "max_size": 3000,
-      "warming_keys": [
-        "auth_tokens",
-        "user_sessions",
-        "permission_cache"
-      ]
+      "warming_keys": ["auth_tokens", "user_sessions", "permission_cache"]
     },
     "integrity_service": {
       "service_name": "integrity_service",
       "cache_type": "integrity_validation",
       "ttl_seconds": 3600,
       "max_size": 1000,
-      "warming_keys": [
-        "integrity_checks",
-        "audit_patterns",
-        "validation_cache"
-      ]
+      "warming_keys": ["integrity_checks", "audit_patterns", "validation_cache"]
     }
   },
   "default_settings": {

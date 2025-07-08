@@ -7,14 +7,6 @@ This script systematically resolves port conflicts across all Docker Compose fil
 and updates service configurations to use unique ports.
 """
 
-import json
-import os
-import re
-from collections import defaultdict
-from pathlib import Path
-
-import yaml
-
 # Constitutional hash
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
@@ -165,7 +157,7 @@ def update_env_file():
     env_file_path = ".env"
 
     try:
-        with open(env_file_path, "r") as f:
+        with open(env_file_path) as f:
             content = f.read()
 
         # Create new port section

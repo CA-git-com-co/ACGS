@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex main"] 0 "main.aux" "main.bbl" "main" 0 -1
-  "./ACGS-PGP.bib" 1752008082.39362 20005 b258bb6b1b5cfcef3ac474fb3654c1ca ""
+["bibtex main"] 1752010497.32089 "main.aux" "main.bbl" "main" 1752010502.33125 0
+  "./ACGS-PGP.bib" 1752009473.93937 20004 2a40c241c0d769135463c0281917db9f ""
   "/usr/share/texlive/texmf-dist/bibtex/bst/acmart/ACM-Reference-Format.bst" 1680299675 90332 18dc4e5c9b5c2ddd337e9f97727d04f1 ""
-  "main.aux" 1752008159.73585 94845 0aa86afa78b5c4cceacd282efa82a2e7 "pdflatex"
+  "main.aux" 1752010501.96352 96632 89ceba3689dfcf57a6378acc57112195 "pdflatex"
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["pdflatex"] 1752008158.3381 "main.tex" "main.pdf" "main" 1752008160.19011 2
+["pdflatex"] 1752010497.39351 "main.tex" "main.pdf" "main" 1752010502.33158 0
   "/etc/texmf/web2c/texmf.cnf" 1746903930.98296 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/usr/share/texlive/texmf-dist/fonts/enc/dvips/inconsolata/i4-t1-4.enc" 1558214095 7693 0f2dce6d313c82989ec3a67fc24df2a0 ""
   "/usr/share/texlive/texmf-dist/fonts/enc/dvips/libertine/lbtn_25tcsq.enc" 1490131464 2921 8ca0eb0831f9bc5da080d3697cfe67bf ""
@@ -271,13 +271,20 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1707919699 40399 f2c302f7d2af602abb742093540a5834 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1748896237.34129 5472669 54eaf61a88b6b7896ebd0dac973cb29c ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1747083669 8211355 bc6dcf965fb56e15832c202c29bbd44b ""
-  "comment.cut" 1752008159.61285 1366 1695c817ff98fcfa54af59c40f26b78b "pdflatex"
+  "comment.cut" 1752010501.79052 1366 1695c817ff98fcfa54af59c40f26b78b "pdflatex"
+  "figures/Figure_2_Enhanced_Explainability_Dashboard_Mockup.png" 1752008475.75395 432712 e1db10155d1bd97f17715bcad2aecfde ""
+  "figures/Figure_3_Rule_Synthesis_Success_Rate_per_Principle.png" 1752008476.06501 199726 9af5d4740c8d4c0d66df5fe4756c1f40 ""
+  "figures/Figure_4_Constitutional_Compliance_Over_Generations.png" 1752008476.41408 386717 a4e0d275e0f9dfba7a40aac47c2e2a07 ""
+  "figures/Figure_5_compliance_generations.png" 1752008476.74514 348208 684d4580d805cbbd329c41e57748ff88 ""
+  "figures/Figure_6_Latency_Distribution.png" 1752008477.17323 233099 c1fc61356a92346b78f44e9c69424b5a ""
+  "figures/Figure_7_Throughput_Over_Time.png" 1752008477.5403 610717 6f5ba2e6b1beaa8f70881dd7b055d176 ""
+  "figures/Figure_8_Compliance_Dashboard_Snapshot.png" 1752008477.75134 72439 80d38abe27cb1a1566aebc015f895886 ""
   "figures/production_architecture.pdf" 1751932562.65855 34836 99a78c8b9564d97d9737f0aa2454deaa ""
-  "main.aux" 1752008159.73585 94845 0aa86afa78b5c4cceacd282efa82a2e7 "pdflatex"
-  "main.bbl" 1752008088.5814 30661 548520aeceb59bf56de14bbe4d942e49 "bibtex main"
-  "main.out" 1752008159.73885 10418 0c15778d76875ff5c282935622126b1f "pdflatex"
-  "main.tex" 1752008075.42487 283432 88e9ca44a52a71d6805c461076558134 ""
-  "production_certification.tex" 1751932562.66955 18938 a1af5420a744da83cdd8b910a9cf22fa ""
+  "main.aux" 1752010501.96352 96632 89ceba3689dfcf57a6378acc57112195 "pdflatex"
+  "main.bbl" 1752010497.38756 30661 548520aeceb59bf56de14bbe4d942e49 "bibtex main"
+  "main.out" 1752010501.96652 10418 ec997446703c56757923763343b0bff4 "pdflatex"
+  "main.tex" 1752009916.99377 288597 e32a17b77c206661880e0b0858212a4d ""
+  "production_certification.tex" 1752010475.79474 18907 59fcf000b78d04b8c81f1efae2db0ad0 ""
   (generated)
   "comment.cut"
   "main.aux"
@@ -285,3 +292,4 @@
   "main.out"
   "main.pdf"
   (rewritten before read)
+  "comment.cut"

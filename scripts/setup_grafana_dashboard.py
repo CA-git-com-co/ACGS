@@ -23,9 +23,9 @@ def setup_grafana_dashboard():
     grafana_user = "admin"
     grafana_password = os.getenv("PASSWORD", "")
 
-    print(f"🔧 Setting up ACGS Constitutional Compliance Dashboard")
+    print("🔧 Setting up ACGS Constitutional Compliance Dashboard")
     print(f"📊 Grafana URL: {grafana_url}")
-    print(f"🔐 Constitutional Hash: cdd01ef066bc6cf2")
+    print("🔐 Constitutional Hash: cdd01ef066bc6cf2")
     print("=" * 80)
 
     # Wait for Grafana to be ready
@@ -78,7 +78,7 @@ def setup_grafana_dashboard():
     # Load dashboard configuration
     print("\n📋 Loading dashboard configuration...")
     try:
-        with open("acgs_constitutional_compliance_dashboard.json", "r") as f:
+        with open("acgs_constitutional_compliance_dashboard.json") as f:
             dashboard_config = json.load(f)
         print("✅ Dashboard configuration loaded")
     except Exception as e:
@@ -90,7 +90,9 @@ def setup_grafana_dashboard():
     dashboard_payload = {
         "dashboard": dashboard_config["dashboard"],
         "overwrite": True,
-        "message": f"ACGS Constitutional Compliance Dashboard - {datetime.now().isoformat()}",
+        "message": (
+            f"ACGS Constitutional Compliance Dashboard - {datetime.now().isoformat()}"
+        ),
     }
 
     try:
@@ -187,12 +189,12 @@ def validate_monitoring_setup():
         except:
             print(f"❌ {service_name:25} Port {port:4} | Connection failed")
 
-    print(f"\n📊 MONITORING SUMMARY")
+    print("\n📊 MONITORING SUMMARY")
     print("=" * 80)
     print(f"Operational Services: {operational_services}/{len(services)}")
-    print(f"Constitutional Hash: cdd01ef066bc6cf2")
-    print(f"Prometheus: http://localhost:9090")
-    print(f"Grafana: http://localhost:3001 (admin/acgs_admin_2024)")
+    print("Constitutional Hash: cdd01ef066bc6cf2")
+    print("Prometheus: http://localhost:9090")
+    print("Grafana: http://localhost:3001 (admin/acgs_admin_2024)")
     print(f"Timestamp: {datetime.now().isoformat()}")
 
     return operational_services >= len(services) * 0.8  # 80% services operational
@@ -210,7 +212,7 @@ if __name__ == "__main__":
     monitoring_success = validate_monitoring_setup()
 
     # Final status
-    print(f"\n🏁 SETUP COMPLETE")
+    print("\n🏁 SETUP COMPLETE")
     print("=" * 80)
     if dashboard_success and monitoring_success:
         print("✅ ACGS monitoring fully operational!")

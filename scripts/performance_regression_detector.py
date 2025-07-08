@@ -6,11 +6,7 @@ Monitors for cache hit rates <85% and performance degradation
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import json
-import statistics
-import time
 from datetime import datetime, timedelta
-from typing import Dict, List, Tuple
 
 import requests
 
@@ -28,7 +24,7 @@ class PerformanceRegressor:
             "error_rate": 0.01,
         }
 
-    def query_prometheus(self, query: str, time_range: str = "5m") -> List[Dict]:
+    def query_prometheus(self, query: str, time_range: str = "5m") -> list[dict]:
         """Query Prometheus for metrics"""
         try:
             url = f"{self.prometheus_url}/api/v1/query"
@@ -44,7 +40,7 @@ class PerformanceRegressor:
             print(f"❌ Prometheus query error: {e}")
             return []
 
-    def query_prometheus_range(self, query: str, duration: str = "1h") -> List[Dict]:
+    def query_prometheus_range(self, query: str, duration: str = "1h") -> list[dict]:
         """Query Prometheus for time series data"""
         try:
             url = f"{self.prometheus_url}/api/v1/query_range"
@@ -68,7 +64,7 @@ class PerformanceRegressor:
             print(f"❌ Prometheus range query error: {e}")
             return []
 
-    def check_latency_regression(self) -> Tuple[bool, Dict]:
+    def check_latency_regression(self) -> tuple[bool, dict]:
         """Check for P99 latency regression"""
         print("⏱️  Checking P99 Latency Regression...")
 
@@ -89,17 +85,13 @@ class PerformanceRegressor:
             target_ms = self.performance_targets["p99_latency_ms"]
 
             if latency_ms > target_ms:
-                regressions.append(
-                    {
-                        "service": instance,
-                        "metric": "p99_latency",
-                        "current": latency_ms,
-                        "target": target_ms,
-                        "severity": (
-                            "critical" if latency_ms > target_ms * 2 else "warning"
-                        ),
-                    }
-                )
+                regressions.append({
+                    "service": instance,
+                    "metric": "p99_latency",
+                    "current": latency_ms,
+                    "target": target_ms,
+                    "severity": "critical" if latency_ms > target_ms * 2 else "warning",
+                })
                 print(f"⚠️  {instance}: {latency_ms:.2f}ms (target: {target_ms}ms)")
             else:
                 healthy_services += 1
@@ -111,7 +103,7 @@ class PerformanceRegressor:
             "total_services": len(results),
         }
 
-    def check_cache_regression(self) -> Tuple[bool, Dict]:
+    def check_cache_regression(self) -> tuple[bool, dict]:
         """Check for cache hit rate regression"""
         print("\n💾 Checking Cache Hit Rate Regression...")
 
@@ -136,17 +128,15 @@ class PerformanceRegressor:
             target_rate = self.performance_targets["cache_hit_rate"]
 
             if hit_rate < target_rate:
-                regressions.append(
-                    {
-                        "service": instance,
-                        "metric": "cache_hit_rate",
-                        "current": hit_rate,
-                        "target": target_rate,
-                        "severity": (
-                            "critical" if hit_rate < target_rate * 0.8 else "warning"
-                        ),
-                    }
-                )
+                regressions.append({
+                    "service": instance,
+                    "metric": "cache_hit_rate",
+                    "current": hit_rate,
+                    "target": target_rate,
+                    "severity": (
+                        "critical" if hit_rate < target_rate * 0.8 else "warning"
+                    ),
+                })
                 print(f"⚠️  {instance}: {hit_rate:.1%} (target: {target_rate:.1%})")
             else:
                 healthy_services += 1
@@ -158,7 +148,7 @@ class PerformanceRegressor:
             "total_services": len(all_results),
         }
 
-    def check_throughput_regression(self) -> Tuple[bool, Dict]:
+    def check_throughput_regression(self) -> tuple[bool, dict]:
         """Check for throughput regression"""
         print("\n🚀 Checking Throughput Regression...")
 
@@ -176,15 +166,13 @@ class PerformanceRegressor:
             target_rps = self.performance_targets["throughput_rps"]
 
             if rps < target_rps:
-                regressions.append(
-                    {
-                        "service": instance,
-                        "metric": "throughput_rps",
-                        "current": rps,
-                        "target": target_rps,
-                        "severity": "critical" if rps < target_rps * 0.5 else "warning",
-                    }
-                )
+                regressions.append({
+                    "service": instance,
+                    "metric": "throughput_rps",
+                    "current": rps,
+                    "target": target_rps,
+                    "severity": "critical" if rps < target_rps * 0.5 else "warning",
+                })
                 print(f"⚠️  {instance}: {rps:.1f} RPS (target: {target_rps} RPS)")
             else:
                 healthy_services += 1
@@ -196,7 +184,7 @@ class PerformanceRegressor:
             "total_services": len(results),
         }
 
-    def check_constitutional_compliance_regression(self) -> Tuple[bool, Dict]:
+    def check_constitutional_compliance_regression(self) -> tuple[bool, dict]:
         """Check for constitutional compliance regression"""
         print("\n⚖️  Checking Constitutional Compliance Regression...")
 
@@ -224,15 +212,13 @@ class PerformanceRegressor:
                     constitutional_hash = data.get("constitutional_hash", "missing")
 
                     if constitutional_hash != self.constitutional_hash:
-                        regressions.append(
-                            {
-                                "service": service_name,
-                                "metric": "constitutional_hash",
-                                "current": constitutional_hash,
-                                "target": self.constitutional_hash,
-                                "severity": "critical",
-                            }
-                        )
+                        regressions.append({
+                            "service": service_name,
+                            "metric": "constitutional_hash",
+                            "current": constitutional_hash,
+                            "target": self.constitutional_hash,
+                            "severity": "critical",
+                        })
                         print(
                             f"🚨 {service_name}: Hash mismatch ({constitutional_hash})"
                         )
@@ -240,26 +226,22 @@ class PerformanceRegressor:
                         compliant_services += 1
                         print(f"✅ {service_name}: Constitutional compliance OK")
                 else:
-                    regressions.append(
-                        {
-                            "service": service_name,
-                            "metric": "service_availability",
-                            "current": "down",
-                            "target": "up",
-                            "severity": "critical",
-                        }
-                    )
-                    print(f"❌ {service_name}: Service unavailable")
-            except Exception as e:
-                regressions.append(
-                    {
+                    regressions.append({
                         "service": service_name,
-                        "metric": "service_connectivity",
-                        "current": "error",
-                        "target": "connected",
+                        "metric": "service_availability",
+                        "current": "down",
+                        "target": "up",
                         "severity": "critical",
-                    }
-                )
+                    })
+                    print(f"❌ {service_name}: Service unavailable")
+            except Exception:
+                regressions.append({
+                    "service": service_name,
+                    "metric": "service_connectivity",
+                    "current": "error",
+                    "target": "connected",
+                    "severity": "critical",
+                })
                 print(f"❌ {service_name}: Connection error")
 
         return len(regressions) == 0, {
@@ -268,7 +250,7 @@ class PerformanceRegressor:
             "total_services": len(services),
         }
 
-    def generate_regression_report(self, results: Dict) -> str:
+    def generate_regression_report(self, results: dict) -> str:
         """Generate a comprehensive regression report"""
         report = []
         report.append("📊 ACGS PERFORMANCE REGRESSION REPORT")
@@ -333,7 +315,9 @@ class PerformanceRegressor:
             "Latency Check": self.check_latency_regression,
             "Cache Check": self.check_cache_regression,
             "Throughput Check": self.check_throughput_regression,
-            "Constitutional Compliance": self.check_constitutional_compliance_regression,
+            "Constitutional Compliance": (
+                self.check_constitutional_compliance_regression
+            ),
         }
 
         results = {}

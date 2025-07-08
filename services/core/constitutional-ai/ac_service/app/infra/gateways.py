@@ -35,7 +35,9 @@ class ConstitutionalRepository(ABC):
         """Get all constitutional principles."""
 
     @abstractmethod
-    async def get_principle_by_id(self, principle_id: str) -> ConstitutionalPrinciple | None:
+    async def get_principle_by_id(
+        self, principle_id: str
+    ) -> ConstitutionalPrinciple | None:
         """Get a constitutional principle by ID."""
 
     @abstractmethod
@@ -67,7 +69,9 @@ class AuditRepository(ABC):
         """Get audit events for an entity."""
 
     @abstractmethod
-    async def get_events_by_type(self, event_type: str, limit: int = 100) -> list[AuditEvent]:
+    async def get_events_by_type(
+        self, event_type: str, limit: int = 100
+    ) -> list[AuditEvent]:
         """Get audit events by type."""
 
 
@@ -75,7 +79,9 @@ class ExternalValidationGateway(ABC):
     """Gateway interface for external validation services."""
 
     @abstractmethod
-    async def validate_content(self, request: ContentValidationRequest) -> ValidationResult | None:
+    async def validate_content(
+        self, request: ContentValidationRequest
+    ) -> ValidationResult | None:
         """Validate content using external services."""
 
     @abstractmethod
@@ -120,7 +126,9 @@ class DatabaseConstitutionalRepository(ConstitutionalRepository):
             ),
         ]
 
-    async def get_principle_by_id(self, principle_id: str) -> ConstitutionalPrinciple | None:
+    async def get_principle_by_id(
+        self, principle_id: str
+    ) -> ConstitutionalPrinciple | None:
         """Get a constitutional principle by ID."""
         principles = await self.get_principles()
         return next((p for p in principles if p.principle_id == principle_id), None)
@@ -159,7 +167,9 @@ class DatabasePolicyRepository(PolicyRepository):
 
     async def save_decision(self, decision: PolicyDecision) -> None:
         """Save a policy decision to database."""
-        logger.info(f"Saving policy decision: {decision.decision} for {decision.policy_id}")
+        logger.info(
+            f"Saving policy decision: {decision.decision} for {decision.policy_id}"
+        )
 
 
 @injectable(ServiceLifetime.SCOPED)
@@ -174,7 +184,8 @@ class DatabaseAuditRepository(AuditRepository):
         """Save an audit event to database."""
         # In a real implementation, this would save to database
         logger.debug(
-            f"Audit event saved: {event.event_type} for {event.entity_type}:{event.entity_id}"
+            f"Audit event saved: {event.event_type} for"
+            f" {event.entity_type}:{event.entity_id}"
         )
 
     async def get_events_by_entity(self, entity_id: str) -> list[AuditEvent]:
@@ -190,7 +201,9 @@ class DatabaseAuditRepository(AuditRepository):
             )
         ]
 
-    async def get_events_by_type(self, event_type: str, limit: int = 100) -> list[AuditEvent]:
+    async def get_events_by_type(
+        self, event_type: str, limit: int = 100
+    ) -> list[AuditEvent]:
         """Get audit events by type."""
         # Mock audit data
         return []
@@ -205,7 +218,9 @@ class HTTPExternalValidationGateway(ExternalValidationGateway):
         self.settings = get_settings()
         logger.debug("HTTPExternalValidationGateway initialized")
 
-    async def validate_content(self, request: ContentValidationRequest) -> ValidationResult | None:
+    async def validate_content(
+        self, request: ContentValidationRequest
+    ) -> ValidationResult | None:
         """Validate content using external HTTP services."""
         try:
             # In a real implementation, this would make HTTP calls to external services
@@ -275,17 +290,21 @@ class FileSystemAuditRepository(AuditRepository):
                 for line in f:
                     event_data = json.loads(line.strip())
                     if event_data["entity_id"] == entity_id:
-                        events.append(AuditEvent(
-                            event_id=event_data["event_id"],
-                            event_type=event_data["event_type"],
-                            entity_type=event_data["entity_type"],
-                            entity_id=event_data["entity_id"],
-                            action=event_data["action"],
-                            actor_id=event_data["actor_id"],
-                            metadata=event_data["metadata"],
-                            timestamp=datetime.fromisoformat(event_data["timestamp"]),
-                            constitutional_hash=event_data["constitutional_hash"],
-                        ))
+                        events.append(
+                            AuditEvent(
+                                event_id=event_data["event_id"],
+                                event_type=event_data["event_type"],
+                                entity_type=event_data["entity_type"],
+                                entity_id=event_data["entity_id"],
+                                action=event_data["action"],
+                                actor_id=event_data["actor_id"],
+                                metadata=event_data["metadata"],
+                                timestamp=datetime.fromisoformat(
+                                    event_data["timestamp"]
+                                ),
+                                constitutional_hash=event_data["constitutional_hash"],
+                            )
+                        )
             return events
         except FileNotFoundError:
             return []
@@ -293,7 +312,9 @@ class FileSystemAuditRepository(AuditRepository):
             logger.error(f"Failed to read audit events from file: {e}")
             return []
 
-    async def get_events_by_type(self, event_type: str, limit: int = 100) -> list[AuditEvent]:
+    async def get_events_by_type(
+        self, event_type: str, limit: int = 100
+    ) -> list[AuditEvent]:
         """Get audit events by type from file."""
         try:
             import json
@@ -306,17 +327,21 @@ class FileSystemAuditRepository(AuditRepository):
                         break
                     event_data = json.loads(line.strip())
                     if event_data["event_type"] == event_type:
-                        events.append(AuditEvent(
-                            event_id=event_data["event_id"],
-                            event_type=event_data["event_type"],
-                            entity_type=event_data["entity_type"],
-                            entity_id=event_data["entity_id"],
-                            action=event_data["action"],
-                            actor_id=event_data["actor_id"],
-                            metadata=event_data["metadata"],
-                            timestamp=datetime.fromisoformat(event_data["timestamp"]),
-                            constitutional_hash=event_data["constitutional_hash"],
-                        ))
+                        events.append(
+                            AuditEvent(
+                                event_id=event_data["event_id"],
+                                event_type=event_data["event_type"],
+                                entity_type=event_data["entity_type"],
+                                entity_id=event_data["entity_id"],
+                                action=event_data["action"],
+                                actor_id=event_data["actor_id"],
+                                metadata=event_data["metadata"],
+                                timestamp=datetime.fromisoformat(
+                                    event_data["timestamp"]
+                                ),
+                                constitutional_hash=event_data["constitutional_hash"],
+                            )
+                        )
                         count += 1
             return events
         except FileNotFoundError:
@@ -343,7 +368,9 @@ class RedisConstitutionalRepository(ConstitutionalRepository):
         # then fall back to database if cache miss
         return await self.db_repo.get_principles()
 
-    async def get_principle_by_id(self, principle_id: str) -> ConstitutionalPrinciple | None:
+    async def get_principle_by_id(
+        self, principle_id: str
+    ) -> ConstitutionalPrinciple | None:
         """Get a constitutional principle by ID with caching."""
         return await self.db_repo.get_principle_by_id(principle_id)
 
@@ -365,7 +392,9 @@ class GatewayFactory:
         return DatabaseAuditRepository()
 
     @staticmethod
-    def create_constitutional_repository(use_cache: bool = True) -> ConstitutionalRepository:
+    def create_constitutional_repository(
+        use_cache: bool = True,
+    ) -> ConstitutionalRepository:
         """Create constitutional repository implementation."""
         db_repo = DatabaseConstitutionalRepository()
         if use_cache:

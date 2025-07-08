@@ -74,53 +74,43 @@ class CoreServicesUnitTestCoverage:
         tests = []
 
         # Authentication tests
-        tests.extend(
-            [
-                {"name": "test_valid_user_login", "success": True},
-                {"name": "test_invalid_credentials", "success": True},
-                {"name": "test_locked_account", "success": True},
-                {"name": "test_expired_password", "success": True},
-            ]
-        )
+        tests.extend([
+            {"name": "test_valid_user_login", "success": True},
+            {"name": "test_invalid_credentials", "success": True},
+            {"name": "test_locked_account", "success": True},
+            {"name": "test_expired_password", "success": True},
+        ])
 
         # Session management tests
-        tests.extend(
-            [
-                {"name": "test_session_creation", "success": True},
-                {"name": "test_session_expiration", "success": True},
-                {"name": "test_concurrent_sessions", "success": True},
-                {"name": "test_session_cleanup", "success": True},
-            ]
-        )
+        tests.extend([
+            {"name": "test_session_creation", "success": True},
+            {"name": "test_session_expiration", "success": True},
+            {"name": "test_concurrent_sessions", "success": True},
+            {"name": "test_session_cleanup", "success": True},
+        ])
 
         # Token validation tests
-        tests.extend(
-            [
-                {"name": "test_jwt_token_creation", "success": True},
-                {"name": "test_token_validation", "success": True},
-                {"name": "test_expired_token", "success": True},
-                {"name": "test_malformed_token", "success": True},
-            ]
-        )
+        tests.extend([
+            {"name": "test_jwt_token_creation", "success": True},
+            {"name": "test_token_validation", "success": True},
+            {"name": "test_expired_token", "success": True},
+            {"name": "test_malformed_token", "success": True},
+        ])
 
         # Security tests
-        tests.extend(
-            [
-                {"name": "test_password_hashing", "success": True},
-                {"name": "test_brute_force_protection", "success": True},
-                {"name": "test_sql_injection_prevention", "success": True},
-                {"name": "test_xss_prevention", "success": True},
-            ]
-        )
+        tests.extend([
+            {"name": "test_password_hashing", "success": True},
+            {"name": "test_brute_force_protection", "success": True},
+            {"name": "test_sql_injection_prevention", "success": True},
+            {"name": "test_xss_prevention", "success": True},
+        ])
 
         # Error handling tests
-        tests.extend(
-            [
-                {"name": "test_invalid_input_handling", "success": True},
-                {"name": "test_database_error_handling", "success": True},
-                {"name": "test_network_error_handling", "success": True},
-            ]
-        )
+        tests.extend([
+            {"name": "test_invalid_input_handling", "success": True},
+            {"name": "test_database_error_handling", "success": True},
+            {"name": "test_network_error_handling", "success": True},
+        ])
 
         passed = sum(1 for test in tests if test["success"])
         total = len(tests)
@@ -167,42 +157,34 @@ class CoreServicesUnitTestCoverage:
         tests = []
 
         # RBAC tests
-        tests.extend(
-            [
-                {"name": "test_role_creation", "success": True},
-                {"name": "test_permission_assignment", "success": True},
-                {"name": "test_role_hierarchy", "success": True},
-                {"name": "test_permission_inheritance", "success": True},
-            ]
-        )
+        tests.extend([
+            {"name": "test_role_creation", "success": True},
+            {"name": "test_permission_assignment", "success": True},
+            {"name": "test_role_hierarchy", "success": True},
+            {"name": "test_permission_inheritance", "success": True},
+        ])
 
         # Authorization tests
-        tests.extend(
-            [
-                {"name": "test_resource_access_allowed", "success": True},
-                {"name": "test_resource_access_denied", "success": True},
-                {"name": "test_conditional_access", "success": True},
-                {"name": "test_time_based_access", "success": True},
-            ]
-        )
+        tests.extend([
+            {"name": "test_resource_access_allowed", "success": True},
+            {"name": "test_resource_access_denied", "success": True},
+            {"name": "test_conditional_access", "success": True},
+            {"name": "test_time_based_access", "success": True},
+        ])
 
         # Constitutional compliance tests
-        tests.extend(
-            [
-                {"name": "test_constitutional_hash_validation", "success": True},
-                {"name": "test_policy_compliance_check", "success": True},
-                {"name": "test_governance_rule_enforcement", "success": True},
-            ]
-        )
+        tests.extend([
+            {"name": "test_constitutional_hash_validation", "success": True},
+            {"name": "test_policy_compliance_check", "success": True},
+            {"name": "test_governance_rule_enforcement", "success": True},
+        ])
 
         # Security tests
-        tests.extend(
-            [
-                {"name": "test_privilege_escalation_prevention", "success": True},
-                {"name": "test_unauthorized_access_prevention", "success": True},
-                {"name": "test_audit_trail_creation", "success": True},
-            ]
-        )
+        tests.extend([
+            {"name": "test_privilege_escalation_prevention", "success": True},
+            {"name": "test_unauthorized_access_prevention", "success": True},
+            {"name": "test_audit_trail_creation", "success": True},
+        ])
 
         passed = sum(1 for test in tests if test["success"])
         total = len(tests)
@@ -247,32 +229,26 @@ class CoreServicesUnitTestCoverage:
         tests = []
 
         # Data integrity tests
-        tests.extend(
-            [
-                {"name": "test_data_hash_validation", "success": True},
-                {"name": "test_corrupted_data_detection", "success": True},
-                {"name": "test_integrity_proof_creation", "success": True},
-                {"name": "test_integrity_proof_verification", "success": True},
-            ]
-        )
+        tests.extend([
+            {"name": "test_data_hash_validation", "success": True},
+            {"name": "test_corrupted_data_detection", "success": True},
+            {"name": "test_integrity_proof_creation", "success": True},
+            {"name": "test_integrity_proof_verification", "success": True},
+        ])
 
         # Constitutional hash tests
-        tests.extend(
-            [
-                {"name": "test_constitutional_hash_validation", "success": True},
-                {"name": "test_invalid_constitutional_hash", "success": True},
-                {"name": "test_constitutional_hash_update", "success": True},
-            ]
-        )
+        tests.extend([
+            {"name": "test_constitutional_hash_validation", "success": True},
+            {"name": "test_invalid_constitutional_hash", "success": True},
+            {"name": "test_constitutional_hash_update", "success": True},
+        ])
 
         # Digital signature tests
-        tests.extend(
-            [
-                {"name": "test_signature_creation", "success": True},
-                {"name": "test_signature_verification", "success": True},
-                {"name": "test_invalid_signature_detection", "success": True},
-            ]
-        )
+        tests.extend([
+            {"name": "test_signature_creation", "success": True},
+            {"name": "test_signature_verification", "success": True},
+            {"name": "test_invalid_signature_detection", "success": True},
+        ])
 
         passed = sum(1 for test in tests if test["success"])
         total = len(tests)
@@ -317,35 +293,29 @@ class CoreServicesUnitTestCoverage:
         tests = []
 
         # Formal verification tests
-        tests.extend(
-            [
-                {"name": "test_policy_logic_verification", "success": True},
-                {"name": "test_inconsistent_policy_detection", "success": True},
-                {
-                    "name": "test_constitutional_compliance_verification",
-                    "success": True,
-                },
-                {"name": "test_verification_proof_generation", "success": True},
-            ]
-        )
+        tests.extend([
+            {"name": "test_policy_logic_verification", "success": True},
+            {"name": "test_inconsistent_policy_detection", "success": True},
+            {
+                "name": "test_constitutional_compliance_verification",
+                "success": True,
+            },
+            {"name": "test_verification_proof_generation", "success": True},
+        ])
 
         # Logic consistency tests
-        tests.extend(
-            [
-                {"name": "test_logic_consistency_check", "success": True},
-                {"name": "test_contradiction_detection", "success": True},
-                {"name": "test_completeness_verification", "success": True},
-            ]
-        )
+        tests.extend([
+            {"name": "test_logic_consistency_check", "success": True},
+            {"name": "test_contradiction_detection", "success": True},
+            {"name": "test_completeness_verification", "success": True},
+        ])
 
         # Model checking tests
-        tests.extend(
-            [
-                {"name": "test_state_space_exploration", "success": True},
-                {"name": "test_property_verification", "success": True},
-                {"name": "test_counterexample_generation", "success": True},
-            ]
-        )
+        tests.extend([
+            {"name": "test_state_space_exploration", "success": True},
+            {"name": "test_property_verification", "success": True},
+            {"name": "test_counterexample_generation", "success": True},
+        ])
 
         passed = sum(1 for test in tests if test["success"])
         total = len(tests)
@@ -390,32 +360,26 @@ class CoreServicesUnitTestCoverage:
         tests = []
 
         # Policy synthesis tests
-        tests.extend(
-            [
-                {"name": "test_policy_synthesis_standard", "success": True},
-                {"name": "test_policy_synthesis_enhanced", "success": True},
-                {"name": "test_multi_model_consensus", "success": True},
-                {"name": "test_human_review_integration", "success": True},
-            ]
-        )
+        tests.extend([
+            {"name": "test_policy_synthesis_standard", "success": True},
+            {"name": "test_policy_synthesis_enhanced", "success": True},
+            {"name": "test_multi_model_consensus", "success": True},
+            {"name": "test_human_review_integration", "success": True},
+        ])
 
         # Constitutional alignment tests
-        tests.extend(
-            [
-                {"name": "test_constitutional_alignment_check", "success": True},
-                {"name": "test_constitutional_hash_integration", "success": True},
-                {"name": "test_governance_rule_compliance", "success": True},
-            ]
-        )
+        tests.extend([
+            {"name": "test_constitutional_alignment_check", "success": True},
+            {"name": "test_constitutional_hash_integration", "success": True},
+            {"name": "test_governance_rule_compliance", "success": True},
+        ])
 
         # Risk assessment tests
-        tests.extend(
-            [
-                {"name": "test_risk_level_calculation", "success": True},
-                {"name": "test_risk_mitigation_strategies", "success": True},
-                {"name": "test_synthesis_quality_metrics", "success": True},
-            ]
-        )
+        tests.extend([
+            {"name": "test_risk_level_calculation", "success": True},
+            {"name": "test_risk_mitigation_strategies", "success": True},
+            {"name": "test_synthesis_quality_metrics", "success": True},
+        ])
 
         passed = sum(1 for test in tests if test["success"])
         total = len(tests)
@@ -460,33 +424,27 @@ class CoreServicesUnitTestCoverage:
         tests = []
 
         # Compliance checking tests
-        tests.extend(
-            [
-                {"name": "test_policy_compliance_validation", "success": True},
-                {"name": "test_constitutional_compliance_check", "success": True},
-                {"name": "test_governance_rule_enforcement", "success": True},
-                {"name": "test_compliance_scoring", "success": True},
-            ]
-        )
+        tests.extend([
+            {"name": "test_policy_compliance_validation", "success": True},
+            {"name": "test_constitutional_compliance_check", "success": True},
+            {"name": "test_governance_rule_enforcement", "success": True},
+            {"name": "test_compliance_scoring", "success": True},
+        ])
 
         # Governance workflow tests
-        tests.extend(
-            [
-                {"name": "test_policy_creation_workflow", "success": True},
-                {"name": "test_policy_approval_workflow", "success": True},
-                {"name": "test_policy_enforcement_workflow", "success": True},
-                {"name": "test_audit_workflow", "success": True},
-            ]
-        )
+        tests.extend([
+            {"name": "test_policy_creation_workflow", "success": True},
+            {"name": "test_policy_approval_workflow", "success": True},
+            {"name": "test_policy_enforcement_workflow", "success": True},
+            {"name": "test_audit_workflow", "success": True},
+        ])
 
         # Constitutional validation tests
-        tests.extend(
-            [
-                {"name": "test_constitutional_hash_validation", "success": True},
-                {"name": "test_constitutional_principle_checking", "success": True},
-                {"name": "test_constitutional_amendment_process", "success": True},
-            ]
-        )
+        tests.extend([
+            {"name": "test_constitutional_hash_validation", "success": True},
+            {"name": "test_constitutional_principle_checking", "success": True},
+            {"name": "test_constitutional_amendment_process", "success": True},
+        ])
 
         passed = sum(1 for test in tests if test["success"])
         total = len(tests)
@@ -531,33 +489,27 @@ class CoreServicesUnitTestCoverage:
         tests = []
 
         # Evolutionary algorithm tests
-        tests.extend(
-            [
-                {"name": "test_policy_evolution", "success": True},
-                {"name": "test_fitness_evaluation", "success": True},
-                {"name": "test_population_initialization", "success": True},
-                {"name": "test_generation_evolution", "success": True},
-            ]
-        )
+        tests.extend([
+            {"name": "test_policy_evolution", "success": True},
+            {"name": "test_fitness_evaluation", "success": True},
+            {"name": "test_population_initialization", "success": True},
+            {"name": "test_generation_evolution", "success": True},
+        ])
 
         # Genetic operation tests
-        tests.extend(
-            [
-                {"name": "test_crossover_operation", "success": True},
-                {"name": "test_mutation_operation", "success": True},
-                {"name": "test_selection_operation", "success": True},
-                {"name": "test_elitism_preservation", "success": True},
-            ]
-        )
+        tests.extend([
+            {"name": "test_crossover_operation", "success": True},
+            {"name": "test_mutation_operation", "success": True},
+            {"name": "test_selection_operation", "success": True},
+            {"name": "test_elitism_preservation", "success": True},
+        ])
 
         # Optimization tests
-        tests.extend(
-            [
-                {"name": "test_policy_optimization", "success": True},
-                {"name": "test_convergence_detection", "success": True},
-                {"name": "test_diversity_maintenance", "success": True},
-            ]
-        )
+        tests.extend([
+            {"name": "test_policy_optimization", "success": True},
+            {"name": "test_convergence_detection", "success": True},
+            {"name": "test_diversity_maintenance", "success": True},
+        ])
 
         passed = sum(1 for test in tests if test["success"])
         total = len(tests)
@@ -610,7 +562,8 @@ class CoreServicesUnitTestCoverage:
         print("\n📋 Service-Specific Coverage:")
         for result in service_results:
             print(
-                f"   {result.service_name} (port {result.port}): {result.coverage_percentage:.1f}%"
+                f"   {result.service_name} (port {result.port}):"
+                f" {result.coverage_percentage:.1f}%"
             )
 
         # Test categories summary
@@ -647,7 +600,8 @@ class CoreServicesUnitTestCoverage:
             if result.coverage_percentage >= target_coverage
         )
         print(
-            f"   Services Meeting Target: {services_meeting_target}/{len(service_results)}"
+            "   Services Meeting Target:"
+            f" {services_meeting_target}/{len(service_results)}"
         )
 
         return {

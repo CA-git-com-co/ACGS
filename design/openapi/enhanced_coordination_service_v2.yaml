@@ -2,12 +2,12 @@ openapi: 3.0.3
 info:
   title: Enhanced Multi-Agent Coordination Service API
   description: |
-    Enhanced Multi-Agent Coordination Service for ACGS-2 providing scalable coordination 
+    Enhanced Multi-Agent Coordination Service for ACGS-2 providing scalable coordination
     of hundreds to thousands of AI agents with constitutional compliance oversight.
-    
+
     **Constitutional Hash**: `cdd01ef066bc6cf2`
-    
-    Supports event-driven coordination, advanced consensus algorithms, and distributed 
+
+    Supports event-driven coordination, advanced consensus algorithms, and distributed
     agent management with sub-30s coordination latency and 98% success rate.
   version: 2.0.0
   contact:
@@ -35,12 +35,12 @@ paths:
       tags:
         - Health
       responses:
-        '200':
+        "200":
           description: Service is healthy
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CoordinationHealthResponse'
+                $ref: "#/components/schemas/CoordinationHealthResponse"
 
   /api/v1/coordination/agents/register:
     post:
@@ -55,7 +55,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AgentRegistrationRequest'
+              $ref: "#/components/schemas/AgentRegistrationRequest"
             example:
               constitutional_context:
                 hash: cdd01ef066bc6cf2
@@ -76,18 +76,18 @@ paths:
                   port: 9001
                   health_path: /health
       responses:
-        '200':
+        "200":
           description: Agent registered successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AgentRegistrationResponse'
-        '400':
-          $ref: '#/components/responses/RegistrationError'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          $ref: '#/components/responses/InsufficientClearanceError'
+                $ref: "#/components/schemas/AgentRegistrationResponse"
+        "400":
+          $ref: "#/components/responses/RegistrationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/InsufficientClearanceError"
 
   /api/v1/coordination/agents/discover:
     post:
@@ -102,18 +102,18 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AgentDiscoveryRequest'
+              $ref: "#/components/schemas/AgentDiscoveryRequest"
       responses:
-        '200':
+        "200":
           description: Suitable agents discovered
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AgentDiscoveryResponse'
-        '400':
-          $ref: '#/components/responses/ValidationError'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
+                $ref: "#/components/schemas/AgentDiscoveryResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
 
   /api/v1/coordination/sessions/create:
     post:
@@ -128,7 +128,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CoordinationSessionRequest'
+              $ref: "#/components/schemas/CoordinationSessionRequest"
             example:
               constitutional_context:
                 hash: cdd01ef066bc6cf2
@@ -154,18 +154,18 @@ paths:
                       - transparency
                       - accountability
       responses:
-        '201':
+        "201":
           description: Coordination session created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CoordinationSessionResponse'
-        '400':
-          $ref: '#/components/responses/ValidationError'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          $ref: '#/components/responses/InsufficientClearanceError'
+                $ref: "#/components/schemas/CoordinationSessionResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/InsufficientClearanceError"
 
   /api/v1/coordination/sessions/{sessionId}/execute:
     post:
@@ -187,22 +187,22 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CoordinationExecutionRequest'
+              $ref: "#/components/schemas/CoordinationExecutionRequest"
       responses:
-        '200':
+        "200":
           description: Coordination session executed successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CoordinationExecutionResponse'
-        '400':
-          $ref: '#/components/responses/CoordinationError'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '404':
-          $ref: '#/components/responses/SessionNotFoundError'
-        '409':
-          $ref: '#/components/responses/SessionStateError'
+                $ref: "#/components/schemas/CoordinationExecutionResponse"
+        "400":
+          $ref: "#/components/responses/CoordinationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "404":
+          $ref: "#/components/responses/SessionNotFoundError"
+        "409":
+          $ref: "#/components/responses/SessionStateError"
 
   /api/v1/coordination/sessions/{sessionId}/status:
     get:
@@ -217,16 +217,16 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Session status retrieved
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CoordinationSessionStatus'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '404':
-          $ref: '#/components/responses/SessionNotFoundError'
+                $ref: "#/components/schemas/CoordinationSessionStatus"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "404":
+          $ref: "#/components/responses/SessionNotFoundError"
 
   /api/v1/coordination/consensus:
     post:
@@ -241,20 +241,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ConsensusRequest'
+              $ref: "#/components/schemas/ConsensusRequest"
       responses:
-        '200':
+        "200":
           description: Consensus reached successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConsensusResponse'
-        '400':
-          $ref: '#/components/responses/ConsensusError'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '422':
-          $ref: '#/components/responses/ConstitutionalViolationError'
+                $ref: "#/components/schemas/ConsensusResponse"
+        "400":
+          $ref: "#/components/responses/ConsensusError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "422":
+          $ref: "#/components/responses/ConstitutionalViolationError"
 
   /api/v1/coordination/metrics:
     get:
@@ -282,14 +282,14 @@ paths:
             type: string
           description: Filter metrics by agent type
       responses:
-        '200':
+        "200":
           description: Coordination metrics retrieved
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CoordinationMetricsResponse'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
+                $ref: "#/components/schemas/CoordinationMetricsResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
 
   /api/v1/coordination/agents/pools:
     get:
@@ -309,12 +309,12 @@ paths:
             type: string
           description: Tenant-specific pool status
       responses:
-        '200':
+        "200":
           description: Agent pool status retrieved
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AgentPoolStatusResponse'
+                $ref: "#/components/schemas/AgentPoolStatusResponse"
 
 components:
   securitySchemes:
@@ -340,7 +340,7 @@ components:
           type: string
           enum: [healthy, degraded, unhealthy]
         constitutional_compliance:
-          $ref: '#/components/schemas/ConstitutionalCompliance'
+          $ref: "#/components/schemas/ConstitutionalCompliance"
         service:
           type: string
           example: enhanced-coordination
@@ -460,7 +460,7 @@ components:
         - data
       properties:
         constitutional_context:
-          $ref: '#/components/schemas/ConstitutionalContext'
+          $ref: "#/components/schemas/ConstitutionalContext"
         data:
           type: object
           required:
@@ -468,9 +468,9 @@ components:
             - service_endpoint
           properties:
             agent:
-              $ref: '#/components/schemas/Agent'
+              $ref: "#/components/schemas/Agent"
             service_endpoint:
-              $ref: '#/components/schemas/ServiceEndpoint'
+              $ref: "#/components/schemas/ServiceEndpoint"
 
     AgentRegistrationResponse:
       type: object
@@ -479,7 +479,7 @@ components:
         - data
       properties:
         constitutional_compliance:
-          $ref: '#/components/schemas/ConstitutionalCompliance'
+          $ref: "#/components/schemas/ConstitutionalCompliance"
         data:
           type: object
           properties:
@@ -527,7 +527,8 @@ components:
           type: array
           items:
             type: string
-            enum: [fairness, transparency, accountability, human_dignity, privacy]
+            enum:
+              [fairness, transparency, accountability, human_dignity, privacy]
         compliance_threshold:
           type: number
           minimum: 0.0
@@ -541,16 +542,16 @@ components:
         - data
       properties:
         constitutional_context:
-          $ref: '#/components/schemas/ConstitutionalContext'
+          $ref: "#/components/schemas/ConstitutionalContext"
         data:
           type: object
           required:
             - task_requirements
           properties:
             task_requirements:
-              $ref: '#/components/schemas/TaskRequirements'
+              $ref: "#/components/schemas/TaskRequirements"
             constitutional_requirements:
-              $ref: '#/components/schemas/ConstitutionalRequirements'
+              $ref: "#/components/schemas/ConstitutionalRequirements"
             max_agents:
               type: integer
               minimum: 1
@@ -564,7 +565,7 @@ components:
         - data
       properties:
         constitutional_compliance:
-          $ref: '#/components/schemas/ConstitutionalCompliance'
+          $ref: "#/components/schemas/ConstitutionalCompliance"
         data:
           type: object
           properties:
@@ -574,7 +575,7 @@ components:
                 type: object
                 properties:
                   agent:
-                    $ref: '#/components/schemas/Agent'
+                    $ref: "#/components/schemas/Agent"
                   capability_match_score:
                     type: number
                   availability_status:
@@ -599,7 +600,13 @@ components:
           type: string
         task_type:
           type: string
-          enum: [constitutional_analysis, policy_evaluation, decision_validation, compliance_audit]
+          enum:
+            [
+              constitutional_analysis,
+              policy_evaluation,
+              decision_validation,
+              compliance_audit,
+            ]
         complexity:
           type: string
           enum: [low, medium, high, critical]
@@ -623,7 +630,7 @@ components:
         - data
       properties:
         constitutional_context:
-          $ref: '#/components/schemas/ConstitutionalContext'
+          $ref: "#/components/schemas/ConstitutionalContext"
         data:
           type: object
           required:
@@ -666,7 +673,7 @@ components:
                   maximum: 3600
                   default: 300
                 constitutional_requirements:
-                  $ref: '#/components/schemas/ConstitutionalRequirements'
+                  $ref: "#/components/schemas/ConstitutionalRequirements"
 
     CoordinationSessionResponse:
       type: object
@@ -675,22 +682,22 @@ components:
         - data
       properties:
         constitutional_compliance:
-          $ref: '#/components/schemas/ConstitutionalCompliance'
+          $ref: "#/components/schemas/ConstitutionalCompliance"
         data:
           type: object
           properties:
             session_id:
               type: string
             task:
-              $ref: '#/components/schemas/CoordinationTask'
+              $ref: "#/components/schemas/CoordinationTask"
             selected_agents:
               type: array
               items:
-                $ref: '#/components/schemas/Agent'
+                $ref: "#/components/schemas/Agent"
             hierarchy:
-              $ref: '#/components/schemas/CoordinationHierarchy'
+              $ref: "#/components/schemas/CoordinationHierarchy"
             execution_plan:
-              $ref: '#/components/schemas/ExecutionPlan'
+              $ref: "#/components/schemas/ExecutionPlan"
 
     CoordinationHierarchy:
       type: object
@@ -770,7 +777,7 @@ components:
         - data
       properties:
         constitutional_compliance:
-          $ref: '#/components/schemas/ConstitutionalCompliance'
+          $ref: "#/components/schemas/ConstitutionalCompliance"
         data:
           type: object
           properties:
@@ -809,9 +816,10 @@ components:
           type: string
         status:
           type: string
-          enum: [created, executing, consensus_pending, completed, failed, timeout]
+          enum:
+            [created, executing, consensus_pending, completed, failed, timeout]
         constitutional_compliance:
-          $ref: '#/components/schemas/ConstitutionalCompliance'
+          $ref: "#/components/schemas/ConstitutionalCompliance"
         progress:
           type: object
           properties:
@@ -852,7 +860,7 @@ components:
         - data
       properties:
         constitutional_context:
-          $ref: '#/components/schemas/ConstitutionalContext'
+          $ref: "#/components/schemas/ConstitutionalContext"
         data:
           type: object
           required:
@@ -865,10 +873,17 @@ components:
             agent_decisions:
               type: array
               items:
-                $ref: '#/components/schemas/AgentDecision'
+                $ref: "#/components/schemas/AgentDecision"
             consensus_algorithm:
               type: string
-              enum: [simple_majority, weighted_vote, constitutional_priority, expert_mediation, ml_based]
+              enum:
+                [
+                  simple_majority,
+                  weighted_vote,
+                  constitutional_priority,
+                  expert_mediation,
+                  ml_based,
+                ]
             consensus_requirements:
               type: object
               properties:
@@ -919,7 +934,7 @@ components:
         - data
       properties:
         constitutional_compliance:
-          $ref: '#/components/schemas/ConstitutionalCompliance'
+          $ref: "#/components/schemas/ConstitutionalCompliance"
         data:
           type: object
           properties:
@@ -961,7 +976,7 @@ components:
         - data
       properties:
         constitutional_compliance:
-          $ref: '#/components/schemas/ConstitutionalCompliance'
+          $ref: "#/components/schemas/ConstitutionalCompliance"
         data:
           type: object
           properties:
@@ -1010,7 +1025,7 @@ components:
         - data
       properties:
         constitutional_compliance:
-          $ref: '#/components/schemas/ConstitutionalCompliance'
+          $ref: "#/components/schemas/ConstitutionalCompliance"
         data:
           type: object
           properties:
@@ -1051,7 +1066,7 @@ components:
             type: object
             properties:
               constitutional_compliance:
-                $ref: '#/components/schemas/ConstitutionalCompliance'
+                $ref: "#/components/schemas/ConstitutionalCompliance"
               error:
                 type: object
                 properties:
@@ -1087,7 +1102,7 @@ components:
             type: object
             properties:
               constitutional_compliance:
-                $ref: '#/components/schemas/ConstitutionalCompliance'
+                $ref: "#/components/schemas/ConstitutionalCompliance"
               error:
                 type: object
                 properties:
@@ -1129,7 +1144,7 @@ components:
             type: object
             properties:
               constitutional_compliance:
-                $ref: '#/components/schemas/ConstitutionalCompliance'
+                $ref: "#/components/schemas/ConstitutionalCompliance"
               error:
                 type: object
                 properties:
@@ -1191,7 +1206,7 @@ components:
             type: object
             properties:
               constitutional_compliance:
-                $ref: '#/components/schemas/ConstitutionalCompliance'
+                $ref: "#/components/schemas/ConstitutionalCompliance"
               error:
                 type: object
                 properties:
@@ -1202,7 +1217,13 @@ components:
                     type: string
                   failure_reason:
                     type: string
-                    enum: [insufficient_responses, constitutional_violation, timeout, algorithm_error]
+                    enum:
+                      [
+                        insufficient_responses,
+                        constitutional_violation,
+                        timeout,
+                        algorithm_error,
+                      ]
 
     ConstitutionalViolationError:
       description: Constitutional compliance violation detected

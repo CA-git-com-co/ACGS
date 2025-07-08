@@ -7,14 +7,14 @@ Unified testing framework for ACGS services and infrastructure.
 
 from .orchestrator import (
     ACGSTestOrchestrator,
-    TestSuiteConfig,
-    TestResult,
     TestOrchestrationResult,
+    TestResult,
+    TestSuiteConfig,
 )
 
 __all__ = [
     "ACGSTestOrchestrator",
-    "TestSuiteConfig", 
+    "TestSuiteConfig",
     "TestResult",
     "TestOrchestrationResult",
 ]

@@ -25,7 +25,7 @@ Coordinate a fleet of LLM-based coding agents working on complex programming cha
 ├── Risk Assessment: Failure modes, impact analysis, mitigation strategies
 └── Success Criteria: Measurable outcomes, validation methods
 
-🧠 SOLUTION ARCHITECTURE  
+🧠 SOLUTION ARCHITECTURE
 ├── Approach Selection: Algorithm choice, design patterns, trade-offs
 ├── Component Design: Service boundaries, interfaces, data flows
 ├── Integration Strategy: Dependencies, sequencing, rollback plans
@@ -56,19 +56,19 @@ steps:
   validate:
     description: "Check inputs, constraints, and prerequisites"
     acceptance_criteria: ["specific", "measurable", "criteria"]
-    
+
   execute:
     description: "Perform the atomic action"
     commands: ["specific", "executable", "commands"]
-    
+
   verify:
     description: "Confirm expected output and side effects"
     validation_methods: ["automated_tests", "manual_checks"]
-    
+
   checkpoint:
     description: "Save state for rollback and progress tracking"
     artifacts: ["state_snapshots", "configuration_backups"]
-    
+
 rollback_procedure: "Steps to undo changes if verification fails"
 escalation_criteria: "When to escalate to human oversight"
 ```
@@ -148,12 +148,12 @@ failure_modes:
     detection: "Health check timeout >30s"
     fallback: "Route to backup service instance"
     recovery: "Exponential backoff retry with circuit breaker"
-    
+
   performance_degradation:
     detection: "P99 latency >10ms for 5 consecutive measurements"
     fallback: "Enable load shedding, reduce feature complexity"
     recovery: "Scale horizontally, optimize critical path"
-    
+
   constitutional_violation:
     detection: "Compliance score <1.0"
     fallback: "Immediate task suspension, human escalation"
@@ -181,7 +181,7 @@ failure_modes:
 
 #### 2. Atomic Execution Plan (7-Step Sprintlet Cycle)
 - **Step 0**: Pre-execution validation and setup
-- **Step 1**: Service discovery and registration  
+- **Step 1**: Service discovery and registration
 - **Step 2**: Agent hierarchy establishment
 - **Step 3**: Task coordination initialization
 - **Step 4**: Multi-agent execution
@@ -196,14 +196,14 @@ state_action_reward_spec:
     task_queue_depth: [0, 100]  # integer count
     resource_utilization: [0.0, 1.0]  # ratio
     constitutional_compliance: [0.0, 1.0]  # compliance score
-    
+
   action_space:
     delegate_task: [0, 1, 2, 3]  # priority levels
     request_coordination: [0, 1, 2]  # urgency levels
     update_status: [0, 1, 2, 3, 4]  # status states
-    
+
   reward_function: |
-    R(s,a) = 10 * task_completion_rate 
+    R(s,a) = 10 * task_completion_rate
            - 0.1 * max(0, latency_ms - 5)
            + 20 * constitutional_compliance_score
            - 5 * conflict_count
@@ -214,7 +214,7 @@ agent_task_manager_rpc_schema:
     task_id: uuid
     action: enum[delegate, coordinate, status, resolve]
     constitutional_hash: const[cdd01ef066bc6cf2]
-    
+
   response:
     status: enum[success, error, pending]
     latency_ms: number
@@ -268,7 +268,7 @@ services:
       timeout: 5s
       retries: 3
     restart: on-failure
-    
+
   mcp_filesystem:
     image: mcp/filesystem:latest
     environment:
@@ -278,7 +278,7 @@ services:
       - mcp_workspace:/workspace
     networks:
       - mcp_network
-    
+
   mcp_github:
     image: mcp/github:latest
     environment:
@@ -286,7 +286,7 @@ services:
       - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     networks:
       - mcp_network
-    
+
   mcp_browser:
     image: mcp/browser:latest
     environment:

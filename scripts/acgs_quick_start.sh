@@ -49,10 +49,10 @@ if [ "$DRY_RUN" == "--dry-run" ]; then
 else
     echo -e "${GREEN}Starting reorganization...${NC}"
     echo -e "${YELLOW}This may take several minutes for large repositories${NC}"
-    
+
     # Run with progress indication
     python acgs_reorganize.py "$SOURCE_REPO" "$TARGET_DIR"
-    
+
     if [ $? -eq 0 ]; then
         echo -e "${GREEN}Reorganization completed successfully!${NC}"
         echo

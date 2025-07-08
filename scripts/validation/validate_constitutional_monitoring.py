@@ -17,11 +17,9 @@ import logging
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
 
 import aioredis
 import asyncpg
-import requests
 import yaml
 
 # Constitutional hash validation
@@ -43,7 +41,7 @@ class ConstitutionalMonitoringValidator:
     """Constitutional monitoring setup validator"""
 
     def __init__(self):
-        self.results: List[ValidationResult] = []
+        self.results: list[ValidationResult] = []
         self.setup_logging()
 
     def setup_logging(self) -> None:
@@ -102,7 +100,7 @@ class ConstitutionalMonitoringValidator:
                 )
                 return False
 
-            with open(config_path, "r") as f:
+            with open(config_path) as f:
                 config = yaml.safe_load(f)
 
             # Validate constitutional hash presence
@@ -111,7 +109,8 @@ class ConstitutionalMonitoringValidator:
                 self.add_result(
                     "prometheus_config",
                     "FAILED",
-                    f"Constitutional hash mismatch in global labels: {global_labels.get('constitutional_hash')}",
+                    "Constitutional hash mismatch in global labels:"
+                    f" {global_labels.get('constitutional_hash')}",
                     False,
                 )
                 return False
@@ -145,7 +144,7 @@ class ConstitutionalMonitoringValidator:
             self.add_result(
                 "prometheus_config",
                 "ERROR",
-                f"Config validation error: {str(e)}",
+                f"Config validation error: {e!s}",
                 False,
             )
             return False
@@ -163,7 +162,7 @@ class ConstitutionalMonitoringValidator:
                 )
                 return False
 
-            with open(rules_path, "r") as f:
+            with open(rules_path) as f:
                 rules = yaml.safe_load(f)
 
             groups = rules.get("groups", [])
@@ -190,14 +189,15 @@ class ConstitutionalMonitoringValidator:
             self.add_result(
                 "alerting_rules",
                 "PASSED",
-                f"Found {constitutional_alerts} constitutional alerts ({critical_alerts} critical)",
+                f"Found {constitutional_alerts} constitutional alerts"
+                f" ({critical_alerts} critical)",
                 True,
             )
             return True
 
         except Exception as e:
             self.add_result(
-                "alerting_rules", "ERROR", f"Rules validation error: {str(e)}", False
+                "alerting_rules", "ERROR", f"Rules validation error: {e!s}", False
             )
             return False
 
@@ -217,7 +217,7 @@ class ConstitutionalMonitoringValidator:
                 )
                 return False
 
-            with open(dashboard_path, "r") as f:
+            with open(dashboard_path) as f:
                 dashboard = json.load(f)
 
             dashboard_config = dashboard.get("dashboard", {})
@@ -244,7 +244,8 @@ class ConstitutionalMonitoringValidator:
                 self.add_result(
                     "grafana_dashboard",
                     "FAILED",
-                    f"Constitutional hash template mismatch: {constitutional_template.get('query')}",
+                    "Constitutional hash template mismatch:"
+                    f" {constitutional_template.get('query')}",
                     False,
                 )
                 return False
@@ -273,7 +274,7 @@ class ConstitutionalMonitoringValidator:
             self.add_result(
                 "grafana_dashboard",
                 "ERROR",
-                f"Dashboard validation error: {str(e)}",
+                f"Dashboard validation error: {e!s}",
                 False,
             )
             return False
@@ -320,14 +321,15 @@ class ConstitutionalMonitoringValidator:
 
             except Exception as e:
                 self.logger.warning(
-                    f"Service {service} metrics endpoint not accessible: {str(e)}"
+                    f"Service {service} metrics endpoint not accessible: {e!s}"
                 )
 
         if constitutional_endpoints > 0:
             self.add_result(
                 "service_metrics",
                 "PASSED",
-                f"Found {constitutional_endpoints}/{len(endpoints)} constitutional metrics endpoints",
+                f"Found {constitutional_endpoints}/{len(endpoints)} constitutional"
+                " metrics endpoints",
                 True,
             )
             return True
@@ -335,7 +337,8 @@ class ConstitutionalMonitoringValidator:
             self.add_result(
                 "service_metrics",
                 "WARNING",
-                "No constitutional metrics endpoints accessible (services may not be running)",
+                "No constitutional metrics endpoints accessible (services may not be"
+                " running)",
                 True,  # Not a constitutional compliance failure
             )
             return False
@@ -357,7 +360,7 @@ class ConstitutionalMonitoringValidator:
             await conn.close()
             results.append(("PostgreSQL", True, "Connection successful"))
         except Exception as e:
-            results.append(("PostgreSQL", False, f"Connection failed: {str(e)}"))
+            results.append(("PostgreSQL", False, f"Connection failed: {e!s}"))
 
         # Test Redis
         try:
@@ -366,7 +369,7 @@ class ConstitutionalMonitoringValidator:
             await redis.close()
             results.append(("Redis", True, "Connection successful"))
         except Exception as e:
-            results.append(("Redis", False, f"Connection failed: {str(e)}"))
+            results.append(("Redis", False, f"Connection failed: {e!s}"))
 
         successful_connections = sum(1 for _, success, _ in results if success)
 
@@ -374,7 +377,8 @@ class ConstitutionalMonitoringValidator:
             self.add_result(
                 "infrastructure_connectivity",
                 "PASSED" if successful_connections == len(results) else "PARTIAL",
-                f"{successful_connections}/{len(results)} infrastructure connections successful",
+                f"{successful_connections}/{len(results)} infrastructure connections"
+                " successful",
                 True,
             )
             return True
@@ -417,10 +421,11 @@ class ConstitutionalMonitoringValidator:
             )
             return True
 
-    async def run_validation(self) -> Dict[str, any]:
+    async def run_validation(self) -> dict[str, any]:
         """Run complete constitutional monitoring validation"""
         self.logger.info(
-            f"Starting constitutional monitoring validation with hash: {CONSTITUTIONAL_HASH}"
+            "Starting constitutional monitoring validation with hash:"
+            f" {CONSTITUTIONAL_HASH}"
         )
 
         # File structure validation
@@ -481,25 +486,26 @@ class ConstitutionalMonitoringValidator:
 
         return summary
 
-    def print_results(self, summary: Dict[str, any]) -> None:
+    def print_results(self, summary: dict[str, any]) -> None:
         """Print validation results"""
-        print(f"\n{'='*80}")
-        print(f"ACGS-2 Constitutional Monitoring Validation Results")
+        print(f"\n{'=' * 80}")
+        print("ACGS-2 Constitutional Monitoring Validation Results")
         print(f"Constitutional Hash: {CONSTITUTIONAL_HASH}")
-        print(f"{'='*80}")
+        print(f"{'=' * 80}")
 
-        print(f"\nSUMMARY:")
+        print("\nSUMMARY:")
         print(f"  Total Tests: {summary['total_tests']}")
         print(f"  Passed: {summary['passed']}")
         print(f"  Failed: {summary['failed']}")
         print(f"  Warnings: {summary['warnings']}")
         print(f"  Errors: {summary['errors']}")
         print(
-            f"  Constitutional Compliance Rate: {summary['constitutional_compliance_rate']:.2%}"
+            "  Constitutional Compliance Rate:"
+            f" {summary['constitutional_compliance_rate']:.2%}"
         )
         print(f"  Overall Status: {summary['overall_status']}")
 
-        print(f"\nDETAILED RESULTS:")
+        print("\nDETAILED RESULTS:")
         for detail in summary["details"]:
             status_icon = {
                 "PASSED": "✓",
@@ -514,7 +520,7 @@ class ConstitutionalMonitoringValidator:
                 f"  {status_icon} {compliance_icon} {detail['component']:25} {detail['status']:8} {detail['details']}"
             )
 
-        print(f"\n{'='*80}")
+        print(f"\n{'=' * 80}")
 
 
 async def main():
@@ -541,7 +547,7 @@ async def main():
             exit(1)
 
     except Exception as e:
-        print(f"\n💥 Validation script error: {str(e)}")
+        print(f"\n💥 Validation script error: {e!s}")
         logging.exception("Validation script error")
         exit(2)
 

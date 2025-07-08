@@ -1,4 +1,5 @@
 # ACGS Environment Configuration Deep Analysis Report
+
 **Constitutional Hash: cdd01ef066bc6cf2**
 **Analysis Date: 2025-07-08**
 
@@ -7,6 +8,7 @@
 This comprehensive analysis of the ACGS environment configuration reveals **critical inconsistencies and conflicts** that require immediate attention for proper system deployment and operation.
 
 ### **Critical Issues Identified**
+
 - ❌ **Port Conflicts**: Multiple services competing for the same ports
 - ❌ **Database Configuration Mismatches**: Inconsistent PostgreSQL port configurations
 - ❌ **Redis Configuration Conflicts**: Different Redis ports across environments
@@ -20,11 +22,13 @@ This comprehensive analysis of the ACGS environment configuration reveals **crit
 ### 1. **Configuration Validation** ❌ **CRITICAL ISSUES FOUND**
 
 #### **Environment File Analysis**
+
 - **Primary Config**: `/home/dislove/ACGS-2/.env.acgs` (84 lines)
 - **Production Config**: `/home/dislove/ACGS-2/.env.production` (47 lines)
 - **Rules Engine Config**: Docker Compose with embedded environment variables
 
 #### **Syntax and Formatting Issues**
+
 - ✅ **Syntax**: All environment variables properly formatted
 - ✅ **Values**: No missing critical values detected
 - ⚠️ **Consistency**: Significant inconsistencies between development and production configs
@@ -33,15 +37,16 @@ This comprehensive analysis of the ACGS environment configuration reveals **crit
 
 #### **Critical Port Conflicts**
 
-| Service | .env.acgs Port | .env.production Port | Currently Running | Status |
-|---------|----------------|---------------------|-------------------|---------|
-| **PostgreSQL** | 5432 | 5439 | 5440 | ❌ **CONFLICT** |
-| **Redis** | 6379 | 6389 | 6390 | ❌ **CONFLICT** |
-| **Grafana** | 3001 | N/A | 3001 | ⚠️ **OCCUPIED** |
-| **Rules Engine** | N/A | N/A | 8020 | ✅ **AVAILABLE** |
-| **Constitutional AI** | 8001 | 8001 | 8001 | ✅ **CONSISTENT** |
+| Service               | .env.acgs Port | .env.production Port | Currently Running | Status            |
+| --------------------- | -------------- | -------------------- | ----------------- | ----------------- |
+| **PostgreSQL**        | 5432           | 5439                 | 5440              | ❌ **CONFLICT**   |
+| **Redis**             | 6379           | 6389                 | 6390              | ❌ **CONFLICT**   |
+| **Grafana**           | 3001           | N/A                  | 3001              | ⚠️ **OCCUPIED**   |
+| **Rules Engine**      | N/A            | N/A                  | 8020              | ✅ **AVAILABLE**  |
+| **Constitutional AI** | 8001           | 8001                 | 8001              | ✅ **CONSISTENT** |
 
 #### **Port Usage Analysis**
+
 ```
 Currently Listening Ports:
 - 3001: Grafana (conflicts with .env.acgs GRAFANA_PORT)
@@ -52,6 +57,7 @@ Currently Listening Ports:
 ```
 
 #### **Docker Container Port Mappings**
+
 ```
 Production Containers:
 - acgs_postgres_production: 5440->5432 (matches .env.production)
@@ -63,6 +69,7 @@ Production Containers:
 ### 3. **Constitutional Hash Consistency** ✅ **VALIDATED**
 
 #### **Hash Verification Results**
+
 - **Target Hash**: `cdd01ef066bc6cf2`
 - ✅ **.env.acgs**: `cdd01ef066bc6cf2` ✓ **MATCH**
 - ✅ **.env.production**: `cdd01ef066bc6cf2` ✓ **MATCH**
@@ -72,6 +79,7 @@ Production Containers:
 ### 4. **Service Dependencies** ❌ **CONFIGURATION MISMATCHES**
 
 #### **Database Connection Issues**
+
 ```
 Configuration Conflicts:
 .env.acgs:        POSTGRES_PORT=5432
@@ -81,6 +89,7 @@ Currently Running: 5440 (acgs_postgres_production)
 ```
 
 #### **Redis Connection Issues**
+
 ```
 Configuration Conflicts:
 .env.acgs:        REDIS_PORT=6379
@@ -90,6 +99,7 @@ Currently Running: 6390 (acgs_redis_production)
 ```
 
 #### **Service URL Validation**
+
 - ❌ **Database URLs**: Inconsistent ports across configurations
 - ❌ **Redis URLs**: Multiple different ports specified
 - ⚠️ **OPA Server**: `http://opa:8181` (not verified if running)
@@ -98,6 +108,7 @@ Currently Running: 6390 (acgs_redis_production)
 ### 5. **Security Configuration** ❌ **CRITICAL VULNERABILITIES**
 
 #### **Exposed Credentials**
+
 ```
 SECURITY RISKS IDENTIFIED:
 ❌ POSTGRES_PASSWORD=acgs_password (weak, exposed in .env.acgs)
@@ -108,11 +119,13 @@ SECURITY RISKS IDENTIFIED:
 ```
 
 #### **Authentication Settings**
+
 - ⚠️ **JWT Algorithm**: HS256 (acceptable but consider RS256 for production)
 - ❌ **Secret Key Reuse**: AUTH_SECRET_KEY and JWT_SECRET_KEY are identical
 - ✅ **Production Passwords**: Stronger passwords in .env.production
 
 #### **CORS Configuration**
+
 ```
 CORS Origins: http://localhost:3000,http://localhost:8080,http://localhost:3001
 Issues:
@@ -123,6 +136,7 @@ Issues:
 ### 6. **Performance Settings** ⚠️ **OPTIMIZATION NEEDED**
 
 #### **Database Performance**
+
 ```
 Current Settings:
 ❌ No connection pool configuration in .env.acgs
@@ -132,6 +146,7 @@ Current Settings:
 ```
 
 #### **Cache Configuration**
+
 ```
 Redis Settings:
 ❌ No Redis connection pool settings
@@ -141,6 +156,7 @@ Redis Settings:
 ```
 
 #### **Performance Targets**
+
 ```
 Production Targets (.env.production):
 ✅ ACGS_PERFORMANCE_P99_TARGET=5 (5ms)
@@ -152,6 +168,7 @@ Production Targets (.env.production):
 ### 7. **Integration Compatibility** ❌ **COMPATIBILITY ISSUES**
 
 #### **Rules Engine Integration**
+
 ```
 Compatibility Analysis:
 ❌ Rules Engine uses port 8020 (not defined in .env.acgs)
@@ -161,6 +178,7 @@ Compatibility Analysis:
 ```
 
 #### **Service Discovery**
+
 ```
 Configuration:
 ✅ ENABLE_SERVICE_DISCOVERY=true
@@ -175,6 +193,7 @@ Configuration:
 ### **Immediate Actions Required**
 
 #### 1. **Resolve Port Conflicts** (Priority: CRITICAL)
+
 ```bash
 # Update .env.acgs to match production reality:
 POSTGRES_PORT=5440          # Currently: 5432
@@ -184,6 +203,7 @@ RULES_ENGINE_PORT=8020      # Add missing configuration
 ```
 
 #### 2. **Fix Security Vulnerabilities** (Priority: CRITICAL)
+
 ```bash
 # Generate secure credentials:
 POSTGRES_PASSWORD=$(openssl rand -base64 32)
@@ -194,6 +214,7 @@ GRAFANA_ADMIN_PASSWORD=$(openssl rand -base64 16)
 ```
 
 #### 3. **Standardize Database Configuration** (Priority: HIGH)
+
 ```bash
 # Align all configurations to use production ports:
 DATABASE_URL=postgresql://acgs_user:${POSTGRES_PASSWORD}@localhost:5440/acgs_db
@@ -201,6 +222,7 @@ REDIS_URL=redis://:${REDIS_PASSWORD}@localhost:6390/0
 ```
 
 #### 4. **Add Missing Performance Settings** (Priority: MEDIUM)
+
 ```bash
 # Add to .env.acgs:
 ACGS_PERFORMANCE_P99_TARGET=5
@@ -214,6 +236,7 @@ REDIS_CONNECTION_POOL_SIZE=10
 ### **Configuration Consolidation Strategy**
 
 #### **Recommended .env.acgs Updates**
+
 1. **Port Alignment**: Update all ports to match production deployment
 2. **Security Hardening**: Generate and use secure credentials
 3. **Performance Optimization**: Add missing performance configurations
@@ -225,6 +248,7 @@ REDIS_CONNECTION_POOL_SIZE=10
 ## 📋 **VALIDATION CHECKLIST**
 
 ### **Pre-Deployment Validation**
+
 - [ ] **Port Conflicts Resolved**: All services use unique, documented ports
 - [ ] **Security Credentials Updated**: All passwords and keys regenerated
 - [ ] **Database Connections Tested**: All services can connect to correct database
@@ -234,6 +258,7 @@ REDIS_CONNECTION_POOL_SIZE=10
 - [ ] **Service Discovery Functional**: All services can discover each other
 
 ### **Post-Deployment Verification**
+
 - [ ] **Health Checks Passing**: All services report healthy status
 - [ ] **Integration Tests Passing**: Cross-service communication functional
 - [ ] **Performance Targets Met**: Latency and throughput within targets

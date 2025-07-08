@@ -7,7 +7,6 @@ This script adds the constitutional hash to files that are missing it.
 """
 
 import os
-import re
 
 # Constitutional hash
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -32,7 +31,7 @@ def add_constitutional_hash_to_file(filepath):
         return False
 
     try:
-        with open(filepath, "r", encoding="utf-8") as f:
+        with open(filepath, encoding="utf-8") as f:
             content = f.read()
 
         # Check if constitutional hash already exists

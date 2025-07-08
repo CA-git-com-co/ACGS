@@ -7,7 +7,7 @@ link_patterns:
   markdown_link: '\[([^\]]+)\]\(([^)]+)\)'
   reference_link: '\[([^\]]+)\]:\s*([^\s]+)'
   relative_path: '(?:\.{1,2}/)+[^)\s]+'
-  file_reference: '(?:src/|services/|docs/|tools/|tests/)[^)\s\'"]+' 
+  file_reference: '(?:src/|services/|docs/|tools/|tests/)[^)\s\'"]+'
   code_import: '(?:import|from)\s+["\']([^"\']+)["\']'
   include_directive: '!\[.*?\]\(([^)]+)\)'
   yaml_reference: '(?:file|path|src):\s*["\']?([^"\'>\s]+)["\']?'
@@ -16,7 +16,7 @@ link_patterns:
 # File extensions to scan for cross-references
 scannable_extensions:
   - '.md'
-  - '.py' 
+  - '.py'
   - '.js'
   - '.ts'
   - '.yaml'
@@ -47,9 +47,9 @@ auto_update:
   commit_updates: true
   commit_message_template: |
     docs: Auto-update cross-references for file moves
-    
+
     Constitutional Hash: {constitutional_hash}
-    
+
     Updated references:
     {updates}
 

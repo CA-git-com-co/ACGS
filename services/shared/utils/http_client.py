@@ -34,6 +34,7 @@ logger = logging.getLogger(__name__)
 
 class HTTPMethod(Enum):
     """Supported HTTP methods."""
+
     GET = "GET"
     POST = "POST"
     PUT = "PUT"
@@ -46,6 +47,7 @@ class HTTPMethod(Enum):
 @dataclass
 class RetryConfig:
     """Configuration for retry behavior."""
+
     max_retries: int = 3
     base_delay: float = 1.0
     max_delay: float = 30.0
@@ -56,6 +58,7 @@ class RetryConfig:
 @dataclass
 class CircuitBreakerConfig:
     """Configuration for circuit breaker behavior."""
+
     failure_threshold: int = 5
     timeout: int = TimeoutValues.CIRCUIT_BREAKER_TIMEOUT
     expected_exception: type = Exception
@@ -64,6 +67,7 @@ class CircuitBreakerConfig:
 @dataclass
 class HTTPClientConfig:
     """Configuration for HTTP client behavior."""
+
     base_url: str
     timeout: int = TimeoutValues.HTTP_TOTAL_TIMEOUT
     connect_timeout: int = TimeoutValues.HTTP_CONNECT_TIMEOUT
@@ -78,7 +82,12 @@ class HTTPClientConfig:
 class HTTPClientError(Exception):
     """Base exception for HTTP client errors."""
 
-    def __init__(self, message: str, status_code: int | None = None, error_code: str | None = None):
+    def __init__(
+        self,
+        message: str,
+        status_code: int | None = None,
+        error_code: str | None = None,
+    ):
         super().__init__(message)
         self.status_code = status_code
         self.error_code = error_code
@@ -196,12 +205,12 @@ class AsyncHTTPClient:
             timeout = aiohttp.ClientTimeout(
                 total=self.config.timeout,
                 connect=self.config.connect_timeout,
-                sock_read=self.config.read_timeout
+                sock_read=self.config.read_timeout,
             )
 
             connector = aiohttp.TCPConnector(
                 limit=self.config.max_concurrent_requests,
-                limit_per_host=self.config.max_concurrent_requests
+                limit_per_host=self.config.max_concurrent_requests,
             )
 
             self.session = aiohttp.ClientSession(
@@ -210,7 +219,7 @@ class AsyncHTTPClient:
                 headers={
                     HeaderNames.USER_AGENT.value: SERVICE_USER_AGENT,
                     HeaderNames.X_CONSTITUTIONAL_HASH.value: CONSTITUTIONAL_HASH,
-                }
+                },
             )
 
     async def close(self):
@@ -242,30 +251,28 @@ class AsyncHTTPClient:
         constitutional_hash = headers.get(HeaderNames.X_CONSTITUTIONAL_HASH.value)
         if constitutional_hash != CONSTITUTIONAL_HASH:
             raise ConstitutionalValidationError(
-                f"Constitutional hash mismatch: expected {CONSTITUTIONAL_HASH}, got {constitutional_hash}",
-                error_code=ErrorCodes.CONSTITUTIONAL_HASH_MISMATCH.value
+                f"Constitutional hash mismatch: expected {CONSTITUTIONAL_HASH}, got"
+                f" {constitutional_hash}",
+                error_code=ErrorCodes.CONSTITUTIONAL_HASH_MISMATCH.value,
             )
 
     async def _calculate_delay(self, attempt: int) -> float:
         """Calculate retry delay with exponential backoff and jitter."""
         config = self.config.retry_config
         delay = min(
-            config.base_delay * (config.exponential_base ** attempt),
-            config.max_delay
+            config.base_delay * (config.exponential_base**attempt), config.max_delay
         )
 
         if config.jitter:
             # Add ±25% jitter
             import random
-            delay *= (0.75 + 0.5 * random.random())
+
+            delay *= 0.75 + 0.5 * random.random()
 
         return delay
 
     async def _make_request_with_retries(
-        self,
-        method: HTTPMethod,
-        url: str,
-        **kwargs
+        self, method: HTTPMethod, url: str, **kwargs
     ) -> aiohttp.ClientResponse:
         """Make HTTP request with retry logic."""
         last_exception = None
@@ -277,12 +284,14 @@ class AsyncHTTPClient:
                         raise HTTPClientError(
                             MESSAGES["RATE_LIMIT_EXCEEDED"],
                             status_code=HttpStatusCodes.TOO_MANY_REQUESTS,
-                            error_code=ErrorCodes.SERVICE_TIMEOUT.value
+                            error_code=ErrorCodes.SERVICE_TIMEOUT.value,
                         )
 
                 await self._ensure_session()
 
-                async with self.session.request(method.value, url, **kwargs) as response:
+                async with self.session.request(
+                    method.value, url, **kwargs
+                ) as response:
                     if response.status < 500:  # Don't retry client errors
                         return response
 
@@ -311,8 +320,9 @@ class AsyncHTTPClient:
 
         if last_exception:
             raise HTTPRetryExhaustedError(
-                f"Request failed after {self.config.retry_config.max_retries} retries: {last_exception}",
-                error_code=ErrorCodes.SERVICE_TIMEOUT.value
+                f"Request failed after {self.config.retry_config.max_retries} retries:"
+                f" {last_exception}",
+                error_code=ErrorCodes.SERVICE_TIMEOUT.value,
             )
 
     async def request(
@@ -323,7 +333,7 @@ class AsyncHTTPClient:
         params: dict[str, Any] | None = None,
         json_data: dict[str, Any] | None = None,
         data: str | bytes | None = None,
-        **kwargs
+        **kwargs,
     ) -> dict[str, Any]:
         """Make HTTP request with full error handling and constitutional validation."""
         url = self._build_url(endpoint)
@@ -332,11 +342,7 @@ class AsyncHTTPClient:
         # Validate constitutional compliance
         self._validate_constitutional_compliance(final_headers)
 
-        request_kwargs = {
-            "headers": final_headers,
-            "params": params,
-            **kwargs
-        }
+        request_kwargs = {"headers": final_headers, "params": params, **kwargs}
 
         if json_data is not None:
             request_kwargs["json"] = json_data
@@ -346,8 +352,7 @@ class AsyncHTTPClient:
         try:
             if self.circuit_breaker:
                 response = self.circuit_breaker.call(
-                    self._make_request_with_retries,
-                    method, url, **request_kwargs
+                    self._make_request_with_retries, method, url, **request_kwargs
                 )
             else:
                 response = await self._make_request_with_retries(
@@ -360,7 +365,7 @@ class AsyncHTTPClient:
                 raise HTTPClientError(
                     f"HTTP {response.status}: {error_text}",
                     status_code=response.status,
-                    error_code=self._map_status_to_error_code(response.status)
+                    error_code=self._map_status_to_error_code(response.status),
                 )
 
             # Parse JSON response
@@ -373,7 +378,7 @@ class AsyncHTTPClient:
             raise HTTPClientError(
                 "Service temporarily unavailable",
                 status_code=HttpStatusCodes.SERVICE_UNAVAILABLE,
-                error_code=ErrorCodes.SERVICE_UNAVAILABLE.value
+                error_code=ErrorCodes.SERVICE_UNAVAILABLE.value,
             )
 
     def _map_status_to_error_code(self, status_code: int) -> str:
@@ -436,7 +441,7 @@ class ServiceHTTPClient:
             return {
                 "status": "unhealthy",
                 "service": self.service_name,
-                "error": str(e)
+                "error": str(e),
             }
 
     async def constitutional_validate(self, data: dict[str, Any]) -> dict[str, Any]:
@@ -455,7 +460,7 @@ def create_auth_client(base_url: str) -> ServiceHTTPClient:
         "auth-service",
         base_url,
         retry_config=RetryConfig(max_retries=2),
-        circuit_breaker_config=CircuitBreakerConfig(failure_threshold=3)
+        circuit_breaker_config=CircuitBreakerConfig(failure_threshold=3),
     )
 
 
@@ -465,7 +470,7 @@ def create_constitutional_ai_client(base_url: str) -> ServiceHTTPClient:
         "constitutional-ai",
         base_url,
         retry_config=RetryConfig(max_retries=3),
-        circuit_breaker_config=CircuitBreakerConfig(failure_threshold=5)
+        circuit_breaker_config=CircuitBreakerConfig(failure_threshold=5),
     )
 
 
@@ -475,7 +480,7 @@ def create_governance_synthesis_client(base_url: str) -> ServiceHTTPClient:
         "governance-synthesis",
         base_url,
         retry_config=RetryConfig(max_retries=2),
-        circuit_breaker_config=CircuitBreakerConfig(failure_threshold=3)
+        circuit_breaker_config=CircuitBreakerConfig(failure_threshold=3),
     )
 
 

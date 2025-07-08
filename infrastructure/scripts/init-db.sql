@@ -15,12 +15,12 @@ BEGIN
     IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'acgs_app') THEN
         CREATE ROLE acgs_app WITH LOGIN PASSWORD 'CHANGE_ME_APP_PASSWORD';
     END IF;
-    
+
     -- Read-only user for monitoring
     IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'acgs_monitor') THEN
         CREATE ROLE acgs_monitor WITH LOGIN PASSWORD 'CHANGE_ME_MONITOR_PASSWORD';
     END IF;
-    
+
     -- Backup user
     IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'acgs_backup') THEN
         CREATE ROLE acgs_backup WITH LOGIN PASSWORD 'CHANGE_ME_BACKUP_PASSWORD';
@@ -165,16 +165,16 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
-CREATE TRIGGER update_constitutional_compliance_updated_at 
-    BEFORE UPDATE ON constitutional_compliance 
+CREATE TRIGGER update_constitutional_compliance_updated_at
+    BEFORE UPDATE ON constitutional_compliance
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_service_health_updated_at 
-    BEFORE UPDATE ON service_health 
+CREATE TRIGGER update_service_health_updated_at
+    BEFORE UPDATE ON service_health
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_agent_coordination_updated_at 
-    BEFORE UPDATE ON agent_coordination 
+CREATE TRIGGER update_agent_coordination_updated_at
+    BEFORE UPDATE ON agent_coordination
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Grant table permissions
@@ -187,8 +187,8 @@ GRANT SELECT ON ALL TABLES IN SCHEMA public TO acgs_backup;
 -- Insert initial data
 INSERT INTO constitutional_compliance (service_name, compliance_status, compliance_score, validation_details, metadata)
 VALUES (
-    'database_initialization', 
-    true, 
+    'database_initialization',
+    true,
     1.0000,
     '{"initialization": "complete", "extensions": ["uuid-ossp", "pgcrypto", "pg_stat_statements", "pg_trgm"]}'::jsonb,
     '{"deployment_date": "2025-01-08", "version": "1.0.0", "performance_targets": {"p99_latency": "5ms", "throughput": "100rps", "cache_hit": "85%"}}'::jsonb
@@ -196,15 +196,15 @@ VALUES (
 
 INSERT INTO service_health (service_name, status, response_time_ms, metadata)
 VALUES (
-    'database', 
-    'healthy', 
+    'database',
+    'healthy',
     1.5,
     '{"initialization": "complete", "tables_created": 6, "indexes_created": 15}'::jsonb
 ) ON CONFLICT DO NOTHING;
 
 -- Performance baseline metrics
 INSERT INTO performance_metrics (service_name, metric_name, metric_value, target_value, unit, metadata)
-VALUES 
+VALUES
     ('database', 'p99_latency_ms', 1.5, 5.0, 'ms', '{"baseline": true}'::jsonb),
     ('database', 'throughput_rps', 0.0, 100.0, 'rps', '{"baseline": true}'::jsonb),
     ('database', 'cache_hit_rate', 0.0, 0.85, 'ratio', '{"baseline": true}'::jsonb)
@@ -212,12 +212,12 @@ ON CONFLICT DO NOTHING;
 
 -- Create views for monitoring
 CREATE OR REPLACE VIEW v_service_health_summary AS
-SELECT 
+SELECT
     service_name,
     status,
     last_check,
     response_time_ms,
-    CASE 
+    CASE
         WHEN last_check > NOW() - INTERVAL '5 minutes' THEN 'current'
         WHEN last_check > NOW() - INTERVAL '15 minutes' THEN 'stale'
         ELSE 'outdated'
@@ -226,7 +226,7 @@ FROM service_health
 ORDER BY last_check DESC;
 
 CREATE OR REPLACE VIEW v_performance_summary AS
-SELECT 
+SELECT
     service_name,
     metric_name,
     AVG(metric_value) as avg_value,
@@ -234,19 +234,19 @@ SELECT
     unit,
     COUNT(*) as sample_count,
     MAX(timestamp) as last_update
-FROM performance_metrics 
+FROM performance_metrics
 WHERE timestamp > NOW() - INTERVAL '1 hour'
 GROUP BY service_name, metric_name, unit
 ORDER BY service_name, metric_name;
 
 CREATE OR REPLACE VIEW v_constitutional_compliance_summary AS
-SELECT 
+SELECT
     service_name,
     compliance_status,
     AVG(compliance_score) as avg_compliance_score,
     COUNT(*) as check_count,
     MAX(timestamp) as last_check
-FROM constitutional_compliance 
+FROM constitutional_compliance
 WHERE timestamp > NOW() - INTERVAL '24 hours'
 GROUP BY service_name, compliance_status
 ORDER BY service_name;

@@ -7,8 +7,6 @@ Groups broken paths by compose file and categorizes each path.
 import csv
 import json
 import re
-from pathlib import Path
-from typing import Dict, List, Set
 
 import yaml
 
@@ -98,13 +96,13 @@ def categorize_path(path: str, compose_file: str) -> str:
     return "legacy/unused"
 
 
-def load_validation_data(file_path: str) -> Dict:
+def load_validation_data(file_path: str) -> dict:
     """Load and parse the validation_check.json file."""
-    with open(file_path, "r") as f:
+    with open(file_path) as f:
         return json.load(f)
 
 
-def create_triaged_analysis(data: Dict) -> List[Dict]:
+def create_triaged_analysis(data: dict) -> list[dict]:
     """Create triaged analysis of broken volume mounts."""
     broken_refs = data.get("broken_references", {})
     results = []
@@ -119,19 +117,17 @@ def create_triaged_analysis(data: Dict) -> List[Dict]:
             container_path = path_parts[1] if len(path_parts) > 1 else ""
             mount_options = path_parts[2] if len(path_parts) > 2 else ""
 
-            results.append(
-                {
-                    "compose_file": compose_file,
-                    "host_path": host_path,
-                    "container_path": container_path,
-                    "mount_options": mount_options,
-                    "full_mount": path,
-                    "category": category,
-                    "recommended_action": get_recommended_action(
-                        category, host_path, compose_file
-                    ),
-                }
-            )
+            results.append({
+                "compose_file": compose_file,
+                "host_path": host_path,
+                "container_path": container_path,
+                "mount_options": mount_options,
+                "full_mount": path,
+                "category": category,
+                "recommended_action": get_recommended_action(
+                    category, host_path, compose_file
+                ),
+            })
 
     return results
 
@@ -139,14 +135,14 @@ def create_triaged_analysis(data: Dict) -> List[Dict]:
 def get_recommended_action(category: str, host_path: str, compose_file: str) -> str:
     """Get recommended action based on category."""
     actions = {
-        "wrong relative root": f"Update path to start with infrastructure/docker/",
+        "wrong relative root": "Update path to start with infrastructure/docker/",
         "missing host directory": f"Create directory: {host_path}",
         "legacy/unused": f"Remove mount from {compose_file}",
     }
     return actions.get(category, "Review manually")
 
 
-def generate_csv_report(results: List[Dict], output_file: str):
+def generate_csv_report(results: list[dict], output_file: str):
     """Generate CSV report of triaged volume mounts."""
     fieldnames = [
         "compose_file",
@@ -164,7 +160,7 @@ def generate_csv_report(results: List[Dict], output_file: str):
         writer.writerows(results)
 
 
-def generate_yaml_report(results: List[Dict], output_file: str):
+def generate_yaml_report(results: list[dict], output_file: str):
     """Generate YAML report grouped by compose file."""
     grouped = {}
 
@@ -178,30 +174,28 @@ def generate_yaml_report(results: List[Dict], output_file: str):
             }
 
         category_key = result["category"].replace("/", "_").replace(" ", "_")
-        grouped[compose_file][category_key].append(
-            {
-                "host_path": result["host_path"],
-                "container_path": result["container_path"],
-                "mount_options": result["mount_options"],
-                "full_mount": result["full_mount"],
-                "recommended_action": result["recommended_action"],
-            }
-        )
+        grouped[compose_file][category_key].append({
+            "host_path": result["host_path"],
+            "container_path": result["container_path"],
+            "mount_options": result["mount_options"],
+            "full_mount": result["full_mount"],
+            "recommended_action": result["recommended_action"],
+        })
 
     # Create summary statistics
     summary = {
         "total_broken_mounts": len(results),
         "compose_files_affected": len(grouped),
         "categories": {
-            "wrong_relative_root": len(
-                [r for r in results if r["category"] == "wrong relative root"]
-            ),
-            "missing_host_directory": len(
-                [r for r in results if r["category"] == "missing host directory"]
-            ),
-            "legacy_unused": len(
-                [r for r in results if r["category"] == "legacy/unused"]
-            ),
+            "wrong_relative_root": len([
+                r for r in results if r["category"] == "wrong relative root"
+            ]),
+            "missing_host_directory": len([
+                r for r in results if r["category"] == "missing host directory"
+            ]),
+            "legacy_unused": len([
+                r for r in results if r["category"] == "legacy/unused"
+            ]),
         },
     }
 
@@ -213,7 +207,7 @@ def generate_yaml_report(results: List[Dict], output_file: str):
         )
 
 
-def generate_summary_stats(results: List[Dict]) -> Dict:
+def generate_summary_stats(results: list[dict]) -> dict:
     """Generate summary statistics."""
     stats = {
         "total_broken_mounts": len(results),
@@ -271,24 +265,24 @@ def main():
     stats = generate_summary_stats(results)
 
     # Print summary to console
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print("VOLUME MOUNT TRIAGE SUMMARY")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
     print(f"Total broken mounts: {stats['total_broken_mounts']}")
     print(f"Compose files affected: {stats['compose_files_affected']}")
-    print(f"\nCategory breakdown:")
+    print("\nCategory breakdown:")
     for category, count in stats["categories"].items():
         percentage = (count / stats["total_broken_mounts"]) * 100
         print(f"  {category}: {count} ({percentage:.1f}%)")
 
-    print(f"\nTop 10 most problematic compose files:")
+    print("\nTop 10 most problematic compose files:")
     for i, (file, count) in enumerate(
         list(stats["top_problematic_compose_files"].items())[:10]
     ):
-        print(f"  {i+1:2d}. {file}: {count} issues")
+        print(f"  {i + 1:2d}. {file}: {count} issues")
 
     # Generate reports
-    print(f"\nGenerating reports...")
+    print("\nGenerating reports...")
 
     # CSV report
     csv_file = "volume_mount_triage.csv"
@@ -306,10 +300,10 @@ def main():
         yaml.dump(stats, f, default_flow_style=False, sort_keys=True, indent=2)
     print(f"✓ Summary stats: {summary_file}")
 
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print("Reports generated successfully!")
     print("Use these artifacts to drive surgical edits in subsequent steps.")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
 
 
 if __name__ == "__main__":

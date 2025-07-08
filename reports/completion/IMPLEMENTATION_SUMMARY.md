@@ -48,11 +48,13 @@ The implementation blocks the following dangerous patterns:
 ## Usage Examples
 
 ### Standard Execution
+
 ```bash
 echo '{"command": "echo Hello"}' | python3 .claude/hooks/pre_tool_use.py
 ```
 
 ### UV Execution (Single-File Pattern)
+
 ```bash
 echo '{"command": "echo Hello"}' | uv run .claude/hooks/pre_tool_use.py
 ```
@@ -60,6 +62,7 @@ echo '{"command": "echo Hello"}' | uv run .claude/hooks/pre_tool_use.py
 ### Response Formats
 
 **Allowed Command:**
+
 ```json
 {
   "allowed": true,
@@ -68,6 +71,7 @@ echo '{"command": "echo Hello"}' | uv run .claude/hooks/pre_tool_use.py
 ```
 
 **Blocked Command:**
+
 ```json
 {
   "allowed": false,
@@ -79,6 +83,7 @@ echo '{"command": "echo Hello"}' | uv run .claude/hooks/pre_tool_use.py
 ## Testing Results
 
 All unit tests pass successfully:
+
 - ✅ `test_allowed_benign_commands`: Validates benign commands are allowed
 - ✅ `test_blocked_dangerous_commands`: Validates dangerous commands are blocked
 - ✅ `test_case_insensitive_blocking`: Validates case-insensitive pattern matching
@@ -99,6 +104,7 @@ The implementation includes full constitutional AI governance compliance:
 ## Code Quality
 
 The implementation follows project standards:
+
 - ✅ **Black Formatting**: Code properly formatted
 - ✅ **Import Sorting**: isort compliance
 - ✅ **Type Annotations**: Full type hints throughout
@@ -108,17 +114,20 @@ The implementation follows project standards:
 ## Security Features
 
 ### Pattern Matching
+
 - Case-insensitive regex matching
 - Comprehensive coverage of dangerous commands
 - Extensible pattern list for future additions
 
 ### Logging and Auditing
+
 - JSON-structured logs for machine parsing
 - Complete audit trail with constitutional metadata
 - Severity classification for security events
 - Error tracking and diagnostics
 
 ### Input Validation
+
 - JSON schema validation
 - Required field checking
 - Error message standardization
@@ -134,6 +143,7 @@ The implementation follows project standards:
 ## Future Enhancements
 
 Potential areas for future improvement:
+
 1. **Dynamic Pattern Updates**: Runtime pattern configuration
 2. **Rate Limiting**: Threshold-based blocking
 3. **Machine Learning**: Adaptive pattern learning
@@ -142,6 +152,7 @@ Potential areas for future improvement:
 ## Conclusion
 
 The pre_tool_use.py implementation successfully provides:
+
 - 🛡️ **Robust Security**: Comprehensive dangerous command blocking
 - 🏛️ **Constitutional Compliance**: Full governance framework integration
 - 📋 **Complete Testing**: Extensive unit test coverage
@@ -150,5 +161,5 @@ The pre_tool_use.py implementation successfully provides:
 
 The implementation is production-ready and provides strong security barriers while maintaining constitutional AI governance compliance throughout all operations.
 
-**Constitutional Hash**: `cdd01ef066bc6cf2`  
+**Constitutional Hash**: `cdd01ef066bc6cf2`
 **Implementation Status**: ✅ **COMPLETE**

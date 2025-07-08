@@ -339,10 +339,10 @@ class ACGSClient:
         self.base_url = base_url
         self.token = token
         self.headers = {"Authorization": f"Bearer {token}"} if token else {}
-        
+
     async def constitutional_validation_workflow(self, decision, tenant_id):
         """Complete workflow: authenticate, validate, audit"""
-        
+
         # Step 1: Constitutional validation
         async with httpx.AsyncClient() as client:
             validation_response = await client.post(
@@ -351,7 +351,7 @@ class ACGSClient:
                 headers=self.headers
             )
             validation_result = validation_response.json()
-            
+
             # Step 2: Create audit entry
             audit_response = await client.post(
                 f"{self.base_url}:8002/api/v1/audit/create",
@@ -363,7 +363,7 @@ class ACGSClient:
                 headers=self.headers
             )
             audit_result = audit_response.json()
-            
+
             return {
                 "validation": validation_result,
                 "audit": audit_result
@@ -372,7 +372,7 @@ class ACGSClient:
 # Usage example
 async def main():
     client = ACGSClient(token="your_jwt_token")
-    
+
     decision = {
         "description": "Deploy sentiment analysis model",
         "context": {
@@ -380,12 +380,12 @@ async def main():
             "impact_level": "medium"
         }
     }
-    
+
     result = await client.constitutional_validation_workflow(
-        decision, 
+        decision,
         "social-platform-004"
     )
-    
+
     print(f"Constitutional compliance: {result['validation']['validation_result']['compliant']}")
     print(f"Audit ID: {result['audit']['audit_id']}")
 
@@ -404,7 +404,7 @@ class PolicyDrivenDecisionMaker {
         this.baseUrl = baseUrl;
         this.authHeaders = authToken ? { Authorization: `Bearer ${authToken}` } : {};
     }
-    
+
     async makePolicyDrivenDecision(context, tenantId) {
         try {
             // Step 1: Get policy evaluation
@@ -417,9 +417,9 @@ class PolicyDrivenDecisionMaker {
                 },
                 { headers: this.authHeaders }
             );
-            
+
             const policyResult = policyResponse.data;
-            
+
             // Step 2: If approved, proceed with constitutional validation
             if (policyResult.policy_result.decision === 'allow') {
                 const constitutionalResponse = await axios.post(
@@ -430,7 +430,7 @@ class PolicyDrivenDecisionMaker {
                     },
                     { headers: this.authHeaders }
                 );
-                
+
                 return {
                     policy_approved: true,
                     constitutional_compliant: constitutionalResponse.data.validation_result.compliant,
@@ -440,12 +440,12 @@ class PolicyDrivenDecisionMaker {
                     ]
                 };
             }
-            
+
             return {
                 policy_approved: false,
                 reason: policyResult.policy_result.reason || 'Policy evaluation failed'
             };
-            
+
         } catch (error) {
             throw new Error(`Policy decision failed: ${error.message}`);
         }
@@ -658,7 +658,7 @@ console.log(`Decision: ${decision.approved ? 'Approved' : 'Rejected'}`);
 
 services=(
     "8001:Constitutional Core"
-    "8002:Integrity Service" 
+    "8002:Integrity Service"
     "8004:Governance Engine"
     "8006:Evolutionary Computation"
     "8016:Authentication"
@@ -667,7 +667,7 @@ services=(
 for service in "${services[@]}"; do
     port="${service%%:*}"
     name="${service##*:}"
-    
+
     if curl -f "http://localhost:${port}/health" > /dev/null 2>&1; then
         echo "✓ ${name} (${port}): Healthy"
     else
@@ -685,7 +685,7 @@ import httpx
 @pytest.mark.asyncio
 async def test_constitutional_workflow():
     """Test complete constitutional validation workflow"""
-    
+
     # Authenticate
     auth_response = await httpx.AsyncClient().post(
         "http://localhost:8016/api/v1/auth/login",
@@ -697,9 +697,9 @@ async def test_constitutional_workflow():
     )
     assert auth_response.status_code == 200
     token = auth_response.json()["access_token"]
-    
+
     headers = {"Authorization": f"Bearer {token}"}
-    
+
     # Constitutional validation
     validation_response = await httpx.AsyncClient().post(
         "http://localhost:8001/api/v1/constitutional/validate",
@@ -712,7 +712,7 @@ async def test_constitutional_workflow():
         },
         headers=headers
     )
-    
+
     assert validation_response.status_code == 200
     result = validation_response.json()
     assert "constitutional_hash" in result
@@ -722,6 +722,6 @@ async def test_constitutional_workflow():
 
 ---
 
-**Constitutional Hash**: `cdd01ef066bc6cf2`  
-**Last Updated**: 2025-01-08  
+**Constitutional Hash**: `cdd01ef066bc6cf2`
+**Last Updated**: 2025-01-08
 **API Version**: 2.0.0

@@ -294,9 +294,9 @@ async def test_database_performance_optimization():
     overall_avg = statistics.mean([m.avg_response_time for m in all_metrics])
     overall_p95 = statistics.mean([m.p95_response_time for m in all_metrics])
     overall_success = statistics.mean([m.success_rate for m in all_metrics])
-    overall_improvement = statistics.mean(
-        [m.optimization_improvement for m in all_metrics]
-    )
+    overall_improvement = statistics.mean([
+        m.optimization_improvement for m in all_metrics
+    ])
 
     print("📈 Overall Performance Summary:")
     print(f"   Overall Average Response Time: {overall_avg:.2f}ms")
@@ -326,7 +326,8 @@ async def test_database_performance_optimization():
     print(f"   Target Response Time (95th percentile): ≤{target_response_time}ms")
     print(f"   Achieved Response Time: {overall_p95:.2f}ms")
     print(
-        f"   Response Time Target: {'✅ MET' if meets_response_target else '❌ NOT MET'}"
+        "   Response Time Target:"
+        f" {'✅ MET' if meets_response_target else '❌ NOT MET'}"
     )
     print(f"   Target Success Rate: ≥{target_success_rate}%")
     print(f"   Achieved Success Rate: {overall_success:.1f}%")
@@ -357,15 +358,18 @@ async def main():
         print("=" * 60)
         print(f"⚡ Average Response Time: {result['overall_avg_response_time']:.2f}ms")
         print(
-            f"📊 95th Percentile Response Time: {result['overall_p95_response_time']:.2f}ms"
+            "📊 95th Percentile Response Time:"
+            f" {result['overall_p95_response_time']:.2f}ms"
         )
         print(f"✅ Success Rate: {result['overall_success_rate']:.1f}%")
         print(f"🚀 Performance Improvement: {result['overall_improvement']:.1f}%")
         print(
-            f"🎯 Response Time Target: {'MET' if result['meets_response_target'] else 'NOT MET'}"
+            "🎯 Response Time Target:"
+            f" {'MET' if result['meets_response_target'] else 'NOT MET'}"
         )
         print(
-            f"🎯 Success Rate Target: {'MET' if result['meets_success_target'] else 'NOT MET'}"
+            "🎯 Success Rate Target:"
+            f" {'MET' if result['meets_success_target'] else 'NOT MET'}"
         )
 
         if result["meets_response_target"] and result["meets_success_target"]:

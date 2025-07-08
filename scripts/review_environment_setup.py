@@ -7,15 +7,12 @@ This script loads the full repository into a review environment, indexes service
 directories, config files, and documentation, and verifies availability of analysis tools.
 """
 
-import hashlib
 import json
-import os
 import subprocess
 import sys
 import time
-from collections import defaultdict
 from pathlib import Path
-from typing import Any, Dict, List, Set, Tuple
+from typing import Any
 
 # Constitutional compliance validation
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -76,7 +73,8 @@ class ACGSRepositoryIndexer:
         """Log with constitutional hash validation."""
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
         print(
-            f"[{timestamp}] [{level}] [Constitutional Hash: {self.constitutional_hash}] {message}"
+            f"[{timestamp}] [{level}] [Constitutional Hash: {self.constitutional_hash}]"
+            f" {message}"
         )
 
     def validate_constitutional_hash(self) -> bool:
@@ -123,7 +121,7 @@ class ACGSRepositoryIndexer:
             self.log_status(f"Error validating constitutional hash: {e}", "ERROR")
             return False
 
-    def check_analysis_tools(self) -> Dict[str, bool]:
+    def check_analysis_tools(self) -> dict[str, bool]:
         """Check availability of static analysis, search, and graph-mapping tools."""
         self.log_status("Checking static analysis and search tools availability...")
 
@@ -171,7 +169,7 @@ class ACGSRepositoryIndexer:
         except ImportError:
             return False
 
-    def index_services(self) -> Dict[str, Any]:
+    def index_services(self) -> dict[str, Any]:
         """Index all service directories and components."""
         self.log_status("Indexing service directories...")
 
@@ -206,7 +204,7 @@ class ACGSRepositoryIndexer:
         self.log_status(f"Indexed {len(services)} service categories")
         return services
 
-    def _analyze_service(self, service_path: Path) -> Dict[str, Any]:
+    def _analyze_service(self, service_path: Path) -> dict[str, Any]:
         """Analyze individual service structure."""
         service_info = {
             "path": str(service_path),
@@ -245,7 +243,7 @@ class ACGSRepositoryIndexer:
 
         return service_info
 
-    def index_configuration(self) -> Dict[str, Any]:
+    def index_configuration(self) -> dict[str, Any]:
         """Index all configuration files and infrastructure configs."""
         self.log_status("Indexing configuration files...")
 
@@ -280,7 +278,7 @@ class ACGSRepositoryIndexer:
         self.log_status(f"Indexed configuration across {len(config_index)} categories")
         return config_index
 
-    def _scan_config_directory(self, config_dir: Path) -> List[Dict[str, str]]:
+    def _scan_config_directory(self, config_dir: Path) -> list[dict[str, str]]:
         """Scan a configuration directory for relevant files."""
         config_files = []
 
@@ -293,20 +291,18 @@ class ACGSRepositoryIndexer:
                     or "docker-compose" in file_path.name.lower()
                     or file_path.name.lower().startswith(("dockerfile", ".env"))
                 ):
-
-                    config_files.append(
-                        {
-                            "name": file_path.name,
-                            "path": str(file_path.relative_to(config_dir)),
-                            "full_path": str(file_path),
-                            "has_constitutional_hash": str(file_path)
-                            in self.constitutional_files,
-                        }
-                    )
+                    config_files.append({
+                        "name": file_path.name,
+                        "path": str(file_path.relative_to(config_dir)),
+                        "full_path": str(file_path),
+                        "has_constitutional_hash": (
+                            str(file_path) in self.constitutional_files
+                        ),
+                    })
 
         return config_files
 
-    def index_documentation(self) -> Dict[str, Any]:
+    def index_documentation(self) -> dict[str, Any]:
         """Index all documentation files and their relationships."""
         self.log_status("Indexing documentation...")
 
@@ -342,15 +338,12 @@ class ACGSRepositoryIndexer:
         # Scan for README files
         for readme in self.repo_root.rglob("README*"):
             if readme.is_file():
-                docs_index["readme_files"].append(
-                    {
-                        "name": readme.name,
-                        "path": str(readme.relative_to(self.repo_root)),
-                        "full_path": str(readme),
-                        "has_constitutional_hash": str(readme)
-                        in self.constitutional_files,
-                    }
-                )
+                docs_index["readme_files"].append({
+                    "name": readme.name,
+                    "path": str(readme.relative_to(self.repo_root)),
+                    "full_path": str(readme),
+                    "has_constitutional_hash": str(readme) in self.constitutional_files,
+                })
 
         # Scan docs directory
         docs_dir = self.repo_root / "docs"
@@ -363,7 +356,7 @@ class ACGSRepositoryIndexer:
         )
         return docs_index
 
-    def _scan_docs_directory(self, docs_dir: Path) -> Dict[str, Any]:
+    def _scan_docs_directory(self, docs_dir: Path) -> dict[str, Any]:
         """Scan the main docs directory structure."""
         docs_structure = {}
 
@@ -372,32 +365,28 @@ class ACGSRepositoryIndexer:
                 docs_structure[item.name] = {"path": str(item), "files": []}
 
                 for doc_file in item.rglob("*.md"):
-                    docs_structure[item.name]["files"].append(
-                        {
-                            "name": doc_file.name,
-                            "path": str(doc_file.relative_to(item)),
-                            "full_path": str(doc_file),
-                            "has_constitutional_hash": str(doc_file)
-                            in self.constitutional_files,
-                        }
-                    )
+                    docs_structure[item.name]["files"].append({
+                        "name": doc_file.name,
+                        "path": str(doc_file.relative_to(item)),
+                        "full_path": str(doc_file),
+                        "has_constitutional_hash": (
+                            str(doc_file) in self.constitutional_files
+                        ),
+                    })
             elif item.suffix == ".md":
                 if "root_files" not in docs_structure:
                     docs_structure["root_files"] = {"files": []}
 
-                docs_structure["root_files"]["files"].append(
-                    {
-                        "name": item.name,
-                        "path": str(item.relative_to(docs_dir)),
-                        "full_path": str(item),
-                        "has_constitutional_hash": str(item)
-                        in self.constitutional_files,
-                    }
-                )
+                docs_structure["root_files"]["files"].append({
+                    "name": item.name,
+                    "path": str(item.relative_to(docs_dir)),
+                    "full_path": str(item),
+                    "has_constitutional_hash": str(item) in self.constitutional_files,
+                })
 
         return docs_structure
 
-    def generate_dependency_graph(self) -> Dict[str, Any]:
+    def generate_dependency_graph(self) -> dict[str, Any]:
         """Generate a basic dependency mapping using available tools."""
         self.log_status("Generating dependency mappings...")
 
@@ -411,7 +400,7 @@ class ACGSRepositoryIndexer:
         # Python dependencies from requirements files
         for req_file in self.repo_root.rglob("requirements*.txt"):
             try:
-                with open(req_file, "r") as f:
+                with open(req_file) as f:
                     deps = [
                         line.strip()
                         for line in f
@@ -429,13 +418,14 @@ class ACGSRepositoryIndexer:
                 str(compose_file.relative_to(self.repo_root))
             ] = {
                 "path": str(compose_file),
-                "has_constitutional_hash": str(compose_file)
-                in self.constitutional_files,
+                "has_constitutional_hash": (
+                    str(compose_file) in self.constitutional_files
+                ),
             }
 
         return dependency_info
 
-    def create_review_cache(self) -> Dict[str, Any]:
+    def create_review_cache(self) -> dict[str, Any]:
         """Create a comprehensive cache file for review environment."""
         self.log_status("Creating review environment cache...")
 
@@ -472,7 +462,7 @@ class ACGSRepositoryIndexer:
 
         return cache_data
 
-    def _generate_statistics(self) -> Dict[str, Any]:
+    def _generate_statistics(self) -> dict[str, Any]:
         """Generate repository statistics."""
         stats = {
             "total_services": 0,
@@ -545,7 +535,7 @@ class ACGSRepositoryIndexer:
             self.log_status(f"Indexing failed with error: {e}", "ERROR")
             return False
 
-    def _generate_summary_report(self, cache_data: Dict[str, Any]):
+    def _generate_summary_report(self, cache_data: dict[str, Any]):
         """Generate and display summary report."""
         stats = cache_data["statistics"]
         metadata = cache_data["metadata"]
@@ -562,7 +552,7 @@ class ACGSRepositoryIndexer:
         print(
             f"  ✓ Constitutional hash found in {len(self.constitutional_files)} files"
         )
-        print(f"  ✓ Hash validation: PASSED")
+        print("  ✓ Hash validation: PASSED")
         print()
 
         print("ANALYSIS TOOLS AVAILABILITY:")
@@ -570,19 +560,24 @@ class ACGSRepositoryIndexer:
             status = "✓" if available else "✗"
             print(f"  {status} {tool}")
         print(
-            f"  Summary: {stats['analysis_tools_available']}/{stats['analysis_tools_total']} tools available"
+            "  Summary:"
+            f" {stats['analysis_tools_available']}/{stats['analysis_tools_total']} tools"
+            " available"
         )
         print()
 
         print("REPOSITORY INDEXING SUMMARY:")
         print(
-            f"  Services: {stats['total_services']} total, {stats['services_with_constitutional_hash']} with constitutional hash"
+            f"  Services: {stats['total_services']} total,"
+            f" {stats['services_with_constitutional_hash']} with constitutional hash"
         )
         print(
-            f"  Config Files: {stats['total_config_files']} total, {stats['configs_with_constitutional_hash']} with constitutional hash"
+            f"  Config Files: {stats['total_config_files']} total,"
+            f" {stats['configs_with_constitutional_hash']} with constitutional hash"
         )
         print(
-            f"  Documentation: {stats['total_docs']} files, {stats['docs_with_constitutional_hash']} with constitutional hash"
+            f"  Documentation: {stats['total_docs']} files,"
+            f" {stats['docs_with_constitutional_hash']} with constitutional hash"
         )
         print()
 

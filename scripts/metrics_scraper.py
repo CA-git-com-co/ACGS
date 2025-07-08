@@ -13,7 +13,7 @@ def parse_markdown(file_path):
     metrics = {}
     source_info = {}
 
-    with open(file_path, "r") as f:
+    with open(file_path) as f:
         lines = f.readlines()
 
     for i, line in enumerate(lines, 1):
@@ -120,7 +120,7 @@ def parse_json(file_path):
     metrics = {}
     source_info = {}
 
-    with open(file_path, "r") as f:
+    with open(file_path) as f:
         data = json.load(f)
 
     # Parse different JSON report structures
@@ -251,7 +251,7 @@ def main():
             if metrics:
                 print(f"  Found: {', '.join(metrics.keys())}")
             else:
-                print(f"  No metrics found")
+                print("  No metrics found")
 
         except Exception as e:
             print(f"Error processing {file_path}: {e}")
@@ -297,7 +297,8 @@ def main():
                 print(f"  {key}: {value} (from {file_name}:{source['line']})")
             else:
                 print(
-                    f"  {key}: {value} (from {file_name}:{source.get('path', 'unknown')})"
+                    f"  {key}: {value} (from"
+                    f" {file_name}:{source.get('path', 'unknown')})"
                 )
         else:
             print(f"  {key}: {value} (source unknown)")

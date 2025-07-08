@@ -3,30 +3,33 @@ name: Documentation Quality Assurance
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
     paths:
-      - 'docs/**'
-      - 'README.md'
-      - '**/*.md'
-      - 'services/**/README.md'
-      - 'tools/**/README.md'
+      - "docs/**"
+      - "README.md"
+      - "**/*.md"
+      - "services/**/README.md"
+      - "tools/**/README.md"
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
     paths:
-      - 'docs/**'
-      - 'README.md'
-      - '**/*.md'
-      - 'services/**/README.md'
-      - 'tools/**/README.md'
+      - "docs/**"
+      - "README.md"
+      - "**/*.md"
+      - "services/**/README.md"
+      - "tools/**/README.md"
+      - "docs/research/**/*.tex"
+      - "docs/research/**/*.bib"
+      - "docs/research/**/*.pdf"
   schedule:
     # Run weekly on Sundays at 2 AM UTC
-    - cron: '0 2 * * 0'
+    - cron: "0 2 * * 0"
   workflow_dispatch:
     inputs:
       check_level:
-        description: 'Quality check level'
+        description: "Quality check level"
         required: true
-        default: 'standard'
+        default: "standard"
         type: choice
         options:
           - basic
@@ -42,21 +45,21 @@ jobs:
   documentation-structure:
     name: Documentation Structure Analysis
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-          
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install PyYAML markdown beautifulsoup4 lxml gitpython
-          
+
       - name: Analyze documentation structure
         run: |
           cat > analyze_docs_structure.py << 'EOF'
@@ -65,10 +68,10 @@ jobs:
           import re
           from pathlib import Path
           from collections import defaultdict
-          
+
           def analyze_documentation_structure():
               """Analyze the documentation structure and completeness."""
-              
+
               repo_root = Path('.')
               docs_analysis = {
                   'constitutional_hash': '${{ env.CONSTITUTIONAL_HASH }}',
@@ -77,11 +80,11 @@ jobs:
                   'quality_metrics': {},
                   'recommendations': []
               }
-              
+
               # Find all markdown files
               md_files = list(repo_root.rglob('*.md'))
               docs_analysis['structure']['total_md_files'] = len(md_files)
-              
+
               # Categorize documentation
               categories = {
                   'api_docs': [],
@@ -92,10 +95,10 @@ jobs:
                   'readme_files': [],
                   'other': []
               }
-              
+
               for md_file in md_files:
                   rel_path = str(md_file.relative_to(repo_root))
-                  
+
                   if 'api' in rel_path.lower():
                       categories['api_docs'].append(rel_path)
                   elif 'service' in rel_path.lower() or rel_path.startswith('services/'):
@@ -110,10 +113,10 @@ jobs:
                       categories['user_guides'].append(rel_path)
                   else:
                       categories['other'].append(rel_path)
-              
+
               docs_analysis['structure']['categories'] = {k: len(v) for k, v in categories.items()}
               docs_analysis['structure']['category_files'] = categories
-              
+
               # Check for required documentation
               required_docs = {
                   'main_readme': 'README.md',
@@ -124,10 +127,10 @@ jobs:
                   'contributing_guide': 'CONTRIBUTING.md',
                   'license': 'LICENSE'
               }
-              
+
               missing_docs = []
               present_docs = []
-              
+
               for doc_name, doc_path in required_docs.items():
                   if doc_path.endswith('/'):
                       # Check if directory exists and has files
@@ -143,12 +146,12 @@ jobs:
                           present_docs.append(doc_name)
                       else:
                           missing_docs.append(doc_name)
-              
+
               docs_analysis['completeness']['required_docs_present'] = len(present_docs)
               docs_analysis['completeness']['required_docs_missing'] = len(missing_docs)
               docs_analysis['completeness']['missing_docs'] = missing_docs
               docs_analysis['completeness']['completeness_percentage'] = (len(present_docs) / len(required_docs)) * 100
-              
+
               # Generate recommendations
               if missing_docs:
                   docs_analysis['recommendations'].append({
@@ -156,79 +159,115 @@ jobs:
                       'priority': 'high',
                       'description': f'Missing required documentation: {", ".join(missing_docs)}'
                   })
-              
+
               if len(categories['api_docs']) < 5:
                   docs_analysis['recommendations'].append({
                       'type': 'api_documentation',
                       'priority': 'medium',
                       'description': 'Consider expanding API documentation coverage'
                   })
-              
+
               if len(categories['user_guides']) < 3:
                   docs_analysis['recommendations'].append({
                       'type': 'user_guides',
                       'priority': 'medium',
                       'description': 'Consider adding more user guides and tutorials'
                   })
-              
+
               # Save analysis
               with open('docs_structure_analysis.json', 'w') as f:
                   json.dump(docs_analysis, f, indent=2)
-              
+
               print(f"Documentation structure analysis completed:")
               print(f"  Total markdown files: {docs_analysis['structure']['total_md_files']}")
               print(f"  Completeness: {docs_analysis['completeness']['completeness_percentage']:.1f}%")
               print(f"  Missing docs: {len(missing_docs)}")
               print(f"  Recommendations: {len(docs_analysis['recommendations'])}")
-              
+
               return len(missing_docs) == 0
-          
+
           if __name__ == "__main__":
               success = analyze_documentation_structure()
               exit(0 if success else 1)
           EOF
-          
+
           python analyze_docs_structure.py
-          
+
       - name: Upload structure analysis
         uses: actions/upload-artifact@v3
         with:
           name: docs-structure-analysis
           path: docs_structure_analysis.json
+
+  paper-test:
+    name: Paper Build and Quality Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install LaTeX and linting tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y latexmk chktex lacheck texlive-latex-extra texlive-fonts-recommended
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Run paper tests
+        run: make paper-test
+
+      - name: Upload paper test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: paper-test-results
+          path: |
+            docs/research/arxiv_submission_package/*.pdf
+            docs/research/arxiv_submission_package/*.log
           retention-days: 30
 
   constitutional-compliance-check:
     name: Constitutional Compliance in Documentation
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-          
+
       - name: Check constitutional hash presence
         run: |
           echo "Checking for constitutional hash in documentation..."
-          
+
           # Find all markdown files
           find . -name "*.md" -type f > md_files.txt
-          
+
           # Count files with constitutional hash
           TOTAL_FILES=$(wc -l < md_files.txt)
           FILES_WITH_HASH=$(grep -l "${{ env.CONSTITUTIONAL_HASH }}" $(cat md_files.txt) | wc -l)
-          
+
           echo "Total markdown files: $TOTAL_FILES"
           echo "Files with constitutional hash: $FILES_WITH_HASH"
-          
+
           # Calculate compliance percentage
           if [ $TOTAL_FILES -gt 0 ]; then
             COMPLIANCE_PERCENT=$((FILES_WITH_HASH * 100 / TOTAL_FILES))
             echo "Constitutional compliance: $COMPLIANCE_PERCENT%"
-            
+
             # Create compliance report
             cat > constitutional_compliance.json << EOF
           {
@@ -240,7 +279,7 @@ jobs:
             "status": "$([ $COMPLIANCE_PERCENT -ge 80 ] && echo "passing" || echo "failing")"
           }
           EOF
-            
+
             if [ $COMPLIANCE_PERCENT -lt 80 ]; then
               echo "⚠️ Constitutional compliance below target (80%)"
               exit 1
@@ -250,7 +289,7 @@ jobs:
           else
             echo "No markdown files found"
           fi
-          
+
       - name: Upload compliance report
         uses: actions/upload-artifact@v3
         with:
@@ -261,25 +300,25 @@ jobs:
   link-validation:
     name: Comprehensive Link Validation
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-          
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install requests aiohttp markdown beautifulsoup4 lxml
-          
+
       - name: Validate internal links
         run: |
           python3 tools/automation/cross_reference_maintainer.py --validate --report --output internal_links_report.json
-          
+
       - name: Validate external links
         run: |
           cat > validate_external_links.py << 'EOF'
@@ -288,34 +327,34 @@ jobs:
           import asyncio
           import aiohttp
           from pathlib import Path
-          
+
           async def validate_external_links():
               """Validate external links in markdown files."""
-              
+
               # Find all markdown files
               md_files = list(Path('.').rglob('*.md'))
-              
+
               # Extract external links
               external_links = set()
               link_pattern = r'\[([^\]]+)\]\(([^)]+)\)'
-              
+
               for md_file in md_files:
                   try:
                       content = md_file.read_text(encoding='utf-8')
                       matches = re.findall(link_pattern, content)
-                      
+
                       for text, url in matches:
                           if url.startswith(('http://', 'https://')):
                               external_links.add(url)
                   except Exception as e:
                       print(f"Error reading {md_file}: {e}")
-              
+
               print(f"Found {len(external_links)} unique external links")
-              
+
               # Validate links
               results = []
               timeout = aiohttp.ClientTimeout(total=10)
-              
+
               async with aiohttp.ClientSession(timeout=timeout) as session:
                   for url in external_links:
                       try:
@@ -332,11 +371,11 @@ jobs:
                               'error': str(e),
                               'valid': False
                           })
-              
+
               # Generate report
               valid_links = [r for r in results if r['valid']]
               invalid_links = [r for r in results if not r['valid']]
-              
+
               report = {
                   'total_external_links': len(external_links),
                   'valid_links': len(valid_links),
@@ -344,22 +383,22 @@ jobs:
                   'validation_percentage': (len(valid_links) / len(external_links)) * 100 if external_links else 100,
                   'invalid_link_details': invalid_links[:20]  # Limit to first 20
               }
-              
+
               with open('external_links_report.json', 'w') as f:
                   json.dump(report, f, indent=2)
-              
+
               print(f"External link validation: {report['validation_percentage']:.1f}% valid")
               print(f"Invalid links: {len(invalid_links)}")
-              
+
               return len(invalid_links) < 10  # Allow up to 10 invalid links
-          
+
           if __name__ == "__main__":
               success = asyncio.run(validate_external_links())
               exit(0 if success else 1)
           EOF
-          
+
           python validate_external_links.py
-          
+
       - name: Upload link validation reports
         uses: actions/upload-artifact@v3
         with:
@@ -372,20 +411,20 @@ jobs:
   markdown-quality:
     name: Markdown Quality Assessment
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          
+
       - name: Install markdownlint
         run: |
           npm install -g markdownlint-cli
-          
+
       - name: Create markdownlint config
         run: |
           cat > .markdownlint.json << 'EOF'
@@ -396,21 +435,21 @@ jobs:
             "MD024": {"allow_different_nesting": true}
           }
           EOF
-          
+
       - name: Run markdownlint
         run: |
           markdownlint -o markdownlint_report.txt **/*.md || true
-          
+
       - name: Analyze markdown quality
         run: |
           cat > analyze_markdown_quality.py << 'EOF'
           import json
           import re
           from pathlib import Path
-          
+
           def analyze_markdown_quality():
               """Analyze markdown quality metrics."""
-              
+
               # Read markdownlint report
               lint_issues = []
               try:
@@ -420,10 +459,10 @@ jobs:
                               lint_issues.append(line.strip())
               except FileNotFoundError:
                   pass
-              
+
               # Find all markdown files
               md_files = list(Path('.').rglob('*.md'))
-              
+
               # Analyze content quality
               quality_metrics = {
                   'total_files': len(md_files),
@@ -436,90 +475,90 @@ jobs:
                   'average_file_size': 0,
                   'total_words': 0
               }
-              
+
               total_size = 0
               total_words = 0
-              
+
               for md_file in md_files:
                   try:
                       content = md_file.read_text(encoding='utf-8')
                       file_size = len(content)
                       total_size += file_size
-                      
+
                       # Count words (rough estimate)
                       word_count = len(content.split())
                       total_words += word_count
-                      
+
                       # Check for frontmatter
                       if content.startswith('---'):
                           quality_metrics['files_with_frontmatter'] += 1
-                      
+
                       # Check for table of contents
                       if re.search(r'(table of contents|toc)', content, re.IGNORECASE):
                           quality_metrics['files_with_toc'] += 1
-                      
+
                       # Check for code blocks
                       if '```' in content:
                           quality_metrics['files_with_code_blocks'] += 1
-                      
+
                       # Check for links
                       if re.search(r'\[([^\]]+)\]\([^)]+\)', content):
                           quality_metrics['files_with_links'] += 1
-                      
+
                       # Check for images
                       if re.search(r'!\[([^\]]*)\]\([^)]+\)', content):
                           quality_metrics['files_with_images'] += 1
-                          
+
                   except Exception as e:
                       print(f"Error analyzing {md_file}: {e}")
-              
+
               if md_files:
                   quality_metrics['average_file_size'] = total_size / len(md_files)
                   quality_metrics['average_words_per_file'] = total_words / len(md_files)
-              
+
               quality_metrics['total_words'] = total_words
-              
+
               # Calculate quality score
               score = 0
               max_score = 100
-              
+
               # Lint issues (30 points max)
               lint_penalty = min(len(lint_issues) * 2, 30)
               score += max(0, 30 - lint_penalty)
-              
+
               # Content richness (40 points max)
               if md_files:
                   score += min((quality_metrics['files_with_code_blocks'] / len(md_files)) * 15, 15)
                   score += min((quality_metrics['files_with_links'] / len(md_files)) * 15, 15)
                   score += min((quality_metrics['files_with_images'] / len(md_files)) * 10, 10)
-              
+
               # Structure (30 points max)
               if md_files:
                   score += min((quality_metrics['files_with_frontmatter'] / len(md_files)) * 15, 15)
                   score += min((quality_metrics['files_with_toc'] / len(md_files)) * 15, 15)
-              
+
               quality_metrics['quality_score'] = min(score, max_score)
               quality_metrics['lint_issues_sample'] = lint_issues[:10]  # First 10 issues
-              
+
               # Save report
               with open('markdown_quality_report.json', 'w') as f:
                   json.dump(quality_metrics, f, indent=2)
-              
+
               print(f"Markdown quality analysis completed:")
               print(f"  Quality score: {quality_metrics['quality_score']:.1f}/100")
               print(f"  Lint issues: {len(lint_issues)}")
               print(f"  Total files: {len(md_files)}")
               print(f"  Total words: {total_words:,}")
-              
+
               return quality_metrics['quality_score'] >= 70
-          
+
           if __name__ == "__main__":
               success = analyze_markdown_quality()
               exit(0 if success else 1)
           EOF
-          
+
           python analyze_markdown_quality.py
-          
+
       - name: Upload markdown quality report
         uses: actions/upload-artifact@v3
         with:
@@ -532,13 +571,19 @@ jobs:
   comprehensive-quality-report:
     name: Generate Comprehensive Quality Report
     runs-on: ubuntu-latest
-    needs: [documentation-structure, constitutional-compliance-check, link-validation, markdown-quality]
+    needs:
+      [
+        documentation-structure,
+        constitutional-compliance-check,
+        link-validation,
+        markdown-quality,
+      ]
     if: always()
-    
+
     steps:
       - name: Download all reports
         uses: actions/download-artifact@v3
-        
+
       - name: Generate comprehensive report
         run: |
           cat > generate_quality_report.py << 'EOF'
@@ -546,7 +591,7 @@ jobs:
           import os
           from datetime import datetime
           from pathlib import Path
-          
+
           def load_report(artifact_dir, filename):
               """Load a report file from an artifact directory."""
               for root, dirs, files in os.walk('.'):
@@ -559,10 +604,10 @@ jobs:
                           except (json.JSONDecodeError, FileNotFoundError):
                               continue
               return {}
-          
+
           def generate_comprehensive_report():
               """Generate a comprehensive documentation quality report."""
-              
+
               # Load all reports
               reports = {
                   'structure': load_report('docs-structure-analysis', 'docs_structure_analysis.json'),
@@ -571,41 +616,41 @@ jobs:
                   'external_links': load_report('link-validation-reports', 'external_links_report.json'),
                   'markdown_quality': load_report('markdown-quality-report', 'markdown_quality_report.json')
               }
-              
+
               # Calculate overall score
               scores = {}
-              
+
               # Structure score (25%)
               structure = reports.get('structure', {})
               completeness = structure.get('completeness', {})
               structure_score = completeness.get('completeness_percentage', 0)
               scores['structure'] = structure_score
-              
+
               # Constitutional compliance score (20%)
               constitutional = reports.get('constitutional', {})
               const_score = constitutional.get('compliance_percentage', 0)
               scores['constitutional'] = const_score
-              
+
               # Link validation score (25%)
               internal_links = reports.get('internal_links', {})
               external_links = reports.get('external_links', {})
-              
+
               # Internal links
               internal_broken = internal_links.get('summary', {}).get('broken_references', 0)
               internal_total = internal_links.get('summary', {}).get('total_references', 1)
               internal_score = max(0, (1 - internal_broken / internal_total) * 100)
-              
+
               # External links
               external_score = external_links.get('validation_percentage', 100)
-              
+
               link_score = (internal_score + external_score) / 2
               scores['links'] = link_score
-              
+
               # Markdown quality score (30%)
               markdown = reports.get('markdown_quality', {})
               markdown_score = markdown.get('quality_score', 0)
               scores['markdown'] = markdown_score
-              
+
               # Calculate weighted overall score
               overall_score = (
                   scores['structure'] * 0.25 +
@@ -613,7 +658,7 @@ jobs:
                   scores['links'] * 0.25 +
                   scores['markdown'] * 0.30
               )
-              
+
               # Determine status
               if overall_score >= 90:
                   status = 'excellent'
@@ -625,38 +670,38 @@ jobs:
                   status = 'needs_improvement'
               else:
                   status = 'poor'
-              
+
               # Generate recommendations
               recommendations = []
-              
+
               if scores['structure'] < 80:
                   recommendations.append({
                       'category': 'structure',
                       'priority': 'high',
                       'action': 'Complete missing required documentation'
                   })
-              
+
               if scores['constitutional'] < 80:
                   recommendations.append({
                       'category': 'constitutional',
                       'priority': 'medium',
                       'action': 'Add constitutional hash to more documentation files'
                   })
-              
+
               if scores['links'] < 80:
                   recommendations.append({
                       'category': 'links',
                       'priority': 'high',
                       'action': 'Fix broken internal and external links'
                   })
-              
+
               if scores['markdown'] < 70:
                   recommendations.append({
                       'category': 'markdown',
                       'priority': 'medium',
                       'action': 'Improve markdown formatting and add more rich content'
                   })
-              
+
               # Create comprehensive report
               comprehensive_report = {
                   'timestamp': datetime.now().isoformat(),
@@ -673,11 +718,11 @@ jobs:
                       'lint_issues': markdown.get('lint_issues', 0)
                   }
               }
-              
+
               # Save comprehensive report
               with open('comprehensive_quality_report.json', 'w') as f:
                   json.dump(comprehensive_report, f, indent=2)
-              
+
               # Print summary
               print("Documentation Quality Assessment Summary")
               print("=" * 50)
@@ -687,56 +732,56 @@ jobs:
               print(f"Links: {scores['links']:.1f}%")
               print(f"Markdown: {scores['markdown']:.1f}%")
               print(f"Recommendations: {len(recommendations)}")
-              
+
               return overall_score >= 70
-          
+
           if __name__ == "__main__":
               success = generate_comprehensive_report()
               exit(0 if success else 1)
           EOF
-          
+
           python generate_quality_report.py
-          
+
       - name: Upload comprehensive quality report
         uses: actions/upload-artifact@v3
         with:
           name: comprehensive-quality-report
           path: comprehensive_quality_report.json
           retention-days: 90
-          
+
       - name: Comment on PR with quality report
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
-            
+
             try {
               const report = JSON.parse(fs.readFileSync('comprehensive_quality_report.json', 'utf8'));
-              
+
               const comment = `## 📊 Documentation Quality Report
-              
+
               **Overall Score:** ${report.overall_score}/100 (${report.status.toUpperCase()})
               **Constitutional Hash:** \`${{ env.CONSTITUTIONAL_HASH }}\`
-              
+
               ### Category Scores
               - **Structure:** ${report.category_scores.structure}%
               - **Constitutional Compliance:** ${report.category_scores.constitutional}%
               - **Link Validation:** ${report.category_scores.links}%
               - **Markdown Quality:** ${report.category_scores.markdown}%
-              
+
               ### Summary
               - Files analyzed: ${report.summary.total_files_analyzed}
               - Constitutional compliance: ${report.summary.constitutional_compliance}
               - Broken links: ${report.summary.broken_links}
               - Lint issues: ${report.summary.lint_issues}
-              
+
               ${report.recommendations.length > 0 ? `### Recommendations
               ${report.recommendations.map(r => `- **${r.category}** (${r.priority}): ${r.action}`).join('\n')}` : '### ✅ No recommendations - excellent quality!'}
-              
+
               ---
               *Generated by ACGS Documentation Quality Workflow*`;
-              
+
               github.rest.issues.createComment({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,

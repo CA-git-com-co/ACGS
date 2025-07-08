@@ -1,6 +1,6 @@
 # ACGS Shared Base Requirements
 # Constitutional Hash: cdd01ef066bc6cf2
-# 
+#
 # This file contains common dependencies used across all ACGS services
 # Include this in service-specific requirements with: -r ../shared/requirements/base.txt
 

@@ -8,14 +8,10 @@ code quality improvements for the ACGS system.
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import ast
-import os
 import re
 import subprocess
-import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
 
 # Constitutional compliance
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -28,11 +24,11 @@ REDIS_PORT = 6389
 class AuditResult:
     """Results of the constitutional compliance audit."""
 
-    hash_verification: Dict[str, bool]
-    port_validation: Dict[str, List[str]]
-    mypy_issues: Dict[str, List[str]]
-    formatting_issues: Dict[str, List[str]]
-    missing_error_handlers: Dict[str, List[str]]
+    hash_verification: dict[str, bool]
+    port_validation: dict[str, list[str]]
+    mypy_issues: dict[str, list[str]]
+    formatting_issues: dict[str, list[str]]
+    missing_error_handlers: dict[str, list[str]]
     constitutional_hash: str = CONSTITUTIONAL_HASH
 
 
@@ -47,7 +43,8 @@ class ConstitutionalComplianceAuditor:
     def run_audit(self) -> AuditResult:
         """Run comprehensive constitutional compliance audit."""
         print(
-            f"🏛️ Starting Constitutional Compliance Audit (Hash: {self.constitutional_hash})"
+            "🏛️ Starting Constitutional Compliance Audit (Hash:"
+            f" {self.constitutional_hash})"
         )
 
         # 1. Hash Verification
@@ -78,7 +75,7 @@ class ConstitutionalComplianceAuditor:
             missing_error_handlers=missing_error_handlers,
         )
 
-    def _verify_constitutional_hash(self) -> Dict[str, bool]:
+    def _verify_constitutional_hash(self) -> dict[str, bool]:
         """Verify constitutional hash exists in all relevant files."""
         results = {}
 
@@ -91,7 +88,7 @@ class ConstitutionalComplianceAuditor:
                     continue
 
                 try:
-                    with open(file_path, "r", encoding="utf-8") as f:
+                    with open(file_path, encoding="utf-8") as f:
                         content = f.read()
                         results[str(file_path.relative_to(self.project_root))] = (
                             self.constitutional_hash in content
@@ -102,7 +99,7 @@ class ConstitutionalComplianceAuditor:
 
         return results
 
-    def _validate_service_ports(self) -> Dict[str, List[str]]:
+    def _validate_service_ports(self) -> dict[str, list[str]]:
         """Validate service port configurations."""
         issues = {
             "auth_service_port_violations": [],
@@ -131,7 +128,7 @@ class ConstitutionalComplianceAuditor:
                 continue
 
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     content = f.read()
 
                     # Check for auth service port violations
@@ -141,7 +138,8 @@ class ConstitutionalComplianceAuditor:
                         ]:
                             if re.search(rf"\b{incorrect_port}\b", content):
                                 issues["auth_service_port_violations"].append(
-                                    f"{file_path}: Found port {incorrect_port} instead of {AUTH_SERVICE_PORT}"
+                                    f"{file_path}: Found port {incorrect_port} instead"
+                                    f" of {AUTH_SERVICE_PORT}"
                                 )
 
                     # Check for PostgreSQL port violations
@@ -152,7 +150,8 @@ class ConstitutionalComplianceAuditor:
                         for incorrect_port in port_patterns["postgresql"]["incorrect"]:
                             if re.search(rf"\b{incorrect_port}\b", content):
                                 issues["postgresql_port_violations"].append(
-                                    f"{file_path}: Found port {incorrect_port} instead of {POSTGRESQL_PORT}"
+                                    f"{file_path}: Found port {incorrect_port} instead"
+                                    f" of {POSTGRESQL_PORT}"
                                 )
 
                     # Check for Redis port violations
@@ -160,7 +159,8 @@ class ConstitutionalComplianceAuditor:
                         for incorrect_port in port_patterns["redis"]["incorrect"]:
                             if re.search(rf"\b{incorrect_port}\b", content):
                                 issues["redis_port_violations"].append(
-                                    f"{file_path}: Found port {incorrect_port} instead of {REDIS_PORT}"
+                                    f"{file_path}: Found port {incorrect_port} instead"
+                                    f" of {REDIS_PORT}"
                                 )
 
             except (UnicodeDecodeError, PermissionError, IsADirectoryError):
@@ -168,7 +168,7 @@ class ConstitutionalComplianceAuditor:
 
         return issues
 
-    def _check_async_function_types(self) -> Dict[str, List[str]]:
+    def _check_async_function_types(self) -> dict[str, list[str]]:
         """Check MyPy type annotations for async functions."""
         issues = {}
 
@@ -206,7 +206,7 @@ class ConstitutionalComplianceAuditor:
 
         return issues
 
-    def _check_formatting(self) -> Dict[str, List[str]]:
+    def _check_formatting(self) -> dict[str, list[str]]:
         """Check Black formatting and isort import sorting."""
         issues = {"black_issues": [], "isort_issues": []}
 
@@ -262,7 +262,7 @@ class ConstitutionalComplianceAuditor:
 
         return issues
 
-    def _check_error_handlers(self) -> Dict[str, List[str]]:
+    def _check_error_handlers(self) -> dict[str, list[str]]:
         """Check for missing FastAPI error handlers."""
         issues = {"missing_error_handlers": []}
 
@@ -272,7 +272,7 @@ class ConstitutionalComplianceAuditor:
                 continue
 
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     content = f.read()
 
                 # Check if this is a FastAPI app file
@@ -300,7 +300,7 @@ class ConstitutionalComplianceAuditor:
 
         return issues
 
-    def _find_files_with_async_functions(self) -> List[Path]:
+    def _find_files_with_async_functions(self) -> list[Path]:
         """Find Python files containing async functions."""
         async_files = []
 
@@ -309,7 +309,7 @@ class ConstitutionalComplianceAuditor:
                 continue
 
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     content = f.read()
                     if re.search(r"async\s+def\s+", content):
                         async_files.append(file_path)
@@ -345,7 +345,7 @@ class ConstitutionalComplianceFixer:
         self.project_root = Path(project_root)
         self.constitutional_hash = CONSTITUTIONAL_HASH
 
-    def apply_fixes(self, audit_result: AuditResult) -> Dict[str, int]:
+    def apply_fixes(self, audit_result: AuditResult) -> dict[str, int]:
         """Apply fixes for identified issues."""
         fixes_applied = {
             "hash_fixes": 0,
@@ -382,7 +382,7 @@ class ConstitutionalComplianceFixer:
 
         return fixes_applied
 
-    def _fix_missing_hashes(self, hash_verification: Dict[str, bool]) -> int:
+    def _fix_missing_hashes(self, hash_verification: dict[str, bool]) -> int:
         """Add missing constitutional hashes to files."""
         fixes = 0
 
@@ -390,12 +390,15 @@ class ConstitutionalComplianceFixer:
             if not has_hash and file_path.endswith(".py"):
                 full_path = self.project_root / file_path
                 try:
-                    with open(full_path, "r", encoding="utf-8") as f:
+                    with open(full_path, encoding="utf-8") as f:
                         content = f.read()
 
                     # Add constitutional hash comment at the top
                     if not content.startswith('"""') and not content.startswith("#"):
-                        new_content = f"# Constitutional Hash: {self.constitutional_hash}\n{content}"
+                        new_content = (
+                            "# Constitutional Hash:"
+                            f" {self.constitutional_hash}\n{content}"
+                        )
                     elif '"""' in content:
                         # Add to docstring
                         docstring_end = content.find('"""', 3) + 3
@@ -406,9 +409,15 @@ class ConstitutionalComplianceFixer:
                                 + content[docstring_end - 3 :]
                             )
                         else:
-                            new_content = f"# Constitutional Hash: {self.constitutional_hash}\n{content}"
+                            new_content = (
+                                "# Constitutional Hash:"
+                                f" {self.constitutional_hash}\n{content}"
+                            )
                     else:
-                        new_content = f"# Constitutional Hash: {self.constitutional_hash}\n{content}"
+                        new_content = (
+                            "# Constitutional Hash:"
+                            f" {self.constitutional_hash}\n{content}"
+                        )
 
                     with open(full_path, "w", encoding="utf-8") as f:
                         f.write(new_content)
@@ -421,7 +430,7 @@ class ConstitutionalComplianceFixer:
 
         return fixes
 
-    def _fix_port_configurations(self, port_validation: Dict[str, List[str]]) -> int:
+    def _fix_port_configurations(self, port_validation: dict[str, list[str]]) -> int:
         """Fix incorrect port configurations."""
         fixes = 0
 
@@ -452,7 +461,7 @@ class ConstitutionalComplianceFixer:
                 if not file_path.exists():
                     continue
 
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     content = f.read()
 
                 original_content = content
@@ -473,7 +482,7 @@ class ConstitutionalComplianceFixer:
 
         return fixes
 
-    def _fix_mypy_issues(self, mypy_issues: Dict[str, List[str]]) -> int:
+    def _fix_mypy_issues(self, mypy_issues: dict[str, list[str]]) -> int:
         """Fix common MyPy type annotation issues."""
         fixes = 0
 
@@ -484,7 +493,7 @@ class ConstitutionalComplianceFixer:
                 continue
 
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     content = f.read()
 
                 original_content = content
@@ -510,7 +519,7 @@ class ConstitutionalComplianceFixer:
 
         return fixes
 
-    def _fix_async_return_types(self, content: str, issues: List[str]) -> str:
+    def _fix_async_return_types(self, content: str, issues: list[str]) -> str:
         """Fix missing return type annotations for async functions."""
         # Add -> None for async functions that don't return values
         no_return_pattern = r"(async def \w+\([^)]*\)):"
@@ -537,7 +546,7 @@ class ConstitutionalComplianceFixer:
 
         return content
 
-    def _fix_missing_type_imports(self, content: str, issues: List[str]) -> str:
+    def _fix_missing_type_imports(self, content: str, issues: list[str]) -> str:
         """Add missing type imports."""
         imports_needed = set()
 
@@ -567,7 +576,7 @@ class ConstitutionalComplianceFixer:
 
         return content
 
-    def _fix_generic_type_args(self, content: str, issues: List[str]) -> str:
+    def _fix_generic_type_args(self, content: str, issues: list[str]) -> str:
         """Fix missing generic type arguments."""
         # Fix dict -> Dict[str, Any]
         content = re.sub(r"\bdict\b(?!\[)", "Dict[str, Any]", content)
@@ -577,7 +586,7 @@ class ConstitutionalComplianceFixer:
 
         return content
 
-    def _fix_formatting_issues(self, formatting_issues: Dict[str, List[str]]) -> int:
+    def _fix_formatting_issues(self, formatting_issues: dict[str, list[str]]) -> int:
         """Apply Black formatting and isort import sorting."""
         fixes = 0
 
@@ -626,7 +635,7 @@ class ConstitutionalComplianceFixer:
         return fixes
 
     def _fix_missing_error_handlers(
-        self, missing_error_handlers: Dict[str, List[str]]
+        self, missing_error_handlers: dict[str, list[str]]
     ) -> int:
         """Add missing FastAPI error handlers."""
         fixes = 0
@@ -661,15 +670,13 @@ async def general_exception_handler(request: Request, exc: Exception) -> JSONRes
             "status_code": 500
         }}
     )
-'''.format(
-            constitutional_hash=self.constitutional_hash
-        )
+'''.format(constitutional_hash=self.constitutional_hash)
 
         for file_path_str in missing_error_handlers.get("missing_error_handlers", []):
             file_path = self.project_root / file_path_str
 
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     content = f.read()
 
                 # Check if we need to add imports
@@ -734,30 +741,30 @@ def main():
         1 for has_hash in audit_result.hash_verification.values() if not has_hash
     )
     total_files = len(audit_result.hash_verification)
-    print(f"📋 Constitutional Hash Verification:")
+    print("📋 Constitutional Hash Verification:")
     print(f"   ✅ Files with hash: {total_files - missing_hashes}/{total_files}")
     print(f"   ❌ Files missing hash: {missing_hashes}")
 
     # Port validation results
-    print(f"\n🔌 Service Port Validation:")
+    print("\n🔌 Service Port Validation:")
     for violation_type, violations in audit_result.port_validation.items():
         print(f"   {violation_type}: {len(violations)} violations")
 
     # MyPy issues
-    print(f"\n🔍 MyPy Type Checking:")
+    print("\n🔍 MyPy Type Checking:")
     total_mypy_issues = sum(len(issues) for issues in audit_result.mypy_issues.values())
     print(f"   Files with issues: {len(audit_result.mypy_issues)}")
     print(f"   Total issues: {total_mypy_issues}")
 
     # Formatting issues
-    print(f"\n🎨 Code Formatting:")
+    print("\n🎨 Code Formatting:")
     black_issues = len(audit_result.formatting_issues.get("black_issues", []))
     isort_issues = len(audit_result.formatting_issues.get("isort_issues", []))
     print(f"   Black formatting issues: {black_issues}")
     print(f"   Import sorting issues: {isort_issues}")
 
     # Error handler issues
-    print(f"\n🛡️ Error Handlers:")
+    print("\n🛡️ Error Handlers:")
     missing_handlers = len(
         audit_result.missing_error_handlers.get("missing_error_handlers", [])
     )
@@ -777,7 +784,7 @@ def main():
 
     total_fixes = sum(fixes_applied.values())
     print(f"\n🎉 Total fixes applied: {total_fixes}")
-    print(f"🏛️ Constitutional compliance enhanced!")
+    print("🏛️ Constitutional compliance enhanced!")
     print(f"📋 Constitutional Hash: {CONSTITUTIONAL_HASH}")
 
 

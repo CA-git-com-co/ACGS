@@ -63,9 +63,9 @@ class TimeoutValues(IntEnum):
     DB_POOL_TIMEOUT = 30
 
     # Cache timeouts
-    CACHE_SHORT_TTL = 300      # 5 minutes
-    CACHE_MEDIUM_TTL = 1800    # 30 minutes
-    CACHE_LONG_TTL = 3600      # 1 hour
+    CACHE_SHORT_TTL = 300  # 5 minutes
+    CACHE_MEDIUM_TTL = 1800  # 30 minutes
+    CACHE_LONG_TTL = 3600  # 1 hour
     CACHE_VERY_LONG_TTL = 86400  # 24 hours
 
     # Authentication timeouts
@@ -74,7 +74,7 @@ class TimeoutValues(IntEnum):
     JWT_RESET_TOKEN_MINUTES = 15
 
     # Rate limiting
-    RATE_LIMIT_WINDOW = 60     # 1 minute
+    RATE_LIMIT_WINDOW = 60  # 1 minute
     RATE_LIMIT_MAX_REQUESTS = 100
 
     # Circuit breaker

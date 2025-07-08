@@ -160,7 +160,7 @@ curl -f http://localhost:5439/        # PostgreSQL should be accessible
 ### 4.2 Gradual Rollback (Service by Service)
 ```bash
 # Roll back services in reverse dependency order
-services=("evolutionary-computation" "policy-governance" "governance-synthesis" 
+services=("evolutionary-computation" "policy-governance" "governance-synthesis"
           "formal-verification" "integrity" "constitutional-ai")
 
 for service in "${services[@]}"; do
@@ -174,8 +174,8 @@ done
 ```bash
 # Verify database consistency after rollback
 psql -h localhost -p 5439 -U acgs -d acgs_prod -c "
-  SELECT COUNT(*) FROM constitutional_compliance_log 
-  WHERE hash = 'cdd01ef066bc6cf2' 
+  SELECT COUNT(*) FROM constitutional_compliance_log
+  WHERE hash = 'cdd01ef066bc6cf2'
   AND created_at > NOW() - INTERVAL '1 hour';"
 
 # Expected: > 0 records indicating recent constitutional compliance
@@ -238,8 +238,8 @@ done
 # Check constitutional compliance in database
 psql -h localhost -p 5439 -U acgs -d acgs_prod -c "
   SELECT service_name, COUNT(*) as compliance_checks
-  FROM constitutional_compliance_log 
-  WHERE hash = 'cdd01ef066bc6cf2' 
+  FROM constitutional_compliance_log
+  WHERE hash = 'cdd01ef066bc6cf2'
   AND created_at > NOW() - INTERVAL '24 hours'
   GROUP BY service_name;"
 ```
@@ -263,7 +263,7 @@ psql -h localhost -p 5439 -U acgs -d acgs_prod -c "
 
 ---
 
-**Constitutional Hash**: `cdd01ef066bc6cf2`  
-**Document Version**: 1.0  
-**Last Updated**: 2025-07-06  
+**Constitutional Hash**: `cdd01ef066bc6cf2`
+**Document Version**: 1.0
+**Last Updated**: 2025-07-06
 **Deployment Target**: Phase 2 Enterprise Integration → Phase 3 Operational Excellence

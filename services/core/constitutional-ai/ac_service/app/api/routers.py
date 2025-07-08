@@ -12,10 +12,7 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException
 
 from .....shared.di.container import Inject
-from ..domain.entities import (
-    ConstitutionalComplianceRequest,
-    ContentValidationRequest,
-)
+from ..domain.entities import ConstitutionalComplianceRequest, ContentValidationRequest
 from ..service.constitutional_service import (
     AuditServiceImpl,
     ConstitutionalPolicyServiceImpl,
@@ -45,7 +42,9 @@ async def health_check():
 
 @health_router.get("/detailed")
 async def detailed_health_check(
-    validation_service: ConstitutionalValidationService = Depends(Inject(ConstitutionalValidationService))
+    validation_service: ConstitutionalValidationService = Depends(
+        Inject(ConstitutionalValidationService)
+    ),
 ):
     """Detailed health check with dependency validation."""
     try:
@@ -61,7 +60,7 @@ async def detailed_health_check(
                 "validation_service": "operational",
                 "policy_service": "operational",
                 "audit_service": "operational",
-            }
+            },
         }
     except Exception as e:
         logger.error(f"Detailed health check failed: {e}")
@@ -72,15 +71,17 @@ async def detailed_health_check(
 @validation_router.post("/validate/content")
 async def validate_content(
     request: ContentValidationRequest,
-    validation_service: ConstitutionalValidationService = Depends(Inject(ConstitutionalValidationService))
+    validation_service: ConstitutionalValidationService = Depends(
+        Inject(ConstitutionalValidationService)
+    ),
 ) -> dict[str, Any]:
     """
     Validate content against constitutional rules.
-    
+
     Args:
         request: Content validation request
         validation_service: Injected validation service
-        
+
     Returns:
         Validation result with compliance information
     """
@@ -120,15 +121,17 @@ async def validate_content(
 @validation_router.post("/validate/compliance")
 async def validate_compliance(
     request: ConstitutionalComplianceRequest,
-    validation_service: ConstitutionalValidationService = Depends(Inject(ConstitutionalValidationService))
+    validation_service: ConstitutionalValidationService = Depends(
+        Inject(ConstitutionalValidationService)
+    ),
 ) -> dict[str, Any]:
     """
     Validate constitutional compliance.
-    
+
     Args:
         request: Constitutional compliance request
         validation_service: Injected validation service
-        
+
     Returns:
         Compliance validation result
     """
@@ -162,13 +165,17 @@ async def validate_compliance(
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         logger.error(f"Compliance validation failed: {e}")
-        raise HTTPException(status_code=500, detail="Compliance validation service error")
+        raise HTTPException(
+            status_code=500, detail="Compliance validation service error"
+        )
 
 
 # Policy endpoints
 @policy_router.get("/principles")
 async def get_constitutional_principles(
-    policy_service: ConstitutionalPolicyServiceImpl = Depends(Inject(ConstitutionalPolicyServiceImpl))
+    policy_service: ConstitutionalPolicyServiceImpl = Depends(
+        Inject(ConstitutionalPolicyServiceImpl)
+    ),
 ):
     """Get available constitutional principles."""
     try:
@@ -198,7 +205,9 @@ async def get_constitutional_principles(
 async def evaluate_policy(
     content: str,
     context: dict[str, Any] = None,
-    policy_service: ConstitutionalPolicyServiceImpl = Depends(Inject(ConstitutionalPolicyServiceImpl))
+    policy_service: ConstitutionalPolicyServiceImpl = Depends(
+        Inject(ConstitutionalPolicyServiceImpl)
+    ),
 ):
     """Evaluate content against constitutional policies."""
     try:
@@ -228,8 +237,7 @@ audit_router = APIRouter(prefix="/api/v1/audit", tags=["Audit"])
 
 @audit_router.get("/trail/{entity_id}")
 async def get_audit_trail(
-    entity_id: str,
-    audit_service: AuditServiceImpl = Depends(Inject(AuditServiceImpl))
+    entity_id: str, audit_service: AuditServiceImpl = Depends(Inject(AuditServiceImpl))
 ):
     """Get audit trail for an entity."""
     try:

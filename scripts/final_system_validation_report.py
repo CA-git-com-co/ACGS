@@ -6,11 +6,9 @@ Comprehensive validation of all success criteria with constitutional compliance
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import json
 import subprocess
 import time
 from datetime import datetime
-from typing import Dict, List, Tuple
 
 import requests
 
@@ -30,7 +28,7 @@ class ACGSSystemValidator:
             "monitoring_operational": True,  # Monitoring infrastructure operational
         }
 
-    def validate_test_infrastructure(self) -> Tuple[bool, Dict]:
+    def validate_test_infrastructure(self) -> tuple[bool, dict]:
         """Validate test infrastructure and execution results"""
         print("🧪 Validating Test Infrastructure...")
 
@@ -77,7 +75,7 @@ class ACGSSystemValidator:
                         (passed / total_tests) * 100 if total_tests > 0 else 0
                     )
 
-                    print(f"✅ Test execution completed")
+                    print("✅ Test execution completed")
                     print(f"   Passed: {passed}/{total_tests} tests")
                     print(f"   Success rate: {success_rate:.1f}%")
 
@@ -95,7 +93,7 @@ class ACGSSystemValidator:
             print(f"❌ Test execution failed: {e}")
             return False, {"error": str(e)}
 
-    def validate_service_operational_status(self) -> Tuple[bool, Dict]:
+    def validate_service_operational_status(self) -> tuple[bool, dict]:
         """Validate all services are operational"""
         print("\n🏛️  Validating Service Operational Status...")
 
@@ -123,9 +121,10 @@ class ACGSSystemValidator:
                 else:
                     failed_services.append(service_name)
                     print(
-                        f"❌ {service_name:25} Port {port:4} | HTTP {response.status_code}"
+                        f"❌ {service_name:25} Port {port:4} | HTTP"
+                        f" {response.status_code}"
                     )
-            except Exception as e:
+            except Exception:
                 failed_services.append(service_name)
                 print(f"❌ {service_name:25} Port {port:4} | Connection failed")
 
@@ -140,7 +139,7 @@ class ACGSSystemValidator:
             "failed_services": failed_services,
         }
 
-    def validate_constitutional_compliance(self) -> Tuple[bool, Dict]:
+    def validate_constitutional_compliance(self) -> tuple[bool, dict]:
         """Validate constitutional compliance across all services"""
         print("\n⚖️  Validating Constitutional Compliance...")
 
@@ -172,12 +171,13 @@ class ACGSSystemValidator:
                     else:
                         non_compliant_services.append(service_name)
                         print(
-                            f"🚨 {service_name:25} | Hash mismatch: {constitutional_hash}"
+                            f"🚨 {service_name:25} | Hash mismatch:"
+                            f" {constitutional_hash}"
                         )
                 else:
                     non_compliant_services.append(service_name)
                     print(f"❌ {service_name:25} | Service unavailable")
-            except Exception as e:
+            except Exception:
                 non_compliant_services.append(service_name)
                 print(f"❌ {service_name:25} | Connection error")
 
@@ -193,7 +193,7 @@ class ACGSSystemValidator:
             "non_compliant_services": non_compliant_services,
         }
 
-    def validate_performance_targets(self) -> Tuple[bool, Dict]:
+    def validate_performance_targets(self) -> tuple[bool, dict]:
         """Validate performance targets are met"""
         print("\n⚡ Validating Performance Targets...")
 
@@ -212,7 +212,7 @@ class ACGSSystemValidator:
                     print(f"✅ Port {port}: {latency_ms:.2f}ms")
                 else:
                     print(f"❌ Port {port}: HTTP {response.status_code}")
-            except Exception as e:
+            except Exception:
                 print(f"❌ Port {port}: Connection failed")
 
         if latencies:
@@ -238,7 +238,7 @@ class ACGSSystemValidator:
         else:
             return False, {"error": "No latency samples collected"}
 
-    def validate_monitoring_infrastructure(self) -> Tuple[bool, Dict]:
+    def validate_monitoring_infrastructure(self) -> tuple[bool, dict]:
         """Validate monitoring infrastructure is operational"""
         print("\n📊 Validating Monitoring Infrastructure...")
 
@@ -259,7 +259,7 @@ class ACGSSystemValidator:
                 else:
                     failed_components.append(component)
                     print(f"❌ {component}: HTTP {response.status_code}")
-            except Exception as e:
+            except Exception:
                 failed_components.append(component)
                 print(f"❌ {component}: Connection failed")
 
@@ -271,7 +271,7 @@ class ACGSSystemValidator:
             "total": len(monitoring_components),
         }
 
-    def generate_final_report(self, validation_results: Dict) -> str:
+    def generate_final_report(self, validation_results: dict) -> str:
         """Generate comprehensive final validation report"""
         report = []
         report.append("🏆 ACGS FINAL SYSTEM VALIDATION REPORT")
@@ -305,7 +305,8 @@ class ACGSSystemValidator:
             if validation_name == "Test Infrastructure":
                 if "success_rate" in data:
                     report.append(
-                        f"Success Rate: {data['success_rate']:.1f}% (target: {data['target']:.1f}%)"
+                        f"Success Rate: {data['success_rate']:.1f}% (target:"
+                        f" {data['target']:.1f}%)"
                     )
                     report.append(f"Tests Passed: {data['passed']}/{data['total']}")
 
@@ -332,13 +333,15 @@ class ACGSSystemValidator:
             elif validation_name == "Performance Targets":
                 if "p99_latency" in data:
                     report.append(
-                        f"P99 Latency: {data['p99_latency']:.2f}ms (target: {data['target']:.2f}ms)"
+                        f"P99 Latency: {data['p99_latency']:.2f}ms (target:"
+                        f" {data['target']:.2f}ms)"
                     )
                     report.append(f"Average Latency: {data['avg_latency']:.2f}ms")
 
             elif validation_name == "Monitoring Infrastructure":
                 report.append(
-                    f"Operational Components: {len(data['operational'])}/{data['total']}"
+                    "Operational Components:"
+                    f" {len(data['operational'])}/{data['total']}"
                 )
                 report.append(f"Components: {', '.join(data['operational'])}")
 
@@ -352,7 +355,9 @@ class ACGSSystemValidator:
         total_count = len(validation_results)
 
         report.append(f"Validations Passed: {passed_count}/{total_count}")
-        report.append(f"Overall Success Rate: {(passed_count/total_count)*100:.1f}%")
+        report.append(
+            f"Overall Success Rate: {(passed_count / total_count) * 100:.1f}%"
+        )
         report.append(f"Constitutional Hash: {self.constitutional_hash}")
 
         if all_passed:

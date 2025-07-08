@@ -1,66 +1,66 @@
-version: '3.8'
+version: "3.8"
 networks:
   mcp_network:
     driver: bridge
     ipam:
       config:
-      - subnet: 172.21.0.0/16
+        - subnet: 172.21.0.0/16
     labels:
-    - acgs.constitutional_hash=cdd01ef066bc6cf2
-    - acgs.network_type=mcp_coordination
+      - acgs.constitutional_hash=cdd01ef066bc6cf2
+      - acgs.network_type=mcp_coordination
 volumes:
   mcp_workspace:
     driver: local
     labels:
-    - acgs.constitutional_hash=cdd01ef066bc6cf2
-    - acgs.volume_type=workspace
+      - acgs.constitutional_hash=cdd01ef066bc6cf2
+      - acgs.volume_type=workspace
   mcp_logs:
     driver: local
     labels:
-    - acgs.constitutional_hash=cdd01ef066bc6cf2
-    - acgs.volume_type=logs
+      - acgs.constitutional_hash=cdd01ef066bc6cf2
+      - acgs.volume_type=logs
   mcp_cache:
     driver: local
     labels:
-    - acgs.constitutional_hash=cdd01ef066bc6cf2
-    - acgs.volume_type=cache
+      - acgs.constitutional_hash=cdd01ef066bc6cf2
+      - acgs.volume_type=cache
 services:
   mcp_aggregator:
     image: nazar256/combine-mcp:latest
     container_name: acgs_mcp_aggregator
     hostname: mcp-aggregator
     ports:
-    - 127.0.0.1:${GRAFANA_PORT}:3000
+      - 127.0.0.1:${GRAFANA_PORT}:3000
     networks:
-    - mcp_network
+      - mcp_network
     environment:
-    - SERVICE_NAME=mcp_aggregator
-    - SERVICE_PORT=3000
-    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-    - LOG_LEVEL=${LOG_LEVEL:-INFO}
-    - MCP_FILESYSTEM_URL=http://mcp_filesystem:3010
-    - MCP_GITHUB_URL=http://mcp_github:3011
-    - MCP_BROWSER_URL=http://mcp_browser:3012
-    - ACGS_AUTH_SERVICE_URL=http://host.docker.internal:8016
-    - ACGS_CONSTITUTIONAL_AI_URL=http://host.docker.internal:8001
-    - ACGS_INTEGRITY_SERVICE_URL=http://host.docker.internal:8002
-    - ACGS_MULTI_AGENT_COORDINATOR_URL=http://host.docker.internal:8008
-    - ACGS_BLACKBOARD_SERVICE_URL=http://host.docker.internal:8010
-    - ACGS_GOVERNANCE_SYNTHESIS_URL=http://host.docker.internal:8004
-    - AGGREGATOR_TIMEOUT=30s
-    - AGGREGATOR_RETRY_COUNT=3
-    - CLAUDE_MCP_INTEGRATION_ENABLED=true
-    - PERFORMANCE_MONITORING_ENABLED=true
-    - AUDIT_ALL_OPERATIONS=true
+      - SERVICE_NAME=mcp_aggregator
+      - SERVICE_PORT=3000
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - MCP_FILESYSTEM_URL=http://mcp_filesystem:3010
+      - MCP_GITHUB_URL=http://mcp_github:3011
+      - MCP_BROWSER_URL=http://mcp_browser:3012
+      - ACGS_AUTH_SERVICE_URL=http://host.docker.internal:8016
+      - ACGS_CONSTITUTIONAL_AI_URL=http://host.docker.internal:8001
+      - ACGS_INTEGRITY_SERVICE_URL=http://host.docker.internal:8002
+      - ACGS_MULTI_AGENT_COORDINATOR_URL=http://host.docker.internal:8008
+      - ACGS_BLACKBOARD_SERVICE_URL=http://host.docker.internal:8010
+      - ACGS_GOVERNANCE_SYNTHESIS_URL=http://host.docker.internal:8004
+      - AGGREGATOR_TIMEOUT=30s
+      - AGGREGATOR_RETRY_COUNT=3
+      - CLAUDE_MCP_INTEGRATION_ENABLED=true
+      - PERFORMANCE_MONITORING_ENABLED=true
+      - AUDIT_ALL_OPERATIONS=true
     volumes:
-    - mcp_logs:/app/logs
-    - mcp_cache:/app/cache
+      - mcp_logs:/app/logs
+      - mcp_cache:/app/cache
     healthcheck:
       test:
-      - CMD
-      - curl
-      - -f
-      - http://localhost:3000/health
+        - CMD
+        - curl
+        - -f
+        - http://localhost:3000/health
       interval: 15s
       timeout: 5s
       retries: 3
@@ -70,10 +70,10 @@ services:
       resources:
         limits:
           memory: 512M
-          cpus: '0.5'
+          cpus: "0.5"
         reservations:
           memory: 256M
-          cpus: '0.25'
+          cpus: "0.25"
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -89,34 +89,34 @@ services:
       mcp_browser:
         condition: service_healthy
     labels:
-    - acgs.constitutional_hash=cdd01ef066bc6cf2
-    - acgs.service_type=mcp_aggregator
-    - acgs.monitoring.enabled=true
-    - acgs.security.level=high
+      - acgs.constitutional_hash=cdd01ef066bc6cf2
+      - acgs.service_type=mcp_aggregator
+      - acgs.monitoring.enabled=true
+      - acgs.security.level=high
   mcp_filesystem:
     image: mcp/filesystem:latest
     container_name: acgs_mcp_filesystem
     hostname: mcp-filesystem
     networks:
-    - mcp_network
+      - mcp_network
     environment:
-    - SERVICE_NAME=mcp_filesystem
-    - SERVICE_PORT=3010
-    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-    - ALLOWED_PATH=/workspace
-    - LOG_LEVEL=${LOG_LEVEL:-INFO}
-    - MAX_FILE_SIZE=100MB
-    - ALLOWED_EXTENSIONS=.txt,.md,.json,.yaml,.yml,.py,.js,.ts
+      - SERVICE_NAME=mcp_filesystem
+      - SERVICE_PORT=3010
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - ALLOWED_PATH=/workspace
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - MAX_FILE_SIZE=100MB
+      - ALLOWED_EXTENSIONS=.txt,.md,.json,.yaml,.yml,.py,.js,.ts
     volumes:
-    - mcp_workspace:/workspace
-    - mcp_logs:/app/logs
-    - ./workspace:/workspace/host:ro
+      - mcp_workspace:/workspace
+      - mcp_logs:/app/logs
+      - ./workspace:/workspace/host:ro
     healthcheck:
       test:
-      - CMD
-      - curl
-      - -f
-      - http://localhost:3010/health
+        - CMD
+        - curl
+        - -f
+        - http://localhost:3010/health
       interval: 15s
       timeout: 5s
       retries: 3
@@ -126,10 +126,10 @@ services:
       resources:
         limits:
           memory: 256M
-          cpus: '0.25'
+          cpus: "0.25"
         reservations:
           memory: 128M
-          cpus: '0.1'
+          cpus: "0.1"
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -138,36 +138,36 @@ services:
     user: 1000:1000
     read_only: true
     tmpfs:
-    - /tmp:size=100M,noexec,nosuid,nodev
+      - /tmp:size=100M,noexec,nosuid,nodev
     labels:
-    - acgs.constitutional_hash=cdd01ef066bc6cf2
-    - acgs.service_type=mcp_filesystem
-    - acgs.monitoring.enabled=true
-    - acgs.security.level=medium
+      - acgs.constitutional_hash=cdd01ef066bc6cf2
+      - acgs.service_type=mcp_filesystem
+      - acgs.monitoring.enabled=true
+      - acgs.security.level=medium
   mcp_github:
     image: mcp/github:latest
     container_name: acgs_mcp_github
     hostname: mcp-github
     networks:
-    - mcp_network
+      - mcp_network
     environment:
-    - SERVICE_NAME=mcp_github
-    - SERVICE_PORT=3011
-    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-    - GITHUB_TOKEN=${GITHUB_TOKEN}
-    - LOG_LEVEL=${LOG_LEVEL:-INFO}
-    - GITHUB_API_BASE_URL=https://api.github.com
-    - RATE_LIMIT_REQUESTS=5000
-    - RATE_LIMIT_WINDOW=3600
+      - SERVICE_NAME=mcp_github
+      - SERVICE_PORT=3011
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - GITHUB_API_BASE_URL=https://api.github.com
+      - RATE_LIMIT_REQUESTS=5000
+      - RATE_LIMIT_WINDOW=3600
     volumes:
-    - mcp_logs:/app/logs
-    - mcp_cache:/app/cache
+      - mcp_logs:/app/logs
+      - mcp_cache:/app/cache
     healthcheck:
       test:
-      - CMD
-      - curl
-      - -f
-      - http://localhost:3011/health
+        - CMD
+        - curl
+        - -f
+        - http://localhost:3011/health
       interval: 15s
       timeout: 5s
       retries: 3
@@ -177,10 +177,10 @@ services:
       resources:
         limits:
           memory: 512M
-          cpus: '0.5'
+          cpus: "0.5"
         reservations:
           memory: 256M
-          cpus: '0.25'
+          cpus: "0.25"
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -189,37 +189,37 @@ services:
     user: 1000:1000
     read_only: true
     tmpfs:
-    - /tmp:size=100M,noexec,nosuid,nodev
+      - /tmp:size=100M,noexec,nosuid,nodev
     labels:
-    - acgs.constitutional_hash=cdd01ef066bc6cf2
-    - acgs.service_type=mcp_github
-    - acgs.monitoring.enabled=true
-    - acgs.security.level=high
+      - acgs.constitutional_hash=cdd01ef066bc6cf2
+      - acgs.service_type=mcp_github
+      - acgs.monitoring.enabled=true
+      - acgs.security.level=high
   mcp_browser:
     image: mcp/browser:latest
     container_name: acgs_mcp_browser
     hostname: mcp-browser
     networks:
-    - mcp_network
+      - mcp_network
     environment:
-    - SERVICE_NAME=mcp_browser
-    - SERVICE_PORT=3012
-    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-    - HEADLESS=true
-    - LOG_LEVEL=${LOG_LEVEL:-INFO}
-    - BROWSER_TIMEOUT=30000
-    - MAX_CONCURRENT_PAGES=5
-    - DISABLE_IMAGES=true
-    - DISABLE_JAVASCRIPT=false
+      - SERVICE_NAME=mcp_browser
+      - SERVICE_PORT=3012
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - HEADLESS=true
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - BROWSER_TIMEOUT=30000
+      - MAX_CONCURRENT_PAGES=5
+      - DISABLE_IMAGES=true
+      - DISABLE_JAVASCRIPT=false
     volumes:
-    - mcp_logs:/app/logs
-    - /tmp:/tmp:rw,noexec,nosuid,nodev
+      - mcp_logs:/app/logs
+      - /tmp:/tmp:rw,noexec,nosuid,nodev
     healthcheck:
       test:
-      - CMD
-      - curl
-      - -f
-      - http://localhost:3012/health
+        - CMD
+        - curl
+        - -f
+        - http://localhost:3012/health
       interval: 15s
       timeout: 5s
       retries: 3
@@ -229,10 +229,10 @@ services:
       resources:
         limits:
           memory: 1G
-          cpus: '0.75'
+          cpus: "0.75"
         reservations:
           memory: 512M
-          cpus: '0.5'
+          cpus: "0.5"
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -241,22 +241,22 @@ services:
     user: 1000:1000
     read_only: false
     cap_drop:
-    - ALL
+      - ALL
     cap_add:
-    - SYS_ADMIN
+      - SYS_ADMIN
     security_opt:
-    - seccomp:unconfined
+      - seccomp:unconfined
     shm_size: 2gb
     labels:
-    - acgs.constitutional_hash=cdd01ef066bc6cf2
-    - acgs.service_type=mcp_browser
-    - acgs.monitoring.enabled=true
-    - acgs.security.level=high
+      - acgs.constitutional_hash=cdd01ef066bc6cf2
+      - acgs.service_type=mcp_browser
+      - acgs.monitoring.enabled=true
+      - acgs.security.level=high
 x-logging: &id001
   driver: json-file
   options:
     max-size: 10m
-    max-file: '3'
+    max-file: "3"
     labels: acgs.constitutional_hash,acgs.service_type
 x-service-defaults:
   logging: *id001

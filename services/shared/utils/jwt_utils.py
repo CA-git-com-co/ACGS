@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 
 class JWTError(Exception):
     """Custom exception for JWT-related errors."""
+
     def __init__(self, message, error_code=None):
         super().__init__(message)
         self.error_code = error_code
@@ -45,24 +46,28 @@ def create_access_token(subject: str, expires_delta: timedelta | None = None) ->
         "sub": subject,
     }
 
-    return jwt.encode(payload, SecurityConfig.MIN_SECRET_KEY_LENGTH, algorithm=SecurityConfig.JWT_ALGORITHM)
+    return jwt.encode(
+        payload,
+        SecurityConfig.MIN_SECRET_KEY_LENGTH,
+        algorithm=SecurityConfig.JWT_ALGORITHM,
+    )
 
 
 def decode_token(token: str) -> dict[str, Any]:
     """Decode a JWT token, raising appropriate errors if invalid."""
     try:
-        payload = jwt.decode(token, SecurityConfig.MIN_SECRET_KEY_LENGTH, algorithms=[SecurityConfig.JWT_ALGORITHM])
+        payload = jwt.decode(
+            token,
+            SecurityConfig.MIN_SECRET_KEY_LENGTH,
+            algorithms=[SecurityConfig.JWT_ALGORITHM],
+        )
         return payload
     except jwt.ExpiredSignatureError:
         raise TokenExpiredError(
-            MESSAGES["TOKEN_EXPIRED"],
-            error_code=ErrorCodes.TOKEN_EXPIRED
+            MESSAGES["TOKEN_EXPIRED"], error_code=ErrorCodes.TOKEN_EXPIRED
         )
     except PyJWTError as e:
-        raise TokenInvalidError(
-            str(e),
-            error_code=ErrorCodes.TOKEN_INVALID
-        )
+        raise TokenInvalidError(str(e), error_code=ErrorCodes.TOKEN_INVALID)
 
 
 def validate_token(token: str) -> bool:

@@ -21,7 +21,7 @@ import yaml
 
 def load_yaml(file_path):
     """Load YAML file safely."""
-    with open(file_path, "r") as file:
+    with open(file_path) as file:
         return yaml.safe_load(file)
 
 
@@ -62,7 +62,7 @@ def replace_placeholders_in_paper(paper_path, production_metrics, mapping_table)
     print(f"Created backup: {backup_path}")
 
     # Read the content of the paper
-    with open(paper_path, "r", encoding="utf-8") as file:
+    with open(paper_path, encoding="utf-8") as file:
         content = file.read()
 
     replacements_made = []
@@ -95,18 +95,17 @@ def replace_placeholders_in_paper(paper_path, production_metrics, mapping_table)
                         content = re.sub(
                             placeholder_pattern, escaped_replacement, content
                         )
-                        replacements_made.append(
-                            {
-                                "placeholder": placeholder_pattern,
-                                "replacement": replacement,
-                                "matches": matches,
-                                "description": mapping_info.get(
-                                    "description", "No description"
-                                ),
-                            }
-                        )
+                        replacements_made.append({
+                            "placeholder": placeholder_pattern,
+                            "replacement": replacement,
+                            "matches": matches,
+                            "description": mapping_info.get(
+                                "description", "No description"
+                            ),
+                        })
                         print(
-                            f"Replaced {matches} instances of '{placeholder_pattern}' with '{replacement}'"
+                            f"Replaced {matches} instances of '{placeholder_pattern}'"
+                            f" with '{replacement}'"
                         )
 
     # Write updated content back to the paper

@@ -20,7 +20,6 @@ import asyncio
 import json
 import sys
 import time
-from typing import Dict, List, Optional
 
 import httpx
 
@@ -154,7 +153,7 @@ class HealthChecker:
             self.results[service_name] = {"status": "error", "error": str(e)}
             return False
 
-    async def _check_infrastructure_health(self, infra_name: str, config: Dict) -> bool:
+    async def _check_infrastructure_health(self, infra_name: str, config: dict) -> bool:
         """Check health of infrastructure components."""
         print(f"  🔍 {infra_name}...", end=" ")
 
@@ -166,7 +165,7 @@ class HealthChecker:
             print(f"⚠️  Unknown infrastructure: {infra_name}")
             return False
 
-    async def _check_postgres_health(self, config: Dict) -> bool:
+    async def _check_postgres_health(self, config: dict) -> bool:
         """Check PostgreSQL database health."""
         try:
             # Simple connection test using subprocess
@@ -207,7 +206,7 @@ class HealthChecker:
             self.results["postgres"] = {"status": "unhealthy", "error": str(e)}
             return False
 
-    async def _check_redis_health(self, config: Dict) -> bool:
+    async def _check_redis_health(self, config: dict) -> bool:
         """Check Redis cache health."""
         try:
             # Simple connection test using subprocess
@@ -307,7 +306,7 @@ class HealthChecker:
 
         total_services = len(SERVICES) + len(INFRASTRUCTURE)
 
-        print(f"📈 Services Status:")
+        print("📈 Services Status:")
         print(f"  ✅ Healthy: {healthy_count}")
         print(f"  ⚠️  Degraded: {degraded_count}")
         print(f"  ❌ Unhealthy: {unhealthy_count}")
@@ -316,9 +315,9 @@ class HealthChecker:
         # Overall status
         if unhealthy_count == 0:
             if degraded_count == 0:
-                print(f"\n🎉 All services healthy!")
+                print("\n🎉 All services healthy!")
             else:
-                print(f"\n⚠️  Some services degraded but operational")
+                print("\n⚠️  Some services degraded but operational")
         else:
             print(f"\n❌ {unhealthy_count} services unhealthy")
 

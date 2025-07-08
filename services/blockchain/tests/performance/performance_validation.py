@@ -224,10 +224,12 @@ class PerformanceValidator:
         meets_success_target = success_rate >= test.target_success_rate
 
         print(
-            f"   🎯 Response Time Target: {'✅ MET' if meets_response_target else '❌ NOT MET'}"
+            "   🎯 Response Time Target:"
+            f" {'✅ MET' if meets_response_target else '❌ NOT MET'}"
         )
         print(
-            f"   🎯 Success Rate Target: {'✅ MET' if meets_success_target else '❌ NOT MET'}"
+            "   🎯 Success Rate Target:"
+            f" {'✅ MET' if meets_success_target else '❌ NOT MET'}"
         )
 
         return result
@@ -340,7 +342,8 @@ class PerformanceValidator:
         print(f"   Target Response Time (95th percentile): ≤{target_response_time}ms")
         print(f"   Achieved Response Time: {overall_p95_response:.2f}ms")
         print(
-            f"   Response Time Target: {'✅ MET' if meets_response_target else '❌ NOT MET'}"
+            "   Response Time Target:"
+            f" {'✅ MET' if meets_response_target else '❌ NOT MET'}"
         )
 
         print(f"   Target Concurrent Users: ≥{target_concurrent_users}")
@@ -348,13 +351,15 @@ class PerformanceValidator:
         if peak_test:
             print("   Achieved Concurrent Users: 1000 (Peak Load Test)")
             print(
-                f"   Concurrency Target: {'✅ MET' if meets_concurrency_target else '❌ NOT MET'}"
+                "   Concurrency Target:"
+                f" {'✅ MET' if meets_concurrency_target else '❌ NOT MET'}"
             )
 
         print(f"   Target System Availability: ≥{target_availability}%")
         print(f"   Achieved Availability: {overall_availability:.1f}%")
         print(
-            f"   Availability Target: {'✅ MET' if meets_availability_target else '❌ NOT MET'}"
+            "   Availability Target:"
+            f" {'✅ MET' if meets_availability_target else '❌ NOT MET'}"
         )
 
         # Test-specific analysis
@@ -367,7 +372,8 @@ class PerformanceValidator:
             )
             print(f"   {result.test_name}: {status}")
             print(
-                f"     Response Time: {result.p95_response_time:.1f}ms | Success Rate: {result.success_rate:.1f}%"
+                f"     Response Time: {result.p95_response_time:.1f}ms | Success Rate:"
+                f" {result.success_rate:.1f}%"
             )
 
         return {
@@ -400,27 +406,29 @@ async def main():
             f"⚡ Overall Average Response Time: {result['overall_avg_response']:.2f}ms"
         )
         print(
-            f"📊 Overall 95th Percentile Response Time: {result['overall_p95_response']:.2f}ms"
+            "📊 Overall 95th Percentile Response Time:"
+            f" {result['overall_p95_response']:.2f}ms"
         )
         print(f"✅ Overall Success Rate: {result['overall_success_rate']:.1f}%")
         print(f"🎯 Overall Availability: {result['overall_availability']:.1f}%")
         print(
-            f"🎯 Response Time Target: {'MET' if result['meets_response_target'] else 'NOT MET'}"
+            "🎯 Response Time Target:"
+            f" {'MET' if result['meets_response_target'] else 'NOT MET'}"
         )
         print(
-            f"🎯 Concurrency Target: {'MET' if result['meets_concurrency_target'] else 'NOT MET'}"
+            "🎯 Concurrency Target:"
+            f" {'MET' if result['meets_concurrency_target'] else 'NOT MET'}"
         )
         print(
-            f"🎯 Availability Target: {'MET' if result['meets_availability_target'] else 'NOT MET'}"
+            "🎯 Availability Target:"
+            f" {'MET' if result['meets_availability_target'] else 'NOT MET'}"
         )
 
-        all_targets_met = all(
-            [
-                result["meets_response_target"],
-                result["meets_concurrency_target"],
-                result["meets_availability_target"],
-            ]
-        )
+        all_targets_met = all([
+            result["meets_response_target"],
+            result["meets_concurrency_target"],
+            result["meets_availability_target"],
+        ])
 
         if all_targets_met:
             print("\n🎉 Comprehensive performance validation successful!")

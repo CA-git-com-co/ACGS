@@ -23,14 +23,9 @@ ACGS Port Allocation:
 """
 
 import argparse
-import json
-import os
 import re
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple
-
-import yaml
 
 # ACGS Reserved Port Ranges
 ACGS_RESERVED_PORTS = {
@@ -72,13 +67,13 @@ class PortValidator:
 
     def __init__(self):
         self.constitutional_hash = "cdd01ef066bc6cf2"
-        self.errors: List[str] = []
-        self.warnings: List[str] = []
-        self.found_ports: Dict[int, List[str]] = {}
+        self.errors: list[str] = []
+        self.warnings: list[str] = []
+        self.found_ports: dict[int, list[str]] = {}
 
     def validate_project(self, project_root: Path) -> bool:
         """Validate all port assignments in the project"""
-        print(f"🔍 Validating port numbers in ACGS project")
+        print("🔍 Validating port numbers in ACGS project")
         print(f"📋 Constitutional Hash: {self.constitutional_hash}")
 
         # Files to check for port configurations
@@ -148,7 +143,7 @@ class PortValidator:
                 chunk = f.read(512)
                 if b"\0" in chunk:
                     return True
-        except (OSError, IOError):
+        except OSError:
             return True
 
         return False
@@ -156,7 +151,7 @@ class PortValidator:
     def _check_file_ports(self, file_path: Path) -> None:
         """Check a single file for port numbers"""
         try:
-            with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+            with open(file_path, encoding="utf-8", errors="ignore") as f:
                 content = f.read()
 
             # Find port patterns
@@ -185,7 +180,7 @@ class PortValidator:
                     except ValueError:
                         continue
 
-        except (OSError, IOError, UnicodeDecodeError) as e:
+        except (OSError, UnicodeDecodeError) as e:
             self.warnings.append(f"Could not read {file_path}: {e}")
 
     def _validate_port_assignments(self) -> None:
@@ -236,7 +231,7 @@ class PortValidator:
 
     def _validate_acgs_compliance(self) -> None:
         """Validate compliance with ACGS port allocation scheme"""
-        print(f"\n🏗️  ACGS Port Allocation Validation:")
+        print("\n🏗️  ACGS Port Allocation Validation:")
 
         # Check reserved ACGS ports
         missing_services = []
@@ -276,28 +271,28 @@ class PortValidator:
                 if port not in ACGS_RESERVED_PORTS:
                     self.warnings.append(
                         f"Port {port} is in ACGS service range (8000-8099) but not in "
-                        f"reserved allocation. Consider using a different port."
+                        "reserved allocation. Consider using a different port."
                     )
 
     def _report_results(self) -> bool:
         """Report validation results"""
-        print(f"\n📊 Port Validation Results:")
+        print("\n📊 Port Validation Results:")
         print(f"   Total ports found: {len(self.found_ports)}")
         print(f"   Errors: {len(self.errors)}")
         print(f"   Warnings: {len(self.warnings)}")
 
         if self.errors:
-            print(f"\n❌ Errors:")
+            print("\n❌ Errors:")
             for error in self.errors:
                 print(f"   • {error}")
 
         if self.warnings:
-            print(f"\n⚠️  Warnings:")
+            print("\n⚠️  Warnings:")
             for warning in self.warnings:
                 print(f"   • {warning}")
 
         # Show port summary
-        print(f"\n📋 Port Usage Summary:")
+        print("\n📋 Port Usage Summary:")
         sorted_ports = sorted(self.found_ports.keys())
 
         for port in sorted_ports:
@@ -305,28 +300,28 @@ class PortValidator:
             service_name = ACGS_RESERVED_PORTS.get(port, "Unknown")
             status = "🔧 ACGS" if port in ACGS_RESERVED_PORTS else "🔍 Other"
 
-            print(f"   {status} Port {port}: {service_name} " f"({len(files)} files)")
+            print(f"   {status} Port {port}: {service_name} ({len(files)} files)")
 
         # Constitutional compliance check
         constitutional_files = []
         for files in self.found_ports.values():
             for file_path in files:
                 try:
-                    with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+                    with open(file_path, encoding="utf-8", errors="ignore") as f:
                         if self.constitutional_hash in f.read():
                             constitutional_files.append(file_path)
                             break
-                except (OSError, IOError):
+                except OSError:
                     continue
 
-        print(f"\n🏛️  Constitutional Compliance:")
+        print("\n🏛️  Constitutional Compliance:")
         print(f"   Files with constitutional hash: {len(set(constitutional_files))}")
 
         # Return success status
         success = len(self.errors) == 0
 
         if success:
-            print(f"\n✅ Port validation passed!")
+            print("\n✅ Port validation passed!")
         else:
             print(f"\n❌ Port validation failed with {len(self.errors)} errors")
 

@@ -12,9 +12,7 @@ Constitutional Hash: cdd01ef066bc6cf2
 
 import re
 import subprocess
-import sys
 from pathlib import Path
-from typing import Dict, List
 
 # Constitutional compliance
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -23,7 +21,7 @@ POSTGRESQL_PORT = 5439
 REDIS_PORT = 6389
 
 
-def verify_constitutional_hash() -> Dict[str, int]:
+def verify_constitutional_hash() -> dict[str, int]:
     """Verify constitutional hash exists in key files."""
     print("📋 1. Hash Verification: Confirming constitutional hash in all files...")
 
@@ -46,14 +44,15 @@ def verify_constitutional_hash() -> Dict[str, int]:
         for py_file in dir_full_path.glob("**/*.py"):
             if py_file.is_file():
                 try:
-                    with open(py_file, "r", encoding="utf-8") as f:
+                    with open(py_file, encoding="utf-8") as f:
                         content = f.read()
                         if CONSTITUTIONAL_HASH in content:
                             files_with_hash += 1
                         else:
                             files_without_hash += 1
                             print(
-                                f"  ❌ Missing hash: {py_file.relative_to(Path('/home/dislove/ACGS-2'))}"
+                                "  ❌ Missing hash:"
+                                f" {py_file.relative_to(Path('/home/dislove/ACGS-2'))}"
                             )
                 except Exception:
                     continue
@@ -64,7 +63,7 @@ def verify_constitutional_hash() -> Dict[str, int]:
     return {"with_hash": files_with_hash, "without_hash": files_without_hash}
 
 
-def validate_service_ports() -> Dict[str, List[str]]:
+def validate_service_ports() -> dict[str, list[str]]:
     """Validate service port configurations."""
     print("🔌 2. Service Port Validation:")
     print(f"   - Auth Service: Enforcing port {AUTH_SERVICE_PORT}")
@@ -91,7 +90,7 @@ def validate_service_ports() -> Dict[str, List[str]]:
             continue
 
         try:
-            with open(full_path, "r", encoding="utf-8") as f:
+            with open(full_path, encoding="utf-8") as f:
                 content = f.read()
 
                 # Check for incorrect ports
@@ -116,7 +115,7 @@ def validate_service_ports() -> Dict[str, List[str]]:
     return violations
 
 
-def check_mypy_async_functions() -> Dict[str, List[str]]:
+def check_mypy_async_functions() -> dict[str, list[str]]:
     """Check MyPy type checking for async functions."""
     print("🔍 3. Code Quality Checks - MyPy type checking for async functions:")
 
@@ -162,7 +161,7 @@ def check_mypy_async_functions() -> Dict[str, List[str]]:
                 if len(issues) > 3:
                     print(f"       ... and {len(issues) - 3} more")
             else:
-                print(f"     ✅ No MyPy issues")
+                print("     ✅ No MyPy issues")
 
         except Exception as e:
             print(f"     ❌ MyPy check failed: {e}")
@@ -337,7 +336,7 @@ async def general_exception_handler(request: Request, exc: Exception) -> JSONRes
             continue
 
         try:
-            with open(full_path, "r", encoding="utf-8") as f:
+            with open(full_path, encoding="utf-8") as f:
                 content = f.read()
 
             # Check if error handlers already exist
@@ -406,7 +405,7 @@ def fix_mypy_type_annotations() -> int:
             continue
 
         try:
-            with open(full_path, "r", encoding="utf-8") as f:
+            with open(full_path, encoding="utf-8") as f:
                 content = f.read()
 
             original_content = content
@@ -482,15 +481,15 @@ def main():
     # Summary
     print("\n✅ STEP 1 COMPLETION SUMMARY:")
     print("=" * 50)
-    print(f"📋 Constitutional Hash Verification:")
+    print("📋 Constitutional Hash Verification:")
     print(f"   Files with hash: {hash_results['with_hash']}")
     print(f"   Files missing hash: {hash_results['without_hash']}")
 
-    print(f"\n🔌 Service Port Validation:")
+    print("\n🔌 Service Port Validation:")
     total_violations = sum(len(v) for v in port_violations.values())
     print(f"   Total port violations found: {total_violations}")
 
-    print(f"\n🔍 Code Quality Improvements:")
+    print("\n🔍 Code Quality Improvements:")
     print(f"   Files with MyPy issues: {len(mypy_issues)}")
     print(f"   Files formatted with Black: {formatted_files}")
     print(f"   Files sorted with isort: {sorted_files}")
@@ -499,7 +498,7 @@ def main():
 
     total_improvements = formatted_files + sorted_files + handlers_added + type_fixes
     print(f"\n🎉 Total code quality improvements: {total_improvements}")
-    print(f"🏛️ Constitutional compliance audit completed!")
+    print("🏛️ Constitutional compliance audit completed!")
     print(f"📋 Constitutional Hash: {CONSTITUTIONAL_HASH}")
 
 

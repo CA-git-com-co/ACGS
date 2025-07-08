@@ -7,17 +7,13 @@ Constitutional Hash: cdd01ef066bc6cf2
 
 import json
 import os
-import re
 from pathlib import Path
-from typing import Any, Dict, List, Set
-
-import yaml
 
 
 def add_hash_to_yaml_file(file_path: str) -> bool:
     """Add constitutional hash to YAML file"""
     try:
-        with open(file_path, "r") as f:
+        with open(file_path) as f:
             content = f.read()
 
         # Check if hash already exists
@@ -54,7 +50,7 @@ def add_hash_to_yaml_file(file_path: str) -> bool:
 def add_hash_to_json_file(file_path: str) -> bool:
     """Add constitutional hash to JSON file"""
     try:
-        with open(file_path, "r") as f:
+        with open(file_path) as f:
             content = f.read()
 
         # Check if hash already exists
@@ -91,7 +87,7 @@ def add_hash_to_json_file(file_path: str) -> bool:
 def add_hash_to_config_file(file_path: str) -> bool:
     """Add constitutional hash to configuration file"""
     try:
-        with open(file_path, "r") as f:
+        with open(file_path) as f:
             content = f.read()
 
         # Check if hash already exists
@@ -115,7 +111,7 @@ def add_hash_to_config_file(file_path: str) -> bool:
         return False
 
 
-def find_config_files(repo_root: Path) -> List[Path]:
+def find_config_files(repo_root: Path) -> list[Path]:
     """Find all configuration files that might need constitutional hash"""
     config_extensions = {
         ".yml",
@@ -207,23 +203,23 @@ def main():
 
             if updated:
                 updated_count += 1
-                print(f"  ✅ Added constitutional hash")
+                print("  ✅ Added constitutional hash")
             else:
                 skipped_count += 1
-                print(f"  ⏭️  Skipped (hash already present)")
+                print("  ⏭️  Skipped (hash already present)")
 
         except Exception as e:
             error_count += 1
             print(f"  ❌ Error: {e}")
 
-    print(f"\n🎯 Constitutional Hash Addition Summary:")
+    print("\n🎯 Constitutional Hash Addition Summary:")
     print("=" * 50)
     print(f"Total files processed: {len(config_files)}")
     print(f"Files updated: {updated_count}")
     print(f"Files skipped: {skipped_count}")
     print(f"Files with errors: {error_count}")
-    print(f"\n✅ Constitutional hash addition completed!")
-    print(f"📋 Constitutional Hash: cdd01ef066bc6cf2")
+    print("\n✅ Constitutional hash addition completed!")
+    print("📋 Constitutional Hash: cdd01ef066bc6cf2")
 
 
 if __name__ == "__main__":

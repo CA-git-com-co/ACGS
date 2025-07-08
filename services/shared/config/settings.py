@@ -75,16 +75,17 @@ class SecuritySettings(BaseSettings):
     auth_secret_key: str = Field(..., description="Authentication secret key")
     jwt_secret_key: str = Field(..., description="JWT secret key")
     jwt_algorithm: str = Field(default="HS256", description="JWT algorithm")
-    jwt_access_token_expire_minutes: int = Field(default=30, description="JWT expiration minutes")
+    jwt_access_token_expire_minutes: int = Field(
+        default=30, description="JWT expiration minutes"
+    )
 
     # CORS settings
     backend_cors_origins: list[str] = Field(
         default=["http://localhost:3000", "http://localhost:8080"],
-        description="CORS origins"
+        description="CORS origins",
     )
     allowed_hosts: list[str] = Field(
-        default=["localhost", "127.0.0.1"],
-        description="Allowed hosts"
+        default=["localhost", "127.0.0.1"], description="Allowed hosts"
     )
 
     @validator("backend_cors_origins", pre=True)
@@ -109,13 +110,25 @@ class ServicePortSettings(BaseSettings):
     )
 
     api_gateway_port: int = Field(default=8080, description="API Gateway port")
-    constitutional_ai_port: int = Field(default=8001, description="Constitutional AI service port")
-    integrity_service_port: int = Field(default=8002, description="Integrity service port")
-    governance_engine_port: int = Field(default=8004, description="Governance engine port")
-    ec_service_port: int = Field(default=8006, description="Evolutionary computation port")
-    auth_service_port: int = Field(default=8016, description="Authentication service port")
+    constitutional_ai_port: int = Field(
+        default=8001, description="Constitutional AI service port"
+    )
+    integrity_service_port: int = Field(
+        default=8002, description="Integrity service port"
+    )
+    governance_engine_port: int = Field(
+        default=8004, description="Governance engine port"
+    )
+    ec_service_port: int = Field(
+        default=8006, description="Evolutionary computation port"
+    )
+    auth_service_port: int = Field(
+        default=8016, description="Authentication service port"
+    )
     rules_engine_port: int = Field(default=8020, description="Rules engine port")
-    coordinator_port: int = Field(default=8008, description="Multi-agent coordinator port")
+    coordinator_port: int = Field(
+        default=8008, description="Multi-agent coordinator port"
+    )
     blackboard_port: int = Field(default=8010, description="Blackboard service port")
     prometheus_port: int = Field(default=9090, description="Prometheus port")
     grafana_port: int = Field(default=3001, description="Grafana port")
@@ -131,9 +144,15 @@ class PerformanceSettings(BaseSettings):
 
     p99_target: int = Field(default=5, description="P99 latency target (ms)")
     rps_target: int = Field(default=100, description="RPS target")
-    cache_hit_rate_target: int = Field(default=85, description="Cache hit rate target (%)")
-    constitutional_fidelity_threshold: float = Field(default=0.85, description="Constitutional fidelity threshold")
-    policy_quality_threshold: float = Field(default=0.80, description="Policy quality threshold")
+    cache_hit_rate_target: int = Field(
+        default=85, description="Cache hit rate target (%)"
+    )
+    constitutional_fidelity_threshold: float = Field(
+        default=0.85, description="Constitutional fidelity threshold"
+    )
+    policy_quality_threshold: float = Field(
+        default=0.80, description="Policy quality threshold"
+    )
     max_synthesis_loops: int = Field(default=3, description="Max synthesis loops")
     pgc_latency_target: int = Field(default=25, description="PGC latency target (ms)")
 
@@ -148,9 +167,13 @@ class MonitoringSettings(BaseSettings):
 
     enable_metrics: bool = Field(default=True, description="Enable metrics collection")
     enable_tracing: bool = Field(default=True, description="Enable distributed tracing")
-    prometheus_retention: str = Field(default="200h", description="Prometheus retention period")
+    prometheus_retention: str = Field(
+        default="200h", description="Prometheus retention period"
+    )
     grafana_admin_user: str = Field(default="admin", description="Grafana admin user")
-    grafana_admin_password: str = Field(default="", description="Grafana admin password")
+    grafana_admin_password: str = Field(
+        default="", description="Grafana admin password"
+    )
 
 
 class ConstitutionalSettings(BaseSettings):
@@ -162,14 +185,16 @@ class ConstitutionalSettings(BaseSettings):
     )
 
     hash: str = Field(default=CONSTITUTIONAL_HASH, description="Constitutional hash")
-    validation_enabled: bool = Field(default=True, description="Enable constitutional validation")
+    validation_enabled: bool = Field(
+        default=True, description="Enable constitutional validation"
+    )
     audit_enabled: bool = Field(default=True, description="Enable constitutional audit")
 
 
 class ACGSSettings(BaseSettings):
     """
     Main ACGS configuration settings.
-    
+
     This class combines all configuration subsections and provides
     a central configuration object for the entire system.
     """
@@ -182,7 +207,9 @@ class ACGSSettings(BaseSettings):
     )
 
     # Core settings
-    constitutional_hash: str = Field(default=CONSTITUTIONAL_HASH, description="Constitutional hash")
+    constitutional_hash: str = Field(
+        default=CONSTITUTIONAL_HASH, description="Constitutional hash"
+    )
     environment: str = Field(default="development", description="Environment")
     log_level: str = Field(default="INFO", description="Log level")
 
@@ -193,41 +220,61 @@ class ACGSSettings(BaseSettings):
     ports: ServicePortSettings = Field(default_factory=ServicePortSettings)
     performance: PerformanceSettings = Field(default_factory=PerformanceSettings)
     monitoring: MonitoringSettings = Field(default_factory=MonitoringSettings)
-    constitutional: ConstitutionalSettings = Field(default_factory=ConstitutionalSettings)
+    constitutional: ConstitutionalSettings = Field(
+        default_factory=ConstitutionalSettings
+    )
 
     # Service discovery
-    enable_service_discovery: bool = Field(default=True, description="Enable service discovery")
-    service_discovery_registry: str = Field(default="redis", description="Service discovery registry")
+    enable_service_discovery: bool = Field(
+        default=True, description="Enable service discovery"
+    )
+    service_discovery_registry: str = Field(
+        default="redis", description="Service discovery registry"
+    )
 
     # Rate limiting
-    rate_limit_requests_per_minute: int = Field(default=1000, description="Rate limit requests per minute")
+    rate_limit_requests_per_minute: int = Field(
+        default=1000, description="Rate limit requests per minute"
+    )
     rate_limit_burst: int = Field(default=100, description="Rate limit burst")
 
     # Gateway settings
-    gateway_enable_docs: bool = Field(default=True, description="Enable gateway documentation")
+    gateway_enable_docs: bool = Field(
+        default=True, description="Enable gateway documentation"
+    )
 
     # AI models
-    google_gemini_enabled: bool = Field(default=True, description="Enable Google Gemini")
+    google_gemini_enabled: bool = Field(
+        default=True, description="Enable Google Gemini"
+    )
     deepseek_r1_enabled: bool = Field(default=True, description="Enable DeepSeek R1")
     nvidia_qwen_enabled: bool = Field(default=True, description="Enable NVIDIA Qwen")
     nano_vllm_enabled: bool = Field(default=True, description="Enable Nano vLLM")
 
     # Evolutionary computation
     wina_enabled: bool = Field(default=True, description="Enable WINA")
-    evolutionary_computation_enabled: bool = Field(default=True, description="Enable evolutionary computation")
+    evolutionary_computation_enabled: bool = Field(
+        default=True, description="Enable evolutionary computation"
+    )
 
     # Health checks
-    health_check_interval: str = Field(default="30s", description="Health check interval")
+    health_check_interval: str = Field(
+        default="30s", description="Health check interval"
+    )
     health_check_timeout: str = Field(default="10s", description="Health check timeout")
     health_check_retries: int = Field(default=3, description="Health check retries")
-    health_check_start_period: str = Field(default="60s", description="Health check start period")
+    health_check_start_period: str = Field(
+        default="60s", description="Health check start period"
+    )
 
     # OPA configuration
     opa_server_url: str = Field(default="http://opa:8181", description="OPA server URL")
 
     # Blockchain settings (optional)
     solana_network: str = Field(default="devnet", description="Solana network")
-    anchor_provider_url: str = Field(default="https://api.devnet.solana.com", description="Anchor provider URL")
+    anchor_provider_url: str = Field(
+        default="https://api.devnet.solana.com", description="Anchor provider URL"
+    )
 
     def __init__(self, **kwargs):
         """Initialize settings with constitutional validation."""
@@ -243,12 +290,18 @@ class ACGSSettings(BaseSettings):
         self.monitoring = MonitoringSettings()
         self.constitutional = ConstitutionalSettings()
 
-        logger.info(f"✅ ACGS configuration loaded with constitutional hash: {self.constitutional_hash}")
+        logger.info(
+            "✅ ACGS configuration loaded with constitutional hash:"
+            f" {self.constitutional_hash}"
+        )
 
     def _validate_constitutional_integrity(self):
         """Validate constitutional integrity."""
         if self.constitutional_hash != CONSTITUTIONAL_HASH:
-            raise ValueError(f"Constitutional hash mismatch: expected {CONSTITUTIONAL_HASH}, got {self.constitutional_hash}")
+            raise ValueError(
+                f"Constitutional hash mismatch: expected {CONSTITUTIONAL_HASH}, got"
+                f" {self.constitutional_hash}"
+            )
 
     @property
     def is_development(self) -> bool:

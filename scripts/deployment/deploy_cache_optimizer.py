@@ -13,7 +13,7 @@ import os
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
@@ -93,12 +93,12 @@ class CacheOptimizerDeployment:
             },
         ]
 
-    async def deploy_cache_optimization(self) -> Dict[str, Any]:
+    async def deploy_cache_optimization(self) -> dict[str, Any]:
         """Deploy cache optimization to all target services."""
-        logger.info(f"🚀 Starting ACGS Cache Optimization Deployment")
+        logger.info("🚀 Starting ACGS Cache Optimization Deployment")
         logger.info(f"📋 Constitutional Hash: {self.constitutional_hash}")
         logger.info(
-            f"🎯 Target Hit Rate: {CACHE_OPTIMIZATION_CONFIG['target_hit_rate']*100}%"
+            f"🎯 Target Hit Rate: {CACHE_OPTIMIZATION_CONFIG['target_hit_rate'] * 100}%"
         )
 
         try:
@@ -120,27 +120,27 @@ class CacheOptimizerDeployment:
             self.deployment_results["overall_metrics"] = overall_metrics
 
             # Determine overall status
-            success_count = len(
-                [
-                    r
-                    for r in self.deployment_results["services"].values()
-                    if r["status"] == "success"
-                ]
-            )
+            success_count = len([
+                r
+                for r in self.deployment_results["services"].values()
+                if r["status"] == "success"
+            ])
             total_count = len(self.target_services)
 
             if success_count == total_count:
                 self.deployment_results["overall_status"] = "success"
-                logger.info(f"✅ Cache optimization deployment completed successfully")
+                logger.info("✅ Cache optimization deployment completed successfully")
             elif success_count > total_count // 2:
                 self.deployment_results["overall_status"] = "partial_success"
                 logger.warning(
-                    f"⚠️ Cache optimization partially deployed ({success_count}/{total_count})"
+                    "⚠️ Cache optimization partially deployed"
+                    f" ({success_count}/{total_count})"
                 )
             else:
                 self.deployment_results["overall_status"] = "failed"
                 logger.error(
-                    f"❌ Cache optimization deployment failed ({success_count}/{total_count})"
+                    "❌ Cache optimization deployment failed"
+                    f" ({success_count}/{total_count})"
                 )
 
             # Save deployment report
@@ -155,8 +155,8 @@ class CacheOptimizerDeployment:
             return self.deployment_results
 
     async def _deploy_to_service(
-        self, service_config: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, service_config: dict[str, Any]
+    ) -> dict[str, Any]:
         """Deploy cache optimization to a specific service."""
         service_name = service_config["name"]
         logger.info(f"📦 Deploying cache optimization to {service_name}")
@@ -190,15 +190,13 @@ class CacheOptimizerDeployment:
                 # Update service configuration files
                 config_updated = await self._update_service_config(service_config)
 
-                result.update(
-                    {
-                        "status": "success",
-                        "warming_results": warming_results,
-                        "test_results": test_results,
-                        "baseline_metrics": metrics,
-                        "config_updated": config_updated,
-                    }
-                )
+                result.update({
+                    "status": "success",
+                    "warming_results": warming_results,
+                    "test_results": test_results,
+                    "baseline_metrics": metrics,
+                    "config_updated": config_updated,
+                })
 
                 logger.info(
                     f"✅ Cache optimization deployed successfully to {service_name}"
@@ -209,9 +207,9 @@ class CacheOptimizerDeployment:
                 await cache_manager.close()
 
             else:
-                result.update(
-                    {"status": "failed", "error": "Cache manager initialization failed"}
-                )
+                result.update({
+                    "status": "failed", "error": "Cache manager initialization failed"
+                })
                 logger.error(
                     f"❌ Cache manager initialization failed for {service_name}"
                 )
@@ -223,8 +221,8 @@ class CacheOptimizerDeployment:
         return result
 
     async def _warm_service_cache(
-        self, cache_manager: OptimizedCacheManager, cache_types: List[str]
-    ) -> Dict[str, Any]:
+        self, cache_manager: OptimizedCacheManager, cache_types: list[str]
+    ) -> dict[str, Any]:
         """Perform service-specific cache warming."""
         warming_results = {}
 
@@ -267,7 +265,7 @@ class CacheOptimizerDeployment:
 
     async def _test_cache_operations(
         self, cache_manager: OptimizedCacheManager
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Test cache operations to validate deployment."""
         test_results = {
             "operations_tested": 0,
@@ -338,7 +336,7 @@ class CacheOptimizerDeployment:
             test_results["error"] = str(e)
             return test_results
 
-    async def _update_service_config(self, service_config: Dict[str, Any]) -> bool:
+    async def _update_service_config(self, service_config: dict[str, Any]) -> bool:
         """Update service configuration to enable cache optimization."""
         try:
             service_name = service_config["name"]
@@ -373,7 +371,7 @@ class CacheOptimizerDeployment:
             )
             return False
 
-    async def _test_overall_performance(self) -> Dict[str, Any]:
+    async def _test_overall_performance(self) -> dict[str, Any]:
         """Test overall cache performance across services."""
         logger.info("📊 Testing overall cache performance")
 
@@ -413,14 +411,15 @@ class CacheOptimizerDeployment:
                     "overall_hit_rate": round(overall_hit_rate, 4),
                     "overall_hit_rate_percent": round(overall_hit_rate * 100, 2),
                     "target_hit_rate": CACHE_OPTIMIZATION_CONFIG["target_hit_rate"],
-                    "target_met": overall_hit_rate
-                    >= CACHE_OPTIMIZATION_CONFIG["target_hit_rate"],
+                    "target_met": (
+                        overall_hit_rate >= CACHE_OPTIMIZATION_CONFIG["target_hit_rate"]
+                    ),
                     "total_operations": total_operations,
                     "total_hits": total_hits,
                     "services_count": len(service_metrics),
                 }
 
-            logger.info(f"📈 Overall performance test completed")
+            logger.info("📈 Overall performance test completed")
             return overall_metrics
 
         except Exception as e:
@@ -463,7 +462,8 @@ async def main():
         print("\n📊 Deployment Results:")
         print(f"Overall Status: {results['overall_status']}")
         print(
-            f"Services Deployed: {len(deployment.deployed_services)}/{len(deployment.target_services)}"
+            "Services Deployed:"
+            f" {len(deployment.deployed_services)}/{len(deployment.target_services)}"
         )
 
         if "overall_metrics" in results:

@@ -9,9 +9,9 @@ security:
   hardening: passed
 certification:
   acgs_hash: cdd01ef066bc6cf2
-  date: '2025-07-07'
+  date: "2025-07-07"
 _metadata:
-  generated_at: '2025-07-07T12:07:57.855851'
+  generated_at: "2025-07-07T12:07:57.855851"
   source_files: 10
   extracted_metrics: 9
   sources:

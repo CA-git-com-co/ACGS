@@ -1,7 +1,7 @@
 # ACGS Docker Compose Makefile
 # Constitutional Hash: cdd01ef066bc6cf2
 
-.PHONY: help dev prod test monitoring mcp clean
+.PHONY: help dev prod test monitoring paper-test mcp clean
 
 help: ## Show this help message
 	@echo "ACGS Docker Compose Commands:"
@@ -38,6 +38,12 @@ monitoring: ## Start with monitoring stack
 	docker-compose -f docker-compose.base.yml \
 	              -f docker-compose.services.yml \
 	              -f docker-compose.monitoring.yml up -d
+
+paper-test: ## Run LaTeX paper tests
+	cd docs/research/arxiv_submission_package && latexmk -f -pdf -halt-on-error main.tex
+	chktex docs/research/arxiv_submission_package/main.tex
+	lacheck docs/research/arxiv_submission_package/main.tex
+	pytest tests/paper/ -v
 
 mcp: ## Start MCP services for multi-agent coordination
 	docker-compose -f compose-stacks/docker-compose.mcp.yml up -d

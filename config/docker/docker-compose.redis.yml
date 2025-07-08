@@ -1,31 +1,31 @@
 services:
   redis:
     command:
-    - redis-server
-    - --appendonly
-    - 'yes'
-    - --maxmemory
-    - 512mb
-    - --maxmemory-policy
-    - allkeys-lru
-    - --timeout
-    - '300'
+      - redis-server
+      - --appendonly
+      - "yes"
+      - --maxmemory
+      - 512mb
+      - --maxmemory-policy
+      - allkeys-lru
+      - --timeout
+      - "300"
     container_name: acgs_redis
     healthcheck:
       interval: 10s
       retries: 5
       test:
-      - CMD
-      - redis-cli
-      - ping
+        - CMD
+        - redis-cli
+        - ping
       timeout: 3s
     image: redis:7.2-alpine
     ports:
-    - 6389:6379
+      - 6389:6379
     restart: unless-stopped
     volumes:
-    - redis_data:/data
-version: '3.8'
+      - redis_data:/data
+version: "3.8"
 volumes:
   redis_data: {}
 constitutional_hash: cdd01ef066bc6cf2

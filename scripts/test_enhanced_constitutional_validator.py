@@ -10,7 +10,6 @@ This script demonstrates the new features:
 - Extended file type support
 """
 
-import os
 import tempfile
 from pathlib import Path
 
@@ -24,29 +23,24 @@ def create_test_files():
 
     # 1. Python file with constitutional hash
     python_file = test_dir / "compliant.py"
-    python_file.write_text(
-        """#!/usr/bin/env python3
+    python_file.write_text("""#!/usr/bin/env python3
 # Constitutional Hash: cdd01ef066bc6cf2
 
 def main():
     print("This file has the constitutional hash")
-"""
-    )
+""")
 
     # 2. Python file without constitutional hash
     python_file_bad = test_dir / "non_compliant.py"
-    python_file_bad.write_text(
-        """#!/usr/bin/env python3
+    python_file_bad.write_text("""#!/usr/bin/env python3
 
 def main():
     print("This file is missing the constitutional hash")
-"""
-    )
+""")
 
     # 3. JavaScript file with constitutional hash
     js_file = test_dir / "app.js"
-    js_file.write_text(
-        """// Constitutional Hash: cdd01ef066bc6cf2
+    js_file.write_text("""// Constitutional Hash: cdd01ef066bc6cf2
 
 const express = require('express');
 const app = express();
@@ -57,13 +51,11 @@ app.get('/api/data', (req, res) => {
         res.json({constitutional_hash: 'cdd01ef066bc6cf2', data: 'valid'});
     }
 });
-"""
-    )
+""")
 
     # 4. HTML file with constitution-ignore pragma
     html_file = test_dir / "ignored.html"
-    html_file.write_text(
-        """<!DOCTYPE html>
+    html_file.write_text("""<!DOCTYPE html>
 <!-- constitution-ignore -->
 <html>
 <head>
@@ -73,13 +65,11 @@ app.get('/api/data', (req, res) => {
     <p>This file should be ignored due to the pragma</p>
 </body>
 </html>
-"""
-    )
+""")
 
     # 5. CSS file without constitutional hash
     css_file = test_dir / "styles.css"
-    css_file.write_text(
-        """.header {
+    css_file.write_text(""".header {
     background-color: #blue;
     color: white;
 }
@@ -87,8 +77,7 @@ app.get('/api/data', (req, res) => {
 .content {
     margin: 20px;
 }
-"""
-    )
+""")
 
     # 6. Binary file (should be skipped)
     binary_file = test_dir / "binary.dat"
@@ -103,21 +92,18 @@ app.get('/api/data', (req, res) => {
 
     # 8. SQL file with constitutional hash
     sql_file = test_dir / "schema.sql"
-    sql_file.write_text(
-        """-- Constitutional Hash: cdd01ef066bc6cf2
+    sql_file.write_text("""-- Constitutional Hash: cdd01ef066bc6cf2
 
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) NOT NULL,
     constitutional_compliance BOOLEAN DEFAULT TRUE
 );
-"""
-    )
+""")
 
     # 9. TypeScript file with pragma
     ts_file = test_dir / "service.ts"
-    ts_file.write_text(
-        """// constitution-ignore
+    ts_file.write_text("""// constitution-ignore
 interface UserService {
     getUsers(): Promise<User[]>;
     createUser(user: User): Promise<User>;
@@ -128,8 +114,7 @@ export class UserServiceImpl implements UserService {
         return await fetch('/api/users');
     }
 }
-"""
-    )
+""")
 
     return test_dir
 
@@ -176,7 +161,7 @@ def test_enhanced_validator():
 
         # Test 1: Pragma detection
         html_file = test_dir / "ignored.html"
-        with open(html_file, "r") as f:
+        with open(html_file) as f:
             content = f.read()
         has_pragma = enforcer._has_constitutional_ignore_pragma(content)
         print(f"✅ Pragma detection: {'PASS' if has_pragma else 'FAIL'}")
@@ -198,7 +183,8 @@ def test_enhanced_validator():
             f.suffix for f in files_found if f.suffix in supported_extensions
         }
         print(
-            f"✅ Extended file types: {'PASS' if len(found_extensions) >= 4 else 'FAIL'}"
+            "✅ Extended file types:"
+            f" {'PASS' if len(found_extensions) >= 4 else 'FAIL'}"
         )
         print(f"   Found: {', '.join(sorted(found_extensions))}")
 
@@ -226,7 +212,7 @@ def main():
         print("✅ Extended file type support (Python, JS, HTML, CSS, SQL, etc.)")
         print("✅ Multi-encoding support with graceful fallback")
         print("✅ Language-specific compliance checks")
-        print(f"\n🔐 Constitutional Hash: cdd01ef066bc6cf2")
+        print("\n🔐 Constitutional Hash: cdd01ef066bc6cf2")
 
     except Exception as e:
         print(f"❌ Test failed: {e}")

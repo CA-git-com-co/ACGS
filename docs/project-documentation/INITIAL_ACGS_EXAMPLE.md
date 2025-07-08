@@ -6,7 +6,7 @@
 
 **Feature Name:** Enhanced Multi-Agent Constitutional Validation Pipeline
 
-**Description:** 
+**Description:**
 Implement a real-time constitutional validation pipeline that can process multi-agent decisions and validate them against the ACGS constitutional framework with sub-3ms latency. The system should provide immediate feedback when constitutional violations are detected and automatically trigger escalation procedures.
 
 **Constitutional Compliance Requirements:**

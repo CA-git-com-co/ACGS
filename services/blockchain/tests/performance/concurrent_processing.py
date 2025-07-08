@@ -363,10 +363,12 @@ async def test_concurrent_processing():
         high_load_results = await processor.get_results(timeout=5.0)
 
         print(
-            f"   ✅ Processed {len(high_load_results)} actions in {total_processing_time:.2f}s"
+            f"   ✅ Processed {len(high_load_results)} actions in"
+            f" {total_processing_time:.2f}s"
         )
         print(
-            f"   Throughput: {len(high_load_results) / total_processing_time:.1f} actions/second"
+            "   Throughput:"
+            f" {len(high_load_results) / total_processing_time:.1f} actions/second"
         )
 
         # Test 3: Stress test with concurrent submissions
@@ -420,10 +422,12 @@ async def test_concurrent_processing():
 
         print(f"   ✅ Submitted {total_submitted} actions from 10 concurrent sources")
         print(
-            f"   ✅ Processed {len(stress_results)} actions in {stress_processing_time:.2f}s"
+            f"   ✅ Processed {len(stress_results)} actions in"
+            f" {stress_processing_time:.2f}s"
         )
         print(
-            f"   Throughput: {len(stress_results) / stress_processing_time:.1f} actions/second"
+            "   Throughput:"
+            f" {len(stress_results) / stress_processing_time:.1f} actions/second"
         )
 
         # Get final performance metrics
@@ -452,17 +456,20 @@ async def test_concurrent_processing():
         print(f"   Target Concurrent Actions: ≥{target_concurrent_actions}")
         print(f"   Achieved Concurrent Actions: {metrics['processed_actions']}")
         print(
-            f"   Concurrency Target: {'✅ MET' if meets_concurrency_target else '❌ NOT MET'}"
+            "   Concurrency Target:"
+            f" {'✅ MET' if meets_concurrency_target else '❌ NOT MET'}"
         )
         print(f"   Target Response Time (95th percentile): ≤{target_response_time}ms")
         print(f"   Achieved Response Time: {metrics['p95_response_time']:.2f}ms")
         print(
-            f"   Response Time Target: {'✅ MET' if meets_response_target else '❌ NOT MET'}"
+            "   Response Time Target:"
+            f" {'✅ MET' if meets_response_target else '❌ NOT MET'}"
         )
         print(f"   Target Success Rate: ≥{target_success_rate}%")
         print(f"   Achieved Success Rate: {metrics['success_rate']:.1f}%")
         print(
-            f"   Success Rate Target: {'✅ MET' if meets_success_target else '❌ NOT MET'}"
+            "   Success Rate Target:"
+            f" {'✅ MET' if meets_success_target else '❌ NOT MET'}"
         )
 
         return {
@@ -495,22 +502,23 @@ async def main():
         print(f"📊 95th Percentile Response Time: {metrics['p95_response_time']:.2f}ms")
         print(f"✅ Success Rate: {metrics['success_rate']:.1f}%")
         print(
-            f"🎯 Concurrency Target: {'MET' if result['meets_concurrency_target'] else 'NOT MET'}"
+            "🎯 Concurrency Target:"
+            f" {'MET' if result['meets_concurrency_target'] else 'NOT MET'}"
         )
         print(
-            f"🎯 Response Time Target: {'MET' if result['meets_response_target'] else 'NOT MET'}"
+            "🎯 Response Time Target:"
+            f" {'MET' if result['meets_response_target'] else 'NOT MET'}"
         )
         print(
-            f"🎯 Success Rate Target: {'MET' if result['meets_success_target'] else 'NOT MET'}"
+            "🎯 Success Rate Target:"
+            f" {'MET' if result['meets_success_target'] else 'NOT MET'}"
         )
 
-        if all(
-            [
-                result["meets_concurrency_target"],
-                result["meets_response_target"],
-                result["meets_success_target"],
-            ]
-        ):
+        if all([
+            result["meets_concurrency_target"],
+            result["meets_response_target"],
+            result["meets_success_target"],
+        ]):
             print("\n🎉 Concurrent processing implementation successful!")
             print("   All performance targets achieved!")
             exit(0)

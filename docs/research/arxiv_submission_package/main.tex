@@ -110,7 +110,19 @@
   breaklinks=true,
   unicode=true,
   pdfencoding=auto,
-pdftitle={ACGS: Production-Ready Autonomous Coding Governance System with Constitutional AI and Enterprise Infrastructure},
+  % PDF/UA compliance for accessibility
+  pdfusetitle=true,
+  pdfpagemode=UseOutlines,
+  pdfstartview=FitH,
+  pdfborder={0 0 0},
+  pdftoolbar=true,
+  pdfmenubar=true,
+  pdffitwindow=true,
+  pdfcenterwindow=true,
+  pdfnewwindow=true,
+  pdfpagelayout=OneColumn,
+  pdflang=en,
+  pdftitle={ACGS: Production-Ready Autonomous Coding Governance System with Constitutional AI and Enterprise Infrastructure},
   pdfsubject={Constitutional AI Governance System with Production Infrastructure and Enterprise Deployment},
   pdfauthor={Martin Honglin Lyu},
   pdfkeywords={Constitutional AI, AI Governance, Autonomous Coding, Production Systems, Enterprise Infrastructure, Microservices Architecture, Policy-as-Code, Democratic AI, Large Language Models, Enterprise AI}
@@ -118,6 +130,18 @@ pdftitle={ACGS: Production-Ready Autonomous Coding Governance System with Consti
 
 % Graphics paths
 \graphicspath{{figs/}{figures/}}
+
+% Alt-text support for PDF accessibility
+\newcommand{\figurealt}[2]{%
+  \pdfstringdef\figalttext{#1}%
+  \pdfannot width 0pt height 0pt depth 0pt {%
+    /Subtype /Text
+    /Contents (#1)
+    /Name /Note
+    /Open false
+  }%
+  #2%
+}
 
 % URL configuration
 \urlstyle{same} % Use document's main font for URLs
@@ -156,10 +180,12 @@ pdftitle={ACGS: Production-Ready Autonomous Coding Governance System with Consti
 
 % Custom commands for boxes
 \usepackage{xcolor} % Required for fcolorbox
+% Color-blind friendly palette - using blues and oranges instead of red/green
 \definecolor{takeawayblue}{rgb}{0.9,0.95,1.0}
 \definecolor{takeawayborder}{rgb}{0.2,0.4,0.8}
-\definecolor{contribgreen}{rgb}{0.9,1.0,0.9}
-\definecolor{contribborder}{rgb}{0.2,0.6,0.2}
+% Changed from green to orange for color-blind accessibility
+\definecolor{contriborange}{rgb}{1.0,0.95,0.9}
+\definecolor{contribborder}{rgb}{0.8,0.4,0.2}
 
 \newcommand{\keytakeaway}[1]{%
   \begin{center}
@@ -173,7 +199,7 @@ pdftitle={ACGS: Production-Ready Autonomous Coding Governance System with Consti
 
 \newcommand{\contributionsbox}[1]{%
   \begin{center}
-    \fcolorbox{contribborder}{contribgreen}{%
+    \fcolorbox{contribborder}{contriborange}{%
       \parbox{0.98\linewidth}{% Slightly wider parbox to reduce line breaking issues
         \footnotesize\textbf{Key Contributions:}\\[0.5ex] % Changed from Main Contributions for conciseness
         \raggedright % Use ragged right to eliminate justification issues
@@ -184,13 +210,14 @@ pdftitle={ACGS: Production-Ready Autonomous Coding Governance System with Consti
 }
 
 % Listings configuration
-\definecolor{codegreen}{rgb}{0,0.6,0}
+% Color-blind friendly code colors
+\definecolor{codegreen}{rgb}{0,0.6,0.6}      % Changed to teal instead of green
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
 \definecolor{codepurple}{rgb}{0.58,0,0.82}
 \definecolor{backcolour}{rgb}{0.98,0.98,0.98}
 \definecolor{keywordcolor}{rgb}{0.0, 0.2, 0.7} % Blue for keywords
 \definecolor{commentcolor}{rgb}{0.4, 0.4, 0.4} % Gray for comments
-\definecolor{stringcolor}{rgb}{0.7, 0.1, 0.1}  % Dark red for strings
+\definecolor{stringcolor}{rgb}{0.7, 0.4, 0.1}  % Changed to orange instead of red
 
 \lstdefinestyle{mystyle}{
     backgroundcolor=\color{backcolour},
@@ -201,7 +228,7 @@ pdftitle={ACGS: Production-Ready Autonomous Coding Governance System with Consti
     basicstyle=\ttfamily\footnotesize,
     breakatwhitespace=true,
     breaklines=true,
-    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+    postbreak=\mbox{\textcolor{orange}{$\hookrightarrow$}\space},
     captionpos=b,
     keepspaces=true,
     numbers=left,
@@ -417,7 +444,9 @@ pdftitle={ACGS: Production-Ready Autonomous Coding Governance System with Consti
 Kubernetes-ready deployment configurations with containerized microservices, PostgreSQL database with connection pooling (pool size: 10--20 connections), Redis caching infrastructure, event streaming capabilities, Prometheus monitoring with Grafana visualization, and AlertManager for operational alerting - deployed in development environment with comprehensive monitoring and constitutional hash verification across all services. Resource limits standardized at CPU: 200m--500m, Memory: 512Mi--1Gi per service.
 \begin{figure*}[!htb]
 	\centering
+	\figurealt{Architecture diagram showing ACGS production system with nine interconnected services: Constitutional AI Service on port 8001, Integrity Service on port 8002, Multi-Agent Coordinator on port 8008, Worker Agents on port 8009, and Blackboard Service on port 8010. The diagram displays data flows with constitutional hash validation at multiple checkpoints, compliance verification stages, and external integration through MCP Aggregator on port 3000. Each service box contains processing indicators and connection arrows showing real-time constitutional governance validation throughout the distributed system architecture.}{
 	\includegraphics[width=0.95\textwidth,keepaspectratio]{figures/production_architecture.pdf}
+	}
 	\caption[ACGS Production Architecture]{ACGS Production Architecture: Constitutional AI Service (8001), Integrity Service (8002), Multi-Agent Coordinator (8008), Worker Agents (8009), and Blackboard Service (8010) with Constitutional Hash Validation. The diagram illustrates the complete production environment data flows, including compliance hash checks (\texttt{cdd01ef066bc6cf2\cite{perf-report}}) across all services. The architecture demonstrates multi-agent coordination with constitutional compliance validation, knowledge sharing through the blackboard pattern, and comprehensive audit trail generation. External integration includes MCP Aggregator (3000) connecting to Context7, Sequential, and other external tools. Each component implements pre-execution, runtime, and post-execution compliance checks ensuring constitutional governance throughout the system.}
 	\label{fig:architecture}
 	\Description{Production architecture diagram showing the operational ACGS system with Constitutional AI Service (port 8001), Integrity Service (port 8002), Multi-Agent Coordinator (port 8008), Worker Agents (port 8009), and Blackboard Service (port 8010). The diagram shows data flows with constitutional hash validation, compliance checking at multiple stages, and integration with external tools through MCP Aggregator. All services implement constitutional compliance verification with the hash cdd01ef066bc6cf2\cite{perf-report}, demonstrating practical constitutional AI governance in a production environment.}
@@ -794,7 +823,7 @@ The production implementation demonstrates enterprise-ready constitutional gover
 
 \paragraph{Kubernetes Configuration and Deployment.} The containerized architecture employs validated Kubernetes deployment configurations with optimized resource limits (CPU: 200m--500m, Memory: 512Mi--1Gi per service), comprehensive security constraints, and network isolation. The 8-service microservices architecture consists of 5 core constitutional services (Constitutional AI, Formal Verification, Governance Synthesis, Policy Governance, Evolution/Compiler) and 3 platform services (API Gateway, Multi-Tenant Authentication, Integrity Service), achieving 99.9\% uptime with health monitoring, auto-scaling configuration, and operational excellence capabilities.
 
-\paragraph{Data Persistence and Event Processing.} The production system leverages PostgreSQL database integration (port 5439: \texttt{postgresql+asyncpg://acgs\_user:acgs\_secure\_password@}\\\texttt{acgs-database:5439/acgs\_db}) with connection pooling (pool size: 10--20 connections, max overflow: 20-40) for data persistence and event streaming capabilities for real-time processing. % pragma: allowlist secret
+\paragraph{Data Persistence and Event Processing.} The production system leverages PostgreSQL database integration (port 5439: \texttt{postgresql+asyncpg://ACGS\_user:ACGS\_secure\_password@}\\\texttt{ACGS-database:5439/ACGS\_db}) with connection pooling (pool size: 10--20 connections, max overflow: 20-40) for data persistence and event streaming capabilities for real-time processing. % pragma: allowlist secret
 The architecture provides data integrity with comprehensive audit trails and constitutional hash verification across operational services, complemented by Redis caching (port 6389) achieving 95.8\% hit rates for performance optimization.
 
 \paragraph{Service Integration and API Framework.} The microservices architecture exposes RESTful APIs with comprehensive authentication, rate limiting, and monitoring capabilities. Constitutional validation occurs across service interactions with real-time compliance checking and error handling achieving sub-5ms response times. The system provides constitutional governance capabilities validated for enterprise production environments.
@@ -1224,7 +1253,7 @@ The system employs Singular Value Decomposition (SVD) on LLM weight matrices to 
 	\item \textbf{Real-Time Performance Monitoring}: Continuous tracking of synthesis quality and computational efficiency with automatic rebalancing.
 \end{itemize}
 
-\paragraph{Performance Results.} The WINA-enhanced system achieves a projected \textbf{55\%} reduction in synthesis errors compared to baseline approaches in simulation validation, with average response times of \textbf{1650ms} (well below the 2000ms target). The system demonstrates \textbf{99.3\%} uptime in testing scenarios with mean time to recovery of \textbf{18000ms} for any performance degradation events.
+\paragraph{Performance Results.} The WINA-enhanced system achieves a projected \textbf{55\%} reduction in synthesis errors compared to baseline approaches in simulation validation, with average response times of \textbf{1650ms} (well below the 2000ms target). The system demonstrates \textbf{99.3\%} uptime in testing scenarios with mean time to recovery of \textbf{1800ms} for any performance degradation events.
 
 \subsection{Deployment Methodology and Infrastructure}
 \label{subsec:deployment_methodology}
@@ -1253,7 +1282,7 @@ The deployment incorporates enterprise-grade monitoring infrastructure to ensure
 
 \paragraph{Grafana Dashboard Integration.} Real-time visualization through Grafana v10.1.0 provides stakeholders with comprehensive system insights. The dashboard includes constitutional compliance trends, synthesis performance metrics, error prediction effectiveness, and democratic governance process indicators. Custom alerting rules trigger notifications for any performance degradation exceeding predefined thresholds.
 
-\paragraph{AlertManager Configuration.} Automated alerting through AlertManager v0.26.0 ensures rapid response to system anomalies. Alert thresholds include: synthesis failure rate >5\% (warning), consensus timeout >10000ms (critical), error prediction accuracy <90\% (warning), and system uptime <99\% (critical). Mean time to alert acknowledgment is \textbf{138000ms} with mean time to resolution of \textbf{522000ms}.
+\paragraph{AlertManager Configuration.} Automated alerting through AlertManager v0.26.0 ensures rapid response to system anomalies. Alert thresholds include: synthesis failure rate >5\% (warning), consensus timeout >5000ms (critical), error prediction accuracy <90\% (warning), and system uptime <99\% (critical). Mean time to alert acknowledgment is \textbf{1380ms} with mean time to resolution of \textbf{5220ms}.
 
 \subsection{Rigorous Experimental Methodology and Reproducibility}
 \label{subsec:experimental_methodology}
@@ -1929,7 +1958,7 @@ The enhanced system demonstrated significant improvements across multiple qualit
 	\item \textbf{Synthesis Quality Score}: Improved by \textbf{15\%} compared to baseline, with enhanced semantic consistency and constitutional alignment.
 	\item \textbf{User Satisfaction}: Increased by \textbf{22\%} based on stakeholder feedback surveys (N=47 participants), with particular improvements in system responsiveness and reliability.
 	\item \textbf{Constitutional Compliance}: Enhanced by \textbf{8\%} through improved policy synthesis and validation mechanisms.
-	\item \textbf{System Reliability}: Achieved \textbf{99.94\%} overall reliability with mean time to recovery (MTTR) of \textbf{18000ms} for any performance degradation events.
+	\item \textbf{System Reliability}: Achieved \textbf{99.94\%} overall reliability with mean time to recovery (MTTR) of \textbf{1800ms} for any performance degradation events.
 \end{itemize}
 
 \subsubsection{Operational Metrics and Scalability Analysis}

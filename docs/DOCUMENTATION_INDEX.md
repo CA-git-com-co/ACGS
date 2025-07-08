@@ -17,7 +17,7 @@ Welcome to the ACGS (Autonomous Coding Governance System) documentation. This in
 Essential project documentation and guidelines:
 
 - [README.md](../README.md) - Main project overview and setup
-- [CLAUDE.md](../CLAUDE.md) - Claude agent configuration and guidelines  
+- [CLAUDE.md](../CLAUDE.md) - Claude agent configuration and guidelines
 - [AGENTS.md](../AGENTS.md) - Multi-agent coordination framework
 - [GEMINI.md](../GEMINI.md) - Gemini agent integration
 - [CONTRIBUTING.md](../CONTRIBUTING.md) - Contribution guidelines
@@ -104,7 +104,7 @@ Historical reports and analysis:
 Current ACGS performance targets:
 
 - **P99 Latency**: <5ms
-- **Throughput**: >100 RPS  
+- **Throughput**: >100 RPS
 - **Cache Hit Rate**: >85%
 - **Constitutional Compliance**: 100% (Hash: `cdd01ef066bc6cf2`)
 

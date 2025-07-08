@@ -5,11 +5,12 @@ Constitutional Hash: cdd01ef066bc6cf2
 Unified configuration system for ACGS scripts.
 """
 
-import os
 import json
+import os
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, Any, Optional, List
+from typing import Any, Optional
+
 from .exceptions import ConfigurationError
 
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -18,6 +19,7 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 @dataclass
 class ServiceConfig:
     """Configuration for individual ACGS services."""
+
     name: str
     host: str = "localhost"
     port: int = 8000
@@ -25,13 +27,13 @@ class ServiceConfig:
     timeout: int = 30
     max_retries: int = 3
     health_endpoint: str = "/health"
-    
+
     @property
     def base_url(self) -> str:
         """Get the base URL for the service."""
         return f"{self.protocol}://{self.host}:{self.port}"
-    
-    @property 
+
+    @property
     def health_url(self) -> str:
         """Get the health check URL for the service."""
         return f"{self.base_url}{self.health_endpoint}"
@@ -40,6 +42,7 @@ class ServiceConfig:
 @dataclass
 class DatabaseConfig:
     """Database configuration."""
+
     host: str = "localhost"
     port: int = 5432
     database: str = "acgs"
@@ -49,9 +52,10 @@ class DatabaseConfig:
     timeout: int = 30
 
 
-@dataclass 
+@dataclass
 class RedisConfig:
     """Redis configuration."""
+
     host: str = "localhost"
     port: int = 6379
     database: int = 0
@@ -62,47 +66,49 @@ class RedisConfig:
 @dataclass
 class Config:
     """Main ACGS configuration."""
-    
+
     # Constitutional compliance
     constitutional_hash: str = CONSTITUTIONAL_HASH
-    
+
     # Environment
     environment: str = "development"
     debug: bool = False
     log_level: str = "INFO"
-    
+
     # Services
-    services: Dict[str, ServiceConfig] = field(default_factory=dict)
-    
+    services: dict[str, ServiceConfig] = field(default_factory=dict)
+
     # Database
     database: DatabaseConfig = field(default_factory=DatabaseConfig)
-    
-    # Redis  
+
+    # Redis
     redis: RedisConfig = field(default_factory=RedisConfig)
-    
+
     # Performance targets
     target_p99_latency_ms: float = 5.0
     target_throughput_rps: int = 100
-    
+
     # Validation settings
     validation_timeout: int = 60
     max_concurrent_validations: int = 10
-    
+
     # Testing settings
     test_timeout: int = 300
     test_parallel_workers: int = 4
-    
+
     def __post_init__(self):
         """Initialize default services if not provided."""
         if not self.services:
             self._init_default_services()
-    
+
     def _init_default_services(self):
         """Initialize default ACGS service configurations."""
         default_services = {
             "constitutional-ai": ServiceConfig("constitutional-ai", port=8001),
             "integrity": ServiceConfig("integrity", port=8002),
-            "evolutionary-computation": ServiceConfig("evolutionary-computation", port=8013), 
+            "evolutionary-computation": ServiceConfig(
+                "evolutionary-computation", port=8013
+            ),
             "formal-verification": ServiceConfig("formal-verification", port=8011),
             "policy-governance": ServiceConfig("policy-governance", port=8014),
             "coordinator": ServiceConfig("coordinator", port=8008),
@@ -112,17 +118,17 @@ class Config:
             "api-gateway": ServiceConfig("api-gateway", port=8017),
         }
         self.services.update(default_services)
-    
+
     def get_service(self, name: str) -> ServiceConfig:
         """Get service configuration by name."""
         if name not in self.services:
             raise ConfigurationError(f"Service '{name}' not found in configuration")
         return self.services[name]
-    
-    def get_all_services(self) -> List[ServiceConfig]:
+
+    def get_all_services(self) -> list[ServiceConfig]:
         """Get all service configurations."""
         return list(self.services.values())
-    
+
     def validate(self) -> None:
         """Validate configuration."""
         if self.constitutional_hash != CONSTITUTIONAL_HASH:
@@ -130,30 +136,30 @@ class Config:
                 f"Invalid constitutional hash: {self.constitutional_hash}. "
                 f"Expected: {CONSTITUTIONAL_HASH}"
             )
-        
+
         if self.target_p99_latency_ms <= 0:
             raise ConfigurationError("target_p99_latency_ms must be positive")
-        
+
         if self.target_throughput_rps <= 0:
             raise ConfigurationError("target_throughput_rps must be positive")
-    
+
     @classmethod
     def from_env(cls) -> "Config":
         """Create configuration from environment variables."""
         config = cls()
-        
+
         # Environment settings
         config.environment = os.getenv("ACGS_ENVIRONMENT", config.environment)
         config.debug = os.getenv("ACGS_DEBUG", "false").lower() == "true"
         config.log_level = os.getenv("ACGS_LOG_LEVEL", config.log_level)
-        
+
         # Performance targets
         if p99_latency := os.getenv("ACGS_TARGET_P99_LATENCY_MS"):
             config.target_p99_latency_ms = float(p99_latency)
-        
+
         if throughput := os.getenv("ACGS_TARGET_THROUGHPUT_RPS"):
             config.target_throughput_rps = int(throughput)
-        
+
         # Database
         if db_host := os.getenv("ACGS_DB_HOST"):
             config.database.host = db_host
@@ -165,7 +171,7 @@ class Config:
             config.database.username = db_user
         if db_pass := os.getenv("ACGS_DB_PASSWORD"):
             config.database.password = db_pass
-        
+
         # Redis
         if redis_host := os.getenv("ACGS_REDIS_HOST"):
             config.redis.host = redis_host
@@ -175,43 +181,45 @@ class Config:
             config.redis.database = int(redis_db)
         if redis_pass := os.getenv("ACGS_REDIS_PASSWORD"):
             config.redis.password = redis_pass
-        
+
         config.validate()
         return config
-    
+
     @classmethod
     def from_file(cls, config_path: Path) -> "Config":
         """Load configuration from JSON file."""
         if not config_path.exists():
             raise ConfigurationError(f"Configuration file not found: {config_path}")
-        
+
         try:
-            with open(config_path, 'r') as f:
+            with open(config_path) as f:
                 data = json.load(f)
-            
+
             config = cls()
-            
+
             # Update from file data
             for key, value in data.items():
                 if hasattr(config, key):
                     if key == "services":
                         # Handle services specially
                         for service_name, service_data in value.items():
-                            config.services[service_name] = ServiceConfig(**service_data)
+                            config.services[service_name] = ServiceConfig(
+                                **service_data
+                            )
                     elif key == "database":
                         config.database = DatabaseConfig(**value)
                     elif key == "redis":
                         config.redis = RedisConfig(**value)
                     else:
                         setattr(config, key, value)
-            
+
             config.validate()
             return config
-            
+
         except (json.JSONDecodeError, TypeError, ValueError) as e:
             raise ConfigurationError(f"Invalid configuration file: {e}")
-    
-    def to_dict(self) -> Dict[str, Any]:
+
+    def to_dict(self) -> dict[str, Any]:
         """Convert configuration to dictionary."""
         return {
             "constitutional_hash": self.constitutional_hash,

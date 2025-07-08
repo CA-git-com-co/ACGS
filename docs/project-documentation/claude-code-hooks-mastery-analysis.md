@@ -4,8 +4,8 @@
 
 ## Repository Overview
 
-**Repository:** https://github.com/disler/claude-code-hooks-mastery  
-**Purpose:** Demonstrates Claude Code hooks using UV single-file scripts for deterministic control over Claude Code behavior  
+**Repository:** https://github.com/disler/claude-code-hooks-mastery
+**Purpose:** Demonstrates Claude Code hooks using UV single-file scripts for deterministic control over Claude Code behavior
 **Architecture:** UV single-file scripts with embedded dependencies for hook lifecycle management
 
 ## UV Single-File Script Conventions
@@ -48,8 +48,8 @@ except ImportError:
 ## Claude Code Hook Lifecycle Events
 
 ### 1. PreToolUse Hook
-**Fires:** Before any tool execution  
-**Capabilities:** Can block tool execution  
+**Fires:** Before any tool execution
+**Capabilities:** Can block tool execution
 **JSON Input:**
 ```json
 {
@@ -70,12 +70,12 @@ except ImportError:
 - Other: Non-blocking error
 
 ### 2. PostToolUse Hook
-**Fires:** After successful tool completion  
-**Capabilities:** Cannot block (tool already executed)  
+**Fires:** After successful tool completion
+**Capabilities:** Cannot block (tool already executed)
 **JSON Input:** Same as PreToolUse + `tool_response` field
 
 ### 3. Notification Hook
-**Fires:** When Claude Code sends notifications  
+**Fires:** When Claude Code sends notifications
 **Capabilities:** Cannot block, informational only
 **JSON Input:**
 ```json
@@ -88,7 +88,7 @@ except ImportError:
 ```
 
 ### 4. Stop Hook
-**Fires:** When Claude Code finishes responding  
+**Fires:** When Claude Code finishes responding
 **Capabilities:** Can block stopping, force continuation
 **JSON Input:**
 ```json
@@ -100,7 +100,7 @@ except ImportError:
 ```
 
 ### 5. SubagentStop Hook
-**Fires:** When Claude Code subagents finish  
+**Fires:** When Claude Code subagents finish
 **Capabilities:** Can block subagent stopping
 **JSON Input:** Same as Stop Hook
 
@@ -125,19 +125,19 @@ def main():
     try:
         # Read JSON input from stdin
         input_data = json.load(sys.stdin)
-        
+
         # Extract common fields
         tool_name = input_data.get('tool_name', '')
         tool_input = input_data.get('tool_input', {})
         session_id = input_data.get('session_id', '')
-        
+
         # Your hook logic here
-        
+
         # Logging pattern
         log_dir = Path.cwd() / 'logs'
         log_dir.mkdir(parents=True, exist_ok=True)
         log_path = log_dir / 'hook_name.json'
-        
+
         # Read existing log data
         if log_path.exists():
             with open(log_path, 'r') as f:
@@ -147,16 +147,16 @@ def main():
                     log_data = []
         else:
             log_data = []
-        
+
         # Append new data
         log_data.append(input_data)
-        
+
         # Write back with formatting
         with open(log_path, 'w') as f:
             json.dump(log_data, f, indent=2)
-        
+
         sys.exit(0)
-        
+
     except json.JSONDecodeError:
         sys.exit(0)  # Graceful failure
     except Exception:
@@ -171,14 +171,14 @@ if __name__ == '__main__':
 def is_dangerous_rm_command(command):
     """Comprehensive detection of dangerous rm commands."""
     normalized = ' '.join(command.lower().split())
-    
+
     patterns = [
         r'\brm\s+.*-[a-z]*r[a-z]*f',  # rm -rf variations
         r'\brm\s+.*-[a-z]*f[a-z]*r',  # rm -fr variations
         r'\brm\s+--recursive\s+--force',
         r'\brm\s+--force\s+--recursive',
     ]
-    
+
     for pattern in patterns:
         if re.search(pattern, normalized):
             return True
@@ -190,7 +190,7 @@ def is_env_file_access(tool_name, tool_input):
         file_path = tool_input.get('file_path', '')
         if '.env' in file_path and not file_path.endswith('.env.sample'):
             return True
-    
+
     if tool_name == 'Bash':
         command = tool_input.get('command', '')
         env_patterns = [
@@ -217,24 +217,24 @@ def get_tts_script_path():
     """
     script_dir = Path(__file__).parent
     tts_dir = script_dir / "utils" / "tts"
-    
+
     # Check ElevenLabs (highest priority)
     if os.getenv('ELEVENLABS_API_KEY'):
         elevenlabs_script = tts_dir / "elevenlabs_tts.py"
         if elevenlabs_script.exists():
             return str(elevenlabs_script)
-    
+
     # Check OpenAI (second priority)
     if os.getenv('OPENAI_API_KEY'):
         openai_script = tts_dir / "openai_tts.py"
         if openai_script.exists():
             return str(openai_script)
-    
+
     # Fall back to pyttsx3 (no API key required)
     pyttsx3_script = tts_dir / "pyttsx3_tts.py"
     if pyttsx3_script.exists():
         return str(pyttsx3_script)
-    
+
     return None
 
 def announce_with_tts(message):
@@ -243,10 +243,10 @@ def announce_with_tts(message):
         tts_script = get_tts_script_path()
         if not tts_script:
             return
-        
+
         subprocess.run([
             "uv", "run", tts_script, message
-        ], 
+        ],
         capture_output=True,
         timeout=10
         )
@@ -268,46 +268,46 @@ def announce_with_tts(message):
 def prompt_llm(prompt_text):
     """Base LLM prompting with error handling."""
     load_dotenv()
-    
+
     api_key = os.getenv("OPENAI_API_KEY")  # or ANTHROPIC_API_KEY
     if not api_key:
         return None
-    
+
     try:
         from openai import OpenAI  # or import anthropic
-        
+
         client = OpenAI(api_key=api_key)
-        
+
         response = client.chat.completions.create(
             model="gpt-4.1-nano",  # or claude-3-5-haiku-20241022
             messages=[{"role": "user", "content": prompt_text}],
             max_tokens=100,
             temperature=0.7,
         )
-        
+
         return response.choices[0].message.content.strip()
-        
+
     except Exception:
         return None
 
 def generate_completion_message():
     """Generate context-aware completion message."""
     engineer_name = os.getenv("ENGINEER_NAME", "").strip()
-    
+
     prompt = f"""Generate a short, friendly completion message.
     Requirements:
     - Under 10 words
     - Positive and future focused
     - Natural, conversational language
     {"- Sometimes include name: " + engineer_name if engineer_name else ""}
-    
+
     Generate ONE completion message:"""
-    
+
     response = prompt_llm(prompt)
     if response:
         response = response.strip().strip('"').strip("'").strip()
         response = response.split("\n")[0].strip()
-    
+
     return response or "Work complete!"
 ```
 
@@ -320,11 +320,11 @@ def main():
     parser.add_argument('--notify', action='store_true', help='Enable TTS notifications')
     parser.add_argument('--chat', action='store_true', help='Copy transcript to chat.json')
     args = parser.parse_args()
-    
+
     # Use flags in logic
     if args.notify:
         announce_notification()
-    
+
     if args.chat and 'transcript_path' in input_data:
         convert_transcript_to_json(input_data['transcript_path'])
 ```
@@ -335,7 +335,7 @@ def convert_transcript_to_json(transcript_path):
     """Convert JSONL transcript to readable JSON array."""
     if not os.path.exists(transcript_path):
         return
-    
+
     chat_data = []
     try:
         with open(transcript_path, 'r') as f:
@@ -346,12 +346,12 @@ def convert_transcript_to_json(transcript_path):
                         chat_data.append(json.loads(line))
                     except json.JSONDecodeError:
                         pass  # Skip invalid lines
-        
+
         # Write to logs/chat.json
         log_dir = Path.cwd() / 'logs'
         log_dir.mkdir(parents=True, exist_ok=True)
         chat_file = log_dir / 'chat.json'
-        
+
         with open(chat_file, 'w') as f:
             json.dump(chat_data, f, indent=2)
     except Exception:
@@ -452,7 +452,7 @@ logs/                       # Generated by hooks
 ## Environment Variables Used
 
 - `ELEVENLABS_API_KEY`: ElevenLabs TTS service
-- `OPENAI_API_KEY`: OpenAI LLM and TTS services  
+- `OPENAI_API_KEY`: OpenAI LLM and TTS services
 - `ANTHROPIC_API_KEY`: Anthropic Claude LLM service
 - `ENGINEER_NAME`: Personalization for TTS messages
 

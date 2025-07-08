@@ -6,13 +6,9 @@ Systematically addresses all remaining constitutional hash issues.
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import configparser
 import json
 import logging
-import os
-import re
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple
 
 import yaml
 
@@ -73,7 +69,7 @@ class ConstitutionalComplianceFixer:
 
     def has_constitutional_hash(self, content: str, file_type: str) -> bool:
         """Check if content already has constitutional hash."""
-        if file_type in ["json"]:
+        if file_type == "json":
             try:
                 data = json.loads(content)
                 return self._check_json_hash(data)
@@ -85,7 +81,7 @@ class ConstitutionalComplianceFixer:
                 return self._check_yaml_hash(data)
             except yaml.YAMLError:
                 return False
-        elif file_type in ["py"]:
+        elif file_type == "py":
             return self.constitutional_hash in content
         elif file_type in ["dockerfile", "docker"]:
             return f"# Constitutional Hash: {self.constitutional_hash}" in content
@@ -224,7 +220,7 @@ class ConstitutionalComplianceFixer:
 
         try:
             # Read file content
-            with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+            with open(file_path, encoding="utf-8", errors="ignore") as f:
                 content = f.read()
 
             # Determine file type
@@ -376,7 +372,8 @@ class ConstitutionalComplianceFixer:
 
         if self.stats["updated"] > 0:
             print(
-                f"\n🎉 Successfully added constitutional hash to {self.stats['updated']} files!"
+                "\n🎉 Successfully added constitutional hash to"
+                f" {self.stats['updated']} files!"
             )
         else:
             print("\n✅ All files already have constitutional hash compliance!")

@@ -12,13 +12,9 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import argparse
-import json
-import os
-import re
-import subprocess
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Optional
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -80,15 +76,15 @@ class ConstitutionalComplianceValidator:
 
     def __init__(self, constitutional_hash: str, base_path: Optional[Path] = None):
         self.constitutional_hash = constitutional_hash
-        self.base_path = base_path or Path(".")
-        self.violations: List[Dict[str, str]] = []
-        self.warnings: List[Dict[str, str]] = []
+        self.base_path = base_path or Path()
+        self.violations: list[dict[str, str]] = []
+        self.warnings: list[dict[str, str]] = []
         # Coverage stats per pattern
-        self.coverage_stats: Dict[str, Dict[str, float | int]] = {}
+        self.coverage_stats: dict[str, dict[str, float | int]] = {}
 
     def validate_compliance(self, coverage_target: float = 100.0) -> bool:
         """Validate constitutional compliance across the codebase."""
-        print(f"⚖️  ACGS Constitutional Compliance Validation")
+        print("⚖️  ACGS Constitutional Compliance Validation")
         print(f"📋 Constitutional Hash: {self.constitutional_hash}")
         print(f"🎯 Coverage Target: {coverage_target}%")
         print("=" * 60)
@@ -124,7 +120,7 @@ class ConstitutionalComplianceValidator:
             print(f"  📁 Checking {description}...")
 
             # Find files matching pattern
-            files: List[Path] = []
+            files: list[Path] = []
             if pattern == "**/*.{json,yaml,yml}":
                 # Handle multiple extensions for configuration files
                 files.extend(self.base_path.glob("**/*.json"))
@@ -139,13 +135,11 @@ class ConstitutionalComplianceValidator:
                 files = list(self.base_path.glob(str(pattern)))
 
             if not files and required:
-                self.violations.append(
-                    {
-                        "file": "",
-                        "error": f"No files found for required pattern: {pattern}",
-                    }
-                )
-                print(f"    ❌ No files found")
+                self.violations.append({
+                    "file": "",
+                    "error": f"No files found for required pattern: {pattern}",
+                })
+                print("    ❌ No files found")
                 continue
 
             # Check each file for constitutional hash
@@ -156,12 +150,12 @@ class ConstitutionalComplianceValidator:
                 if self._file_contains_hash(file_path):
                     files_with_hash += 1
                 elif required:
-                    self.violations.append(
-                        {
-                            "file": str(file_path),
-                            "error": f"Constitutional hash missing in required file: {file_path}",
-                        }
-                    )
+                    self.violations.append({
+                        "file": str(file_path),
+                        "error": (
+                            f"Constitutional hash missing in required file: {file_path}"
+                        ),
+                    })
 
             coverage = (files_with_hash / total_files * 100) if total_files > 0 else 0.0
             self.coverage_stats[pattern_name] = {
@@ -174,21 +168,19 @@ class ConstitutionalComplianceValidator:
                 print(f"    ✅ {files_with_hash}/{total_files} files ({coverage:.1f}%)")
             elif coverage >= 70:
                 print(f"    ⚠️  {files_with_hash}/{total_files} files ({coverage:.1f}%)")
-                self.warnings.append(
-                    {
-                        "file": "",
-                        "error": f"Low coverage in {description}: {coverage:.1f}%",
-                    }
-                )
+                self.warnings.append({
+                    "file": "",
+                    "error": f"Low coverage in {description}: {coverage:.1f}%",
+                })
             else:
                 print(f"    ❌ {files_with_hash}/{total_files} files ({coverage:.1f}%)")
                 if required:
-                    self.violations.append(
-                        {
-                            "file": "",
-                            "error": f"Insufficient coverage in {description}: {coverage:.1f}%",
-                        }
-                    )
+                    self.violations.append({
+                        "file": "",
+                        "error": (
+                            f"Insufficient coverage in {description}: {coverage:.1f}%"
+                        ),
+                    })
 
     def _validate_constitutional_principles(self) -> None:
         """Validate implementation of constitutional principles."""
@@ -213,20 +205,19 @@ class ConstitutionalComplianceValidator:
                 print(f"  ✅ {principle}")
             else:
                 print(f"  ❌ {principle}")
-                self.violations.append(
-                    {
-                        "file": "",
-                        "error": f"Constitutional principle not implemented: {principle}",
-                    }
-                )
+                self.violations.append({
+                    "file": "",
+                    "error": f"Constitutional principle not implemented: {principle}",
+                })
 
         if missing_principles:
-            self.violations.append(
-                {
-                    "file": "",
-                    "error": f"Missing constitutional principles: {', '.join(missing_principles)}",
-                }
-            )
+            self.violations.append({
+                "file": "",
+                "error": (
+                    "Missing constitutional principles:"
+                    f" {', '.join(missing_principles)}"
+                ),
+            })
 
     def _validate_service_responses(self) -> None:
         """Validate that service responses include constitutional hash."""
@@ -249,30 +240,30 @@ class ConstitutionalComplianceValidator:
                 if "constitutional_hash" in content.lower():
                     compliant_responses += 1
                 else:
-                    self.warnings.append(
-                        {
-                            "file": str(file_path),
-                            "error": f"Response model may be missing constitutional_hash: {file_path}",
-                        }
-                    )
+                    self.warnings.append({
+                        "file": str(file_path),
+                        "error": (
+                            "Response model may be missing constitutional_hash:"
+                            f" {file_path}"
+                        ),
+                    })
 
         if total_responses > 0:
             coverage = compliant_responses / total_responses * 100
             print(
-                f"  📊 Response compliance: {compliant_responses}/{total_responses} ({coverage:.1f}%)"
+                "  📊 Response compliance:"
+                f" {compliant_responses}/{total_responses} ({coverage:.1f}%)"
             )
 
             if coverage < 90:
-                self.violations.append(
-                    {
-                        "file": "",
-                        "error": f"Low response compliance coverage: {coverage:.1f}%",
-                    }
-                )
+                self.violations.append({
+                    "file": "",
+                    "error": f"Low response compliance coverage: {coverage:.1f}%",
+                })
         else:
-            self.warnings.append(
-                {"file": "", "error": "No response models found for validation"}
-            )
+            self.warnings.append({
+                "file": "", "error": "No response models found for validation"
+            })
 
     def _validate_audit_trail(self) -> None:
         """Validate audit trail completeness."""
@@ -295,12 +286,13 @@ class ConstitutionalComplianceValidator:
         print(f"  📝 Audit implementations found: {audit_implementations}")
 
         if audit_implementations < 5:  # Minimum expected audit implementations
-            self.warnings.append(
-                {
-                    "file": "",
-                    "error": f"Limited audit trail implementations found: {audit_implementations}",
-                }
-            )
+            self.warnings.append({
+                "file": "",
+                "error": (
+                    "Limited audit trail implementations found:"
+                    f" {audit_implementations}"
+                ),
+            })
 
     def _file_contains_hash(self, file_path: Path) -> bool:
         """Check if file contains the constitutional hash."""
@@ -313,7 +305,7 @@ class ConstitutionalComplianceValidator:
             # Skip directories
             if file_path.is_dir():
                 return ""
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 return f.read()
         except (
             UnicodeDecodeError,
@@ -348,7 +340,8 @@ class ConstitutionalComplianceValidator:
 
         # Overall coverage
         print(
-            f"📈 Overall Coverage: {self.overall_coverage:.1f}% (target: {coverage_target}%)"
+            f"📈 Overall Coverage: {self.overall_coverage:.1f}% (target:"
+            f" {coverage_target}%)"
         )
 
         # Coverage by category
@@ -360,7 +353,8 @@ class ConstitutionalComplianceValidator:
 
             status = "✅" if coverage >= 90 else "⚠️" if coverage >= 70 else "❌"
             print(
-                f"  {status} {category}: {files_with_hash}/{total_files} ({coverage:.1f}%)"
+                f"  {status} {category}:"
+                f" {files_with_hash}/{total_files} ({coverage:.1f}%)"
             )
 
         # Violations

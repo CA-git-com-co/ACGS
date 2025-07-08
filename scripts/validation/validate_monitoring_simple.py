@@ -10,7 +10,6 @@ and documentation without requiring external dependencies.
 import json
 import time
 from pathlib import Path
-from typing import Dict, List
 
 import yaml
 
@@ -83,7 +82,7 @@ class SimpleMonitoringValidator:
             return False
 
         try:
-            with open(config_path, "r") as f:
+            with open(config_path) as f:
                 config = yaml.safe_load(f)
 
             # Validate constitutional hash in global labels
@@ -92,14 +91,15 @@ class SimpleMonitoringValidator:
                 self.add_result(
                     "prometheus_config",
                     "PASSED",
-                    f"Constitutional hash found in global labels: {CONSTITUTIONAL_HASH}",
+                    "Constitutional hash found in global labels:"
+                    f" {CONSTITUTIONAL_HASH}",
                     True,
                 )
             else:
                 self.add_result(
                     "prometheus_config",
                     "FAILED",
-                    f"Constitutional hash missing or incorrect in global labels",
+                    "Constitutional hash missing or incorrect in global labels",
                     False,
                 )
                 return False
@@ -125,7 +125,7 @@ class SimpleMonitoringValidator:
             self.add_result(
                 "prometheus_config",
                 "FAILED",
-                f"Error parsing Prometheus config: {str(e)}",
+                f"Error parsing Prometheus config: {e!s}",
                 False,
             )
             return False
@@ -141,7 +141,7 @@ class SimpleMonitoringValidator:
             return False
 
         try:
-            with open(rules_path, "r") as f:
+            with open(rules_path) as f:
                 rules = yaml.safe_load(f)
 
             groups = rules.get("groups", [])
@@ -168,7 +168,8 @@ class SimpleMonitoringValidator:
             self.add_result(
                 "alerting_rules",
                 "PASSED",
-                f"Found {constitutional_alerts} constitutional alerts ({critical_alerts} critical)",
+                f"Found {constitutional_alerts} constitutional alerts"
+                f" ({critical_alerts} critical)",
                 True,
             )
             return True
@@ -177,7 +178,7 @@ class SimpleMonitoringValidator:
             self.add_result(
                 "alerting_rules",
                 "FAILED",
-                f"Error parsing alerting rules: {str(e)}",
+                f"Error parsing alerting rules: {e!s}",
                 False,
             )
             return False
@@ -196,7 +197,7 @@ class SimpleMonitoringValidator:
             return False
 
         try:
-            with open(dashboard_path, "r") as f:
+            with open(dashboard_path) as f:
                 dashboard = json.load(f)
 
             dashboard_config = dashboard.get("dashboard", {})
@@ -223,7 +224,8 @@ class SimpleMonitoringValidator:
                 self.add_result(
                     "grafana_dashboard",
                     "FAILED",
-                    f"Constitutional hash template mismatch: {constitutional_template.get('query')}",
+                    "Constitutional hash template mismatch:"
+                    f" {constitutional_template.get('query')}",
                     False,
                 )
                 return False
@@ -252,7 +254,7 @@ class SimpleMonitoringValidator:
             self.add_result(
                 "grafana_dashboard",
                 "FAILED",
-                f"Error parsing Grafana dashboard: {str(e)}",
+                f"Error parsing Grafana dashboard: {e!s}",
                 False,
             )
             return False
@@ -295,7 +297,7 @@ class SimpleMonitoringValidator:
                 continue
 
             try:
-                with open(full_path, "r", encoding="utf-8") as f:
+                with open(full_path, encoding="utf-8") as f:
                     content = f.read()
 
                 missing_patterns = []
@@ -323,16 +325,16 @@ class SimpleMonitoringValidator:
                 self.add_result(
                     "documentation",
                     "FAILED",
-                    f"Error reading {doc_path}: {str(e)}",
+                    f"Error reading {doc_path}: {e!s}",
                     False,
                 )
                 all_docs_valid = False
 
         return all_docs_valid
 
-    def run_validation(self) -> Dict:
+    def run_validation(self) -> dict:
         """Run complete monitoring validation"""
-        print(f"🏛️ ACGS-2 Simple Monitoring Validation")
+        print("🏛️ ACGS-2 Simple Monitoring Validation")
         print(f"Constitutional Hash: {CONSTITUTIONAL_HASH}")
         print("=" * 60)
 
@@ -373,13 +375,14 @@ class SimpleMonitoringValidator:
         }
 
         print("=" * 60)
-        print(f"📊 VALIDATION SUMMARY")
+        print("📊 VALIDATION SUMMARY")
         print(f"Total Checks: {total_checks}")
         print(f"Passed: {passed_checks}")
         print(f"Failed: {failed_checks}")
         print(f"Warnings: {warning_checks}")
         print(
-            f"Constitutional Compliance Rate: {summary['constitutional_compliance_rate']:.1%}"
+            "Constitutional Compliance Rate:"
+            f" {summary['constitutional_compliance_rate']:.1%}"
         )
         print(f"Overall Status: {summary['overall_status']}")
         print("=" * 60)
@@ -402,7 +405,7 @@ def main():
             exit(1)
 
     except Exception as e:
-        print(f"\n💥 Validation script error: {str(e)}")
+        print(f"\n💥 Validation script error: {e!s}")
         exit(2)
 
 

@@ -1,27 +1,27 @@
 
 pipeline {
     agent any
-    
+
     environment {
         CONSTITUTIONAL_HASH = 'cdd01ef066bc6cf2'
         DATABASE_URL = 'postgresql://postgres:postgres@localhost:5432/acgs_test'
         REDIS_URL = 'redis://localhost:6379/0'
     }
-    
+
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
-        
+
         stage('Setup') {
             steps {
                 sh 'pip install -r requirements.txt'
                 sh 'pip install -r requirements-test.txt'
             }
         }
-        
+
         stage('Unit Tests') {
             steps {
                 sh 'python -m pytest tests/unit/ -v --cov=services --cov-report=xml --junitxml=unit-test-results.xml'
@@ -33,7 +33,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Integration Tests') {
             steps {
                 sh 'python -m pytest tests/integration/ -v --junitxml=integration-test-results.xml'
@@ -44,7 +44,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Security Tests') {
             steps {
                 sh 'python -m pytest tests/security/ -v --junitxml=security-test-results.xml'
@@ -57,13 +57,13 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Constitutional Tests') {
             steps {
                 sh 'python tests/policies/test_constitutional_policies.py'
             }
         }
-        
+
         stage('Performance Tests') {
             when {
                 anyOf {
@@ -81,7 +81,7 @@ pipeline {
             }
         }
     }
-    
+
     post {
         always {
             cleanWs()

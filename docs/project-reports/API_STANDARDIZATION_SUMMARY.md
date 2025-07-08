@@ -227,7 +227,7 @@ async def get_resources(
 ```python
 class YourModel(BaseACGSModel):
     __tablename__ = "your_table"
-    
+
     name = Column(String(255), nullable=False)
     # Automatically includes:
     # - id (UUID primary key)
@@ -354,7 +354,7 @@ async def get_tenant_info(
 ### 3. Service-by-Service Migration
 ```bash
 # 1. Constitutional Core ✅ (Already uses similar patterns)
-# 2. Governance Engine ✅ (Already consolidated) 
+# 2. Governance Engine ✅ (Already consolidated)
 # 3. API Gateway (Enhanced with template patterns)
 # 4. Integrity Service (Migrate to template)
 # 5. New Services (Use template from day one)

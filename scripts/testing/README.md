@@ -1,4 +1,5 @@
 # ACGS Unified Testing Framework
+
 Constitutional Hash: cdd01ef066bc6cf2
 
 ## Overview
@@ -41,15 +42,15 @@ python3 scripts/cli/test.py --with-coverage --output results.json
 
 ## Available Test Suites
 
-| Suite | Description | Tags |
-|-------|-------------|------|
+| Suite                       | Description                          | Tags     |
+| --------------------------- | ------------------------------------ | -------- |
 | `constitutional_compliance` | Constitutional compliance validation | critical |
-| `unit_tests` | Unit tests with coverage analysis | coverage |
-| `integration_tests` | Service integration tests | |
-| `performance_tests` | Performance benchmarks | |
-| `security_tests` | Security hardening tests | |
-| `multi_tenant_tests` | Multi-tenant isolation tests | |
-| `e2e_tests` | End-to-end workflow tests | |
+| `unit_tests`                | Unit tests with coverage analysis    | coverage |
+| `integration_tests`         | Service integration tests            |          |
+| `performance_tests`         | Performance benchmarks               |          |
+| `security_tests`            | Security hardening tests             |          |
+| `multi_tenant_tests`        | Multi-tenant isolation tests         |          |
+| `e2e_tests`                 | End-to-end workflow tests            |          |
 
 ## Architecture
 
@@ -111,13 +112,13 @@ from scripts.testing import ACGSTestOrchestrator
 async def run_tests():
     orchestrator = ACGSTestOrchestrator(project_root)
     orchestrator.register_standard_suites()
-    
+
     result = await orchestrator.run_all_suites(
         suite_filter=["unit_tests", "integration_tests"],
         parallel=True,
         fail_fast=True
     )
-    
+
     return result.overall_success
 
 success = asyncio.run(run_tests())
@@ -126,9 +127,11 @@ success = asyncio.run(run_tests())
 ## Output Formats
 
 ### Text Output
+
 Human-readable summary with test results, metrics, and status.
 
 ### JSON Output
+
 Structured data with complete test results, coverage data, and metrics:
 
 ```json
@@ -168,7 +171,7 @@ All test execution maintains constitutional compliance with hash `cdd01ef066bc6c
 The framework enforces ACGS performance targets:
 
 - **P99 Latency**: <5ms for constitutional validation
-- **Throughput**: >100 RPS for concurrent operations  
+- **Throughput**: >100 RPS for concurrent operations
 - **Cache Hit Rate**: ≥85% for constitutional decisions
 - **Test Coverage**: ≥80% for unit tests
 
@@ -182,4 +185,5 @@ For questions or issues:
 4. Validate setup: `python3 scripts/testing/migrate_legacy_runners.py --validate`
 
 ---
-*ACGS Unified Testing Framework - Constitutional Hash: cdd01ef066bc6cf2*
+
+_ACGS Unified Testing Framework - Constitutional Hash: cdd01ef066bc6cf2_

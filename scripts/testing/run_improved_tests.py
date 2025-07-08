@@ -7,7 +7,6 @@ Runs the improved ACGS test suite with proper configuration and reporting.
 Targets >80% test coverage and >80% success rate.
 """
 
-import asyncio
 import json
 import os
 import subprocess
@@ -181,7 +180,8 @@ def run_comprehensive_tests():
                         break
 
             print(
-                f"  {'✅' if result['status'] == 'passed' else '❌'} {category_name}: {result['status']}"
+                f"  {'✅' if result['status'] == 'passed' else '❌'} {category_name}:"
+                f" {result['status']}"
             )
         else:
             print(f"  ⏭️  Skipping {category_name}: {test_path} not found")
@@ -211,7 +211,7 @@ def run_comprehensive_tests():
         json.dump(report, f, indent=2)
 
     # Print summary
-    print(f"\n📊 Test Results Summary:")
+    print("\n📊 Test Results Summary:")
     print(f"   Total Tests: {total_tests}")
     print(f"   Passed: {passed_tests}")
     print(f"   Failed: {total_tests - passed_tests}")
@@ -222,12 +222,14 @@ def run_comprehensive_tests():
     # Check if targets are met
     if success_rate >= TEST_CONFIG["target_success_rate"]:
         print(
-            f"✅ SUCCESS: Target success rate of {TEST_CONFIG['target_success_rate']}% achieved!"
+            f"✅ SUCCESS: Target success rate of {TEST_CONFIG['target_success_rate']}%"
+            " achieved!"
         )
         return 0
     else:
         print(
-            f"❌ FAILED: Success rate {success_rate:.1f}% below target {TEST_CONFIG['target_success_rate']}%"
+            f"❌ FAILED: Success rate {success_rate:.1f}% below target"
+            f" {TEST_CONFIG['target_success_rate']}%"
         )
         return 1
 

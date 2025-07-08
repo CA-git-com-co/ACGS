@@ -34,7 +34,7 @@ class OptimizedDatabaseConfig:
         max_overflow: int = 0,
         pool_timeout: int = 30,
         pool_recycle: int = 3600,
-        echo: bool = False
+        echo: bool = False,
     ):
         self.database_url = database_url
         self.pool_size = pool_size
@@ -53,7 +53,6 @@ class OptimizedDatabaseConfig:
         # Create optimized async engine
         self.engine = create_async_engine(
             self.database_url,
-
             # Connection pooling optimization
             poolclass=QueuePool,
             pool_size=self.pool_size,
@@ -61,28 +60,24 @@ class OptimizedDatabaseConfig:
             pool_timeout=self.pool_timeout,
             pool_recycle=self.pool_recycle,
             pool_pre_ping=True,
-
             # Performance settings
             connect_args={
                 "command_timeout": 60,
                 "server_settings": {
                     "jit": "off",  # Disable JIT for consistent performance
-                    "application_name": f"acgs_optimized_{CONSTITUTIONAL_HASH}"
-                }
+                    "application_name": f"acgs_optimized_{CONSTITUTIONAL_HASH}",
+                },
             },
-
             # Echo for debugging (disable in production)
             echo=self.echo,
             echo_pool=self.echo,
-
             # Async settings
             future=True,
-
             # Query optimization
             execution_options={
                 "isolation_level": "READ_COMMITTED",
-                "autocommit": False
-            }
+                "autocommit": False,
+            },
         )
 
         # Setup connection event handlers
@@ -94,14 +89,14 @@ class OptimizedDatabaseConfig:
             class_=AsyncSession,
             expire_on_commit=False,
             autoflush=False,  # Manual flush for better control
-            autocommit=False
+            autocommit=False,
         )
 
         logger.info(
             "Database engine initialized",
             constitutional_hash=self.constitutional_hash,
             pool_size=self.pool_size,
-            max_overflow=self.max_overflow
+            max_overflow=self.max_overflow,
         )
 
     def _setup_connection_handlers(self):
@@ -123,7 +118,7 @@ class OptimizedDatabaseConfig:
             """Log connection checkout for monitoring."""
             logger.debug(
                 "Database connection checked out",
-                constitutional_hash=self.constitutional_hash
+                constitutional_hash=self.constitutional_hash,
             )
 
     async def get_session(self) -> AsyncSession:
@@ -137,8 +132,7 @@ class OptimizedDatabaseConfig:
         if self.engine:
             await self.engine.dispose()
             logger.info(
-                "Database engine disposed",
-                constitutional_hash=self.constitutional_hash
+                "Database engine disposed", constitutional_hash=self.constitutional_hash
             )
 
 
@@ -149,12 +143,7 @@ class OptimizedQueryPatterns:
         self.session = session
         self.constitutional_hash = CONSTITUTIONAL_HASH
 
-    async def get_with_selectinload(
-        self,
-        model_class,
-        entity_id: Any,
-        *relationships
-    ):
+    async def get_with_selectinload(self, model_class, entity_id: Any, *relationships):
         """Get entity with optimized selectinload for relationships."""
 
         query = select(model_class).where(model_class.id == entity_id)
@@ -167,10 +156,7 @@ class OptimizedQueryPatterns:
         return result.scalar_one_or_none()
 
     async def get_multiple_with_selectinload(
-        self,
-        model_class,
-        entity_ids: list[Any],
-        *relationships
+        self, model_class, entity_ids: list[Any], *relationships
     ):
         """Get multiple entities with selectinload optimization."""
 
@@ -183,12 +169,7 @@ class OptimizedQueryPatterns:
         result = await self.session.execute(query)
         return result.scalars().all()
 
-    async def get_with_joinedload(
-        self,
-        model_class,
-        entity_id: Any,
-        *relationships
-    ):
+    async def get_with_joinedload(self, model_class, entity_id: Any, *relationships):
         """Get entity with joinedload for one-to-one relationships."""
 
         query = select(model_class).where(model_class.id == entity_id)
@@ -206,7 +187,7 @@ class OptimizedQueryPatterns:
         filters: dict[str, Any] | None = None,
         page: int = 1,
         page_size: int = 100,
-        order_by=None
+        order_by=None,
     ):
         """Optimized paginated query with efficient count."""
 
@@ -243,14 +224,11 @@ class OptimizedQueryPatterns:
             "total_count": total_count,
             "page": page,
             "page_size": page_size,
-            "total_pages": (total_count + page_size - 1) // page_size
+            "total_pages": (total_count + page_size - 1) // page_size,
         }
 
     async def bulk_upsert(
-        self,
-        model_class,
-        data_list: list[dict[str, Any]],
-        conflict_columns: list[str]
+        self, model_class, data_list: list[dict[str, Any]], conflict_columns: list[str]
     ):
         """Optimized bulk upsert using PostgreSQL ON CONFLICT."""
 
@@ -259,12 +237,12 @@ class OptimizedQueryPatterns:
 
         # Build the bulk insert with ON CONFLICT
         stmt = f"""
-        INSERT INTO {model_class.__tablename__} 
+        INSERT INTO {model_class.__tablename__}
         ({', '.join(data_list[0].keys())})
         VALUES {', '.join([f"({', '.join([f":{key}_{i}" for key in data.keys()])})"
                           for i, data in enumerate(data_list)])}
-        ON CONFLICT ({', '.join(conflict_columns)}) 
-        DO UPDATE SET 
+        ON CONFLICT ({', '.join(conflict_columns)})
+        DO UPDATE SET
         {', '.join([f"{key} = EXCLUDED.{key}" for key in data_list[0].keys()
                    if key not in conflict_columns])},
         updated_at = NOW()
@@ -283,9 +261,7 @@ class OptimizedQueryPatterns:
         return result.fetchall()
 
     async def efficient_exists_check(
-        self,
-        model_class,
-        filters: dict[str, Any]
+        self, model_class, filters: dict[str, Any]
     ) -> bool:
         """Efficient exists check using EXISTS clause."""
 
@@ -315,47 +291,41 @@ class IndexOptimizationManager:
         indexes_sql = [
             # Constitutional hash index
             """
-            CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_constitutional_hash 
-            ON constitutional_entities (constitutional_hash) 
+            CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_constitutional_hash
+            ON constitutional_entities (constitutional_hash)
             WHERE constitutional_hash = %s
             """,
-
             # Composite indexes for common query patterns
             """
-            CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_service_status_timestamp 
+            CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_service_status_timestamp
             ON service_metrics (service_name, status, created_at DESC)
             """,
-
             # Partial indexes for active records
             """
-            CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_active_policies 
-            ON policies (id, name, version) 
+            CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_active_policies
+            ON policies (id, name, version)
             WHERE status = 'active'
             """,
-
             # JSON path indexes for constitutional data
             """
-            CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_policy_metadata_hash 
+            CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_policy_metadata_hash
             ON policies USING GIN ((metadata->>'constitutional_hash'))
             """,
-
             # Timeline queries optimization
             """
-            CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_audit_timeline 
+            CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_audit_timeline
             ON audit_logs (entity_type, entity_id, created_at DESC)
             """,
-
             # Performance metrics indexes
             """
-            CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_metrics_service_time 
+            CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_metrics_service_time
             ON performance_metrics (service_name, metric_type, timestamp DESC)
             """,
-
             # Full-text search optimization
             """
-            CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_policies_search 
+            CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_policies_search
             ON policies USING GIN (to_tsvector('english', name || ' ' || description))
-            """
+            """,
         ]
 
         async with self.engine.begin() as conn:
@@ -364,13 +334,13 @@ class IndexOptimizationManager:
                     await conn.execute(text(index_sql), [self.constitutional_hash])
                     logger.info(
                         "Index created successfully",
-                        constitutional_hash=self.constitutional_hash
+                        constitutional_hash=self.constitutional_hash,
                     )
                 except Exception as e:
                     logger.warning(
                         "Index creation skipped",
                         error=str(e),
-                        constitutional_hash=self.constitutional_hash
+                        constitutional_hash=self.constitutional_hash,
                     )
 
     async def analyze_query_performance(self, query: str, params: dict = None):
@@ -389,13 +359,13 @@ class IndexOptimizationManager:
                 "Query performance analysis",
                 execution_time=execution_time,
                 planning_time=planning_time,
-                constitutional_hash=self.constitutional_hash
+                constitutional_hash=self.constitutional_hash,
             )
 
             return {
                 "execution_time": execution_time,
                 "planning_time": planning_time,
-                "plan": explain_result[0]["Plan"]
+                "plan": explain_result[0]["Plan"],
             }
 
 
@@ -418,7 +388,7 @@ class ConnectionPoolMonitor:
             "checked_out": pool.checkedout(),
             "overflow": pool.overflow(),
             "invalid": pool.invalid(),
-            "constitutional_hash": self.constitutional_hash
+            "constitutional_hash": self.constitutional_hash,
         }
 
     async def warm_up_pool(self, target_connections: int = 10):
@@ -433,7 +403,7 @@ class ConnectionPoolMonitor:
             logger.info(
                 "Connection pool warmed up",
                 target_connections=target_connections,
-                constitutional_hash=self.constitutional_hash
+                constitutional_hash=self.constitutional_hash,
             )
 
         finally:
@@ -444,8 +414,7 @@ class ConnectionPoolMonitor:
 
 # Factory function
 async def create_optimized_database(
-    database_url: str,
-    **kwargs
+    database_url: str, **kwargs
 ) -> OptimizedDatabaseConfig:
     """Factory function to create optimized database configuration."""
 
@@ -462,7 +431,7 @@ async def create_optimized_database(
 
     logger.info(
         "Optimized database configuration created",
-        constitutional_hash=CONSTITUTIONAL_HASH
+        constitutional_hash=CONSTITUTIONAL_HASH,
     )
 
     return config

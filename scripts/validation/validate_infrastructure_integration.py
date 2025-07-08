@@ -11,7 +11,6 @@ This script validates that the Step 3 infrastructure updates have been properly 
 
 import asyncio
 import logging
-import os
 import sys
 from pathlib import Path
 
@@ -153,7 +152,8 @@ class InfrastructureValidator:
 
         except ImportError:
             logger.warning(
-                "⚠️ Connection pool validation skipped: Runtime dependencies not available"
+                "⚠️ Connection pool validation skipped: Runtime dependencies not"
+                " available"
             )
             self.validation_results["connection_pools"] = (
                 True  # Pass if structure is correct

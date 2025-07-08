@@ -7,10 +7,8 @@ This script validates that the monitoring infrastructure documentation
 has been properly updated across all relevant files.
 """
 
-import os
-import re
 from pathlib import Path
-from typing import Dict, List, Tuple, Union
+from typing import Union
 
 # Constitutional hash validation
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -21,37 +19,33 @@ class DocumentationValidator:
 
     def __init__(self) -> None:
         self.project_root = Path("/home/dislove/ACGS-2")
-        self.results: List[Dict[str, str]] = []
+        self.results: list[dict[str, str]] = []
 
     def validate_file_exists(self, file_path: str) -> bool:
         """Check if a file exists"""
         full_path = self.project_root / file_path
         exists = full_path.exists()
-        self.results.append(
-            {
-                "check": f"File exists: {file_path}",
-                "status": "PASS" if exists else "FAIL",
-                "details": f"File {'found' if exists else 'not found'} at {full_path}",
-            }
-        )
+        self.results.append({
+            "check": f"File exists: {file_path}",
+            "status": "PASS" if exists else "FAIL",
+            "details": f"File {'found' if exists else 'not found'} at {full_path}",
+        })
         return exists
 
-    def validate_content_contains(self, file_path: str, patterns: List[str]) -> bool:
+    def validate_content_contains(self, file_path: str, patterns: list[str]) -> bool:
         """Check if file contains specific patterns"""
         full_path = self.project_root / file_path
 
         if not full_path.exists():
-            self.results.append(
-                {
-                    "check": f"Content validation: {file_path}",
-                    "status": "FAIL",
-                    "details": f"File not found: {full_path}",
-                }
-            )
+            self.results.append({
+                "check": f"Content validation: {file_path}",
+                "status": "FAIL",
+                "details": f"File not found: {full_path}",
+            })
             return False
 
         try:
-            with open(full_path, "r", encoding="utf-8") as f:
+            with open(full_path, encoding="utf-8") as f:
                 content = f.read()
 
             all_found = True
@@ -62,37 +56,33 @@ class DocumentationValidator:
                     all_found = False
                     missing_patterns.append(pattern)
 
-            self.results.append(
-                {
-                    "check": f"Content patterns in {file_path}",
-                    "status": "PASS" if all_found else "FAIL",
-                    "details": (
-                        f"Missing patterns: {missing_patterns}"
-                        if missing_patterns
-                        else "All patterns found"
-                    ),
-                }
-            )
+            self.results.append({
+                "check": f"Content patterns in {file_path}",
+                "status": "PASS" if all_found else "FAIL",
+                "details": (
+                    f"Missing patterns: {missing_patterns}"
+                    if missing_patterns
+                    else "All patterns found"
+                ),
+            })
 
             return all_found
 
         except Exception as e:
-            self.results.append(
-                {
-                    "check": f"Content validation: {file_path}",
-                    "status": "ERROR",
-                    "details": f"Error reading file: {str(e)}",
-                }
-            )
+            self.results.append({
+                "check": f"Content validation: {file_path}",
+                "status": "ERROR",
+                "details": f"Error reading file: {e!s}",
+            })
             return False
 
     def validate_constitutional_hash(self, file_path: str) -> bool:
         """Validate constitutional hash presence"""
         return self.validate_content_contains(file_path, [CONSTITUTIONAL_HASH])
 
-    def run_validation(self) -> Dict[str, Union[int, float, str, List[Dict[str, str]]]]:
+    def run_validation(self) -> dict[str, Union[int, float, str, list[dict[str, str]]]]:
         """Run complete documentation validation"""
-        print(f"🏛️ Validating monitoring documentation updates...")
+        print("🏛️ Validating monitoring documentation updates...")
         print(f"Constitutional Hash: {CONSTITUTIONAL_HASH}")
         print("=" * 60)
 
@@ -162,7 +152,7 @@ class DocumentationValidator:
         failed_checks = sum(1 for r in self.results if r["status"] == "FAIL")
         error_checks = sum(1 for r in self.results if r["status"] == "ERROR")
 
-        summary: Dict[str, Union[int, float, str, List[Dict[str, str]]]] = {
+        summary: dict[str, Union[int, float, str, list[dict[str, str]]]] = {
             "constitutional_hash": CONSTITUTIONAL_HASH,
             "total_checks": total_checks,
             "passed": passed_checks,
@@ -178,10 +168,10 @@ class DocumentationValidator:
         return summary
 
     def print_results(
-        self, summary: Dict[str, Union[int, float, str, List[Dict[str, str]]]]
+        self, summary: dict[str, Union[int, float, str, list[dict[str, str]]]]
     ) -> None:
         """Print validation results"""
-        print(f"\n📊 VALIDATION RESULTS")
+        print("\n📊 VALIDATION RESULTS")
         print("=" * 60)
         print(f"Total Checks: {summary['total_checks']}")
         print(f"Passed: {summary['passed']}")
@@ -190,7 +180,7 @@ class DocumentationValidator:
         print(f"Success Rate: {summary['success_rate']:.1%}")
         print(f"Overall Status: {summary['overall_status']}")
 
-        print(f"\n📋 DETAILED RESULTS")
+        print("\n📋 DETAILED RESULTS")
         print("=" * 60)
 
         results = summary.get("results", [])
@@ -229,7 +219,7 @@ def main() -> None:
             exit(1)
 
     except Exception as e:
-        print(f"\n💥 Validation script error: {str(e)}")
+        print(f"\n💥 Validation script error: {e!s}")
         exit(2)
 
 

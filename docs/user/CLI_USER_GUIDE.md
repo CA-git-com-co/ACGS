@@ -110,12 +110,12 @@ Example output:
   Constitutional Hash: cdd01ef066bc6cf2
   Compliance Score: 0.94
   Status: COMPLIANT
-  
+
   Recommendations:
   • Implement bias monitoring for demographic groups
   • Ensure model explainability for clinical decisions
   • Add patient consent verification workflow
-  
+
   Audit ID: audit_789xyz
   Timestamp: 2025-01-08T10:30:00Z
 ```
@@ -514,15 +514,15 @@ on: [push, pull_request]
 jobs:
   constitutional-check:
     runs-on: ubuntu-latest
-    
+
     steps:
     - uses: actions/checkout@v2
-    
+
     - name: Setup ACGS CLI
       run: |
         pip install -e ".[cli]"
         echo "${{ secrets.ACGS_CONFIG }}" > ~/.acgs/config.yaml
-    
+
     - name: Validate Constitutional Compliance
       run: |
         acgs constitutional validate-codebase \
@@ -530,7 +530,7 @@ jobs:
           --tenant-id ci-tenant \
           --fail-on-violation \
           --output compliance-report.json
-    
+
     - name: Upload Compliance Report
       uses: actions/upload-artifact@v2
       with:
@@ -607,8 +607,8 @@ acgs performance dashboard-data \
 
 ---
 
-**Constitutional Hash**: `cdd01ef066bc6cf2`  
-**Last Updated**: 2025-01-08  
+**Constitutional Hash**: `cdd01ef066bc6cf2`
+**Last Updated**: 2025-01-08
 **CLI Version**: 2.0.0
 
 For additional help with any CLI command, use the `--help` flag:

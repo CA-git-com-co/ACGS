@@ -18,6 +18,7 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 class ViolationType(Enum):
     """Types of constitutional violations."""
+
     CONTENT_HARMFUL = "content_harmful"
     BIAS_DETECTED = "bias_detected"
     PRIVACY_VIOLATION = "privacy_violation"
@@ -28,6 +29,7 @@ class ViolationType(Enum):
 
 class ComplianceLevel(Enum):
     """Levels of constitutional compliance."""
+
     COMPLIANT = "compliant"
     PARTIALLY_COMPLIANT = "partially_compliant"
     NON_COMPLIANT = "non_compliant"
@@ -156,11 +158,15 @@ class ConstitutionalValidator(ABC):
     """Abstract base class for constitutional validators."""
 
     @abstractmethod
-    async def validate_content(self, request: ContentValidationRequest) -> ValidationResult:
+    async def validate_content(
+        self, request: ContentValidationRequest
+    ) -> ValidationResult:
         """Validate content against constitutional rules."""
 
     @abstractmethod
-    async def validate_compliance(self, request: ConstitutionalComplianceRequest) -> ValidationResult:
+    async def validate_compliance(
+        self, request: ConstitutionalComplianceRequest
+    ) -> ValidationResult:
         """Validate constitutional compliance."""
 
     @abstractmethod
@@ -244,11 +250,15 @@ class ConstitutionalPolicyService(ABC):
     """Abstract service for constitutional policy management."""
 
     @abstractmethod
-    async def evaluate_policy(self, content: str, context: dict[str, Any]) -> PolicyDecision:
+    async def evaluate_policy(
+        self, content: str, context: dict[str, Any]
+    ) -> PolicyDecision:
         """Evaluate content against constitutional policies."""
 
     @abstractmethod
-    async def get_applicable_principles(self, context: dict[str, Any]) -> list[ConstitutionalPrinciple]:
+    async def get_applicable_principles(
+        self, context: dict[str, Any]
+    ) -> list[ConstitutionalPrinciple]:
         """Get constitutional principles applicable to the given context."""
 
 

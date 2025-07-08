@@ -3,15 +3,9 @@
     "docker-compose.postgresql.yml": [
       "config/postgresql/postgresql.conf:/etc/postgresql/postgresql.conf"
     ],
-    "tests/e2e/docker/prometheus.yml": [
-      "metrics"
-    ],
-    "services/core/code-analysis/config/prometheus.yml": [
-      "metrics"
-    ],
-    "tests/load_testing/monitoring/prometheus.yml": [
-      "metrics"
-    ],
+    "tests/e2e/docker/prometheus.yml": ["metrics"],
+    "services/core/code-analysis/config/prometheus.yml": ["metrics"],
+    "tests/load_testing/monitoring/prometheus.yml": ["metrics"],
     "services/shared/streaming/docker-compose.kafka.yml": [
       "services/shared/streaming/monitoring/jmx-kafka-config.yml:/opt/jmx_prometheus/config.yml:ro"
     ],
@@ -231,12 +225,8 @@
       "infrastructure/docker/logs:/app/logs",
       "infrastructure/docker/config/kimi:/app/config:ro"
     ],
-    "infrastructure/load-balancer/haproxy-exporter.yml": [
-      "metrics"
-    ],
-    "infrastructure/chaos/prometheus-chaos.yml": [
-      "metrics"
-    ],
+    "infrastructure/load-balancer/haproxy-exporter.yml": ["metrics"],
+    "infrastructure/chaos/prometheus-chaos.yml": ["metrics"],
     "infrastructure/docker/docker-compose.operational-excellence.yml": [
       "infrastructure/monitoring/grafana_dashboards:/etc/grafana/provisioning/dashboards:ro",
       "infrastructure/monitoring/alertmanager-enhanced.yml:/etc/alertmanager/alertmanager.yml:ro",
@@ -262,9 +252,7 @@
       "infrastructure/monitoring/config/grafana/datasources:/etc/grafana/provisioning/datasources:ro",
       "infrastructure/monitoring/config/prometheus.yml:/etc/prometheus/prometheus.yml:ro"
     ],
-    "infrastructure/monitoring/prometheus.yml": [
-      "metrics"
-    ],
+    "infrastructure/monitoring/prometheus.yml": ["metrics"],
     "infrastructure/docker/docker-compose.nano-vllm-staging.yml": [
       "logs/staging:/app/logs",
       "tests/validation",
@@ -318,9 +306,7 @@
       "logs:/app/logs",
       "reports/chaos_experiments:/app/reports/chaos_experiments"
     ],
-    "infrastructure/docker/monitoring/prometheus-ocr.yml": [
-      "metrics"
-    ],
+    "infrastructure/docker/monitoring/prometheus-ocr.yml": ["metrics"],
     "infrastructure/docker/docker-compose.development.yml": [
       "services/core/constitutional-ai:/app",
       "services/core/governance-synthesis:/app",
@@ -362,15 +348,9 @@
       "infrastructure/docker/services/core/governance-synthesis:/app",
       "infrastructure/docker/services/core/constitutional-ai"
     ],
-    "infrastructure/docker/monitoring/prometheus.yml": [
-      "metrics"
-    ],
-    "infrastructure/docker/prometheus/prometheus.yml": [
-      "metrics"
-    ],
-    "infrastructure/monitoring/prometheus/prometheus.yml": [
-      "metrics"
-    ],
+    "infrastructure/docker/monitoring/prometheus.yml": ["metrics"],
+    "infrastructure/docker/prometheus/prometheus.yml": ["metrics"],
+    "infrastructure/monitoring/prometheus/prometheus.yml": ["metrics"],
     "infrastructure/database/docker-compose.replicas.yml": [
       "infrastructure/database/userlist.txt:/etc/pgbouncer/userlist.txt",
       "infrastructure/database/replica_setup.sh:/docker-entrypoint-initdb.d/replica_setup.sh",
@@ -386,9 +366,7 @@
       "infrastructure/monitoring/monitoring/prometheus:/etc/prometheus",
       "infrastructure/monitoring/monitoring/grafana/provisioning:/etc/grafana/provisioning"
     ],
-    "infrastructure/monitoring/config/prometheus.yml": [
-      "metrics"
-    ],
+    "infrastructure/monitoring/config/prometheus.yml": ["metrics"],
     "infrastructure/redis/docker-compose.redis-cluster.yml": [
       "infrastructure/redis/cluster-init.sh:/cluster-init.sh:ro",
       "infrastructure/redis/cluster-health-check.sh:/cluster-health-check.sh:ro",
@@ -414,9 +392,7 @@
     "infrastructure/monitoring/config/prometheus-ai-governance.yml": [
       "metrics"
     ],
-    "tools/docker/prometheus.yml": [
-      "metrics"
-    ],
+    "tools/docker/prometheus.yml": ["metrics"],
     "services/blockchain/test_transaction_costs.js": [
       "services/blockchain/target/idl/quantumagi_core.json'"
     ],
@@ -441,9 +417,7 @@
     "services/blockchain/tests/logging_comprehensive.js": [
       "services/blockchain/tests/test_setup_helper'"
     ],
-    "services/blockchain/scripts/cost_optimization.js": [
-      ".."
-    ],
+    "services/blockchain/scripts/cost_optimization.js": [".."],
     "tools/mcp-inspector/client/tailwind.config.js": [
       "tools/mcp-inspector/client/index.html\",",
       "tools/mcp-inspector/client/src/**/*.{js,ts,jsx,tsx}\"],"
@@ -489,9 +463,7 @@
       "services/core/governance-synthesis",
       "services/core/constitutional-ai/ac_service"
     ],
-    "tools/manage_fv_service.sh": [
-      "services/core/governance-synthesis"
-    ],
+    "tools/manage_fv_service.sh": ["services/core/governance-synthesis"],
     "tools/test_emergency_shutdown.sh": [
       "tools/scripts/start_all_services.sh\""
     ],
@@ -500,9 +472,7 @@
       "tools/mcp-inspector/cli/scripts/nonexistent-config.json\",",
       "tools/mcp-inspector/cli/build\""
     ],
-    "tools/setup_redis_cluster.sh": [
-      "metrics"
-    ],
+    "tools/setup_redis_cluster.sh": ["metrics"],
     "tools/manage_ec_service.sh": [
       "services/core/governance-synthesis",
       "services/core/evolutionary-computation"
@@ -511,12 +481,8 @@
       "services/shared",
       "tools/scripts/deploy_mlops_system.sh"
     ],
-    "tools/setup-health-monitoring.sh": [
-      "metrics"
-    ],
-    "tools/manage_auth_service.sh": [
-      "services/core/governance-synthesis"
-    ],
+    "tools/setup-health-monitoring.sh": ["metrics"],
+    "tools/manage_auth_service.sh": ["services/core/governance-synthesis"],
     "tools/start_all_services.sh": [
       "services/platform_services/authentication/auth_service",
       "services/core/governance-synthesis/gs_service",
@@ -527,19 +493,13 @@
       "services/core/formal-verification/fv_service",
       "tools/acgs_test.db\""
     ],
-    "tools/fix_requirements_staging.sh": [
-      "tools/shared"
-    ],
+    "tools/fix_requirements_staging.sh": ["tools/shared"],
     "tools/fix_ci_failures.sh": [
       "services/shared/alembic.ini",
       "services/shared/__init__.py"
     ],
-    "tools/fix_integrity_service_dns.sh": [
-      ".env.integrity"
-    ],
-    "tools/manage_pgc_service.sh": [
-      "services/core/governance-synthesis"
-    ],
+    "tools/fix_integrity_service_dns.sh": [".env.integrity"],
+    "tools/manage_pgc_service.sh": ["services/core/governance-synthesis"],
     "tools/validate_fixes.sh": [
       "services/shared/alembic.ini",
       "services/shared/__init__.py",
@@ -553,16 +513,12 @@
       "tools/replica_setup.sh:/docker-entrypoint-initdb.d/replica_setup.sh",
       "tools/userlist.txt:/etc/pgbouncer/userlist.txt"
     ],
-    "tools/manage_gs_service.sh": [
-      "services/core/governance-synthesis"
-    ],
+    "tools/manage_gs_service.sh": ["services/core/governance-synthesis"],
     "tools/validate-emergency-preparedness.sh": [
       "tools/scripts/rollback.sh",
       "tools/scripts/emergency-response.sh"
     ],
-    "tools/quick_start_kimi.sh": [
-      "tools/scripts/manage_kimi_service.sh"
-    ],
+    "tools/quick_start_kimi.sh": ["tools/scripts/manage_kimi_service.sh"],
     "tools/run_phase3_tests.sh": [
       "services/core/governance-synthesis/gs_service/tests/integration",
       "services/core/governance-synthesis/gs_service/tests/performance/test_governance_synthesis_performance.py::TestAdvancedCachePerformance",
@@ -582,9 +538,7 @@
       "tools/scripts/rollback.sh",
       "tools/scripts/emergency-response.sh"
     ],
-    "tools/run_all_setup_tests.sh": [
-      "tools/scripts/start_all_services.sh\""
-    ],
+    "tools/run_all_setup_tests.sh": ["tools/scripts/start_all_services.sh\""],
     "tools/start_missing_services.sh": [
       "services/core/governance-synthesis/gs_service",
       "services/core/formal-verification/fv_service",
@@ -597,28 +551,16 @@
       "tools/node_modules/*\"",
       "tools/.git/*\""
     ],
-    "tools/monitor_database.sh": [
-      "."
-    ],
-    "tools/start_monitoring.sh": [
-      "tools/health_check.sh"
-    ],
+    "tools/monitor_database.sh": ["."],
+    "tools/start_monitoring.sh": ["tools/health_check.sh"],
     "tools/setup_pgbouncer_monitoring.sh": [
       "tools/scripts/tune_pgbouncer_performance.py\"",
       "metrics"
     ],
-    "tools/manage_integrity_service.sh": [
-      "services/core/governance-synthesis"
-    ],
-    "tools/restore_database.sh": [
-      "tools/health_check.sh"
-    ],
-    "tools/emergency_shutdown_test.sh": [
-      "tools/scripts/start_all_services.sh"
-    ],
-    "tools/setup-test-environment.sh": [
-      "tools/kind"
-    ],
+    "tools/manage_integrity_service.sh": ["services/core/governance-synthesis"],
+    "tools/restore_database.sh": ["tools/health_check.sh"],
+    "tools/emergency_shutdown_test.sh": ["tools/scripts/start_all_services.sh"],
+    "tools/setup-test-environment.sh": ["tools/kind"],
     "tools/generate_api_docs.sh": [
       "tools/documentation/doc_sync.py",
       "tools/scripts/generate_api_docs.sh",
@@ -628,9 +570,7 @@
       "services/shared",
       "tools/scripts/deploy_mlops_system.sh"
     ],
-    "tools/update-deps.sh": [
-      "UPDATE_SUMMARY.md"
-    ],
+    "tools/update-deps.sh": ["UPDATE_SUMMARY.md"],
     "tools/setup_automated_backups.sh": [
       "tools/scripts/monitor_backups.sh",
       "tools/scripts/test_disaster_recovery.sh",
@@ -642,9 +582,7 @@
     "tools/start_services_simple.sh": [
       "services/core/policy-governance/pgc_service"
     ],
-    "tools/implement-routine-maintenance.sh": [
-      "tools/scripts/health-check.sh"
-    ],
+    "tools/implement-routine-maintenance.sh": ["tools/scripts/health-check.sh"],
     "tools/update_running_services_pgbouncer.sh": [
       "tools/scripts/restart_services_with_pgbouncer.sh\""
     ],
@@ -704,9 +642,7 @@
       "tests/security.py",
       "tests/performance.py"
     ],
-    "infrastructure/monitoring/validate-deployment.sh": [
-      "infrastructure/..\""
-    ],
+    "infrastructure/monitoring/validate-deployment.sh": ["infrastructure/..\""],
     "tools/deploy-performance-testing.sh": [
       "tools/reports\",",
       "tools/infrastructure/performance-testing/reports/playwright'",
@@ -719,9 +655,7 @@
     "infrastructure/monitoring/test-metrics-integration.sh": [
       "infrastructure/..\""
     ],
-    "infrastructure/monitoring/deploy-monitoring.sh": [
-      "infrastructure/..\""
-    ],
+    "infrastructure/monitoring/deploy-monitoring.sh": ["infrastructure/..\""],
     "infrastructure/redis/redis-cluster-setup.sh": [
       "infrastructure/redis/deploy-cluster.sh\""
     ],
@@ -744,9 +678,7 @@
       "infrastructure/kubernetes/production/infrastructure/kubernetes/production/infrastructure-validation.sh;",
       "infrastructure/kubernetes/production/infrastructure/kubernetes/production/deploy-cluster.sh;"
     ],
-    "infrastructure/kubernetes/service-mesh/linkerd-deployment.sh": [
-      "metrics"
-    ],
+    "infrastructure/kubernetes/service-mesh/linkerd-deployment.sh": ["metrics"],
     "infrastructure/kubernetes/blue-green/migrate-pgc-service.sh": [
       "metrics",
       "infrastructure/kubernetes/blue-green/infrastructure/kubernetes/blue-green/traffic-routing-controller.sh"
@@ -800,12 +732,8 @@
       "tools/..\"",
       "tools/security/run-constitutional-trainer-security-scan.sh"
     ],
-    "tools/monitoring/setup-monitoring.sh": [
-      "metrics"
-    ],
-    "tools/reorganization/rollback_reorganization.sh": [
-      "tools/..\""
-    ],
+    "tools/monitoring/setup-monitoring.sh": ["metrics"],
+    "tools/reorganization/rollback_reorganization.sh": ["tools/..\""],
     "tools/maintenance/setup_dependencies.sh": [
       "tools/maintenance/node_modules/*\"",
       "tools/maintenance/target/*\"",
@@ -813,84 +741,45 @@
       "tools/mcp-inspector",
       "tools/mcp-inspector/package.json"
     ],
-    "tools/enterprise/ci-performance-optimizer.sh": [
-      "tools/..\""
-    ],
-    "tools/enterprise/artifact-management-validator.sh": [
-      "tools/..\""
-    ],
-    "tools/enterprise/integration-testing-validator.sh": [
-      "tools/..\""
-    ],
-    "tools/enterprise/workflow-optimization-validator.sh": [
-      "tools/..\""
-    ],
-    "tools/enterprise/documentation-compliance-validator.sh": [
-      "tools/..\""
-    ],
-    "tools/enterprise/validate-24-checks.sh": [
-      "tools/..\""
-    ],
-    "tools/enterprise/validate-enterprise-ci.sh": [
-      "tools/..\""
-    ],
+    "tools/enterprise/ci-performance-optimizer.sh": ["tools/..\""],
+    "tools/enterprise/artifact-management-validator.sh": ["tools/..\""],
+    "tools/enterprise/integration-testing-validator.sh": ["tools/..\""],
+    "tools/enterprise/workflow-optimization-validator.sh": ["tools/..\""],
+    "tools/enterprise/documentation-compliance-validator.sh": ["tools/..\""],
+    "tools/enterprise/validate-24-checks.sh": ["tools/..\""],
+    "tools/enterprise/validate-enterprise-ci.sh": ["tools/..\""],
     "tools/enterprise/validation-script-enhancement-validator.sh": [
       "tools/..\""
     ],
-    "tools/ci-cd/setup-test-environment.sh": [
-      "tests/e2e/",
-      "tools/..\""
-    ],
-    "tools/enterprise/performance-monitor.sh": [
-      "tools/..\""
-    ],
-    "tools/enterprise/deploy-enterprise-ci.sh": [
-      "tools/..\""
-    ],
-    "tools/enterprise/failure-analysis.sh": [
-      "tools/..\""
-    ],
-    "tools/enterprise/compliance-scoring-validator.sh": [
-      "tools/..\""
-    ],
+    "tools/ci-cd/setup-test-environment.sh": ["tests/e2e/", "tools/..\""],
+    "tools/enterprise/performance-monitor.sh": ["tools/..\""],
+    "tools/enterprise/deploy-enterprise-ci.sh": ["tools/..\""],
+    "tools/enterprise/failure-analysis.sh": ["tools/..\""],
+    "tools/enterprise/compliance-scoring-validator.sh": ["tools/..\""],
     "tools/metrics/collect_daily_metrics.sh": [
       "docs/api/index.md",
       "docs/configuration/README.md",
       "tools/..\""
     ],
-    "tools/enterprise/infrastructure-setup.sh": [
-      "tools/..\""
-    ],
-    "tools/enterprise/performance-optimization-validator.sh": [
-      "tools/..\""
-    ],
-    "tools/enterprise/toolchain-management-validator.sh": [
-      "tools/..\""
-    ],
-    "tools/reasoning-models/deploy-vllm-models.sh": [
-      "tools/..\""
-    ],
+    "tools/enterprise/infrastructure-setup.sh": ["tools/..\""],
+    "tools/enterprise/performance-optimization-validator.sh": ["tools/..\""],
+    "tools/enterprise/toolchain-management-validator.sh": ["tools/..\""],
+    "tools/reasoning-models/deploy-vllm-models.sh": ["tools/..\""],
     "tools/operations/disaster_recovery.sh": [
       "tools/operations/scripts/health/production_health_check.py"
     ],
-    "tools/reasoning-models/deploy-nano-vllm-service.sh": [
-      "tools/..\""
-    ],
+    "tools/reasoning-models/deploy-nano-vllm-service.sh": ["tools/..\""],
     "tools/setup/install_dependencies.sh": [
       "tools/setup/scripts/setup/start_development.sh\"",
       "tools/setup/scripts/setup/quick_start.sh"
     ],
-    "tools/reasoning-models/validate-nano-vllm-migration.sh": [
-      "tools/..\""
-    ],
+    "tools/reasoning-models/validate-nano-vllm-migration.sh": ["tools/..\""],
     "tools/reasoning-models/migrate-to-nano-vllm.sh": [
       "tools/reasoning-models/config/nano-vllm:/app/config:ro",
       "services/reasoning-models",
       "tools/..\""
     ],
-    "tools/setup/quick_start.sh": [
-      "tests/unit/"
-    ],
+    "tools/setup/quick_start.sh": ["tests/unit/"],
     "tools/setup/start_development.sh": [
       "tools/setup/scripts/stop_all_services.sh\"",
       "services/core/governance-synthesis/gs_service",
@@ -907,9 +796,7 @@
       ".",
       "tools/setup/scripts/run_migrations.sh"
     ],
-    "tools/enterprise/security-enhancement-validator.sh": [
-      "tools/..\""
-    ],
+    "tools/enterprise/security-enhancement-validator.sh": ["tools/..\""],
     "tools/validation/quick_validation.sh": [
       "tools/validation/validate_documentation_consistency.py",
       "docs/operations/SERVICE_STATUS.md",
@@ -942,15 +829,9 @@
       "services/core/constitutional-ai/",
       "services/core/policy-governance/pgc_service"
     ],
-    "tools/reasoning-models/migrate-configurations.sh": [
-      "tools/..\""
-    ],
-    "scripts/monitoring/start_enterprise_monitoring.sh": [
-      "scripts/..\""
-    ],
-    "tools/docker/setup-dind.sh": [
-      "tools/..\""
-    ],
+    "tools/reasoning-models/migrate-configurations.sh": ["tools/..\""],
+    "scripts/monitoring/start_enterprise_monitoring.sh": ["scripts/..\""],
+    "tools/docker/setup-dind.sh": ["tools/..\""],
     "tools/validation/test_builds.sh": [
       "services/shared/config/service_registry.py",
       "tools/validation/.git/*\"",
@@ -973,9 +854,7 @@
       "docs/api",
       "docs/architecture"
     ],
-    "opencode_source/opencode.json": [
-      "opencode_source/node_modules/foo\"]"
-    ],
+    "opencode_source/opencode.json": ["opencode_source/node_modules/foo\"]"],
     "acgs_focused_dependency_update_report.json": [
       "services/blockchain/scripts/Cargo.toml",
       "services/blockchain/package.json",
@@ -1109,12 +988,8 @@
       "tools/mcp-inspector/client/tsconfig.node.json\"",
       "tools/mcp-inspector/client/tsconfig.app.json\""
     ],
-    "services/blockchain/Anchor.toml": [
-      "services/blockchain/tsconfig.json"
-    ],
-    "CLEANUP_VALIDATION_REPORT.md": [
-      "services/core/constitutional-ai/"
-    ],
+    "services/blockchain/Anchor.toml": ["services/blockchain/tsconfig.json"],
+    "CLEANUP_VALIDATION_REPORT.md": ["services/core/constitutional-ai/"],
     "services/blockchain/scripts/Cargo.toml": [
       "services/blockchain/client/rust\""
     ],
@@ -1130,17 +1005,13 @@
       "tests/unit/",
       "tests/integration/"
     ],
-    "CHANGELOG.md": [
-      "CONTRIBUTING.md"
-    ],
+    "CHANGELOG.md": ["CONTRIBUTING.md"],
     "ACGS_DOCUMENTATION_AUDIT_REPORT.md": [
       "docs/api/api-docs-index.md`,",
       "docs/deployment/",
       "docs/api/index.md`"
     ],
-    "docs/openrouter_integration.md": [
-      "README.md"
-    ],
+    "docs/openrouter_integration.md": ["README.md"],
     "ACGS_DOCUMENTATION_QUALITY_REMEDIATION_REPORT.md": [
       "tools/quality/comprehensive_documentation_remediation.py`",
       "docs/api/constitutional-ai.md`",
@@ -1206,10 +1077,7 @@
       "docs/api/index.md`",
       "docs/tools/validation/validate_documentation_consistency.py`"
     ],
-    "README.md": [
-      "services/shared",
-      "tests/multi_agent_test_runner.py`"
-    ],
+    "README.md": ["services/shared", "tests/multi_agent_test_runner.py`"],
     "docs/HUNYUAN_INTEGRATION_STATUS.md": [
       "docs/scripts/hunyuan_management.sh"
     ],
@@ -1219,24 +1087,15 @@
       "docs/api/authentication.md`",
       "docs/README.md"
     ],
-    "docs/DEPENDENCIES.md": [
-      "docs/install.sh"
-    ],
-    "docs/ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md": [
-      "metrics"
-    ],
+    "docs/DEPENDENCIES.md": ["docs/install.sh"],
+    "docs/ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md": ["metrics"],
     "docs/QUARTERLY_DOCUMENTATION_AUDIT_PROCEDURES.md": [
       "docs/api/",
       "docs/api/index.md",
       "docs/configuration/README.md"
     ],
-    "docs/README.md": [
-      "services/shared",
-      "tests/multi_agent_test_runner.py`"
-    ],
-    "docs/DEPENDENCY_MANAGERS_UPDATE_SUMMARY.md": [
-      "services/blockchain"
-    ],
+    "docs/README.md": ["services/shared", "tests/multi_agent_test_runner.py`"],
+    "docs/DEPENDENCY_MANAGERS_UPDATE_SUMMARY.md": ["services/blockchain"],
     "docs/REMAINING_TASKS_COMPLETION_SUMMARY.md": [
       "tests/e2e/tests/test_security.py`"
     ],
@@ -1775,9 +1634,7 @@
       "services/cli/tui/sdk/scripts/format",
       "services/cli/tui/sdk/scripts/build"
     ],
-    "services/cli/tui/sdk/README.md": [
-      "services/cli/tui/sdk/CONTRIBUTING.md"
-    ],
+    "services/cli/tui/sdk/README.md": ["services/cli/tui/sdk/CONTRIBUTING.md"],
     "services/cli_backup_20250706_110222/gemini_cli/README.md": [
       "tests/unit/",
       "tests/integration/"
@@ -1880,9 +1737,7 @@
     "services/platform_services/authentication/auth_service/README.md": [
       "services/docs/api/auth_service_api.md"
     ],
-    "docs/deployment/BRANCH_PROTECTION_GUIDE.md": [
-      "services/core/"
-    ],
+    "docs/deployment/BRANCH_PROTECTION_GUIDE.md": ["services/core/"],
     "services/blockchain/docs/OPERATIONAL_RUNBOOKS.md": [
       "services/blockchain/docs/scripts/deployment_status.sh",
       "services/blockchain/docs/scripts/run_comprehensive_tests.sh",
@@ -1915,9 +1770,7 @@
     "docs/implementation/ACGS_CODE_ANALYSIS_ENGINE_IMPLEMENTATION_PLAN.md": [
       "services/core/code-analysis/"
     ],
-    "docs/operations/SERVICE_STATUS.md": [
-      "services/shared"
-    ],
+    "docs/operations/SERVICE_STATUS.md": ["services/shared"],
     "docs/architecture/ACGS_CLAUDIA_INTEGRATION_ARCHITECTURE.md": [
       "ACGS-2",
       "docs/claudia-acgs"
@@ -2073,9 +1926,7 @@
       "docs/deployment/scripts/security_audit.py",
       "services/"
     ],
-    "docs/architecture/NEXT_PHASE_ROADMAP.md": [
-      "tests/integration/"
-    ],
+    "docs/architecture/NEXT_PHASE_ROADMAP.md": ["tests/integration/"],
     "docs/architecture/ACGS_GITOPS_COMPREHENSIVE_VALIDATION_REPORT.md": [
       "docs/architecture/scripts/deploy-gitops.sh`"
     ],
@@ -2090,9 +1941,7 @@
       "docs/deployment/scripts/test_emergency_shutdown.sh",
       "docs/deployment/scripts/security_audit.py"
     ],
-    "docs/architecture/ACGE_PHASE3_EDGE_INFRASTRUCTURE.md": [
-      "metrics"
-    ],
+    "docs/architecture/ACGE_PHASE3_EDGE_INFRASTRUCTURE.md": ["metrics"],
     "docs/training/ACGS_DOCUMENTATION_TEAM_TRAINING_GUIDE.md": [
       "tools/monitoring/quality_alert_monitor.py",
       "docs/training/tools/validation/quick_validation.sh",
@@ -2106,9 +1955,7 @@
       "tools/validation/quick_validation.sh",
       "docs/training/validation_tools_cheatsheet.md"
     ],
-    "docs/security/SECURITY.md": [
-      "docs/security/scripts/key_management.sh"
-    ],
+    "docs/security/SECURITY.md": ["docs/security/scripts/key_management.sh"],
     "docs/training/validation_tools_cheatsheet.md": [
       "tools/monitoring/quality_alert_monitor.py",
       "docs/training/tools/validation/quick_validation.sh",
@@ -2129,9 +1976,7 @@
       "docs/operations/SERVICE_STATUS.md",
       "docs/performance_benchmarking_plan.md"
     ],
-    "docs/api/integrity.md": [
-      "docs/operations/SERVICE_STATUS.md"
-    ],
+    "docs/api/integrity.md": ["docs/operations/SERVICE_STATUS.md"],
     "reorganization-tools/reports/REORGANIZATION_SUCCESS_REPORT.md": [
       "services/platform_services/integrity/",
       "services/core/worker_agents/",
@@ -2179,9 +2024,7 @@
       "infrastructure/operational-excellence/scripts/comprehensive_health_check.sh",
       "infrastructure/operational-excellence/scripts/run_performance_validation.py"
     ],
-    "tests/load_testing/README.md": [
-      "tests/load_testing/"
-    ],
+    "tests/load_testing/README.md": ["tests/load_testing/"],
     "docs/api/index.md": [
       "docs/operations/SERVICE_STATUS.md",
       "docs/configuration/README.md",
@@ -2278,9 +2121,7 @@
     "infrastructure/kubernetes/staging/STAGING_DEPLOYMENT_SIMULATION.md": [
       "infrastructure/kubernetes/staging/infrastructure/kubernetes/operations/health-monitor.sh"
     ],
-    "infrastructure/monitoring/runbooks/database_issues_runbook.md": [
-      "."
-    ],
+    "infrastructure/monitoring/runbooks/database_issues_runbook.md": ["."],
     "infrastructure/monitoring/grafana/dashboards/README.md": [
       "infrastructure/monitoring/grafana/dashboards/infrastructure/monitoring/grafana/deploy-dashboards.sh"
     ],
@@ -2382,9 +2223,7 @@
     "opencode_source/packages/tui/sdk/README.md": [
       "opencode_source/packages/tui/sdk/CONTRIBUTING.md"
     ],
-    "pnpm-workspace.yaml": [
-      "services/blockchain"
-    ],
+    "pnpm-workspace.yaml": ["services/blockchain"],
     "services/core/policy-governance/pgc_service/k8s/service-mesh.yaml": [
       "metrics"
     ],
@@ -2400,9 +2239,7 @@
       "infrastructure/kubernetes/monitoring",
       "infrastructure/kubernetes/security"
     ],
-    "infrastructure/security/istio-service-mesh.yaml": [
-      "metrics"
-    ],
+    "infrastructure/security/istio-service-mesh.yaml": ["metrics"],
     "infrastructure/monitoring/runbooks/change_management_runbook.md": [
       "infrastructure/monitoring/runbooks/scripts/notify_constitutional_stakeholders.py",
       "infrastructure/monitoring/runbooks/scripts/collect_stakeholder_feedback.py",
@@ -2444,37 +2281,20 @@
       "infrastructure/monitoring/runbooks/scripts/constitutional_change_process.py",
       "infrastructure/monitoring/runbooks/scripts/monitor_change_progress.py"
     ],
-    "infrastructure/kubernetes/api-gateway.yaml": [
-      "metrics"
-    ],
-    "infrastructure/kubernetes/redis.yaml": [
-      "data"
-    ],
-    "infrastructure/kubernetes/opa.yaml": [
-      "config"
-    ],
-    "infrastructure/istio/dgm-service/deployment.yaml": [
-      "metrics"
-    ],
+    "infrastructure/kubernetes/api-gateway.yaml": ["metrics"],
+    "infrastructure/kubernetes/redis.yaml": ["data"],
+    "infrastructure/kubernetes/opa.yaml": ["config"],
+    "infrastructure/istio/dgm-service/deployment.yaml": ["metrics"],
     "infrastructure/istio/dgm-service/security-policies.yaml": [
       "infrastructure/istio/dgm-service/*'"
     ],
     "infrastructure/kubernetes/deployment-scripts.yaml": [
       "infrastructure/kubernetes/audit-backup"
     ],
-    "infrastructure/kubernetes/acgs-lite/policy-engine.yaml": [
-      "metrics"
-    ],
-    "infrastructure/kubernetes/acgs-lite/redis.yaml": [
-      "data",
-      "metrics"
-    ],
-    "infrastructure/kubernetes/acgs-lite/monitoring.yaml": [
-      "metrics"
-    ],
-    "infrastructure/kubernetes/acgs-lite/database-init.yaml": [
-      "scripts"
-    ],
+    "infrastructure/kubernetes/acgs-lite/policy-engine.yaml": ["metrics"],
+    "infrastructure/kubernetes/acgs-lite/redis.yaml": ["data", "metrics"],
+    "infrastructure/kubernetes/acgs-lite/monitoring.yaml": ["metrics"],
+    "infrastructure/kubernetes/acgs-lite/database-init.yaml": ["scripts"],
     "infrastructure/kubernetes/acgs-lite/redpanda-cluster.yaml": [
       "scripts",
       "metrics"
@@ -2486,15 +2306,11 @@
     "infrastructure/kubernetes/acgs-lite/constitutional-trainer.yaml": [
       "metrics"
     ],
-    "infrastructure/kubernetes/acgs-lite/alertmanager.yaml": [
-      "metrics"
-    ],
+    "infrastructure/kubernetes/acgs-lite/alertmanager.yaml": ["metrics"],
     "infrastructure/kubernetes/blue-green/automated-rollback-system.yaml": [
       "metrics"
     ],
-    "infrastructure/kubernetes/blue-green/shared-resources.yaml": [
-      "data"
-    ],
+    "infrastructure/kubernetes/blue-green/shared-resources.yaml": ["data"],
     "infrastructure/kubernetes/monitoring/prometheus-operator.yaml": [
       "metrics"
     ],
@@ -2519,9 +2335,7 @@
     "infrastructure/kubernetes/production/monitoring/prometheus-config.yaml": [
       "metrics"
     ],
-    "services/cli/opencode/sst-env.d.ts": [
-      "services/sst-env.d.ts\""
-    ],
+    "services/cli/opencode/sst-env.d.ts": ["services/sst-env.d.ts\""],
     "opencode_source/sst.config.ts": [
       "opencode_source/infra/app.js\"",
       "opencode_source/.sst/platform/config.d.ts\""
@@ -3360,9 +3174,7 @@
       "services/cli/opencode/src/tool/edit",
       "services/cli/opencode/src/tool/bash\""
     ],
-    "services/blockchain/scripts/cost_optimization.ts": [
-      ".."
-    ],
+    "services/blockchain/scripts/cost_optimization.ts": [".."],
     "services/cli_backup_20250706_110222/opencode_adapter/src/constitutional-wrapper.ts": [
       "services/cli_backup_20250706_110222/opencode_adapter/src/logger.js';",
       "services/cli_backup_20250706_110222/opencode_adapter/src/logger.js"
@@ -3504,9 +3316,7 @@
       "tools/mcp-inspector/cli/src/transport.js",
       "tools/mcp-inspector/cli/src/error-handler.js"
     ],
-    "tools/mcp-inspector/cli/src/cli.ts": [
-      "tools/mcp-inspector/\","
-    ],
+    "tools/mcp-inspector/cli/src/cli.ts": ["tools/mcp-inspector/\","],
     "tools/mcp-inspector/client/src/lib/oauth-state-machine.ts": [
       "tools/mcp-inspector/client/src/lib/auth-types",
       "tools/mcp-inspector/client/src/lib/auth-types\";",
@@ -4325,9 +4135,7 @@
       "opencode_source/packages/opencode/src/cli/cmd/cmd\"",
       "opencode_source/packages/opencode/src/cli/ui"
     ],
-    "tools/test_security_features.py": [
-      "..../..../etc/passwd\","
-    ],
+    "tools/test_security_features.py": ["..../..../etc/passwd\","],
     "tools/apply_security_headers_middleware.py": [
       "services/core/governance-synthesis/gs_service/app/main.py",
       "services/core/formal-verification/fv_service/main.py",
@@ -4433,19 +4241,13 @@
       "docs/api",
       "docs/architecture"
     ],
-    "tools/performance_optimization.py": [
-      "data"
-    ],
+    "tools/performance_optimization.py": ["data"],
     "tools/automated_vulnerability_scanner.py": [
       "services/core/governance-synthesis/gs_service/app/main.py",
       "services/shared/models.py",
       "services/core/policy-governance/pgc_service/app/main.py"
     ],
-    "tools/validate_cicd_pipeline.py": [
-      "pytest.ini",
-      "config",
-      "github\""
-    ],
+    "tools/validate_cicd_pipeline.py": ["pytest.ini", "config", "github\""],
     "tools/security_compliance_enhancement.py": [
       "services/core/governance-synthesis/gs_service/app/main.py",
       "services/core/policy-governance/pgc_service/app/main.py"
@@ -4471,9 +4273,7 @@
       "services/core/evolutionary-computation",
       "services/core/policy-governance"
     ],
-    "tools/priority2_focused_test_improvement.py": [
-      "tests/performance/"
-    ],
+    "tools/priority2_focused_test_improvement.py": ["tests/performance/"],
     "tools/code_quality_standardization.py": [
       "services/core/governance-synthesis",
       "services/core/formal-verification",
@@ -4540,16 +4340,11 @@
       "tools/services/\",",
       "services/core/evolutionary-computation/ec_service"
     ],
-    "tools/code_quality_validator.py": [
-      "services/core"
-    ],
+    "tools/code_quality_validator.py": ["services/core"],
     "tools/validate_phase1_enhanced_synthesis.py": [
       "services/core/policy-governance/pgc_service/app/core"
     ],
-    "tools/post_cleanup_comprehensive_analysis.py": [
-      "config",
-      "services/core"
-    ],
+    "tools/post_cleanup_comprehensive_analysis.py": ["config", "services/core"],
     "tools/error_tracking_system.py": [
       "services/core/governance-synthesis/gs_service/app/schemas.py"
     ],
@@ -4584,9 +4379,7 @@
       "services/core/constitutional-ai/ac_service/app/main.py",
       "services/core/policy-governance/pgc_service/app/main.py"
     ],
-    "tools/comprehensive_codebase_reorganization.py": [
-      "services/core"
-    ],
+    "tools/comprehensive_codebase_reorganization.py": ["services/core"],
     "tools/test_new_models.py": [
       "services/shared",
       "services/core/governance-synthesis/gs_service/app"
@@ -4623,12 +4416,8 @@
       "services/core/evolutionary-computation/ec_service",
       "services/core/policy-governance/pgc_service"
     ],
-    "tools/test_remediation_coordinator.py": [
-      "tests/performance/"
-    ],
-    "tools/analyze_cleanup_results.py": [
-      "services/core/"
-    ],
+    "tools/test_remediation_coordinator.py": ["tests/performance/"],
+    "tools/analyze_cleanup_results.py": ["services/core/"],
     "tools/enhance_frontend_integration.py": [
       "services/api';",
       "config/blockchain.json';",
@@ -4644,16 +4433,12 @@
       "tools/authentication_service_openapi.yaml'></redoc>",
       "tools/authentication_service_openapi.yaml',"
     ],
-    "tools/audit_compliance_validator.py": [
-      "tools/policy-datasets"
-    ],
+    "tools/audit_compliance_validator.py": ["tools/policy-datasets"],
     "tools/fix_gs_service_dependencies.py": [
       "services/core/governance-synthesis/gs_service",
       "tools/restart_gs_service.sh\""
     ],
-    "tools/production_config_setup.py": [
-      ".env.production"
-    ],
+    "tools/production_config_setup.py": [".env.production"],
     "tools/update_monitoring_config.py": [
       "tools/alertmanager.yml:/etc/alertmanager/alertmanager.yml\"",
       "tools/prometheus.yml:/etc/prometheus/prometheus.yml\",",
@@ -4714,9 +4499,7 @@
       "services/core/evolutionary-computation/ec_service",
       "services/core/policy-governance/pgc_service"
     ],
-    "tools/load_test_data.py": [
-      "tools/test_comprehensive_workflow.sh\""
-    ],
+    "tools/load_test_data.py": ["tools/test_comprehensive_workflow.sh\""],
     "tools/establish_maintenance_procedures.py": [
       "tools/communication/automation_tools.json",
       "tools/automation/MAINTENANCE_AUTOMATION_FRAMEWORK.json",
@@ -4729,9 +4512,7 @@
       "services/core/formal-verification/fv_service",
       "services/core/policy-governance/pgc_service"
     ],
-    "tools/database_performance_analysis.py": [
-      "."
-    ],
+    "tools/database_performance_analysis.py": ["."],
     "tools/simple_security_scanner.py": [
       "tools/venv,./node_modules,./target,./blockchain/target\","
     ],
@@ -4754,9 +4535,7 @@
     "tools/production_blue_green_deployment.py": [
       "tools/scripts/start_all_services.sh\"],"
     ],
-    "tools/refactoring_demo.py": [
-      "services"
-    ],
+    "tools/refactoring_demo.py": ["services"],
     "tools/testing_infrastructure_optimization.py": [
       "tests/security",
       "tests/security/",
@@ -4816,10 +4595,7 @@
       "docs/architecture",
       "tools/scripts/start_all_services.sh"
     ],
-    "tools/post_cleanup_analysis.py": [
-      "services/core/",
-      "services/core"
-    ],
+    "tools/post_cleanup_analysis.py": ["services/core/", "services/core"],
     "tools/test_runner.py": [
       "tests/security/",
       "tests/performance/",
@@ -4854,13 +4630,8 @@
       "tools/monitoring/prometheus:/etc/prometheus\",",
       "tools/monitoring/alertmanager:/etc/alertmanager\"],"
     ],
-    "tools/generate_api_docs.py": [
-      "README.md",
-      "docs/api"
-    ],
-    "tools/implement_enhanced_constitutional_analyzer.py": [
-      "services/shared"
-    ],
+    "tools/generate_api_docs.py": ["README.md", "docs/api"],
+    "tools/implement_enhanced_constitutional_analyzer.py": ["services/shared"],
     "tools/verify_security_fixes.py": [
       "services/core/constitutional-ai/ac_service/app/main.py",
       "services/core/governance-synthesis/gs_service/app/services/advanced_cache.py",
@@ -4868,9 +4639,7 @@
       "services/core/governance-synthesis/gs_service/app/core/llm_reliability_framework.py",
       "services/core/governance-synthesis/gs_service/app/core/opa_integration.py"
     ],
-    "tools/large_file_analyzer.py": [
-      "tools/large_file_analyzer.py"
-    ],
+    "tools/large_file_analyzer.py": ["tools/large_file_analyzer.py"],
     "tools/fix_python_imports.py": [
       "services/core/policy-governance/pgc_service/app",
       "services/core",
@@ -4894,15 +4663,9 @@
       "services/core/policy-governance/pgc_service",
       "services/core/formal-verification/fv_service/app/core"
     ],
-    "tools/penetration_testing.py": [
-      "..../..../etc/passwd\","
-    ],
-    "tools/validate_mab_metrics_functionality.py": [
-      "services/shared"
-    ],
-    "tools/database_query_optimization.py": [
-      "."
-    ],
+    "tools/penetration_testing.py": ["..../..../etc/passwd\","],
+    "tools/validate_mab_metrics_functionality.py": ["services/shared"],
+    "tools/database_query_optimization.py": ["."],
     "tools/documentation_cleanup.py": [
       "services/core/governance-synthesis/gs_service/",
       "tests/e2e/",
@@ -4913,9 +4676,7 @@
       "services/core/evolutionary-computation/ec_service/",
       "services/core/constitutional-ai/ac_service/"
     ],
-    "tools/sla_dashboard.py": [
-      "tools/scripts/start_sla_monitor.sh"
-    ],
+    "tools/sla_dashboard.py": ["tools/scripts/start_sla_monitor.sh"],
     "tools/comprehensive_test_runner.py": [
       "tests/unit",
       "tests/integration",
@@ -4926,9 +4687,7 @@
       "services/platform_services/",
       ".github/CODEOWNERS"
     ],
-    "tools/security_cleanup.py": [
-      ".env.template"
-    ],
+    "tools/security_cleanup.py": [".env.template"],
     "tools/constitutional_compliance_remediation.py": [
       "docs/deployment/ACGS_GITOPS_DEPLOYMENT_GUIDE.md",
       "docs/emergency_rollback_procedures.md",
@@ -4971,17 +4730,13 @@
       "docs/workflow_fixes_summary.md",
       "docs/risk_assessed_migration_plan.md"
     ],
-    "tools/automated_incident_response.py": [
-      "config"
-    ],
+    "tools/automated_incident_response.py": ["config"],
     "tools/fix_test_imports.py": [
       "tests/unit",
       "tests/performance",
       "tests/integration"
     ],
-    "tools/test_ollama_constitutional.py": [
-      "config"
-    ],
+    "tools/test_ollama_constitutional.py": ["config"],
     "tools/automated_validation_pipeline.py": [
       "services/core/governance-synthesis/gs_service",
       "services/core/formal-verification/fv_service",
@@ -5000,9 +4755,7 @@
     "tools/start_pgc_service_host.py": [
       "services/core/policy-governance/pgc_service"
     ],
-    "tools/configuration_standardization.py": [
-      "config"
-    ],
+    "tools/configuration_standardization.py": ["config"],
     "tools/fix_outdated_paths.py": [
       "services/core/governance-synthesis/gs_service",
       "services/shared",
@@ -5010,15 +4763,9 @@
       "services/core/formal-verification/fv_service",
       "services/core/policy-governance/pgc_service"
     ],
-    "tools/test_cleanup.py": [
-      "tests/fixtures"
-    ],
-    "tools/comprehensive_duplicate_cleanup.py": [
-      "services/core/"
-    ],
-    "tools/final_duplicate_cleanup.py": [
-      "services/shared/alembic"
-    ],
+    "tools/test_cleanup.py": ["tests/fixtures"],
+    "tools/comprehensive_duplicate_cleanup.py": ["services/core/"],
+    "tools/final_duplicate_cleanup.py": ["services/shared/alembic"],
     "tools/deploy_comprehensive_audit_logging.py": [
       "services/core/governance-synthesis/gs_service/app/main.py",
       "services/core/policy-governance/pgc_service/app/main.py",
@@ -5033,9 +4780,7 @@
       "services/core/constitutional-ai",
       "services/core/policy-governance"
     ],
-    "tools/fix_vulnerabilities.py": [
-      "SECURITY_POLICY.yml"
-    ],
+    "tools/fix_vulnerabilities.py": ["SECURITY_POLICY.yml"],
     "tools/validate_documentation_update.py": [
       "services/core/governance-synthesis/gs_service",
       "services/core/constitutional-ai/ac_service",
@@ -5043,19 +4788,13 @@
       "services/core/formal-verification/fv_service",
       "services/core/policy-governance/pgc_service"
     ],
-    "tools/policy_synthesis_deployment_plan.py": [
-      "config"
-    ],
-    "tools/production_readiness_validation.py": [
-      "services/core/"
-    ],
+    "tools/policy_synthesis_deployment_plan.py": ["config"],
+    "tools/production_readiness_validation.py": ["services/core/"],
     "tools/focused_dependency_update.py": [
       "services/blockchain",
       ".acgs-dependencies.json"
     ],
-    "tools/test_mab_real_world_validation.py": [
-      "services/shared"
-    ],
+    "tools/test_mab_real_world_validation.py": ["services/shared"],
     "tools/update_cicd_pipelines.py": [
       "tests/integration",
       "tests/performance/",
@@ -5088,9 +4827,7 @@
       "services/core/evolutionary-computation",
       "services/core/policy-governance/pgc_service"
     ],
-    "tools/enhance_access_control.py": [
-      "config.json"
-    ],
+    "tools/enhance_access_control.py": ["config.json"],
     "tools/gs_service_hotfix.py": [
       "services/core/governance-synthesis/gs_service/app/main.py"
     ],
@@ -5121,9 +4858,7 @@
       "services/core/policy-governance",
       "tools/dgm-best-swe-agent"
     ],
-    "tools/test_mab_metrics_endpoint.py": [
-      "services/shared"
-    ],
+    "tools/test_mab_metrics_endpoint.py": ["services/shared"],
     "tools/fix_github_actions_workflows.py": [
       "tools/coverage\\.xml\",",
       "tools/coverage.xml\""
@@ -5138,10 +4873,7 @@
       "tests/unit/",
       "tests/integration/"
     ],
-    "tools/deploy_intelligent_alerting.py": [
-      "config",
-      "metrics"
-    ],
+    "tools/deploy_intelligent_alerting.py": ["config", "metrics"],
     "tools/dependency_management_resolution.py": [
       "services/core/governance-synthesis",
       "services/core/constitutional-ai",
@@ -5178,9 +4910,7 @@
       "tools/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml\"",
       "tools/backups/$DATE\""
     ],
-    "tools/comprehensive_codebase_cleanup.py": [
-      "tools/blockchain/target'"
-    ],
+    "tools/comprehensive_codebase_cleanup.py": ["tools/blockchain/target'"],
     "tools/comprehensive_production_monitoring.py": [
       "tools/config/prometheus.yml:/etc/prometheus/prometheus.yml\",",
       "tools/monitoring/scripts/emergency_restore.sh\"",
@@ -5224,12 +4954,8 @@
       "services/core/constitutional-ai/",
       "services/core/constitutional-ai/ac_service/"
     ],
-    "tools/validate_enhancement_readiness.py": [
-      "pytest.ini"
-    ],
-    "services/blockchain/test_concurrent_processing.py": [
-      "metrics"
-    ],
+    "tools/validate_enhancement_readiness.py": ["pytest.ini"],
+    "services/blockchain/test_concurrent_processing.py": ["metrics"],
     "tools/priority3_monitoring_infrastructure.py": [
       "tools/alertmanager:/etc/alertmanager\"],",
       "tools/grafana/provisioning:/etc/grafana/provisioning\",",
@@ -5312,12 +5038,8 @@
       "services/blockchain/scripts/README.md",
       "services/blockchain/scripts/client"
     ],
-    "services/cli_backup_20250706_110222/gemini_cli/gemini_cli.py": [
-      "config"
-    ],
-    "services/shared/auth/tenant_auth.py": [
-      "..\""
-    ],
+    "services/cli_backup_20250706_110222/gemini_cli/gemini_cli.py": ["config"],
+    "services/shared/auth/tenant_auth.py": ["..\""],
     "services/shared/security/unified_input_validation.py": [
       "services/shared/security/\",",
       "services/shared/security/|\\.\\.\\\\"
@@ -5360,15 +5082,9 @@
     "tests/unit/test_apgf_integration.py": [
       "tests/unit/test_apgf_integration.py"
     ],
-    "tests/compliance/compliance_test_runner.py": [
-      "tests/compliance"
-    ],
-    "tests/e2e/tests/test_security.py": [
-      "etc/passwd\","
-    ],
-    "tests/e2e/framework/runner.py": [
-      "tests"
-    ],
+    "tests/compliance/compliance_test_runner.py": ["tests/compliance"],
+    "tests/e2e/tests/test_security.py": ["etc/passwd\","],
+    "tests/e2e/framework/runner.py": ["tests"],
     "tests/load_testing/distributed_config.py": [
       "tests/load_testing/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml\",",
       "tests/load_testing/monitoring/grafana/provisioning:/etc/grafana/provisioning\",",
@@ -5439,9 +5155,7 @@
       "tools/validation/api_code_sync_validator.py",
       "docs/api/governance_synthesis.md"
     ],
-    "tools/cicd/enhanced_cicd_pipeline.py": [
-      "services"
-    ],
+    "tools/cicd/enhanced_cicd_pipeline.py": ["services"],
     "tools/automation/cross_reference_maintainer.py": [
       "tools/automation/{new_rel}\"",
       "tools/automation/{old_rel}\",",
@@ -5449,9 +5163,7 @@
       "tools/automation/cross_reference_maintainer.py",
       "tools/'"
     ],
-    "tools/versioning/migration_generator.py": [
-      "tests/integration/"
-    ],
+    "tools/versioning/migration_generator.py": ["tests/integration/"],
     "tools/dgm-best-swe-agent/coding_agent.py": [
       "tools/dgm-best-swe-agent/chat_history.md\","
     ],
@@ -5475,9 +5187,7 @@
       "tools/dgm-best-swe-agent/polyglot/subsets/small.json\"",
       "tools/dgm-best-swe-agent/output_dgm\","
     ],
-    "tools/testing/wina_performance_tester.py": [
-      "services/shared"
-    ],
+    "tools/testing/wina_performance_tester.py": ["services/shared"],
     "tools/performance/implement_performance_scaling_optimization.py": [
       "tools/performance/services/core/{service}\",",
       "tools/performance/config/database/postgresql.conf:/etc/postgresql/postgresql.conf\","
@@ -5489,9 +5199,7 @@
       "services/core/constitutional-ai/ac_service/app/main.py",
       "services/core/evolutionary-computation/app/main.py"
     ],
-    "tools/testing/security_validator.py": [
-      "services/shared"
-    ],
+    "tools/testing/security_validator.py": ["services/shared"],
     "tools/testing/test_runner_simple.py": [
       "tests/security",
       "tests/integration",
@@ -5522,9 +5230,7 @@
       "docs/architecture/",
       "services/core/constitutional-ai/"
     ],
-    "tools/testing/e2e_workflow_tester.py": [
-      "services/shared"
-    ],
+    "tools/testing/e2e_workflow_tester.py": ["services/shared"],
     "tools/production_readiness/performance_optimization_implementation.py": [
       "tools/production_readiness/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro",
       "tools/production_readiness/ssl:/etc/ssl/certs:ro",
@@ -5536,9 +5242,7 @@
       "services/core/constitutional-ai",
       "services/core/policy-governance"
     ],
-    "tools/testing/integration_tester.py": [
-      "services/shared"
-    ],
+    "tools/testing/integration_tester.py": ["services/shared"],
     "tools/testing/analyze_metrics_endpoints.py": [
       "services/core/governance-synthesis",
       "services/core/formal-verification",
@@ -5546,26 +5250,15 @@
       "services/core/evolutionary-computation",
       "services/core/policy-governance"
     ],
-    "tools/testing/performance_benchmarker.py": [
-      "services/shared"
-    ],
-    "tools/testing/critical_issue_resolver.py": [
-      "tools/testing/\","
-    ],
-    "tools/testing/conftest.py": [
-      "services/shared",
-      "services/core"
-    ],
-    "tools/testing/business_rules_tester.py": [
-      "services/shared"
-    ],
+    "tools/testing/performance_benchmarker.py": ["services/shared"],
+    "tools/testing/critical_issue_resolver.py": ["tools/testing/\","],
+    "tools/testing/conftest.py": ["services/shared", "services/core"],
+    "tools/testing/business_rules_tester.py": ["services/shared"],
     "tools/testing/apply_security_headers.py": [
       "services/core/governance-synthesis",
       "services/core/evolutionary-computation"
     ],
-    "tools/security/automated_vulnerability_scan.py": [
-      "tests"
-    ],
+    "tools/security/automated_vulnerability_scan.py": ["tests"],
     "tools/maintenance/fix_utc_imports.py": [
       "services/shared/utils.py",
       "services/shared/models.py",
@@ -5575,15 +5268,9 @@
       "tools/maintenance/scripts/start_all_services.sh",
       "services/core"
     ],
-    "tools/security/enforce-security-policies.py": [
-      "services"
-    ],
-    "tools/quality/constitutional_hash_formatter.py": [
-      "docs/api/"
-    ],
-    "tools/cache/optimize_cache_performance.py": [
-      "config"
-    ],
+    "tools/security/enforce-security-policies.py": ["services"],
+    "tools/quality/constitutional_hash_formatter.py": ["docs/api/"],
+    "tools/cache/optimize_cache_performance.py": ["config"],
     "tools/quality/comprehensive_documentation_remediation.py": [
       "tools/training/validation_tools_cheatsheet.md\""
     ],
@@ -5605,16 +5292,12 @@
     "tools/operations/implement_operational_excellence.py": [
       "tools/operations/scripts/health/production_health_check.py"
     ],
-    "tools/setup/setup_production_auth.py": [
-      "tools/setup/test_rbac.sh\""
-    ],
+    "tools/setup/setup_production_auth.py": ["tools/setup/test_rbac.sh\""],
     "tools/monitoring/setup_basic_monitoring.py": [
       "services",
       "tools/monitoring/scripts/monitoring/start_monitoring.sh\""
     ],
-    "tools/monitoring/deploy_basic_monitoring.py": [
-      "services"
-    ],
+    "tools/monitoring/deploy_basic_monitoring.py": ["services"],
     "tools/setup/setup_redis_infrastructure.py": [
       "tools/setup/redis.conf:/usr/local/etc/redis/redis.conf",
       "infrastructure"
@@ -5678,16 +5361,12 @@
     "tools/validation/validate_deployment.py": [
       "services/shared/config/service_registry.py"
     ],
-    "tools/dgm-best-swe-agent/polyglot/docker_utils.py": [
-      "data"
-    ],
+    "tools/dgm-best-swe-agent/polyglot/docker_utils.py": ["data"],
     "tools/dgm-best-swe-agent/swe_bench/report.py": [
       "tools/dgm-best-swe-agent/swe_bench/swe_bench\",",
       "tools/dgm-best-swe-agent/swe_bench/swe_bench/SWE-bench/swebench/harness/run_evaluation.py\""
     ],
-    "tools/dgm-best-swe-agent/swe_bench/utils.py": [
-      "data"
-    ],
+    "tools/dgm-best-swe-agent/swe_bench/utils.py": ["data"],
     "tools/dgm-best-swe-agent/swe_bench/harness.py": [
       "tools/dgm-best-swe-agent/swe_bench/swe_bench/subsets/small.json\"",
       "tools/dgm-best-swe-agent/swe_bench/swe_bench/subsets/medium.json\"",
@@ -5769,9 +5448,7 @@
     "docs/research/arxiv_submission_package/COMPILER_README.md": [
       "docs/research/arxiv_submission_package/compile.sh"
     ],
-    "docs/research/arxiv_submission_package/build.py": [
-      "tests/unit/"
-    ],
+    "docs/research/arxiv_submission_package/build.py": ["tests/unit/"],
     "docs/research/arxiv_submission_package/cli/README.md": [
       "arxiv_submission_package/cli/my_paper",
       "arxiv_submission_package/cli/paper"
@@ -5890,9 +5567,7 @@
     "services/core/code-analysis/config/context-mock.conf:/etc/nginx/conf.d/default.conf:ro": [
       "services/core/code-analysis/docker-compose.yml"
     ],
-    "services:/app/services:ro": [
-      "tests/e2e/docker/docker-compose.e2e.yml"
-    ],
+    "services:/app/services:ro": ["tests/e2e/docker/docker-compose.e2e.yml"],
     "tests/e2e/docker/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro": [
       "tests/e2e/docker/docker-compose.e2e.yml"
     ],
@@ -5999,9 +5674,7 @@
     "infrastructure/docker/monitoring/prometheus-ocr.yml:/etc/prometheus/prometheus.yml": [
       "infrastructure/docker/docker-compose.ocr.yml"
     ],
-    "services/ocr-service": [
-      "infrastructure/docker/docker-compose.ocr.yml"
-    ],
+    "services/ocr-service": ["infrastructure/docker/docker-compose.ocr.yml"],
     "config/docker/config/opa/policies:/policies:ro": [
       "config/docker/docker-compose.yml"
     ],
@@ -6237,9 +5910,7 @@
     "infrastructure/docker/config/opa/policies:/policies:ro": [
       "infrastructure/docker/docker-compose.acgs.yml"
     ],
-    "services/cli/opencode": [
-      "infrastructure/docker/docker-compose.acgs.yml"
-    ],
+    "services/cli/opencode": ["infrastructure/docker/docker-compose.acgs.yml"],
     "infrastructure/docker/scripts/docker/prometheus.yml:/etc/prometheus/prometheus.yml:ro": [
       "infrastructure/docker/docker-compose.acgs.yml"
     ],
@@ -6249,9 +5920,7 @@
     "infrastructure/docker/scripts/docker/grafana/dashboards:/var/lib/grafana/dashboards:ro": [
       "infrastructure/docker/docker-compose.acgs.yml"
     ],
-    "services/ac": [
-      "infrastructure/docker/docker-compose.testing.yml"
-    ],
+    "services/ac": ["infrastructure/docker/docker-compose.testing.yml"],
     "infrastructure/monitoring/prometheus-test.yml:/etc/prometheus/prometheus.yml:ro": [
       "infrastructure/docker/docker-compose.testing.yml"
     ],
@@ -6264,12 +5933,8 @@
     "infrastructure/database/test-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro": [
       "infrastructure/docker/docker-compose.testing.yml"
     ],
-    "tests:/tests": [
-      "infrastructure/docker/docker-compose.testing.yml"
-    ],
-    "services/auth": [
-      "infrastructure/docker/docker-compose.testing.yml"
-    ],
+    "tests:/tests": ["infrastructure/docker/docker-compose.testing.yml"],
+    "services/auth": ["infrastructure/docker/docker-compose.testing.yml"],
     "infrastructure/opa/test-policies:/policies:ro": [
       "infrastructure/docker/docker-compose.testing.yml"
     ],
@@ -6922,12 +6587,8 @@
     "tools/mcp-inspector/client/..\",": [
       "tools/mcp-inspector/client/bin/start.js"
     ],
-    "tools/health_check.sh;": [
-      "tools/quick_start.sh"
-    ],
-    "tools/health_check.sh\"": [
-      "tools/quick_start.sh"
-    ],
+    "tools/health_check.sh;": ["tools/quick_start.sh"],
+    "tools/health_check.sh\"": ["tools/quick_start.sh"],
     "tools/scripts/start_all_services.sh\"": [
       "tools/test_emergency_shutdown.sh",
       "tools/test_performance_validation.sh",
@@ -6939,9 +6600,7 @@
     "tools/mcp-inspector/cli/scripts/nonexistent-config.json\",": [
       "tools/mcp-inspector/cli/scripts/cli-tests.js"
     ],
-    "tools/mcp-inspector/\"": [
-      "tools/mcp-inspector/cli/scripts/cli-tests.js"
-    ],
+    "tools/mcp-inspector/\"": ["tools/mcp-inspector/cli/scripts/cli-tests.js"],
     "tools/mcp-inspector/cli/build\"": [
       "tools/mcp-inspector/cli/scripts/cli-tests.js"
     ],
@@ -7009,9 +6668,7 @@
       "services/core/evolutionary-computation/app/services/ac_client.py",
       "services/core/governance-synthesis/gs_service/start_minimal.py"
     ],
-    "tools/acgs_test.db\"": [
-      "tools/start_all_services.sh"
-    ],
+    "tools/acgs_test.db\"": ["tools/start_all_services.sh"],
     "tools/shared": [
       "tools/deployment_preparation.py",
       "tools/fix_requirements_staging.sh"
@@ -7024,12 +6681,8 @@
       "tools/fix_ci_failures.sh",
       "tools/validate_fixes.sh"
     ],
-    ".env.integrity": [
-      "tools/fix_integrity_service_dns.sh"
-    ],
-    "services/shared/alembic/versions": [
-      "tools/validate_fixes.sh"
-    ],
+    ".env.integrity": ["tools/fix_integrity_service_dns.sh"],
+    "services/shared/alembic/versions": ["tools/validate_fixes.sh"],
     "tools/userlist.txt:/etc/pgbouncer/userlist.txt": [
       "tools/setup_read_replicas.sh"
     ],
@@ -7047,9 +6700,7 @@
       "tools/validate-emergency-preparedness.sh",
       "tools/test-emergency-response.sh"
     ],
-    "tools/scripts/manage_kimi_service.sh": [
-      "tools/quick_start_kimi.sh"
-    ],
+    "tools/scripts/manage_kimi_service.sh": ["tools/quick_start_kimi.sh"],
     "services/core/governance-synthesis/gs_service/tests/performance/": [
       "tools/run_phase3_tests.sh"
     ],
@@ -7085,15 +6736,9 @@
     "tools/scripts/setup-github-environments.sh;": [
       "tools/fix-github-actions-validation.sh"
     ],
-    "tools/.git/*\"": [
-      "tools/safe_cleanup.sh"
-    ],
-    "tools/.git\"": [
-      "tools/safe_cleanup.sh"
-    ],
-    "tools/applications/*\"": [
-      "tools/safe_cleanup.sh"
-    ],
+    "tools/.git/*\"": ["tools/safe_cleanup.sh"],
+    "tools/.git\"": ["tools/safe_cleanup.sh"],
+    "tools/applications/*\"": ["tools/safe_cleanup.sh"],
     "services/core": [
       "tools/test_infrastructure_reconstruction.py",
       "tools/post_cleanup_validation.py",
@@ -7111,9 +6756,7 @@
       "tools/code_quality_validator.py",
       "tools/comprehensive_codebase_reorganization.py"
     ],
-    "tools/node_modules/*\"": [
-      "tools/safe_cleanup.sh"
-    ],
+    "tools/node_modules/*\"": ["tools/safe_cleanup.sh"],
     "tools/health_check.sh": [
       "tools/start_monitoring.sh",
       "tools/restore_database.sh"
@@ -7125,24 +6768,12 @@
       "tools/emergency_shutdown_test.sh",
       "tools/documentation_synchronization.py"
     ],
-    "tools/kind": [
-      "tools/setup-test-environment.sh"
-    ],
-    "tools/scripts/generate_api_docs.sh": [
-      "tools/generate_api_docs.sh"
-    ],
-    "tools/documentation/doc_sync.py": [
-      "tools/generate_api_docs.sh"
-    ],
-    "tools/documentation/openapi_generator.py": [
-      "tools/generate_api_docs.sh"
-    ],
-    "UPDATE_SUMMARY.md": [
-      "tools/update-deps.sh"
-    ],
-    "tools/scripts/monitor_backups.sh": [
-      "tools/setup_automated_backups.sh"
-    ],
+    "tools/kind": ["tools/setup-test-environment.sh"],
+    "tools/scripts/generate_api_docs.sh": ["tools/generate_api_docs.sh"],
+    "tools/documentation/doc_sync.py": ["tools/generate_api_docs.sh"],
+    "tools/documentation/openapi_generator.py": ["tools/generate_api_docs.sh"],
+    "UPDATE_SUMMARY.md": ["tools/update-deps.sh"],
+    "tools/scripts/monitor_backups.sh": ["tools/setup_automated_backups.sh"],
     "tools/scripts/test_disaster_recovery.sh\"": [
       "tools/setup_automated_backups.sh"
     ],
@@ -7152,15 +6783,11 @@
     "logs/health-monitoring/health-check-\\$(date": [
       "tools/health-monitor-setup.sh"
     ],
-    "tools/scripts/health-check.sh": [
-      "tools/implement-routine-maintenance.sh"
-    ],
+    "tools/scripts/health-check.sh": ["tools/implement-routine-maintenance.sh"],
     "tools/scripts/restart_services_with_pgbouncer.sh\"": [
       "tools/update_running_services_pgbouncer.sh"
     ],
-    "tools/acgs_production.db\"": [
-      "tools/start_acgs_services_simple.sh"
-    ],
+    "tools/acgs_production.db\"": ["tools/start_acgs_services_simple.sh"],
     "tests/integration/": [
       "tools/cicd/implement_cicd_pipeline.py",
       "tools/update_contributor_docs.py",
@@ -7228,9 +6855,7 @@
       "tools/fix_test_imports.py",
       "tools/testing_infrastructure_optimization.py"
     ],
-    "$LOG_FILE\"": [
-      "tools/run_comprehensive_tests.sh"
-    ],
+    "$LOG_FILE\"": ["tools/run_comprehensive_tests.sh"],
     "tests/unit": [
       "tools/validation/validate_reorganization.py",
       "tools/run_comprehensive_tests.sh",
@@ -7307,18 +6932,12 @@
     "infrastructure/monitoring/dashboards/ai-governance": [
       "infrastructure/monitoring/start-ai-governance-monitoring.sh"
     ],
-    "tests/performance.py": [
-      "tests/e2e/scripts/run_tests.sh"
-    ],
-    "tests/security.py": [
-      "tests/e2e/scripts/run_tests.sh"
-    ],
+    "tests/performance.py": ["tests/e2e/scripts/run_tests.sh"],
+    "tests/security.py": ["tests/e2e/scripts/run_tests.sh"],
     "tools/infrastructure/performance-testing/reports/playwright'": [
       "tools/deploy-performance-testing.sh"
     ],
-    "tools/reports\",": [
-      "tools/deploy-performance-testing.sh"
-    ],
+    "tools/reports\",": ["tools/deploy-performance-testing.sh"],
     "tools/infrastructure/performance-testing/tests',": [
       "tools/deploy-performance-testing.sh"
     ],
@@ -7424,18 +7043,12 @@
       "tools/maintenance/setup_dependencies.sh",
       "acgs_focused_dependency_update_report.json"
     ],
-    "tools/mcp-inspector": [
-      "tools/maintenance/setup_dependencies.sh"
-    ],
-    "tools/maintenance/target/*\"": [
-      "tools/maintenance/setup_dependencies.sh"
-    ],
+    "tools/mcp-inspector": ["tools/maintenance/setup_dependencies.sh"],
+    "tools/maintenance/target/*\"": ["tools/maintenance/setup_dependencies.sh"],
     "tools/maintenance/node_modules/*\"": [
       "tools/maintenance/setup_dependencies.sh"
     ],
-    "tools/maintenance/venv/*\"": [
-      "tools/maintenance/setup_dependencies.sh"
-    ],
+    "tools/maintenance/venv/*\"": ["tools/maintenance/setup_dependencies.sh"],
     "tests/e2e/": [
       "docs/configuration/README.md",
       "tools/update_cicd_pipelines.py",
@@ -7588,22 +7201,14 @@
       "reorganization-tools/reports/REORGANIZATION_SUCCESS_REPORT.md",
       "tools/reorganization/execute_reorganization.sh"
     ],
-    "scripts/..\"": [
-      "scripts/monitoring/start_enterprise_monitoring.sh"
-    ],
-    "tools/validation/node_modules/*\"": [
-      "tools/validation/test_builds.sh"
-    ],
+    "scripts/..\"": ["scripts/monitoring/start_enterprise_monitoring.sh"],
+    "tools/validation/node_modules/*\"": ["tools/validation/test_builds.sh"],
     "services/shared/config/service_registry.py": [
       "tools/validation/test_builds.sh",
       "tools/validation/validate_deployment.py"
     ],
-    "tools/validation/.git/*\"": [
-      "tools/validation/test_builds.sh"
-    ],
-    "tools/validation/backup_*\"": [
-      "tools/validation/test_builds.sh"
-    ],
+    "tools/validation/.git/*\"": ["tools/validation/test_builds.sh"],
+    "tools/validation/backup_*\"": ["tools/validation/test_builds.sh"],
     "tests/e2e/tests/test_smoke.py::test_framework_initialization": [
       "reports/ci_validation_report.json",
       "docs/PYTEST_WARNING_FIXES.md",
@@ -7626,9 +7231,7 @@
       "tools/update_documentation.py",
       "tools/documentation_sync_results.json"
     ],
-    "opencode_source/node_modules/foo\"]": [
-      "opencode_source/opencode.json"
-    ],
+    "opencode_source/node_modules/foo\"]": ["opencode_source/opencode.json"],
     "services/blockchain/programs/quantumagi-core/Cargo.toml": [
       "acgs_focused_dependency_update_report.json"
     ],
@@ -7663,15 +7266,11 @@
     "opencode_source/packages/opencode/src/index.ts": [
       "opencode_source/package.json"
     ],
-    "opencode_source/scripts/hooks\"": [
-      "opencode_source/package.json"
-    ],
+    "opencode_source/scripts/hooks\"": ["opencode_source/package.json"],
     "tools/setup/scripts/start_all_services.sh\"": [
       "tools/setup/project_setup.sh"
     ],
-    "tools/setup/tsconfig.json": [
-      "tools/setup/project_setup.sh"
-    ],
+    "tools/setup/tsconfig.json": ["tools/setup/project_setup.sh"],
     "services/blockchain/node_modules/@types\"],": [
       "services/blockchain/tsconfig.json"
     ],
@@ -7701,9 +7300,7 @@
     "services/platform_services/authentication/auth_service/Dockerfile.acge": [
       "cicd_validation_report.json"
     ],
-    "tools/dgm-best-swe-agent/Dockerfile": [
-      "cicd_validation_report.json"
-    ],
+    "tools/dgm-best-swe-agent/Dockerfile": ["cicd_validation_report.json"],
     "services/core/formal-verification/fv_service/Dockerfile.prod": [
       "cicd_validation_report.json"
     ],
@@ -7742,21 +7339,15 @@
     "services/core/code-analysis/\\n": [
       "services/core/code-analysis/phase2_staging_deployment_results.json"
     ],
-    "services/cli/acgs-config.json": [
-      "services/cli/opencode/package.json"
-    ],
+    "services/cli/acgs-config.json": ["services/cli/opencode/package.json"],
     "services/cli/opencode/bin/opencode\"": [
       "services/cli/opencode/package.json"
     ],
     "services/cli/opencode/src/index.ts\",": [
       "services/cli/opencode/package.json"
     ],
-    "services/cli/opencode/*\":": [
-      "services/cli/opencode/package.json"
-    ],
-    "services/cli/opencode/src/*.ts\"": [
-      "services/cli/opencode/package.json"
-    ],
+    "services/cli/opencode/*\":": ["services/cli/opencode/package.json"],
+    "services/cli/opencode/src/*.ts\"": ["services/cli/opencode/package.json"],
     "services/cli/opencode/src/index.ts": [
       "services/cli/opencode/package.json"
     ],
@@ -7977,18 +7568,10 @@
       "tools/quality/final_validation_fixes.py",
       "validation_reports/unified_validation_20250706_103227.json"
     ],
-    "tools/mcp-inspector/client/dist": [
-      "tools/mcp-inspector/package.json"
-    ],
-    "tools/mcp-inspector/build": [
-      "tools/mcp-inspector/package.json"
-    ],
-    "tools/mcp-inspector/node_modules": [
-      "tools/mcp-inspector/package.json"
-    ],
-    "tools/mcp-inspector/cli/build": [
-      "tools/mcp-inspector/package.json"
-    ],
+    "tools/mcp-inspector/client/dist": ["tools/mcp-inspector/package.json"],
+    "tools/mcp-inspector/build": ["tools/mcp-inspector/package.json"],
+    "tools/mcp-inspector/node_modules": ["tools/mcp-inspector/package.json"],
+    "tools/mcp-inspector/cli/build": ["tools/mcp-inspector/package.json"],
     "tools/mcp-inspector/cli/node_modules": [
       "tools/mcp-inspector/package.json"
     ],
@@ -7998,9 +7581,7 @@
     "tools/mcp-inspector/client/node_modules": [
       "tools/mcp-inspector/package.json"
     ],
-    "tools/mcp-inspector/server/build": [
-      "tools/mcp-inspector/package.json"
-    ],
+    "tools/mcp-inspector/server/build": ["tools/mcp-inspector/package.json"],
     "tools/mcp-inspector/server/src\",": [
       "tools/mcp-inspector/server/tsconfig.json"
     ],
@@ -8014,9 +7595,7 @@
     "tools/mcp-inspector/client/tsconfig.app.json\",": [
       "tools/mcp-inspector/client/tsconfig.jest.json"
     ],
-    "tools/mcp-inspector/cli/src\",": [
-      "tools/mcp-inspector/cli/tsconfig.json"
-    ],
+    "tools/mcp-inspector/cli/src\",": ["tools/mcp-inspector/cli/tsconfig.json"],
     "tools/mcp-inspector/cli/build\",": [
       "tools/mcp-inspector/cli/tsconfig.json"
     ],
@@ -8029,9 +7608,7 @@
     "tools/mcp-inspector/client/tsconfig.app.json\"": [
       "tools/mcp-inspector/client/tsconfig.json"
     ],
-    "services/blockchain/tsconfig.json": [
-      "services/blockchain/Anchor.toml"
-    ],
+    "services/blockchain/tsconfig.json": ["services/blockchain/Anchor.toml"],
     "services/blockchain/client/rust\"": [
       "services/blockchain/scripts/Cargo.toml"
     ],
@@ -8047,13 +7624,8 @@
     "opencode_source/packages/opencode/*\":": [
       "opencode_source/packages/opencode/package.json"
     ],
-    "LICENSE": [
-      "CONTRIBUTING.md"
-    ],
-    "CONTRIBUTING.md": [
-      "CHANGELOG.md",
-      "tools/phase4_community_adoption.py"
-    ],
+    "LICENSE": ["CONTRIBUTING.md"],
+    "CONTRIBUTING.md": ["CHANGELOG.md", "tools/phase4_community_adoption.py"],
     "docs/api/index.md`": [
       "docs/DEPLOYMENT_VALIDATION_REPORT.md",
       "ACGS_DOCUMENTATION_AUDIT_REPORT.md",
@@ -8064,9 +7636,7 @@
       "docs/DOCUMENTATION_SYNCHRONIZATION_PROCEDURES.md",
       "ACGS_DOCUMENTATION_QUALITY_REMEDIATION_REPORT.md"
     ],
-    "docs/api/api-docs-index.md`,": [
-      "ACGS_DOCUMENTATION_AUDIT_REPORT.md"
-    ],
+    "docs/api/api-docs-index.md`,": ["ACGS_DOCUMENTATION_AUDIT_REPORT.md"],
     "README.md": [
       "tools/generate_api_docs.py",
       "docs/free_model_usage.md",
@@ -8126,9 +7696,7 @@
       "tools/cicd/integration_pipeline.py",
       "CLAUDE.md"
     ],
-    "tests/load_testing": [
-      "CLAUDE.md"
-    ],
+    "tests/load_testing": ["CLAUDE.md"],
     "tests/security": [
       "tools/testing/test_runner_simple.py",
       "tools/testing_infrastructure_optimization.py",
@@ -8138,9 +7706,7 @@
       "tools/automation/enhanced_auto_doc_generator.py",
       "CLAUDE.md"
     ],
-    "tests/multi_agent_test_runner.py": [
-      "CLAUDE.md"
-    ],
+    "tests/multi_agent_test_runner.py": ["CLAUDE.md"],
     "tools/validation/api_code_sync_validator.py": [
       "tools/automation/enhanced_auto_doc_generator.py",
       "CLAUDE.md"
@@ -8148,12 +7714,8 @@
     "tools/validation/unified_documentation_validation_framework.py": [
       "CLAUDE.md"
     ],
-    "services/shared/middleware/tenant_middleware.py`": [
-      "CLAUDE.md"
-    ],
-    "tools/automation/enhanced_auto_doc_generator.py": [
-      "CLAUDE.md"
-    ],
+    "services/shared/middleware/tenant_middleware.py`": ["CLAUDE.md"],
+    "tools/automation/enhanced_auto_doc_generator.py": ["CLAUDE.md"],
     "docs/operations/SERVICE_ISSUE_RESOLUTION_GUIDE.md": [
       "ACGS_POST_DEPLOYMENT_VALIDATION_REPORT.md"
     ],
@@ -8162,9 +7724,7 @@
       "ACGS_POST_DEPLOYMENT_VALIDATION_REPORT.md",
       "docs/DOCUMENTATION_AUDIT_REPORT.md"
     ],
-    "tools/validation/": [
-      "ACGS_POST_DEPLOYMENT_VALIDATION_REPORT.md"
-    ],
+    "tools/validation/": ["ACGS_POST_DEPLOYMENT_VALIDATION_REPORT.md"],
     "docs/api/ACGS_CODE_ANALYSIS_ENGINE_API_SPECIFICATION.yaml": [
       "ACGS_POST_DEPLOYMENT_VALIDATION_REPORT.md"
     ],
@@ -8192,18 +7752,10 @@
       "SYSTEM_OVERVIEW.md",
       "tests/security/README.md"
     ],
-    "tests/security/compliance_validator.py": [
-      "SYSTEM_OVERVIEW.md"
-    ],
-    "tests/load_testing/run_load_test.py": [
-      "SYSTEM_OVERVIEW.md"
-    ],
-    "tests/load_testing/distributed_config.py": [
-      "SYSTEM_OVERVIEW.md"
-    ],
-    "tests/security/run_security_tests.py": [
-      "SYSTEM_OVERVIEW.md"
-    ],
+    "tests/security/compliance_validator.py": ["SYSTEM_OVERVIEW.md"],
+    "tests/load_testing/run_load_test.py": ["SYSTEM_OVERVIEW.md"],
+    "tests/load_testing/distributed_config.py": ["SYSTEM_OVERVIEW.md"],
+    "tests/security/run_security_tests.py": ["SYSTEM_OVERVIEW.md"],
     "docs/tools/validation/quick_validation.sh`": [
       "docs/DOCUMENTATION_SYNCHRONIZATION_PROCEDURES.md"
     ],
@@ -8213,10 +7765,7 @@
     "tools/validation/validate_documentation_consistency.py`": [
       "docs/DOCUMENTATION_SYNCHRONIZATION_PROCEDURES.md"
     ],
-    "tests/multi_agent_test_runner.py`": [
-      "docs/README.md",
-      "README.md"
-    ],
+    "tests/multi_agent_test_runner.py`": ["docs/README.md", "README.md"],
     "docs/scripts/hunyuan_management.sh": [
       "docs/HUNYUAN_INTEGRATION_STATUS.md"
     ],
@@ -8249,42 +7798,28 @@
       "docs/DOCUMENTATION_QA_VALIDATION_REPORT.md",
       "docs/CROSS_REFERENCE_VALIDATION_REPORT.md"
     ],
-    "docs/scripts/update-deps.sh": [
-      "docs/DEPENDENCY_MANAGEMENT_COMPLETE.md"
-    ],
-    "docs/install.sh`": [
-      "docs/DEPENDENCY_MANAGEMENT_COMPLETE.md"
-    ],
+    "docs/scripts/update-deps.sh": ["docs/DEPENDENCY_MANAGEMENT_COMPLETE.md"],
+    "docs/install.sh`": ["docs/DEPENDENCY_MANAGEMENT_COMPLETE.md"],
     "docs/scripts/security-scan.sh`": [
       "docs/DEPENDENCY_MANAGEMENT_COMPLETE.md"
     ],
-    "docs/scripts/update-deps.sh`": [
-      "docs/DEPENDENCY_MANAGEMENT_COMPLETE.md"
-    ],
+    "docs/scripts/update-deps.sh`": ["docs/DEPENDENCY_MANAGEMENT_COMPLETE.md"],
     "docs/tools/validation/coverage_check.sh": [
       "docs/DOCUMENTATION_QUALITY_METRICS.md"
     ],
     "docs/blockchain/quantumagi-deployment/deploy_quantumagi_devnet.sh`": [
       "docs/CONTRIBUTING.md"
     ],
-    "docs/deploy_quantumagi_devnet.sh": [
-      "docs/CONTRIBUTING.md"
-    ],
-    "docs/scripts/health_check.sh`": [
-      "docs/CONTRIBUTING.md"
-    ],
-    "docs/run_tests.sh`": [
-      "docs/CONTRIBUTING.md"
-    ],
+    "docs/deploy_quantumagi_devnet.sh": ["docs/CONTRIBUTING.md"],
+    "docs/scripts/health_check.sh`": ["docs/CONTRIBUTING.md"],
+    "docs/run_tests.sh`": ["docs/CONTRIBUTING.md"],
     "tests/security/": [
       "docs/CONTRIBUTING.md",
       "tools/cicd/implement_cicd_pipeline.py",
       "tools/test_runner.py",
       "tools/testing_infrastructure_optimization.py"
     ],
-    "docs/run_tests.sh": [
-      "docs/CONTRIBUTING.md"
-    ],
+    "docs/run_tests.sh": ["docs/CONTRIBUTING.md"],
     "tools/feedback/user_satisfaction_system.py`": [
       "docs/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md"
     ],
@@ -8324,18 +7859,12 @@
     "examples/openrouter_constitutional_validation.py](../examples/openrouter_constitutional_validation.py": [
       "docs/free_model_usage.md"
     ],
-    "README.md](../README.md": [
-      "docs/free_model_usage.md"
-    ],
+    "README.md](../README.md": ["docs/free_model_usage.md"],
     "examples/openrouter_constitutional_validation.py": [
       "docs/free_model_usage.md"
     ],
-    "docs/api/README.md`": [
-      "docs/CROSS_REFERENCE_VALIDATION_REPORT.md"
-    ],
-    "README.md`": [
-      "docs/CROSS_REFERENCE_VALIDATION_REPORT.md"
-    ],
+    "docs/api/README.md`": ["docs/CROSS_REFERENCE_VALIDATION_REPORT.md"],
+    "README.md`": ["docs/CROSS_REFERENCE_VALIDATION_REPORT.md"],
     "docs/deployment/ACGS_PGP_SETUP_GUIDE.md`": [
       "docs/CROSS_REFERENCE_VALIDATION_REPORT.md"
     ],
@@ -8345,12 +7874,8 @@
     "docs/openrouter_integration.md`": [
       "docs/CROSS_REFERENCE_VALIDATION_REPORT.md"
     ],
-    "docs/configuration/": [
-      "docs/DOCUMENTATION_REVIEW_REQUIREMENTS.md"
-    ],
-    "docs/operations/": [
-      "docs/DOCUMENTATION_REVIEW_REQUIREMENTS.md"
-    ],
+    "docs/configuration/": ["docs/DOCUMENTATION_REVIEW_REQUIREMENTS.md"],
+    "docs/operations/": ["docs/DOCUMENTATION_REVIEW_REQUIREMENTS.md"],
     "docs/tools/validation/quick_validation.sh": [
       "docs/DOCUMENTATION_REVIEW_REQUIREMENTS.md"
     ],
@@ -8509,9 +8034,7 @@
       "validation_reports/enhanced_validation_20250706_073322.md",
       "validation_reports/enhanced_validation_20250706_072959.md"
     ],
-    "services/shared/utils.py`": [
-      "docs/TEST_IMPROVEMENTS_SUMMARY.md"
-    ],
+    "services/shared/utils.py`": ["docs/TEST_IMPROVEMENTS_SUMMARY.md"],
     "docs/api/policy-governance.md**": [
       "validation_reports/cross_reference_analysis_20250706_101926.md",
       "validation_reports/enhanced_validation_20250705_193736.md",
@@ -8859,9 +8382,7 @@
     "docs/api/policy-governance.md:": [
       "audit_reports/quarterly_audit_Q3_2025_20250705.md"
     ],
-    "docs/api/index.md:": [
-      "audit_reports/quarterly_audit_Q3_2025_20250705.md"
-    ],
+    "docs/api/index.md:": ["audit_reports/quarterly_audit_Q3_2025_20250705.md"],
     "docs/api/constitutional-ai.md:": [
       "audit_reports/quarterly_audit_Q3_2025_20250705.md"
     ],
@@ -8880,18 +8401,10 @@
     "docs/configuration/README.md:": [
       "audit_reports/quarterly_audit_Q3_2025_20250705.md"
     ],
-    "services/cli/tui/internal/theme": [
-      "services/cli/tui/AGENTS.md"
-    ],
-    "services/cli/tui/...`": [
-      "services/cli/tui/AGENTS.md"
-    ],
-    "services/cli/tui/cmd/opencode`": [
-      "services/cli/tui/AGENTS.md"
-    ],
-    "services/docs/deployment/README.md": [
-      "services/blockchain/README.md"
-    ],
+    "services/cli/tui/internal/theme": ["services/cli/tui/AGENTS.md"],
+    "services/cli/tui/...`": ["services/cli/tui/AGENTS.md"],
+    "services/cli/tui/cmd/opencode`": ["services/cli/tui/AGENTS.md"],
+    "services/docs/deployment/README.md": ["services/blockchain/README.md"],
     "services/blockchain/client/quantumagi-client';": [
       "services/blockchain/README.md"
     ],
@@ -8899,9 +8412,7 @@
       "services/blockchain/README.md",
       "docs/configuration/README.md"
     ],
-    "services/docs/api/README.md": [
-      "services/blockchain/README.md"
-    ],
+    "services/docs/api/README.md": ["services/blockchain/README.md"],
     "services/blockchain/client/quantumagi-client": [
       "services/blockchain/README.md"
     ],
@@ -8929,9 +8440,7 @@
     "services/cli/tui/sdk/examples/<your-example>": [
       "services/cli/tui/sdk/CONTRIBUTING.md"
     ],
-    "services/cli/tui/sdk/CONTRIBUTING.md": [
-      "services/cli/tui/sdk/README.md"
-    ],
+    "services/cli/tui/sdk/CONTRIBUTING.md": ["services/cli/tui/sdk/README.md"],
     "services/docs/api/policy_governance_service_api.md": [
       "services/core/policy-governance/pgc_service/README.md"
     ],
@@ -9137,9 +8646,7 @@
     "services/core/code-analysis/": [
       "docs/implementation/ACGS_CODE_ANALYSIS_ENGINE_IMPLEMENTATION_PLAN.md"
     ],
-    "ACGS-2": [
-      "docs/architecture/ACGS_CLAUDIA_INTEGRATION_ARCHITECTURE.md"
-    ],
+    "ACGS-2": ["docs/architecture/ACGS_CLAUDIA_INTEGRATION_ARCHITECTURE.md"],
     "docs/claudia-acgs": [
       "docs/architecture/ACGS_CLAUDIA_INTEGRATION_ARCHITECTURE.md"
     ],
@@ -9470,9 +8977,7 @@
       "docs/deployment/ACGS_PGP_SETUP_GUIDE.md",
       "docs/deployment/ACGS_PGP_TROUBLESHOOTING_GUIDE.md"
     ],
-    "services/": [
-      "docs/deployment/ACGS_PGP_SETUP_GUIDE.md"
-    ],
+    "services/": ["docs/deployment/ACGS_PGP_SETUP_GUIDE.md"],
     "docs/architecture/scripts/deploy-gitops.sh`": [
       "docs/architecture/ACGS_GITOPS_COMPREHENSIVE_VALIDATION_REPORT.md"
     ],
@@ -9509,9 +9014,7 @@
       "docs/training/validation_tools_cheatsheet.md",
       "docs/training/ACGS_DOCUMENTATION_TEAM_TRAINING_GUIDE.md"
     ],
-    "docs/security/scripts/key_management.sh": [
-      "docs/security/SECURITY.md"
-    ],
+    "docs/security/scripts/key_management.sh": ["docs/security/SECURITY.md"],
     "tools/metrics/collect_daily_metrics.sh": [
       "tools/cicd/integration_pipeline.py",
       "docs/training/validation_tools_cheatsheet.md",
@@ -9526,9 +9029,7 @@
     "services/platform_services/authentication/auth_service/requirements.txt": [
       "docs/security/SECURITY_REMEDIATION_REPORT.md"
     ],
-    "tools/requirements.txt": [
-      "docs/security/SECURITY_REMEDIATION_REPORT.md"
-    ],
+    "tools/requirements.txt": ["docs/security/SECURITY_REMEDIATION_REPORT.md"],
     "services/core/evolutionary-computation/requirements.txt": [
       "docs/security/SECURITY_REMEDIATION_REPORT.md"
     ],
@@ -9585,9 +9086,7 @@
       "docs/api/index.md",
       "docs/api/formal-verification.md"
     ],
-    "tests/security/requirements.txt": [
-      "tests/security/README.md"
-    ],
+    "tests/security/requirements.txt": ["tests/security/README.md"],
     "reorganization-tools/acgs-platform": [
       "reorganization-tools/documentation/TEAM_DOCUMENTATION_UPDATE.md"
     ],
@@ -9615,9 +9114,7 @@
     "infrastructure/operational-excellence/scripts/comprehensive_health_check.sh": [
       "infrastructure/operational-excellence/PRODUCTION_READINESS_CHECKLIST.md"
     ],
-    "tests/load_testing/": [
-      "tests/load_testing/README.md"
-    ],
+    "tests/load_testing/": ["tests/load_testing/README.md"],
     "infrastructure/load-balancer/test-monitoring-integration.sh": [
       "infrastructure/load-balancer/MONITORING_INTEGRATION.md"
     ],
@@ -9631,31 +9128,17 @@
     "infrastructure/monitoring/deploy-security-monitoring.sh": [
       "infrastructure/monitoring/SECURITY_MONITORING_GUIDE.md"
     ],
-    "tests/e2e/tests/performance.py": [
-      "tests/e2e/README.md"
-    ],
-    "tests/performance.py`": [
-      "tests/e2e/README.md"
-    ],
-    "tests/security.py`": [
-      "tests/e2e/README.md"
-    ],
-    "tests/e2e/tests/constitutional.py": [
-      "tests/e2e/README.md"
-    ],
-    "tests/e2e/tests/security.py": [
-      "tests/e2e/README.md"
-    ],
-    "tests/e2e/tests/health.py": [
-      "tests/e2e/README.md"
-    ],
+    "tests/e2e/tests/performance.py": ["tests/e2e/README.md"],
+    "tests/performance.py`": ["tests/e2e/README.md"],
+    "tests/security.py`": ["tests/e2e/README.md"],
+    "tests/e2e/tests/constitutional.py": ["tests/e2e/README.md"],
+    "tests/e2e/tests/security.py": ["tests/e2e/README.md"],
+    "tests/e2e/tests/health.py": ["tests/e2e/README.md"],
     "tests/e2e/docker": [
       "tests/e2e/README.md",
       "tests/e2e/IMPLEMENTATION_SUMMARY.md"
     ],
-    "tests/e2e/tests/health.py`": [
-      "tests/e2e/README.md"
-    ],
+    "tests/e2e/tests/health.py`": ["tests/e2e/README.md"],
     "infrastructure/monitoring/infrastructure/monitoring/test-metrics-integration.sh": [
       "infrastructure/monitoring/METRICS_DOCUMENTATION.md"
     ],
@@ -9666,9 +9149,7 @@
     "tests/e2e/tests/e2e/scripts/run_tests.sh": [
       "tests/e2e/IMPLEMENTATION_SUMMARY.md"
     ],
-    "tests/e2e/scripts/run_tests.sh": [
-      "tests/e2e/IMPLEMENTATION_SUMMARY.md"
-    ],
+    "tests/e2e/scripts/run_tests.sh": ["tests/e2e/IMPLEMENTATION_SUMMARY.md"],
     "infrastructure/monitoring/scripts/emergency-password-rotation.sh": [
       "infrastructure/monitoring/SECURITY_GUIDE.md"
     ],
@@ -9989,9 +9470,7 @@
     "infrastructure/kubernetes/monitoring": [
       "infrastructure/gitops/application.yaml"
     ],
-    "infrastructure/kubernetes": [
-      "infrastructure/gitops/application.yaml"
-    ],
+    "infrastructure/kubernetes": ["infrastructure/gitops/application.yaml"],
     "infrastructure/monitoring/runbooks/scripts/execute_change_step.py": [
       "infrastructure/monitoring/runbooks/change_management_runbook.md"
     ],
@@ -10144,12 +9623,8 @@
       "infrastructure/kubernetes/acgs-lite/database-init.yaml",
       "infrastructure/kubernetes/acgs-lite/redpanda-cluster.yaml"
     ],
-    "services/sst-env.d.ts\"": [
-      "services/cli/opencode/sst-env.d.ts"
-    ],
-    "opencode_source/infra/app.js\"": [
-      "opencode_source/sst.config.ts"
-    ],
+    "services/sst-env.d.ts\"": ["services/cli/opencode/sst-env.d.ts"],
+    "opencode_source/infra/app.js\"": ["opencode_source/sst.config.ts"],
     "opencode_source/.sst/platform/config.d.ts\"": [
       "opencode_source/sst.config.ts"
     ],
@@ -10659,9 +10134,7 @@
     "services/cli/opencode/script/dist/homebrew-tap`": [
       "services/cli/opencode/script/publish.ts"
     ],
-    "services/cli/opencode/tui\",": [
-      "services/cli/opencode/script/publish.ts"
-    ],
+    "services/cli/opencode/tui\",": ["services/cli/opencode/script/publish.ts"],
     "services/cli/opencode/script/dist/homebrew-tap/opencode.rb\"": [
       "services/cli/opencode/script/publish.ts"
     ],
@@ -10671,9 +10144,7 @@
     "services/cli/opencode/script/dist/${pkg.name}/bin`": [
       "services/cli/opencode/script/publish.ts"
     ],
-    "services/cli/${key}.zip": [
-      "services/cli/opencode/script/publish.ts"
-    ],
+    "services/cli/${key}.zip": ["services/cli/opencode/script/publish.ts"],
     "services/cli/opencode/script/dist/${name}/bin/tui`": [
       "services/cli/opencode/script/publish.ts"
     ],
@@ -11501,9 +10972,7 @@
     "tools/mcp-inspector/cli/src/client/index.js\";": [
       "tools/mcp-inspector/cli/src/index.ts"
     ],
-    "tools/mcp-inspector/\",": [
-      "tools/mcp-inspector/cli/src/cli.ts"
-    ],
+    "tools/mcp-inspector/\",": ["tools/mcp-inspector/cli/src/cli.ts"],
     "tools/mcp-inspector/client/src/lib/auth-types\";": [
       "tools/mcp-inspector/client/src/lib/oauth-state-machine.ts"
     ],
@@ -12669,9 +12138,7 @@
     "opencode_source/packages/tui/cmd/opencode\",": [
       "opencode_source/packages/opencode/src/cli/cmd/tui.ts"
     ],
-    "services/platform_services": [
-      "tools/constitutional_hash_integrator.py"
-    ],
+    "services/platform_services": ["tools/constitutional_hash_integrator.py"],
     "tools/versioning/deployment_manager.py": [
       "tools/simple_versioning_test.py",
       "tools/basic_versioning_test.py"
@@ -12688,15 +12155,11 @@
       "tools/simple_versioning_test.py",
       "tools/basic_versioning_test.py"
     ],
-    "tools/src/backend/auth_service\":": [
-      "tools/reorganize_codebase.py"
-    ],
+    "tools/src/backend/auth_service\":": ["tools/reorganize_codebase.py"],
     "tools/services/core/governance-synthesis/gs_service\",": [
       "tools/reorganize_codebase.py"
     ],
-    "tools/src/backend/gs_service\":": [
-      "tools/reorganize_codebase.py"
-    ],
+    "tools/src/backend/gs_service\":": ["tools/reorganize_codebase.py"],
     "tools/services/core/policy-governance/pgc_service\",": [
       "tools/reorganize_codebase.py"
     ],
@@ -12710,27 +12173,15 @@
     "tools/services/core/evolutionary-computation/ec_service\",": [
       "tools/reorganize_codebase.py"
     ],
-    "tools/src/backend/ac_service\":": [
-      "tools/reorganize_codebase.py"
-    ],
-    "tools/services/shared\",": [
-      "tools/reorganize_codebase.py"
-    ],
-    "tools/src/backend/shared\":": [
-      "tools/reorganize_codebase.py"
-    ],
+    "tools/src/backend/ac_service\":": ["tools/reorganize_codebase.py"],
+    "tools/services/shared\",": ["tools/reorganize_codebase.py"],
+    "tools/src/backend/shared\":": ["tools/reorganize_codebase.py"],
     "tools/services/core/constitutional-ai/ac_service\",": [
       "tools/reorganize_codebase.py"
     ],
-    "tools/src/backend/fv_service\":": [
-      "tools/reorganize_codebase.py"
-    ],
-    "tools/src/backend/integrity_service\":": [
-      "tools/reorganize_codebase.py"
-    ],
-    "tools/src/backend/pgc_service\":": [
-      "tools/reorganize_codebase.py"
-    ],
+    "tools/src/backend/fv_service\":": ["tools/reorganize_codebase.py"],
+    "tools/src/backend/integrity_service\":": ["tools/reorganize_codebase.py"],
+    "tools/src/backend/pgc_service\":": ["tools/reorganize_codebase.py"],
     "tools/services/platform/integrity/integrity_service\",": [
       "tools/reorganize_codebase.py"
     ],
@@ -12742,35 +12193,23 @@
       "tools/automated_vulnerability_scanner.py",
       "tools/maintenance/fix_utc_imports.py"
     ],
-    "github\"": [
-      "tools/validate_cicd_pipeline.py"
-    ],
+    "github\"": ["tools/validate_cicd_pipeline.py"],
     "pytest.ini": [
       "tools/test_infrastructure_reconstruction.py",
       "tools/validate_enhancement_readiness.py",
       "tools/validate_cicd_pipeline.py"
     ],
-    "services/shared/events": [
-      "tools/fix_relative_imports.py"
-    ],
-    "services/shared/service_mesh": [
-      "tools/fix_relative_imports.py"
-    ],
-    "services/shared/common": [
-      "tools/fix_relative_imports.py"
-    ],
+    "services/shared/events": ["tools/fix_relative_imports.py"],
+    "services/shared/service_mesh": ["tools/fix_relative_imports.py"],
+    "services/shared/common": ["tools/fix_relative_imports.py"],
     "services/core/policy-governance/pgc_service/config/auth_config.yaml": [
       "tools/validate_constitutional_compliance_security.py"
     ],
     "services/core/constitutional-ai/ac_service/config/auth_config.yaml": [
       "tools/validate_constitutional_compliance_security.py"
     ],
-    "tests/e2e/__init__.py": [
-      "tools/priority2_test_coverage_expansion.py"
-    ],
-    "tests/unit/__init__.py": [
-      "tools/priority2_test_coverage_expansion.py"
-    ],
+    "tests/e2e/__init__.py": ["tools/priority2_test_coverage_expansion.py"],
+    "tests/unit/__init__.py": ["tools/priority2_test_coverage_expansion.py"],
     "tests/integration/__init__.py": [
       "tools/priority2_test_coverage_expansion.py"
     ],
@@ -12794,9 +12233,7 @@
     "tools/verify_deployment_status.sh\"],": [
       "tools/comprehensive_validation.py"
     ],
-    "tools/monitor_database.sh\"": [
-      "tools/configure_production_database.py"
-    ],
+    "tools/monitor_database.sh\"": ["tools/configure_production_database.py"],
     "tools/kubernetes/scripts/migrate.sh\",": [
       "tools/kubernetes_migration_plan.py"
     ],
@@ -12812,33 +12249,19 @@
       "tools/refactoring_demo.py",
       "tools/apply_authentication_hardening.py"
     ],
-    "shared\",": [
-      "tools/update_documentation.py"
-    ],
-    "tools/services/\"": [
-      "tools/update_documentation.py"
-    ],
-    "tools/src/backend/\",": [
-      "tools/update_documentation.py"
-    ],
-    "tools/src/frontend/\":": [
-      "tools/update_comprehensive_documentation.py"
-    ],
-    "tools/src/backend/\":": [
-      "tools/update_comprehensive_documentation.py"
-    ],
+    "shared\",": ["tools/update_documentation.py"],
+    "tools/services/\"": ["tools/update_documentation.py"],
+    "tools/src/backend/\",": ["tools/update_documentation.py"],
+    "tools/src/frontend/\":": ["tools/update_comprehensive_documentation.py"],
+    "tools/src/backend/\":": ["tools/update_comprehensive_documentation.py"],
     "tools/applications/legacy-frontend/\",": [
       "tools/update_comprehensive_documentation.py"
     ],
-    "tools/services/\",": [
-      "tools/update_comprehensive_documentation.py"
-    ],
+    "tools/services/\",": ["tools/update_comprehensive_documentation.py"],
     "tools/quantumagi_core/\":": [
       "tools/update_comprehensive_documentation.py"
     ],
-    "tools/blockchain/\",": [
-      "tools/update_comprehensive_documentation.py"
-    ],
+    "tools/blockchain/\",": ["tools/update_comprehensive_documentation.py"],
     "services/core/policy-governance/pgc_service/app/core": [
       "tools/validate_phase1_enhanced_synthesis.py",
       "tools/validation/validate_enhanced_policy_synthesis.py",
@@ -12847,30 +12270,18 @@
     "services/core/governance-synthesis/gs_service/app/schemas.py": [
       "tools/error_tracking_system.py"
     ],
-    "tools/run_tests.sh": [
-      "tools/update_contributor_docs.py"
-    ],
-    "tools/run_tests.sh'": [
-      "tools/update_contributor_docs.py"
-    ],
-    "tools/scripts/health_check.sh`": [
-      "tools/update_contributor_docs.py"
-    ],
+    "tools/run_tests.sh": ["tools/update_contributor_docs.py"],
+    "tools/run_tests.sh'": ["tools/update_contributor_docs.py"],
+    "tools/scripts/health_check.sh`": ["tools/update_contributor_docs.py"],
     "tools/blockchain/quantumagi-deployment/deploy`": [
       "tools/update_contributor_docs.py"
     ],
-    "tools/SECURITY.md": [
-      "tools/update_contributor_docs.py"
-    ],
+    "tools/SECURITY.md": ["tools/update_contributor_docs.py"],
     "architecture/REORGANIZED_ARCHITECTURE.md": [
       "tools/update_contributor_docs.py"
     ],
-    "testing/README.md": [
-      "tools/update_contributor_docs.py"
-    ],
-    "tools/deploy_quantumagi_devnet.sh": [
-      "tools/update_contributor_docs.py"
-    ],
+    "testing/README.md": ["tools/update_contributor_docs.py"],
+    "tools/deploy_quantumagi_devnet.sh": ["tools/update_contributor_docs.py"],
     "tools/blockchain/quantumagi-deployment/deploy_quantumagi_devnet.sh`": [
       "tools/update_contributor_docs.py"
     ],
@@ -12880,24 +12291,12 @@
     "tools/services/core/constitutional-ai/ac_service": [
       "tools/update_contributor_docs.py"
     ],
-    "tools/src/backend/ac_service`": [
-      "tools/update_contributor_docs.py"
-    ],
-    "tools/src/backend/ac_service": [
-      "tools/update_contributor_docs.py"
-    ],
-    "api/README.md": [
-      "tools/update_contributor_docs.py"
-    ],
-    "tools/quantumagi_core/deploy`": [
-      "tools/update_contributor_docs.py"
-    ],
-    "tools/developer_guide.md": [
-      "tools/update_contributor_docs.py"
-    ],
-    "tools/run_tests.sh`": [
-      "tools/update_contributor_docs.py"
-    ],
+    "tools/src/backend/ac_service`": ["tools/update_contributor_docs.py"],
+    "tools/src/backend/ac_service": ["tools/update_contributor_docs.py"],
+    "api/README.md": ["tools/update_contributor_docs.py"],
+    "tools/quantumagi_core/deploy`": ["tools/update_contributor_docs.py"],
+    "tools/developer_guide.md": ["tools/update_contributor_docs.py"],
+    "tools/run_tests.sh`": ["tools/update_contributor_docs.py"],
     "services/core/constitutional-ai/ac_service/app/api/v1/principles.py": [
       "tools/resolve_high_security_findings.py"
     ],
@@ -12934,45 +12333,23 @@
     "tools/scripts/phase3_host_based_deployment.sh": [
       "tools/execute_comprehensive_improvements.py"
     ],
-    "config/api.json": [
-      "tools/enhance_frontend_integration.py"
-    ],
-    "config/blockchain.json": [
-      "tools/enhance_frontend_integration.py"
-    ],
-    "services/api": [
-      "tools/enhance_frontend_integration.py"
-    ],
-    "types/anchor": [
-      "tools/enhance_frontend_integration.py"
-    ],
-    "services/api';": [
-      "tools/enhance_frontend_integration.py"
-    ],
-    "types/anchor';": [
-      "tools/enhance_frontend_integration.py"
-    ],
-    "config/api.json';": [
-      "tools/enhance_frontend_integration.py"
-    ],
-    "config/blockchain.json';": [
-      "tools/enhance_frontend_integration.py"
-    ],
+    "config/api.json": ["tools/enhance_frontend_integration.py"],
+    "config/blockchain.json": ["tools/enhance_frontend_integration.py"],
+    "services/api": ["tools/enhance_frontend_integration.py"],
+    "types/anchor": ["tools/enhance_frontend_integration.py"],
+    "services/api';": ["tools/enhance_frontend_integration.py"],
+    "types/anchor';": ["tools/enhance_frontend_integration.py"],
+    "config/api.json';": ["tools/enhance_frontend_integration.py"],
+    "config/blockchain.json';": ["tools/enhance_frontend_integration.py"],
     "tools/authentication_service_openapi.yaml'></redoc>": [
       "tools/api_documentation_enhancement.py"
     ],
     "tools/authentication_service_openapi.yaml',": [
       "tools/api_documentation_enhancement.py"
     ],
-    "tools/policy-datasets": [
-      "tools/audit_compliance_validator.py"
-    ],
-    "tools/restart_gs_service.sh\"": [
-      "tools/fix_gs_service_dependencies.py"
-    ],
-    ".env.production": [
-      "tools/production_config_setup.py"
-    ],
+    "tools/policy-datasets": ["tools/audit_compliance_validator.py"],
+    "tools/restart_gs_service.sh\"": ["tools/fix_gs_service_dependencies.py"],
+    ".env.production": ["tools/production_config_setup.py"],
     "tools/prometheus/rules:/etc/prometheus/rules\",": [
       "tools/update_monitoring_config.py"
     ],
@@ -12988,45 +12365,27 @@
     "tools/grafana/datasources:/etc/grafana/provisioning/datasources\",": [
       "tools/update_monitoring_config.py"
     ],
-    "components/\":": [
-      "tools/restructure_applications.py"
-    ],
-    "hooks/\":": [
-      "tools/restructure_applications.py"
-    ],
-    "shared/components/\",": [
-      "tools/restructure_applications.py"
-    ],
+    "components/\":": ["tools/restructure_applications.py"],
+    "hooks/\":": ["tools/restructure_applications.py"],
+    "shared/components/\",": ["tools/restructure_applications.py"],
     "types": [
       "tools/test_restructured_applications.py",
       "tools/restructure_applications.py"
     ],
-    "shared/hooks": [
-      "tools/restructure_applications.py"
-    ],
-    "shared/types/\",": [
-      "tools/restructure_applications.py"
-    ],
+    "shared/hooks": ["tools/restructure_applications.py"],
+    "shared/types/\",": ["tools/restructure_applications.py"],
     "components": [
       "tools/test_restructured_applications.py",
       "tools/restructure_applications.py"
     ],
-    "shared/types": [
-      "tools/restructure_applications.py"
-    ],
+    "shared/types": ["tools/restructure_applications.py"],
     "hooks": [
       "tools/test_restructured_applications.py",
       "tools/restructure_applications.py"
     ],
-    "types/\":": [
-      "tools/restructure_applications.py"
-    ],
-    "shared/components": [
-      "tools/restructure_applications.py"
-    ],
-    "shared/hooks/\",": [
-      "tools/restructure_applications.py"
-    ],
+    "types/\":": ["tools/restructure_applications.py"],
+    "shared/components": ["tools/restructure_applications.py"],
+    "shared/hooks/\",": ["tools/restructure_applications.py"],
     "services/platform_services/authentication/auth_service/app/core/jwt_security.py": [
       "tools/acgs_validation_suite.py"
     ],
@@ -13059,9 +12418,7 @@
     "services/core/policy-governance/pgc_service/app/monitoring/acgs_pgp_metrics.py": [
       "tools/execute_acgs_pgp_enhancement.py"
     ],
-    "tools/test_comprehensive_workflow.sh\"": [
-      "tools/load_test_data.py"
-    ],
+    "tools/test_comprehensive_workflow.sh\"": ["tools/load_test_data.py"],
     "tools/automation/MAINTENANCE_AUTOMATION_FRAMEWORK.json": [
       "tools/establish_maintenance_procedures.py"
     ],
@@ -13075,9 +12432,7 @@
       "tools/comprehensive_security_vulnerability_scanner.py",
       "tools/simple_security_scanner.py"
     ],
-    "tools/acgs_production.db\",": [
-      "tools/start_service_isolated.py"
-    ],
+    "tools/acgs_production.db\",": ["tools/start_service_isolated.py"],
     "tools/scripts/start_all_services.sh\"],": [
       "tools/production_blue_green_deployment.py"
     ],
@@ -13088,48 +12443,22 @@
     "tools/scripts/setup/quick_start.sh": [
       "tools/phase4_community_adoption.py"
     ],
-    "CODE_OF_CONDUCT.md": [
-      "tools/phase4_community_adoption.py"
-    ],
-    "tools/deployment": [
-      "tools/phase4_community_adoption.py"
-    ],
-    "tools/architecture": [
-      "tools/phase4_community_adoption.py"
-    ],
-    "docs/development/setup.md": [
-      "tools/phase4_community_adoption.py"
-    ],
-    "tools/scripts/validate_setup.sh": [
-      "tools/phase4_community_adoption.py"
-    ],
-    "tools/api": [
-      "tools/phase4_community_adoption.py"
-    ],
-    "Cargo.toml": [
-      "tools/update_dependency_managers.py"
-    ],
-    "pnpm-workspace.yaml": [
-      "tools/update_dependency_managers.py"
-    ],
+    "CODE_OF_CONDUCT.md": ["tools/phase4_community_adoption.py"],
+    "tools/deployment": ["tools/phase4_community_adoption.py"],
+    "tools/architecture": ["tools/phase4_community_adoption.py"],
+    "docs/development/setup.md": ["tools/phase4_community_adoption.py"],
+    "tools/scripts/validate_setup.sh": ["tools/phase4_community_adoption.py"],
+    "tools/api": ["tools/phase4_community_adoption.py"],
+    "Cargo.toml": ["tools/update_dependency_managers.py"],
+    "pnpm-workspace.yaml": ["tools/update_dependency_managers.py"],
     "acgs_dependency_managers_update_report.json": [
       "tools/update_dependency_managers.py"
     ],
-    "pyproject.toml": [
-      "tools/update_dependency_managers.py"
-    ],
-    "tools/node_modules": [
-      "tools/update_dependency_managers.py"
-    ],
-    ".npmrc": [
-      "tools/update_dependency_managers.py"
-    ],
-    "uv.toml": [
-      "tools/update_dependency_managers.py"
-    ],
-    "tools/versioning/sdk_generator.py": [
-      "tools/basic_versioning_test.py"
-    ],
+    "pyproject.toml": ["tools/update_dependency_managers.py"],
+    "tools/node_modules": ["tools/update_dependency_managers.py"],
+    ".npmrc": ["tools/update_dependency_managers.py"],
+    "uv.toml": ["tools/update_dependency_managers.py"],
+    "tools/versioning/sdk_generator.py": ["tools/basic_versioning_test.py"],
     "tools/config/prometheus.yml:/etc/prometheus/prometheus.yml:ro\",": [
       "tools/setup_monitoring_stack.py"
     ],
@@ -13149,9 +12478,7 @@
       "tools/complete_reorganization.py",
       "tools/final_cleanup.py"
     ],
-    "tools/federated-evaluation": [
-      "tools/final_cleanup.py"
-    ],
+    "tools/federated-evaluation": ["tools/final_cleanup.py"],
     "services/core/formal-verification/tests/test_formal_verification_completion.py": [
       "tools/comprehensive_validation_deployment.py"
     ],
@@ -13161,15 +12488,9 @@
     "services/core/evolutionary-computation/tests/test_wina_integration.py": [
       "tools/comprehensive_validation_deployment.py"
     ],
-    "types/\",": [
-      "tools/test_restructured_applications.py"
-    ],
-    "hooks/\",": [
-      "tools/test_restructured_applications.py"
-    ],
-    "components/\",": [
-      "tools/test_restructured_applications.py"
-    ],
+    "types/\",": ["tools/test_restructured_applications.py"],
+    "hooks/\",": ["tools/test_restructured_applications.py"],
+    "components/\",": ["tools/test_restructured_applications.py"],
     "tools/monitoring/prometheus:/etc/prometheus\",": [
       "tools/phase3_production_infrastructure_setup.py"
     ],
@@ -13179,9 +12500,7 @@
     "tools/monitoring/alertmanager:/etc/alertmanager\"],": [
       "tools/phase3_production_infrastructure_setup.py"
     ],
-    "tools/large_file_analyzer.py": [
-      "tools/large_file_analyzer.py"
-    ],
+    "tools/large_file_analyzer.py": ["tools/large_file_analyzer.py"],
     "services/core/policy-governance/pgc_service/app": [
       "tools/fix_python_imports.py"
     ],
@@ -13210,15 +12529,9 @@
       "tools/generate_documentation_summary.py",
       "tools/documentation_cleanup.py"
     ],
-    "tools/scripts/start_sla_monitor.sh": [
-      "tools/sla_dashboard.py"
-    ],
-    "services/platform_services/": [
-      "tools/setup_branch_protection.py"
-    ],
-    ".github/CODEOWNERS": [
-      "tools/setup_branch_protection.py"
-    ],
+    "tools/scripts/start_sla_monitor.sh": ["tools/sla_dashboard.py"],
+    "services/platform_services/": ["tools/setup_branch_protection.py"],
+    ".github/CODEOWNERS": ["tools/setup_branch_protection.py"],
     ".env.template": [
       "tools/security_cleanup.py",
       "tools/post_cleanup_validation.py"
@@ -13226,9 +12539,7 @@
     "docs/COST_OPTIMIZATION_SUMMARY.md": [
       "tools/constitutional_compliance_remediation.py"
     ],
-    "docs/acge.md": [
-      "tools/constitutional_compliance_remediation.py"
-    ],
+    "docs/acge.md": ["tools/constitutional_compliance_remediation.py"],
     "docs/PYTEST_WARNING_FIXES.md": [
       "tools/constitutional_compliance_remediation.py"
     ],
@@ -13250,9 +12561,7 @@
     "docs/deployment/MIGRATION_GUIDE_OPENCODE.md": [
       "tools/constitutional_compliance_remediation.py"
     ],
-    "docs/CHANGELOG.md": [
-      "tools/constitutional_compliance_remediation.py"
-    ],
+    "docs/CHANGELOG.md": ["tools/constitutional_compliance_remediation.py"],
     "docs/TEST_IMPROVEMENTS_SUMMARY.md": [
       "tools/constitutional_compliance_remediation.py"
     ],
@@ -13289,9 +12598,7 @@
     "docs/deployment/ACGS_GITOPS_DEPLOYMENT_GUIDE.md": [
       "tools/constitutional_compliance_remediation.py"
     ],
-    "docs/DEPENDENCIES.md": [
-      "tools/constitutional_compliance_remediation.py"
-    ],
+    "docs/DEPENDENCIES.md": ["tools/constitutional_compliance_remediation.py"],
     "docs/emergency_rollback_procedures.md": [
       "tools/constitutional_compliance_remediation.py"
     ],
@@ -13338,20 +12645,14 @@
     "services/core/evolutionary-computation/ec_service/security_architecture.py": [
       "tools/deploy_security_architecture.py"
     ],
-    "services/shared/alembic": [
-      "tools/final_duplicate_cleanup.py"
-    ],
+    "services/shared/alembic": ["tools/final_duplicate_cleanup.py"],
     "services/core/evolutionary-computation/app/main.py": [
       "tools/testing/fix_import_errors.py",
       "tools/deploy_comprehensive_audit_logging.py",
       "tools/apply_security_middleware_to_all_services.py"
     ],
-    "SECURITY_POLICY.yml": [
-      "tools/fix_vulnerabilities.py"
-    ],
-    ".acgs-dependencies.json": [
-      "tools/focused_dependency_update.py"
-    ],
+    "SECURITY_POLICY.yml": ["tools/fix_vulnerabilities.py"],
+    ".acgs-dependencies.json": ["tools/focused_dependency_update.py"],
     "services/shared/database.py": [
       "tools/testing/test_runner_simple.py",
       "tools/manual_code_security_review.py"
@@ -13360,36 +12661,24 @@
       "tools/testing/test_runner_simple.py",
       "tools/manual_code_security_review.py"
     ],
-    "services/shared/config.py": [
-      "tools/manual_code_security_review.py"
-    ],
-    "config.json": [
-      "tools/enhance_access_control.py"
-    ],
+    "services/shared/config.py": ["tools/manual_code_security_review.py"],
+    "config.json": ["tools/enhance_access_control.py"],
     "services/shared/constitutional_cache.py": [
       "tools/upgrade_cryptographic_implementations.py"
     ],
     "tools/services/core/evolutionary-computation\",": [
       "tools/focused_reorganization.py"
     ],
-    "tools/coverage.xml\"": [
-      "tools/fix_github_actions_workflows.py"
-    ],
-    "tools/coverage\\.xml\",": [
-      "tools/fix_github_actions_workflows.py"
-    ],
+    "tools/coverage.xml\"": ["tools/fix_github_actions_workflows.py"],
+    "tools/coverage\\.xml\",": ["tools/fix_github_actions_workflows.py"],
     "tools/scripts/security_scan.sh\"": [
       "tools/demo_security_compliance_tools.py"
     ],
     "tools/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml\"": [
       "tools/deployment_automation.py"
     ],
-    "tools/backups/$DATE\"": [
-      "tools/deployment_automation.py"
-    ],
-    "tools/blockchain/target'": [
-      "tools/comprehensive_codebase_cleanup.py"
-    ],
+    "tools/backups/$DATE\"": ["tools/deployment_automation.py"],
+    "tools/blockchain/target'": ["tools/comprehensive_codebase_cleanup.py"],
     "tools/monitoring/scripts/emergency_restore.sh\"": [
       "tools/comprehensive_production_monitoring.py"
     ],
@@ -13417,12 +12706,8 @@
     "tools/monitoring/scripts/emergency_restore.sh\",": [
       "tools/generate_final_deployment_report.py"
     ],
-    "docs/security": [
-      "tools/documentation_restructuring.py"
-    ],
-    "docs/operations": [
-      "tools/documentation_restructuring.py"
-    ],
+    "docs/security": ["tools/documentation_restructuring.py"],
+    "docs/operations": ["tools/documentation_restructuring.py"],
     "tools/prometheus:/etc/prometheus\",": [
       "tools/priority3_monitoring_infrastructure.py"
     ],
@@ -13474,9 +12759,7 @@
     "services/blockchain/scripts/README.md": [
       "services/blockchain/scripts/deploy_quantumagi.py"
     ],
-    "..\"": [
-      "services/shared/auth/tenant_auth.py"
-    ],
+    "..\"": ["services/shared/auth/tenant_auth.py"],
     "services/shared/security/\",": [
       "services/shared/security/unified_input_validation.py"
     ],
@@ -13513,21 +12796,15 @@
     "tests/services/policies\"": [
       "tests/services/test_governance_synthesis_service.py"
     ],
-    "target": [
-      "reorganization-tools/scripts/setup_cicd_pipelines.py"
-    ],
+    "target": ["reorganization-tools/scripts/setup_cicd_pipelines.py"],
     "reorganization-tools/scripts/coverage.xml": [
       "reorganization-tools/scripts/setup_cicd_pipelines.py"
     ],
     "tests/unit/test_apgf_integration.py": [
       "tests/unit/test_apgf_integration.py"
     ],
-    "tests/compliance": [
-      "tests/compliance/compliance_test_runner.py"
-    ],
-    "etc/passwd\",": [
-      "tests/e2e/tests/test_security.py"
-    ],
+    "tests/compliance": ["tests/compliance/compliance_test_runner.py"],
+    "etc/passwd\",": ["tests/e2e/tests/test_security.py"],
     "tests/load_testing/monitoring/grafana/dashboards:/var/lib/grafana/dashboards\",": [
       "tests/load_testing/distributed_config.py"
     ],
@@ -13588,9 +12865,7 @@
     "tools/cicd/scripts/cicd/deploy_production.sh\",": [
       "tools/cicd/implement_cicd_pipeline.py"
     ],
-    "tools/cicd/coverage.xml\",": [
-      "tools/cicd/implement_cicd_pipeline.py"
-    ],
+    "tools/cicd/coverage.xml\",": ["tools/cicd/implement_cicd_pipeline.py"],
     "tools/cicd/scripts/cicd/rollback_production.sh": [
       "tools/cicd/implement_cicd_pipeline.py"
     ],
@@ -13615,12 +12890,8 @@
     "tools/automation/{old_rel}\",": [
       "tools/automation/cross_reference_maintainer.py"
     ],
-    "tools/'": [
-      "tools/automation/cross_reference_maintainer.py"
-    ],
-    "tools/automation/'": [
-      "tools/automation/cross_reference_maintainer.py"
-    ],
+    "tools/'": ["tools/automation/cross_reference_maintainer.py"],
+    "tools/automation/'": ["tools/automation/cross_reference_maintainer.py"],
     "tools/automation/{new_rel}\"": [
       "tools/automation/cross_reference_maintainer.py"
     ],
@@ -13628,9 +12899,7 @@
       "tools/dgm-best-swe-agent/coding_agent_polyglot.py",
       "tools/dgm-best-swe-agent/coding_agent.py"
     ],
-    "tools/\"],": [
-      "tools/dgm-best-swe-agent/coding_agent_polyglot.py"
-    ],
+    "tools/\"],": ["tools/dgm-best-swe-agent/coding_agent_polyglot.py"],
     "tools/dgm-best-swe-agent/gradlew\",": [
       "tools/dgm-best-swe-agent/coding_agent_polyglot.py"
     ],
@@ -13646,9 +12915,7 @@
     "tools/dgm-best-swe-agent/\"": [
       "tools/dgm-best-swe-agent/self_improve_step.py"
     ],
-    "tools/\"": [
-      "tools/dgm-best-swe-agent/self_improve_step.py"
-    ],
+    "tools/\"": ["tools/dgm-best-swe-agent/self_improve_step.py"],
     "tools/dgm-best-swe-agent/swe_bench/subsets/small.json\"": [
       "tools/dgm-best-swe-agent/DGM_outer.py"
     ],
@@ -13685,9 +12952,7 @@
     "tools/production_readiness/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro": [
       "tools/production_readiness/performance_optimization_implementation.py"
     ],
-    "tools/testing/\",": [
-      "tools/testing/critical_issue_resolver.py"
-    ],
+    "tools/testing/\",": ["tools/testing/critical_issue_resolver.py"],
     "services/core/constitutional-ai/ac_service/app/core/cryptographic_signing.py": [
       "tools/maintenance/fix_utc_imports.py"
     ],
@@ -13700,18 +12965,14 @@
     "tools/documentation/{service_key}_openapi.json',": [
       "tools/documentation/openapi_generator.py"
     ],
-    "tools/setup/test_rbac.sh\"": [
-      "tools/setup/setup_production_auth.py"
-    ],
+    "tools/setup/test_rbac.sh\"": ["tools/setup/setup_production_auth.py"],
     "tools/monitoring/scripts/monitoring/start_monitoring.sh\"": [
       "tools/monitoring/setup_basic_monitoring.py"
     ],
     "tools/setup/redis.conf:/usr/local/etc/redis/redis.conf": [
       "tools/setup/setup_redis_infrastructure.py"
     ],
-    "infrastructure": [
-      "tools/setup/setup_redis_infrastructure.py"
-    ],
+    "infrastructure": ["tools/setup/setup_redis_infrastructure.py"],
     "tools/observability/config/observability/logstash.conf:/usr/share/logstash/pipeline/logstash.conf\"": [
       "tools/observability/implement_comprehensive_observability.py"
     ],
@@ -13764,21 +13025,11 @@
     "services/core/policy-governance/pgc_service/app/core\",": [
       "tools/validation/validate_enhanced_policy_synthesis.py"
     ],
-    "services/shared/models": [
-      "tools/validation/validate_reorganization.py"
-    ],
-    "tools/\",": [
-      "tools/validation/validate_reorganization.py"
-    ],
-    "services/shared/config": [
-      "tools/validation/validate_reorganization.py"
-    ],
-    "services/shared/database": [
-      "tools/validation/validate_reorganization.py"
-    ],
-    "services/shared/auth": [
-      "tools/validation/validate_reorganization.py"
-    ],
+    "services/shared/models": ["tools/validation/validate_reorganization.py"],
+    "tools/\",": ["tools/validation/validate_reorganization.py"],
+    "services/shared/config": ["tools/validation/validate_reorganization.py"],
+    "services/shared/database": ["tools/validation/validate_reorganization.py"],
+    "services/shared/auth": ["tools/validation/validate_reorganization.py"],
     "tools/dgm-best-swe-agent/tools\"": [
       "tools/dgm-best-swe-agent/prompts/tooluse_prompt.py"
     ],
@@ -13849,12 +13100,8 @@
     "tools/dgm-best-swe-agent/analysis/analysis/output/dgm_comparisons_{info_label}.pdf\"": [
       "tools/dgm-best-swe-agent/analysis/plot_comparison.py"
     ],
-    "tests/e2e/framework": [
-      "scripts/testing/run_e2e_with_coverage.py"
-    ],
-    "tests/e2e/pytest.ini": [
-      "scripts/ci/validate_pytest_config.py"
-    ],
+    "tests/e2e/framework": ["scripts/testing/run_e2e_with_coverage.py"],
+    "tests/e2e/pytest.ini": ["scripts/ci/validate_pytest_config.py"],
     "infrastructure/terraform/modules/acgs-platform\"": [
       "infrastructure/terraform/environments/staging/main.tf",
       "infrastructure/terraform/environments/production/main.tf",

@@ -6,8 +6,6 @@ Tests automated alerting for constitutional compliance and performance violation
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import json
-import time
 from datetime import datetime
 
 import requests
@@ -26,7 +24,8 @@ def validate_prometheus_alerts():
                 groups = data["data"]["groups"]
                 total_rules = sum(len(group["rules"]) for group in groups)
                 print(
-                    f"✅ Prometheus rules loaded: {len(groups)} groups, {total_rules} rules"
+                    f"✅ Prometheus rules loaded: {len(groups)} groups,"
+                    f" {total_rules} rules"
                 )
 
                 # Check for constitutional compliance rules
@@ -132,11 +131,12 @@ def check_active_alerts():
                     else:
                         print(f"ℹ️  OTHER: {alert_name} ({state})")
 
-                print(f"\nAlert Summary:")
+                print("\nAlert Summary:")
                 print(f"  Constitutional alerts: {constitutional_alerts}")
                 print(f"  Performance alerts: {performance_alerts}")
                 print(
-                    f"  Other alerts: {len(alerts) - constitutional_alerts - performance_alerts}"
+                    "  Other alerts:"
+                    f" {len(alerts) - constitutional_alerts - performance_alerts}"
                 )
 
                 return constitutional_alerts == 0  # No constitutional violations
@@ -212,7 +212,8 @@ def validate_constitutional_monitoring():
             print(f"❌ {metric}: Error - {e}")
 
     print(
-        f"\nConstitutional Metrics: {valid_metrics}/{len(constitutional_metrics)} available"
+        "\nConstitutional Metrics:"
+        f" {valid_metrics}/{len(constitutional_metrics)} available"
     )
     return valid_metrics >= len(constitutional_metrics) * 0.5  # At least 50% available
 
@@ -234,11 +235,11 @@ def main():
 
     results = {}
     for name, validation_func in validations:
-        print(f"\n{'='*20} {name} {'='*20}")
+        print(f"\n{'=' * 20} {name} {'=' * 20}")
         results[name] = validation_func()
 
     # Summary
-    print(f"\n🏁 ALERTING VALIDATION SUMMARY")
+    print("\n🏁 ALERTING VALIDATION SUMMARY")
     print("=" * 80)
 
     passed = sum(results.values())
@@ -249,7 +250,7 @@ def main():
         print(f"{status} {name}")
 
     print(f"\nOverall: {passed}/{total} validations passed")
-    print(f"Constitutional Hash: cdd01ef066bc6cf2")
+    print("Constitutional Hash: cdd01ef066bc6cf2")
     print(f"Timestamp: {datetime.now().isoformat()}")
 
     if passed >= total * 0.8:  # 80% pass rate

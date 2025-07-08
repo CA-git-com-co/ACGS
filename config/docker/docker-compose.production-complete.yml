@@ -1,7 +1,7 @@
 # ACGS-2 Production Docker Compose Configuration
 # Constitutional Hash: cdd01ef066bc6cf2
 # Performance Targets: P99 <5ms, >100 RPS, >85% cache hit
-version: '3.8'
+version: "3.8"
 
 networks:
   acgs_production:
@@ -60,7 +60,11 @@ services:
     networks:
       - acgs_production
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-acgs_user} -d ${POSTGRES_DB:-acgs_production}"]
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-acgs_user} -d ${POSTGRES_DB:-acgs_production}",
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -69,10 +73,10 @@ services:
       resources:
         limits:
           memory: 2G
-          cpus: '1.0'
+          cpus: "1.0"
         reservations:
           memory: 1G
-          cpus: '0.5'
+          cpus: "0.5"
     logging:
       driver: "json-file"
       options:
@@ -102,10 +106,10 @@ services:
       resources:
         limits:
           memory: 512M
-          cpus: '0.5'
+          cpus: "0.5"
         reservations:
           memory: 256M
-          cpus: '0.25'
+          cpus: "0.25"
     logging:
       driver: "json-file"
       options:
@@ -152,10 +156,10 @@ services:
       resources:
         limits:
           memory: 1G
-          cpus: '0.5'
+          cpus: "0.5"
         reservations:
           memory: 512M
-          cpus: '0.25'
+          cpus: "0.25"
     volumes:
       - acgs_logs:/app/logs
     logging:
@@ -203,10 +207,10 @@ services:
       resources:
         limits:
           memory: 2G
-          cpus: '1.0'
+          cpus: "1.0"
         reservations:
           memory: 1G
-          cpus: '0.5'
+          cpus: "0.5"
     volumes:
       - acgs_logs:/app/logs
     logging:
@@ -255,10 +259,10 @@ services:
       resources:
         limits:
           memory: 1G
-          cpus: '0.5'
+          cpus: "0.5"
         reservations:
           memory: 512M
-          cpus: '0.25'
+          cpus: "0.25"
     volumes:
       - acgs_logs:/app/logs
     logging:
@@ -304,10 +308,10 @@ services:
       resources:
         limits:
           memory: 1G
-          cpus: '0.5'
+          cpus: "0.5"
         reservations:
           memory: 512M
-          cpus: '0.25'
+          cpus: "0.25"
     volumes:
       - acgs_logs:/app/logs
     logging:
@@ -322,12 +326,12 @@ services:
     container_name: acgs_prometheus_prod
     restart: unless-stopped
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--storage.tsdb.retention.time=200h'
-      - '--web.enable-lifecycle'
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/etc/prometheus/console_libraries"
+      - "--web.console.templates=/etc/prometheus/consoles"
+      - "--storage.tsdb.retention.time=200h"
+      - "--web.enable-lifecycle"
     environment:
       CONSTITUTIONAL_HASH: "cdd01ef066bc6cf2"
     volumes:
@@ -339,7 +343,15 @@ services:
     networks:
       - acgs_production
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      test:
+        [
+          "CMD",
+          "wget",
+          "--quiet",
+          "--tries=1",
+          "--spider",
+          "http://localhost:9090/-/healthy",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -347,10 +359,10 @@ services:
       resources:
         limits:
           memory: 1G
-          cpus: '0.5'
+          cpus: "0.5"
         reservations:
           memory: 512M
-          cpus: '0.25'
+          cpus: "0.25"
     logging:
       driver: "json-file"
       options:
@@ -376,7 +388,15 @@ services:
     depends_on:
       - prometheus
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      test:
+        [
+          "CMD",
+          "wget",
+          "--quiet",
+          "--tries=1",
+          "--spider",
+          "http://localhost:3000/api/health",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -384,10 +404,10 @@ services:
       resources:
         limits:
           memory: 512M
-          cpus: '0.25'
+          cpus: "0.25"
         reservations:
           memory: 256M
-          cpus: '0.1'
+          cpus: "0.1"
     logging:
       driver: "json-file"
       options:
@@ -416,7 +436,15 @@ services:
       - multi-agent-coordinator
       - blackboard-service
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      test:
+        [
+          "CMD",
+          "wget",
+          "--quiet",
+          "--tries=1",
+          "--spider",
+          "http://localhost/health",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -424,10 +452,10 @@ services:
       resources:
         limits:
           memory: 256M
-          cpus: '0.25'
+          cpus: "0.25"
         reservations:
           memory: 128M
-          cpus: '0.1'
+          cpus: "0.1"
     logging:
       driver: "json-file"
       options:
@@ -477,10 +505,10 @@ services:
       resources:
         limits:
           memory: 1G
-          cpus: '0.5'
+          cpus: "0.5"
         reservations:
           memory: 512M
-          cpus: '0.25'
+          cpus: "0.25"
     volumes:
       - acgs_logs:/app/logs
     logging:

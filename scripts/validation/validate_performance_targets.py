@@ -13,10 +13,9 @@ Constitutional Hash: cdd01ef066bc6cf2
 
 import argparse
 import json
-import statistics
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -37,10 +36,10 @@ PERFORMANCE_TARGETS = {
 class PerformanceValidator:
     """Validates performance test results against targets."""
 
-    def __init__(self, targets: Optional[Dict[str, float]] = None):
+    def __init__(self, targets: Optional[dict[str, float]] = None):
         self.targets = targets or PERFORMANCE_TARGETS
-        self.violations: List[str] = []
-        self.warnings: List[str] = []
+        self.violations: list[str] = []
+        self.warnings: list[str] = []
 
     def validate_test_results(self, results_file: Path) -> bool:
         """Validate performance test results from JSON file."""
@@ -49,7 +48,7 @@ class PerformanceValidator:
         print("=" * 60)
 
         try:
-            with open(results_file, "r") as f:
+            with open(results_file) as f:
                 results = json.load(f)
 
             # Validate constitutional hash
@@ -79,7 +78,7 @@ class PerformanceValidator:
             print(f"❌ Error validating results: {e}")
             return False
 
-    def _validate_latency_metrics(self, results: Dict[str, Any]) -> None:
+    def _validate_latency_metrics(self, results: dict[str, Any]) -> None:
         """Validate latency performance metrics."""
         print("⏱️  Validating Latency Metrics")
         print("-" * 30)
@@ -105,7 +104,7 @@ class PerformanceValidator:
                 self.warnings.append(f"Missing latency metric: {metric}")
                 print(f"  ⚠️  Missing metric: {metric}")
 
-    def _validate_throughput_metrics(self, results: Dict[str, Any]) -> None:
+    def _validate_throughput_metrics(self, results: dict[str, Any]) -> None:
         """Validate throughput performance metrics."""
         print("\n🚀 Validating Throughput Metrics")
         print("-" * 30)
@@ -127,7 +126,7 @@ class PerformanceValidator:
             self.warnings.append("Missing throughput metric")
             print("  ⚠️  Missing throughput metric")
 
-    def _validate_cache_metrics(self, results: Dict[str, Any]) -> None:
+    def _validate_cache_metrics(self, results: dict[str, Any]) -> None:
         """Validate cache performance metrics."""
         print("\n💾 Validating Cache Metrics")
         print("-" * 30)
@@ -149,7 +148,7 @@ class PerformanceValidator:
             self.warnings.append("Missing cache hit rate metric")
             print("  ⚠️  Missing cache hit rate metric")
 
-    def _validate_resource_metrics(self, results: Dict[str, Any]) -> None:
+    def _validate_resource_metrics(self, results: dict[str, Any]) -> None:
         """Validate resource usage metrics."""
         print("\n🖥️  Validating Resource Metrics")
         print("-" * 30)
@@ -180,17 +179,20 @@ class PerformanceValidator:
 
             if actual > target:
                 self.violations.append(
-                    f"Constitutional overhead: {actual:.2f}ms exceeds target {target:.2f}ms"
+                    f"Constitutional overhead: {actual:.2f}ms exceeds target"
+                    f" {target:.2f}ms"
                 )
                 print(
-                    f"  ❌ Constitutional overhead: {actual:.2f}ms (target: {target:.2f}ms)"
+                    f"  ❌ Constitutional overhead: {actual:.2f}ms (target:"
+                    f" {target:.2f}ms)"
                 )
             else:
                 print(
-                    f"  ✅ Constitutional overhead: {actual:.2f}ms (target: {target:.2f}ms)"
+                    f"  ✅ Constitutional overhead: {actual:.2f}ms (target:"
+                    f" {target:.2f}ms)"
                 )
 
-    def _validate_error_rates(self, results: Dict[str, Any]) -> None:
+    def _validate_error_rates(self, results: dict[str, Any]) -> None:
         """Validate error rate metrics."""
         print("\n🚨 Validating Error Rates")
         print("-" * 30)
@@ -212,7 +214,7 @@ class PerformanceValidator:
             self.warnings.append("Missing error rate metric")
             print("  ⚠️  Missing error rate metric")
 
-    def _extract_latency_data(self, results: Dict[str, Any]) -> Dict[str, float]:
+    def _extract_latency_data(self, results: dict[str, Any]) -> dict[str, float]:
         """Extract latency data from test results."""
         latency_data = {}
 
@@ -238,7 +240,7 @@ class PerformanceValidator:
 
         return latency_data
 
-    def _extract_throughput_data(self, results: Dict[str, Any]) -> Dict[str, float]:
+    def _extract_throughput_data(self, results: dict[str, Any]) -> dict[str, float]:
         """Extract throughput data from test results."""
         throughput_data = {}
 
@@ -249,7 +251,7 @@ class PerformanceValidator:
 
         return throughput_data
 
-    def _extract_cache_data(self, results: Dict[str, Any]) -> Dict[str, float]:
+    def _extract_cache_data(self, results: dict[str, Any]) -> dict[str, float]:
         """Extract cache performance data from test results."""
         cache_data = {}
 
@@ -260,9 +262,9 @@ class PerformanceValidator:
 
         return cache_data
 
-    def _extract_resource_data(self, results: Dict[str, Any]) -> Dict[str, float]:
+    def _extract_resource_data(self, results: dict[str, Any]) -> dict[str, float]:
         """Extract resource usage data from test results."""
-        resource_data: Dict[str, float] = {}
+        resource_data: dict[str, float] = {}
 
         # Look for resource metrics in results
         for category, tests in results.get("results_by_category", {}).items():
@@ -280,7 +282,7 @@ class PerformanceValidator:
 
         return resource_data
 
-    def _extract_error_data(self, results: Dict[str, Any]) -> Dict[str, float]:
+    def _extract_error_data(self, results: dict[str, Any]) -> dict[str, float]:
         """Extract error rate data from test results."""
         error_data = {}
 

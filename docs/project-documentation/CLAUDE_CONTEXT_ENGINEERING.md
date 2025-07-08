@@ -139,17 +139,17 @@ from services.shared.testing.constitutional_test_framework import (
 
 class TestACGSFeature(ConstitutionalTestCase):
     """All ACGS tests must inherit from ConstitutionalTestCase."""
-    
+
     @pytest.mark.constitutional
     def test_constitutional_compliance(self):
         """Validate constitutional hash in all operations."""
         assert self.validate_constitutional_hash()
-    
+
     @pytest.mark.performance
     def test_performance_targets(self):
         """Validate sub-5ms P99 latency."""
         assert self.validate_latency_target(max_p99_ms=5.0)
-    
+
     @pytest.mark.integration
     def test_multi_agent_coordination(self):
         """Validate multi-agent coordination patterns."""
@@ -297,7 +297,7 @@ curl http://localhost:8008/api/v1/coordination/health
 MULTI_AGENT_CONTEXT = {
     "constitutional_hash": "cdd01ef066bc6cf2",
     "coordinator_endpoint": "http://localhost:8008",
-    "blackboard_endpoint": "http://localhost:8010", 
+    "blackboard_endpoint": "http://localhost:8010",
     "required_agents": ["ethics", "legal", "operational"],
     "consensus_algorithms": [
         "MajorityVoteConsensus",
@@ -320,7 +320,7 @@ CONSTITUTIONAL_CONTEXT = {
     "compliance_threshold": 0.95,
     "required_validations": [
         "hash_integrity",
-        "policy_compliance", 
+        "policy_compliance",
         "audit_trail_integrity"
     ]
 }

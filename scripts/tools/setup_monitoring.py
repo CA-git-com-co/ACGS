@@ -17,12 +17,10 @@ Usage:
 
 import argparse
 import json
-import os
 import subprocess
 import sys
 import time
 from pathlib import Path
-from typing import Dict, List, Optional
 
 import requests
 import yaml
@@ -53,7 +51,7 @@ class ACGSMonitoringSetup:
     """Sets up comprehensive monitoring for ACGS services."""
 
     def __init__(self, base_path: Path = None):
-        self.base_path = base_path or Path(".")
+        self.base_path = base_path or Path()
         self.monitoring_path = self.base_path / "infrastructure" / "monitoring"
         self.grafana_path = self.monitoring_path / "grafana"
 
@@ -121,12 +119,13 @@ class ACGSMonitoringSetup:
             prometheus_config = self.monitoring_path / "prometheus.yml"
 
             if prometheus_config.exists():
-                with open(prometheus_config, "r") as f:
+                with open(prometheus_config) as f:
                     config_content = f.read()
 
                 if CONSTITUTIONAL_HASH in config_content:
                     print(
-                        "  ✅ Prometheus configuration already includes constitutional hash"
+                        "  ✅ Prometheus configuration already includes constitutional"
+                        " hash"
                     )
                 else:
                     print("  ⚠️  Prometheus configuration missing constitutional hash")
@@ -227,7 +226,7 @@ class ACGSMonitoringSetup:
             )
 
             if compliance_rules.exists():
-                with open(compliance_rules, "r") as f:
+                with open(compliance_rules) as f:
                     rules_content = f.read()
 
                 # Verify constitutional hash is in rules
@@ -276,7 +275,8 @@ class ACGSMonitoringSetup:
 
             if not compose_file.exists():
                 print(
-                    "  ⚠️  Monitoring Docker Compose file not found, skipping service startup"
+                    "  ⚠️  Monitoring Docker Compose file not found, skipping service"
+                    " startup"
                 )
                 return True
 
@@ -354,13 +354,13 @@ class ACGSMonitoringSetup:
                 print(f"  ⚠️  {service_name} is not accessible (may not be started)")
 
         # Validate constitutional hash in configuration
-        print(f"\n🔐 Constitutional Hash Validation:")
+        print("\n🔐 Constitutional Hash Validation:")
         print(f"  📋 Expected: {CONSTITUTIONAL_HASH}")
-        print(f"  ✅ Configuration files validated")
+        print("  ✅ Configuration files validated")
 
         return validation_success
 
-    def generate_monitoring_summary(self) -> Dict:
+    def generate_monitoring_summary(self) -> dict:
         """Generate monitoring setup summary."""
         summary = {
             "timestamp": time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime()),

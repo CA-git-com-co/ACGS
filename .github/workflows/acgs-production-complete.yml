@@ -7,21 +7,21 @@ name: ACGS-2 Complete Production Deployment
 on:
   push:
     branches: [main, production]
-    tags: ['v*']
+    tags: ["v*"]
   pull_request:
     branches: [main, production]
   workflow_dispatch:
     inputs:
       deployment_mode:
-        description: 'Deployment mode'
+        description: "Deployment mode"
         required: true
-        default: 'docker'
+        default: "docker"
         type: choice
         options: [docker, kubernetes]
       environment:
-        description: 'Target environment'
+        description: "Target environment"
         required: true
-        default: 'production'
+        default: "production"
         type: choice
         options: [staging, production]
 
@@ -41,7 +41,7 @@ jobs:
       compliance_score: ${{ steps.validate.outputs.compliance_score }}
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Validate Constitutional Hash
         id: validate
         run: |
@@ -49,7 +49,7 @@ jobs:
           EXPECTED="${{ env.CONSTITUTIONAL_HASH }}"
           SCORE=0
           TOTAL=0
-          
+
           FILES=(
             "config/environments/.env.example:$EXPECTED"
             "config/docker/docker-compose.production-complete.yml:$EXPECTED"
@@ -59,12 +59,12 @@ jobs:
             "scripts/deployment/deploy-production.sh:$EXPECTED"
             "infrastructure/scripts/init-db.sql:$EXPECTED"
           )
-          
+
           for file_check in "${FILES[@]}"; do
             file="${file_check%:*}"
             hash="${file_check#*:}"
             TOTAL=$((TOTAL + 1))
-            
+
             if [[ -f "$file" ]] && grep -q "$hash" "$file"; then
               echo "✅ $file: Constitutional hash validated"
               SCORE=$((SCORE + 1))
@@ -72,10 +72,10 @@ jobs:
               echo "❌ $file: Constitutional hash missing or incorrect"
             fi
           done
-          
+
           COMPLIANCE_PERCENTAGE=$((SCORE * 100 / TOTAL))
           echo "📊 Compliance Score: $SCORE/$TOTAL ($COMPLIANCE_PERCENTAGE%)"
-          
+
           if [[ $COMPLIANCE_PERCENTAGE -eq 100 ]]; then
             echo "hash_validated=true" >> $GITHUB_OUTPUT
             echo "compliance_score=$COMPLIANCE_PERCENTAGE" >> $GITHUB_OUTPUT
@@ -93,11 +93,11 @@ jobs:
     needs: constitutional-compliance
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Security Configuration Validation
         run: |
           echo "🔒 Validating security configurations..."
-          
+
           SECURITY_CONFIGS=(
             "CORS_ORIGINS"
             "CSRF_SECRET_KEY"
@@ -105,7 +105,7 @@ jobs:
             "HSTS_ENABLED"
             "CONTENT_SECURITY_POLICY_ENABLED"
           )
-          
+
           for config in "${SECURITY_CONFIGS[@]}"; do
             if grep -q "$config" config/environments/.env.example; then
               echo "✅ Security config: $config"
@@ -120,17 +120,24 @@ jobs:
     needs: [constitutional-compliance, security-validation]
     strategy:
       matrix:
-        service: [auth-service, constitutional-ai-service, integrity-service, multi-agent-coordinator, blackboard-service]
+        service:
+          [
+            auth-service,
+            constitutional-ai-service,
+            integrity-service,
+            multi-agent-coordinator,
+            blackboard-service,
+          ]
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      
+
       - name: Build service image
         run: |
           echo "🏗️  Building ${{ matrix.service }} with constitutional hash: ${{ env.CONSTITUTIONAL_HASH }}"
-          
+
           # Build Docker image with constitutional compliance
           docker build \
             --build-arg CONSTITUTIONAL_HASH=${{ env.CONSTITUTIONAL_HASH }} \
@@ -153,7 +160,7 @@ jobs:
     needs: [constitutional-compliance, build-services]
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Performance Validation
         run: |
           echo "⚡ Validating performance targets:"
@@ -161,7 +168,7 @@ jobs:
           echo "  Throughput: > ${{ env.PERFORMANCE_TARGET_RPS }} RPS"
           echo "  Cache Hit Rate: > ${{ env.PERFORMANCE_TARGET_CACHE_HIT }}%"
           echo "  Constitutional Hash: ${{ env.CONSTITUTIONAL_HASH }}"
-          
+
           # Create performance test configuration
           cat > performance-test.yml << EOF
           constitutional_hash: ${{ env.CONSTITUTIONAL_HASH }}
@@ -170,7 +177,7 @@ jobs:
             throughput_rps: ${{ env.PERFORMANCE_TARGET_RPS }}
             cache_hit_rate: ${{ env.PERFORMANCE_TARGET_CACHE_HIT }}
           EOF
-          
+
           echo "📊 Performance test configuration created"
 
   deploy-staging:
@@ -181,26 +188,26 @@ jobs:
     environment: staging
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Deploy to Staging
         run: |
           echo "🚀 Deploying to staging environment"
           echo "Constitutional Hash: ${{ env.CONSTITUTIONAL_HASH }}"
           echo "Deployment Mode: ${{ github.event.inputs.deployment_mode || 'docker' }}"
-          
+
           # Make deployment script executable
           chmod +x scripts/deployment/deploy-production.sh
-          
+
           # Deploy to staging
           export CONSTITUTIONAL_HASH=${{ env.CONSTITUTIONAL_HASH }}
           export ENVIRONMENT=staging
           ./scripts/deployment/deploy-production.sh ${{ github.event.inputs.deployment_mode || 'docker' }} staging
-      
+
       - name: Staging Health Verification
         run: |
           echo "🏥 Performing staging health checks..."
           sleep 60
-          
+
           SERVICES=(8016 8001 8002 8008 8010)
           for port in "${SERVICES[@]}"; do
             echo "Checking service on port $port..."
@@ -211,49 +218,55 @@ jobs:
               exit 1
             fi
           done
-          
+
           echo "🎉 Staging deployment verified"
 
   deploy-production:
     name: Deploy to Production
     runs-on: ubuntu-latest
-    needs: [constitutional-compliance, build-services, performance-testing, deploy-staging]
+    needs:
+      [
+        constitutional-compliance,
+        build-services,
+        performance-testing,
+        deploy-staging,
+      ]
     if: github.ref == 'refs/heads/production' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production')
     environment: production
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Production Deployment
         run: |
           echo "🚀 Starting production deployment"
           echo "Constitutional Hash: ${{ env.CONSTITUTIONAL_HASH }}"
           echo "Compliance Score: ${{ needs.constitutional-compliance.outputs.compliance_score }}%"
           echo "Performance Targets: P99<${{ env.PERFORMANCE_TARGET_P99 }}ms, RPS>${{ env.PERFORMANCE_TARGET_RPS }}, Cache>${{ env.PERFORMANCE_TARGET_CACHE_HIT }}%"
-          
+
           # Verify constitutional compliance before deployment
           if [[ "${{ needs.constitutional-compliance.outputs.hash_validated }}" != "true" ]]; then
             echo "❌ Constitutional compliance validation failed"
             exit 1
           fi
-          
+
           # Make deployment script executable
           chmod +x scripts/deployment/deploy-production.sh
-          
+
           # Deploy to production
           export CONSTITUTIONAL_HASH=${{ env.CONSTITUTIONAL_HASH }}
           export ENVIRONMENT=production
           ./scripts/deployment/deploy-production.sh ${{ github.event.inputs.deployment_mode || 'docker' }} production
-      
+
       - name: Production Health Verification
         run: |
           echo "🏥 Performing comprehensive production health checks..."
           sleep 120
-          
+
           # Service health checks
           SERVICES=(8016 8001 8002 8008 8010)
           for port in "${SERVICES[@]}"; do
             echo "Checking service on port $port..."
-            
+
             # Health endpoint
             if curl -f -s "http://localhost:$port/health" > /dev/null; then
               echo "✅ Port $port: Health check passed"
@@ -261,7 +274,7 @@ jobs:
               echo "❌ Port $port: Health check failed"
               exit 1
             fi
-            
+
             # Constitutional compliance endpoint
             if curl -f -s "http://localhost:$port/constitutional-hash" 2>/dev/null | grep -q "${{ env.CONSTITUTIONAL_HASH }}"; then
               echo "✅ Port $port: Constitutional compliance verified"
@@ -269,10 +282,10 @@ jobs:
               echo "⚠️  Port $port: Constitutional compliance endpoint unavailable"
             fi
           done
-          
+
           # Infrastructure health checks
           echo "Checking infrastructure services..."
-          
+
           # PostgreSQL
           if docker exec acgs_postgres_prod pg_isready -U acgs_production_user > /dev/null 2>&1; then
             echo "✅ PostgreSQL: Healthy"
@@ -280,7 +293,7 @@ jobs:
             echo "❌ PostgreSQL: Unhealthy"
             exit 1
           fi
-          
+
           # Redis
           if docker exec acgs_redis_prod redis-cli ping > /dev/null 2>&1; then
             echo "✅ Redis: Healthy"
@@ -288,29 +301,29 @@ jobs:
             echo "❌ Redis: Unhealthy"
             exit 1
           fi
-          
+
           # Monitoring stack
           if curl -f -s "http://localhost:9090/-/healthy" > /dev/null; then
             echo "✅ Prometheus: Healthy"
           else
             echo "⚠️  Prometheus: Unhealthy"
           fi
-          
+
           if curl -f -s "http://localhost:3000/api/health" > /dev/null; then
             echo "✅ Grafana: Healthy"
           else
             echo "⚠️  Grafana: Unhealthy"
           fi
-          
+
           echo "🎉 Production deployment completed successfully!"
-      
+
       - name: Post-Deployment Monitoring Setup
         run: |
           echo "📊 Setting up post-deployment monitoring..."
-          
+
           # Reload Prometheus configuration
           curl -X POST "http://localhost:9090/-/reload" || echo "Prometheus reload failed"
-          
+
           # Create deployment record
           cat > deployment-record.json << EOF
           {
@@ -329,10 +342,10 @@ jobs:
             "git_ref": "${{ github.ref }}"
           }
           EOF
-          
+
           echo "📝 Deployment record created"
           cat deployment-record.json
-          
+
           echo "🚀 ACGS-2 Production Deployment Complete!"
           echo "Constitutional Hash: ${{ env.CONSTITUTIONAL_HASH }}"
           echo "All services are healthy and constitutionally compliant"

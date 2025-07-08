@@ -10,7 +10,6 @@ import argparse
 import shutil
 import sys
 from pathlib import Path
-from typing import Dict, List
 
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
@@ -19,69 +18,69 @@ LEGACY_MIGRATION_MAP = {
     "run_comprehensive_tests.py": {
         "description": "Comprehensive test runner with all categories",
         "new_command": "python scripts/cli/test.py --all",
-        "notes": "Runs all test suites in the new unified framework"
+        "notes": "Runs all test suites in the new unified framework",
     },
     "run_improved_tests.py": {
         "description": "Improved test runner with coverage",
         "new_command": "python scripts/cli/test.py --with-coverage",
-        "notes": "Runs test suites that include coverage analysis"
+        "notes": "Runs test suites that include coverage analysis",
     },
     "run_integration_tests.py": {
         "description": "Integration test runner",
         "new_command": "python scripts/cli/test.py --suite integration_tests",
-        "notes": "Runs integration tests with service availability checking"
+        "notes": "Runs integration tests with service availability checking",
     },
     "run_e2e_with_coverage.py": {
         "description": "E2E test runner with coverage options",
         "new_command": "python scripts/cli/test.py --suite e2e_tests",
-        "notes": "Runs end-to-end tests through the unified framework"
+        "notes": "Runs end-to-end tests through the unified framework",
     },
     "run_testing_suite.py": {
         "description": "General testing suite runner",
         "new_command": "python scripts/cli/test.py --all --parallel",
-        "notes": "Runs all tests with parallel execution for better performance"
-    }
+        "notes": "Runs all tests with parallel execution for better performance",
+    },
 }
 
 
 class LegacyTestRunnerMigrator:
     """Helper for migrating from legacy test runners."""
-    
+
     def __init__(self, project_root: Path):
         self.project_root = project_root
         self.scripts_dir = project_root / "scripts"
         self.testing_dir = self.scripts_dir / "testing"
-        
-    def analyze_legacy_usage(self) -> Dict[str, List[str]]:
+
+    def analyze_legacy_usage(self) -> dict[str, list[str]]:
         """Analyze how legacy test runners are being used."""
         usage_analysis = {}
-        
+
         # Look for references to legacy scripts in various files
-        search_patterns = [
-            "*.py", "*.sh", "*.yml", "*.yaml", "*.md", "*.txt"
-        ]
-        
+        search_patterns = ["*.py", "*.sh", "*.yml", "*.yaml", "*.md", "*.txt"]
+
         for pattern in search_patterns:
             for file_path in self.project_root.rglob(pattern):
                 if file_path.is_file():
                     try:
-                        content = file_path.read_text(encoding='utf-8')
-                        
-                        for legacy_script in LEGACY_MIGRATION_MAP.keys():
+                        content = file_path.read_text(encoding="utf-8")
+
+                        for legacy_script in LEGACY_MIGRATION_MAP:
                             if legacy_script in content:
                                 if legacy_script not in usage_analysis:
                                     usage_analysis[legacy_script] = []
-                                usage_analysis[legacy_script].append(str(file_path.relative_to(self.project_root)))
-                                
+                                usage_analysis[legacy_script].append(
+                                    str(file_path.relative_to(self.project_root))
+                                )
+
                     except (UnicodeDecodeError, PermissionError):
                         # Skip binary files or files we can't read
                         continue
-        
+
         return usage_analysis
-    
+
     def generate_migration_guide(self) -> str:
         """Generate a comprehensive migration guide."""
-        
+
         guide = f"""# ACGS Test Runner Migration Guide
 Constitutional Hash: {CONSTITUTIONAL_HASH}
 
@@ -93,7 +92,7 @@ The new system provides better performance, more consistent reporting, and unifi
 ## Legacy Script Mapping
 
 """
-        
+
         for legacy_script, migration_info in LEGACY_MIGRATION_MAP.items():
             guide += f"""### {legacy_script}
 
@@ -102,7 +101,7 @@ The new system provides better performance, more consistent reporting, and unifi
 **Notes**: {migration_info['notes']}
 
 """
-        
+
         # Add usage analysis
         usage_analysis = self.analyze_legacy_usage()
         if usage_analysis:
@@ -118,7 +117,7 @@ Referenced in:
                 for file_path in files:
                     guide += f"- {file_path}\n"
                 guide += "\n"
-        
+
         guide += f"""## New Unified Test CLI
 
 The new test CLI provides all functionality of the legacy runners with additional features:
@@ -193,14 +192,14 @@ For questions about migration:
 
 Constitutional Hash: {CONSTITUTIONAL_HASH}
 """
-        
+
         return guide
-    
+
     def create_migration_aliases(self) -> None:
         """Create shell aliases to help with migration."""
-        
+
         aliases_script = self.scripts_dir / "test_aliases.sh"
-        
+
         alias_content = f"""#!/bin/bash
 # ACGS Test Runner Migration Aliases
 # Constitutional Hash: {CONSTITUTIONAL_HASH}
@@ -240,24 +239,24 @@ echo "ACGS Test CLI aliases loaded successfully!"
 echo "Use 'acgs-test-list' to see available test suites"
 echo "Use 'acgs-test-help' for detailed help"
 """
-        
+
         aliases_script.write_text(alias_content)
         print(f"Created migration aliases: {aliases_script}")
-    
+
     def backup_legacy_scripts(self, backup_dir: Path) -> None:
         """Backup legacy test scripts to a specified directory."""
-        
+
         backup_dir.mkdir(parents=True, exist_ok=True)
         backed_up = []
-        
-        for legacy_script in LEGACY_MIGRATION_MAP.keys():
+
+        for legacy_script in LEGACY_MIGRATION_MAP:
             legacy_path = self.testing_dir / legacy_script
             if legacy_path.exists():
                 backup_path = backup_dir / legacy_script
                 shutil.copy2(legacy_path, backup_path)
                 backed_up.append(legacy_script)
                 print(f"Backed up: {legacy_script} -> {backup_path}")
-        
+
         # Also backup the main testing suite runner
         main_runner = self.scripts_dir / "run_testing_suite.py"
         if main_runner.exists():
@@ -265,30 +264,30 @@ echo "Use 'acgs-test-help' for detailed help"
             shutil.copy2(main_runner, backup_path)
             backed_up.append("run_testing_suite.py")
             print(f"Backed up: run_testing_suite.py -> {backup_path}")
-        
+
         return backed_up
-    
+
     def validate_new_setup(self) -> bool:
         """Validate that the new unified test setup is working."""
-        
+
         required_files = [
             self.scripts_dir / "cli" / "test.py",
-            self.scripts_dir / "testing" / "orchestrator.py", 
+            self.scripts_dir / "testing" / "orchestrator.py",
             self.scripts_dir / "testing" / "__init__.py",
             self.scripts_dir / "core" / "__init__.py",
         ]
-        
+
         missing_files = []
         for file_path in required_files:
             if not file_path.exists():
                 missing_files.append(file_path)
-        
+
         if missing_files:
             print("❌ Missing required files for new test setup:")
             for file_path in missing_files:
                 print(f"  - {file_path}")
             return False
-        
+
         print("✅ New test setup validation passed")
         return True
 
@@ -297,77 +296,71 @@ def main():
     """Main migration script entry point."""
     parser = argparse.ArgumentParser(
         description="ACGS Legacy Test Runner Migration Tool",
-        formatter_class=argparse.RawDescriptionHelpFormatter
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    
+
     parser.add_argument(
         "--project-root",
         type=Path,
         default=Path.cwd(),
-        help="ACGS project root directory"
+        help="ACGS project root directory",
     )
     parser.add_argument(
-        "--generate-guide",
-        action="store_true",
-        help="Generate migration guide"
+        "--generate-guide", action="store_true", help="Generate migration guide"
     )
     parser.add_argument(
-        "--create-aliases", 
+        "--create-aliases",
         action="store_true",
-        help="Create shell aliases for migration"
+        help="Create shell aliases for migration",
     )
     parser.add_argument(
         "--backup-legacy",
         type=Path,
-        help="Backup legacy scripts to specified directory"
+        help="Backup legacy scripts to specified directory",
     )
     parser.add_argument(
-        "--validate",
-        action="store_true",
-        help="Validate new test setup"
+        "--validate", action="store_true", help="Validate new test setup"
     )
-    parser.add_argument(
-        "--output",
-        type=Path,
-        help="Output file for migration guide"
-    )
-    
+    parser.add_argument("--output", type=Path, help="Output file for migration guide")
+
     args = parser.parse_args()
-    
+
     # Initialize migrator
     migrator = LegacyTestRunnerMigrator(args.project_root)
-    
+
     # Handle different actions
     if args.generate_guide:
         guide = migrator.generate_migration_guide()
-        
+
         if args.output:
             args.output.write_text(guide)
             print(f"Migration guide written to: {args.output}")
         else:
             print(guide)
-    
+
     if args.create_aliases:
         migrator.create_migration_aliases()
-    
+
     if args.backup_legacy:
         backed_up = migrator.backup_legacy_scripts(args.backup_legacy)
         print(f"Backed up {len(backed_up)} legacy scripts to {args.backup_legacy}")
-    
+
     if args.validate:
         if migrator.validate_new_setup():
             print("✅ Ready to use new unified test orchestrator")
         else:
             print("❌ New test setup needs attention")
             sys.exit(1)
-    
-    if not any([args.generate_guide, args.create_aliases, args.backup_legacy, args.validate]):
+
+    if not any([
+        args.generate_guide, args.create_aliases, args.backup_legacy, args.validate
+    ]):
         # Default action: show summary
-        print(f"ACGS Legacy Test Runner Migration Tool")
+        print("ACGS Legacy Test Runner Migration Tool")
         print(f"Constitutional Hash: {CONSTITUTIONAL_HASH}")
         print()
         print("Available actions:")
-        print("  --generate-guide    Generate comprehensive migration guide") 
+        print("  --generate-guide    Generate comprehensive migration guide")
         print("  --create-aliases    Create shell aliases for easier migration")
         print("  --backup-legacy     Backup legacy scripts")
         print("  --validate          Validate new test setup")

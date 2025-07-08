@@ -92,7 +92,7 @@ POSTGRES_PASSWORD=acgs_dev_password
 REDIS_PASSWORD=acgs_dev_redis
 ENVIRONMENT=development
 
-# .env.production  
+# .env.production
 POSTGRES_PASSWORD=${SECURE_POSTGRES_PASSWORD}
 REDIS_PASSWORD=${SECURE_REDIS_PASSWORD}
 ENVIRONMENT=production

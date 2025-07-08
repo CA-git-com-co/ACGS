@@ -13,10 +13,8 @@ import json
 import logging
 import subprocess
 import sys
-import time
 from datetime import datetime
-from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -35,7 +33,7 @@ class ComprehensiveTestRunner:
         self.test_results = {}
         self.start_time = datetime.utcnow()
 
-    async def run_all_tests(self) -> Dict[str, Any]:
+    async def run_all_tests(self) -> dict[str, Any]:
         """Run all test categories and generate comprehensive report."""
         logger.info("🚀 Starting ACGS Comprehensive Test Suite")
         logger.info(f"Constitutional Hash: {self.CONSTITUTIONAL_HASH}")
@@ -89,7 +87,7 @@ class ComprehensiveTestRunner:
             self.test_results["error"] = str(e)
             return self.test_results
 
-    async def _run_constitutional_tests(self) -> Dict[str, Any]:
+    async def _run_constitutional_tests(self) -> dict[str, Any]:
         """Run constitutional compliance tests."""
         try:
             result = subprocess.run(
@@ -112,7 +110,7 @@ class ComprehensiveTestRunner:
             # Parse JSON report if available
             report_data = {}
             try:
-                with open("constitutional-report.json", "r") as f:
+                with open("constitutional-report.json") as f:
                     report_data = json.load(f)
             except FileNotFoundError:
                 pass
@@ -139,7 +137,7 @@ class ComprehensiveTestRunner:
                 "constitutional_hash": self.CONSTITUTIONAL_HASH,
             }
 
-    async def _run_unit_tests(self) -> Dict[str, Any]:
+    async def _run_unit_tests(self) -> dict[str, Any]:
         """Run unit tests with coverage."""
         try:
             result = subprocess.run(
@@ -165,7 +163,7 @@ class ComprehensiveTestRunner:
             # Parse coverage data
             coverage_data = {}
             try:
-                with open("unit-coverage.json", "r") as f:
+                with open("unit-coverage.json") as f:
                     coverage_data = json.load(f)
             except FileNotFoundError:
                 pass
@@ -173,7 +171,7 @@ class ComprehensiveTestRunner:
             # Parse test report
             report_data = {}
             try:
-                with open("unit-report.json", "r") as f:
+                with open("unit-report.json") as f:
                     report_data = json.load(f)
             except FileNotFoundError:
                 pass
@@ -207,7 +205,7 @@ class ComprehensiveTestRunner:
                 "constitutional_hash": self.CONSTITUTIONAL_HASH,
             }
 
-    async def _run_integration_tests(self) -> Dict[str, Any]:
+    async def _run_integration_tests(self) -> dict[str, Any]:
         """Run integration tests."""
         try:
             result = subprocess.run(
@@ -230,7 +228,7 @@ class ComprehensiveTestRunner:
             # Parse test report
             report_data = {}
             try:
-                with open("integration-report.json", "r") as f:
+                with open("integration-report.json") as f:
                     report_data = json.load(f)
             except FileNotFoundError:
                 pass
@@ -257,7 +255,7 @@ class ComprehensiveTestRunner:
                 "constitutional_hash": self.CONSTITUTIONAL_HASH,
             }
 
-    async def _run_performance_tests(self) -> Dict[str, Any]:
+    async def _run_performance_tests(self) -> dict[str, Any]:
         """Run performance tests."""
         try:
             result = subprocess.run(
@@ -280,7 +278,7 @@ class ComprehensiveTestRunner:
             # Parse test report
             report_data = {}
             try:
-                with open("performance-report.json", "r") as f:
+                with open("performance-report.json") as f:
                     report_data = json.load(f)
             except FileNotFoundError:
                 pass
@@ -307,7 +305,7 @@ class ComprehensiveTestRunner:
                 "constitutional_hash": self.CONSTITUTIONAL_HASH,
             }
 
-    async def _run_multi_tenant_tests(self) -> Dict[str, Any]:
+    async def _run_multi_tenant_tests(self) -> dict[str, Any]:
         """Run multi-tenant tests."""
         try:
             result = subprocess.run(
@@ -330,7 +328,7 @@ class ComprehensiveTestRunner:
             # Parse test report
             report_data = {}
             try:
-                with open("multi-tenant-report.json", "r") as f:
+                with open("multi-tenant-report.json") as f:
                     report_data = json.load(f)
             except FileNotFoundError:
                 pass
@@ -357,7 +355,7 @@ class ComprehensiveTestRunner:
                 "constitutional_hash": self.CONSTITUTIONAL_HASH,
             }
 
-    async def _run_security_tests(self) -> Dict[str, Any]:
+    async def _run_security_tests(self) -> dict[str, Any]:
         """Run security tests."""
         try:
             result = subprocess.run(
@@ -380,7 +378,7 @@ class ComprehensiveTestRunner:
             # Parse test report
             report_data = {}
             try:
-                with open("security-report.json", "r") as f:
+                with open("security-report.json") as f:
                     report_data = json.load(f)
             except FileNotFoundError:
                 pass
@@ -407,7 +405,7 @@ class ComprehensiveTestRunner:
                 "constitutional_hash": self.CONSTITUTIONAL_HASH,
             }
 
-    def _generate_test_summary(self) -> Dict[str, Any]:
+    def _generate_test_summary(self) -> dict[str, Any]:
         """Generate comprehensive test summary."""
         end_time = datetime.utcnow()
         duration = (end_time - self.start_time).total_seconds()

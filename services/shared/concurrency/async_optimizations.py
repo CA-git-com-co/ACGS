@@ -29,6 +29,7 @@ logger = structlog.get_logger()
 @dataclass
 class ThroughputMetrics:
     """Throughput performance metrics."""
+
     requests_completed: int = 0
     requests_failed: int = 0
     total_latency: float = 0.0
@@ -59,19 +60,18 @@ class ThroughputMetrics:
             "failed_requests": self.requests_failed,
             "success_rate": (
                 (self.requests_completed / total_requests * 100)
-                if total_requests > 0 else 0
+                if total_requests > 0
+                else 0
             ),
             "avg_latency": (
-                (self.total_latency / total_requests)
-                if total_requests > 0 else 0
+                (self.total_latency / total_requests) if total_requests > 0 else 0
             ),
             "max_latency": self.max_latency if self.max_latency != 0 else 0,
             "min_latency": self.min_latency if self.min_latency != float("inf") else 0,
             "throughput_rps": (
-                (total_requests / elapsed_time)
-                if elapsed_time > 0 else 0
+                (total_requests / elapsed_time) if elapsed_time > 0 else 0
             ),
-            "constitutional_hash": self.constitutional_hash
+            "constitutional_hash": self.constitutional_hash,
         }
 
 
@@ -84,7 +84,7 @@ class OptimizedHTTPXClient:
         max_keepalive_connections: int = 20,
         keepalive_expiry: int = 5,
         timeout: float = 30.0,
-        retries: int = 3
+        retries: int = 3,
     ):
         self.max_connections = max_connections
         self.max_keepalive_connections = max_keepalive_connections
@@ -97,15 +97,12 @@ class OptimizedHTTPXClient:
         self.limits = Limits(
             max_connections=max_connections,
             max_keepalive_connections=max_keepalive_connections,
-            keepalive_expiry=keepalive_expiry
+            keepalive_expiry=keepalive_expiry,
         )
 
         # Configure timeout
         self.timeout_config = Timeout(
-            connect=5.0,
-            read=timeout,
-            write=timeout,
-            pool=timeout
+            connect=5.0, read=timeout, write=timeout, pool=timeout
         )
 
         self.client: httpx.AsyncClient | None = None
@@ -128,12 +125,12 @@ class OptimizedHTTPXClient:
             timeout=self.timeout_config,
             headers={
                 "User-Agent": f"ACGS-Optimized/{CONSTITUTIONAL_HASH}",
-                "X-Constitutional-Hash": self.constitutional_hash
+                "X-Constitutional-Hash": self.constitutional_hash,
             },
             # HTTP/2 support for better performance
             http2=True,
             # Keep connections alive
-            verify=True
+            verify=True,
         )
 
         self.metrics.start_time = time.time()
@@ -141,7 +138,7 @@ class OptimizedHTTPXClient:
         logger.info(
             "Optimized HTTPX client initialized",
             max_connections=self.max_connections,
-            constitutional_hash=self.constitutional_hash
+            constitutional_hash=self.constitutional_hash,
         )
 
     async def close(self):
@@ -149,16 +146,10 @@ class OptimizedHTTPXClient:
         if self.client:
             await self.client.aclose()
 
-        logger.info(
-            "HTTPX client closed",
-            constitutional_hash=self.constitutional_hash
-        )
+        logger.info("HTTPX client closed", constitutional_hash=self.constitutional_hash)
 
     async def request_with_retry(
-        self,
-        method: str,
-        url: str,
-        **kwargs
+        self, method: str, url: str, **kwargs
     ) -> httpx.Response:
         """Make HTTP request with retry logic."""
 
@@ -186,11 +177,11 @@ class OptimizedHTTPXClient:
                         "HTTP request failed after retries",
                         url=url,
                         status_code=e.response.status_code,
-                        constitutional_hash=self.constitutional_hash
+                        constitutional_hash=self.constitutional_hash,
                     )
                     raise
 
-                await asyncio.sleep(2 ** attempt)  # Exponential backoff
+                await asyncio.sleep(2**attempt)  # Exponential backoff
 
             except (httpx.ConnectError, httpx.TimeoutException) as e:
                 latency = time.time() - start_time
@@ -201,11 +192,11 @@ class OptimizedHTTPXClient:
                         "HTTP connection failed after retries",
                         url=url,
                         error=str(e),
-                        constitutional_hash=self.constitutional_hash
+                        constitutional_hash=self.constitutional_hash,
                     )
                     raise
 
-                await asyncio.sleep(2 ** attempt)  # Exponential backoff
+                await asyncio.sleep(2**attempt)  # Exponential backoff
 
     async def get(self, url: str, **kwargs) -> httpx.Response:
         """GET request with optimization."""
@@ -235,7 +226,7 @@ class ConcurrentRequestBatcher:
         self,
         max_concurrent: int = 50,
         batch_size: int = 100,
-        rate_limit_rps: float | None = None
+        rate_limit_rps: float | None = None,
     ):
         self.max_concurrent = max_concurrent
         self.batch_size = batch_size
@@ -267,19 +258,14 @@ class ConcurrentRequestBatcher:
             return await request_func()
 
     async def execute_batch(
-        self,
-        request_functions: list[Callable],
-        return_exceptions: bool = True
+        self, request_functions: list[Callable], return_exceptions: bool = True
     ) -> list[Any]:
         """Execute batch of requests concurrently."""
 
         start_time = time.time()
 
         # Create rate-limited tasks
-        tasks = [
-            self._rate_limited_request(func)
-            for func in request_functions
-        ]
+        tasks = [self._rate_limited_request(func) for func in request_functions]
 
         # Execute with asyncio.gather for optimal concurrency
         results = await asyncio.gather(*tasks, return_exceptions=return_exceptions)
@@ -291,15 +277,13 @@ class ConcurrentRequestBatcher:
             batch_size=len(request_functions),
             execution_time=execution_time,
             throughput=len(request_functions) / execution_time,
-            constitutional_hash=self.constitutional_hash
+            constitutional_hash=self.constitutional_hash,
         )
 
         return results
 
     async def execute_batches(
-        self,
-        request_functions: list[Callable],
-        return_exceptions: bool = True
+        self, request_functions: list[Callable], return_exceptions: bool = True
     ) -> list[Any]:
         """Execute large list of requests in optimized batches."""
 
@@ -307,7 +291,7 @@ class ConcurrentRequestBatcher:
 
         # Process in batches
         for i in range(0, len(request_functions), self.batch_size):
-            batch = request_functions[i:i + self.batch_size]
+            batch = request_functions[i : i + self.batch_size]
             batch_results = await self.execute_batch(batch, return_exceptions)
             all_results.extend(batch_results)
 
@@ -321,7 +305,7 @@ class CircuitBreaker:
         self,
         failure_threshold: int = 5,
         recovery_timeout: float = 60.0,
-        expected_exception: type = Exception
+        expected_exception: type = Exception,
     ):
         self.failure_threshold = failure_threshold
         self.recovery_timeout = recovery_timeout
@@ -360,7 +344,7 @@ class CircuitBreaker:
                 logger.warning(
                     "Circuit breaker opened",
                     failure_count=self.failure_count,
-                    constitutional_hash=self.constitutional_hash
+                    constitutional_hash=self.constitutional_hash,
                 )
 
             raise e
@@ -369,11 +353,7 @@ class CircuitBreaker:
 class AsyncTaskManager:
     """Manage and optimize async task execution."""
 
-    def __init__(
-        self,
-        max_concurrent_tasks: int = 100,
-        task_timeout: float = 30.0
-    ):
+    def __init__(self, max_concurrent_tasks: int = 100, task_timeout: float = 30.0):
         self.max_concurrent_tasks = max_concurrent_tasks
         self.task_timeout = task_timeout
         self.constitutional_hash = CONSTITUTIONAL_HASH
@@ -383,9 +363,7 @@ class AsyncTaskManager:
         self.failed_tasks = 0
 
     async def execute_tasks(
-        self,
-        task_functions: list[Callable],
-        return_exceptions: bool = True
+        self, task_functions: list[Callable], return_exceptions: bool = True
     ) -> list[Any]:
         """Execute tasks with optimal concurrency management."""
 
@@ -408,7 +386,9 @@ class AsyncTaskManager:
 
         # Execute with concurrency control
         limited_tasks = [run_with_semaphore(task) for task in tasks]
-        results = await asyncio.gather(*limited_tasks, return_exceptions=return_exceptions)
+        results = await asyncio.gather(
+            *limited_tasks, return_exceptions=return_exceptions
+        )
 
         # Count successes and failures
         for result in results:
@@ -425,7 +405,7 @@ class AsyncTaskManager:
             completed_tasks=self.completed_tasks,
             failed_tasks=self.failed_tasks,
             execution_time=execution_time,
-            constitutional_hash=self.constitutional_hash
+            constitutional_hash=self.constitutional_hash,
         )
 
         return results
@@ -433,7 +413,7 @@ class AsyncTaskManager:
     async def execute_with_progress(
         self,
         task_functions: list[Callable],
-        progress_callback: Callable[[int, int], None] | None = None
+        progress_callback: Callable[[int, int], None] | None = None,
     ) -> list[Any]:
         """Execute tasks with progress reporting."""
 
@@ -444,7 +424,7 @@ class AsyncTaskManager:
         batch_size = min(self.max_concurrent_tasks, 20)
 
         for i in range(0, len(task_functions), batch_size):
-            batch = task_functions[i:i + batch_size]
+            batch = task_functions[i : i + batch_size]
             batch_results = await self.execute_tasks(batch)
             results.extend(batch_results)
 
@@ -457,9 +437,7 @@ class AsyncTaskManager:
 
 # Utility functions for common async patterns
 async def gather_with_concurrency_limit(
-    awaitables: list[Callable],
-    limit: int = 50,
-    return_exceptions: bool = True
+    awaitables: list[Callable], limit: int = 50, return_exceptions: bool = True
 ) -> list[Any]:
     """Execute awaitables with concurrency limit using asyncio.gather."""
 
@@ -470,30 +448,29 @@ async def gather_with_concurrency_limit(
             return await awaitable()
 
     limited_awaitables = [run_with_limit(aw) for aw in awaitables]
-    return await asyncio.gather(*limited_awaitables, return_exceptions=return_exceptions)
+    return await asyncio.gather(
+        *limited_awaitables, return_exceptions=return_exceptions
+    )
 
 
 async def batch_process_with_gather(
     items: list[Any],
     processor: Callable,
     batch_size: int = 100,
-    max_concurrent: int = 50
+    max_concurrent: int = 50,
 ) -> list[Any]:
     """Process items in batches with optimal concurrency."""
 
     all_results = []
 
     for i in range(0, len(items), batch_size):
-        batch = items[i:i + batch_size]
+        batch = items[i : i + batch_size]
 
         # Create processing tasks for batch
         tasks = [lambda item=item: processor(item) for item in batch]
 
         # Execute batch with concurrency limit
-        batch_results = await gather_with_concurrency_limit(
-            tasks,
-            limit=max_concurrent
-        )
+        batch_results = await gather_with_concurrency_limit(tasks, limit=max_concurrent)
 
         all_results.extend(batch_results)
 
@@ -501,15 +478,11 @@ async def batch_process_with_gather(
 
 
 @asynccontextmanager
-async def optimized_http_session(
-    max_connections: int = 100,
-    **kwargs
-):
+async def optimized_http_session(max_connections: int = 100, **kwargs):
     """Context manager for optimized HTTP session."""
 
     async with OptimizedHTTPXClient(
-        max_connections=max_connections,
-        **kwargs
+        max_connections=max_connections, **kwargs
     ) as client:
         yield client
 
@@ -518,7 +491,7 @@ async def optimized_http_session(
 async def benchmark_concurrent_requests(
     urls: list[str],
     max_concurrent: int = 50,
-    client: OptimizedHTTPXClient | None = None
+    client: OptimizedHTTPXClient | None = None,
 ) -> dict[str, Any]:
     """Benchmark concurrent HTTP requests."""
 
@@ -527,7 +500,9 @@ async def benchmark_concurrent_requests(
     # Use provided client or create new one
     if client is None:
         async with OptimizedHTTPXClient(max_connections=max_concurrent) as test_client:
-            return await benchmark_concurrent_requests(urls, max_concurrent, test_client)
+            return await benchmark_concurrent_requests(
+                urls, max_concurrent, test_client
+            )
 
     # Create request tasks
     async def make_request(url):
@@ -541,15 +516,15 @@ async def benchmark_concurrent_requests(
 
     # Execute with concurrency limit
     results = await gather_with_concurrency_limit(
-        request_tasks,
-        limit=max_concurrent,
-        return_exceptions=True
+        request_tasks, limit=max_concurrent, return_exceptions=True
     )
 
     execution_time = time.time() - start_time
 
     # Analyze results
-    successful_requests = sum(1 for r in results if isinstance(r, int) and 200 <= r < 300)
+    successful_requests = sum(
+        1 for r in results if isinstance(r, int) and 200 <= r < 300
+    )
     failed_requests = len(results) - successful_requests
 
     return {
@@ -559,7 +534,7 @@ async def benchmark_concurrent_requests(
         "success_rate": (successful_requests / len(urls)) * 100,
         "execution_time": execution_time,
         "throughput_rps": len(urls) / execution_time,
-        "constitutional_hash": CONSTITUTIONAL_HASH
+        "constitutional_hash": CONSTITUTIONAL_HASH,
     }
 
 

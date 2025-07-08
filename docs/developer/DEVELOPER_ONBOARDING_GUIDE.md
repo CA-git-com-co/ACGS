@@ -11,7 +11,7 @@ This comprehensive guide will help you set up your development environment and u
 Before starting, ensure you have the following installed:
 
 - [ ] **Docker & Docker Compose** (v20.10+)
-- [ ] **Python 3.11+** 
+- [ ] **Python 3.11+**
 - [ ] **UV package manager** (preferred) or pip
 - [ ] **Git** (v2.30+)
 - [ ] **Rust 1.70+** (for blockchain components)
@@ -51,7 +51,7 @@ make health
 Expected output:
 ```
 ✓ Constitutional AI (8001): Healthy
-✓ Integrity Service (8002): Healthy  
+✓ Integrity Service (8002): Healthy
 ✓ API Gateway (8080): Healthy
 ✓ Governance Synthesis (8004): Healthy
 ```
@@ -508,7 +508,7 @@ import httpx
 
 async def test_full_workflow():
     """Test complete ACGS workflow"""
-    
+
     # Test constitutional validation
     async with httpx.AsyncClient() as client:
         response = await client.post(
@@ -521,12 +521,12 @@ async def test_full_workflow():
                 "tenant_id": "dev-tenant"
             }
         )
-        
+
         assert response.status_code == 200
         result = response.json()
         assert result["constitutional_hash"] == "cdd01ef066bc6cf2"
         print("✓ Constitutional validation working")
-        
+
         # Test audit logging
         audit_response = await client.post(
             "http://localhost:8002/api/v1/audit/create",
@@ -536,10 +536,10 @@ async def test_full_workflow():
                 "tenant_id": "dev-tenant"
             }
         )
-        
+
         assert audit_response.status_code == 200
         print("✓ Audit logging working")
-        
+
         print("🎉 Development environment fully functional!")
 
 if __name__ == "__main__":
@@ -623,8 +623,8 @@ python scripts/validation/validate_performance_targets.py
 
 ---
 
-**Constitutional Hash**: `cdd01ef066bc6cf2`  
-**Last Updated**: 2025-01-08  
+**Constitutional Hash**: `cdd01ef066bc6cf2`
+**Last Updated**: 2025-01-08
 **Guide Version**: 2.0.0
 
 **Welcome to the ACGS-2 development community! 🚀**

@@ -5,20 +5,16 @@ Systematically assigns unique ports to all services to resolve conflicts
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import json
 import os
 import re
 from pathlib import Path
-from typing import Any, Dict, List, Set
-
-import yaml
 
 
-def load_env_file(env_path: str) -> Dict[str, str]:
+def load_env_file(env_path: str) -> dict[str, str]:
     """Load environment variables from .env file"""
     env_vars = {}
     if os.path.exists(env_path):
-        with open(env_path, "r") as f:
+        with open(env_path) as f:
             for line in f:
                 line = line.strip()
                 if line and not line.startswith("#") and "=" in line:
@@ -27,7 +23,7 @@ def load_env_file(env_path: str) -> Dict[str, str]:
     return env_vars
 
 
-def save_env_file(env_path: str, env_vars: Dict[str, str]) -> None:
+def save_env_file(env_path: str, env_vars: dict[str, str]) -> None:
     """Save environment variables to .env file"""
     lines = ["# Constitutional Hash: cdd01ef066bc6cf2\n"]
 
@@ -80,13 +76,13 @@ def save_env_file(env_path: str, env_vars: Dict[str, str]) -> None:
         f.writelines(lines)
 
 
-def update_docker_compose_ports(file_path: str, port_mapping: Dict[str, int]) -> None:
+def update_docker_compose_ports(file_path: str, port_mapping: dict[str, int]) -> None:
     """Update hardcoded ports in Docker Compose files"""
     if not os.path.exists(file_path):
         return
 
     try:
-        with open(file_path, "r") as f:
+        with open(file_path) as f:
             content = f.read()
 
         original_content = content
@@ -363,10 +359,11 @@ def main():
             for port_name, port_value in sorted(ports.items()):
                 print(f"  {port_name}: {port_value}")
 
-    print(f"\n✅ Comprehensive port conflict resolution completed!")
-    print(f"📋 Constitutional Hash: cdd01ef066bc6cf2")
+    print("\n✅ Comprehensive port conflict resolution completed!")
+    print("📋 Constitutional Hash: cdd01ef066bc6cf2")
     print(
-        f"🔧 Total unique ports assigned: {len([v for k, v in port_assignments.items() if k.endswith('_PORT')])}"
+        "🔧 Total unique ports assigned:"
+        f" {len([v for k, v in port_assignments.items() if k.endswith('_PORT')])}"
     )
 
 

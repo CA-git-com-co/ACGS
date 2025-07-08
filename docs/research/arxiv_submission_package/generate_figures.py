@@ -4,13 +4,14 @@ Generate missing figures for ACGS arxiv submission package.
 Creates professional-quality figures for the academic paper.
 """
 
+from pathlib import Path
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
 from matplotlib import patches
 from matplotlib.patches import FancyBboxPatch, Rectangle
-from pathlib import Path
 
 # Set style for academic papers
 plt.style.use("seaborn-v0_8-whitegrid")
@@ -577,7 +578,7 @@ def create_latency_distribution():
     test_name = "acgs_distributed_load_test"
     results_dir = "/app/reports"
     stats_file = Path(results_dir) / f"{test_name}_stats.csv"
-    
+
     if stats_file.exists():
         df = pd.read_csv(stats_file)
         response_times = []
@@ -592,24 +593,37 @@ def create_latency_distribution():
         np.random.seed(42)  # For reproducibility
         response_times = np.random.lognormal(mean=np.log(0.5), sigma=0.4, size=10000)
         response_times_series = pd.Series(response_times)
-    
+
     p50 = response_times_series.quantile(0.5)
     p95 = response_times_series.quantile(0.95)
     p99 = response_times_series.quantile(0.99)
-    
+
     fig, ax = plt.subplots(1, 1, figsize=(12, 8))
     sns.histplot(response_times_series, kde=True, ax=ax, bins=50)
-    ax.axvline(p50, color='g', linestyle='--', linewidth=2, label=f'P50={p50:.2f}ms')
-    ax.axvline(p95, color='y', linestyle='--', linewidth=2, label=f'P95={p95:.2f}ms')
-    ax.axvline(p99, color='r', linestyle='--', linewidth=2, label=f'P99={p99:.2f}ms')
-    ax.set_title('ACGS Production Latency Distribution\n(P99 = 1.081ms validated)', fontsize=14, fontweight='bold')
-    ax.set_xlabel('Response Time (ms)', fontsize=12)
-    ax.set_ylabel('Frequency', fontsize=12)
+    ax.axvline(p50, color="g", linestyle="--", linewidth=2, label=f"P50={p50:.2f}ms")
+    ax.axvline(p95, color="y", linestyle="--", linewidth=2, label=f"P95={p95:.2f}ms")
+    ax.axvline(p99, color="r", linestyle="--", linewidth=2, label=f"P99={p99:.2f}ms")
+    ax.set_title(
+        "ACGS Production Latency Distribution\n(P99 = 1.081ms validated)",
+        fontsize=14,
+        fontweight="bold",
+    )
+    ax.set_xlabel("Response Time (ms)", fontsize=12)
+    ax.set_ylabel("Frequency", fontsize=12)
     ax.legend(fontsize=10)
-    ax.text(0.02, 0.98, 'Constitutional Hash: cdd01ef066bc6cf2', transform=ax.transAxes, 
-            fontsize=8, verticalalignment='top', style='italic')
+    ax.text(
+        0.02,
+        0.98,
+        "Constitutional Hash: cdd01ef066bc6cf2",
+        transform=ax.transAxes,
+        fontsize=8,
+        verticalalignment="top",
+        style="italic",
+    )
     plt.tight_layout()
-    plt.savefig('figures/Figure_6_Latency_Distribution.png', dpi=300, bbox_inches='tight')
+    plt.savefig(
+        "figures/Figure_6_Latency_Distribution.png", dpi=300, bbox_inches="tight"
+    )
     plt.close()
 
 
@@ -618,7 +632,7 @@ def create_throughput_over_time():
     test_name = "acgs_distributed_load_test"
     results_dir = "/app/reports"
     stats_file = Path(results_dir) / f"{test_name}_stats.csv"
-    
+
     if stats_file.exists():
         df = pd.read_csv(stats_file)
         time_data = df.index
@@ -631,31 +645,65 @@ def create_throughput_over_time():
         base_throughput = 943.1
         throughput_data = base_throughput + np.random.normal(0, 50, len(time_data))
         # Add some realistic peaks and valleys
-        throughput_data += 100 * np.sin(time_data * 0.02) + 50 * np.sin(time_data * 0.05)
-        throughput_data = np.clip(throughput_data, 800, 1200)  # Keep within realistic bounds
-    
+        throughput_data += 100 * np.sin(time_data * 0.02) + 50 * np.sin(
+            time_data * 0.05
+        )
+        throughput_data = np.clip(
+            throughput_data, 800, 1200
+        )  # Keep within realistic bounds
+
     fig, ax = plt.subplots(1, 1, figsize=(12, 8))
-    ax.plot(time_data, throughput_data, linewidth=2, color='#1f77b4', alpha=0.8)
-    ax.axhline(y=943.1, color='r', linestyle='--', linewidth=2, label='Production Average (943.1 RPS)')
-    ax.set_title('ACGS Production Throughput Over Time\n(Validated 943.1 RPS)', fontsize=14, fontweight='bold')
-    ax.set_xlabel('Time (seconds)', fontsize=12)
-    ax.set_ylabel('Throughput (Requests/s)', fontsize=12)
+    ax.plot(time_data, throughput_data, linewidth=2, color="#1f77b4", alpha=0.8)
+    ax.axhline(
+        y=943.1,
+        color="r",
+        linestyle="--",
+        linewidth=2,
+        label="Production Average (943.1 RPS)",
+    )
+    ax.set_title(
+        "ACGS Production Throughput Over Time\n(Validated 943.1 RPS)",
+        fontsize=14,
+        fontweight="bold",
+    )
+    ax.set_xlabel("Time (seconds)", fontsize=12)
+    ax.set_ylabel("Throughput (Requests/s)", fontsize=12)
     ax.legend(fontsize=10)
     ax.grid(True, alpha=0.3)
-    ax.text(0.02, 0.98, 'Constitutional Hash: cdd01ef066bc6cf2', transform=ax.transAxes, 
-            fontsize=8, verticalalignment='top', style='italic')
+    ax.text(
+        0.02,
+        0.98,
+        "Constitutional Hash: cdd01ef066bc6cf2",
+        transform=ax.transAxes,
+        fontsize=8,
+        verticalalignment="top",
+        style="italic",
+    )
     plt.tight_layout()
-    plt.savefig('figures/Figure_7_Throughput_Over_Time.png', dpi=300, bbox_inches='tight')
+    plt.savefig(
+        "figures/Figure_7_Throughput_Over_Time.png", dpi=300, bbox_inches="tight"
+    )
     plt.close()
 
 
 def create_compliance_dashboard_snapshot():
     """Create a Compliance Dashboard Snapshot with constitutional hash."""
     fig, ax = plt.subplots(1, 1, figsize=(12, 8))
-    ax.text(0.5, 0.5, "Compliance Dashboard Snapshot\nHash: cdd01ef066bc6cf2", fontsize=12, ha='center', va='center')
+    ax.text(
+        0.5,
+        0.5,
+        "Compliance Dashboard Snapshot\nHash: cdd01ef066bc6cf2",
+        fontsize=12,
+        ha="center",
+        va="center",
+    )
     ax.set_axis_off()
     plt.tight_layout()
-    plt.savefig('figures/Figure_8_Compliance_Dashboard_Snapshot.png', dpi=300, bbox_inches='tight')
+    plt.savefig(
+        "figures/Figure_8_Compliance_Dashboard_Snapshot.png",
+        dpi=300,
+        bbox_inches="tight",
+    )
     plt.close()
 
 

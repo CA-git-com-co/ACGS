@@ -2,12 +2,12 @@ openapi: 3.0.3
 info:
   title: Constitutional Governance Service API
   description: |
-    Enhanced Constitutional Governance Service for ACGS-2 providing centralized constitutional 
+    Enhanced Constitutional Governance Service for ACGS-2 providing centralized constitutional
     compliance validation, policy synthesis, and governance workflows with sub-5ms P99 latency.
-    
+
     **Constitutional Hash**: `cdd01ef066bc6cf2`
-    
-    This service maintains 100% constitutional compliance while providing high-performance 
+
+    This service maintains 100% constitutional compliance while providing high-performance
     governance operations at enterprise scale.
   version: 2.0.0
   contact:
@@ -35,12 +35,12 @@ paths:
       tags:
         - Health
       responses:
-        '200':
+        "200":
           description: Service is healthy
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HealthResponse'
+                $ref: "#/components/schemas/HealthResponse"
               example:
                 status: healthy
                 constitutional_compliance:
@@ -54,7 +54,7 @@ paths:
     post:
       summary: Validate constitutional compliance of a decision
       description: |
-        Validates a governance decision against constitutional principles with comprehensive 
+        Validates a governance decision against constitutional principles with comprehensive
         compliance scoring and recommendations.
       tags:
         - Constitutional Validation
@@ -63,7 +63,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ConstitutionalValidationRequest'
+              $ref: "#/components/schemas/ConstitutionalValidationRequest"
             example:
               constitutional_context:
                 hash: cdd01ef066bc6cf2
@@ -104,12 +104,12 @@ paths:
                   user_consent_required: true
                   explainability_required: true
       responses:
-        '200':
+        "200":
           description: Constitutional validation completed successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConstitutionalValidationResponse'
+                $ref: "#/components/schemas/ConstitutionalValidationResponse"
               example:
                 constitutional_compliance:
                   hash: cdd01ef066bc6cf2
@@ -147,16 +147,16 @@ paths:
                       - Model performance monitoring
                 errors: []
                 warnings: []
-        '400':
-          $ref: '#/components/responses/ConstitutionalViolationError'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          $ref: '#/components/responses/ForbiddenError'
-        '422':
-          $ref: '#/components/responses/ValidationError'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+        "400":
+          $ref: "#/components/responses/ConstitutionalViolationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 
   /api/v1/constitutional/validate/batch:
     post:
@@ -171,22 +171,22 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BatchValidationRequest'
+              $ref: "#/components/schemas/BatchValidationRequest"
       responses:
-        '200':
+        "200":
           description: Batch validation completed
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BatchValidationResponse'
-        '400':
-          $ref: '#/components/responses/BatchValidationError'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          $ref: '#/components/responses/ForbiddenError'
-        '422':
-          $ref: '#/components/responses/ValidationError'
+                $ref: "#/components/schemas/BatchValidationResponse"
+        "400":
+          $ref: "#/components/responses/BatchValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
 
   /api/v1/constitutional/policies/synthesize:
     post:
@@ -201,20 +201,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PolicySynthesisRequest'
+              $ref: "#/components/schemas/PolicySynthesisRequest"
       responses:
-        '200':
+        "200":
           description: Policy synthesis completed
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PolicySynthesisResponse'
-        '400':
-          $ref: '#/components/responses/ConstitutionalViolationError'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '422':
-          $ref: '#/components/responses/ValidationError'
+                $ref: "#/components/schemas/PolicySynthesisResponse"
+        "400":
+          $ref: "#/components/responses/ConstitutionalViolationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
 
   /api/v1/constitutional/audit:
     get:
@@ -247,7 +247,12 @@ paths:
           name: event_type
           schema:
             type: string
-            enum: [constitutional_validation, policy_synthesis, compliance_violation]
+            enum:
+              [
+                constitutional_validation,
+                policy_synthesis,
+                compliance_violation,
+              ]
           description: Filter by event type
         - in: query
           name: compliance_threshold
@@ -272,18 +277,18 @@ paths:
             default: 50
           description: Page size for pagination
       responses:
-        '200':
+        "200":
           description: Audit query completed
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuditQueryResponse'
-        '400':
-          $ref: '#/components/responses/ValidationError'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          $ref: '#/components/responses/ForbiddenError'
+                $ref: "#/components/schemas/AuditQueryResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
 
   /api/v1/constitutional/metrics:
     get:
@@ -307,16 +312,16 @@ paths:
             default: 24h
           description: Time range for metrics aggregation
       responses:
-        '200':
+        "200":
           description: Constitutional metrics retrieved
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConstitutionalMetricsResponse'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          $ref: '#/components/responses/ForbiddenError'
+                $ref: "#/components/schemas/ConstitutionalMetricsResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
 
 components:
   securitySchemes:
@@ -345,7 +350,7 @@ components:
           type: string
           enum: [healthy, degraded, unhealthy]
         constitutional_compliance:
-          $ref: '#/components/schemas/ConstitutionalCompliance'
+          $ref: "#/components/schemas/ConstitutionalCompliance"
         service:
           type: string
           example: constitutional-governance
@@ -471,11 +476,12 @@ components:
           description: Human-readable decision description
         domain:
           type: string
-          enum: [healthcare, finance, education, manufacturing, retail, government]
+          enum:
+            [healthcare, finance, education, manufacturing, retail, government]
         impact_assessment:
-          $ref: '#/components/schemas/ImpactAssessment'
+          $ref: "#/components/schemas/ImpactAssessment"
         ai_model:
-          $ref: '#/components/schemas/AIModelInfo'
+          $ref: "#/components/schemas/AIModelInfo"
 
     ImpactAssessment:
       type: object
@@ -527,16 +533,16 @@ components:
         - data
       properties:
         constitutional_context:
-          $ref: '#/components/schemas/ConstitutionalContext'
+          $ref: "#/components/schemas/ConstitutionalContext"
         request_metadata:
-          $ref: '#/components/schemas/RequestMetadata'
+          $ref: "#/components/schemas/RequestMetadata"
         data:
           type: object
           required:
             - decision
           properties:
             decision:
-              $ref: '#/components/schemas/Decision'
+              $ref: "#/components/schemas/Decision"
             context:
               type: object
               description: Additional decision context
@@ -549,9 +555,9 @@ components:
         - data
       properties:
         constitutional_compliance:
-          $ref: '#/components/schemas/ConstitutionalCompliance'
+          $ref: "#/components/schemas/ConstitutionalCompliance"
         response_metadata:
-          $ref: '#/components/schemas/ResponseMetadata'
+          $ref: "#/components/schemas/ResponseMetadata"
         data:
           type: object
           required:
@@ -561,15 +567,15 @@ components:
             decision_id:
               type: string
             validation_result:
-              $ref: '#/components/schemas/ValidationResult'
+              $ref: "#/components/schemas/ValidationResult"
         errors:
           type: array
           items:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
         warnings:
           type: array
           items:
-            $ref: '#/components/schemas/Warning'
+            $ref: "#/components/schemas/Warning"
 
     ValidationResult:
       type: object
@@ -601,7 +607,7 @@ components:
         requirements:
           type: array
           items:
-            $ref: '#/components/schemas/ComplianceRequirement'
+            $ref: "#/components/schemas/ComplianceRequirement"
         monitoring_requirements:
           type: array
           items:
@@ -634,9 +640,9 @@ components:
         - data
       properties:
         constitutional_context:
-          $ref: '#/components/schemas/ConstitutionalContext'
+          $ref: "#/components/schemas/ConstitutionalContext"
         request_metadata:
-          $ref: '#/components/schemas/RequestMetadata'
+          $ref: "#/components/schemas/RequestMetadata"
         data:
           type: object
           required:
@@ -646,7 +652,7 @@ components:
               type: array
               maxItems: 50
               items:
-                $ref: '#/components/schemas/Decision'
+                $ref: "#/components/schemas/Decision"
             batch_options:
               type: object
               properties:
@@ -665,9 +671,9 @@ components:
         - data
       properties:
         constitutional_compliance:
-          $ref: '#/components/schemas/ConstitutionalCompliance'
+          $ref: "#/components/schemas/ConstitutionalCompliance"
         response_metadata:
-          $ref: '#/components/schemas/ResponseMetadata'
+          $ref: "#/components/schemas/ResponseMetadata"
         data:
           type: object
           required:
@@ -681,7 +687,7 @@ components:
                   decision_id:
                     type: string
                   validation_result:
-                    $ref: '#/components/schemas/ValidationResult'
+                    $ref: "#/components/schemas/ValidationResult"
                   processing_time_ms:
                     type: number
             summary:
@@ -703,7 +709,7 @@ components:
         - data
       properties:
         constitutional_context:
-          $ref: '#/components/schemas/ConstitutionalContext'
+          $ref: "#/components/schemas/ConstitutionalContext"
         data:
           type: object
           required:
@@ -733,12 +739,12 @@ components:
         - data
       properties:
         constitutional_compliance:
-          $ref: '#/components/schemas/ConstitutionalCompliance'
+          $ref: "#/components/schemas/ConstitutionalCompliance"
         data:
           type: object
           properties:
             synthesized_policy:
-              $ref: '#/components/schemas/SynthesizedPolicy'
+              $ref: "#/components/schemas/SynthesizedPolicy"
 
     SynthesizedPolicy:
       type: object
@@ -769,14 +775,14 @@ components:
         - data
       properties:
         constitutional_compliance:
-          $ref: '#/components/schemas/ConstitutionalCompliance'
+          $ref: "#/components/schemas/ConstitutionalCompliance"
         data:
           type: object
           properties:
             audit_entries:
               type: array
               items:
-                $ref: '#/components/schemas/AuditEntry'
+                $ref: "#/components/schemas/AuditEntry"
             total_count:
               type: integer
             query_metadata:
@@ -787,7 +793,7 @@ components:
                 cache_hit:
                   type: boolean
         pagination:
-          $ref: '#/components/schemas/Pagination'
+          $ref: "#/components/schemas/Pagination"
 
     AuditEntry:
       type: object
@@ -815,7 +821,7 @@ components:
         - data
       properties:
         constitutional_compliance:
-          $ref: '#/components/schemas/ConstitutionalCompliance'
+          $ref: "#/components/schemas/ConstitutionalCompliance"
         data:
           type: object
           properties:
@@ -926,7 +932,7 @@ components:
                         recommendation:
                           type: string
               error:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
               data:
                 type: object
                 nullable: true
@@ -939,9 +945,9 @@ components:
             type: object
             properties:
               constitutional_compliance:
-                $ref: '#/components/schemas/ConstitutionalCompliance'
+                $ref: "#/components/schemas/ConstitutionalCompliance"
               error:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
               data:
                 type: object
                 properties:
@@ -962,7 +968,7 @@ components:
             type: object
             properties:
               constitutional_compliance:
-                $ref: '#/components/schemas/ConstitutionalCompliance'
+                $ref: "#/components/schemas/ConstitutionalCompliance"
               error:
                 type: object
                 properties:
@@ -981,7 +987,7 @@ components:
             type: object
             properties:
               constitutional_compliance:
-                $ref: '#/components/schemas/ConstitutionalCompliance'
+                $ref: "#/components/schemas/ConstitutionalCompliance"
               error:
                 type: object
                 properties:
@@ -1000,7 +1006,7 @@ components:
             type: object
             properties:
               constitutional_compliance:
-                $ref: '#/components/schemas/ConstitutionalCompliance'
+                $ref: "#/components/schemas/ConstitutionalCompliance"
               error:
                 type: object
                 properties:
@@ -1027,7 +1033,7 @@ components:
             type: object
             properties:
               constitutional_compliance:
-                $ref: '#/components/schemas/ConstitutionalCompliance'
+                $ref: "#/components/schemas/ConstitutionalCompliance"
               error:
                 type: object
                 properties:

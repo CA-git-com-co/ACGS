@@ -1,9 +1,9 @@
 services:
   postgresql:
     command:
-    - postgres
-    - -c
-    - config_file=/etc/postgresql/postgresql.conf
+      - postgres
+      - -c
+      - config_file=/etc/postgresql/postgresql.conf
     container_name: acgs_postgresql
     environment:
       POSTGRES_DB: acgs_production
@@ -14,17 +14,17 @@ services:
       interval: 10s
       retries: 5
       test:
-      - CMD-SHELL
-      - pg_isready -U acgs_user -d acgs_production
+        - CMD-SHELL
+        - pg_isready -U acgs_user -d acgs_production
       timeout: 5s
     image: postgres:15.4
     ports:
-    - 5439:5432
+      - 5439:5432
     restart: unless-stopped
     volumes:
-    - postgresql_data:/var/lib/postgresql/data
-    - ${ACGS_ROOT}/config/postgresql/postgresql.conf:/etc/postgresql/postgresql.conf
-version: '3.8'
+      - postgresql_data:/var/lib/postgresql/data
+      - ${ACGS_ROOT}/config/postgresql/postgresql.conf:/etc/postgresql/postgresql.conf
+version: "3.8"
 volumes:
   postgresql_data: {}
 # constitutional_hash: cdd01ef066bc6cf2

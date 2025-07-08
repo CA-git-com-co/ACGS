@@ -117,7 +117,8 @@ async def main():
 
             compliance_status = "✅" if result["constitutional_compliant"] else "❌"
             print(
-                f"{compliance_status} {service:25} Port {port:4} | {latency:6.2f}ms | {status}"
+                f"{compliance_status} {service:25} Port {port:4} | {latency:6.2f}ms |"
+                f" {status}"
             )
 
             if result["constitutional_compliant"]:
@@ -127,7 +128,8 @@ async def main():
         else:
             unhealthy_services.append(service)
             print(
-                f"❌ {service:25} Port {port:4} | ERROR: {result.get('error', 'Unknown')}"
+                f"❌ {service:25} Port {port:4} | ERROR:"
+                f" {result.get('error', 'Unknown')}"
             )
 
     # Summary statistics
@@ -140,10 +142,12 @@ async def main():
     print("=" * 80)
     print(f"Total Services:           {total_services}")
     print(
-        f"Healthy Services:         {healthy_count}/{total_services} ({healthy_count/total_services*100:.1f}%)"
+        "Healthy Services:        "
+        f" {healthy_count}/{total_services} ({healthy_count / total_services * 100:.1f}%)"
     )
     print(
-        f"Constitutional Compliant: {compliant_count}/{total_services} ({compliant_count/total_services*100:.1f}%)"
+        "Constitutional Compliant:"
+        f" {compliant_count}/{total_services} ({compliant_count / total_services * 100:.1f}%)"
     )
     print(f"Average Latency:          {avg_latency:.2f}ms")
 
@@ -159,13 +163,16 @@ async def main():
     availability_pass = (healthy_count / total_services * 100) >= availability_target
 
     print(
-        f"P99 Latency < {p99_target}ms:     {'✅ PASS' if latency_pass else '❌ FAIL'} ({avg_latency:.2f}ms)"
+        f"P99 Latency < {p99_target}ms:    "
+        f" {'✅ PASS' if latency_pass else '❌ FAIL'} ({avg_latency:.2f}ms)"
     )
     print(
-        f"Constitutional Compliance: {'✅ PASS' if compliance_pass else '❌ FAIL'} ({compliant_count/total_services*100:.1f}%)"
+        "Constitutional Compliance:"
+        f" {'✅ PASS' if compliance_pass else '❌ FAIL'} ({compliant_count / total_services * 100:.1f}%)"
     )
     print(
-        f"Service Availability:      {'✅ PASS' if availability_pass else '❌ FAIL'} ({healthy_count/total_services*100:.1f}%)"
+        "Service Availability:     "
+        f" {'✅ PASS' if availability_pass else '❌ FAIL'} ({healthy_count / total_services * 100:.1f}%)"
     )
 
     # Overall status
@@ -178,7 +185,8 @@ async def main():
         print(f"✅ {total_services} services running with constitutional compliance")
         print(f"✅ Average latency {avg_latency:.2f}ms (target: <{p99_target}ms)")
         print(
-            f"✅ Constitutional hash {CONSTITUTIONAL_HASH} validated across all services"
+            f"✅ Constitutional hash {CONSTITUTIONAL_HASH} validated across all"
+            " services"
         )
     else:
         print("⚠️  SOME TARGETS NOT MET - REQUIRES ATTENTION")
@@ -202,7 +210,7 @@ async def main():
     with open("service_validation_report.json", "w") as f:
         json.dump(validation_report, f, indent=2)
 
-    print(f"\n📄 Detailed report saved to: service_validation_report.json")
+    print("\n📄 Detailed report saved to: service_validation_report.json")
 
     return all_targets_met
 

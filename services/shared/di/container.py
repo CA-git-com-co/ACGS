@@ -34,6 +34,7 @@ class CircularDependency(DIException):
 
 class ServiceLifetime:
     """Service lifetime scopes."""
+
     SINGLETON = "singleton"
     TRANSIENT = "transient"
     SCOPED = "scoped"
@@ -62,7 +63,7 @@ class ServiceDescriptor:
 class Container:
     """
     Lightweight dependency injection container.
-    
+
     Provides service registration, resolution, and lifetime management
     compatible with FastAPI's dependency injection system.
     """
@@ -76,7 +77,10 @@ class Container:
         # Register the container itself
         self.register_instance(Container, self)
 
-        logger.info(f"✅ DI Container initialized with constitutional hash: {CONSTITUTIONAL_HASH}")
+        logger.info(
+            "✅ DI Container initialized with constitutional hash:"
+            f" {CONSTITUTIONAL_HASH}"
+        )
 
     def register(
         self,
@@ -87,7 +91,9 @@ class Container:
     ) -> "Container":
         """Register a service with the container."""
         if service_type in self._services:
-            logger.warning(f"Service {service_type.__name__} is already registered, overriding")
+            logger.warning(
+                f"Service {service_type.__name__} is already registered, overriding"
+            )
 
         self._services[service_type] = ServiceDescriptor(
             service_type=service_type,
@@ -140,7 +146,9 @@ class Container:
         # Check for circular dependencies
         if service_type in self._resolution_stack:
             cycle = " -> ".join([t.__name__ for t in self._resolution_stack])
-            raise CircularDependency(f"Circular dependency detected: {cycle} -> {service_type.__name__}")
+            raise CircularDependency(
+                f"Circular dependency detected: {cycle} -> {service_type.__name__}"
+            )
 
         # Handle different lifetimes
         if descriptor.lifetime == ServiceLifetime.SINGLETON:
@@ -150,19 +158,29 @@ class Container:
         # TRANSIENT
         return self._create_instance(service_type, descriptor)
 
-    def _resolve_singleton(self, service_type: type[T], descriptor: ServiceDescriptor) -> T:
+    def _resolve_singleton(
+        self, service_type: type[T], descriptor: ServiceDescriptor
+    ) -> T:
         """Resolve a singleton service."""
         if service_type not in self._singletons:
-            self._singletons[service_type] = self._create_instance(service_type, descriptor)
+            self._singletons[service_type] = self._create_instance(
+                service_type, descriptor
+            )
         return self._singletons[service_type]
 
-    def _resolve_scoped(self, service_type: type[T], descriptor: ServiceDescriptor) -> T:
+    def _resolve_scoped(
+        self, service_type: type[T], descriptor: ServiceDescriptor
+    ) -> T:
         """Resolve a scoped service."""
         if service_type not in self._scoped_instances:
-            self._scoped_instances[service_type] = self._create_instance(service_type, descriptor)
+            self._scoped_instances[service_type] = self._create_instance(
+                service_type, descriptor
+            )
         return self._scoped_instances[service_type]
 
-    def _create_instance(self, service_type: type[T], descriptor: ServiceDescriptor) -> T:
+    def _create_instance(
+        self, service_type: type[T], descriptor: ServiceDescriptor
+    ) -> T:
         """Create a new instance of the service."""
         self._resolution_stack.append(service_type)
 
@@ -205,7 +223,10 @@ class Container:
                     kwargs[param_name] = self.resolve(param.annotation)
                 elif param.default == inspect.Parameter.empty:
                     # Required parameter without annotation
-                    logger.warning(f"Parameter {param_name} in {implementation.__name__} has no type annotation")
+                    logger.warning(
+                        f"Parameter {param_name} in {implementation.__name__} has no"
+                        " type annotation"
+                    )
 
             return implementation(**kwargs)
 
@@ -216,9 +237,9 @@ class Container:
     def _can_auto_register(self, service_type: type) -> bool:
         """Check if a type can be auto-registered."""
         return (
-            inspect.isclass(service_type) and
-            not inspect.isabstract(service_type) and
-            hasattr(service_type, "__init__")
+            inspect.isclass(service_type)
+            and not inspect.isabstract(service_type)
+            and hasattr(service_type, "__init__")
         )
 
     def clear_scoped(self):
@@ -228,6 +249,7 @@ class Container:
 
     def get_dependency_provider(self, service_type: type[T]) -> Callable[[], T]:
         """Get a FastAPI-compatible dependency provider function."""
+
         @cache
         def dependency_provider() -> T:
             return self.resolve(service_type)
@@ -256,9 +278,7 @@ def configure_container() -> Container:
 
     # Register configuration
     container.register_factory(
-        type(get_acgs_config()),
-        get_acgs_config,
-        ServiceLifetime.SINGLETON
+        type(get_acgs_config()), get_acgs_config, ServiceLifetime.SINGLETON
     )
 
     logger.info("✅ Container configured with core services")
@@ -277,6 +297,7 @@ def injectable(
     interface: type | None = None,
 ) -> Callable[[type[T]], type[T]]:
     """Decorator to mark a class as injectable."""
+
     def decorator(cls: type[T]) -> type[T]:
         container = get_container()
         registration_type = interface or cls

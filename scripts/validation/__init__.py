@@ -5,7 +5,6 @@ Constitutional Hash: cdd01ef066bc6cf2
 Unified validation framework for ACGS services and infrastructure.
 """
 
-from .validator import ACGSValidator, ValidationResult
 from .checks import (
     ConstitutionalComplianceCheck,
     EnvironmentConfigCheck,
@@ -14,10 +13,11 @@ from .checks import (
     PerformanceTargetsCheck,
     PortNumbersCheck,
 )
+from .validator import ACGSValidator, ValidationResult
 
 __all__ = [
     "ACGSValidator",
-    "ValidationResult", 
+    "ValidationResult",
     "ConstitutionalComplianceCheck",
     "EnvironmentConfigCheck",
     "InfrastructureIntegrationCheck",
