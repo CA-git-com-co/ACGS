@@ -56,6 +56,20 @@ app = FastAPI(
     redoc_url="/gateway/redoc" if GatewayConfig.ENABLE_DOCS else None,
 )
 
+# Setup optimized constitutional validation middleware
+setup_constitutional_validation(
+    app=app,
+    service_name="api-gateway",
+    performance_target_ms=0.5,  # Optimized target
+    enable_strict_validation=True,
+)
+
+# Constitutional compliance logging
+logger.info(f"✅ Optimized constitutional middleware enabled for api-gateway")
+logger.info(f"📋 Constitutional Hash: cdd01ef066bc6cf2")
+logger.info(f"🎯 Performance Target: <0.5ms validation")
+
+
 # Initialize core components
 gateway_config = GatewayConfig()
 service_router = ServiceRouter()

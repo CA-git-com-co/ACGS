@@ -48,6 +48,12 @@ from middleware.prometheus_metrics import (
     instrument_database_queries,
 )
 
+# Import optimized constitutional middleware
+from services.shared.middleware.constitutional_validation import (
+    ConstitutionalValidationMiddleware,
+    setup_constitutional_validation,
+)
+
 # ACGS Standardized Error Handling
 try:
     import sys
@@ -299,6 +305,20 @@ app = FastAPI(
     redoc_url="/redoc",
     lifespan=lifespan,
 )
+
+# Setup optimized constitutional validation middleware
+setup_constitutional_validation(
+    app=app,
+    service_name="integrity",
+    performance_target_ms=0.5,  # Optimized target
+    enable_strict_validation=True,
+)
+
+# Constitutional compliance logging
+logger.info(f"✅ Optimized constitutional middleware enabled for integrity")
+logger.info(f"📋 Constitutional Hash: cdd01ef066bc6cf2")
+logger.info(f"🎯 Performance Target: <0.5ms validation")
+
 
 # Add Prometheus Middleware for standardized monitoring
 app.add_middleware(PrometheusMiddleware, service_name=SERVICE_NAME)

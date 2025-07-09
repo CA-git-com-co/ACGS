@@ -23,10 +23,30 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 logger = logging.getLogger(__name__)
 
 # Create application using refactored configuration
+# Import optimized constitutional middleware
+from services.shared.middleware.constitutional_validation import (
+    ConstitutionalValidationMiddleware,
+    setup_constitutional_validation,
+)
+
 from .config.app_config import create_constitutional_ai_app
 
 # Create the FastAPI app
 app = create_constitutional_ai_app()
+
+# Setup optimized constitutional validation middleware
+setup_constitutional_validation(
+    app=app,
+    service_name="constitutional-ai",
+    performance_target_ms=0.5,  # Optimized target
+    enable_strict_validation=True,
+)
+
+# Constitutional compliance logging
+logger.info(f"✅ Optimized constitutional middleware enabled for constitutional-ai")
+logger.info(f"📋 Constitutional Hash: cdd01ef066bc6cf2")
+logger.info(f"🎯 Performance Target: <0.5ms validation")
+
 
 # Setup API endpoints
 from .api.endpoints import setup_api_endpoints

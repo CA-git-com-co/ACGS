@@ -31,15 +31,16 @@ class DatabaseConfig(BaseSettings):
         description="Database connection URL",
     )
 
-    # Connection pool settings
+    # Enhanced connection pool settings (optimized for >200 concurrent
+    # connections)
     pool_size: int = Field(
-        default=10,
+        default=50,  # Increased from 10 to 50
         env="DATABASE_POOL_SIZE",
         description="Database connection pool size",
     )
 
     max_overflow: int = Field(
-        default=20,
+        default=50,  # Increased from 20 to 50
         env="DATABASE_MAX_OVERFLOW",
         description="Maximum connection pool overflow",
     )
@@ -79,9 +80,11 @@ class RedisConfig(BaseSettings):
         description="Redis connection URL",
     )
 
-    # Connection pool settings
+    # Enhanced connection pool settings (increased to 50)
     max_connections: int = Field(
-        default=20, env="REDIS_MAX_CONNECTIONS", description="Maximum Redis connections"
+        default=50,  # Increased from 20 to 50
+        env="REDIS_MAX_CONNECTIONS",
+        description="Maximum Redis connections"
     )
 
     # Caching settings

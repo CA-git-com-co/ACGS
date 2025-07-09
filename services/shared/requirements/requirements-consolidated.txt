@@ -1,0 +1,12 @@
+# ACGS Consolidated Requirements
+# Constitutional Hash: cdd01ef066bc6cf2
+# All core dependencies for ACGS services
+
+-r requirements-base.txt
+-r requirements-web.txt
+-r requirements-security.txt
+-r requirements-core.txt
+-r requirements-monitoring.txt
+
+# Service-specific additions should be minimal
+# Use this file as the foundation for all ACGS services

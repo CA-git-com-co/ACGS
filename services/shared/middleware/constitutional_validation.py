@@ -1,16 +1,31 @@
 """
-Constitutional validation middleware for FastAPI.
+Constitutional validation middleware for FastAPI with
+FastConstitutionalValidator.
 Constitutional Hash: cdd01ef066bc6cf2
+
+Enhanced with O(1) validation performance using FastConstitutionalValidator.
 """
 
-import json
 import logging
 import time
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Dict
 
 from fastapi import HTTPException, Request, Response
 from prometheus_client import Counter
 from starlette.middleware.base import BaseHTTPMiddleware
+
+# Import the fast validator
+from .fast_constitutional_validator import (
+    get_fast_validator,
+    add_constitutional_headers_fast
+)
+
+# Import performance metrics
+from .constitutional_performance_metrics import (
+    ConstitutionalPerformanceTracker,
+    get_performance_collector,
+    setup_constitutional_metrics_endpoint,
+)
 
 # Constitutional compliance hash
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -38,7 +53,8 @@ logger = logging.getLogger(__name__)
 
 
 class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
-    """Middleware for validating constitutional compliance in requests and responses."""
+    """Enhanced middleware using FastConstitutionalValidator for O(1)
+    validation performance."""
 
     def __init__(
         self,
@@ -59,25 +75,46 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
             "/openapi.json",
         ]
 
-    async def dispatch(self, request: Request, call_next: Callable) -> Response:
+        # Initialize fast validator for O(1) performance
+        self.fast_validator = get_fast_validator()
+
+        # Initialize performance collector
+        self.performance_collector = get_performance_collector(
+            f"constitutional-middleware-{hash(app) % 10000}"
+        )
+
+    async def dispatch(
+        self, request: Request, call_next: Callable
+    ) -> Response:
         # Skip validation for exempt paths
         if request.url.path in self.exempt_paths:
             return await call_next(request)
-
-        # Start timing
-        start_time = time.time()
 
         # Extract endpoint and method for metrics
         endpoint = request.url.path
         method = request.method
         service_name = getattr(request.state, "service_name", "unknown")
 
-        # Validate request headers
-        await self._validate_request_headers(request, service_name, endpoint, method)
+        # Use performance tracker for comprehensive metrics
+        with ConstitutionalPerformanceTracker(
+            service_name=service_name,
+            validation_type="middleware",
+            endpoint=endpoint,
+            method=method
+        ) as tracker:
+            # Start timing for internal metrics
+            start_time = time.time()
 
-        # Validate request body if present
-        if hasattr(request, "_body"):
-            await self._validate_request_body(request, service_name, endpoint, method)
+            # Validate request headers
+            await self._validate_request_headers(
+                request, service_name, endpoint, method, tracker
+            )
+
+            # Validate request body if present
+            if hasattr(request, "_body"):
+                await self._validate_request_body(
+                    request, service_name, endpoint, method, tracker
+                )
 
         try:
             # Process request
@@ -90,14 +127,22 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
             if processing_time > self.performance_target_ms:
                 logger.warning(
                     f"Performance target exceeded: {service_name}.{endpoint} "
-                    f"took {processing_time:.2f}ms (target: {self.performance_target_ms}ms)"
+                    f"took {processing_time:.2f}ms "
+                    f"(target: {self.performance_target_ms}ms)"
                 )
 
             # Validate response
-            await self._validate_response(response, service_name, endpoint, method)
+            await self._validate_response(
+                response, service_name, endpoint, method
+            )
 
-            # Add constitutional headers to response
-            self._add_constitutional_headers(response, processing_time)
+            # Add constitutional headers to response using fast validator
+            add_constitutional_headers_fast(
+                response,
+                self.constitutional_hash,
+                processing_time,
+                self.performance_target_ms
+            )
 
             # Record successful validation
             CONSTITUTIONAL_VALIDATIONS.labels(
@@ -106,9 +151,11 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
 
             return response
 
-        except HTTPException as e:
+        except HTTPException:
             # Record validation failure
-            CONSTITUTIONAL_FAILURES.labels(service_name, endpoint, method).inc()
+            CONSTITUTIONAL_FAILURES.labels(
+                service_name, endpoint, method
+            ).inc()
             CONSTITUTIONAL_VALIDATIONS.labels(
                 service_name, endpoint, method, "failure"
             ).inc()
@@ -116,43 +163,65 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
         except Exception as e:
             # Record unexpected error
             logger.error(f"Constitutional validation error: {e}")
-            CONSTITUTIONAL_FAILURES.labels(service_name, endpoint, method).inc()
+            CONSTITUTIONAL_FAILURES.labels(
+                service_name, endpoint, method
+            ).inc()
             CONSTITUTIONAL_VALIDATIONS.labels(
                 service_name, endpoint, method, "error"
             ).inc()
             raise HTTPException(
-                status_code=500, detail="Constitutional validation service error"
+                status_code=500,
+                detail="Constitutional validation service error"
             )
 
     async def _validate_request_headers(
-        self, request: Request, service_name: str, endpoint: str, method: str
+        self, request: Request, service_name: str, endpoint: str, method: str,
+        tracker=None
     ):
-        """Validate constitutional compliance in request headers."""
+        """Fast validation of constitutional compliance in request headers."""
         if not self.enable_strict_validation:
             return
 
-        # Check for constitutional hash in headers (optional for requests)
+        # Use fast validator for O(1) header validation
         request_hash = request.headers.get("X-Constitutional-Hash")
-        if request_hash and request_hash != self.constitutional_hash:
-            CONSTITUTIONAL_HASH_VIOLATIONS.labels(
-                service_name, endpoint, "invalid_request_hash"
-            ).inc()
+        if request_hash:
+            is_valid = self.fast_validator.validate_hash_fast(request_hash)
 
-            logger.warning(
-                f"Invalid constitutional hash in request: {request_hash} "
-                f"(expected: {self.constitutional_hash})"
-            )
+            # Record cache hit/miss
+            if tracker:
+                if is_valid:
+                    tracker.record_cache_hit("header_hash")
+                else:
+                    tracker.record_cache_miss("header_hash")
+                tracker.record_compliance_result(is_valid)
 
-            if self.enable_strict_validation:
-                raise HTTPException(
-                    status_code=400,
-                    detail=f"Invalid constitutional hash. Expected: {self.constitutional_hash}",
+            if not is_valid:
+                CONSTITUTIONAL_HASH_VIOLATIONS.labels(
+                    service_name, endpoint, "invalid_request_hash"
+                ).inc()
+
+                logger.warning(
+                    f"Invalid constitutional hash in request: {request_hash} "
+                    f"(expected: {self.constitutional_hash})"
                 )
 
+                if self.enable_strict_validation:
+                    raise HTTPException(
+                        status_code=400,
+                        detail=f"Invalid constitutional hash. "
+                        f"Expected: {self.constitutional_hash}",
+                    )
+        else:
+            # Record compliance for missing hash
+            if tracker:
+                # Missing hash is allowed
+                tracker.record_compliance_result(True)
+
     async def _validate_request_body(
-        self, request: Request, service_name: str, endpoint: str, method: str
+        self, request: Request, service_name: str, endpoint: str, method: str,
+        tracker=None
     ):
-        """Validate constitutional compliance in request body."""
+        """Fast validation of constitutional compliance in request body."""
         if not self.enable_strict_validation:
             return
 
@@ -167,25 +236,28 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
             if not body:
                 return
 
-            # Parse JSON body
-            try:
-                body_data = json.loads(body.decode())
-            except (json.JSONDecodeError, UnicodeDecodeError):
-                return  # Skip validation for non-JSON bodies
+            # Use fast validator for optimized body validation
+            is_valid = self.fast_validator._validate_body_fast(body)
 
-            # Check for constitutional hash in body
-            if isinstance(body_data, dict):
-                body_hash = body_data.get("constitutional_hash")
-                if body_hash and body_hash != self.constitutional_hash:
-                    CONSTITUTIONAL_HASH_VIOLATIONS.labels(
-                        service_name, endpoint, "invalid_body_hash"
-                    ).inc()
+            # Record performance metrics
+            if tracker:
+                if is_valid:
+                    tracker.record_cache_hit("body_hash")
+                else:
+                    tracker.record_cache_miss("body_hash")
+                tracker.record_compliance_result(is_valid)
 
-                    if self.enable_strict_validation:
-                        raise HTTPException(
-                            status_code=400,
-                            detail=f"Invalid constitutional hash in body. Expected: {self.constitutional_hash}",
-                        )
+            if not is_valid:
+                CONSTITUTIONAL_HASH_VIOLATIONS.labels(
+                    service_name, endpoint, "invalid_body_hash"
+                ).inc()
+
+                if self.enable_strict_validation:
+                    raise HTTPException(
+                        status_code=400,
+                        detail=f"Invalid constitutional hash in body. "
+                        f"Expected: {self.constitutional_hash}",
+                    )
 
         except HTTPException:
             raise
@@ -203,18 +275,9 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
             ).inc()
 
             logger.warning(
-                f"Missing constitutional hash in response headers for {service_name}.{endpoint}"
+                f"Missing constitutional hash in response headers for "
+                f"{service_name}.{endpoint}"
             )
-
-    def _add_constitutional_headers(self, response: Response, processing_time: float):
-        """Add constitutional compliance headers to response."""
-        response.headers["X-Constitutional-Hash"] = self.constitutional_hash
-        response.headers["X-Constitutional-Compliance"] = "validated"
-        response.headers["X-Processing-Time-Ms"] = str(round(processing_time, 2))
-        response.headers["X-Performance-Target-Ms"] = str(self.performance_target_ms)
-        response.headers["X-Performance-Compliant"] = str(
-            processing_time <= self.performance_target_ms
-        ).lower()
 
 
 class ConstitutionalComplianceChecker:
@@ -272,6 +335,7 @@ def setup_constitutional_validation(
     service_name: str,
     performance_target_ms: float = 5.0,
     enable_strict_validation: bool = True,
+    enable_metrics_endpoint: bool = True,
 ):
     """
     Set up constitutional validation middleware for a FastAPI application.
@@ -281,6 +345,7 @@ def setup_constitutional_validation(
         service_name: Name of the service
         performance_target_ms: Performance target in milliseconds
         enable_strict_validation: Whether to enable strict validation
+        enable_metrics_endpoint: Whether to enable metrics endpoint
     """
     # Add constitutional validation middleware
     app.add_middleware(
@@ -289,6 +354,10 @@ def setup_constitutional_validation(
         performance_target_ms=performance_target_ms,
         enable_strict_validation=enable_strict_validation,
     )
+
+    # Setup performance metrics endpoint
+    if enable_metrics_endpoint:
+        setup_constitutional_metrics_endpoint(app)
 
     logger.info(
         f"Constitutional validation middleware initialized for {service_name} "
@@ -300,4 +369,5 @@ def setup_constitutional_validation(
         "constitutional_hash": CONSTITUTIONAL_HASH,
         "performance_target_ms": performance_target_ms,
         "strict_validation": enable_strict_validation,
+        "metrics_enabled": enable_metrics_endpoint,
     }

@@ -1,0 +1,258 @@
+# ACGS Performance Alert Rules
+# Constitutional Hash: cdd01ef066bc6cf2
+# Target: <1 minute alert response time for critical performance issues
+
+groups:
+  - name: acgs_performance_alerts
+    interval: 30s
+    rules:
+      # P99 Latency Alerts
+      - alert: ACGS_High_P99_Latency
+        expr: histogram_quantile(0.99, rate(http_request_duration_seconds_bucket{job=~"acgs-.*"}[5m])) > 0.005
+        for: 30s
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+          alert_type: performance
+          service: "{{ $labels.job }}"
+        annotations:
+          summary: "ACGS service {{ $labels.job }} has high P99 latency"
+          description: "P99 latency is {{ $value }}s, exceeding 5ms threshold for service {{ $labels.job }}"
+          runbook_url: "https://acgs.docs/runbooks/high-latency"
+          constitutional_compliance: "Performance degradation may impact constitutional compliance"
+
+      - alert: ACGS_Constitutional_Validation_Latency
+        expr: histogram_quantile(0.99, rate(constitutional_validation_duration_seconds_bucket[5m])) > 0.0005
+        for: 15s
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+          alert_type: constitutional_performance
+        annotations:
+          summary: "Constitutional validation latency exceeds 0.5ms"
+          description: "Constitutional validation P99 latency is {{ $value }}s, exceeding 0.5ms target"
+          runbook_url: "https://acgs.docs/runbooks/constitutional-latency"
+          constitutional_compliance: "CRITICAL: Constitutional validation performance degraded"
+
+      # Cache Hit Rate Alerts
+      - alert: ACGS_Low_Cache_Hit_Rate
+        expr: (cache_hits_total / (cache_hits_total + cache_misses_total)) * 100 < 85
+        for: 2m
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+          alert_type: cache_performance
+          service: "{{ $labels.job }}"
+        annotations:
+          summary: "ACGS cache hit rate below 85% for {{ $labels.job }}"
+          description: "Cache hit rate is {{ $value }}%, below 85% threshold"
+          runbook_url: "https://acgs.docs/runbooks/low-cache-hit-rate"
+          constitutional_compliance: "Cache performance may impact constitutional compliance speed"
+
+      - alert: ACGS_Constitutional_Cache_Miss
+        expr: (constitutional_cache_hits_total / (constitutional_cache_hits_total + constitutional_cache_misses_total)) * 100 < 95
+        for: 1m
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+          alert_type: constitutional_cache
+        annotations:
+          summary: "Constitutional cache hit rate below 95%"
+          description: "Constitutional cache hit rate is {{ $value }}%, below 95% threshold"
+          runbook_url: "https://acgs.docs/runbooks/constitutional-cache-miss"
+          constitutional_compliance: "CRITICAL: Constitutional cache performance degraded"
+
+      # Throughput Alerts
+      - alert: ACGS_Low_Throughput
+        expr: rate(http_requests_total{job=~"acgs-.*"}[5m]) < 100
+        for: 3m
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+          alert_type: throughput
+          service: "{{ $labels.job }}"
+        annotations:
+          summary: "ACGS service {{ $labels.job }} throughput below 100 RPS"
+          description: "Current throughput is {{ $value }} RPS, below 100 RPS threshold"
+          runbook_url: "https://acgs.docs/runbooks/low-throughput"
+          constitutional_compliance: "Low throughput may impact constitutional compliance processing"
+
+      # Constitutional Compliance Alerts
+      - alert: ACGS_Constitutional_Compliance_Violation
+        expr: constitutional_compliance_violations_total > 0
+        for: 0s
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+          alert_type: constitutional_violation
+          service: "{{ $labels.job }}"
+        annotations:
+          summary: "CRITICAL: Constitutional compliance violation detected"
+          description: "{{ $value }} constitutional compliance violations detected in {{ $labels.job }}"
+          runbook_url: "https://acgs.docs/runbooks/constitutional-violation"
+          constitutional_compliance: "IMMEDIATE ACTION REQUIRED: Constitutional compliance violated"
+
+      - alert: ACGS_Constitutional_Hash_Mismatch
+        expr: constitutional_hash_mismatches_total > 0
+        for: 0s
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+          alert_type: constitutional_hash
+          service: "{{ $labels.job }}"
+        annotations:
+          summary: "CRITICAL: Constitutional hash mismatch detected"
+          description: "{{ $value }} constitutional hash mismatches in {{ $labels.job }}"
+          runbook_url: "https://acgs.docs/runbooks/hash-mismatch"
+          constitutional_compliance: "IMMEDIATE ACTION REQUIRED: Constitutional hash integrity compromised"
+
+      # Database Performance Alerts
+      - alert: ACGS_Database_High_Latency
+        expr: histogram_quantile(0.99, rate(database_query_duration_seconds_bucket[5m])) > 0.005
+        for: 1m
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+          alert_type: database_performance
+        annotations:
+          summary: "Database P99 query latency exceeds 5ms"
+          description: "Database P99 latency is {{ $value }}s, exceeding 5ms threshold"
+          runbook_url: "https://acgs.docs/runbooks/database-latency"
+          constitutional_compliance: "Database performance may impact constitutional compliance"
+
+      - alert: ACGS_Database_Connection_Pool_Exhaustion
+        expr: database_connections_active / database_connections_max > 0.9
+        for: 2m
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+          alert_type: database_connections
+        annotations:
+          summary: "Database connection pool near exhaustion"
+          description: "{{ $value }}% of database connections in use, exceeding 90% threshold"
+          runbook_url: "https://acgs.docs/runbooks/connection-pool-exhaustion"
+          constitutional_compliance: "Connection exhaustion may block constitutional compliance operations"
+
+      # Redis Performance Alerts
+      - alert: ACGS_Redis_High_Latency
+        expr: histogram_quantile(0.99, rate(redis_command_duration_seconds_bucket[5m])) > 0.001
+        for: 1m
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+          alert_type: redis_performance
+        annotations:
+          summary: "Redis P99 command latency exceeds 1ms"
+          description: "Redis P99 latency is {{ $value }}s, exceeding 1ms threshold"
+          runbook_url: "https://acgs.docs/runbooks/redis-latency"
+          constitutional_compliance: "Redis performance may impact constitutional compliance caching"
+
+      - alert: ACGS_Redis_Memory_High
+        expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.85
+        for: 2m
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+          alert_type: redis_memory
+        annotations:
+          summary: "Redis memory usage exceeds 85%"
+          description: "Redis memory usage is {{ $value }}%, exceeding 85% threshold"
+          runbook_url: "https://acgs.docs/runbooks/redis-memory"
+          constitutional_compliance: "High memory usage may trigger evictions affecting constitutional cache"
+
+      # Service Health Alerts
+      - alert: ACGS_Service_Down
+        expr: up{job=~"acgs-.*"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+          alert_type: service_availability
+          service: "{{ $labels.job }}"
+        annotations:
+          summary: "ACGS service {{ $labels.job }} is down"
+          description: "Service {{ $labels.job }} has been down for more than 30 seconds"
+          runbook_url: "https://acgs.docs/runbooks/service-down"
+          constitutional_compliance: "Service unavailability impacts constitutional compliance system"
+
+      - alert: ACGS_High_Error_Rate
+        expr: rate(http_requests_total{job=~"acgs-.*",status=~"5.."}[5m]) / rate(http_requests_total{job=~"acgs-.*"}[5m]) > 0.01
+        for: 2m
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+          alert_type: error_rate
+          service: "{{ $labels.job }}"
+        annotations:
+          summary: "High error rate in ACGS service {{ $labels.job }}"
+          description: "Error rate is {{ $value }}%, exceeding 1% threshold"
+          runbook_url: "https://acgs.docs/runbooks/high-error-rate"
+          constitutional_compliance: "High error rate may indicate constitutional compliance issues"
+
+      # Multi-Agent Coordination Alerts
+      - alert: ACGS_Agent_Coordination_Latency
+        expr: histogram_quantile(0.95, rate(agent_coordination_duration_seconds_bucket[5m])) > 0.005
+        for: 1m
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+          alert_type: coordination_performance
+        annotations:
+          summary: "Agent coordination P95 latency exceeds 5ms"
+          description: "Agent coordination P95 latency is {{ $value }}s, exceeding 5ms threshold"
+          runbook_url: "https://acgs.docs/runbooks/coordination-latency"
+          constitutional_compliance: "Coordination delays may impact constitutional compliance processing"
+
+      - alert: ACGS_Agent_Selection_Timeout
+        expr: agent_selection_timeouts_total > 0
+        for: 0s
+        labels:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+          alert_type: agent_selection
+        annotations:
+          summary: "Agent selection timeouts detected"
+          description: "{{ $value }} agent selection timeouts in the last period"
+          runbook_url: "https://acgs.docs/runbooks/agent-selection-timeout"
+          constitutional_compliance: "Agent selection failures may block constitutional compliance tasks"
+
+      # System Resource Alerts
+      - alert: ACGS_High_CPU_Usage
+        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+          alert_type: system_resources
+        annotations:
+          summary: "High CPU usage on ACGS instance {{ $labels.instance }}"
+          description: "CPU usage is {{ $value }}%, exceeding 80% threshold"
+          runbook_url: "https://acgs.docs/runbooks/high-cpu"
+          constitutional_compliance: "High CPU usage may impact constitutional compliance performance"
+
+      - alert: ACGS_High_Memory_Usage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+          alert_type: system_resources
+        annotations:
+          summary: "High memory usage on ACGS instance {{ $labels.instance }}"
+          description: "Memory usage is {{ $value }}%, exceeding 85% threshold"
+          runbook_url: "https://acgs.docs/runbooks/high-memory"
+          constitutional_compliance: "High memory usage may impact constitutional compliance caching"
+
+      # Disk Space Alerts
+      - alert: ACGS_Low_Disk_Space
+        expr: (1 - (node_filesystem_avail_bytes{fstype!="tmpfs"} / node_filesystem_size_bytes{fstype!="tmpfs"})) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+          constitutional_hash: cdd01ef066bc6cf2
+          alert_type: disk_space
+        annotations:
+          summary: "Low disk space on ACGS instance {{ $labels.instance }}"
+          description: "Disk usage is {{ $value }}%, exceeding 85% threshold on {{ $labels.mountpoint }}"
+          runbook_url: "https://acgs.docs/runbooks/low-disk-space"
+          constitutional_compliance: "Low disk space may impact constitutional compliance logging and storage"

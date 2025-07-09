@@ -1,0 +1,23 @@
+# ACGS Monitoring and Observability Requirements
+# Constitutional Hash: cdd01ef066bc6cf2
+-r requirements-base.txt
+
+# Monitoring and Metrics
+prometheus-client>=0.21.0
+grafana-api>=1.0.3
+opentelemetry-api>=1.27.0
+opentelemetry-sdk>=1.27.0
+opentelemetry-instrumentation-fastapi>=0.48b0
+opentelemetry-exporter-prometheus>=0.48b0
+
+# Logging and Tracing
+structlog>=23.1.0
+loguru>=0.7.2
+jaeger-client>=4.8.0
+
+# Health Checks
+py-healthcheck>=1.10.1
+
+# Performance Monitoring
+psutil>=5.9.0
+memory-profiler>=0.61.0

@@ -1,0 +1,27 @@
+# ACGS Code Analysis Requirements
+# Constitutional Hash: cdd01ef066bc6cf2
+-r requirements-base.txt
+
+# Static Analysis and Code Quality
+ruff>=0.8.4
+black>=24.10.0
+mypy>=1.13.0
+bandit>=1.7.10
+safety>=3.2.11
+
+# Testing and Coverage
+pytest>=8.3.4
+pytest-asyncio>=0.24.0
+pytest-cov>=6.0.0
+pytest-mock>=3.14.0
+coverage>=7.6.9
+
+# Documentation
+sphinx>=7.1.2
+sphinx-rtd-theme>=3.0.2
+mkdocs>=1.6.1
+mkdocs-material>=9.5.50
+
+# Code Complexity Analysis
+radon>=6.0.1
+xenon>=0.9.1

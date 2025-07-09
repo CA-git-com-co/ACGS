@@ -1,0 +1,37 @@
+{
+  "jwt_settings": {
+    "algorithm": "HS256",
+    "access_token_expire_minutes": 30,
+    "refresh_token_expire_days": 7,
+    "issuer": "acgs-1-system",
+    "audience": "acgs-1-services"
+  },
+  "password_policy": {
+    "min_length": 12,
+    "require_uppercase": true,
+    "require_lowercase": true,
+    "require_numbers": true,
+    "require_special_chars": true,
+    "password_history": 5,
+    "max_age_days": 90
+  },
+  "session_security": {
+    "secure_cookies": true,
+    "httponly_cookies": true,
+    "samesite_policy": "strict",
+    "session_timeout_minutes": 60,
+    "concurrent_sessions_limit": 3
+  },
+  "multi_factor_auth": {
+    "enabled": true,
+    "methods": [
+      "totp",
+      "sms",
+      "email"
+    ],
+    "backup_codes": true,
+    "grace_period_hours": 24
+  },
+  "_constitutional_hash": "cdd01ef066bc6cf2",
+  "constitutional_hash": "cdd01ef066bc6cf2"
+}

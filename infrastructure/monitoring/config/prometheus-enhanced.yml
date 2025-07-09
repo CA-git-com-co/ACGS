@@ -1,0 +1,156 @@
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets:
+      - alertmanager:9093
+global:
+  evaluation_interval: 15s
+  external_labels:
+    cluster: acgs-main
+    constitutional_hash: cdd01ef066bc6cf2
+    deployment_version: v2.0.0
+    environment: production
+  scrape_interval: 15s
+rule_files:
+- acgs_rules.yml
+- constitutional_compliance_rules.yml
+- performance_rules.yml
+scrape_configs:
+- job_name: prometheus
+  scrape_interval: 15s
+  static_configs:
+  - targets:
+    - localhost:9090
+- job_name: acgs-constitutional-ai
+  labels:
+    constitutional_hash: cdd01ef066bc6cf2
+    service: constitutional-ai
+  metrics_path: /metrics
+  scrape_interval: 15s
+  static_configs:
+  - targets:
+    - localhost:8001
+- job_name: acgs-integrity-service
+  labels:
+    constitutional_hash: cdd01ef066bc6cf2
+    service: integrity-service
+  metrics_path: /metrics
+  scrape_interval: 15s
+  static_configs:
+  - targets:
+    - localhost:8002
+- job_name: acgs-api-gateway
+  labels:
+    constitutional_hash: cdd01ef066bc6cf2
+    service: api-gateway
+  metrics_path: /metrics
+  scrape_interval: 15s
+  static_configs:
+  - targets:
+    - localhost:8003
+- job_name: acgs-policy-governance
+  labels:
+    constitutional_hash: cdd01ef066bc6cf2
+    service: policy-governance
+  metrics_path: /metrics
+  scrape_interval: 15s
+  static_configs:
+  - targets:
+    - localhost:8005
+- job_name: acgs-context-engine-primary
+  labels:
+    constitutional_hash: cdd01ef066bc6cf2
+    service: context-engine-primary
+  metrics_path: /metrics
+  scrape_interval: 15s
+  static_configs:
+  - targets:
+    - localhost:8006
+- job_name: acgs-coordination-service
+  labels:
+    constitutional_hash: cdd01ef066bc6cf2
+    service: coordination-service
+  metrics_path: /metrics
+  scrape_interval: 15s
+  static_configs:
+  - targets:
+    - localhost:8008
+- job_name: acgs-blackboard-service
+  labels:
+    constitutional_hash: cdd01ef066bc6cf2
+    service: blackboard-service
+  metrics_path: /metrics
+  scrape_interval: 15s
+  static_configs:
+  - targets:
+    - localhost:8010
+- job_name: acgs-context-engine-secondary
+  labels:
+    constitutional_hash: cdd01ef066bc6cf2
+    service: context-engine-secondary
+  metrics_path: /metrics
+  scrape_interval: 15s
+  static_configs:
+  - targets:
+    - localhost:8012
+- job_name: acgs-auth-service
+  labels:
+    constitutional_hash: cdd01ef066bc6cf2
+    service: auth-service
+  metrics_path: /metrics
+  scrape_interval: 15s
+  static_configs:
+  - targets:
+    - localhost:8016
+- job_name: postgresql
+  labels:
+    constitutional_hash: cdd01ef066bc6cf2
+    service: postgresql
+  metrics_path: /metrics
+  scrape_interval: 15s
+  static_configs:
+  - targets:
+    - localhost:5440
+- job_name: redis
+  labels:
+    constitutional_hash: cdd01ef066bc6cf2
+    service: redis
+  metrics_path: /metrics
+  scrape_interval: 15s
+  static_configs:
+  - targets:
+    - localhost:6390
+- job_name: node-exporter
+  labels:
+    constitutional_hash: cdd01ef066bc6cf2
+    service: node-exporter
+  metrics_path: /metrics
+  scrape_interval: 15s
+  static_configs:
+  - targets:
+    - localhost:9100
+- job_name: constitutional-compliance
+  labels:
+    constitutional_hash: cdd01ef066bc6cf2
+    monitoring_type: constitutional-compliance
+  metrics_path: /constitutional/metrics
+  scrape_interval: 10s
+  static_configs:
+  - targets: &id001
+    - localhost:8001
+    - localhost:8002
+    - localhost:8003
+    - localhost:8005
+    - localhost:8006
+    - localhost:8008
+    - localhost:8010
+    - localhost:8012
+    - localhost:8016
+- job_name: performance-metrics
+  labels:
+    constitutional_hash: cdd01ef066bc6cf2
+    monitoring_type: performance
+  metrics_path: /performance/metrics
+  scrape_interval: 5s
+  static_configs:
+  - targets: *id001

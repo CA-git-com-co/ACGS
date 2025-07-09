@@ -1,0 +1,15 @@
+# ACGS Development Requirements
+# Constitutional Hash: cdd01ef066bc6cf2
+-r requirements-base.txt
+-r requirements-test.txt
+
+# Code Quality
+black>=24.0.0
+isort>=5.13.0
+ruff>=0.3.0
+mypy>=1.9.0
+bandit>=1.7.0
+
+# Development Tools
+uvicorn[standard]>=0.29.0
+watchfiles>=0.21.0

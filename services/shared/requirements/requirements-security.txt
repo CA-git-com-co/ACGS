@@ -1,0 +1,10 @@
+# ACGS Security Requirements
+# Constitutional Hash: cdd01ef066bc6cf2
+-r requirements-base.txt
+
+# Security and Authentication
+cryptography>=45.0.4
+pyjwt[crypto]>=2.10.0
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+python-multipart>=0.0.20

@@ -1,0 +1,61 @@
+{
+  "timestamp": "2025-06-23T23:13:48.799761",
+  "status_report": {
+    "timestamp": "2025-06-23T23:13:48.793903",
+    "services": {
+      "auth_service": {
+        "port": 8000,
+        "status": "failed",
+        "endpoint": "http://localhost:8000/health"
+      },
+      "ac_service": {
+        "port": 8001,
+        "status": "failed",
+        "endpoint": "http://localhost:8001/health"
+      },
+      "integrity_service": {
+        "port": 8002,
+        "status": "failed",
+        "endpoint": "http://localhost:8002/health"
+      },
+      "fv_service": {
+        "port": 8003,
+        "status": "operational",
+        "endpoint": "http://localhost:8003/health"
+      },
+      "gs_service": {
+        "port": 8004,
+        "status": "failed",
+        "endpoint": "http://localhost:8004/health"
+      },
+      "pgc_service": {
+        "port": 8005,
+        "status": "failed",
+        "endpoint": "http://localhost:8005/health"
+      },
+      "ec_service": {
+        "port": 8006,
+        "status": "failed",
+        "endpoint": "http://localhost:8006/health"
+      }
+    },
+    "total_operational": 1,
+    "total_degraded": 0,
+    "total_failed": 6
+  },
+  "updated_files": ["/home/ubuntu/ACGS/README.md", "/home/ubuntu/ACGS/docs/operational-runbook.md"],
+  "created_directories": [
+    "docs/api",
+    "docs/deployment",
+    "docs/troubleshooting",
+    "docs/architecture"
+  ],
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "summary": {
+    "total_services": 7,
+    "operational_services": 1,
+    "degraded_services": 0,
+    "failed_services": 6,
+    "documentation_files_updated": 2
+  }
+}

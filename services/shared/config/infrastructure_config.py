@@ -80,10 +80,10 @@ class ACGSConfig:
         )
         self.POSTGRES_DB = os.getenv("ACGS_POSTGRES_DB", "acgs_db")
 
-        # Connection Pool Settings (asyncpg)
-        self.POSTGRES_POOL_MIN_SIZE = int(os.getenv("ACGS_POSTGRES_POOL_MIN_SIZE", "5"))
+        # Enhanced Connection Pool Settings (asyncpg) - Optimized for >200 connections
+        self.POSTGRES_POOL_MIN_SIZE = int(os.getenv("ACGS_POSTGRES_POOL_MIN_SIZE", "20"))  # Increased from 5
         self.POSTGRES_POOL_MAX_SIZE = int(
-            os.getenv("ACGS_POSTGRES_POOL_MAX_SIZE", "20")
+            os.getenv("ACGS_POSTGRES_POOL_MAX_SIZE", "50")  # Increased from 20
         )
         self.POSTGRES_POOL_TIMEOUT = int(os.getenv("ACGS_POSTGRES_POOL_TIMEOUT", "30"))
 

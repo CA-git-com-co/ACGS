@@ -1,0 +1,9 @@
+# ACGS Web Service Requirements
+# Constitutional Hash: cdd01ef066bc6cf2
+-r requirements-base.txt
+
+# Database and Storage
+asyncpg>=0.29.0
+sqlalchemy[asyncio]>=2.0.23
+alembic>=1.13.0
+redis>=5.0.1

@@ -27,6 +27,20 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
+# Setup optimized constitutional validation middleware
+setup_constitutional_validation(
+    app=app,
+    service_name="context",
+    performance_target_ms=0.5,  # Optimized target
+    enable_strict_validation=True,
+)
+
+# Constitutional compliance logging
+logger.info(f"✅ Optimized constitutional middleware enabled for context")
+logger.info(f"📋 Constitutional Hash: cdd01ef066bc6cf2")
+logger.info(f"🎯 Performance Target: <0.5ms validation")
+
+
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,

@@ -1,0 +1,107 @@
+global:
+  smtp_from: acgs-alerts@company.com
+  smtp_smarthost: localhost:587
+inhibit_rules:
+- equal:
+  - alertname
+  - service
+  source_match:
+    severity: critical
+  target_match:
+    severity: warning
+receivers:
+- email_configs:
+  - body: '
+
+      Alert: {{ .GroupLabels.alertname }}
+
+      Constitutional Hash: {{ .GroupLabels.constitutional_hash }}
+
+      Severity: {{ .GroupLabels.severity }}
+
+      Description: {{ range .Alerts }}{{ .Annotations.description }}{{ end }}
+
+      Constitutional Compliance: {{ range .Alerts }}{{ .Annotations.constitutional_compliance
+      }}{{ end }}
+
+      '
+    subject: 'ACGS Alert: {{ .GroupLabels.alertname }}'
+    to: acgs-team@company.com
+  name: acgs-alerts
+  webhook_configs:
+  - send_resolved: true
+    url: http://localhost:8001/alerts/webhook
+- email_configs:
+  - body: '
+
+      CRITICAL ALERT: {{ .GroupLabels.alertname }}
+
+      Constitutional Hash: {{ .GroupLabels.constitutional_hash }}
+
+      Service: {{ .GroupLabels.service }}
+
+      Description: {{ range .Alerts }}{{ .Annotations.description }}{{ end }}
+
+      Constitutional Compliance: {{ range .Alerts }}{{ .Annotations.constitutional_compliance
+      }}{{ end }}
+
+      Runbook: {{ range .Alerts }}{{ .Annotations.runbook_url }}{{ end }}
+
+
+      IMMEDIATE ACTION REQUIRED
+
+      '
+    subject: 'CRITICAL ACGS Alert: {{ .GroupLabels.alertname }}'
+    to: acgs-oncall@company.com
+  name: acgs-critical-alerts
+  slack_configs:
+  - api_url: https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK
+    channel: '#acgs-critical-alerts'
+    text: '{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
+    title: CRITICAL ACGS Alert
+- email_configs:
+  - body: '
+
+      CONSTITUTIONAL COMPLIANCE ALERT: {{ .GroupLabels.alertname }}
+
+      Constitutional Hash: {{ .GroupLabels.constitutional_hash }}
+
+      Alert Type: {{ .GroupLabels.alert_type }}
+
+      Description: {{ range .Alerts }}{{ .Annotations.description }}{{ end }}
+
+      Constitutional Compliance: {{ range .Alerts }}{{ .Annotations.constitutional_compliance
+      }}{{ end }}
+
+
+      CONSTITUTIONAL INTEGRITY AT RISK - IMMEDIATE RESPONSE REQUIRED
+
+      '
+    subject: 'CONSTITUTIONAL COMPLIANCE ALERT: {{ .GroupLabels.alertname }}'
+    to: acgs-constitutional-team@company.com
+  name: acgs-constitutional-alerts
+  webhook_configs:
+  - send_resolved: true
+    url: http://localhost:8002/constitutional/alerts/webhook
+route:
+  group_by:
+  - alertname
+  - constitutional_hash
+  group_interval: 10s
+  group_wait: 10s
+  receiver: acgs-alerts
+  repeat_interval: 1h
+  routes:
+  - group_interval: 5s
+    group_wait: 5s
+    match:
+      constitutional_hash: cdd01ef066bc6cf2
+      severity: critical
+    receiver: acgs-critical-alerts
+    repeat_interval: 15m
+  - group_interval: 0s
+    group_wait: 0s
+    match:
+      alert_type: constitutional_violation
+    receiver: acgs-constitutional-alerts
+    repeat_interval: 5m

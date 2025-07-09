@@ -1,30 +1,106 @@
 groups:
-- name: acgs_services
+- interval: 15s
+  name: acgs_critical_alerts
   rules:
-  - alert: ServiceDown
+  - alert: ACGS_High_P99_Latency
     annotations:
-      description: Service {{ $labels.job }} has been down for more than 1 minute.
-      summary: Service {{ $labels.job }} is down
-    expr: up == 0
-    for: 1m
+      constitutional_compliance: Constitutional compliance may be impacted
+      description: P99 latency exceeds 5ms threshold
+      response_time_target: 1m
+      summary: ACGS performance alert
+    expr: histogram_quantile(0.99, rate(http_request_duration_seconds_bucket{job=~"acgs-.*"}[5m]))
+      > 0.005
+    for: 30s
     labels:
+      alert_type: performance
+      constitutional_hash: cdd01ef066bc6cf2
       severity: critical
-  - alert: HighResponseTime
+  - alert: ACGS_Constitutional_Compliance_Violation
     annotations:
-      description: 95th percentile response time is above 500ms for {{ $labels.job
-        }}.
-      summary: High response time for {{ $labels.job }}
-    expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))
-      > 0.5
-    for: 5m
+      constitutional_compliance: Constitutional compliance may be impacted
+      description: Constitutional compliance violation detected
+      response_time_target: 1m
+      summary: ACGS constitutional_violation alert
+    expr: constitutional_compliance_violations_total > 0
+    for: 0s
     labels:
+      alert_type: constitutional_violation
+      constitutional_hash: cdd01ef066bc6cf2
+      severity: critical
+  - alert: ACGS_Constitutional_Hash_Mismatch
+    annotations:
+      constitutional_compliance: Constitutional compliance may be impacted
+      description: Constitutional hash mismatch detected
+      response_time_target: 1m
+      summary: ACGS constitutional_hash alert
+    expr: constitutional_hash_mismatches_total > 0
+    for: 0s
+    labels:
+      alert_type: constitutional_hash
+      constitutional_hash: cdd01ef066bc6cf2
+      severity: critical
+  - alert: ACGS_Service_Down
+    annotations:
+      constitutional_compliance: Constitutional compliance may be impacted
+      description: ACGS service is down
+      response_time_target: 1m
+      summary: ACGS service_availability alert
+    expr: up{job=~"acgs-.*"} == 0
+    for: 30s
+    labels:
+      alert_type: service_availability
+      constitutional_hash: cdd01ef066bc6cf2
+      severity: critical
+- interval: 30s
+  name: acgs_warning_alerts
+  rules:
+  - alert: ACGS_Low_Cache_Hit_Rate
+    annotations:
+      constitutional_compliance: Monitor for potential constitutional compliance impact
+      description: Cache hit rate below 85% threshold
+      response_time_target: 1m
+      summary: ACGS cache_performance warning
+    expr: (cache_hits_total / (cache_hits_total + cache_misses_total)) * 100 < 85
+    for: 2m
+    labels:
+      alert_type: cache_performance
+      constitutional_hash: cdd01ef066bc6cf2
       severity: warning
-  - alert: ConstitutionalHashMismatch
+  - alert: ACGS_Low_Throughput
     annotations:
-      description: Constitutional hash validation failed for {{ $labels.service }}.
-      summary: Constitutional hash validation failed
-    expr: constitutional_hash_valid == 0
+      constitutional_compliance: Monitor for potential constitutional compliance impact
+      description: Service throughput below 100 RPS
+      response_time_target: 1m
+      summary: ACGS throughput warning
+    expr: rate(http_requests_total{job=~"acgs-.*"}[5m]) < 100
+    for: 3m
+    labels:
+      alert_type: throughput
+      constitutional_hash: cdd01ef066bc6cf2
+      severity: warning
+  - alert: ACGS_Database_High_Latency
+    annotations:
+      constitutional_compliance: Monitor for potential constitutional compliance impact
+      description: Database P99 query latency exceeds 5ms
+      response_time_target: 1m
+      summary: ACGS database_performance warning
+    expr: histogram_quantile(0.99, rate(database_query_duration_seconds_bucket[5m]))
+      > 0.005
     for: 1m
     labels:
-      severity: critical
-constitutional_hash: cdd01ef066bc6cf2
+      alert_type: database_performance
+      constitutional_hash: cdd01ef066bc6cf2
+      severity: warning
+  - alert: ACGS_Redis_High_Latency
+    annotations:
+      constitutional_compliance: Monitor for potential constitutional compliance impact
+      description: Redis P99 command latency exceeds 1ms
+      response_time_target: 1m
+      summary: ACGS redis_performance warning
+    expr: histogram_quantile(0.99, rate(redis_command_duration_seconds_bucket[5m]))
+      > 0.001
+    for: 1m
+    labels:
+      alert_type: redis_performance
+      constitutional_hash: cdd01ef066bc6cf2
+      severity: warning
