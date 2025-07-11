@@ -1,0 +1,148 @@
+{
+  "analysis_timestamp": "2025-07-11 03:55:50",
+  "currency_rates": {
+    "sol_price_usd": 100.0,
+    "lamports_per_sol": 1000000000
+  },
+  "total_savings": {
+    "monthly_savings_lamports": 833287201091.5563,
+    "monthly_savings_usd": 83328.72010915563,
+    "annual_savings_usd": 999944.6413098676,
+    "implementation_cost_lamports": 250000000,
+    "implementation_cost_usd": 25.0,
+    "payback_period_days": 0,
+    "roi_percentage": 3999678.5652394705
+  },
+  "cost_breakdown": {
+    "storage_optimization": {
+      "monthly_savings_lamports": 833335680091.5563,
+      "monthly_savings_usd": 83333.56800915563,
+      "percentage_of_total": 100.0058178020659,
+      "compression_ratio": 0.18987595038015206,
+      "space_saved_bytes": 4049
+    },
+    "compute_optimization": {
+      "monthly_savings_lamports": 1138500.0,
+      "monthly_savings_usd": 0.11384999999999999,
+      "percentage_of_total": 0.00013662756352295262,
+      "total_cu_saved_daily": 37950000,
+      "optimization_count": 4
+    },
+    "cache_optimization": {
+      "monthly_savings_lamports": -49617500.0,
+      "monthly_savings_usd": -4.96175,
+      "percentage_of_total": -0.005954429629424771,
+      "hit_ratio": 0.85,
+      "daily_cache_hits": 850
+    }
+  },
+  "detailed_optimizations": {
+    "storage": {
+      "original_size_bytes": 4998,
+      "compressed_size_bytes": 949,
+      "compression_ratio": 0.18987595038015206,
+      "storage_cost_before": 2896788.7375000003,
+      "storage_cost_after": 550030.5145833333,
+      "monthly_savings": 2346758.222916667,
+      "off_chain_migration_savings": 833333333333.3334
+    },
+    "compute": [
+      {
+        "instruction_name": "create_proposal",
+        "cu_before": 150000,
+        "cu_after": 75000,
+        "cu_savings": 75000,
+        "executions_per_day": 50,
+        "daily_cost_before": 7500.0,
+        "daily_cost_after": 3750.0,
+        "daily_savings": 3750.0
+      },
+      {
+        "instruction_name": "vote_on_proposal",
+        "cu_before": 80000,
+        "cu_after": 25000,
+        "cu_savings": 55000,
+        "executions_per_day": 500,
+        "daily_cost_before": 40000.0,
+        "daily_cost_after": 12500.0,
+        "daily_savings": 27500.0
+      },
+      {
+        "instruction_name": "batch_vote_processing",
+        "cu_before": 400000,
+        "cu_after": 120000,
+        "cu_savings": 280000,
+        "executions_per_day": 20,
+        "daily_cost_before": 8000.0,
+        "daily_cost_after": 2400.0,
+        "daily_savings": 5600.0
+      },
+      {
+        "instruction_name": "process_appeal",
+        "cu_before": 200000,
+        "cu_after": 90000,
+        "cu_savings": 110000,
+        "executions_per_day": 10,
+        "daily_cost_before": 2000.0,
+        "daily_cost_after": 900.0,
+        "daily_savings": 1100.0
+      }
+    ],
+    "cache": {
+      "cache_hit_ratio": 0.85,
+      "response_time_improvement": 0.7,
+      "compute_savings_per_hit": 15000,
+      "daily_cache_hits": 850,
+      "monthly_savings": 382500.0,
+      "infrastructure_cost": 50000000,
+      "net_monthly_savings": -49617500.0
+    }
+  },
+  "risk_assessment": {
+    "storage_compression_risk": {
+      "level": "Low",
+      "description": "Data compression may increase CPU usage",
+      "mitigation": "Tested compression algorithms with minimal CPU impact",
+      "probability": 0.1,
+      "impact": "Minor"
+    },
+    "compute_optimization_risk": {
+      "level": "Medium",
+      "description": "Aggressive optimizations may introduce bugs",
+      "mitigation": "Comprehensive testing and gradual rollout",
+      "probability": 0.3,
+      "impact": "Moderate"
+    },
+    "cache_dependency_risk": {
+      "level": "Low",
+      "description": "Cache failures could impact performance",
+      "mitigation": "Fallback mechanisms and redundancy",
+      "probability": 0.15,
+      "impact": "Minor"
+    },
+    "off_chain_storage_risk": {
+      "level": "Medium",
+      "description": "External storage dependency",
+      "mitigation": "Multiple storage providers and backup systems",
+      "probability": 0.2,
+      "impact": "Moderate"
+    }
+  },
+  "performance_impact": {
+    "compute_unit_reduction_percentage": 66.0,
+    "response_time_improvement_percentage": 70.0,
+    "throughput_improvement_percentage": 250,
+    "overall_performance_score": 128.66666666666666,
+    "scalability_improvement": "High - reduced resource usage allows handling 3x more load"
+  },
+  "recommendations": [
+    "\ud83d\ude80 Excellent ROI - Implement all optimizations immediately",
+    "\ud83d\udcb0 Very fast payback - High priority implementation",
+    "\ud83d\udcb5 High monthly savings ($83328.72) - Significant cost reduction",
+    "\ud83c\udfd7\ufe0f Implement storage optimizations first - lowest risk, immediate benefits",
+    "\u26a1 Deploy compute optimizations in phases - test thoroughly",
+    "\ud83d\uddc4\ufe0f Set up caching infrastructure - high impact on user experience",
+    "\ud83d\udcca Implement monitoring before optimizations - track effectiveness",
+    "\ud83d\udd04 Plan rollback procedures - ensure system stability"
+  ]
+}

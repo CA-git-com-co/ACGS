@@ -48,7 +48,21 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install bandit safety pip-audit semgrep
-          pip install -r requirements-security.txt || echo "Security requirements not found, using base tools"
+          
+          # Install ACGS security requirements with fallback
+          if [ -f requirements-security.txt ]; then
+            echo "Installing from requirements-security.txt"
+            pip install -r requirements-security.txt
+          elif [ -f requirements.txt ]; then
+            echo "Installing from requirements.txt"
+            pip install -r requirements.txt
+          else
+            echo "Installing minimal security dependencies"
+            pip install fastapi uvicorn pydantic sqlalchemy
+          fi
+          
+          # Install additional security tools for enhanced scanning
+          pip install vulture pyflakes pylint security
           
       - name: 🔒 Constitutional Hash Validation
         run: |

@@ -1,0 +1,18 @@
+{
+  "service_name": "api-gateway",
+  "service_path": "services/platform_services/api_gateway/gateway_service",
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "generated_at": "2025-07-11T01:22:12.549882",
+  "test_count": 5,
+  "test_types": {
+    "constitutional": 2,
+    "unit": 0,
+    "integration": 1,
+    "performance": 2
+  },
+  "coverage_targets": {
+    "line_coverage": 95.0,
+    "branch_coverage": 90.0,
+    "function_coverage": 95.0
+  }
+}

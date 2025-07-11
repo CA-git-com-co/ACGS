@@ -1,0 +1,446 @@
+name: 🤖 Claude Code Review Integration
+# Constitutional Hash: cdd01ef066bc6cf2
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+    types: [opened, synchronize, reopened]
+  workflow_run:
+    workflows: 
+      - "🎯 ACGS-2 Workflow Coordinator"
+      - "🔒 ACGS-2 Security Vulnerability Scan"
+      - "📊 Test Coverage Analysis"
+    types: [completed]
+
+env:
+  CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+  CLAUDE_REVIEW_VERSION: "1.0.0"
+
+permissions:
+  # CRITICAL: Required for Claude to read CI results on pull requests
+  actions: read
+  contents: read
+  pull-requests: write
+  security-events: read
+  checks: read
+  statuses: read
+
+jobs:
+  claude-code-review:
+    name: 🤖 AI-Powered Code Review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    timeout-minutes: 15
+    
+    steps:
+      - name: 🔖 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: 📦 Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests pyyaml jq
+      
+      - name: 🔍 Gather CI/CD Results
+        id: ci-results
+        run: |
+          echo "📊 Gathering CI/CD results for Claude analysis..."
+          
+          # Get PR information
+          PR_NUMBER="${{ github.event.number }}"
+          REPO_OWNER="${{ github.repository_owner }}"
+          REPO_NAME="${{ github.event.repository.name }}"
+          
+          # Fetch workflow runs for this PR
+          echo "Fetching workflow runs for PR #$PR_NUMBER..."
+          
+          # Get check runs for the PR head SHA
+          CHECK_RUNS_URL="https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/commits/${{ github.event.pull_request.head.sha }}/check-runs"
+          
+          curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+               -H "Accept: application/vnd.github.v3+json" \
+               "$CHECK_RUNS_URL" > check_runs.json
+          
+          # Get status checks
+          STATUS_URL="https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/commits/${{ github.event.pull_request.head.sha }}/status"
+          
+          curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+               -H "Accept: application/vnd.github.v3+json" \
+               "$STATUS_URL" > status_checks.json
+          
+          # Parse CI results
+          TOTAL_CHECKS=$(jq '.check_runs | length' check_runs.json)
+          PASSED_CHECKS=$(jq '[.check_runs[] | select(.conclusion == "success")] | length' check_runs.json)
+          FAILED_CHECKS=$(jq '[.check_runs[] | select(.conclusion == "failure")] | length' check_runs.json)
+          
+          # Get coverage information if available
+          COVERAGE_STATUS=$(jq -r '.statuses[] | select(.context == "acgs/coverage") | .description' status_checks.json 2>/dev/null || echo "N/A")
+          CONSTITUTIONAL_STATUS=$(jq -r '.statuses[] | select(.context == "acgs/constitutional") | .description' status_checks.json 2>/dev/null || echo "N/A")
+          
+          # Store results for Claude analysis
+          cat > ci_analysis.json << EOF
+          {
+            "pr_number": $PR_NUMBER,
+            "head_sha": "${{ github.event.pull_request.head.sha }}",
+            "base_sha": "${{ github.event.pull_request.base.sha }}",
+            "constitutional_hash": "$CONSTITUTIONAL_HASH",
+            "ci_summary": {
+              "total_checks": $TOTAL_CHECKS,
+              "passed_checks": $PASSED_CHECKS,
+              "failed_checks": $FAILED_CHECKS,
+              "coverage_status": "$COVERAGE_STATUS",
+              "constitutional_status": "$CONSTITUTIONAL_STATUS"
+            },
+            "check_details": $(jq '.check_runs' check_runs.json),
+            "status_details": $(jq '.statuses' status_checks.json)
+          }
+          EOF
+          
+          echo "ci_summary_json=$(cat ci_analysis.json | jq -c '.')" >> $GITHUB_OUTPUT
+          echo "total_checks=$TOTAL_CHECKS" >> $GITHUB_OUTPUT
+          echo "failed_checks=$FAILED_CHECKS" >> $GITHUB_OUTPUT
+          
+          echo "✅ CI results gathered: $PASSED_CHECKS passed, $FAILED_CHECKS failed out of $TOTAL_CHECKS total"
+      
+      - name: 📝 Analyze Code Changes
+        id: code-analysis
+        run: |
+          echo "🔍 Analyzing code changes for constitutional compliance..."
+          
+          # Get changed files
+          git diff --name-only ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }} > changed_files.txt
+          
+          CHANGED_FILES_COUNT=$(wc -l < changed_files.txt)
+          
+          # Analyze file types and patterns
+          PYTHON_FILES=$(grep '\.py$' changed_files.txt | wc -l)
+          CONFIG_FILES=$(grep -E '\.(yml|yaml|json|toml)$' changed_files.txt | wc -l)
+          DOCS_FILES=$(grep '\.md$' changed_files.txt | wc -l)
+          
+          # Check for constitutional hash presence in changed Python files
+          CONSTITUTIONAL_COMPLIANCE=true
+          NON_COMPLIANT_FILES=()
+          
+          while IFS= read -r file; do
+            if [[ "$file" == *.py ]] && [[ -f "$file" ]]; then
+              if ! grep -q "$CONSTITUTIONAL_HASH" "$file"; then
+                CONSTITUTIONAL_COMPLIANCE=false
+                NON_COMPLIANT_FILES+=("$file")
+              fi
+            fi
+          done < changed_files.txt
+          
+          # Create code analysis summary
+          cat > code_analysis.json << EOF
+          {
+            "files_changed": $CHANGED_FILES_COUNT,
+            "python_files": $PYTHON_FILES,
+            "config_files": $CONFIG_FILES,
+            "docs_files": $DOCS_FILES,
+            "constitutional_compliance": $CONSTITUTIONAL_COMPLIANCE,
+            "non_compliant_files": [$(printf '"%s",' "${NON_COMPLIANT_FILES[@]}" | sed 's/,$//')]
+          }
+          EOF
+          
+          echo "code_analysis_json=$(cat code_analysis.json | jq -c '.')" >> $GITHUB_OUTPUT
+          echo "constitutional_compliance=$CONSTITUTIONAL_COMPLIANCE" >> $GITHUB_OUTPUT
+          echo "files_changed=$CHANGED_FILES_COUNT" >> $GITHUB_OUTPUT
+          
+          echo "✅ Code analysis completed: $CHANGED_FILES_COUNT files changed"
+      
+      - name: 🧠 Generate Claude Analysis Report
+        id: claude-analysis
+        run: |
+          echo "🧠 Generating comprehensive analysis for Claude review..."
+          
+          # Combine all analysis data
+          cat > claude_review_context.json << EOF
+          {
+            "metadata": {
+              "constitutional_hash": "$CONSTITUTIONAL_HASH",
+              "pr_number": ${{ github.event.number }},
+              "review_timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+              "reviewer": "claude-code-review-bot",
+              "version": "$CLAUDE_REVIEW_VERSION"
+            },
+            "pr_info": {
+              "title": "${{ github.event.pull_request.title }}",
+              "author": "${{ github.event.pull_request.user.login }}",
+              "base_branch": "${{ github.event.pull_request.base.ref }}",
+              "head_branch": "${{ github.event.pull_request.head.ref }}",
+              "additions": ${{ github.event.pull_request.additions }},
+              "deletions": ${{ github.event.pull_request.deletions }},
+              "changed_files": ${{ github.event.pull_request.changed_files }}
+            },
+            "ci_results": $(cat ci_analysis.json),
+            "code_analysis": $(cat code_analysis.json)
+          }
+          EOF
+          
+          # Generate review summary
+          OVERALL_STATUS="success"
+          ISSUES_FOUND=0
+          RECOMMENDATIONS=()
+          
+          # Check CI failures
+          if [[ "${{ steps.ci-results.outputs.failed_checks }}" -gt "0" ]]; then
+            OVERALL_STATUS="failure"
+            ISSUES_FOUND=$((ISSUES_FOUND + 1))
+            RECOMMENDATIONS+=("Address failing CI checks before merging")
+          fi
+          
+          # Check constitutional compliance
+          if [[ "${{ steps.code-analysis.outputs.constitutional_compliance }}" == "false" ]]; then
+            OVERALL_STATUS="warning"
+            ISSUES_FOUND=$((ISSUES_FOUND + 1))
+            RECOMMENDATIONS+=("Add constitutional hash ($CONSTITUTIONAL_HASH) to non-compliant Python files")
+          fi
+          
+          # Determine review emoji and status
+          case $OVERALL_STATUS in
+            "success") REVIEW_EMOJI="✅"; STATUS_TEXT="APPROVED" ;;
+            "warning") REVIEW_EMOJI="⚠️"; STATUS_TEXT="CHANGES REQUESTED" ;;
+            "failure") REVIEW_EMOJI="❌"; STATUS_TEXT="BLOCKED" ;;
+          esac
+          
+          echo "overall_status=$OVERALL_STATUS" >> $GITHUB_OUTPUT
+          echo "review_emoji=$REVIEW_EMOJI" >> $GITHUB_OUTPUT
+          echo "status_text=$STATUS_TEXT" >> $GITHUB_OUTPUT
+          echo "issues_found=$ISSUES_FOUND" >> $GITHUB_OUTPUT
+          
+          echo "🧠 Claude analysis completed: $STATUS_TEXT with $ISSUES_FOUND issues"
+      
+      - name: 📝 Post Claude Review Comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            
+            // Read analysis data
+            const context_data = JSON.parse(fs.readFileSync('claude_review_context.json', 'utf8'));
+            const ci_results = context_data.ci_results;
+            const code_analysis = context_data.code_analysis;
+            
+            // Build review comment
+            const reviewEmoji = '${{ steps.claude-analysis.outputs.review_emoji }}';
+            const statusText = '${{ steps.claude-analysis.outputs.status_text }}';
+            const issuesFound = '${{ steps.claude-analysis.outputs.issues_found }}';
+            
+            let reviewComment = `# ${reviewEmoji} Claude Code Review - ${statusText}
+            
+            **Constitutional Hash**: \`${context_data.metadata.constitutional_hash}\`  
+            **Review Timestamp**: ${context_data.metadata.review_timestamp}  
+            **Issues Found**: ${issuesFound}
+            
+            ## 📊 CI/CD Analysis
+            
+            | Metric | Value | Status |
+            |--------|-------|--------|
+            | Total Checks | ${ci_results.ci_summary.total_checks} | ℹ️ |
+            | Passed Checks | ${ci_results.ci_summary.passed_checks} | ${ci_results.ci_summary.passed_checks > 0 ? '✅' : '⚠️'} |
+            | Failed Checks | ${ci_results.ci_summary.failed_checks} | ${ci_results.ci_summary.failed_checks === 0 ? '✅' : '❌'} |
+            | Coverage Status | ${ci_results.ci_summary.coverage_status} | ${ci_results.ci_summary.coverage_status.includes('Coverage:') ? '📊' : 'ℹ️'} |
+            | Constitutional | ${ci_results.ci_summary.constitutional_status} | ${ci_results.ci_summary.constitutional_status.includes('Constitutional:') ? '🔒' : 'ℹ️'} |
+            
+            ## 🔍 Code Analysis
+            
+            | Aspect | Count | Notes |
+            |--------|-------|-------|
+            | Files Changed | ${code_analysis.files_changed} | ${code_analysis.files_changed > 10 ? '⚠️ Large changeset' : '✅ Manageable'} |
+            | Python Files | ${code_analysis.python_files} | ${code_analysis.python_files > 0 ? '🐍' : 'ℹ️'} |
+            | Config Files | ${code_analysis.config_files} | ${code_analysis.config_files > 0 ? '⚙️' : 'ℹ️'} |
+            | Documentation | ${code_analysis.docs_files} | ${code_analysis.docs_files > 0 ? '📚' : 'ℹ️'} |
+            | Constitutional Compliance | ${code_analysis.constitutional_compliance ? 'Yes' : 'No'} | ${code_analysis.constitutional_compliance ? '✅' : '❌'} |
+            `;
+            
+            // Add failed checks details if any
+            if (ci_results.ci_summary.failed_checks > 0) {
+              reviewComment += `
+            ## ❌ Failed Checks Details
+            
+            `;
+              const failedChecks = ci_results.check_details.filter(check => check.conclusion === 'failure');
+              failedChecks.forEach(check => {
+                reviewComment += `- **${check.name}**: ${check.conclusion} - [View Details](${check.html_url})\n`;
+              });
+            }
+            
+            // Add constitutional compliance issues
+            if (!code_analysis.constitutional_compliance && code_analysis.non_compliant_files.length > 0) {
+              reviewComment += `
+            ## 🔒 Constitutional Compliance Issues
+            
+            The following Python files are missing the required constitutional hash (\`${context_data.metadata.constitutional_hash}\`):
+            
+            `;
+              code_analysis.non_compliant_files.forEach(file => {
+                reviewComment += `- \`${file}\`\n`;
+              });
+              
+              reviewComment += `
+            **Action Required**: Please add the constitutional hash comment to these files:
+            \`\`\`python
+            # Constitutional Hash: ${context_data.metadata.constitutional_hash}
+            \`\`\`
+            `;
+            }
+            
+            // Add recommendations
+            reviewComment += `
+            ## 🎯 Recommendations
+            
+            `;
+            
+            if (issuesFound === '0') {
+              reviewComment += `✅ **Excellent work!** This PR meets all quality standards:
+            
+            - All CI checks are passing
+            - Constitutional compliance is maintained
+            - Code changes follow ACGS-2 standards
+            - Ready for merge after final review
+            `;
+            } else {
+              if (ci_results.ci_summary.failed_checks > 0) {
+                reviewComment += `1. **Fix CI Failures**: Address all failing checks before proceeding\n`;
+              }
+              if (!code_analysis.constitutional_compliance) {
+                reviewComment += `2. **Constitutional Compliance**: Add required hash to non-compliant files\n`;
+              }
+              reviewComment += `3. **Re-run Checks**: Trigger CI/CD pipeline after fixes\n`;
+              reviewComment += `4. **Review Guidelines**: Ensure adherence to ACGS-2 development standards\n`;
+            }
+            
+            reviewComment += `
+            ## 📋 ACGS-2 Quality Gates
+            
+            | Gate | Status | Description |
+            |------|--------|-------------|
+            | CI/CD Pipeline | ${ci_results.ci_summary.failed_checks === 0 ? '✅ PASS' : '❌ FAIL'} | All automated tests and checks |
+            | Constitutional Compliance | ${code_analysis.constitutional_compliance ? '✅ PASS' : '❌ FAIL'} | Required hash presence |
+            | Code Coverage | ${ci_results.ci_summary.coverage_status !== 'N/A' ? '📊 MEASURED' : 'ℹ️ PENDING'} | Test coverage targets |
+            | Security Scan | 🔒 MONITORED | Vulnerability assessment |
+            
+            ---
+            
+            *🤖 This review was generated by Claude Code Review Integration v${context_data.metadata.version}*  
+            *For questions or issues, please review the [ACGS-2 documentation](docs/)*
+            `;
+            
+            // Post the comment
+            try {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: reviewComment
+              });
+              
+              console.log('✅ Claude review comment posted successfully');
+            } catch (error) {
+              console.error('❌ Error posting Claude review comment:', error);
+              throw error;
+            }
+      
+      - name: 📤 Upload Claude Review Artifacts
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: claude-review-analysis
+          path: |
+            claude_review_context.json
+            ci_analysis.json
+            code_analysis.json
+            check_runs.json
+            status_checks.json
+            changed_files.txt
+          retention-days: 30
+      
+      - name: 🎯 Set Review Status
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const overallStatus = '${{ steps.claude-analysis.outputs.overall_status }}';
+            const issuesFound = '${{ steps.claude-analysis.outputs.issues_found }}';
+            
+            // Map status to GitHub status
+            let state;
+            let description;
+            
+            switch (overallStatus) {
+              case 'success':
+                state = 'success';
+                description = '✅ Claude review passed - Ready for merge';
+                break;
+              case 'warning':
+                state = 'failure';
+                description = `⚠️ Claude review found ${issuesFound} issues to address`;
+                break;
+              case 'failure':
+                state = 'failure';
+                description = `❌ Claude review blocked - ${issuesFound} critical issues`;
+                break;
+              default:
+                state = 'pending';
+                description = 'Claude review in progress...';
+            }
+            
+            // Create commit status
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: context.payload.pull_request.head.sha,
+              state: state,
+              target_url: `${context.payload.repository.html_url}/actions/runs/${context.runId}`,
+              description: description,
+              context: 'claude/code-review'
+            });
+            
+            console.log(`✅ Claude review status set: ${state} - ${description}`);
+
+  workflow-completion-analysis:
+    name: 📊 Workflow Completion Analysis
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_run'
+    timeout-minutes: 10
+    
+    steps:
+      - name: 🔖 Checkout code
+        uses: actions/checkout@v4
+      
+      - name: 📊 Analyze Completed Workflow
+        run: |
+          echo "📊 Analyzing completed workflow: ${{ github.event.workflow_run.name }}"
+          echo "Status: ${{ github.event.workflow_run.conclusion }}"
+          echo "Run ID: ${{ github.event.workflow_run.id }}"
+          
+          # Find associated PR if any
+          PR_NUMBER=$(gh pr list --state open --json number,headRefName | jq -r --arg ref "${{ github.event.workflow_run.head_branch }}" '.[] | select(.headRefName == $ref) | .number')
+          
+          if [[ -n "$PR_NUMBER" && "$PR_NUMBER" != "null" ]]; then
+            echo "📝 Associated PR found: #$PR_NUMBER"
+            echo "Workflow '${{ github.event.workflow_run.name }}' completed with status: ${{ github.event.workflow_run.conclusion }}"
+            
+            # Post completion summary to PR
+            gh pr comment $PR_NUMBER --body "## 🤖 Workflow Update
+            
+            **Workflow**: ${{ github.event.workflow_run.name }}  
+            **Status**: ${{ github.event.workflow_run.conclusion }}  
+            **Run ID**: [${{ github.event.workflow_run.id }}](${{ github.event.workflow_run.html_url }})  
+            **Constitutional Hash**: \`$CONSTITUTIONAL_HASH\`
+            
+            ${github.event.workflow_run.conclusion == 'success' ? '✅ All checks passed!' : '⚠️ Please review any failures'}
+            
+            *Updated by Claude Code Review Integration*"
+          else
+            echo "ℹ️ No associated PR found for this workflow run"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

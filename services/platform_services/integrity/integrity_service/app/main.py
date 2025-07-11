@@ -283,6 +283,29 @@ async def lifespan(app: FastAPI):
         set_audit_chain(audit_chain)
         logger.info("✅ Cryptographic audit chain initialized")
 
+        # Initialize persistent audit logger
+        from .core.persistent_audit_logger import PersistentAuditLogger
+
+        # Configure persistent audit logger
+        db_config = {
+            "host": config.DATABASE_HOST,
+            "port": config.DATABASE_PORT,
+            "database": config.DATABASE_NAME,
+            "user": config.DATABASE_USER,
+            "password": config.DATABASE_PASSWORD
+        }
+
+        redis_config = {
+            "url": f"redis://{config.REDIS_HOST}:{config.REDIS_PORT}"
+        }
+
+        persistent_audit_logger = PersistentAuditLogger(db_config, redis_config)
+        await persistent_audit_logger.initialize()
+
+        # Store in app state for access by endpoints
+        app.state.persistent_audit_logger = persistent_audit_logger
+        logger.info("✅ Persistent audit logger initialized")
+
         logger.info("✅ Integrity Service initialized successfully")
         yield
     except Exception as e:
@@ -300,6 +323,12 @@ async def lifespan(app: FastAPI):
         yield
     finally:
         logger.info("🔄 Shutting down Integrity Service")
+
+        # Cleanup persistent audit logger
+        if hasattr(app.state, 'persistent_audit_logger'):
+            await app.state.persistent_audit_logger.cleanup()
+            logger.info("✅ Persistent audit logger cleaned up")
+
         # Cleanup shared infrastructure
         await cleanup_infrastructure()
         logger.info("✅ ACGS shared infrastructure cleaned up")
@@ -518,6 +547,7 @@ try:
     from .api.v1.crypto import router as crypto_router
     from .api.v1.integrity import router as integrity_router
     from .api.v1.persistent_audit import router as persistent_audit_router
+    from .api.v1.persistent_audit_api import router as persistent_audit_api_router
     from .api.v1.research_data import router as research_router
     from .api.v1.github_webhooks import github_router
 
@@ -752,6 +782,9 @@ if ROUTERS_AVAILABLE:
         )
         app.include_router(
             persistent_audit_router, prefix="/api/v1", tags=["Persistent Audit Trail"]
+        )
+        app.include_router(
+            persistent_audit_api_router, tags=["Persistent Audit API"]
         )
         app.include_router(
             github_router, prefix="/api/v1", tags=["GitHub Integration"]

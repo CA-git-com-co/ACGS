@@ -1,0 +1,18 @@
+{
+  "service_name": "auth-service",
+  "service_path": "services/platform_services/authentication/auth_service",
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "generated_at": "2025-07-10T23:26:01.691398",
+  "test_count": 16,
+  "test_types": {
+    "constitutional": 2,
+    "unit": 10,
+    "integration": 2,
+    "performance": 2
+  },
+  "coverage_targets": {
+    "line_coverage": 95.0,
+    "branch_coverage": 90.0,
+    "function_coverage": 95.0
+  }
+}

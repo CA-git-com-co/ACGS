@@ -1,0 +1,290 @@
+# Horizontal Pod Autoscaler Configuration for ACGS-2 Policy Governance Compiler
+# Supports enterprise-grade auto-scaling with 1247 RPS target and 99.9% uptime
+# Constitutional Hash: cdd01ef066bc6cf2
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: pgc-hpa
+  namespace: acgs-2
+  labels:
+    app: policy-governance-compiler
+    component: autoscaling
+    constitutional-hash: cdd01ef066bc6cf2
+  annotations:
+    description: "HPA for Policy Governance Compiler with enterprise SLA targets"
+    target-rps: "1247"
+    target-uptime: "99.9%"
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: policy-governance-compiler
+  
+  minReplicas: 3  # Minimum for 99.9% uptime
+  maxReplicas: 20  # Maximum for cost control
+  
+  metrics:
+  # CPU-based scaling
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70  # Scale up when CPU > 70%
+  
+  # Memory-based scaling
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80  # Scale up when Memory > 80%
+  
+  # Custom RPS-based scaling
+  - type: Pods
+    pods:
+      metric:
+        name: acgs_rps_per_pod
+      target:
+        type: AverageValue
+        averageValue: "100"  # Target 100 RPS per pod (1247 total / ~12 pods)
+  
+  # Custom response time scaling
+  - type: Pods
+    pods:
+      metric:
+        name: acgs_p95_response_time_ms
+      target:
+        type: AverageValue
+        averageValue: "5"  # Scale up if P95 response time > 5ms
+  
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 60  # Wait 1 minute before scaling up
+      policies:
+      - type: Percent
+        value: 50  # Scale up by max 50% of current replicas
+        periodSeconds: 60
+      - type: Pods
+        value: 2  # Or add max 2 pods
+        periodSeconds: 60
+      selectPolicy: Min  # Use the more conservative policy
+    
+    scaleDown:
+      stabilizationWindowSeconds: 300  # Wait 5 minutes before scaling down
+      policies:
+      - type: Percent
+        value: 10  # Scale down by max 10% of current replicas
+        periodSeconds: 60
+      - type: Pods
+        value: 1  # Or remove max 1 pod
+        periodSeconds: 60
+      selectPolicy: Min  # Use the more conservative policy
+
+---
+# ServiceMonitor for Prometheus to scrape custom metrics
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: pgc-metrics
+  namespace: acgs-2
+  labels:
+    app: policy-governance-compiler
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  selector:
+    matchLabels:
+      app: policy-governance-compiler
+  endpoints:
+  - port: metrics
+    interval: 15s
+    path: /metrics
+    honorLabels: true
+
+---
+# PrometheusRule for custom alerting
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: pgc-alerts
+  namespace: acgs-2
+  labels:
+    app: policy-governance-compiler
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  groups:
+  - name: acgs-pgc-sla
+    interval: 30s
+    rules:
+    
+    # RPS Target Monitoring
+    - alert: PGC_RPS_Below_Target
+      expr: acgs_rps_current{service="pgc"} < 1000
+      for: 2m
+      labels:
+        severity: warning
+        component: performance
+        constitutional_hash: cdd01ef066bc6cf2
+      annotations:
+        summary: "PGC RPS below target"
+        description: "Policy Governance Compiler RPS ({{ $value }}) is below target of 1247 RPS"
+    
+    - alert: PGC_RPS_Critical_Low
+      expr: acgs_rps_current{service="pgc"} < 500
+      for: 1m
+      labels:
+        severity: critical
+        component: performance
+        constitutional_hash: cdd01ef066bc6cf2
+      annotations:
+        summary: "PGC RPS critically low"
+        description: "Policy Governance Compiler RPS ({{ $value }}) is critically low"
+    
+    # Uptime SLA Monitoring
+    - alert: PGC_Uptime_SLA_Breach
+      expr: acgs_uptime_percentage{service="pgc"} < 99.9
+      for: 1m
+      labels:
+        severity: critical
+        component: availability
+        constitutional_hash: cdd01ef066bc6cf2
+      annotations:
+        summary: "PGC uptime SLA breach"
+        description: "Policy Governance Compiler uptime ({{ $value }}%) is below 99.9% SLA"
+    
+    # Constitutional Compliance Monitoring
+    - alert: PGC_Constitutional_Compliance_Breach
+      expr: acgs_constitutional_compliance_rate{service="pgc"} < 1.0
+      for: 0s  # Immediate alert
+      labels:
+        severity: emergency
+        component: compliance
+        constitutional_hash: cdd01ef066bc6cf2
+      annotations:
+        summary: "EMERGENCY: Constitutional compliance breach"
+        description: "Policy Governance Compiler constitutional compliance ({{ $value }}) is below 100%"
+    
+    # Response Time Monitoring
+    - alert: PGC_High_Response_Time
+      expr: histogram_quantile(0.95, acgs_request_duration_seconds{service="pgc"}) > 0.005
+      for: 2m
+      labels:
+        severity: warning
+        component: performance
+        constitutional_hash: cdd01ef066bc6cf2
+      annotations:
+        summary: "PGC high response time"
+        description: "Policy Governance Compiler P95 response time ({{ $value }}s) is above 5ms target"
+    
+    # Resource Utilization Monitoring
+    - alert: PGC_High_CPU_Utilization
+      expr: acgs_cpu_utilization_percentage{service="pgc"} > 80
+      for: 5m
+      labels:
+        severity: warning
+        component: resources
+        constitutional_hash: cdd01ef066bc6cf2
+      annotations:
+        summary: "PGC high CPU utilization"
+        description: "Policy Governance Compiler CPU utilization ({{ $value }}%) is above 80%"
+    
+    - alert: PGC_High_Memory_Utilization
+      expr: acgs_memory_utilization_percentage{service="pgc"} > 85
+      for: 5m
+      labels:
+        severity: warning
+        component: resources
+        constitutional_hash: cdd01ef066bc6cf2
+      annotations:
+        summary: "PGC high memory utilization"
+        description: "Policy Governance Compiler memory utilization ({{ $value }}%) is above 85%"
+    
+    # Business Logic Monitoring
+    - alert: PGC_High_Human_Review_Rate
+      expr: rate(acgs_human_reviews_required_total{service="pgc"}[5m]) > 0.1
+      for: 10m
+      labels:
+        severity: warning
+        component: business-logic
+        constitutional_hash: cdd01ef066bc6cf2
+      annotations:
+        summary: "PGC high human review rate"
+        description: "Policy Governance Compiler human review rate ({{ $value }}/s) is unusually high"
+    
+    # Error Rate Monitoring
+    - alert: PGC_High_Error_Rate
+      expr: rate(acgs_requests_total{service="pgc",status=~"5.."}[5m]) / rate(acgs_requests_total{service="pgc"}[5m]) > 0.01
+      for: 2m
+      labels:
+        severity: critical
+        component: reliability
+        constitutional_hash: cdd01ef066bc6cf2
+      annotations:
+        summary: "PGC high error rate"
+        description: "Policy Governance Compiler error rate ({{ $value | humanizePercentage }}) is above 1%"
+
+---
+# PodDisruptionBudget for high availability
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: pgc-pdb
+  namespace: acgs-2
+  labels:
+    app: policy-governance-compiler
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  minAvailable: 2  # Always keep at least 2 pods running
+  selector:
+    matchLabels:
+      app: policy-governance-compiler
+
+---
+# NetworkPolicy for security
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: pgc-network-policy
+  namespace: acgs-2
+  labels:
+    app: policy-governance-compiler
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  podSelector:
+    matchLabels:
+      app: policy-governance-compiler
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: acgs-2
+    - namespaceSelector:
+        matchLabels:
+          name: monitoring
+    ports:
+    - protocol: TCP
+      port: 8005  # PGC service port
+    - protocol: TCP
+      port: 9090  # Metrics port
+  egress:
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: acgs-2
+    ports:
+    - protocol: TCP
+      port: 5439  # PostgreSQL
+    - protocol: TCP
+      port: 6389  # Redis
+  - to: []  # Allow external DNS/NTP
+    ports:
+    - protocol: UDP
+      port: 53
+    - protocol: TCP
+      port: 53
+    - protocol: UDP
+      port: 123
