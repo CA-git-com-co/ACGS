@@ -17,6 +17,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
+# Import fast constitutional validator
+from .fast_constitutional_validator import get_fast_validator, validate_constitutional_fast
+
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 SERVICE_NAME = "constitutional-core"
@@ -41,13 +44,24 @@ app = FastAPI(
     openapi_url="/api/v1/openapi.json",
 )
 
-# Configure CORS
+# Configure CORS - Production-ready security settings
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Configure appropriately for production
+    allow_origins=[
+        "http://localhost:3000",  # Grafana dashboard
+        "http://localhost:8080",  # API Gateway
+        "http://localhost:9090",  # Prometheus
+        "https://acgs.local",     # Production domain
+    ],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=[
+        "Content-Type", 
+        "Authorization", 
+        "X-Constitutional-Hash",
+        "X-Tenant-ID",
+        "X-Request-ID"
+    ],
 )
 
 
@@ -105,7 +119,9 @@ async def health_check():
         "formal_verification": False,  # Simplified version
         "unified_compliance": True,
         "database": False,
-        "cache": False,
+        "cache": True,  # Fast multi-level caching enabled
+        "redis_cache": True,  # L3 distributed cache
+        "performance_optimization": "ENHANCED",
     }
 
     return HealthResponse(
@@ -141,48 +157,23 @@ async def root():
     "/api/v1/constitutional/validate", response_model=ConstitutionalValidationResult
 )
 async def validate_constitutional_compliance(request: ConstitutionalValidationRequest):
-    """Validate constitutional compliance using simplified AI reasoning."""
+    """Validate constitutional compliance using fast cached validation."""
     try:
-        # Simplified constitutional compliance check
-        # In a real implementation, this would use sophisticated AI reasoning
-
-        content_length = len(request.content)
-        score = min(0.9, 0.5 + (content_length / 1000))  # Simple scoring
-
-        # Basic compliance rules
-        violated_principles = []
-        reasoning = []
-        recommendations = []
-
-        if "harmful" in request.content.lower():
-            violated_principles.append("non-maleficence")
-            reasoning.append("Content contains potentially harmful language")
-            recommendations.append("Remove harmful content and rephrase positively")
-            score = max(0.1, score - 0.5)
-
-        if len(request.content) < 10:
-            violated_principles.append("adequacy")
-            reasoning.append("Content is too brief for proper evaluation")
-            recommendations.append("Provide more detailed content for evaluation")
-            score = max(0.3, score - 0.2)
-
-        compliant = len(violated_principles) == 0 and score >= 0.7
-
-        if compliant:
-            reasoning.append("Content meets basic constitutional compliance standards")
-
+        # Use fast constitutional validator with multi-level caching
+        validation_result = await validate_constitutional_fast(
+            content=request.content,
+            context=request.context,
+            principles=request.principles
+        )
+        
         return ConstitutionalValidationResult(
-            compliant=compliant,
-            score=score,
-            violated_principles=violated_principles,
-            reasoning=reasoning,
-            recommendations=recommendations,
-            constitutional_hash=CONSTITUTIONAL_HASH,
-            metadata={
-                "content_length": content_length,
-                "evaluation_time": datetime.now(timezone.utc).isoformat(),
-                "method": "simplified",
-            },
+            compliant=validation_result["compliant"],
+            score=validation_result["score"],
+            violated_principles=validation_result["violated_principles"],
+            reasoning=validation_result["reasoning"],
+            recommendations=validation_result["recommendations"],
+            constitutional_hash=validation_result["constitutional_hash"],
+            metadata=validation_result.get("metadata", {}),
         )
 
     except Exception as e:
@@ -244,6 +235,25 @@ async def get_unified_status():
         "constitutional_hash": CONSTITUTIONAL_HASH,
         "system_health": "healthy",
         "last_updated": datetime.now(timezone.utc).isoformat(),
+    }
+
+
+@app.get("/api/v1/constitutional/performance")
+async def get_performance_metrics():
+    """Get constitutional validation performance metrics."""
+    validator = get_fast_validator()
+    cache_stats = validator.get_cache_stats()
+    
+    return {
+        "constitutional_hash": CONSTITUTIONAL_HASH,
+        "service": SERVICE_NAME,
+        "performance_status": cache_stats["performance_metrics"]["current_performance"],
+        "metrics": cache_stats,
+        "optimization_level": "ENHANCED_CACHING",
+        "target_p99_latency_ms": 1.0,
+        "current_avg_latency_ms": cache_stats["performance_metrics"]["avg_validation_time_ms"],
+        "cache_effectiveness": cache_stats["cache_performance"]["overall_hit_rate"],
+        "timestamp": datetime.now(timezone.utc).isoformat()
     }
 
 

@@ -223,8 +223,18 @@ async def lifespan(app: FastAPI):
                 components["integrity"] = await integrity_client.health_check()
                 
         except Exception as e:
-        # TODO: Consider using ACGS error handling: log_error_with_context()
-            logger.warning(f"Service client initialization failed: {e}")
+            if ACGS_ERROR_HANDLING_AVAILABLE:
+                log_error_with_context(
+                    error=e,
+                    context={
+                        "operation": "service_client_initialization",
+                        "constitutional_hash": CONSTITUTIONAL_HASH
+                    },
+                    service_name="governance-engine",
+                    level="warning"
+                )
+            else:
+                logger.warning(f"Service client initialization failed: {e}")
     
     # Store component status in app state
     app.state.components = components
@@ -242,8 +252,18 @@ async def lifespan(app: FastAPI):
             from services.shared.service_clients.registry import shutdown_registry
             await shutdown_registry()
         except Exception as e:
-        # TODO: Consider using ACGS error handling: log_error_with_context()
-            logger.warning(f"Service client cleanup failed: {e}")
+            if ACGS_ERROR_HANDLING_AVAILABLE:
+                log_error_with_context(
+                    error=e,
+                    context={
+                        "operation": "service_client_cleanup",
+                        "constitutional_hash": CONSTITUTIONAL_HASH
+                    },
+                    service_name="governance-engine",
+                    level="warning"
+                )
+            else:
+                logger.warning(f"Service client cleanup failed: {e}")
     
     logger.info("✅ Unified Governance Engine shutdown complete")
 
@@ -382,8 +402,17 @@ async def synthesize_policy(request: SynthesisRequest):
         )
         
     except Exception as e:
-        # TODO: Consider using ACGS error handling: log_error_with_context()
-        logger.error(f"Policy synthesis failed: {e}")
+        if ACGS_ERROR_HANDLING_AVAILABLE:
+            log_error_with_context(
+                error=e,
+                context={
+                    "operation": "policy_synthesis",
+                    "constitutional_hash": CONSTITUTIONAL_HASH
+                },
+                service_name="governance-engine"
+            )
+        else:
+            logger.error(f"Policy synthesis failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Policy synthesis failed: {str(e)}"
@@ -438,8 +467,17 @@ async def enforce_policy(request: EnforcementRequest):
         )
         
     except Exception as e:
-        # TODO: Consider using ACGS error handling: log_error_with_context()
-        logger.error(f"Policy enforcement failed: {e}")
+        if ACGS_ERROR_HANDLING_AVAILABLE:
+            log_error_with_context(
+                error=e,
+                context={
+                    "operation": "policy_enforcement",
+                    "constitutional_hash": CONSTITUTIONAL_HASH
+                },
+                service_name="governance-engine"
+            )
+        else:
+            logger.error(f"Policy enforcement failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Policy enforcement failed: {str(e)}"
@@ -491,8 +529,17 @@ async def check_compliance(request: ComplianceRequest):
         )
         
     except Exception as e:
-        # TODO: Consider using ACGS error handling: log_error_with_context()
-        logger.error(f"Compliance check failed: {e}")
+        if ACGS_ERROR_HANDLING_AVAILABLE:
+            log_error_with_context(
+                error=e,
+                context={
+                    "operation": "compliance_check",
+                    "constitutional_hash": CONSTITUTIONAL_HASH
+                },
+                service_name="governance-engine"
+            )
+        else:
+            logger.error(f"Compliance check failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Compliance check failed: {str(e)}"

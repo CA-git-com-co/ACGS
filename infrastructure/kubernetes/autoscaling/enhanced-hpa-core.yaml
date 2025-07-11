@@ -1,0 +1,418 @@
+# Enhanced HPA for Core Services with Performance Optimizations
+# Constitutional Hash: cdd01ef066bc6cf2
+
+---
+# Enhanced HPA for Constitutional AI Service with Anomaly Detection Metrics
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: constitutional-ai-enhanced-hpa
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: autoscaling
+    version: enhanced
+  annotations:
+    acgs.ai/performance-target: "p99-5ms-100rps"
+    acgs.ai/anomaly-detection: "enabled"
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: constitutional-ai-service
+  minReplicas: 3  # Increased for high availability
+  maxReplicas: 15 # Increased to handle traffic spikes
+  metrics:
+    # CPU-based scaling with tighter control
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 60  # Lower threshold for better performance
+    # Memory-based scaling
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 75
+    # Constitutional compliance requests
+    - type: Pods
+      pods:
+        metric:
+          name: constitutional_compliance_requests_per_second
+        target:
+          type: AverageValue
+          averageValue: "50"  # Increased target
+    # Anomaly detection rate (new metric)
+    - type: Pods
+      pods:
+        metric:
+          name: anomalies_detected_per_minute
+        target:
+          type: AverageValue
+          averageValue: "10"  # Scale up if many anomalies detected
+    # P99 latency metric
+    - type: Pods
+      pods:
+        metric:
+          name: constitutional_validation_p99_latency_ms
+        target:
+          type: AverageValue
+          averageValue: "4"  # Target <5ms P99
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300  # 5 minutes
+      policies:
+        - type: Percent
+          value: 10  # Conservative scale down
+          periodSeconds: 60
+        - type: Pods
+          value: 2   # Max 2 pods down per minute
+          periodSeconds: 60
+      selectPolicy: Min  # Use most conservative
+    scaleUp:
+      stabilizationWindowSeconds: 30  # Quick scale up
+      policies:
+        - type: Percent
+          value: 100  # Aggressive scale up
+          periodSeconds: 30
+        - type: Pods
+          value: 5    # Max 5 pods up per 30 seconds
+          periodSeconds: 30
+      selectPolicy: Max  # Use most aggressive
+
+---
+# Enhanced HPA for Governance Synthesis Service with Dynamic Policy Metrics
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: governance-synthesis-enhanced-hpa
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: autoscaling
+    version: enhanced
+  annotations:
+    acgs.ai/performance-target: "p99-5ms-100rps"
+    acgs.ai/dynamic-policies: "enabled"
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: governance-synthesis-service
+  minReplicas: 3  # Increased for stability
+  maxReplicas: 12 # Increased to handle policy adaptations
+  metrics:
+    # CPU-based scaling
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    # Memory-based scaling
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+    # Policy synthesis requests
+    - type: Pods
+      pods:
+        metric:
+          name: policy_synthesis_requests_per_second
+        target:
+          type: AverageValue
+          averageValue: "30"  # Increased from 20
+    # Dynamic policy adaptations (new metric)
+    - type: Pods
+      pods:
+        metric:
+          name: policy_adaptations_per_minute
+        target:
+          type: AverageValue
+          averageValue: "15"  # Scale up if many adaptations needed
+    # Compliance rate metric
+    - type: Pods
+      pods:
+        metric:
+          name: compliance_rate_percentage
+        target:
+          type: AverageValue
+          averageValue: "95"  # Scale up if compliance drops
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 240  # 4 minutes
+      policies:
+        - type: Percent
+          value: 15  # Moderate scale down
+          periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 45  # Quick response
+      policies:
+        - type: Percent
+          value: 75  # Aggressive scale up for policy adaptations
+          periodSeconds: 30
+
+---
+# Enhanced HPA for Evolutionary Computation Service with Security Metrics
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: evolutionary-computation-enhanced-hpa
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: autoscaling
+    version: enhanced
+  annotations:
+    acgs.ai/performance-target: "p99-5ms-100rps"
+    acgs.ai/security-layers: "4-layer-architecture"
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: evolutionary-computation-service
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    # CPU-based scaling
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 65  # Lower for security processing
+    # Memory-based scaling
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 75
+    # Evolution requests
+    - type: Pods
+      pods:
+        metric:
+          name: evolution_requests_per_second
+        target:
+          type: AverageValue
+          averageValue: "20"
+    # Security validation rate (new metric)
+    - type: Pods
+      pods:
+        metric:
+          name: security_validations_per_second
+        target:
+          type: AverageValue
+          averageValue: "40"  # Scale up for security processing
+    # Sandbox creation rate
+    - type: Pods
+      pods:
+        metric:
+          name: sandbox_creations_per_minute
+        target:
+          type: AverageValue
+          averageValue: "25"
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+        - type: Percent
+          value: 20
+          periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+        - type: Percent
+          value: 80
+          periodSeconds: 30
+
+---
+# Enhanced HPA for API Gateway with Load Balancing Optimization
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: api-gateway-enhanced-hpa
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: autoscaling
+    version: enhanced
+  annotations:
+    acgs.ai/performance-target: "p99-5ms-1000rps"
+    acgs.ai/load-balancing: "enabled"
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: api-gateway-service
+  minReplicas: 4  # Higher minimum for traffic distribution
+  maxReplicas: 20 # Higher maximum for traffic spikes
+  metrics:
+    # CPU-based scaling
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 50  # Lower threshold for gateway
+    # Memory-based scaling
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 70
+    # HTTP requests per second
+    - type: Pods
+      pods:
+        metric:
+          name: http_requests_per_second
+        target:
+          type: AverageValue
+          averageValue: "100"  # Higher target for gateway
+    # Response time P99
+    - type: Pods
+      pods:
+        metric:
+          name: http_response_time_p99_ms
+        target:
+          type: AverageValue
+          averageValue: "3"  # Tight response time for gateway
+    # Connection count
+    - type: Pods
+      pods:
+        metric:
+          name: active_connections
+        target:
+          type: AverageValue
+          averageValue: "500"
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 180  # Quick scale down for cost efficiency
+      policies:
+        - type: Percent
+          value: 25  # Moderate scale down
+          periodSeconds: 30
+    scaleUp:
+      stabilizationWindowSeconds: 15  # Very quick scale up
+      policies:
+        - type: Percent
+          value: 200  # Very aggressive scale up
+          periodSeconds: 15
+
+---
+# Custom Metrics ConfigMap for Enhanced Scaling
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: acgs-enhanced-metrics
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: autoscaling
+    version: enhanced
+data:
+  enhanced-metrics.yaml: |
+    # Enhanced Custom Metrics for ACGS Autoscaling
+    # Constitutional Hash: cdd01ef066bc6cf2
+    
+    metrics:
+      # Performance metrics
+      - name: constitutional_validation_p99_latency_ms
+        description: "P99 latency for constitutional validation"
+        query: "histogram_quantile(0.99, rate(constitutional_validation_duration_seconds_bucket[5m])) * 1000"
+        target_value: 4.0
+        scale_direction: "up"
+      
+      # Security metrics
+      - name: anomalies_detected_per_minute
+        description: "Anomalies detected per minute"
+        query: "rate(anomalies_detected_total[1m]) * 60"
+        target_value: 10
+        scale_direction: "up"
+      
+      - name: security_validations_per_second
+        description: "Security validations per second"
+        query: "rate(security_validations_total[5m])"
+        target_value: 40
+        scale_direction: "up"
+      
+      # Policy metrics
+      - name: policy_adaptations_per_minute
+        description: "Policy adaptations per minute"
+        query: "rate(policy_adaptations_total[1m]) * 60"
+        target_value: 15
+        scale_direction: "up"
+      
+      - name: compliance_rate_percentage
+        description: "Current compliance rate"
+        query: "avg(compliance_rate) * 100"
+        target_value: 95
+        scale_direction: "up"
+      
+      # System performance metrics
+      - name: cache_hit_rate_percentage
+        description: "Cache hit rate percentage"
+        query: "avg(cache_hit_rate) * 100"
+        target_value: 85
+        scale_direction: "down"  # Scale down if cache hit rate is high
+      
+      # Gateway metrics
+      - name: http_response_time_p99_ms
+        description: "HTTP response time P99"
+        query: "histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m])) * 1000"
+        target_value: 3.0
+        scale_direction: "up"
+      
+      - name: active_connections
+        description: "Active connections to gateway"
+        query: "sum(nginx_connections_active)"
+        target_value: 500
+        scale_direction: "up"
+
+---
+# Enhanced Pod Disruption Budget with Performance Considerations
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: acgs-enhanced-core-pdb
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: autoscaling
+    version: enhanced
+spec:
+  minAvailable: 2  # Ensure at least 2 instances for performance
+  selector:
+    matchLabels:
+      app.kubernetes.io/part-of: acgs
+      app.kubernetes.io/component: constitutional-ai
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: acgs-enhanced-gateway-pdb
+  namespace: acgs-system
+  labels:
+    constitutional-hash: "cdd01ef066bc6cf2"
+    app.kubernetes.io/part-of: acgs
+    app.kubernetes.io/component: autoscaling
+    version: enhanced
+spec:
+  minAvailable: 3  # Higher minimum for gateway availability
+  selector:
+    matchLabels:
+      app.kubernetes.io/part-of: acgs
+      app.kubernetes.io/component: gateway

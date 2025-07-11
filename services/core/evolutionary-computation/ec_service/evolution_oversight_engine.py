@@ -462,8 +462,8 @@ class EvolutionOversightEngine:
 
 def test_evolution_oversight_engine():
     """Test the evolution oversight engine"""
-    print("🧬 Testing ACGS Evolution Oversight Engine")
-    print("=" * 45)
+    logger.info("🧬 Testing ACGS Evolution Oversight Engine")
+    logger.info("=" * 45)
 
     engine = EvolutionOversightEngine()
 
@@ -509,21 +509,21 @@ def test_evolution_oversight_engine():
         "availability": 0.999,
     }
 
-    print("📊 Calculating fitness score...")
+    logger.info("📊 Calculating fitness score...")
     fitness = engine.calculate_fitness_score(test_policy, test_performance)
 
-    print(f"  Constitutional Compliance: {fitness.constitutional_compliance:.3f}")
-    print(f"  Performance Score: {fitness.performance_score:.3f}")
-    print(f"  Safety Score: {fitness.safety_score:.3f}")
-    print(f"  Fairness Score: {fitness.fairness_score:.3f}")
-    print(f"  Efficiency Score: {fitness.efficiency_score:.3f}")
-    print(f"  Robustness Score: {fitness.robustness_score:.3f}")
-    print(f"  Transparency Score: {fitness.transparency_score:.3f}")
-    print(f"  User Satisfaction: {fitness.user_satisfaction:.3f}")
-    print(f"  Overall Fitness: {fitness.overall_fitness:.3f}")
+    logger.info(f"  Constitutional Compliance: {fitness.constitutional_compliance:.3f}")
+    logger.info(f"  Performance Score: {fitness.performance_score:.3f}")
+    logger.info(f"  Safety Score: {fitness.safety_score:.3f}")
+    logger.info(f"  Fairness Score: {fitness.fairness_score:.3f}")
+    logger.info(f"  Efficiency Score: {fitness.efficiency_score:.3f}")
+    logger.info(f"  Robustness Score: {fitness.robustness_score:.3f}")
+    logger.info(f"  Transparency Score: {fitness.transparency_score:.3f}")
+    logger.info(f"  User Satisfaction: {fitness.user_satisfaction:.3f}")
+    logger.info(f"  Overall Fitness: {fitness.overall_fitness:.3f}")
 
     # Test regression detection
-    print("\n🔍 Testing regression detection...")
+    logger.info("\n🔍 Testing regression detection...")
     engine.fitness_history.append(fitness)
 
     # Simulate degraded performance
@@ -534,26 +534,26 @@ def test_evolution_oversight_engine():
     degraded_fitness = engine.calculate_fitness_score(test_policy, degraded_performance)
     alerts = engine.detect_regression(degraded_fitness)
 
-    print(f"  Regression alerts detected: {len(alerts)}")
+    logger.info(f"  Regression alerts detected: {len(alerts)}")
     for alert in alerts:
-        print(
+        logger.info(
             f"    - {alert.metric_name}: {alert.regression_severity} ({alert.current_value:.3f} vs {alert.baseline_value:.3f})"
         )
 
     # Test rollback decision
     should_rollback = engine.should_trigger_rollback(alerts)
-    print(f"  Should trigger rollback: {should_rollback}")
+    logger.info(f"  Should trigger rollback: {should_rollback}")
 
     # Test trend analysis
-    print("\n📈 Analyzing evolution trends...")
+    logger.info("\n📈 Analyzing evolution trends...")
     engine.fitness_history.append(degraded_fitness)
     trends = engine.analyze_evolution_trends()
 
-    print(f"  Trend Direction: {trends['trend_direction']}")
-    print(f"  Current Fitness: {trends['current_fitness']:.3f}")
-    print(f"  Evaluation Count: {trends['evaluation_count']}")
+    logger.info(f"  Trend Direction: {trends['trend_direction']}")
+    logger.info(f"  Current Fitness: {trends['current_fitness']:.3f}")
+    logger.info(f"  Evaluation Count: {trends['evaluation_count']}")
 
-    print("\n✅ Evolution Oversight Engine: OPERATIONAL")
+    logger.info("\n✅ Evolution Oversight Engine: OPERATIONAL")
 
 
 if __name__ == "__main__":

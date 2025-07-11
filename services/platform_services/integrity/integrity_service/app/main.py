@@ -286,8 +286,17 @@ async def lifespan(app: FastAPI):
         logger.info("✅ Integrity Service initialized successfully")
         yield
     except Exception as e:
-        # TODO: Consider using ACGS error handling: log_error_with_context()
-        logger.error(f"❌ Service initialization failed: {e}")
+        if ACGS_ERROR_HANDLING_AVAILABLE:
+            log_error_with_context(
+                error=e,
+                context={
+                    "operation": "service_initialization",
+                    "constitutional_hash": CONSTITUTIONAL_HASH
+                },
+                service_name="integrity-service"
+            )
+        else:
+            logger.error(f"❌ Service initialization failed: {e}")
         yield
     finally:
         logger.info("🔄 Shutting down Integrity Service")
@@ -510,6 +519,7 @@ try:
     from .api.v1.integrity import router as integrity_router
     from .api.v1.persistent_audit import router as persistent_audit_router
     from .api.v1.research_data import router as research_router
+    from .api.v1.github_webhooks import github_router
 
     ROUTERS_AVAILABLE = True
     logger.info("All API routers imported successfully")
@@ -701,8 +711,17 @@ async def get_constitutional_hash_validation():
         }
 
     except Exception as e:
-        # TODO: Consider using ACGS error handling: log_error_with_context()
-        logger.error(f"Constitutional hash validation failed: {e}")
+        if ACGS_ERROR_HANDLING_AVAILABLE:
+            log_error_with_context(
+                error=e,
+                context={
+                    "operation": "constitutional_hash_validation",
+                    "constitutional_hash": CONSTITUTIONAL_HASH
+                },
+                service_name="integrity-service"
+            )
+        else:
+            logger.error(f"Constitutional hash validation failed: {e}")
         return {
             "constitutional_hash": "cdd01ef066bc6cf2",
             "validation_status": "error",
@@ -734,10 +753,23 @@ if ROUTERS_AVAILABLE:
         app.include_router(
             persistent_audit_router, prefix="/api/v1", tags=["Persistent Audit Trail"]
         )
+        app.include_router(
+            github_router, prefix="/api/v1", tags=["GitHub Integration"]
+        )
         logger.info("✅ All API routers included successfully")
     except Exception as e:
-        # TODO: Consider using ACGS error handling: log_error_with_context()
-        logger.warning(f"⚠️ Failed to include some routers: {e}")
+        if ACGS_ERROR_HANDLING_AVAILABLE:
+            log_error_with_context(
+                error=e,
+                context={
+                    "operation": "router_inclusion",
+                    "constitutional_hash": CONSTITUTIONAL_HASH
+                },
+                service_name="integrity-service",
+                level="warning"
+            )
+        else:
+            logger.warning(f"⚠️ Failed to include some routers: {e}")
 
 
 # Add startup event

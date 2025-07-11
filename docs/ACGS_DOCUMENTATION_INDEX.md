@@ -29,8 +29,8 @@ This index provides comprehensive access to all ACGS documentation, organized by
 |----------|-------------|--------|
 | [**Unified Architecture Guide**](architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md) | Complete system architecture with FastAPI template integration | ✅ Complete |
 | [**Service Integration Patterns**](integration/ACGS_SERVICE_INTEGRATION_PATTERNS.md) | Standardized service-to-service communication patterns | ✅ Complete |
-| [**Multi-Tenant Architecture**](architecture/ACGS_MULTI_TENANT_ARCHITECTURE.md) | Tenant isolation and context management | ✅ Complete |
-| [**Constitutional AI Framework**](architecture/ACGS_CONSTITUTIONAL_AI_FRAMEWORK.md) | Constitutional compliance architecture | ✅ Complete |
+| [**System Overview**](architecture/SYSTEM_OVERVIEW.md) | Comprehensive system architecture and implementation status | ✅ Complete |
+| [**Agents Architecture**](architecture/AGENTS.md) | Multi-agent coordination and governance architecture | ✅ Complete |
 
 ### 2. 👨‍💻 Development & Standards
 
@@ -46,27 +46,32 @@ This index provides comprehensive access to all ACGS documentation, organized by
 | Document | Description | Status |
 |----------|-------------|--------|
 | [**Testing Strategy Foundation**](testing/ACGS_TESTING_STRATEGY_FOUNDATION.md) | Testing patterns and framework preparation | ✅ Complete |
-| [**Constitutional Compliance Testing**](testing/ACGS_CONSTITUTIONAL_COMPLIANCE_TESTING.md) | Constitutional validation testing patterns | ✅ Complete |
-| [**Performance Testing Guide**](testing/ACGS_PERFORMANCE_TESTING_GUIDE.md) | Performance validation and monitoring | ✅ Complete |
-| [**Multi-Tenant Testing Patterns**](testing/ACGS_MULTI_TENANT_TESTING.md) | Tenant isolation testing strategies | ✅ Complete |
+| [**Testing Validation Framework**](ACGE_TESTING_VALIDATION_FRAMEWORK.md) | Comprehensive testing and validation framework | ✅ Complete |
 
 ### 4. 🚀 Deployment & Operations
 
 | Document | Description | Status |
 |----------|-------------|--------|
-| [**Deployment Guide**](deployment/ACGS_DEPLOYMENT_GUIDE.md) | Production deployment procedures | ✅ Complete |
-| [**Kubernetes Configuration**](deployment/ACGS_KUBERNETES_GUIDE.md) | Container orchestration setup | ✅ Complete |
-| [**Monitoring & Observability**](operations/ACGS_MONITORING_GUIDE.md) | Prometheus, Grafana, and alerting setup | ✅ Complete |
-| [**Security Operations**](security/ACGS_SECURITY_OPERATIONS.md) | Security procedures and compliance | ✅ Complete |
+| [**Production Deployment Guide**](deployment/PRODUCTION_DEPLOYMENT_GUIDE.md) | Production deployment procedures | ✅ Complete |
+| [**Deployment Guide**](deployment/DEPLOYMENT_GUIDE.md) | General deployment procedures | ✅ Complete |
+| [**Production Operations**](operations/ACGS_PRODUCTION_OPERATIONS.md) | Production operations and maintenance | ✅ Complete |
+| [**Security Hardening Plan**](security/ACGS_SECURITY_HARDENING_PLAN.md) | Security procedures and compliance | ✅ Complete |
 
 ### 5. 🔗 Integration & APIs
 
 | Document | Description | Status |
 |----------|-------------|--------|
-| [**API Reference**](api/ACGS_API_REFERENCE.md) | Complete API documentation for all services | ✅ Complete |
-| [**Service Integration Guide**](integration/ACGS_SERVICE_INTEGRATION_PATTERNS.md) | Inter-service communication patterns | ✅ Complete |
-| [**Authentication Integration**](integration/ACGS_AUTH_INTEGRATION.md) | JWT and multi-tenant authentication | ✅ Complete |
-| [**Constitutional AI Integration**](integration/ACGS_CONSTITUTIONAL_AI_INTEGRATION.md) | Constitutional compliance service integration | ✅ Complete |
+| [**API Index**](api/index.md) | Complete API documentation index for all services | ✅ Complete |
+| [**Service Integration Guide**](integration/ACGS_SERVICE_INTEGRATION_GUIDE.md) | Inter-service communication patterns | ✅ Complete |
+| [**Service Integration Patterns**](integration/ACGS_SERVICE_INTEGRATION_PATTERNS.md) | Standardized integration patterns | ✅ Complete |
+| [**Authentication API**](api/authentication.md) | JWT and multi-tenant authentication API | ✅ Complete |
+| [**XAI Integration Guide**](integration/ACGS_XAI_INTEGRATION_GUIDE.md) | X.AI Grok model integration with constitutional compliance | ✅ Complete |
+
+### 6. 📚 Reference & Glossaries
+
+| Document | Description | Status |
+|----------|-------------|--------|
+| [**AI Governance Glossary**](reference/AI_GOVERNANCE_GLOSSARY.md) | Comprehensive AI governance terminology with ACGS-2 implementations | ✅ Complete |
 
 ## 🎯 Constitutional Compliance Documentation
 
@@ -122,6 +127,7 @@ The completed Documentation Consolidation provides the foundation for the final 
 2. Review [**FastAPI Service Template**](../services/shared/templates/fastapi_service_template/README.md)
 3. Follow [**Documentation Standards**](standards/ACGS_DOCUMENTATION_STANDARDS.md)
 4. Reference [**API Documentation**](api/ACGS_API_REFERENCE.md)
+5. Study [**AI Governance Glossary**](reference/AI_GOVERNANCE_GLOSSARY.md) for terminology
 
 ### For System Architects
 1. Review [**Unified Architecture Guide**](architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md)

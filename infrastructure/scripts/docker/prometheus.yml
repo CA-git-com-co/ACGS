@@ -1,0 +1,128 @@
+# ACGS Prometheus Configuration
+# Constitutional Hash: cdd01ef066bc6cf2
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    constitutional_hash: "cdd01ef066bc6cf2"
+    cluster: "acgs-production"
+
+rule_files:
+  - "alert_rules.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 5s
+    metrics_path: /metrics
+    scheme: http
+
+  - job_name: 'acgs-auth-service'
+    static_configs:
+      - targets: ['acgs_auth_service:8016']
+    scrape_interval: 10s
+    metrics_path: /metrics
+    scheme: http
+    params:
+      constitutional_hash: ['cdd01ef066bc6cf2']
+
+  - job_name: 'acgs-constitutional-core'
+    static_configs:
+      - targets: ['acgs_constitutional_core:8001']
+    scrape_interval: 10s
+    metrics_path: /metrics
+    scheme: http
+    params:
+      constitutional_hash: ['cdd01ef066bc6cf2']
+
+  - job_name: 'acgs-api-gateway'
+    static_configs:
+      - targets: ['acgs_api_gateway:8080']
+    scrape_interval: 10s
+    metrics_path: /metrics
+    scheme: http
+    params:
+      constitutional_hash: ['cdd01ef066bc6cf2']
+
+  - job_name: 'acgs-integrity-service'
+    static_configs:
+      - targets: ['acgs_integrity_service:8002']
+    scrape_interval: 10s
+    metrics_path: /metrics
+    scheme: http
+    params:
+      constitutional_hash: ['cdd01ef066bc6cf2']
+
+  - job_name: 'acgs-governance-engine'
+    static_configs:
+      - targets: ['acgs_governance_engine:8004']
+    scrape_interval: 10s
+    metrics_path: /metrics
+    scheme: http
+    params:
+      constitutional_hash: ['cdd01ef066bc6cf2']
+
+  - job_name: 'acgs-evolutionary-computation'
+    static_configs:
+      - targets: ['acgs_ec_service:8006']
+    scrape_interval: 10s
+    metrics_path: /metrics
+    scheme: http
+    params:
+      constitutional_hash: ['cdd01ef066bc6cf2']
+
+  - job_name: 'acgs-agent-hitl'
+    static_configs:
+      - targets: ['acgs_agent_hitl:8008']
+    scrape_interval: 10s
+    metrics_path: /metrics
+    scheme: http
+    params:
+      constitutional_hash: ['cdd01ef066bc6cf2']
+
+  - job_name: 'acgs-xai-integration'
+    static_configs:
+      - targets: ['acgs_xai_integration:8014']
+    scrape_interval: 10s
+    metrics_path: /metrics
+    scheme: http
+    params:
+      constitutional_hash: ['cdd01ef066bc6cf2']
+
+  - job_name: 'acgs-opencode-cli'
+    static_configs:
+      - targets: ['acgs_opencode_cli:8020']
+    scrape_interval: 10s
+    metrics_path: /metrics
+    scheme: http
+    params:
+      constitutional_hash: ['cdd01ef066bc6cf2']
+
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 15s
+    metrics_path: /metrics
+    scheme: http
+
+  - job_name: 'redis-exporter'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+    scrape_interval: 15s
+    metrics_path: /metrics
+    scheme: http
+
+  - job_name: 'postgres-exporter'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+    scrape_interval: 15s
+    metrics_path: /metrics
+    scheme: http

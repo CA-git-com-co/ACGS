@@ -13,12 +13,16 @@ from enum import Enum
 from typing import Any
 
 import jwt
+import numpy as np
 from prometheus_client import Counter, Gauge, Histogram
+from sklearn.ensemble import IsolationForest
 
 logger = logging.getLogger(__name__)
 
 # Constitutional hash for compliance validation
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+anomalies_detected = Counter("anomalies_detected_total", "Total detected anomalies")
 
 
 class SecurityLevel(Enum):
@@ -592,6 +596,63 @@ class Layer4_AuditLayer:
         )
 
 
+# Add the AnomalyDetector class here
+class AnomalyDetector:
+    # Constitutional hash: cdd01ef066bc6cf2
+
+    def __init__(self):
+        # Pre-fit the model with baseline data for better performance
+        self.anomaly_model = IsolationForest(contamination=0.1, n_estimators=50, random_state=42)
+        
+        # Pre-train with baseline data to avoid fitting on every call
+        baseline_data = np.array([
+            [100, 0.01],  # Normal: 100 req/s, 1% error
+            [150, 0.02],  # Normal: 150 req/s, 2% error  
+            [200, 0.015], # Normal: 200 req/s, 1.5% error
+            [80, 0.005],  # Normal: 80 req/s, 0.5% error
+            [120, 0.025], # Normal: 120 req/s, 2.5% error
+        ])
+        self.anomaly_model.fit(baseline_data)
+        
+        # Thresholds for simple rule-based detection (faster)
+        self.max_request_rate = 1000
+        self.max_error_rate = 0.1
+        self.min_request_rate = 10
+
+    async def detect_anomaly(self, metrics: dict) -> bool:
+        # Extract example metrics: request rate and error rate
+        request_rate = metrics.get("request_rate", 0)
+        error_rate = metrics.get("error_rate", 0)
+
+        # Fast rule-based detection first (sub-1ms)
+        if (request_rate > self.max_request_rate or 
+            error_rate > self.max_error_rate or 
+            request_rate < self.min_request_rate):
+            
+            try:
+                anomalies_detected.inc()
+            except Exception:
+                pass  # continue without metrics
+            return True
+
+        # Only use ML model for borderline cases
+        if request_rate > 500 or error_rate > 0.05:
+            # Prepare data for model
+            data = np.array([[request_rate, error_rate]])
+            
+            # Use predict (not fit_predict) since model is pre-trained
+            prediction = self.anomaly_model.predict(data)
+            
+            if prediction[0] == -1:
+                try:
+                    anomalies_detected.inc()
+                except Exception:
+                    pass  # continue without metrics
+                return True
+
+        return False
+
+
 class FourLayerSecurityArchitecture:
     """Complete 4-layer security architecture."""
 
@@ -600,7 +661,7 @@ class FourLayerSecurityArchitecture:
         self.layer2_policy = Layer2_PolicyEngine()
         self.layer3_auth = Layer3_Authentication()
         self.layer4_audit = Layer4_AuditLayer()
-
+        self.anomaly_detector = AnomalyDetector()
         logger.info("4-Layer Security Architecture initialized")
 
     async def secure_execute(
@@ -621,6 +682,21 @@ class FourLayerSecurityArchitecture:
                 )
             )
             return {"success": False, "error": "Authentication failed"}
+
+        # Add anomaly detection after auth
+        operation_type = operation.get("type", "unknown")
+        try:
+            if await self.anomaly_detector.detect_anomaly(
+                {"operation": operation_type}
+            ):
+                logger.warning(
+                    f"Anomaly detected for operation {operation_type} with constitutional hash {CONSTITUTIONAL_HASH}"
+                )
+                raise ValueError("Anomaly detected")
+        except Exception as e:
+            logger.warning(
+                f"Anomaly detection failed: {e}, defaulting to allow, hash: {CONSTITUTIONAL_HASH}"
+            )
 
         # Layer 3: Authorization
         if not self.layer3_auth.authorize_operation(

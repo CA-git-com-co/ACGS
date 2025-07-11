@@ -31,3 +31,43 @@ def log_error(error: Exception, context: Optional[dict[str, Any]] = None) -> Non
     """Log error with optional context."""
     context_str = f" Context: {context}" if context else ""
     logger.error(f"Error: {error}{context_str}")
+
+
+def log_error_with_context(
+    error: Exception, 
+    service_name: str = "unknown",
+    operation: str = "unknown",
+    context: Optional[dict[str, Any]] = None,
+    constitutional_hash: str = CONSTITUTIONAL_HASH
+) -> None:
+    """
+    Enhanced error logging with structured context for ACGS services.
+    
+    Args:
+        error: The exception that occurred
+        service_name: Name of the service where error occurred
+        operation: Operation that was being performed
+        context: Additional context information
+        constitutional_hash: Constitutional hash for compliance validation
+    """
+    # Build structured context for logging
+    error_context = {
+        "service": service_name,
+        "operation": operation,
+        "error_type": type(error).__name__,
+        "error_message": str(error),
+        "constitutional_hash": constitutional_hash
+    }
+    
+    # Add any additional context provided
+    if context:
+        error_context.update(context)
+    
+    # Log the error with structured context
+    logger.error(
+        f"ACGS Service Error in {service_name} during {operation}: {error}",
+        extra={"context": error_context}
+    )
+    
+    # Also log to error handler for service-specific handling
+    handle_service_error(error, service_name)

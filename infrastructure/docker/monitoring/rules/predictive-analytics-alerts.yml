@@ -1,0 +1,214 @@
+# Predictive Analytics Alert Rules for ACGS
+# Constitutional Hash: cdd01ef066bc6cf2
+
+groups:
+  - name: "predictive_analytics"
+    rules:
+      # Constitutional Compliance Prediction Alerts
+      - alert: ConstitutionalCompliancePredictedDrop
+        expr: acgs_constitutional_compliance_prediction{horizon_hours="24"} < 0.90
+        for: 5m
+        labels:
+          severity: warning
+          service: predictive-analytics
+          constitutional_hash: "cdd01ef066bc6cf2"
+          alert_type: "predictive"
+        annotations:
+          summary: "Constitutional compliance predicted to drop below 90% in next 24 hours"
+          description: "ML model predicts constitutional compliance rate will drop to {{ $value | humanizePercentage }} in the next 24 hours. Current rate: {{ query \"acgs:constitutional_compliance_rate\" | first | value | humanizePercentage }}."
+          runbook_url: "https://docs.acgs.ai/runbooks/constitutional-compliance"
+          constitutional_hash: "cdd01ef066bc6cf2"
+
+      - alert: ConstitutionalComplianceCriticalPrediction
+        expr: acgs_constitutional_compliance_prediction{horizon_hours="6"} < 0.85
+        for: 2m
+        labels:
+          severity: critical
+          service: predictive-analytics
+          constitutional_hash: "cdd01ef066bc6cf2"
+          alert_type: "predictive"
+        annotations:
+          summary: "CRITICAL: Constitutional compliance predicted to drop below 85% in next 6 hours"
+          description: "ML model predicts constitutional compliance rate will drop to {{ $value | humanizePercentage }} in the next 6 hours. Immediate action required."
+          runbook_url: "https://docs.acgs.ai/runbooks/constitutional-compliance-critical"
+          constitutional_hash: "cdd01ef066bc6cf2"
+
+      # Performance Prediction Alerts
+      - alert: PerformanceLatencyPredictedIncrease
+        expr: acgs_performance_latency_prediction{horizon_hours="12"} > 100
+        for: 10m
+        labels:
+          severity: warning
+          service: predictive-analytics
+          constitutional_hash: "cdd01ef066bc6cf2"
+          alert_type: "predictive"
+        annotations:
+          summary: "Performance latency predicted to exceed 100ms in next 12 hours"
+          description: "ML model predicts P99 latency will increase to {{ $value }}ms in the next 12 hours. Current latency: {{ query \"acgs:request_latency_p99\" | first | value }}ms."
+          runbook_url: "https://docs.acgs.ai/runbooks/performance-optimization"
+          constitutional_hash: "cdd01ef066bc6cf2"
+
+      - alert: ThroughputPredictedDrop
+        expr: acgs_throughput_prediction{horizon_hours="6"} < 80
+        for: 5m
+        labels:
+          severity: warning
+          service: predictive-analytics
+          constitutional_hash: "cdd01ef066bc6cf2"
+          alert_type: "predictive"
+        annotations:
+          summary: "Throughput predicted to drop below 80 RPS in next 6 hours"
+          description: "ML model predicts throughput will drop to {{ $value }} RPS in the next 6 hours. Consider scaling up resources."
+          constitutional_hash: "cdd01ef066bc6cf2"
+
+      # Anomaly Detection Alerts
+      - alert: HighAnomalyScore
+        expr: acgs_anomaly_score > 0.8
+        for: 2m
+        labels:
+          severity: warning
+          service: predictive-analytics
+          constitutional_hash: "cdd01ef066bc6cf2"
+          alert_type: "anomaly"
+        annotations:
+          summary: "High anomaly score detected for {{ $labels.metric_type }}"
+          description: "Anomaly detection system reports score of {{ $value | humanizePercentage }} for {{ $labels.metric_type }}. This indicates unusual behavior that requires investigation."
+          constitutional_hash: "cdd01ef066bc6cf2"
+
+      - alert: CriticalAnomalyDetected
+        expr: acgs_anomaly_score > 0.9
+        for: 1m
+        labels:
+          severity: critical
+          service: predictive-analytics
+          constitutional_hash: "cdd01ef066bc6cf2"
+          alert_type: "anomaly"
+        annotations:
+          summary: "CRITICAL: Severe anomaly detected for {{ $labels.metric_type }}"
+          description: "Critical anomaly detected with score {{ $value | humanizePercentage }} for {{ $labels.metric_type }}. Immediate investigation required."
+          constitutional_hash: "cdd01ef066bc6cf2"
+
+      # Model Health Alerts
+      - alert: PredictionModelAccuracyLow
+        expr: acgs_prediction_accuracy < 0.6
+        for: 15m
+        labels:
+          severity: warning
+          service: predictive-analytics
+          constitutional_hash: "cdd01ef066bc6cf2"
+          alert_type: "model_health"
+        annotations:
+          summary: "ML model accuracy below 60% for {{ $labels.metric_type }}"
+          description: "Prediction model for {{ $labels.metric_type }} has accuracy of {{ $value | humanizePercentage }}. Model may need retraining or feature engineering."
+          constitutional_hash: "cdd01ef066bc6cf2"
+
+      - alert: PredictionServiceDown
+        expr: up{job="predictive-analytics"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: predictive-analytics
+          constitutional_hash: "cdd01ef066bc6cf2"
+          alert_type: "service_health"
+        annotations:
+          summary: "Predictive Analytics service is down"
+          description: "The predictive analytics service is not responding. ML predictions and anomaly detection are unavailable."
+          constitutional_hash: "cdd01ef066bc6cf2"
+
+      # Resource Prediction Alerts
+      - alert: ResourceUtilizationPredictedHigh
+        expr: acgs_resource_utilization_prediction{horizon_hours="6"} > 0.85
+        for: 10m
+        labels:
+          severity: warning
+          service: predictive-analytics
+          constitutional_hash: "cdd01ef066bc6cf2"
+          alert_type: "predictive"
+        annotations:
+          summary: "Resource utilization predicted to exceed 85% in next 6 hours"
+          description: "ML model predicts {{ $labels.resource_type }} utilization will reach {{ $value | humanizePercentage }} in the next 6 hours. Consider scaling resources."
+          constitutional_hash: "cdd01ef066bc6cf2"
+
+  - name: "constitutional_prediction_health"
+    rules:
+      # Constitutional Hash Validation
+      - alert: ConstitutionalHashMismatch
+        expr: |
+          count by (service) (
+            {constitutional_hash!="cdd01ef066bc6cf2"}
+          ) > 0
+        for: 1m
+        labels:
+          severity: critical
+          service: constitutional-validation
+          constitutional_hash: "cdd01ef066bc6cf2"
+          alert_type: "compliance"
+        annotations:
+          summary: "Constitutional hash mismatch detected"
+          description: "Service {{ $labels.service }} is reporting metrics with incorrect constitutional hash. Expected: cdd01ef066bc6cf2"
+          constitutional_hash: "cdd01ef066bc6cf2"
+
+      # Data Quality for ML Models
+      - alert: InsufficientDataForPredictions
+        expr: |
+          count by (metric_type) (
+            acgs_prediction_data_points < 20
+          ) > 0
+        for: 30m
+        labels:
+          severity: warning
+          service: predictive-analytics
+          constitutional_hash: "cdd01ef066bc6cf2"
+          alert_type: "data_quality"
+        annotations:
+          summary: "Insufficient data for reliable predictions"
+          description: "Metric {{ $labels.metric_type }} has only {{ $value }} data points. At least 20 points are needed for reliable ML predictions."
+          constitutional_hash: "cdd01ef066bc6cf2"
+
+      # Prediction Drift Detection
+      - alert: PredictionDriftDetected
+        expr: |
+          abs(
+            acgs_constitutional_compliance_prediction{horizon_hours="1"} - 
+            acgs:constitutional_compliance_rate
+          ) > 0.1
+        for: 15m
+        labels:
+          severity: warning
+          service: predictive-analytics
+          constitutional_hash: "cdd01ef066bc6cf2"
+          alert_type: "model_drift"
+        annotations:
+          summary: "Significant drift detected between predictions and actual values"
+          description: "1-hour constitutional compliance prediction differs from current rate by more than 10%. Model may need retraining."
+          constitutional_hash: "cdd01ef066bc6cf2"
+
+  - name: "predictive_analytics_performance"
+    rules:
+      # Model Inference Performance
+      - alert: PredictionLatencyHigh
+        expr: acgs_prediction_inference_duration_seconds > 0.5
+        for: 5m
+        labels:
+          severity: warning
+          service: predictive-analytics
+          constitutional_hash: "cdd01ef066bc6cf2"
+          alert_type: "performance"
+        annotations:
+          summary: "ML prediction inference taking too long"
+          description: "Prediction inference is taking {{ $value }}s, which exceeds the 500ms threshold. This may impact real-time decision making."
+          constitutional_hash: "cdd01ef066bc6cf2"
+
+      # Training Performance
+      - alert: ModelTrainingFailed
+        expr: increase(acgs_model_training_failures_total[1h]) > 0
+        for: 1m
+        labels:
+          severity: critical
+          service: predictive-analytics
+          constitutional_hash: "cdd01ef066bc6cf2"
+          alert_type: "training"
+        annotations:
+          summary: "ML model training failures detected"
+          description: "{{ $value }} model training failures occurred in the last hour. Predictive capabilities may be degraded."
+          constitutional_hash: "cdd01ef066bc6cf2"

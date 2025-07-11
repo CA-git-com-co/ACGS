@@ -34,45 +34,18 @@ scrape_configs:
     params:
       constitutional_hash: ['cdd01ef066bc6cf2']
 
-  - job_name: 'acgs-constitutional-ai'
+  - job_name: 'acgs-constitutional-core'
     static_configs:
-      - targets: ['acgs-constitutional-ai:8002']
+      - targets: ['acgs_constitutional_core:8001']
     scrape_interval: 10s
     metrics_path: /metrics
     scheme: http
     params:
       constitutional_hash: ['cdd01ef066bc6cf2']
 
-  - job_name: 'acgs-policy-governance'
+  - job_name: 'acgs-api-gateway'
     static_configs:
-      - targets: ['acgs-policy-governance:8003']
-    scrape_interval: 10s
-    metrics_path: /metrics
-    scheme: http
-    params:
-      constitutional_hash: ['cdd01ef066bc6cf2']
-
-  - job_name: 'acgs-evolutionary-computation'
-    static_configs:
-      - targets: ['acgs-evolutionary-computation:8004']
-    scrape_interval: 10s
-    metrics_path: /metrics
-    scheme: http
-    params:
-      constitutional_hash: ['cdd01ef066bc6cf2']
-
-  - job_name: 'acgs-governance-synthesis'
-    static_configs:
-      - targets: ['acgs-governance-synthesis:8005']
-    scrape_interval: 10s
-    metrics_path: /metrics
-    scheme: http
-    params:
-      constitutional_hash: ['cdd01ef066bc6cf2']
-
-  - job_name: 'acgs-formal-verification'
-    static_configs:
-      - targets: ['acgs-formal-verification:8010']
+      - targets: ['acgs_api_gateway:8080']
     scrape_interval: 10s
     metrics_path: /metrics
     scheme: http
@@ -81,7 +54,52 @@ scrape_configs:
 
   - job_name: 'acgs-integrity-service'
     static_configs:
-      - targets: ['acgs-integrity-service:8011']
+      - targets: ['acgs_integrity_service:8002']
+    scrape_interval: 10s
+    metrics_path: /metrics
+    scheme: http
+    params:
+      constitutional_hash: ['cdd01ef066bc6cf2']
+
+  - job_name: 'acgs-governance-engine'
+    static_configs:
+      - targets: ['acgs_governance_engine:8004']
+    scrape_interval: 10s
+    metrics_path: /metrics
+    scheme: http
+    params:
+      constitutional_hash: ['cdd01ef066bc6cf2']
+
+  - job_name: 'acgs-evolutionary-computation'
+    static_configs:
+      - targets: ['acgs_ec_service:8006']
+    scrape_interval: 10s
+    metrics_path: /metrics
+    scheme: http
+    params:
+      constitutional_hash: ['cdd01ef066bc6cf2']
+
+  - job_name: 'acgs-agent-hitl'
+    static_configs:
+      - targets: ['acgs_agent_hitl:8008']
+    scrape_interval: 10s
+    metrics_path: /metrics
+    scheme: http
+    params:
+      constitutional_hash: ['cdd01ef066bc6cf2']
+
+  - job_name: 'acgs-xai-integration'
+    static_configs:
+      - targets: ['acgs_xai_integration:8014']
+    scrape_interval: 10s
+    metrics_path: /metrics
+    scheme: http
+    params:
+      constitutional_hash: ['cdd01ef066bc6cf2']
+
+  - job_name: 'acgs-opencode-cli'
+    static_configs:
+      - targets: ['acgs_opencode_cli:8020']
     scrape_interval: 10s
     metrics_path: /metrics
     scheme: http

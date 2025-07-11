@@ -1,0 +1,87 @@
+{
+  "summary": {
+    "start_time": "2025-07-10T17:37:29.931955",
+    "constitutional_hash": "cdd01ef066bc6cf2",
+    "tests_run": 5,
+    "tests_passed": 5,
+    "constitutional_compliance_rate": 100.0,
+    "end_time": "2025-07-10T17:37:30.183948"
+  },
+  "detailed_results": [
+    {
+      "component": "PostgreSQL",
+      "test_name": "Container Health & Query Test",
+      "status": "PASS",
+      "details": {
+        "port": 5439,
+        "container": "acgs_postgres",
+        "database": "acgs_db",
+        "user": "acgs_user",
+        "version_info": "version                                          \n------------------------------------------------------------------------------------------\n PostgreSQL 15.13 on x86_64-pc-linux-musl, compiled by gcc (Alpine 14.2.0) 14.2.0, 64-bit\n(1 row)"
+      },
+      "constitutional_compliance": true,
+      "constitutional_hash": "cdd01ef066bc6cf2",
+      "timestamp": "2025-07-10T17:37:30.034799"
+    },
+    {
+      "component": "PostgreSQL",
+      "test_name": "Performance Test",
+      "status": "PASS",
+      "details": {
+        "query_time_ms": 65.67502021789551,
+        "target_ms": 100,
+        "performance_ok": true
+      },
+      "constitutional_compliance": true,
+      "constitutional_hash": "cdd01ef066bc6cf2",
+      "timestamp": "2025-07-10T17:37:30.100591"
+    },
+    {
+      "component": "Redis",
+      "test_name": "Connectivity & Performance Test",
+      "status": "PASS",
+      "details": {
+        "ping_time_ms": 1.6701221466064453,
+        "operation_time_ms": 0.3204345703125,
+        "port": 6389,
+        "test_key": "acgs_test_1752183450",
+        "constitutional_hash_verified": true
+      },
+      "constitutional_compliance": true,
+      "constitutional_hash": "cdd01ef066bc6cf2",
+      "timestamp": "2025-07-10T17:37:30.102836"
+    },
+    {
+      "component": "Redis",
+      "test_name": "Cache Performance Test",
+      "status": "PASS",
+      "details": {
+        "operations": 100,
+        "cache_hit_rate_percent": 100.0,
+        "target_hit_rate_percent": 85.0,
+        "avg_set_time_ms": 0.07096052169799805,
+        "avg_get_time_ms": 0.12106895446777344,
+        "total_set_time_ms": 7.096052169799805,
+        "total_get_time_ms": 12.106895446777344,
+        "performance_target_met": true
+      },
+      "constitutional_compliance": true,
+      "constitutional_hash": "cdd01ef066bc6cf2",
+      "timestamp": "2025-07-10T17:37:30.122428"
+    },
+    {
+      "component": "Data Persistence",
+      "test_name": "Cross-Service Persistence Test",
+      "status": "PASS",
+      "details": {
+        "redis_persistence": true,
+        "postgresql_persistence": true,
+        "test_key": "persistence_test_cdd01ef066bc6cf2",
+        "postgresql_tables_count": "count \n-------\n     1\n(1 row)"
+      },
+      "constitutional_compliance": true,
+      "constitutional_hash": "cdd01ef066bc6cf2",
+      "timestamp": "2025-07-10T17:37:30.183827"
+    }
+  ]
+}

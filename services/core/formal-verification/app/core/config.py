@@ -4,40 +4,31 @@ Formal Verification Service Configuration
 Manages configuration for formal verification and validation engine.
 """
 
-from pydantic import BaseSettings, Field
-
-
-class Settings(BaseSettings):
+class Settings:
     """Formal verification service configuration settings."""
 
     # Service identification
-    SERVICE_NAME: str = "formal-verification-service"
-    SERVICE_VERSION: str = "1.0.0"
+    SERVICE_NAME = "formal-verification-service"
+    SERVICE_VERSION = "1.0.0"
 
     # Server configuration
-    HOST: str = Field(default="0.0.0.0", env="FORMAL_VERIFICATION_HOST")
-    PORT: int = Field(default=8010, env="FORMAL_VERIFICATION_PORT")
-    DEBUG: bool = Field(default=False, env="FORMAL_VERIFICATION_DEBUG")
+    HOST = "0.0.0.0"
+    PORT = 8010
+    DEBUG = False
 
     # Constitutional configuration
-    CONSTITUTIONAL_HASH: str = Field(
-        default="cdd01ef066bc6cf2", env="CONSTITUTIONAL_HASH"
-    )
+    CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
     # Z3 SMT Solver configuration
-    Z3_TIMEOUT_MS: int = Field(default=5000, env="Z3_TIMEOUT_MS")
-    Z3_MAX_MEMORY_MB: int = Field(default=1024, env="Z3_MAX_MEMORY_MB")
-    Z3_PARALLEL_CORES: int = Field(default=4, env="Z3_PARALLEL_CORES")
+    Z3_TIMEOUT_MS = 5000
+    Z3_MAX_MEMORY_MB = 1024
+    Z3_PARALLEL_CORES = 4
 
     # Verification configuration
-    DEFAULT_VERIFICATION_TIMEOUT_S: int = Field(
-        default=30, env="DEFAULT_VERIFICATION_TIMEOUT_S"
-    )
-    MAX_VERIFICATION_COMPLEXITY: int = Field(
-        default=1000, env="MAX_VERIFICATION_COMPLEXITY"
-    )
-    ENABLE_PROOF_GENERATION: bool = Field(default=True, env="ENABLE_PROOF_GENERATION")
-    ENABLE_UNSAT_CORE: bool = Field(default=True, env="ENABLE_UNSAT_CORE")
+    DEFAULT_VERIFICATION_TIMEOUT_S = 30
+    MAX_VERIFICATION_COMPLEXITY = 1000
+    ENABLE_PROOF_GENERATION = False  # Disabled for performance
+    ENABLE_UNSAT_CORE = True
 
     # Cache configuration
     REDIS_URL: str = Field(default="redis://localhost:6379/2", env="REDIS_URL")

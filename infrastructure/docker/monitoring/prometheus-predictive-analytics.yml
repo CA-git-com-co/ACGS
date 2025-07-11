@@ -1,0 +1,206 @@
+# Prometheus configuration for ACGS Predictive Analytics
+# Constitutional Hash: cdd01ef066bc6cf2
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    constitutional_hash: "cdd01ef066bc6cf2"
+    cluster: "acgs-production"
+
+# Rule files for predictive analytics alerts
+rule_files:
+  - "rules/predictive-analytics-alerts.yml"
+  - "rules/constitutional-compliance-alerts.yml"
+  - "rules/anomaly-detection-alerts.yml"
+
+# Scrape configurations for predictive analytics
+scrape_configs:
+  # Standard ACGS services
+  - job_name: 'constitutional-ai'
+    static_configs:
+      - targets: ['constitutional-ai:8001']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+    
+  - job_name: 'integrity-service'
+    static_configs:
+      - targets: ['integrity:8002']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+    
+  - job_name: 'governance-engine'
+    static_configs:
+      - targets: ['governance-engine:8008']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+    
+  - job_name: 'api-gateway'
+    static_configs:
+      - targets: ['api-gateway:8010']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  # Predictive Analytics Service
+  - job_name: 'predictive-analytics'
+    static_configs:
+      - targets: ['predictive-analytics:8090']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+    scrape_timeout: 10s
+    honor_labels: true
+    params:
+      constitutional_hash: ['cdd01ef066bc6cf2']
+
+  # ML Model Metrics
+  - job_name: 'ml-model-metrics'
+    static_configs:
+      - targets: ['predictive-analytics:8091']
+    metrics_path: '/ml-metrics'
+    scrape_interval: 60s
+    scrape_timeout: 15s
+    
+  # Anomaly Detection Metrics
+  - job_name: 'anomaly-detection'
+    static_configs:
+      - targets: ['predictive-analytics:8092']
+    metrics_path: '/anomaly-metrics'
+    scrape_interval: 30s
+
+  # System Resources for ML Training
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 15s
+
+  # Database metrics for prediction features
+  - job_name: 'postgres-exporter'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+    scrape_interval: 30s
+
+  # Redis metrics for caching analytics
+  - job_name: 'redis-exporter'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+    scrape_interval: 30s
+
+# Alertmanager configuration for predictive alerts
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+      timeout: 10s
+      api_version: v2
+
+# Recording rules for efficient querying
+recording_rules:
+  # Constitutional compliance rate over time
+  - name: "constitutional_compliance"
+    interval: 60s
+    rules:
+      - record: acgs:constitutional_compliance_rate
+        expr: |
+          (
+            sum(rate(acgs_constitutional_validations_total{result="success"}[5m])) /
+            sum(rate(acgs_constitutional_validations_total[5m]))
+          ) * 100
+        labels:
+          constitutional_hash: "cdd01ef066bc6cf2"
+          
+      - record: acgs:constitutional_compliance_trend_1h
+        expr: |
+          increase(acgs:constitutional_compliance_rate[1h])
+        labels:
+          constitutional_hash: "cdd01ef066bc6cf2"
+
+  # Performance metrics for ML features
+  - name: "performance_metrics"
+    interval: 30s
+    rules:
+      - record: acgs:request_latency_p99
+        expr: |
+          histogram_quantile(0.99, 
+            sum(rate(acgs_request_duration_seconds_bucket[5m])) by (le, service)
+          ) * 1000
+        labels:
+          constitutional_hash: "cdd01ef066bc6cf2"
+          
+      - record: acgs:throughput_rps
+        expr: |
+          sum(rate(acgs_requests_total[5m])) by (service)
+        labels:
+          constitutional_hash: "cdd01ef066bc6cf2"
+          
+      - record: acgs:error_rate
+        expr: |
+          (
+            sum(rate(acgs_requests_total{status=~"5.."}[5m])) /
+            sum(rate(acgs_requests_total[5m]))
+          ) * 100
+        labels:
+          constitutional_hash: "cdd01ef066bc6cf2"
+
+  # Resource utilization for capacity planning
+  - name: "resource_utilization"
+    interval: 60s
+    rules:
+      - record: acgs:cpu_utilization
+        expr: |
+          100 - (avg by (instance) (
+            irate(node_cpu_seconds_total{mode="idle"}[5m]) * 100
+          ))
+        labels:
+          constitutional_hash: "cdd01ef066bc6cf2"
+          
+      - record: acgs:memory_utilization
+        expr: |
+          (
+            (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) /
+            node_memory_MemTotal_bytes
+          ) * 100
+        labels:
+          constitutional_hash: "cdd01ef066bc6cf2"
+
+  # Security events for anomaly detection
+  - name: "security_metrics"
+    interval: 30s
+    rules:
+      - record: acgs:security_events_rate
+        expr: |
+          sum(rate(acgs_security_events_total[5m])) by (event_type)
+        labels:
+          constitutional_hash: "cdd01ef066bc6cf2"
+          
+      - record: acgs:failed_auth_rate
+        expr: |
+          sum(rate(acgs_auth_failures_total[5m]))
+        labels:
+          constitutional_hash: "cdd01ef066bc6cf2"
+
+# Remote write for long-term storage and ML training data
+remote_write:
+  - url: "http://prometheus-long-term:9090/api/v1/write"
+    queue_config:
+      max_samples_per_send: 10000
+      batch_send_deadline: 5s
+      min_shards: 1
+      max_shards: 200
+    metadata_config:
+      send: true
+      send_interval: 30s
+    write_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'acgs_.*'
+        action: keep
+      - source_labels: [constitutional_hash]
+        regex: 'cdd01ef066bc6cf2'
+        action: keep
+
+# Remote read for historical data access
+remote_read:
+  - url: "http://prometheus-long-term:9090/api/v1/read"
+    read_recent: true
+    required_matchers:
+      constitutional_hash: "cdd01ef066bc6cf2"

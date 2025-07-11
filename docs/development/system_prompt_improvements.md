@@ -1,4 +1,7 @@
 # System Prompt Enhancement Analysis
+
+**Constitutional Hash:** `cdd01ef066bc6cf2`
+
 ## Key Improvements and Rationale
 
 ---

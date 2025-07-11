@@ -1,5 +1,7 @@
 # Contributing to ACGS-2
 
+**Constitutional Hash:** `cdd01ef066bc6cf2`
+
 Thank you for your interest in contributing to the AI Compliance and Governance System (ACGS-2)!
 
 ## Table of Contents

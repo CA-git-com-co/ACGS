@@ -315,9 +315,19 @@ class FormalVerificationEngine:
                 )
 
         except Exception as e:
-            # TODO: Consider using ACGS error handling: log_error_with_context()
             verification_time = int((time.time() - start_time) * 1000)
-            logger.error(f"Formal verification failed: {e}")
+            if ACGS_ERROR_HANDLING_AVAILABLE:
+                log_error_with_context(
+                    error=e,
+                    context={
+                        "operation": "formal_verification",
+                        "verification_time_ms": verification_time,
+                        "constitutional_hash": CONSTITUTIONAL_HASH
+                    },
+                    service_name="constitutional-core"
+                )
+            else:
+                logger.error(f"Formal verification failed: {e}")
             return VerificationResult(
                 verified=False,
                 verification_time_ms=verification_time,
@@ -438,8 +448,17 @@ class ConstitutionalReasoningEngine:
             )
 
         except Exception as e:
-            # TODO: Consider using ACGS error handling: log_error_with_context()
-            logger.error(f"Constitutional validation failed: {e}")
+            if ACGS_ERROR_HANDLING_AVAILABLE:
+                log_error_with_context(
+                    error=e,
+                    context={
+                        "operation": "constitutional_validation",
+                        "constitutional_hash": CONSTITUTIONAL_HASH
+                    },
+                    service_name="constitutional-core"
+                )
+            else:
+                logger.error(f"Constitutional validation failed: {e}")
             return ConstitutionalValidationResult(
                 compliant=False,
                 score=0.0,
@@ -622,8 +641,17 @@ Timestamp: {datetime.now(timezone.utc).isoformat()}
             )
 
         except Exception as e:
-            # TODO: Consider using ACGS error handling: log_error_with_context()
-            logger.error(f"Unified compliance evaluation failed: {e}")
+            if ACGS_ERROR_HANDLING_AVAILABLE:
+                log_error_with_context(
+                    error=e,
+                    context={
+                        "operation": "unified_compliance_evaluation",
+                        "constitutional_hash": CONSTITUTIONAL_HASH
+                    },
+                    service_name="constitutional-core"
+                )
+            else:
+                logger.error(f"Unified compliance evaluation failed: {e}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Unified compliance evaluation failed: {str(e)}",
@@ -660,8 +688,18 @@ async def lifespan(app: FastAPI):
                 components["integrity"] = await integrity_client.health_check()
 
         except Exception as e:
-            # TODO: Consider using ACGS error handling: log_error_with_context()
-            logger.warning(f"Service client initialization failed: {e}")
+            if ACGS_ERROR_HANDLING_AVAILABLE:
+                log_error_with_context(
+                    error=e,
+                    context={
+                        "operation": "service_client_initialization",
+                        "constitutional_hash": CONSTITUTIONAL_HASH
+                    },
+                    service_name="constitutional-core",
+                    level="warning"
+                )
+            else:
+                logger.warning(f"Service client initialization failed: {e}")
 
     # Store component status in app state
     app.state.components = components
@@ -680,8 +718,18 @@ async def lifespan(app: FastAPI):
 
             await shutdown_registry()
         except Exception as e:
-            # TODO: Consider using ACGS error handling: log_error_with_context()
-            logger.warning(f"Service client cleanup failed: {e}")
+            if ACGS_ERROR_HANDLING_AVAILABLE:
+                log_error_with_context(
+                    error=e,
+                    context={
+                        "operation": "service_client_cleanup",
+                        "constitutional_hash": CONSTITUTIONAL_HASH
+                    },
+                    service_name="constitutional-core",
+                    level="warning"
+                )
+            else:
+                logger.warning(f"Service client cleanup failed: {e}")
 
     logger.info("✅ Constitutional Core shutdown complete")
 
@@ -802,8 +850,17 @@ async def validate_constitutional_compliance(request: ConstitutionalValidationRe
         return result
 
     except Exception as e:
-        # TODO: Consider using ACGS error handling: log_error_with_context()
-        logger.error(f"Constitutional validation failed: {e}")
+        if ACGS_ERROR_HANDLING_AVAILABLE:
+            log_error_with_context(
+                error=e,
+                context={
+                    "operation": "constitutional_validation_endpoint",
+                    "constitutional_hash": CONSTITUTIONAL_HASH
+                },
+                service_name="constitutional-core"
+            )
+        else:
+            logger.error(f"Constitutional validation failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Constitutional validation failed: {str(e)}",
@@ -847,8 +904,17 @@ async def verify_formal_specification(request: VerificationRequest):
         return result
 
     except Exception as e:
-        # TODO: Consider using ACGS error handling: log_error_with_context()
-        logger.error(f"Formal verification failed: {e}")
+        if ACGS_ERROR_HANDLING_AVAILABLE:
+            log_error_with_context(
+                error=e,
+                context={
+                    "operation": "formal_verification_endpoint",
+                    "constitutional_hash": CONSTITUTIONAL_HASH
+                },
+                service_name="constitutional-core"
+            )
+        else:
+            logger.error(f"Formal verification failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Formal verification failed: {str(e)}",
@@ -880,8 +946,17 @@ async def evaluate_unified_compliance(request: UnifiedComplianceRequest):
         return result
 
     except Exception as e:
-        # TODO: Consider using ACGS error handling: log_error_with_context()
-        logger.error(f"Unified compliance evaluation failed: {e}")
+        if ACGS_ERROR_HANDLING_AVAILABLE:
+            log_error_with_context(
+                error=e,
+                context={
+                    "operation": "unified_compliance_evaluation_endpoint",
+                    "constitutional_hash": CONSTITUTIONAL_HASH
+                },
+                service_name="constitutional-core"
+            )
+        else:
+            logger.error(f"Unified compliance evaluation failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Unified compliance evaluation failed: {str(e)}",

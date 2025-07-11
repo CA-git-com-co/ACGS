@@ -1,5 +1,7 @@
 # Test Feature: Redis Cache Performance Optimizer
 
+**Constitutional Hash:** `cdd01ef066bc6cf2`
+
 ## Overview
 Implement a Redis cache performance optimizer that monitors cache hit rates and automatically adjusts cache configurations to maintain optimal performance for ACGS services.
 
