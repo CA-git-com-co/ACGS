@@ -26,7 +26,7 @@ env:
 
 jobs:
   quality-gates:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Enterprise Quality Gates Validation
     outputs:
       coverage_score: ${{ steps.coverage.outputs.score }}

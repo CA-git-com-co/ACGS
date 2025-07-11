@@ -31,7 +31,7 @@ env:
 jobs:
   # Simple preflight check
   preflight:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Preflight Checks
     outputs:
       python_changed: ${{ steps.changes.outputs.python_changed }}
@@ -60,7 +60,7 @@ jobs:
 
   # Python services testing
   python_services:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Python Services Testing
     needs: preflight
     if: needs.preflight.outputs.should_run == 'true'
@@ -335,7 +335,7 @@ jobs:
 
   # Basic security scanning
   security_scan:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Security Scanning
     needs: preflight
     if: needs.preflight.outputs.should_run == 'true'
@@ -395,7 +395,7 @@ jobs:
 
   # Results aggregation
   results:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Results Summary
     needs: [python_services, security_scan]
     if: always()

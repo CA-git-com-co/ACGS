@@ -18,7 +18,7 @@ env:
 
 jobs:
   collect_metrics:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Collect Daily Documentation Metrics
 
     steps:

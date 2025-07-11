@@ -30,7 +30,7 @@ env:
 jobs:
   # Python Dependencies Monitoring
   python-dependency-monitoring:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Python Dependencies Monitoring
     timeout-minutes: 30
     steps:
@@ -143,7 +143,7 @@ jobs:
 
   # Node.js Dependencies Monitoring
   nodejs-dependency-monitoring:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Node.js Dependencies Monitoring
     timeout-minutes: 30
     steps:
@@ -197,7 +197,7 @@ jobs:
 
   # Rust Dependencies Monitoring
   rust-dependency-monitoring:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Rust Dependencies Monitoring
     timeout-minutes: 30
     steps:
@@ -271,7 +271,7 @@ jobs:
 
   # Vulnerability Analysis and Alerting
   vulnerability-analysis:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Vulnerability Analysis and Alerting
     needs: [python-dependency-monitoring, nodejs-dependency-monitoring, rust-dependency-monitoring]
     if: always()

@@ -46,7 +46,7 @@ env:
 jobs:
   # Build and Push Images
   build_and_push:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Build and Push Docker Images
     outputs:
       image_tag: ${{ steps.meta.outputs.tags }}
@@ -104,7 +104,7 @@ jobs:
 
   # Development Deployment
   deploy_development:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Deploy to Development
     needs: build_and_push
     if: github.ref == 'refs/heads/develop' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'development')
@@ -148,7 +148,7 @@ jobs:
 
   # Staging Deployment
   deploy_staging:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Deploy to Staging
     needs: build_and_push
     if: github.ref == 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging')
@@ -209,7 +209,7 @@ jobs:
 
   # Production Deployment
   deploy_production:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Deploy to Production
     needs: [build_and_push, deploy_staging]
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production'
@@ -301,7 +301,7 @@ jobs:
 
   # Rollback Job
   rollback_deployment:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Rollback Deployment
     if: failure() && (needs.deploy_staging.result == 'failure' || needs.deploy_production.result == 'failure')
     needs: [deploy_staging, deploy_production]
@@ -351,7 +351,7 @@ jobs:
 
   # Deployment Summary
   deployment_summary:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Deployment Summary
     needs: [build_and_push, deploy_development, deploy_staging, deploy_production]
     if: always()

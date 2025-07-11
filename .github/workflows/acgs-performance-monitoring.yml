@@ -32,7 +32,7 @@ jobs:
   # Job 1: Performance Baseline Establishment
   performance-baseline:
     name: Establish Performance Baseline
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     outputs:
       baseline-metrics: ${{ steps.baseline.outputs.metrics }}
 
@@ -151,7 +151,7 @@ jobs:
   # Job 2: Load Testing
   load-testing:
     name: Load Testing
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: performance-baseline
     strategy:
       matrix:
@@ -304,7 +304,7 @@ jobs:
   # Job 3: Stress Testing
   stress-testing:
     name: Stress Testing
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: performance-baseline
 
     steps:
@@ -441,7 +441,7 @@ jobs:
   # Job 4: Performance Regression Detection
   performance-regression:
     name: Performance Regression Detection
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [performance-baseline, load-testing]
 
     steps:
@@ -564,7 +564,7 @@ jobs:
   # Job 5: Performance Alerting
   performance-alerting:
     name: Performance Alerting
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [performance-regression]
     if: failure()
 

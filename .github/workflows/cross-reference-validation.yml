@@ -32,7 +32,7 @@ env:
 jobs:
   cross-reference-scan:
     name: Cross-Reference Analysis
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     outputs:
       has-broken-refs: ${{ steps.validate.outputs.has-broken-refs }}
       scan-cache-key: ${{ steps.cache-key.outputs.key }}
@@ -125,7 +125,7 @@ jobs:
 
   file-change-analysis:
     name: File Change Impact Analysis
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     if: github.event_name == 'pull_request'
     needs: cross-reference-scan
     
@@ -254,7 +254,7 @@ jobs:
 
   reference-update-suggestions:
     name: Generate Reference Update Suggestions
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [cross-reference-scan, file-change-analysis]
     if: github.event_name == 'pull_request' && needs.cross-reference-scan.outputs.has-broken-refs == 'true'
     
@@ -367,7 +367,7 @@ jobs:
 
   auto-fix-references:
     name: Auto-Fix References (Draft)
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [cross-reference-scan, reference-update-suggestions]
     if: >
       github.event_name == 'pull_request' && 
@@ -477,7 +477,7 @@ jobs:
 
   comprehensive-validation:
     name: Comprehensive Documentation Validation
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: cross-reference-scan
     if: >
       github.event.inputs.validation_level == 'comprehensive' ||
@@ -595,7 +595,7 @@ jobs:
 
   create-issue-for-broken-refs:
     name: Create Issue for Broken References
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [cross-reference-scan, comprehensive-validation]
     if: >
       needs.cross-reference-scan.outputs.has-broken-refs == 'true' &&
@@ -708,7 +708,7 @@ jobs:
 
   performance-benchmarks:
     name: Cross-Reference Performance Benchmarks
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: cross-reference-scan
     if: github.event.inputs.validation_level == 'full'
     

@@ -19,7 +19,7 @@ env:
 
 jobs:
   validate_documentation:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Validate Documentation Changes
 
     steps:

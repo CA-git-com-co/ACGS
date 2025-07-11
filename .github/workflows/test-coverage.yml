@@ -18,7 +18,7 @@ env:
 
 jobs:
   test-coverage-analysis:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     timeout-minutes: 30
     
     strategy:
@@ -184,7 +184,7 @@ jobs:
 
   aggregate-coverage:
     needs: test-coverage-analysis
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     
     steps:
     - name: Checkout code
@@ -273,7 +273,7 @@ jobs:
 
   coverage-quality-gate:
     needs: aggregate-coverage
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     
     steps:
     - name: Checkout code

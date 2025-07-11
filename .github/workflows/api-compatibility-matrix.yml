@@ -36,7 +36,7 @@ env:
 jobs:
   # Generate Compatibility Test Matrix
   generate_matrix:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Generate Compatibility Test Matrix
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
@@ -106,7 +106,7 @@ jobs:
 
   # Run Compatibility Tests
   compatibility_tests:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Test ${{ matrix.source }} → ${{ matrix.target }} (${{ matrix.type }})
     needs: generate_matrix
     if: needs.generate_matrix.outputs.test_count > 0
@@ -352,7 +352,7 @@ jobs:
 
   # Aggregate Results and Update Matrix
   aggregate_results:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Aggregate Compatibility Results
     needs: [generate_matrix, compatibility_tests]
     if: always() && needs.generate_matrix.outputs.test_count > 0

@@ -28,7 +28,7 @@ permissions:
 jobs:
   claude-code-review:
     name: 🤖 AI-Powered Code Review
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     if: github.event_name == 'pull_request'
     timeout-minutes: 15
     
@@ -407,7 +407,7 @@ jobs:
 
   workflow-completion-analysis:
     name: 📊 Workflow Completion Analysis
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     if: github.event_name == 'workflow_run'
     timeout-minutes: 10
     

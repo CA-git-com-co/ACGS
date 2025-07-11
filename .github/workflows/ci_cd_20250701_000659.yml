@@ -2,7 +2,7 @@ jobs:
   performance-test:
     if: github.event_name == 'schedule' || contains(github.event.head_commit.message,
       '[perf-test]')
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python
@@ -14,7 +14,7 @@ jobs:
     - name: Run performance tests
       run: python performance/validation/latency_validation_suite.py
   security-scan:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
     - uses: actions/checkout@v3
     - name: Run security scan
@@ -22,7 +22,7 @@ jobs:
     - name: Run dependency check
       run: pip-audit --format=json --output=security-report.json
   test:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     services:
       postgres:
         env:

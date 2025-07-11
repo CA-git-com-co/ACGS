@@ -33,7 +33,7 @@ env:
 
 jobs:
   performance-tests:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     timeout-minutes: 60
     
     services:
@@ -343,7 +343,7 @@ jobs:
           }
 
   performance-regression-check:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     if: github.event_name == 'pull_request'
     needs: performance-tests
     
@@ -363,7 +363,7 @@ jobs:
         echo "Performance regression check completed"
 
   update-performance-dashboard:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     needs: performance-tests
     

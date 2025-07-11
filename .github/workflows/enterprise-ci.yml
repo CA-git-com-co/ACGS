@@ -41,7 +41,7 @@ env:
 jobs:
   # Enterprise Performance Monitoring Job
   performance_monitoring:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Performance Monitoring
     outputs:
       start_time: ${{ steps.timing.outputs.start_time }}
@@ -60,7 +60,7 @@ jobs:
 
   # Enhanced Pre-flight with Infrastructure Validation
   preflight:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Pre-flight & Infrastructure Validation
     needs: performance_monitoring
     outputs:
@@ -172,7 +172,7 @@ jobs:
 
   # Enterprise Toolchain Setup (Shared across jobs for performance)
   toolchain_setup:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Enterprise Toolchain Setup
     needs: [performance_monitoring, preflight]
     if: needs.preflight.outputs.should_run_tests == 'true' && needs.preflight.outputs.infrastructure_ready == 'true'
@@ -311,7 +311,7 @@ jobs:
 
   # Parallel Job 1: Rust Code Quality & Build
   rust_quality_build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Rust Quality & Build (Parallel)
     needs: [preflight, toolchain_setup]
     if: needs.preflight.outputs.should_run_tests == 'true' && needs.preflight.outputs.rust_changed == 'true'
@@ -430,7 +430,7 @@ jobs:
 
   # Parallel Job 2: Enterprise Security Scanning
   enterprise_security_scan:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Enterprise Security Scanning (Parallel)
     needs: [preflight, toolchain_setup, performance_monitoring]
     if: needs.preflight.outputs.should_run_tests == 'true'
@@ -643,7 +643,7 @@ jobs:
 
   # Microsoft Defender for DevOps (MSDO) Security Scanning
   msdo_security_scan:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: MSDO Security Scanning (Parallel)
     needs: [preflight, performance_monitoring]
     if: needs.preflight.outputs.should_run_tests == 'true'
@@ -673,7 +673,7 @@ jobs:
 
   # CodeQL Advanced Security Analysis
   codeql_analysis:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: CodeQL Security Analysis (Parallel)
     needs: [preflight, performance_monitoring]
     if: needs.preflight.outputs.should_run_tests == 'true'
@@ -701,7 +701,7 @@ jobs:
 
   # Secret Detection and Credential Scanning
   secret_detection:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Secret Detection (Parallel)
     needs: [preflight, performance_monitoring]
     if: needs.preflight.outputs.should_run_tests == 'true'
@@ -735,7 +735,7 @@ jobs:
 
   # Container Security Scanning
   container_security:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Container Security (Parallel)
     needs: [preflight, performance_monitoring]
     if: needs.preflight.outputs.should_run_tests == 'true'
@@ -768,7 +768,7 @@ jobs:
 
   # Enterprise Performance & Compliance Reporting
   enterprise_reporting:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Enterprise Performance & Compliance Reporting
     needs:
       [

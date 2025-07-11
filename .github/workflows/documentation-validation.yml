@@ -34,7 +34,7 @@ env:
 jobs:
   # Markdown Link Validation
   markdown_link_validation:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Validate Markdown Links
     steps:
       - name: Check out repository
@@ -111,7 +111,7 @@ jobs:
 
   # Configuration Consistency Validation
   configuration_consistency:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Validate Configuration Consistency
     steps:
       - name: Check out repository
@@ -267,7 +267,7 @@ jobs:
 
   # Performance Targets Validation
   performance_targets_validation:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Validate Performance Targets
     steps:
       - name: Check out repository
@@ -330,7 +330,7 @@ jobs:
 
   # Documentation Quality Check
   documentation_quality:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Documentation Quality Assessment
     steps:
       - name: Check out repository
@@ -394,7 +394,7 @@ jobs:
 
   # Generate Validation Report
   generate_report:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Generate Validation Report
     needs:
       [

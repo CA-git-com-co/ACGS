@@ -1,7 +1,7 @@
 # Constitutional Hash: cdd01ef066bc6cf2
 jobs:
   monitor-pipeline:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
     - name: Check pipeline health
       run: python scripts/cicd/monitor_pipeline_health.py

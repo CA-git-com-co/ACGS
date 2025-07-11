@@ -65,7 +65,7 @@ env:
 jobs:
   # Job 1: Setup and validation
   setup:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     outputs:
       test-mode: ${{ steps.config.outputs.test-mode }}
       test-suite: ${{ steps.config.outputs.test-suite }}
@@ -89,7 +89,7 @@ jobs:
 
   # Job 2: Infrastructure setup (for online/hybrid modes)
   infrastructure:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: setup
     if: needs.setup.outputs.test-mode != 'offline'
     services:
@@ -138,7 +138,7 @@ jobs:
 
   # Job 3: Smoke tests (fast validation)
   smoke-tests:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [setup, infrastructure]
     if: always() && needs.setup.result == 'success' && (needs.infrastructure.result == 'success' || needs.infrastructure.result == 'skipped')
     steps:
@@ -181,7 +181,7 @@ jobs:
 
   # Job 4: Constitutional compliance tests
   constitutional-tests:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [setup, infrastructure, smoke-tests]
     if: always() && needs.smoke-tests.result == 'success'
     steps:
@@ -223,7 +223,7 @@ jobs:
 
   # Job 5: Performance tests (conditional)
   performance-tests:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [setup, infrastructure, smoke-tests]
     if: always() && needs.smoke-tests.result == 'success' && needs.setup.outputs.skip-performance != 'true'
     steps:
@@ -264,7 +264,7 @@ jobs:
 
   # Job 6: Security tests
   security-tests:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [setup, infrastructure, smoke-tests]
     if: always() && needs.smoke-tests.result == 'success'
     steps:
@@ -309,7 +309,7 @@ jobs:
 
   # Job 7: Integration tests
   integration-tests:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [setup, infrastructure, smoke-tests]
     if: always() && needs.smoke-tests.result == 'success'
     steps:
@@ -351,7 +351,7 @@ jobs:
 
   # Job 8: Comprehensive E2E test suite
   comprehensive-e2e:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [setup, infrastructure, constitutional-tests, security-tests, integration-tests]
     if: always() && needs.setup.outputs.test-suite == 'all'
     steps:
@@ -411,7 +411,7 @@ jobs:
 
   # Job 9: Test reporting and analysis
   test-reporting:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [smoke-tests, constitutional-tests, performance-tests, security-tests, integration-tests, comprehensive-e2e]
     if: always()
     steps:
@@ -510,7 +510,7 @@ jobs:
 
   # Job 10: Deployment gate
   deployment-gate:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [smoke-tests, constitutional-tests, security-tests, integration-tests]
     if: always()
     outputs:

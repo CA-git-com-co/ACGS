@@ -58,7 +58,7 @@ concurrency:
 jobs:
   # Test discovery and matrix generation
   test-discovery:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Test Discovery & Matrix Generation
     outputs:
       test_matrix: ${{ steps.discovery.outputs.matrix }}
@@ -121,7 +121,7 @@ jobs:
 
   # Unit tests with parallel execution
   unit-tests:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Unit Tests (${{ matrix.service }})
     needs: test-discovery
     if: needs.test-discovery.outputs.has_tests == 'true' && (github.event.inputs.test_type == 'all' || github.event.inputs.test_type == 'unit')
@@ -211,7 +211,7 @@ jobs:
 
   # Integration tests with service dependencies
   integration-tests:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Integration Tests
     needs: [test-discovery, unit-tests]
     if: needs.test-discovery.outputs.has_tests == 'true' && (github.event.inputs.test_type == 'all' || github.event.inputs.test_type == 'integration')
@@ -296,7 +296,7 @@ jobs:
 
   # End-to-end tests with full system
   e2e-tests:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: End-to-End Tests
     needs: [test-discovery, integration-tests]
     if: needs.test-discovery.outputs.has_tests == 'true' && (github.event.inputs.test_type == 'all' || github.event.inputs.test_type == 'e2e') && github.ref == 'refs/heads/main'
@@ -364,7 +364,7 @@ jobs:
 
   # Performance tests with benchmarking
   performance-tests:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Performance Tests
     needs: test-discovery
     if: needs.test-discovery.outputs.has_tests == 'true' && (github.event.inputs.test_type == 'all' || github.event.inputs.test_type == 'performance') && (github.ref == 'refs/heads/main' || github.event_name == 'schedule')
@@ -430,7 +430,7 @@ with open('${{ env.TEST_RESULTS_DIR }}/benchmark-results.json') as f:
 
   # Security tests with specialized tools
   security-tests:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Security Tests
     needs: test-discovery
     if: needs.test-discovery.outputs.has_tests == 'true' && (github.event.inputs.test_type == 'all' || github.event.inputs.test_type == 'security')
@@ -475,7 +475,7 @@ with open('${{ env.TEST_RESULTS_DIR }}/benchmark-results.json') as f:
 
   # Test result aggregation and reporting
   test-report:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Test Results & Coverage Report
     needs: [unit-tests, integration-tests, e2e-tests, performance-tests, security-tests]
     if: always()

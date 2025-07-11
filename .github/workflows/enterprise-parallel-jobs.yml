@@ -43,7 +43,7 @@ env:
 jobs:
   # Enterprise Service Matrix Configuration
   service_matrix:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Service Matrix Configuration
     outputs:
       core_services: ${{ steps.matrix.outputs.core_services }}
@@ -66,7 +66,7 @@ jobs:
 
   # Pre-flight checks and change detection
   preflight:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Pre-flight & Change Detection
     needs: service_matrix
     outputs:
@@ -118,7 +118,7 @@ jobs:
 
   # Enterprise toolchain setup
   toolchain_setup:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Enterprise Toolchain Setup
     needs: preflight
     outputs:
@@ -239,7 +239,7 @@ jobs:
 
   # Parallel Job 1: Rust Code Quality & Build
   rust_quality_build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Rust Quality & Build (Parallel)
     needs: [preflight, toolchain_setup]
     if: needs.preflight.outputs.should_run_tests == 'true' && always()
@@ -357,7 +357,7 @@ jobs:
 
   # Parallel Job 2: Anchor Testing with Infrastructure Automation
   anchor_testing:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Anchor Testing (Parallel)
     needs: [preflight, toolchain_setup, rust_quality_build]
     if: needs.preflight.outputs.should_run_tests == 'true' && needs.preflight.outputs.rust_changed == 'true' && always()
@@ -509,7 +509,7 @@ jobs:
 
   # Parallel Job 3: Enterprise Security Scanning
   enterprise_security_scan:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Enterprise Security Scanning (Parallel)
     needs: [preflight, toolchain_setup]
     if: needs.preflight.outputs.should_run_tests == 'true' && always()
@@ -629,7 +629,7 @@ jobs:
 
   # Parallel Job 4: ACGS-1 Core Services Matrix
   core_services_matrix:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Core Services Testing (Parallel)
     needs: [preflight, service_matrix]
     if: needs.preflight.outputs.should_run_tests == 'true' && needs.preflight.outputs.python_changed == 'true'
@@ -708,7 +708,7 @@ jobs:
 
   # Enterprise Results Aggregation
   enterprise_results:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Enterprise Results Aggregation
     needs: [rust_quality_build, anchor_testing, enterprise_security_scan, core_services_matrix]
     if: always()

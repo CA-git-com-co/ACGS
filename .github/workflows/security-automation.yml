@@ -34,7 +34,7 @@ env:
 jobs:
   # Code Security Analysis
   code_security_analysis:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Code Security Analysis
     if: github.event.inputs.scan_type == 'code_analysis' || github.event.inputs.scan_type == 'comprehensive' || github.event.inputs.scan_type == ''
     steps:
@@ -106,7 +106,7 @@ jobs:
 
   # Dependency Vulnerability Scan
   dependency_vulnerability_scan:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Dependency Vulnerability Scan
     if: github.event.inputs.scan_type == 'dependency_scan' || github.event.inputs.scan_type == 'comprehensive' || github.event.inputs.scan_type == ''
     steps:
@@ -201,7 +201,7 @@ jobs:
 
   # Container Security Scan
   container_security_scan:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Container Security Scan
     if: github.event.inputs.scan_type == 'container_scan' || github.event.inputs.scan_type == 'comprehensive' || github.event.inputs.scan_type == ''
     steps:
@@ -342,7 +342,7 @@ jobs:
 
   # Infrastructure Security Scan
   infrastructure_security_scan:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Infrastructure Security Scan
     if: github.event.inputs.scan_type == 'infrastructure_scan' || github.event.inputs.scan_type == 'comprehensive' || github.event.inputs.scan_type == ''
     steps:
@@ -428,7 +428,7 @@ jobs:
 
   # Security Compliance Check
   security_compliance_check:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Security Compliance Check
     needs:
       [

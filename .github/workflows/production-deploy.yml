@@ -40,7 +40,7 @@ env:
 
 jobs:
   pre-deployment-checks:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Pre-deployment Checks
     outputs:
       should_deploy: ${{ steps.checks.outputs.should_deploy }}
@@ -89,7 +89,7 @@ jobs:
             ${{ env.SLACK_WEBHOOK }} || true
 
   security-scan:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Security Scan
     needs: pre-deployment-checks
     if: needs.pre-deployment-checks.outputs.should_deploy == 'true'
@@ -115,7 +115,7 @@ jobs:
           sarif_file: 'trivy-results.sarif'
 
   build-and-push:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Build and Push Images
     needs: [pre-deployment-checks, security-scan]
     if: needs.pre-deployment-checks.outputs.should_deploy == 'true'
@@ -173,7 +173,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
 
   deploy-blue-green:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Blue-Green Deployment
     needs: [pre-deployment-checks, build-and-push]
     if: needs.pre-deployment-checks.outputs.should_deploy == 'true' && (github.event.inputs.deployment_type == 'blue-green' || github.event.inputs.deployment_type == '')
@@ -329,7 +329,7 @@ jobs:
             ${{ env.SLACK_WEBHOOK }} || echo "Slack notification for rollback failed, but rollback proceeded."
 
   notify-deployment-result:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Notify Deployment Result
     needs: [pre-deployment-checks, deploy-blue-green]
     if: always() && needs.pre-deployment-checks.outputs.should_deploy == 'true'

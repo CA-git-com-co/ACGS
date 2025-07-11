@@ -29,7 +29,7 @@ env:
 
 jobs:
   rust-blockchain-tools:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Rust Blockchain Tools (Priority)
     strategy:
       matrix:
@@ -178,7 +178,7 @@ jobs:
           echo "✅ All Rust blockchain tools built and tested successfully"
 
   anchor-test:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Anchor Program Tests
     needs: rust-blockchain-tools
     strategy:
@@ -286,7 +286,7 @@ jobs:
           retention-days: 7
 
   security-audit:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Rust Security Audit
     steps:
       - name: Check out repository
@@ -469,7 +469,7 @@ jobs:
           echo "✅ Quantumagi core security audit completed"
 
   program-verification:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Program Verification
     needs: anchor-test
     steps:
@@ -497,7 +497,7 @@ jobs:
           echo "All programs built successfully and passed tests"
 
   notify-solana-results:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Notify Solana Results
     needs: [rust-blockchain-tools, anchor-test, security-audit, program-verification]
     if: always()

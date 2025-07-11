@@ -42,7 +42,7 @@ env:
 jobs:
   # Dependency Vulnerability Scanning
   dependency_scanning:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Dependency Vulnerability Scanning
     timeout-minutes: 30
     if: github.event.inputs.scan_type == 'comprehensive' || github.event.inputs.scan_type == 'dependency-only' || github.event.inputs.scan_type == ''
@@ -166,7 +166,7 @@ jobs:
 
   # Static Code Analysis
   static_code_analysis:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Static Code Analysis
     if: github.event.inputs.scan_type == 'comprehensive' || github.event.inputs.scan_type == 'code-only' || github.event.inputs.scan_type == ''
     steps:
@@ -232,7 +232,7 @@ jobs:
 
   # Container Security Scanning
   container_security_scanning:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Container Security Scanning
     if: github.event.inputs.scan_type == 'comprehensive' || github.event.inputs.scan_type == 'container-only' || github.event.inputs.scan_type == ''
     steps:
@@ -328,7 +328,7 @@ jobs:
 
   # Infrastructure Security Scanning
   infrastructure_security_scanning:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Infrastructure Security Scanning
     if: github.event.inputs.scan_type == 'comprehensive' || github.event.inputs.scan_type == ''
     steps:
@@ -395,7 +395,7 @@ jobs:
 
   # Security Report Generation
   security_report_generation:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Security Report Generation
     needs:
       [

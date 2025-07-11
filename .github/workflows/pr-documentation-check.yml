@@ -16,7 +16,7 @@ env:
 jobs:
   # Check PR Template Compliance
   pr_template_check:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: PR Template Compliance Check
     steps:
       - name: Check out repository
@@ -67,7 +67,7 @@ jobs:
 
   # Documentation Impact Analysis
   documentation_impact_analysis:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Documentation Impact Analysis
     steps:
       - name: Check out repository
@@ -201,7 +201,7 @@ jobs:
 
   # Constitutional Hash Validation
   constitutional_hash_validation:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Constitutional Hash Validation
     steps:
       - name: Check out repository
@@ -271,7 +271,7 @@ jobs:
 
   # Performance Target Validation
   performance_target_validation:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Performance Target Validation
     steps:
       - name: Check out repository
@@ -320,7 +320,7 @@ jobs:
 
   # Final Status Check
   documentation_status:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Documentation Status Summary
     needs:
       [

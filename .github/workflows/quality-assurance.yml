@@ -36,7 +36,7 @@ env:
 jobs:
   # Code Quality Analysis
   code_quality_analysis:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Code Quality Analysis
     if: github.event.inputs.qa_type == 'code_quality' || github.event.inputs.qa_type == 'comprehensive' || github.event.inputs.qa_type == ''
     steps:
@@ -194,7 +194,7 @@ jobs:
 
   # Unit Tests
   unit_tests:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Unit Tests
     if: github.event.inputs.qa_type == 'unit_tests' || github.event.inputs.qa_type == 'comprehensive' || github.event.inputs.qa_type == ''
     strategy:
@@ -309,7 +309,7 @@ jobs:
 
   # Integration Tests
   integration_tests:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Integration Tests
     if: github.event.inputs.qa_type == 'integration_tests' || github.event.inputs.qa_type == 'comprehensive' || github.event.inputs.qa_type == ''
     services:
@@ -396,7 +396,7 @@ jobs:
 
   # End-to-End Tests
   e2e_tests:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: End-to-End Tests
     if: github.event.inputs.qa_type == 'e2e_tests' || github.event.inputs.qa_type == 'comprehensive' || github.event.inputs.qa_type == ''
     steps:
@@ -457,7 +457,7 @@ jobs:
 
   # Performance Tests
   performance_tests:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Performance Tests
     if: github.event.inputs.qa_type == 'performance_tests' || github.event.inputs.qa_type == 'comprehensive' || github.event.inputs.qa_type == ''
     steps:
@@ -516,7 +516,7 @@ jobs:
 
   # QA Summary and Reporting
   qa_summary:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: QA Summary and Reporting
     needs: [code_quality_analysis, unit_tests, integration_tests, e2e_tests, performance_tests]
     if: always()

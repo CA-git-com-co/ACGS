@@ -33,7 +33,7 @@ env:
 jobs:
   # Python services with UV
   python-services:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     timeout-minutes: 45
     strategy:
       matrix:
@@ -189,7 +189,7 @@ jobs:
 
   # Node.js workspaces
   nodejs-workspaces:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     strategy:
       matrix:
         workspace: [applications, blockchain]
@@ -279,7 +279,7 @@ jobs:
 
   # Integration tests with UV
   integration-tests:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [python-services, nodejs-workspaces]
 
     services:
@@ -383,7 +383,7 @@ jobs:
 
   # Security and quality checks
   security-quality:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
       - name: Checkout code
@@ -435,7 +435,7 @@ jobs:
 
   # Build and deploy
   build-deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [python-services, nodejs-workspaces, integration-tests, security-quality]
     if: github.ref == 'refs/heads/master'
 
@@ -508,7 +508,7 @@ jobs:
 
   # Performance testing
   performance-tests:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [integration-tests]
     if: github.ref == 'refs/heads/master'
 

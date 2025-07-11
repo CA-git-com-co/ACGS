@@ -42,7 +42,7 @@ env:
 jobs:
   # Intelligent Cache Analysis
   cache_analysis:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Intelligent Cache Analysis
     outputs:
       cache_config: ${{ steps.analysis.outputs.config }}
@@ -102,7 +102,7 @@ jobs:
 
   # Multi-Layer Rust Caching
   rust_cache_optimization:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Rust Cache Optimization
     needs: cache_analysis
     steps:
@@ -153,7 +153,7 @@ jobs:
 
   # Python Dependency Caching
   python_cache_optimization:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Python Cache Optimization
     needs: cache_analysis
     steps:
@@ -204,7 +204,7 @@ jobs:
 
   # Node.js/TypeScript Caching
   node_cache_optimization:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Node.js Cache Optimization
     needs: cache_analysis
     steps:
@@ -241,7 +241,7 @@ jobs:
 
   # Cache Performance Monitoring
   cache_performance_monitoring:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Cache Performance Monitoring
     needs:
       [cache_analysis, rust_cache_optimization, python_cache_optimization, node_cache_optimization]
@@ -286,7 +286,7 @@ jobs:
 
   # Cache Cleanup and Optimization
   cache_cleanup:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Cache Cleanup and Optimization
     needs: cache_performance_monitoring
     if: always()

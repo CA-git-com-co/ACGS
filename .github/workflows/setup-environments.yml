@@ -17,7 +17,7 @@ permissions:
 
 jobs:
   setup_environments:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Setup GitHub Environments
     steps:
       - name: Check out repository

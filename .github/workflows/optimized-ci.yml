@@ -48,7 +48,7 @@ env:
 jobs:
   # Change detection for intelligent execution
   detect-changes:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Detect Changes
     timeout-minutes: 5
     outputs:
@@ -115,7 +115,7 @@ jobs:
 
   # Python quality and testing
   python-quality:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Python Quality & Testing
     needs: detect-changes
     if: needs.detect-changes.outputs.should_run_tests == 'true' && needs.detect-changes.outputs.python == 'true'
@@ -236,7 +236,7 @@ jobs:
 
   # Rust build and quality
   rust-build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Rust Build & Quality
     needs: detect-changes
     if: needs.detect-changes.outputs.should_run_tests == 'true' && needs.detect-changes.outputs.rust == 'true'
@@ -322,7 +322,7 @@ jobs:
 
   # Security scanning
   security-scan:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Security Scanning
     needs: detect-changes
     if: needs.detect-changes.outputs.should_run_tests == 'true' && (needs.detect-changes.outputs.security == 'true' || github.event_name == 'schedule')
@@ -381,7 +381,7 @@ jobs:
 
   # Docker build (only when needed)
   docker-build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Docker Build
     needs: [detect-changes, python-quality, rust-build]
     if: needs.detect-changes.outputs.docker == 'true' || (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
@@ -420,7 +420,7 @@ jobs:
 
   # Final status report
   status-report:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Pipeline Status
     needs: [detect-changes, python-quality, rust-build, security-scan, docker-build]
     if: always()
