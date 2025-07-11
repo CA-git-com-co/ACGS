@@ -206,7 +206,7 @@ class QuantumErrorCorrection:
                 min_distance = syndrome_weight
                 best_correction = test_codeword
                 
-        correction_successful = min_distance == 0
+        correction_successful = bool(min_distance == 0)
         error_metrics['correction_confidence'] = 1.0 - (min_distance / len(syndrome))
         
         return best_correction, correction_successful, error_metrics
@@ -1102,13 +1102,13 @@ class AdversarialRobustnessFramework:
         
         return {
             'total_qec_tests': len(qec_results),
-            'correction_success_rate': np.mean([qr['correction_successful'] for qr in qec_results]),
-            'average_fidelity': np.mean([qr['fidelity'] for qr in qec_results]),
-            'average_syndrome_weight': np.mean([qr['syndrome_weight'] for qr in qec_results]),
-            'average_confidence': np.mean([qr['correction_confidence'] for qr in qec_results]),
-            'average_latency_ms': np.mean([qr['latency_ms'] for qr in qec_results]),
+            'correction_success_rate': np.mean([qr['correction_successful'] for qr in qec_results]) if qec_results else 0.0,
+            'average_fidelity': np.mean([qr['fidelity'] for qr in qec_results]) if qec_results else 0.0,
+            'average_syndrome_weight': np.mean([qr['syndrome_weight'] for qr in qec_results]) if qec_results else 0.0,
+            'average_confidence': np.mean([qr['correction_confidence'] for qr in qec_results]) if qec_results else 0.0,
+            'average_latency_ms': np.mean([qr['latency_ms'] for qr in qec_results]) if qec_results else 0.0,
             'phase_duration_s': phase_time,
-            'noise_resilience_threshold': np.percentile([qr['noise_probability'] for qr in qec_results if qr['correction_successful']], 95)
+            'noise_resilience_threshold': np.percentile([qr['noise_probability'] for qr in qec_results if qr['correction_successful']], 95) if any(qr['correction_successful'] for qr in qec_results) else 0.0
         }
     
     async def _phase6_z3_verification(self, policy_rego: str, num_cases: int) -> Dict[str, Any]:
@@ -1145,9 +1145,9 @@ class AdversarialRobustnessFramework:
             'total_verifications': len(verification_results),
             'equivalent_policies': sum(1 for vr in verification_results if vr['is_equivalent']),
             'counterexamples_found': sum(1 for vr in verification_results if vr['has_counterexample']),
-            'average_latency_ms': np.mean([vr['latency_ms'] for vr in verification_results]),
-            'average_solver_decisions': np.mean([vr['solver_decisions'] for vr in verification_results]),
-            'verification_success_rate': np.mean([vr['verification_result'] != 'error' for vr in verification_results]),
+            'average_latency_ms': np.mean([vr['latency_ms'] for vr in verification_results]) if verification_results else 0.0,
+            'average_solver_decisions': np.mean([vr['solver_decisions'] for vr in verification_results]) if verification_results else 0.0,
+            'verification_success_rate': np.mean([vr['verification_result'] != 'error' for vr in verification_results]) if verification_results else 0.0,
             'phase_duration_s': phase_time
         }
     
@@ -1240,7 +1240,7 @@ class AdversarialRobustnessFramework:
         
         return {
             'operation_benchmarks': benchmark_results,
-            'overall_mean_latency_ms': np.mean(all_latencies),
+            'overall_mean_latency_ms': np.mean(all_latencies) if all_latencies else 0.0,
             'overall_p99_latency_ms': np.percentile(all_latencies, 99),
             'phase_duration_s': phase_time,
             'performance_score': self._calculate_performance_score(benchmark_results)
@@ -1258,7 +1258,7 @@ class AdversarialRobustnessFramework:
         latencies = [r.latency_ms for r in self.test_results]
         
         # Constitutional compliance rate
-        constitutional_compliance_rate = np.mean([r.constitutional_compliance for r in self.test_results])
+        constitutional_compliance_rate = np.mean([r.constitutional_compliance for r in self.test_results]) if self.test_results else 1.0
         
         return {
             'total_execution_time_s': total_time,
@@ -1286,9 +1286,9 @@ class AdversarialRobustnessFramework:
         
         # Component scores
         false_negative_score = max(0, 1 - (len([r for r in self.test_results if r.false_negative_detected]) / len(self.test_results)) / self.false_negative_threshold)
-        constitutional_score = np.mean([r.constitutional_compliance for r in self.test_results])
-        verification_score = np.mean([r.z3_verification_passed for r in self.test_results])
-        qec_score = np.mean([r.qec_correction_applied for r in self.test_results])
+        constitutional_score = np.mean([r.constitutional_compliance for r in self.test_results]) if self.test_results else 1.0
+        verification_score = np.mean([r.z3_verification_passed for r in self.test_results]) if self.test_results else 1.0
+        qec_score = np.mean([r.qec_correction_applied for r in self.test_results]) if self.test_results else 1.0
         
         # Weighted combination
         robustness_score = (

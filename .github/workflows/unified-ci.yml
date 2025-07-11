@@ -58,7 +58,7 @@ env:
 jobs:
   # Detect changes to determine which jobs to run
   changes:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Detect Changes
     outputs:
       python: ${{ steps.filter.outputs.python }}
@@ -127,7 +127,7 @@ jobs:
 
   # Python testing and quality checks
   python-quality:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Python Quality & Testing
     needs: changes
     if: needs.changes.outputs.should_run_tests == 'true' && (needs.changes.outputs.python == 'true' || github.event_name == 'schedule')
@@ -242,7 +242,7 @@ jobs:
 
   # Rust/Blockchain testing and building
   rust-quality:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Rust Quality & Build
     needs: changes
     if: needs.changes.outputs.should_run_tests == 'true' && (needs.changes.outputs.rust == 'true' || github.event_name == 'schedule')
@@ -326,7 +326,7 @@ jobs:
 
   # Security scanning (consolidated)
   security-scan:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Security Scanning
     needs: changes
     if: needs.changes.outputs.should_run_tests == 'true' && (needs.changes.outputs.security == 'true' || github.event_name == 'schedule')
@@ -391,7 +391,7 @@ jobs:
 
   # Docker build (only when needed)
   docker-build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Docker Build
     needs: [changes, python-quality, rust-quality]
     if: needs.changes.outputs.should_run_tests == 'true' && (needs.changes.outputs.docker == 'true' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
@@ -428,7 +428,7 @@ jobs:
 
   # Final status reporting
   status-report:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Pipeline Status Report
     needs: [changes, python-quality, rust-quality, security-scan, docker-build]
     if: always() && needs.changes.outputs.should_run_tests == 'true'

@@ -12,7 +12,7 @@ env:
 
 jobs:
   constitutional-compliance:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
     - uses: actions/checkout@v3
     
@@ -82,7 +82,7 @@ jobs:
 
   deployment:
     needs: constitutional-compliance
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     if: github.ref == 'refs/heads/main'
     steps:
     - uses: actions/checkout@v3

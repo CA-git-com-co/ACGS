@@ -795,3 +795,6 @@ docs/api/generated/
 # Script outputs
 scripts/*/output/
 scripts/*/logs/
+
+# GitHub Actions runner
+actions-runner/
