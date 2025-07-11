@@ -1,12 +1,12 @@
 # GitHub Actions Workflow Cleanup Report
 **Constitutional Hash:** `cdd01ef066bc6cf2`
-**Generated:** 2025-07-11 11:41:45 UTC
+**Generated:** 2025-07-11 13:37:16 UTC
 
 ## 📊 Summary
-- **Total Workflows**: 68
+- **Total Workflows**: 70
 - **Safe to Remove**: 4
-- **Consolidation Candidates**: 44
-- **Estimated Reduction**: 70.6%
+- **Consolidation Candidates**: 46
+- **Estimated Reduction**: 71.4%
 
 ## 🗑️ Safe to Remove
 These workflows are redundant or obsolete and can be safely deleted:
@@ -40,9 +40,11 @@ These workflows have similar functionality and can be consolidated:
   - Reason: Redundant ci_cd workflow
 - **optimized-ci.yml** (457 lines)
   - Reason: Redundant ci_cd workflow
+- **acgs-optimized-ci.yml** (455 lines)
+  - Reason: Redundant ci_cd workflow
 - **acgs_comprehensive_ci.yml** (434 lines)
   - Reason: Redundant ci_cd workflow
-- **acgs-optimized-ci.yml** (425 lines)
+- **acgs-optimized-ci-broken.yml** (426 lines)
   - Reason: Redundant ci_cd workflow
 - **enhanced-parallel-ci.yml** (417 lines)
   - Reason: Redundant ci_cd workflow
@@ -59,6 +61,8 @@ These workflows have similar functionality and can be consolidated:
 - **acgs-comprehensive-testing.yml** (556 lines)
   - Reason: Redundant testing workflow
 - **e2e-tests.yml** (549 lines)
+  - Reason: Redundant testing workflow
+- **test-coverage.yml** (338 lines)
   - Reason: Redundant testing workflow
 - **test.yml** (327 lines)
   - Reason: Redundant testing workflow

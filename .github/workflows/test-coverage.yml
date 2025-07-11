@@ -1,7 +1,7 @@
 # ACGS Test Coverage CI/CD Pipeline
 # Constitutional Hash: cdd01ef066bc6cf2
 
-name: ACGS: Test Coverage Analysis
+name: ACGS Test Coverage Analysis
 
 on:
   push:
