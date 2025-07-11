@@ -6,10 +6,24 @@ name: ACGS: Test Coverage Analysis
 on:
   push:
     branches: [ main, develop ]
+    paths:
+      - '**.py'
+      - 'tests/**'
+      - 'requirements*.txt'
+      - '.github/workflows/test-coverage.yml'
+      - 'pytest.ini'
+      - 'pyproject.toml'
   pull_request:
     branches: [ main, develop ]
+    paths:
+      - '**.py'
+      - 'tests/**'
+      - 'requirements*.txt'
+      - '.github/workflows/test-coverage.yml'
+      - 'pytest.ini'
+      - 'pyproject.toml'
   schedule:
-    - cron: '0 6 * * 1'  # Weekly on Monday at 6 AM (reduced from every 6 hours)
+    - cron: '0 6 * * 1'  # Weekly on Monday at 6 AM (optimized from every 6 hours)
 
 env:
   CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
@@ -18,8 +32,8 @@ env:
 
 jobs:
   test-coverage-analysis:
-    runs-on: self-hosted
-    timeout-minutes: 30
+    runs-on: ubuntu-latest  # Optimized: Use GitHub-hosted runner for coverage analysis
+    timeout-minutes: 20
     
     strategy:
       matrix:
@@ -43,6 +57,7 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
     
     - name: Install dependencies
       run: |
@@ -111,7 +126,7 @@ jobs:
       continue-on-error: true
     
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4
       with:
         file: ./coverage.xml
         flags: ${{ matrix.service }}
@@ -137,7 +152,7 @@ jobs:
       continue-on-error: true
     
     - name: Upload coverage artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.service }}-coverage
         path: |
@@ -184,7 +199,8 @@ jobs:
 
   aggregate-coverage:
     needs: test-coverage-analysis
-    runs-on: self-hosted
+    runs-on: ubuntu-latest  # Optimized: Use GitHub-hosted runner
+    timeout-minutes: 10
     
     steps:
     - name: Checkout code
@@ -196,7 +212,7 @@ jobs:
         python-version: ${{ env.PYTHON_VERSION }}
     
     - name: Download all coverage artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
     
     - name: Install dependencies
       run: |
@@ -217,7 +233,7 @@ jobs:
           --output-dir coverage_dashboard
     
     - name: Upload aggregated coverage
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: aggregated-coverage
         path: |
@@ -273,14 +289,15 @@ jobs:
 
   coverage-quality-gate:
     needs: aggregate-coverage
-    runs-on: self-hosted
+    runs-on: ubuntu-latest  # Optimized: Use GitHub-hosted runner
+    timeout-minutes: 5
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
     
     - name: Download aggregated coverage
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: aggregated-coverage
     
