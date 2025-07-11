@@ -1,0 +1,375 @@
+name: 🔒 ACGS-2 Security Vulnerability Scan
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run daily at 6 AM UTC
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      scan_level:
+        description: 'Security scan level'
+        required: true
+        default: 'comprehensive'
+        type: choice
+        options:
+          - quick
+          - comprehensive
+          - critical-only
+
+env:
+  CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+  SECURITY_SCAN_TIMEOUT: 1800  # 30 minutes
+
+jobs:
+  security-vulnerability-scan:
+    name: 🔍 Vulnerability Scanning
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+      security-events: write
+      pull-requests: write
+      
+    steps:
+      - name: 🔖 Checkout code
+        uses: actions/checkout@v4
+        
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          
+      - name: 📦 Install security tools
+        run: |
+          pip install --upgrade pip
+          pip install bandit safety pip-audit semgrep
+          pip install -r requirements-security.txt || echo "Security requirements not found, using base tools"
+          
+      - name: 🔒 Constitutional Hash Validation
+        run: |
+          echo "Validating constitutional hash: $CONSTITUTIONAL_HASH"
+          if ! grep -r "$CONSTITUTIONAL_HASH" . --include="*.py" --include="*.md" --include="*.yml" >/dev/null 2>&1; then
+            echo "❌ Constitutional hash not found in codebase"
+            exit 1
+          fi
+          echo "✅ Constitutional hash validation passed"
+          
+      - name: 🔍 Dependency Vulnerability Scan (pip-audit)
+        id: pip-audit
+        run: |
+          echo "Running pip-audit vulnerability scan..."
+          pip-audit --format=json --output=pip-audit-results.json || true
+          pip-audit --format=cyclonedx-json --output=pip-audit-sbom.json || true
+          
+          # Generate summary
+          if [ -f pip-audit-results.json ]; then
+            VULN_COUNT=$(cat pip-audit-results.json | jq '. | length' 2>/dev/null || echo "0")
+            echo "pip_audit_vulnerabilities=$VULN_COUNT" >> $GITHUB_OUTPUT
+            
+            if [ "$VULN_COUNT" -gt "0" ]; then
+              echo "⚠️ Found $VULN_COUNT vulnerabilities with pip-audit"
+              cat pip-audit-results.json | jq '.[] | {package: .package, version: .installed_version, vulnerability: .vulnerability_id, severity: .vulnerability.severity}' || true
+            else
+              echo "✅ No vulnerabilities found with pip-audit"
+            fi
+          fi
+          
+      - name: 🛡️ Safety Database Check
+        id: safety
+        run: |
+          echo "Running Safety vulnerability database check..."
+          safety check --json --output safety-results.json || true
+          
+          if [ -f safety-results.json ]; then
+            VULN_COUNT=$(cat safety-results.json | jq '. | length' 2>/dev/null || echo "0")
+            echo "safety_vulnerabilities=$VULN_COUNT" >> $GITHUB_OUTPUT
+            
+            if [ "$VULN_COUNT" -gt "0" ]; then
+              echo "⚠️ Found $VULN_COUNT vulnerabilities with Safety"
+              cat safety-results.json | jq '.[] | {package: .package_name, version: .analyzed_version, vulnerability: .vulnerability_id, severity: .vulnerability.v}' || true
+            else
+              echo "✅ No vulnerabilities found with Safety"
+            fi
+          fi
+          
+      - name: 🔎 Static Analysis Security Scan (Bandit)
+        id: bandit
+        run: |
+          echo "Running Bandit static analysis security scan..."
+          bandit -r . -f json -o bandit-results.json || true
+          
+          if [ -f bandit-results.json ]; then
+            HIGH_ISSUES=$(cat bandit-results.json | jq '.results[] | select(.issue_severity == "HIGH") | .test_id' | wc -l || echo "0")
+            MEDIUM_ISSUES=$(cat bandit-results.json | jq '.results[] | select(.issue_severity == "MEDIUM") | .test_id' | wc -l || echo "0")
+            
+            echo "bandit_high_issues=$HIGH_ISSUES" >> $GITHUB_OUTPUT
+            echo "bandit_medium_issues=$MEDIUM_ISSUES" >> $GITHUB_OUTPUT
+            
+            if [ "$HIGH_ISSUES" -gt "0" ] || [ "$MEDIUM_ISSUES" -gt "5" ]; then
+              echo "⚠️ Found $HIGH_ISSUES high and $MEDIUM_ISSUES medium severity issues with Bandit"
+            else
+              echo "✅ No significant security issues found with Bandit"
+            fi
+          fi
+          
+      - name: 🔬 Advanced Security Scan (Semgrep)
+        id: semgrep
+        run: |
+          echo "Running Semgrep advanced security analysis..."
+          semgrep --config=auto --json --output=semgrep-results.json . || true
+          
+          if [ -f semgrep-results.json ]; then
+            ERROR_COUNT=$(cat semgrep-results.json | jq '.results[] | select(.extra.severity == "ERROR") | .check_id' | wc -l || echo "0")
+            WARNING_COUNT=$(cat semgrep-results.json | jq '.results[] | select(.extra.severity == "WARNING") | .check_id' | wc -l || echo "0")
+            
+            echo "semgrep_errors=$ERROR_COUNT" >> $GITHUB_OUTPUT
+            echo "semgrep_warnings=$WARNING_COUNT" >> $GITHUB_OUTPUT
+            
+            if [ "$ERROR_COUNT" -gt "0" ]; then
+              echo "❌ Found $ERROR_COUNT critical security issues with Semgrep"
+            elif [ "$WARNING_COUNT" -gt "10" ]; then
+              echo "⚠️ Found $WARNING_COUNT security warnings with Semgrep"
+            else
+              echo "✅ No critical security issues found with Semgrep"
+            fi
+          fi
+          
+      - name: 📊 Generate Security Summary
+        id: summary
+        run: |
+          echo "Generating comprehensive security summary..."
+          
+          # Collect all vulnerability counts
+          PIP_VULNS="${{ steps.pip-audit.outputs.pip_audit_vulnerabilities || '0' }}"
+          SAFETY_VULNS="${{ steps.safety.outputs.safety_vulnerabilities || '0' }}"
+          BANDIT_HIGH="${{ steps.bandit.outputs.bandit_high_issues || '0' }}"
+          BANDIT_MED="${{ steps.bandit.outputs.bandit_medium_issues || '0' }}"
+          SEMGREP_ERR="${{ steps.semgrep.outputs.semgrep_errors || '0' }}"
+          SEMGREP_WARN="${{ steps.semgrep.outputs.semgrep_warnings || '0' }}"
+          
+          # Calculate total critical issues
+          CRITICAL_ISSUES=$((PIP_VULNS + SAFETY_VULNS + BANDIT_HIGH + SEMGREP_ERR))
+          TOTAL_ISSUES=$((CRITICAL_ISSUES + BANDIT_MED + SEMGREP_WARN))
+          
+          echo "critical_issues=$CRITICAL_ISSUES" >> $GITHUB_OUTPUT
+          echo "total_issues=$TOTAL_ISSUES" >> $GITHUB_OUTPUT
+          
+          # Generate security score (100 - deductions)
+          SCORE=$((100 - (CRITICAL_ISSUES * 10) - (BANDIT_MED * 2) - (SEMGREP_WARN * 1)))
+          SCORE=$((SCORE < 0 ? 0 : SCORE))
+          echo "security_score=$SCORE" >> $GITHUB_OUTPUT
+          
+          # Determine security grade
+          if [ "$SCORE" -ge "90" ]; then
+            GRADE="A"
+          elif [ "$SCORE" -ge "80" ]; then
+            GRADE="B"
+          elif [ "$SCORE" -ge "70" ]; then
+            GRADE="C"
+          elif [ "$SCORE" -ge "60" ]; then
+            GRADE="D"
+          else
+            GRADE="F"
+          fi
+          echo "security_grade=$GRADE" >> $GITHUB_OUTPUT
+          
+          # Create summary
+          cat << EOF > security-summary.md
+          # 🔒 ACGS-2 Security Scan Results
+          
+          **Constitutional Hash**: \`$CONSTITUTIONAL_HASH\`  
+          **Scan Date**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')  
+          **Security Score**: $SCORE/100 (Grade: $GRADE)
+          
+          ## 📊 Vulnerability Summary
+          
+          | Tool | Critical/High | Medium/Low | Status |
+          |------|---------------|------------|--------|
+          | pip-audit | $PIP_VULNS | - | $([ "$PIP_VULNS" -eq "0" ] && echo "✅ PASS" || echo "❌ FAIL") |
+          | Safety | $SAFETY_VULNS | - | $([ "$SAFETY_VULNS" -eq "0" ] && echo "✅ PASS" || echo "❌ FAIL") |
+          | Bandit | $BANDIT_HIGH | $BANDIT_MED | $([ "$BANDIT_HIGH" -eq "0" ] && echo "✅ PASS" || echo "❌ FAIL") |
+          | Semgrep | $SEMGREP_ERR | $SEMGREP_WARN | $([ "$SEMGREP_ERR" -eq "0" ] && echo "✅ PASS" || echo "❌ FAIL") |
+          
+          **Total Critical Issues**: $CRITICAL_ISSUES  
+          **Total Issues**: $TOTAL_ISSUES
+          
+          ## 🎯 Action Required
+          
+          $(if [ "$CRITICAL_ISSUES" -gt "0" ]; then
+            echo "🚨 **CRITICAL**: $CRITICAL_ISSUES critical security issues found. Immediate action required."
+            echo ""
+            echo "1. Review all critical vulnerabilities immediately"
+            echo "2. Update vulnerable dependencies"
+            echo "3. Re-run security scan to verify fixes"
+            echo "4. Do not deploy to production until resolved"
+          elif [ "$SCORE" -lt "80" ]; then
+            echo "⚠️ **WARNING**: Security score below acceptable threshold. Review and remediate issues."
+          else
+            echo "✅ **GOOD**: Security scan passed with acceptable score."
+          fi)
+          
+          ## 📋 Next Steps
+          
+          1. Review detailed scan results in workflow artifacts
+          2. Update dependencies listed in \`requirements-security.txt\`
+          3. Address any static analysis findings
+          4. Re-run security scan after fixes
+          5. Maintain constitutional compliance during updates
+          
+          ---
+          *Generated by ACGS-2 Security Scanner*
+          EOF
+          
+      - name: 📤 Upload Security Artifacts
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: security-scan-results
+          path: |
+            pip-audit-results.json
+            pip-audit-sbom.json
+            safety-results.json
+            bandit-results.json
+            semgrep-results.json
+            security-summary.md
+          retention-days: 30
+          
+      - name: 📝 Comment PR with Security Results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            
+            try {
+              const summary = fs.readFileSync('security-summary.md', 'utf8');
+              
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: summary
+              });
+            } catch (error) {
+              console.log('Could not post security summary to PR:', error);
+            }
+            
+      - name: 🚨 Fail on Critical Security Issues
+        if: steps.summary.outputs.critical_issues > 0
+        run: |
+          echo "❌ SECURITY SCAN FAILED"
+          echo "Critical issues found: ${{ steps.summary.outputs.critical_issues }}"
+          echo "Security score: ${{ steps.summary.outputs.security_score }}/100"
+          echo ""
+          echo "🛑 Cannot proceed with critical security vulnerabilities."
+          echo "Please review and fix all critical issues before continuing."
+          echo ""
+          echo "Constitutional Hash: $CONSTITUTIONAL_HASH"
+          exit 1
+          
+      - name: ⚠️ Warn on Low Security Score
+        if: steps.summary.outputs.critical_issues == 0 && steps.summary.outputs.security_score < 80
+        run: |
+          echo "⚠️ SECURITY WARNING"
+          echo "Security score: ${{ steps.summary.outputs.security_score }}/100 (Grade: ${{ steps.summary.outputs.security_grade }})"
+          echo "Total issues: ${{ steps.summary.outputs.total_issues }}"
+          echo ""
+          echo "🔍 Review and consider addressing security findings."
+          echo "While not critical, improving security posture is recommended."
+          
+      - name: ✅ Security Scan Passed
+        if: steps.summary.outputs.critical_issues == 0 && steps.summary.outputs.security_score >= 80
+        run: |
+          echo "✅ SECURITY SCAN PASSED"
+          echo "Security score: ${{ steps.summary.outputs.security_score }}/100 (Grade: ${{ steps.summary.outputs.security_grade }})"
+          echo "Critical issues: 0"
+          echo "Total issues: ${{ steps.summary.outputs.total_issues }}"
+          echo ""
+          echo "🛡️ Security posture is acceptable for deployment."
+          echo "Constitutional Hash: $CONSTITUTIONAL_HASH verified."
+
+  dependency-update-check:
+    name: 🔄 Dependency Update Check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    
+    steps:
+      - name: 🔖 Checkout code
+        uses: actions/checkout@v4
+        
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: 📦 Check for dependency updates
+        id: updates
+        run: |
+          pip install --upgrade pip
+          pip install pip-check-updates
+          
+          echo "Checking for available dependency updates..."
+          pip list --outdated --format=json > outdated-packages.json || echo "[]" > outdated-packages.json
+          
+          OUTDATED_COUNT=$(cat outdated-packages.json | jq '. | length')
+          echo "outdated_count=$OUTDATED_COUNT" >> $GITHUB_OUTPUT
+          
+          if [ "$OUTDATED_COUNT" -gt "0" ]; then
+            echo "📦 Found $OUTDATED_COUNT outdated packages"
+            cat outdated-packages.json | jq '.[] | {package: .name, current: .version, latest: .latest_version}'
+          else
+            echo "✅ All packages are up to date"
+          fi
+          
+      - name: 🚀 Create Dependency Update Issue
+        if: steps.updates.outputs.outdated_count > 5
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const outdatedPackages = JSON.parse(fs.readFileSync('outdated-packages.json', 'utf8'));
+            
+            const packageList = outdatedPackages.slice(0, 10).map(pkg => 
+              `- \`${pkg.name}\`: ${pkg.version} → ${pkg.latest_version}`
+            ).join('\n');
+            
+            const body = `# 📦 Dependency Update Notification
+            
+            **Constitutional Hash**: \`${process.env.CONSTITUTIONAL_HASH}\`
+            **Found**: ${outdatedPackages.length} outdated packages
+            
+            ## 🔄 Top Packages to Update
+            
+            ${packageList}
+            
+            ${outdatedPackages.length > 10 ? '\n*...and ' + (outdatedPackages.length - 10) + ' more packages*' : ''}
+            
+            ## 🔒 Security Considerations
+            
+            1. Review security advisories for each package
+            2. Test updates in development environment
+            3. Verify constitutional compliance after updates
+            4. Run security scan after dependency updates
+            
+            ## 📋 Action Items
+            
+            - [ ] Review security impact of each update
+            - [ ] Update \`requirements-security.txt\`
+            - [ ] Test in staging environment
+            - [ ] Deploy with constitutional validation
+            
+            ---
+            *Auto-generated by ACGS-2 Security Monitor*`;
+            
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🔒 Security Review: ${outdatedPackages.length} Dependency Updates Available`,
+              body: body,
+              labels: ['security', 'dependencies', 'maintenance']
+            });
