@@ -12,7 +12,7 @@ asyncpg==0.29.0
 redis[hiredis]==5.0.1
 
 # Authentication and security
-cryptography==41.0.8
+cryptography==44.0.1
 passlib[bcrypt]==1.7.4
 
 # Monitoring and observability
