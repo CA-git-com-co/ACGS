@@ -1,7 +1,7 @@
 # Constitutional Hash: cdd01ef066bc6cf2
 jobs:
   code-quality:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -18,7 +18,7 @@ jobs:
     - name: Run type checking
       run: mypy services/ scripts/
   security-scan:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -27,7 +27,7 @@ jobs:
     - name: Run dependency security scan
       run: pip-audit --requirement requirements.txt
   test:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout code
       uses: actions/checkout@v4

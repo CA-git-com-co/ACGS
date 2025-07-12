@@ -1,7 +1,7 @@
 # Constitutional Hash: cdd01ef066bc6cf2
 jobs:
   security-review:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout code
       uses: actions/checkout@v4

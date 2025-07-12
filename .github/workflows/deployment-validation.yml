@@ -18,7 +18,7 @@ env:
 
 jobs:
   pre_deployment_validation:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Pre-Deployment Documentation Validation
     outputs:
       validation_status: ${{ steps.validation.outputs.status }}
@@ -145,7 +145,7 @@ jobs:
           retention-days: 30
 
   documentation_generation:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Automated Documentation Generation
     needs: pre_deployment_validation
     if: needs.pre_deployment_validation.outputs.deployment_approved == 'true'
@@ -259,7 +259,7 @@ jobs:
           fi
 
   deployment_gate:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Documentation Deployment Gate
     needs: [pre_deployment_validation, documentation_generation]
     if: always()

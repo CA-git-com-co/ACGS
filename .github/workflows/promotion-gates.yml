@@ -47,7 +47,7 @@ env:
 jobs:
   # Validation and Pre-checks
   promotion_validation:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Promotion Validation
     outputs:
       promotion_allowed: ${{ steps.validate.outputs.allowed }}
@@ -109,7 +109,7 @@ jobs:
 
   # Automated Testing Gate
   automated_testing_gate:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Automated Testing Gate
     needs: promotion_validation
     if: needs.promotion_validation.outputs.promotion_allowed == 'true' && github.event.inputs.skip_tests != 'true'
@@ -158,7 +158,7 @@ jobs:
 
   # Security Scanning Gate
   security_scanning_gate:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Security Scanning Gate
     needs: promotion_validation
     if: needs.promotion_validation.outputs.promotion_allowed == 'true'
@@ -185,7 +185,7 @@ jobs:
 
   # Performance Testing Gate
   performance_testing_gate:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Performance Testing Gate
     needs: [promotion_validation, automated_testing_gate]
     if: needs.promotion_validation.outputs.promotion_allowed == 'true' && github.event.inputs.target_environment == 'production'
@@ -211,7 +211,7 @@ jobs:
 
   # Manual Approval Gate
   manual_approval_gate:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Manual Approval Gate
     needs: [promotion_validation, automated_testing_gate, security_scanning_gate]
     if: needs.promotion_validation.outputs.promotion_allowed == 'true'
@@ -232,7 +232,7 @@ jobs:
 
   # Deployment Execution
   execute_promotion:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Execute Promotion
     needs:
       [promotion_validation, automated_testing_gate, security_scanning_gate, manual_approval_gate]
@@ -281,7 +281,7 @@ jobs:
 
   # Notification and Reporting
   promotion_notification:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Promotion Notification
     needs: [promotion_validation, execute_promotion]
     if: always() && needs.promotion_validation.outputs.promotion_allowed == 'true'

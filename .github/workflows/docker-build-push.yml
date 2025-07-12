@@ -20,7 +20,7 @@ env:
 jobs:
   # Simple Docker build for services that have Dockerfiles
   docker-build:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Docker Build
     strategy:
       matrix:
@@ -134,7 +134,7 @@ jobs:
 
   # Aggregate results
   docker-results:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Docker Build Results
     needs: docker-build
     if: always()

@@ -21,7 +21,7 @@ permissions:
 
 jobs:
   validate-workflow-configuration:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Validate Workflow Configuration
     steps:
       - name: Check out repository

@@ -58,7 +58,7 @@ env:
 jobs:
   # Version Detection and Validation
   version_detection:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: API Version Detection & Validation
     outputs:
       current_version: ${{ steps.detect.outputs.current_version }}
@@ -163,7 +163,7 @@ jobs:
 
   # API Compatibility Testing
   api_compatibility_testing:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: API Compatibility Testing
     needs: version_detection
     if: needs.version_detection.outputs.should_bump_version == 'true'
@@ -334,7 +334,7 @@ jobs:
 
   # Version Bump and Tagging
   version_bump:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Version Bump & Tagging
     needs: [version_detection, api_compatibility_testing]
     if: needs.version_detection.outputs.should_bump_version == 'true' && (success() || needs.api_compatibility_testing.result == 'skipped')
@@ -419,7 +419,7 @@ jobs:
 
   # SDK Generation
   sdk_generation:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Generate Version-Specific SDKs
     needs: [version_detection, version_bump]
     if: needs.version_detection.outputs.should_bump_version == 'true'
@@ -529,7 +529,7 @@ jobs:
 
   # Deployment with Version-Specific Strategy
   versioned_deployment:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Version-Aware Deployment
     needs: [version_detection, version_bump, sdk_generation]
     if: needs.version_detection.outputs.should_bump_version == 'true' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || github.event_name == 'workflow_dispatch')
@@ -637,7 +637,7 @@ jobs:
 
   # Create GitHub Release
   create_release:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Create GitHub Release
     needs: [version_detection, version_bump, sdk_generation, versioned_deployment]
     if: needs.version_detection.outputs.should_bump_version == 'true' && (success() || needs.versioned_deployment.result == 'skipped')

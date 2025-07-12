@@ -17,7 +17,7 @@ env:
 jobs:
   # Python Security Scanning
   python-security:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Python Security Analysis
 
     steps:
@@ -124,7 +124,7 @@ jobs:
 
   # JavaScript/Node.js Security Scanning
   nodejs-security:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Node.js Security Analysis
 
     steps:
@@ -176,7 +176,7 @@ jobs:
 
   # Container Security Scanning
   container-security:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Container Security Analysis
 
     steps:
@@ -214,7 +214,7 @@ jobs:
 
   # Secret Scanning
   secret-scanning:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Secret Detection
 
     steps:
@@ -238,7 +238,7 @@ jobs:
 
   # License Compliance
   license-compliance:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: License Compliance Check
 
     steps:
@@ -310,7 +310,7 @@ jobs:
 
   # Security Summary Report
   security-summary:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Security Summary
     needs:
       [python-security, nodejs-security, container-security, secret-scanning, license-compliance]

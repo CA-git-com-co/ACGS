@@ -19,7 +19,7 @@ jobs:
   # Phase 1: Code Quality and Linting
   code-quality:
     name: Code Quality & Linting
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -162,7 +162,7 @@ jobs:
   # Phase 2: Unit Tests
   unit-tests:
     name: Unit Tests
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: code-quality
     strategy:
       matrix:
@@ -269,7 +269,7 @@ jobs:
   # Phase 3: Integration Tests
   integration-tests:
     name: Integration Tests
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: unit-tests
     services:
       redis:
@@ -361,7 +361,7 @@ jobs:
   # Phase 4: Performance Tests
   performance-tests:
     name: Performance Tests
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: integration-tests
     steps:
       - name: Checkout code
@@ -427,7 +427,7 @@ jobs:
   # Phase 5: Frontend Tests
   frontend-tests:
     name: Frontend Tests
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: code-quality
     steps:
       - name: Checkout code
@@ -476,7 +476,7 @@ jobs:
   # Phase 6: Security Tests
   security-tests:
     name: Security Tests
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: unit-tests
     steps:
       - name: Checkout code
@@ -517,7 +517,7 @@ jobs:
   # Phase 7: Coverage Report
   coverage-report:
     name: Coverage Report
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: [unit-tests, integration-tests, frontend-tests]
     if: always()
     steps:
@@ -567,7 +567,7 @@ jobs:
   # Phase 8: Deployment Validation
   deployment-validation:
     name: Deployment Validation
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: [performance-tests, security-tests]
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
     steps:

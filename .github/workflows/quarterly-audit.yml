@@ -31,7 +31,7 @@ env:
 
 jobs:
   quarterly_audit:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Quarterly Documentation Audit
 
     steps:

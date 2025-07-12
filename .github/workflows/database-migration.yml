@@ -51,7 +51,7 @@ env:
 jobs:
   # Migration Validation
   migration_validation:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Migration Validation
     steps:
       - name: Check out repository
@@ -127,7 +127,7 @@ jobs:
 
   # Test Migration on Test Database
   test_migration:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Test Migration
     needs: migration_validation
     services:
@@ -225,7 +225,7 @@ jobs:
 
   # Environment-Specific Migration
   environment_migration:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Environment Migration
     needs: [migration_validation, test_migration]
     if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
@@ -354,7 +354,7 @@ jobs:
 
   # Migration Report
   migration_report:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Migration Report
     needs: [migration_validation, test_migration, environment_migration]
     if: always()

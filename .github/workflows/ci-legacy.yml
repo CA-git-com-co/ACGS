@@ -35,7 +35,7 @@ env:
 jobs:
   # Enterprise Performance Monitoring Job
   performance_monitoring:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Performance Monitoring
     outputs:
       start_time: ${{ steps.timing.outputs.start_time }}
@@ -54,7 +54,7 @@ jobs:
 
   # Enhanced Pre-flight with Infrastructure Validation
   preflight:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Pre-flight & Infrastructure Validation
     needs: performance_monitoring
     outputs:
@@ -154,7 +154,7 @@ jobs:
 
   # Enterprise Toolchain Setup (Shared across jobs for performance)
   toolchain_setup:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Enterprise Toolchain Setup
     needs: [performance_monitoring, preflight]
     if: needs.preflight.outputs.should_run_tests == 'true' && needs.preflight.outputs.infrastructure_ready == 'true'
@@ -346,7 +346,7 @@ jobs:
 
   # Parallel Job 1: Rust Code Quality & Build
   rust_quality_build:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Rust Quality & Build (Parallel)
     needs: [preflight, toolchain_setup]
     if: needs.preflight.outputs.should_run_tests == 'true' && needs.preflight.outputs.rust_changed == 'true'
@@ -428,7 +428,7 @@ jobs:
 
   # Parallel Job 2: Anchor Testing with Infrastructure Automation
   anchor_testing:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Anchor Testing (Parallel)
     needs: [preflight, toolchain_setup, rust_quality_build]
     if: needs.preflight.outputs.should_run_tests == 'true' && needs.preflight.outputs.rust_changed == 'true'
@@ -550,7 +550,7 @@ jobs:
           fi
 
   security_scan:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Enhanced Security Scanning
     needs: preflight
     if: needs.preflight.outputs.should_run_tests == 'true'
@@ -692,7 +692,7 @@ jobs:
           sarif_file: 'trivy-results.sarif'
 
   python_code_quality:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Python Code Quality Analysis
     needs: preflight
     if: needs.preflight.outputs.should_run_tests == 'true' && needs.preflight.outputs.python_changed == 'true'
@@ -791,7 +791,7 @@ jobs:
           retention-days: 14
 
   python_unit_tests:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Python Unit Tests
     needs: [preflight, python_code_quality]
     if: needs.preflight.outputs.should_run_tests == 'true' && needs.preflight.outputs.python_changed == 'true'
@@ -851,7 +851,7 @@ jobs:
           name: ${{ matrix.component }}-${{ matrix.python-version }}
 
   build_images:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Build Docker Images
     needs: [preflight, python_unit_tests]
     if: needs.preflight.outputs.should_run_tests == 'true' && needs.preflight.outputs.python_changed == 'true'
@@ -954,7 +954,7 @@ jobs:
   # ... (Keep your other jobs as in your original file, or let me know if you want further improvements for those.)
 
   notify_results:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Notify Results
     needs:
       - preflight

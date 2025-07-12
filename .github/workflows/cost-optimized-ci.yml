@@ -51,7 +51,7 @@ env:
 jobs:
   # Smart change detection to minimize unnecessary runs
   detect-changes:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Smart Change Detection
     outputs:
       python: ${{ steps.filter.outputs.python }}
@@ -177,7 +177,7 @@ jobs:
 
   # Optimized Python testing with smart matrix
   python-quality:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Python Quality & Testing
     needs: detect-changes
     if: needs.detect-changes.outputs.should_run_tests == 'true' && needs.detect-changes.outputs.python == 'true'
@@ -290,7 +290,7 @@ jobs:
 
   # Optimized Rust/Blockchain building
   rust-build:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Rust Build & Quality
     needs: detect-changes
     if: needs.detect-changes.outputs.should_run_tests == 'true' && needs.detect-changes.outputs.rust == 'true'
@@ -365,7 +365,7 @@ jobs:
 
   # Consolidated security scanning
   security-scan:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Security Scanning
     needs: detect-changes
     if: needs.detect-changes.outputs.should_run_security == 'true'
@@ -424,7 +424,7 @@ jobs:
 
   # Optimized Docker build (only when needed)
   docker-build:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Docker Build
     needs: [detect-changes, python-quality, rust-build]
     if: needs.detect-changes.outputs.should_build_docker == 'true' && (needs.python-quality.result == 'success' || needs.python-quality.result == 'skipped') && (needs.rust-build.result == 'success' || needs.rust-build.result == 'skipped')
@@ -466,7 +466,7 @@ jobs:
 
   # Cost-optimized reporting
   cost-optimized-report:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Pipeline Report
     needs: [detect-changes, python-quality, rust-build, security-scan, docker-build]
     if: always()

@@ -42,7 +42,7 @@ env:
 jobs:
   # API Documentation Generation
   api_documentation:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: API Documentation Generation
     if: github.event.inputs.doc_type == 'api' || github.event.inputs.doc_type == 'all' || github.event.inputs.doc_type == ''
     steps:
@@ -159,7 +159,7 @@ jobs:
 
   # Architecture Documentation
   architecture_documentation:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Architecture Documentation
     if: github.event.inputs.doc_type == 'architecture' || github.event.inputs.doc_type == 'all' || github.event.inputs.doc_type == ''
     steps:
@@ -271,7 +271,7 @@ jobs:
 
   # Deployment Documentation
   deployment_documentation:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Deployment Documentation
     if: github.event.inputs.doc_type == 'deployment' || github.event.inputs.doc_type == 'all' || github.event.inputs.doc_type == ''
     steps:
@@ -347,7 +347,7 @@ jobs:
 
   # User Guide Documentation
   user_guide_documentation:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: User Guide Documentation
     if: github.event.inputs.doc_type == 'user_guide' || github.event.inputs.doc_type == 'all' || github.event.inputs.doc_type == ''
     steps:
@@ -471,7 +471,7 @@ jobs:
 
   # Documentation Site Deployment
   deploy_documentation:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Deploy Documentation Site
     needs:
       [
@@ -576,7 +576,7 @@ jobs:
 
   # Documentation Quality Check
   documentation_quality_check:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Documentation Quality Check
     needs:
       [

@@ -62,7 +62,7 @@ env:
 jobs:
   # Enterprise Performance Monitoring Job
   performance_monitoring:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Performance Monitoring
     outputs:
       start_time: ${{ steps.timing.outputs.start_time }}
@@ -81,7 +81,7 @@ jobs:
 
   # Enhanced Pre-flight with Infrastructure Validation
   preflight:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Pre-flight & Infrastructure Validation
     needs: performance_monitoring
     outputs:
@@ -242,7 +242,7 @@ jobs:
 
   # Enterprise Toolchain Setup (Shared across jobs for performance)
   toolchain_setup:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Enterprise Toolchain Setup
     needs: [performance_monitoring, preflight]
     if: needs.preflight.outputs.should_run_tests == 'true' && needs.preflight.outputs.infrastructure_ready == 'true'
@@ -385,7 +385,7 @@ jobs:
 
   # Enhanced Code Quality Gates Job
   code_quality_gates:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Enterprise Code Quality Gates
     needs: [preflight, toolchain_setup]
     if: needs.preflight.outputs.should_run_tests == 'true'
@@ -461,7 +461,7 @@ jobs:
 
   # Parallel Job 1: Rust Code Quality & Build
   rust_quality_build:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Rust Quality & Build (Parallel)
     needs: [preflight, toolchain_setup, code_quality_gates]
     if: needs.preflight.outputs.should_run_tests == 'true' && needs.preflight.outputs.rust_changed == 'true' && needs.code_quality_gates.outputs.quality_passed == 'true'
@@ -629,7 +629,7 @@ jobs:
 
   # Parallel Job 2: Enterprise Security Scanning
   enterprise_security_scan:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Enterprise Security Scanning (Parallel)
     needs: [preflight, toolchain_setup, performance_monitoring]
     if: needs.preflight.outputs.should_run_tests == 'true'
@@ -867,7 +867,7 @@ jobs:
 
   # Enterprise Performance & Compliance Reporting
   enterprise_reporting:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Enterprise Performance & Compliance Reporting
     needs:
       [
@@ -1137,7 +1137,7 @@ jobs:
 
   # Enterprise Deployment Gates
   deployment_gates:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Enterprise Deployment Gates
     needs:
       [
@@ -1292,7 +1292,7 @@ jobs:
 
   # Multi-Environment Deployment
   multi_environment_deployment:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Multi-Environment Deployment
     needs:
       [

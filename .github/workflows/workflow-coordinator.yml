@@ -40,7 +40,7 @@ env:
 jobs:
   service-discovery:
     name: 🔍 Dynamic Service Discovery
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     outputs:
       service-matrix: ${{ steps.discovery.outputs.service-matrix }}
       workflow-plan: ${{ steps.discovery.outputs.workflow-plan }}
@@ -123,7 +123,7 @@ jobs:
     name: 🧪 Parallel Service Testing
     needs: service-discovery
     if: ${{ always() && needs.service-discovery.result == 'success' }}
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     timeout-minutes: 45
     
     strategy:
@@ -354,7 +354,7 @@ jobs:
     name: 📈 Aggregated Test Reporting
     needs: [service-discovery, parallel-testing]
     if: always()
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     
     steps:
       - name: 🔖 Checkout repository
@@ -495,7 +495,7 @@ jobs:
     name: 🔄 Intelligent Failure Recovery
     needs: [service-discovery, parallel-testing, aggregated-reporting]
     if: failure()
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     
     steps:
       - name: 🔖 Checkout repository

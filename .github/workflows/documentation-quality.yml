@@ -41,7 +41,7 @@ env:
 jobs:
   documentation-structure:
     name: Documentation Structure Analysis
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     
     steps:
       - name: Checkout repository
@@ -199,7 +199,7 @@ jobs:
 
   constitutional-compliance-check:
     name: Constitutional Compliance in Documentation
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     
     steps:
       - name: Checkout repository
@@ -260,7 +260,7 @@ jobs:
 
   link-validation:
     name: Comprehensive Link Validation
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     
     steps:
       - name: Checkout repository
@@ -371,7 +371,7 @@ jobs:
 
   markdown-quality:
     name: Markdown Quality Assessment
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     
     steps:
       - name: Checkout repository
@@ -531,7 +531,7 @@ jobs:
 
   comprehensive-quality-report:
     name: Generate Comprehensive Quality Report
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: [documentation-structure, constitutional-compliance-check, link-validation, markdown-quality]
     if: always()
     

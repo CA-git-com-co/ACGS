@@ -1,7 +1,7 @@
 # Constitutional Hash: cdd01ef066bc6cf2
 jobs:
   container-scan:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -16,7 +16,7 @@ jobs:
         name: container-security-reports
         path: trivy-report.json
   security-scan:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout code
       uses: actions/checkout@v4

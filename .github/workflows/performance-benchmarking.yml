@@ -43,7 +43,7 @@ env:
 jobs:
   # Performance Test Setup
   performance_setup:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Performance Test Setup
     outputs:
       test_environment: ${{ steps.setup.outputs.environment }}
@@ -79,7 +79,7 @@ jobs:
 
   # Service Health Check
   service_health_check:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Service Health Check
     needs: performance_setup
     steps:
@@ -118,7 +118,7 @@ jobs:
 
   # Load Testing
   load_testing:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Load Testing
     needs: [performance_setup, service_health_check]
     if: github.event.inputs.test_type == 'load_test' || github.event.inputs.test_type == 'comprehensive' || github.event.inputs.test_type == ''
@@ -180,7 +180,7 @@ jobs:
 
   # Stress Testing
   stress_testing:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Stress Testing
     needs: [performance_setup, service_health_check]
     if: github.event.inputs.test_type == 'stress_test' || github.event.inputs.test_type == 'comprehensive'
@@ -245,7 +245,7 @@ jobs:
 
   # Endurance Testing
   endurance_testing:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Endurance Testing
     needs: [performance_setup, service_health_check]
     if: github.event.inputs.test_type == 'endurance_test' || github.event.inputs.test_type == 'comprehensive'
@@ -307,7 +307,7 @@ jobs:
 
   # Performance Analysis and Reporting
   performance_analysis:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Performance Analysis and Reporting
     needs: [performance_setup, load_testing, stress_testing, endurance_testing]
     if: always()

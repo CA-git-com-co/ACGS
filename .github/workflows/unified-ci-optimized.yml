@@ -67,7 +67,7 @@ concurrency:
 jobs:
   # Smart change detection with file path filtering
   changes:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Smart Change Detection
     outputs:
       python: ${{ steps.filter.outputs.python }}
@@ -174,7 +174,7 @@ jobs:
 
   # Parallel Python service testing with optimized dependencies
   python-quality:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Python Quality (${{ matrix.service }})
     needs: changes
     if: needs.changes.outputs.should_run_tests == 'true' && needs.changes.outputs.python == 'true'
@@ -311,7 +311,7 @@ jobs:
 
   # Optimized Rust build with sccache
   rust-quality:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Rust Quality & Build
     needs: changes
     if: needs.changes.outputs.should_run_tests == 'true' && needs.changes.outputs.rust == 'true'
@@ -405,7 +405,7 @@ jobs:
 
   # Streamlined security scanning
   security-scan:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Security Scanning
     needs: changes
     if: needs.changes.outputs.should_run_tests == 'true' && (needs.changes.outputs.security == 'true' || github.event_name == 'schedule')
@@ -475,7 +475,7 @@ jobs:
 
   # Conditional Docker build with multi-stage optimization
   docker-build:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Optimized Docker Build
     needs: [changes, python-quality, rust-quality]
     if: needs.changes.outputs.should_run_tests == 'true' && (needs.changes.outputs.docker == 'true' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
@@ -516,7 +516,7 @@ jobs:
 
   # Performance monitoring and reporting
   performance-report:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Performance Report
     needs: [changes, python-quality, rust-quality, security-scan, docker-build]
     if: always() && needs.changes.outputs.should_run_tests == 'true'
