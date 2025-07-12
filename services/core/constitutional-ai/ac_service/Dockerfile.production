@@ -1,0 +1,113 @@
+# Enhanced Constitutional Governance Framework - Production Dockerfile
+# Constitutional Hash: cdd01ef066bc6cf2
+
+FROM python:3.11-slim-bullseye as base
+
+# Set environment variables for production
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+
+# Create non-root user for security
+RUN groupadd -r governance && useradd -r -g governance governance
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    libffi-dev \
+    libssl-dev \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /app
+
+# Copy requirements first for better caching
+COPY requirements-production.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements-production.txt
+
+# Copy application code
+COPY app/ ./app/
+COPY tests/ ./tests/
+COPY *.py ./
+
+# Create necessary directories
+RUN mkdir -p /app/logs /app/data /app/config && \
+    chown -R governance:governance /app
+
+# Health check script
+COPY <<EOF /app/healthcheck.py
+#!/usr/bin/env python3
+import asyncio
+import sys
+from app.services.enhanced_governance_framework import ProductionGovernanceFramework
+
+async def health_check():
+    try:
+        principles = ["test_principle"]
+        framework = ProductionGovernanceFramework(principles=principles, B=1)
+        result = await framework.govern("health check")
+        if result and result[3].get("constitutional_hash") == "cdd01ef066bc6cf2":
+            print("✅ Health check passed")
+            return 0
+        else:
+            print("❌ Health check failed - invalid result")
+            return 1
+    except Exception as e:
+        print(f"❌ Health check failed: {e}")
+        return 1
+
+if __name__ == "__main__":
+    sys.exit(asyncio.run(health_check()))
+EOF
+
+RUN chmod +x /app/healthcheck.py
+
+# Switch to non-root user
+USER governance
+
+# Expose ports
+EXPOSE 8001 8000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python /app/healthcheck.py
+
+# Production startup command
+CMD ["gunicorn", "app.main:app", \
+     "--bind", "0.0.0.0:8001", \
+     "--workers", "4", \
+     "--worker-class", "uvicorn.workers.UvicornWorker", \
+     "--access-logfile", "-", \
+     "--error-logfile", "-", \
+     "--log-level", "info", \
+     "--timeout", "30", \
+     "--keep-alive", "2", \
+     "--max-requests", "1000", \
+     "--max-requests-jitter", "100"]
+
+# Multi-stage build for smaller production image
+FROM base as production
+
+# Copy only necessary files for production
+COPY --from=base /app /app
+COPY --from=base /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=base /usr/local/bin /usr/local/bin
+
+# Production labels
+LABEL maintainer="ACGS-2 Team" \
+      version="1.0.0" \
+      description="Enhanced Constitutional Governance Framework" \
+      constitutional_hash="cdd01ef066bc6cf2"
+
+# Final security hardening
+RUN find /app -type f -name "*.py" -exec chmod 644 {} \; && \
+    find /app -type d -exec chmod 755 {} \;
+
+USER governance
+WORKDIR /app

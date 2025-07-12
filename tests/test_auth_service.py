@@ -110,8 +110,13 @@ class TestInputValidation:
 
     def test_secure_login_request_valid(self):
         """Test valid secure login request."""
+        # Use a valid password that meets all requirements:
+        # - At least 8 characters
+        # - Contains uppercase, lowercase, digit, and special character
+        # - Constitutional hash validation maintained
+        valid_password = "Password123!"
         request = SecureLoginRequest(
-            username="testuser", password=os.getenv("PASSWORD", "")
+            username="testuser", password=valid_password
         )
 
         assert request.username == "testuser"
@@ -241,14 +246,16 @@ class TestAuthServiceIntegration:
 
     async def test_login_flow_with_validation(self):
         """Test complete login flow with input validation."""
-        # Test valid login
+        # Test valid login with constitutional compliance
+        # Use valid password meeting all security requirements
+        valid_password = "SecurePass123!"
         request = SecureLoginRequest(
-            username="testuser", password=os.getenv("PASSWORD", "")
+            username="testuser", password=valid_password
         )
 
         # Simulate authentication logic
         assert request.username == "testuser"
-        assert request.password == "Password123!"
+        assert request.password == "SecurePass123!"
 
         # Create JWT manager
         jwt_manager = JWTSecurityManager(
@@ -327,10 +334,12 @@ class TestConstitutionalCompliance:
     """Test constitutional compliance across Auth service."""
 
     def test_constitutional_hash_consistency(self):
-        """Test constitutional hash consistency."""
-        # Test in input validation
+        """Test constitutional hash consistency with constitutional compliance."""
+        # Test in input validation with valid password
+        # Ensure constitutional hash validation is maintained
+        valid_password = "Constitutional123!"
         request = SecureLoginRequest(
-            username="testuser", password=os.getenv("PASSWORD", "")
+            username="testuser", password=valid_password
         )
 
         # Test in JWT security

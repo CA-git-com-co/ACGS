@@ -98,6 +98,20 @@ class ConstitutionalAIConfig:
         logger.info(f"Redis URL: {self.redis_url}")
         logger.info(f"PostgreSQL DSN: {self.postgres_dsn.replace('password', '***')}")
 
+        # Enhanced governance framework configuration
+        self.enable_enhanced_governance = os.getenv("ENABLE_ENHANCED_GOVERNANCE", "true").lower() == "true"
+        self.governance_performance_targets = {
+            "p99_latency_ms": float(os.getenv("GOVERNANCE_P99_TARGET_MS", "5.0")),
+            "throughput_rps": float(os.getenv("GOVERNANCE_THROUGHPUT_TARGET", "100.0")),
+            "cache_hit_rate": float(os.getenv("GOVERNANCE_CACHE_HIT_TARGET", "0.85")),
+            "error_rate": float(os.getenv("GOVERNANCE_ERROR_RATE_TARGET", "0.01")),
+            "constitutional_compliance_rate": float(os.getenv("GOVERNANCE_COMPLIANCE_TARGET", "1.0")),
+        }
+
+        logger.info(f"Enhanced governance enabled: {self.enable_enhanced_governance}")
+        if self.enable_enhanced_governance:
+            logger.info(f"Governance performance targets: {self.governance_performance_targets}")
+
     def get_cors_config(self) -> dict:
         """Get CORS configuration."""
         if self.environment == "production":
@@ -481,6 +495,45 @@ def create_constitutional_ai_app() -> FastAPI:
         logger.info("Error handlers configured")
     except ImportError:
         logger.warning("Error handling middleware not available")
+
+    # Setup enhanced governance framework integration
+    if config.enable_enhanced_governance:
+        try:
+            from ..api.v1.enhanced_governance import (
+                initialize_enhanced_governance_api,
+                router as governance_router,
+            )
+            from ..services.constitutional_validation_service import ConstitutionalValidationService
+            from services.shared.monitoring.intelligent_alerting_system import AlertingSystem
+            from services.shared.security.enhanced_audit_logging import AuditLogger
+
+            # Initialize dependencies
+            audit_logger = AuditLogger()
+            alerting_system = AlertingSystem()
+            constitutional_validator = ConstitutionalValidationService(
+                audit_logger=audit_logger,
+                violation_detector=None,  # Will be initialized separately
+                fv_client=None,  # Will be initialized separately
+            )
+
+            # Initialize enhanced governance API
+            initialize_enhanced_governance_api(
+                constitutional_validator=constitutional_validator,
+                audit_logger=audit_logger,
+                alerting_system=alerting_system,
+                formal_verification_client=None,  # Optional
+            )
+
+            # Include enhanced governance router
+            app.include_router(governance_router)
+
+            logger.info("✅ Enhanced governance framework integrated successfully")
+            logger.info(f"📊 Performance targets: {config.governance_performance_targets}")
+
+        except ImportError as e:
+            logger.warning(f"Enhanced governance framework not available: {e}")
+        except Exception as e:
+            logger.error(f"Failed to initialize enhanced governance framework: {e}")
 
     logger.info("Constitutional AI application created successfully")
     logger.info(f"Constitutional Hash: {CONSTITUTIONAL_HASH}")

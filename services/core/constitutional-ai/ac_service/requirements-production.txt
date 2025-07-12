@@ -1,0 +1,82 @@
+# Enhanced Constitutional Governance Framework - Production Dependencies
+# Constitutional Hash: cdd01ef066bc6cf2
+
+# Core Framework Dependencies
+numpy==1.24.3                    # Numerical computing for correlation matrices
+scipy==1.11.1                    # Statistical functions for confidence intervals
+scikit-learn==1.3.0             # Machine learning utilities
+
+# Explainable AI & Model Interpretation
+shap==0.45.0                     # SHAP values for principle importance analysis
+eli5==0.13.0                     # Backup explainability library
+lime==0.2.0.1                    # Alternative explanation method
+
+# Configuration & Settings Management
+pydantic==2.5.0                  # Data validation and settings
+pydantic-settings==2.1.0         # Environment-based configuration
+python-dotenv==1.0.0             # .env file support
+
+# Async & Rate Limiting
+asyncio-throttle==1.0.2          # Async rate limiting
+aiofiles==23.2.1                 # Async file operations
+token-bucket==0.3.0              # Token bucket rate limiter
+
+# Monitoring & Metrics
+prometheus-client==0.19.0        # Prometheus metrics collection
+structlog==23.2.0                # Structured logging
+opentelemetry-api==1.21.0        # Distributed tracing
+
+# Testing & Quality Assurance
+pytest==7.4.3                    # Testing framework
+pytest-asyncio==0.21.1           # Async testing support
+pytest-cov==4.1.0                # Coverage reporting
+pytest-mock==3.12.0              # Mocking utilities
+mypy==1.7.1                      # Static type checking
+black==23.11.0                   # Code formatting
+ruff==0.1.6                      # Fast linting
+
+# Security & Secrets Management
+cryptography==41.0.7             # Cryptographic operations
+keyring==24.3.0                  # Secure credential storage
+python-jose[cryptography]==3.3.0 # JWT handling
+
+# Database & Caching (ACGS Integration)
+asyncpg==0.29.0                  # Async PostgreSQL driver
+redis[hiredis]==5.0.1            # Redis client with C extensions
+cachetools==5.3.2                # Advanced caching utilities
+
+# Web Framework & API (FastAPI Integration)
+fastapi==0.104.1                 # Web framework
+uvicorn[standard]==0.24.0        # ASGI server
+httpx==0.25.2                    # Async HTTP client
+
+# Data Processing & Serialization
+orjson==3.9.10                   # Fast JSON serialization
+msgpack==1.0.7                   # Binary serialization
+pandas==2.1.3                    # Data manipulation (for analytics)
+
+# Domain-Specific Compliance Libraries
+# Healthcare (HIPAA)
+fhir.resources==7.0.2            # FHIR healthcare data standards
+python-decouple==3.8             # Environment variable management
+
+# Finance (KYC/AML)
+python-dateutil==2.8.2           # Date utilities for compliance
+iso3166==2.1.1                   # Country codes for sanctions
+
+# Research (IRB)
+xmltodict==0.13.0                # XML processing for research protocols
+
+# Development & Debugging
+ipython==8.17.2                  # Enhanced REPL
+rich==13.7.0                     # Rich terminal output
+typer==0.9.0                     # CLI framework
+
+# Production Deployment
+gunicorn==21.2.0                 # WSGI server for production
+supervisor==4.2.5                # Process management
+psutil==5.9.6                    # System monitoring
+
+# Version pinning for security and stability
+# All versions are pinned to ensure reproducible builds
+# Update with: pip-compile requirements-production.in
