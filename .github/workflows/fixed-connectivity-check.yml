@@ -1,4 +1,5 @@
 # Constitutional Hash: cdd01ef066bc6cf2
+# Runner Migration Phase 2: 2025-01-11 - Monitoring workflows migrated to GitHub-hosted
 name: Fixed Connectivity Check
 
 on:
@@ -9,7 +10,7 @@ on:
 
 jobs:
   connectivity-check:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest  # Phase 2: Migrated for monitoring efficiency
 
     steps:
       - name: Checkout code

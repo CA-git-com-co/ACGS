@@ -1,4 +1,5 @@
 # Constitutional Hash: cdd01ef066bc6cf2
+# Runner Migration: 2025-01-11 - Migrated all jobs to GitHub-hosted for optimal caching
 name: ACGS-1 Advanced Caching Optimization
 
 on:
@@ -42,7 +43,7 @@ env:
 jobs:
   # Intelligent Cache Analysis
   cache_analysis:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest  # Migrated from self-hosted for better caching performance
     name: Intelligent Cache Analysis
     outputs:
       cache_config: ${{ steps.analysis.outputs.config }}
@@ -102,7 +103,7 @@ jobs:
 
   # Multi-Layer Rust Caching
   rust_cache_optimization:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest  # Migrated from self-hosted for better caching performance
     name: Rust Cache Optimization
     needs: cache_analysis
     steps:
@@ -153,7 +154,7 @@ jobs:
 
   # Python Dependency Caching
   python_cache_optimization:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest  # Migrated from self-hosted for better caching performance
     name: Python Cache Optimization
     needs: cache_analysis
     steps:
@@ -204,7 +205,7 @@ jobs:
 
   # Node.js/TypeScript Caching
   node_cache_optimization:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest  # Migrated from self-hosted for better caching performance
     name: Node.js Cache Optimization
     needs: cache_analysis
     steps:
@@ -241,7 +242,7 @@ jobs:
 
   # Cache Performance Monitoring
   cache_performance_monitoring:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest  # Migrated from self-hosted for better caching performance
     name: Cache Performance Monitoring
     needs:
       [cache_analysis, rust_cache_optimization, python_cache_optimization, node_cache_optimization]
@@ -286,7 +287,7 @@ jobs:
 
   # Cache Cleanup and Optimization
   cache_cleanup:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest  # Migrated from self-hosted for better caching performance
     name: Cache Cleanup and Optimization
     needs: cache_performance_monitoring
     if: always()

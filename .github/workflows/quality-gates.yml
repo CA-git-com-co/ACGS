@@ -1,4 +1,5 @@
 # Constitutional Hash: cdd01ef066bc6cf2
+# Runner Migration: 2025-01-11 - Migrated to GitHub-hosted for better performance
 name: ACGS-2 Enterprise Quality Gates
 
 on:
@@ -7,11 +8,23 @@ on:
       - main
       - develop
       - master
+    paths:
+      - '**.py'
+      - 'requirements*.txt'
+      - 'pyproject.toml'
+      - 'tests/**'
+      - '.github/workflows/quality-gates.yml'
   push:
     branches:
       - main
       - develop
       - master
+    paths:
+      - '**.py'
+      - 'requirements*.txt'
+      - 'pyproject.toml'
+      - 'tests/**'
+      - '.github/workflows/quality-gates.yml'
 
 permissions:
   contents: read
@@ -26,7 +39,8 @@ env:
 
 jobs:
   quality-gates:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest  # Migrated from self-hosted for better performance and cost
+    timeout-minutes: 30
     name: Enterprise Quality Gates Validation
     outputs:
       coverage_score: ${{ steps.coverage.outputs.score }}

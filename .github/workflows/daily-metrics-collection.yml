@@ -1,4 +1,5 @@
 name: ACGS Daily Documentation Metrics Collection
+# Runner Migration Phase 2: 2025-01-11 - Monitoring workflows migrated to GitHub-hosted
 
 on:
   # Run daily at 1 AM UTC
@@ -18,7 +19,7 @@ env:
 
 jobs:
   collect_metrics:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest  # Phase 2: Migrated for monitoring efficiency
     name: Collect Daily Documentation Metrics
 
     steps:

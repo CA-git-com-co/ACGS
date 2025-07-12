@@ -1,4 +1,5 @@
 # Constitutional Hash: cdd01ef066bc6cf2
+# Runner Migration: 2025-01-11 - Migrated to GitHub-hosted for cost efficiency
 name: Automated Dependency Updates
 
 on:
@@ -24,7 +25,8 @@ env:
 
 jobs:
   dependency-update:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest  # Migrated from self-hosted for cost efficiency
+    timeout-minutes: 20
     name: Update Dependencies
 
     steps:

@@ -1,4 +1,5 @@
 # Constitutional Hash: cdd01ef066bc6cf2
+# Runner Migration Phase 2: 2025-01-11 - Monitoring workflows migrated to GitHub-hosted
 name: GitHub Actions Cost Monitoring
 
 on:
@@ -13,7 +14,7 @@ permissions:
 
 jobs:
   cost-monitoring:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest  # Phase 2: Migrated for monitoring efficiency
     name: Monitor GitHub Actions Usage & Costs
     steps:
       - name: Checkout repository
