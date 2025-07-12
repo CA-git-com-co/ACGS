@@ -3,7 +3,7 @@
 **Constitutional Hash:** `cdd01ef066bc6cf2`
 **Status:** ✅ IMPLEMENTED - Production Ready
 **Deployment:** Operational on port 8014 (External) → 8001 (Internal)
-**Performance:** **3.49ms P99 latency** (Target: ≤5s) - **EXCEEDS TARGET**
+**Performance:** **Sub-5s P99 latency** (Target: ≤5s) - **OPTIMIZATION IN PROGRESS**
 **Constitutional Compliance:** 100% validated across all services
 **Test Coverage:** 85.2% (Exceeds 80% target)
 **Code Quality:** Comprehensive cleanup completed (July 2025)
@@ -11,7 +11,7 @@
 
 ## Overview
 
-The ACGS-2 X.AI Integration Service provides production-ready integration with X.AI's Grok models, enabling advanced multi-model constitutional governance capabilities. This service maintains constitutional compliance while delivering high-performance AI interactions with sub-5s P99 latency and >85% cache hit rates.
+The ACGS-2 X.AI Integration Service provides integration with X.AI's Grok models, enabling advanced multi-model constitutional governance capabilities. This service maintains constitutional compliance while delivering AI interactions with target sub-5s P99 latency and >85% cache hit rates.
 
 ## Architecture
 

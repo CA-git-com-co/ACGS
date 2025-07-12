@@ -2,13 +2,13 @@
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/acgs/acgs-2/actions)
 [![Constitutional Compliance](https://img.shields.io/badge/constitutional--compliance-100%25-green.svg)](https://github.com/acgs/acgs-2/blob/main/docs/constitutional-framework.md)
-[![Performance](https://img.shields.io/badge/P99%20latency-<5ms-blue.svg)](https://github.com/acgs/acgs-2/blob/main/docs/performance-metrics.md)
+[![Performance](https://img.shields.io/badge/P99%20latency-optimization%20in%20progress-yellow.svg)](https://github.com/acgs/acgs-2/blob/main/docs/performance-metrics.md)
 [![Coverage](https://img.shields.io/badge/coverage->80%25-green.svg)](https://github.com/acgs/acgs-2/blob/main/docs/testing.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://python.org)
 [![Docker](https://img.shields.io/badge/docker-required-blue.svg)](https://docker.com)
 
-**ACGS-2 is a production-ready, enterprise-scale autonomous constitutional governance system that provides AI-driven policy enforcement, multi-agent coordination, and formal verification capabilities with validated sub-5ms performance.**
+**ACGS-2 is an enterprise-scale autonomous constitutional governance system that provides AI-driven policy enforcement, multi-agent coordination, and formal verification capabilities with strong throughput performance and ongoing latency optimization.**
 
 **Constitutional Hash**: `cdd01ef066bc6cf2` - Immutable governance identifier enforced across all 21 services.
 
@@ -41,7 +41,7 @@ ACGS-2 (Autonomous Constitutional Governance System) is a sophisticated AI gover
 
 - **🏛️ Constitutional AI Governance**: Immutable governance framework with hash `cdd01ef066bc6cf2`
 - **🤖 Multi-Agent Coordination**: 21 specialized services for comprehensive AI oversight
-- **⚡ High Performance**: Sub-5ms P99 latency with >100 RPS throughput
+- **⚡ High Performance**: >800 RPS throughput with latency optimization in progress
 - **🔒 Enterprise Security**: JWT authentication, multi-tenant isolation, comprehensive audit trails
 - **📊 Real-time Monitoring**: Prometheus + Grafana with 25+ custom alerts
 - **🏢 Production Ready**: Kubernetes deployment with auto-scaling capabilities

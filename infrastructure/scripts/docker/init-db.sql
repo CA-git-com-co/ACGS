@@ -31,7 +31,10 @@ CREATE TABLE IF NOT EXISTS constitutional_compliance (
     hash VARCHAR(255) NOT NULL DEFAULT 'cdd01ef066bc6cf2',
     service_name VARCHAR(255) NOT NULL,
     compliance_score DECIMAL(3,2) DEFAULT 1.0,
-    validation_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    validation_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    validated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    constitutional_hash VARCHAR(255) NOT NULL DEFAULT 'cdd01ef066bc6cf2',
+    compliance_status BOOLEAN DEFAULT true
 );
 
 -- Insert initial compliance record

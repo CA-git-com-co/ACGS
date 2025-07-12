@@ -1,307 +1,341 @@
 version: '3.8'
+
+# ACGS-2 Monitoring Stack with Sentry Integration
+# Includes Prometheus, Grafana, and Sentry Self-Hosted for comprehensive monitoring
+# Constitutional Hash: cdd01ef066bc6cf2
+
+networks:
+  acgs_monitoring:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.201.0.0/16
+
 services:
+  # Existing Prometheus setup (enhanced with Sentry metrics)
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v2.45.0
     container_name: acgs_prometheus
-    ports:
-    - ${PROMETHEUS_PORT:-9090}:9090
-    volumes:
-    - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
-    - ./monitoring/alert_rules.yml:/etc/prometheus/alert_rules.yml
-    - prometheus_data:/prometheus
-    command:
-    - --config.file=/etc/prometheus/prometheus.yml
-    - --storage.tsdb.path=/prometheus
-    - --web.console.libraries=/etc/prometheus/console_libraries
-    - --web.console.templates=/etc/prometheus/consoles
-    - --storage.tsdb.retention.time=30d
-    - --web.enable-lifecycle
-    - --web.enable-admin-api
-    environment:
-      CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
-    healthcheck:
-      test:
-      - CMD
-      - wget
-      - --quiet
-      - --tries=1
-      - --spider
-      - http://localhost:9090/-/healthy
-      interval: 30s
-      timeout: 10s
-      retries: 3
     restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/alert-rules.yml:/etc/prometheus/alert-rules.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=15d'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
     networks:
-    - acgs_network
+      acgs_monitoring:
+        ipv4_address: 10.201.1.10
+    environment:
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     labels:
-    - acgs.service=monitoring
-    - acgs.component=metrics
-    - acgs.constitutional_hash=cdd01ef066bc6cf2
+      - "acgs.service=monitoring"
+      - "acgs.constitutional-hash=cdd01ef066bc6cf2"
+
+  # Enhanced Grafana with Sentry plugin
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:10.1.0
     container_name: acgs_grafana
-    ports:
-    - ${GRAFANA_PORT:-3000}:3000
-    volumes:
-    - grafana_data:/var/lib/grafana
-    - ./monitoring/dashboards:/etc/grafana/provisioning/dashboards
-    - ./monitoring/datasources:/etc/grafana/provisioning/datasources
-    environment:
-    - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin123}
-    - GF_USERS_ALLOW_SIGN_UP=false
-    - GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-worldmap-panel
-    - GF_FEATURE_TOGGLES_ENABLE=publicDashboards
-    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-    depends_on:
-      prometheus:
-        condition: service_healthy
-    healthcheck:
-      test:
-      - CMD
-      - wget
-      - --quiet
-      - --tries=1
-      - --spider
-      - http://localhost:3000/api/health
-      interval: 30s
-      timeout: 10s
-      retries: 3
     restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_INSTALL_PLUGINS=grafana-sentry-datasource
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - GF_SERVER_DOMAIN=localhost
+      - GF_SERVER_ROOT_URL=http://localhost:3000
     networks:
-    - acgs_network
+      acgs_monitoring:
+        ipv4_address: 10.201.1.11
+    depends_on:
+      - prometheus
     labels:
-    - acgs.service=monitoring
-    - acgs.component=visualization
-    - acgs.constitutional_hash=cdd01ef066bc6cf2
+      - "acgs.service=monitoring"
+      - "acgs.constitutional-hash=cdd01ef066bc6cf2"
+
+  # AlertManager for Prometheus alerts
   alertmanager:
-    image: prom/alertmanager:latest
+    image: prom/alertmanager:v0.25.0
     container_name: acgs_alertmanager
+    restart: unless-stopped
     ports:
-    - ${ALERTMANAGER_PORT:-9100}:9093
+      - "9093:9093"
     volumes:
-    - ./monitoring/alertmanager.yml:/etc/alertmanager/alertmanager.yml
-    - alertmanager_data:/alertmanager
+      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+      - alertmanager_data:/alertmanager
     command:
-    - --config.file=/etc/alertmanager/alertmanager.yml
-    - --storage.path=/alertmanager
-    - --web.external-url=http://localhost:9093
-    environment:
-      CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
-    depends_on:
-      prometheus:
-        condition: service_healthy
-    healthcheck:
-      test:
-      - CMD
-      - wget
-      - --quiet
-      - --tries=1
-      - --spider
-      - http://localhost:9093/-/healthy
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    restart: unless-stopped
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+      - '--web.external-url=http://localhost:9093'
     networks:
-    - acgs_network
-    labels:
-    - acgs.service=monitoring
-    - acgs.component=alerting
-    - acgs.constitutional_hash=cdd01ef066bc6cf2
-  jaeger:
-    image: jaegertracing/all-in-one:latest
-    container_name: acgs_jaeger
-    ports:
-    - ${JAEGER_UI_PORT:-16686}:16686
-    - ${JAEGER_COLLECTOR_PORT:-14268}:14268
-    - ${JAEGER_AGENT_PORT:-6831}:6831/udp
+      acgs_monitoring:
+        ipv4_address: 10.201.1.12
     environment:
-    - COLLECTOR_OTLP_ENABLED=true
-    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    labels:
+      - "acgs.service=monitoring"
+      - "acgs.constitutional-hash=cdd01ef066bc6cf2"
+
+  # Redis for Sentry (if using self-hosted)
+  redis_sentry:
+    image: redis:7.0-alpine
+    container_name: acgs_redis_sentry
+    restart: unless-stopped
     volumes:
-    - jaeger_data:/tmp
-    healthcheck:
-      test:
-      - CMD
-      - wget
-      - --quiet
-      - --tries=1
-      - --spider
-      - http://localhost:16686/
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    restart: unless-stopped
+      - redis_sentry_data:/data
+    command: redis-server --appendonly yes
     networks:
-    - acgs_network
-    labels:
-    - acgs.service=monitoring
-    - acgs.component=tracing
-    - acgs.constitutional_hash=cdd01ef066bc6cf2
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
-    container_name: acgs_elasticsearch
-    ports:
-    - ${ELASTICSEARCH_PORT:-9200}:9200
+      acgs_monitoring:
+        ipv4_address: 10.201.1.20
     environment:
-    - discovery.type=single-node
-    - xpack.security.enabled=false
-    - ES_JAVA_OPTS=-Xms512m -Xmx512m
-    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    labels:
+      - "acgs.service=monitoring-storage"
+      - "acgs.constitutional-hash=cdd01ef066bc6cf2"
+
+  # PostgreSQL for Sentry (if using self-hosted)
+  postgres_sentry:
+    image: postgres:15
+    container_name: acgs_postgres_sentry
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=sentry
+      - POSTGRES_PASSWORD=sentry_password_change_in_production
+      - POSTGRES_DB=sentry
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     volumes:
-    - elasticsearch_data:/usr/share/elasticsearch/data
-    healthcheck:
-      test:
-      - CMD
-      - curl
-      - -f
-      - http://localhost:9200/_cluster/health
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    restart: unless-stopped
+      - postgres_sentry_data:/var/lib/postgresql/data
     networks:
-    - acgs_network
+      acgs_monitoring:
+        ipv4_address: 10.201.1.21
     labels:
-    - acgs.service=monitoring
-    - acgs.component=logs
-    - acgs.constitutional_hash=cdd01ef066bc6cf2
-  kibana:
-    image: docker.elastic.co/kibana/kibana:8.11.0
-    container_name: acgs_kibana
+      - "acgs.service=monitoring-storage"
+      - "acgs.constitutional-hash=cdd01ef066bc6cf2"
+
+  # Sentry Self-Hosted (optional - can use sentry.io instead)
+  sentry_web:
+    image: getsentry/sentry:latest
+    container_name: acgs_sentry_web
+    restart: unless-stopped
     ports:
-    - ${KIBANA_PORT:-5601}:5601
+      - "9000:9000"
     environment:
-    - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-    depends_on:
-      elasticsearch:
-        condition: service_healthy
-    healthcheck:
-      test:
-      - CMD
-      - curl
-      - -f
-      - http://localhost:5601/api/status
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    restart: unless-stopped
-    networks:
-    - acgs_network
-    labels:
-    - acgs.service=monitoring
-    - acgs.component=log-visualization
-    - acgs.constitutional_hash=cdd01ef066bc6cf2
-  filebeat:
-    image: docker.elastic.co/beats/filebeat:8.11.0
-    container_name: acgs_filebeat
-    user: root
+      - SENTRY_SECRET_KEY=${SENTRY_SECRET_KEY:-your-secret-key-change-in-production}
+      - SENTRY_POSTGRES_HOST=postgres_sentry
+      - SENTRY_POSTGRES_PORT=5432
+      - SENTRY_DB_NAME=sentry
+      - SENTRY_DB_USER=sentry
+      - SENTRY_DB_PASSWORD=sentry_password_change_in_production
+      - SENTRY_REDIS_HOST=redis_sentry
+      - SENTRY_REDIS_PORT=6379
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     volumes:
-    - ./monitoring/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
-    - /var/lib/docker/containers:/var/lib/docker/containers:ro
-    - /var/run/docker.sock:/var/run/docker.sock:ro
-    environment:
-    - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-    command: filebeat -e -strict.perms=false
+      - sentry_data:/var/lib/sentry/files
     depends_on:
-      elasticsearch:
-        condition: service_healthy
-    restart: unless-stopped
+      - redis_sentry
+      - postgres_sentry
     networks:
-    - acgs_network
+      acgs_monitoring:
+        ipv4_address: 10.201.1.30
     labels:
-    - acgs.service=monitoring
-    - acgs.component=log-shipping
-    - acgs.constitutional_hash=cdd01ef066bc6cf2
-  node-exporter:
-    image: prom/node-exporter:latest
+      - "acgs.service=monitoring-sentry"
+      - "acgs.constitutional-hash=cdd01ef066bc6cf2"
+
+  # Sentry Worker (for background processing)
+  sentry_worker:
+    image: getsentry/sentry:latest
+    container_name: acgs_sentry_worker
+    restart: unless-stopped
+    command: sentry run worker
+    environment:
+      - SENTRY_SECRET_KEY=${SENTRY_SECRET_KEY:-your-secret-key-change-in-production}
+      - SENTRY_POSTGRES_HOST=postgres_sentry
+      - SENTRY_POSTGRES_PORT=5432
+      - SENTRY_DB_NAME=sentry
+      - SENTRY_DB_USER=sentry
+      - SENTRY_DB_PASSWORD=sentry_password_change_in_production
+      - SENTRY_REDIS_HOST=redis_sentry
+      - SENTRY_REDIS_PORT=6379
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    volumes:
+      - sentry_data:/var/lib/sentry/files
+    depends_on:
+      - redis_sentry
+      - postgres_sentry
+    networks:
+      acgs_monitoring:
+        ipv4_address: 10.201.1.31
+    labels:
+      - "acgs.service=monitoring-sentry"
+      - "acgs.constitutional-hash=cdd01ef066bc6cf2"
+
+  # Sentry Cron (for scheduled tasks)
+  sentry_cron:
+    image: getsentry/sentry:latest
+    container_name: acgs_sentry_cron
+    restart: unless-stopped
+    command: sentry run cron
+    environment:
+      - SENTRY_SECRET_KEY=${SENTRY_SECRET_KEY:-your-secret-key-change-in-production}
+      - SENTRY_POSTGRES_HOST=postgres_sentry
+      - SENTRY_POSTGRES_PORT=5432
+      - SENTRY_DB_NAME=sentry
+      - SENTRY_DB_USER=sentry
+      - SENTRY_DB_PASSWORD=sentry_password_change_in_production
+      - SENTRY_REDIS_HOST=redis_sentry
+      - SENTRY_REDIS_PORT=6379
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    volumes:
+      - sentry_data:/var/lib/sentry/files
+    depends_on:
+      - redis_sentry
+      - postgres_sentry
+    networks:
+      acgs_monitoring:
+        ipv4_address: 10.201.1.32
+    labels:
+      - "acgs.service=monitoring-sentry"
+      - "acgs.constitutional-hash=cdd01ef066bc6cf2"
+
+  # Node Exporter for system metrics
+  node_exporter:
+    image: prom/node-exporter:v1.6.0
     container_name: acgs_node_exporter
+    restart: unless-stopped
     ports:
-    - ${NODE_EXPORTER_PORT:-9100}:9100
+      - "9100:9100"
     volumes:
-    - /proc:/host/proc:ro
-    - /sys:/host/sys:ro
-    - /:/rootfs:ro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
     command:
-    - --path.procfs=/host/proc
-    - --path.rootfs=/rootfs
-    - --path.sysfs=/host/sys
-    - --collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)
-    environment:
-      CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
-    restart: unless-stopped
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
     networks:
-    - acgs_network
+      acgs_monitoring:
+        ipv4_address: 10.201.1.40
+    environment:
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     labels:
-    - acgs.service=monitoring
-    - acgs.component=system-metrics
-    - acgs.constitutional_hash=cdd01ef066bc6cf2
-  postgres-exporter:
-    image: prometheuscommunity/postgres-exporter:latest
-    container_name: acgs_postgres_exporter
+      - "acgs.service=monitoring-metrics"
+      - "acgs.constitutional-hash=cdd01ef066bc6cf2"
+
+  # cAdvisor for container metrics
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.47.0
+    container_name: acgs_cadvisor
+    restart: unless-stopped
     ports:
-    - ${POSTGRES_EXPORTER_PORT:-9187}:9187
-    environment:
-    - DATA_SOURCE_NAME=postgresql://acgs_user:${POSTGRES_PASSWORD:-acgs_dev_password}@postgres:5432/acgs?sslmode=disable
-    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-    depends_on:
-      postgres:
-        condition: service_healthy
-    restart: unless-stopped
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    privileged: true
+    devices:
+      - /dev/kmsg
     networks:
-    - acgs_network
+      acgs_monitoring:
+        ipv4_address: 10.201.1.41
+    environment:
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     labels:
-    - acgs.service=monitoring
-    - acgs.component=database-metrics
-    - acgs.constitutional_hash=cdd01ef066bc6cf2
-  redis-exporter:
-    image: oliver006/redis_exporter:latest
-    container_name: acgs_redis_exporter
+      - "acgs.service=monitoring-metrics"
+      - "acgs.constitutional-hash=cdd01ef066bc6cf2"
+
+  # Jaeger for distributed tracing (complements Sentry)
+  jaeger:
+    image: jaegertracing/all-in-one:1.47
+    container_name: acgs_jaeger
+    restart: unless-stopped
     ports:
-    - ${REDIS_EXPORTER_PORT:-9121}:9121
+      - "16686:16686"  # UI
+      - "14268:14268"  # HTTP receiver
+      - "14250:14250"  # gRPC receiver
     environment:
-    - REDIS_ADDR=redis://redis:6379
-    - REDIS_PASSWORD=${REDIS_PASSWORD:-acgs_dev_redis}
-    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-    depends_on:
-      redis:
-        condition: service_healthy
-    restart: unless-stopped
+      - COLLECTOR_OTLP_ENABLED=true
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     networks:
-    - acgs_network
+      acgs_monitoring:
+        ipv4_address: 10.201.1.50
     labels:
-    - acgs.service=monitoring
-    - acgs.component=cache-metrics
-    - acgs.constitutional_hash=cdd01ef066bc6cf2
+      - "acgs.service=monitoring-tracing"
+      - "acgs.constitutional-hash=cdd01ef066bc6cf2"
+
+  # ACGS-specific metrics collector
+  acgs_metrics_collector:
+    build:
+      context: ../../
+      dockerfile: scripts/monitoring/Dockerfile.metrics-collector
+    container_name: acgs_metrics_collector
+    restart: unless-stopped
+    environment:
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - PROMETHEUS_URL=http://prometheus:9090
+      - SENTRY_DSN=${SENTRY_DSN}
+      - COLLECTION_INTERVAL=30
+    volumes:
+      - ../../:/app/acgs
+    networks:
+      acgs_monitoring:
+        ipv4_address: 10.201.1.60
+    depends_on:
+      - prometheus
+    labels:
+      - "acgs.service=monitoring-custom"
+      - "acgs.constitutional-hash=cdd01ef066bc6cf2"
+
 volumes:
   prometheus_data:
     driver: local
     labels:
-    - acgs.volume=monitoring
-    - acgs.constitutional_hash=cdd01ef066bc6cf2
+      - "acgs.data=prometheus"
+      - "acgs.constitutional-hash=cdd01ef066bc6cf2"
+  
   grafana_data:
     driver: local
     labels:
-    - acgs.volume=monitoring
-    - acgs.constitutional_hash=cdd01ef066bc6cf2
+      - "acgs.data=grafana"
+      - "acgs.constitutional-hash=cdd01ef066bc6cf2"
+  
   alertmanager_data:
     driver: local
     labels:
-    - acgs.volume=monitoring
-    - acgs.constitutional_hash=cdd01ef066bc6cf2
-  elasticsearch_data:
+      - "acgs.data=alertmanager"
+      - "acgs.constitutional-hash=cdd01ef066bc6cf2"
+  
+  redis_sentry_data:
     driver: local
     labels:
-    - acgs.volume=monitoring
-    - acgs.constitutional_hash=cdd01ef066bc6cf2
-  jaeger_data:
+      - "acgs.data=redis-sentry"
+      - "acgs.constitutional-hash=cdd01ef066bc6cf2"
+  
+  postgres_sentry_data:
     driver: local
     labels:
-    - acgs.volume=monitoring
-    - acgs.constitutional_hash=cdd01ef066bc6cf2
-networks:
-  acgs_network:
-    external: true
-constitutional_hash: cdd01ef066bc6cf2
+      - "acgs.data=postgres-sentry"
+      - "acgs.constitutional-hash=cdd01ef066bc6cf2"
+  
+  sentry_data:
+    driver: local
+    labels:
+      - "acgs.data=sentry"
+      - "acgs.constitutional-hash=cdd01ef066bc6cf2"

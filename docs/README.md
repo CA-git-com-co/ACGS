@@ -15,7 +15,7 @@ This directory contains comprehensive documentation for the ACGS-2 (AI Constitut
 - **Evolutionary Computation Service (EC)** - Port 8006: Evolutionary algorithms and WINA ✅ IMPLEMENTED
 
 ### Platform Services
-- **Authentication Service** - Port 8000: JWT auth, MFA, OAuth (Production) ✅ IMPLEMENTED
+- **Authentication Service** - Port 8016: JWT auth, MFA, OAuth (Production) ✅ IMPLEMENTED
 - **Integrity Service** - Port 8002: Cryptographic verification, data integrity ✅ IMPLEMENTED
 
 ### Multi-Agent Coordination
