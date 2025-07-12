@@ -25,18 +25,9 @@ jobs:
     strategy:
       matrix:
         include:
-          - service: 'acgs-pgp-v8'
-            context: 'services/core/acgs-pgp-v8'
-            dockerfile: 'services/core/acgs-pgp-v8/Dockerfile'
           - service: 'ac'
             context: 'services/core/constitutional-ai/ac_service'
             dockerfile: 'services/core/constitutional-ai/ac_service/Dockerfile'
-          - service: 'constitutional-trainer'
-            context: 'services/core/constitutional-trainer'
-            dockerfile: 'services/core/constitutional-trainer/Dockerfile'
-          - service: 'dgm-service'
-            context: 'services/core/dgm-service'
-            dockerfile: 'services/core/dgm-service/Dockerfile'
           - service: 'ec'
             context: 'services/core/evolutionary-computation'
             dockerfile: 'services/core/evolutionary-computation/Dockerfile'
@@ -49,12 +40,15 @@ jobs:
           - service: 'pgc'
             context: 'services/core/policy-governance/pgc_service'
             dockerfile: 'services/core/policy-governance/pgc_service/Dockerfile'
-          - service: 'auth'
-            context: 'services/platform/authentication/auth_service'
-            dockerfile: 'services/platform/authentication/auth_service/Dockerfile'
-          - service: 'integrity'
-            context: 'services/platform/integrity/integrity_service'
-            dockerfile: 'services/platform/integrity/integrity_service/Dockerfile'
+          - service: 'governance-engine'
+            context: 'services/core/governance-engine'
+            dockerfile: 'services/core/governance-engine/Dockerfile'
+          - service: 'code-analysis'
+            context: 'services/core/code-analysis'
+            dockerfile: 'services/core/code-analysis/Dockerfile'
+          - service: 'xai-integration'
+            context: 'services/core/xai-integration'
+            dockerfile: 'services/core/xai-integration/Dockerfile'
       fail-fast: false
     steps:
       - name: Check out repository

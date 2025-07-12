@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACGS-2: Enterprise AI Governance</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-code: #1e1e2e;
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --text-muted: #718096;
+            --accent-primary: #3b82f6;
+            --accent-hover: #2563eb;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-code: #0f172a;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: var(--transition);
+        }
+
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Header with glass effect */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        [data-theme="dark"] .header {
+            background: rgba(15, 23, 42, 0.8);
+        }
+
+        .nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--accent-primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover {
+            color: var(--accent-primary);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-primary);
+            transition: var(--transition);
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Theme toggle */
+        .theme-toggle {
+            background: none;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.5rem;
+            cursor: pointer;
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover {
+            background: var(--bg-secondary);
+        }
+
+        /* Hero section with animations */
+        .hero {
+            padding: 8rem 2rem 4rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .constitutional-hash {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            background: var(--bg-secondary);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            display: inline-block;
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+        }
+
+        /* Button styles */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: var(--accent-primary);
+            color: white;
+            animation: fadeInUp 0.8s ease-out 0.6s both;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-secondary);
+        }
+
+        /* Sections */
+        .section {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: var(--text-primary);
+        }
+
+        /* Feature grid */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .feature-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--accent-primary);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-primary), transparent);
+            transform: scaleX(0);
+            transition: var(--transition);
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .feature-description {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Code blocks with copy functionality */
+        .code-container {
+            position: relative;
+            margin-top: 1rem;
+        }
+
+        .code-block {
+            background: var(--bg-code);
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 4px;
+            padding: 0.5rem;
+            color: #e2e8f0;
+            cursor: pointer;
+            transition: var(--transition);
+            opacity: 0;
+        }
+
+        .code-container:hover .copy-btn {
+            opacity: 1;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Pricing grid with toggle */
+        .pricing-toggle {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 3rem;
+        }
+
+        .toggle-container {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 0.25rem;
+            display: flex;
+            position: relative;
+        }
+
+        .toggle-option {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 6px;
+            transition: var(--transition);
+            position: relative;
+            z-index: 1;
+        }
+
+        .toggle-option.active {
+            color: var(--text-primary);
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 0.25rem;
+            left: 0.25rem;
+            width: calc(50% - 0.25rem);
+            height: calc(100% - 0.5rem);
+            background: var(--bg-primary);
+            border-radius: 6px;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .pricing-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .pricing-card.featured {
+            border-color: var(--accent-primary);
+            transform: scale(1.05);
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .pricing-card.featured:hover {
+            transform: scale(1.05) translateY(-4px);
+        }
+
+        .plan-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+            margin-bottom: 1rem;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .plan-features li {
+            padding: 0.5rem 0;
+            color: var(--text-secondary);
+        }
+
+        .plan-features li::before {
+            content: '✓';
+            color: var(--accent-primary);
+            margin-right: 0.5rem;
+        }
+
+        /* Form styles */
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-error {
+            color: #ef4444;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .nav {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .hero {
+                padding: 6rem 1rem 3rem;
+            }
+
+            .section {
+                padding: 3rem 1rem;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pricing-card.featured {
+                transform: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <a href="#home" class="logo">ACGS-2</a>
+            <ul class="nav-links">
+                <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="#features" class="nav-link">Features</a></li>
+                <li><a href="#pricing" class="nav-link">Pricing</a></li>
+                <li><a href="#docs" class="nav-link">Docs</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+                <li><button class="theme-toggle" id="themeToggle">🌙</button></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Home Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Enterprise AI Governance</h1>
+            <p>Immutable Constitutional Enforcement with Multi-Agent Coordination</p>
+            <div class="constitutional-hash">
+                Constitutional Hash: cdd01ef066bc6cf2
+            </div>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <a href="#features" class="btn btn-primary">
+                    Start Free Trial
+                    <span>→</span>
+                </a>
+                <a href="#docs" class="btn btn-secondary">
+                    View Documentation
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="section">
+        <h2 class="section-title">Key Features</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h3 class="feature-title">Constitutional Hash Validation</h3>
+                <p class="feature-description">
+                    Real-time compliance with immutable hash enforcement across all operations.
+                    Ensure constitutional adherence with cryptographic verification.
+                </p>
+                <div class="code-container">
+                    <pre class="code-block">import requests
+
+headers = {
+    "Constitutional-Hash": "cdd01ef066bc6cf2",
+    "Authorization": "Bearer <jwt_token>"
+}
+
+response = requests.post(
+    "https://acgs.ai/v1/governance/validate",
+    headers=headers,
+    json={
+        "action": "policy_decision", 
+        "context": {"user_id": "user123"}
+    }
+)
+print(response.json())</pre>
+                    <button class="copy-btn" onclick="copyCode(this)">📋</button>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <h3 class="feature-title">Multi-Agent Coordination</h3>
+                <p class="feature-description">
+                    Ethics, legal, and operational agents with human-in-the-loop intervention.
+                    Distributed decision-making with constitutional oversight.
+                </p>
+                <div class="code-container">
+                    <pre class="code-block"># Multi-agent coordination workflow
+from acgs import MultiAgentCoordinator
+
+coordinator = MultiAgentCoordinator()
+result = await coordinator.coordinate(
+    task="ethical_review",
+    context={"decision": "data_access"},
+    agents=["ethics", "legal", "operational"]
+)
+
+if result.requires_human_review:
+    await coordinator.escalate_to_human(result)</pre>
+                    <button class="copy-btn" onclick="copyCode(this)">📋</button>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <h3 class="feature-title">Enterprise Security & Monitoring</h3>
+                <p class="feature-description">
+                    JWT authentication, comprehensive audit trails, and Grafana dashboards 
+                    for 99.9% uptime with constitutional compliance monitoring.
+                </p>
+                <div class="code-container">
+                    <pre class="code-block"># Security configuration
+ACGS_CONFIG = {
+    "constitutional_hash": "cdd01ef066bc6cf2",
+    "jwt_secret": "your-secret-key",
+    "audit_level": "comprehensive",
+    "monitoring": {
+        "prometheus": True,
+        "grafana": True,
+        "alerts": ["constitutional_violation"]
+    }
+}</pre>
+                    <button class="copy-btn" onclick="copyCode(this)">📋</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="section">
+        <h2 class="section-title">Pricing Plans</h2>
+        
+        <div class="pricing-toggle">
+            <div class="toggle-container">
+                <button class="toggle-option active" onclick="togglePricing('monthly')">Monthly</button>
+                <button class="toggle-option" onclick="togglePricing('annual')">Annual</button>
+                <div class="toggle-slider" id="toggleSlider"></div>
+            </div>
+        </div>
+
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <h3 class="plan-name">Basic</h3>
+                <div class="plan-price">
+                    $<span id="basic-price">49</span><span style="font-size: 1rem; color: var(--text-muted);">/mo</span>
+                </div>
+                <ul class="plan-features">
+                    <li>Core Constitutional Validation</li>
+                    <li>Basic Monitoring Dashboard</li>
+                    <li>Community Support</li>
+                    <li>Up to 10,000 requests/month</li>
+                </ul>
+                <button class="btn btn-primary" style="width: 100%;">Get Started</button>
+            </div>
+
+            <div class="pricing-card featured">
+                <h3 class="plan-name">Pro</h3>
+                <div class="plan-price">
+                    $<span id="pro-price">99</span><span style="font-size: 1rem; color: var(--text-muted);">/mo</span>
+                </div>
+                <ul class="plan-features">
+                    <li>All Basic Features</li>
+                    <li>Multi-Agent Coordination</li>
+                    <li>Advanced Analytics</li>
+                    <li>Priority Support</li>
+                    <li>Up to 100,000 requests/month</li>
+                </ul>
+                <button class="btn btn-primary" style="width: 100%;">Most Popular</button>
+            </div>
+
+            <div class="pricing-card">
+                <h3 class="plan-name">Enterprise</h3>
+                <div class="plan-price">Custom</div>
+                <ul class="plan-features">
+                    <li>All Pro Features</li>
+                    <li>Custom Integrations</li>
+                    <li>Dedicated Account Manager</li>
+                    <li>On-premises Deployment</li>
+                    <li>Unlimited Requests</li>
+                </ul>
+                <button class="btn btn-secondary" style="width: 100%;">Contact Sales</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Documentation Section -->
+    <section id="docs" class="section">
+        <h2 class="section-title">Documentation</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h3 class="feature-title">API Reference</h3>
+                <p class="feature-description">
+                    Complete API documentation with interactive examples and constitutional compliance guides.
+                </p>
+                <div class="code-container">
+                    <pre class="code-block"># Constitutional validation endpoint
+POST /v1/governance/validate
+Content-Type: application/json
+Constitutional-Hash: cdd01ef066bc6cf2
+
+{
+  "action": "policy_decision",
+  "context": {...}
+}</pre>
+                    <button class="copy-btn" onclick="copyCode(this)">📋</button>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <h3 class="feature-title">Quick Start Guide</h3>
+                <p class="feature-description">
+                    Get up and running in minutes with our Kubernetes deployment guide and Docker Compose setup.
+                </p>
+                <div class="code-container">
+                    <pre class="code-block"># Quick start with Docker
+git clone https://github.com/acgs/acgs-2
+cd acgs-2
+docker-compose up -d
+
+# Verify constitutional compliance
+curl -H "Constitutional-Hash: cdd01ef066bc6cf2" \
+     http://localhost:8001/health</pre>
+                    <button class="copy-btn" onclick="copyCode(this)">📋</button>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <h3 class="feature-title">Webhooks & Events</h3>
+                <p class="feature-description">
+                    Real-time notifications for constitutional compliance events and governance decisions.
+                </p>
+                <div class="code-container">
+                    <pre class="code-block"># Webhook payload example
+{
+  "event": "constitutional_violation",
+  "timestamp": "2025-01-12T10:00:00Z",
+  "hash": "cdd01ef066bc6cf2",
+  "details": {
+    "violation_type": "unauthorized_access",
+    "severity": "high"
+  }
+}</pre>
+                    <button class="copy-btn" onclick="copyCode(this)">📋</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="section">
+        <h2 class="section-title">Contact Us</h2>
+        <div class="form-container">
+            <form id="contactForm">
+                <div class="form-group">
+                    <label for="name" class="form-label">Name</label>
+                    <input type="text" id="name" name="name" class="form-input" required>
+                    <div class="form-error" id="nameError"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" id="email" name="email" class="form-input" required>
+                    <div class="form-error" id="emailError"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="company" class="form-label">Company</label>
+                    <input type="text" id="company" name="company" class="form-input">
+                </div>
+                
+                <div class="form-group">
+                    <label for="message" class="form-label">Message</label>
+                    <textarea id="message" name="message" rows="4" class="form-input" required></textarea>
+                    <div class="form-error" id="messageError"></div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    Send Message
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p>&copy; 2025 ACGS-2. All rights reserved. Constitutional Hash: cdd01ef066bc6cf2</p>
+    </footer>
+
+    <script>
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        
+        // Check for saved theme preference or default to light mode
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        body.setAttribute('data-theme', currentTheme);
+        themeToggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+        
+        themeToggle.addEventListener('click', () => {
+            const newTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Copy code functionality
+        function copyCode(button) {
+            const codeBlock = button.parentNode.querySelector('pre');
+            const text = codeBlock.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.textContent;
+                button.textContent = '✅';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                }, 2000);
+            });
+        }
+
+        // Pricing toggle functionality
+        const pricingData = {
+            monthly: { basic: 49, pro: 99 },
+            annual: { basic: 39, pro: 79 }
+        };
+
+        function togglePricing(period) {
+            const toggleOptions = document.querySelectorAll('.toggle-option');
+            const slider = document.getElementById('toggleSlider');
+            
+            toggleOptions.forEach(option => option.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (period === 'annual') {
+                slider.style.transform = 'translateX(100%)';
+            } else {
+                slider.style.transform = 'translateX(0)';
+            }
+            
+            // Update prices
+            document.getElementById('basic-price').textContent = pricingData[period].basic;
+            document.getElementById('pro-price').textContent = pricingData[period].pro;
+        }
+
+        // Form validation and submission
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Clear previous errors
+            document.querySelectorAll('.form-error').forEach(error => error.textContent = '');
+            
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            // Validate form
+            let isValid = true;
+            
+            if (!data.name.trim()) {
+                document.getElementById('nameError').textContent = 'Name is required';
+                isValid = false;
+            }
+            
+            if (!data.email.trim()) {
+                document.getElementById('emailError').textContent = 'Email is required';
+                isValid = false;
+            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+                document.getElementById('emailError').textContent = 'Please enter a valid email';
+                isValid = false;
+            }
+            
+            if (!data.message.trim()) {
+                document.getElementById('messageError').textContent = 'Message is required';
+                isValid = false;
+            }
+            
+            if (isValid) {
+                // Simulate form submission
+                const submitBtn = this.querySelector('button[type="submit"]');
+                const originalText = submitBtn.textContent;
+                submitBtn.textContent = 'Sending...';
+                submitBtn.disabled = true;
+                
+                setTimeout(() => {
+                    alert('Message sent successfully! We\'ll get back to you soon.');
+                    this.reset();
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                }, 2000);
+            }
+        });
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe feature cards for animations
+        document.querySelectorAll('.feature-card, .pricing-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(card);
+        });
+
+        // Header background on scroll
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('.header');
+            if (window.scrollY > 100) {
+                header.style.background = body.getAttribute('data-theme') === 'dark' 
+                    ? 'rgba(15, 23, 42, 0.95)' 
+                    : 'rgba(255, 255, 255, 0.95)';
+            } else {
+                header.style.background = body.getAttribute('data-theme') === 'dark' 
+                    ? 'rgba(15, 23, 42, 0.8)' 
+                    : 'rgba(255, 255, 255, 0.8)';
+            }
+        });
+    </script>
+</body>
+</html>
