@@ -1,0 +1,31 @@
+# ACGS-2 Core Requirements
+# Constitutional Hash: cdd01ef066bc6cf2
+
+# Core Framework
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+pydantic>=2.5.0
+
+# Testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-benchmark>=4.0.0
+hypothesis>=6.88.0
+
+# Performance & Monitoring
+redis>=5.0.0
+asyncpg>=0.28.0
+httpx>=0.25.0
+
+# Security
+cryptography>=41.0.0
+passlib[bcrypt]>=1.7.4
+
+# Development
+black>=23.0.0
+isort>=5.12.0
+mypy>=1.6.0
+ruff>=0.1.0
+
+# Logging & Observability
+structlog>=23.2.0

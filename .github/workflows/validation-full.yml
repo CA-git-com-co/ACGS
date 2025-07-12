@@ -64,7 +64,7 @@ jobs:
           fetch-depth: 0  # Full history for comprehensive analysis
           
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           
@@ -295,7 +295,7 @@ jobs:
           
       - name: Upload validation reports
         if: github.event.inputs.upload_artifacts != 'false'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: full-validation-reports
           path: |
@@ -305,7 +305,7 @@ jobs:
           
       - name: Upload JSON report for API consumption
         if: success() || failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: validation-json-report
           path: validation_reports/consolidated_validation_report.json
@@ -417,7 +417,7 @@ jobs:
         uses: actions/checkout@v4
         
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           
@@ -455,7 +455,7 @@ jobs:
           echo "Security validation completed"
           
       - name: Upload security reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: security-validation-reports
           path: security_reports/
@@ -472,7 +472,7 @@ jobs:
         uses: actions/checkout@v4
         
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           
@@ -595,7 +595,7 @@ jobs:
           python benchmark_documentation_validation.py
           
       - name: Upload benchmark results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: performance-benchmarks
           path: performance_benchmarks.json
@@ -617,7 +617,7 @@ jobs:
       
     steps:
       - name: Download validation reports
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: full-validation-reports
           

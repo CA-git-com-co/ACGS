@@ -11,7 +11,7 @@ jobs:
       run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy
         image --format json --output trivy-report.json acgs-security-scan
     - name: Upload container scan results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: container-security-reports
         path: trivy-report.json
@@ -21,7 +21,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.10'
     - name: Install security tools
@@ -35,7 +35,7 @@ jobs:
     - name: Run pip-audit
       run: pip-audit --format=json --output=pip-audit-report.json
     - name: Upload security reports
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: security-reports
         path: '*-report.json'

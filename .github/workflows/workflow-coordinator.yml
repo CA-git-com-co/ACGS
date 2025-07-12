@@ -111,7 +111,7 @@ jobs:
           echo "📊 Found $TOTAL_SERVICES services ($COMPLIANCE_RATE% constitutional compliance)"
       
       - name: 📤 Upload service configuration
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: service-discovery-config
           path: |
@@ -141,7 +141,7 @@ jobs:
           python-version: '3.11'
       
       - name: 📥 Download service configuration
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: service-discovery-config
       
@@ -304,7 +304,7 @@ jobs:
         continue-on-error: true
       
       - name: 📤 Upload test artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: test-results-${{ matrix.service }}
@@ -366,7 +366,7 @@ jobs:
           python-version: '3.11'
       
       - name: 📥 Download all artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
       
       - name: 📊 Generate comprehensive report
         run: |
@@ -438,7 +438,7 @@ jobs:
           EOF
       
       - name: 📤 Upload final reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: comprehensive-test-reports
           path: |
@@ -556,7 +556,7 @@ jobs:
             });
       
       - name: 📤 Upload failure reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: failure-analysis
           path: failure_analysis.md
