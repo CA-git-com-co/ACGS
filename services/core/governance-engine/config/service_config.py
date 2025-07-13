@@ -4,7 +4,6 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import os
-from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -44,8 +43,8 @@ class SecurityConfig(BaseModel):
     )
     jwt_algorithm: str = Field(default="HS256")
     jwt_expire_minutes: int = Field(default=60)
-    cors_origins: List[str] = Field(default=["*"])
-    trusted_hosts: List[str] = Field(default=["*"])
+    cors_origins: list[str] = Field(default=["*"])
+    trusted_hosts: list[str] = Field(default=["*"])
 
 
 class ServiceConfig(BaseModel):

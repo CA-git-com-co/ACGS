@@ -6,17 +6,14 @@ This enhanced version integrates SuperClaude cognitive personas with ACGS ethics
 providing specialized ethical perspectives while maintaining constitutional compliance.
 """
 
-import asyncio
-import logging
-import time
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
 
 from ...shared.ai_model_service import AIModelService
-from ...shared.blackboard import BlackboardService, KnowledgeItem, TaskDefinition
+from ...shared.blackboard import BlackboardService, KnowledgeItem
 from ...shared.constitutional_safety_framework import ConstitutionalSafetyValidator
 from ...shared.superclaude_persona_integration import (
     PersonaEnhancedAgent,
@@ -37,10 +34,10 @@ class EnhancedEthicalAnalysisResult(BaseModel):
     """Enhanced ethical analysis result with persona integration"""
 
     base_analysis: EthicalAnalysisResult
-    persona_enhancement: Optional[PersonaIntegrationResult] = None
+    persona_enhancement: PersonaIntegrationResult | None = None
     constitutional_hash: str = "cdd01ef066bc6cf2"
-    integrated_recommendations: List[str] = Field(default_factory=list)
-    persona_insights: Dict[str, Any] = Field(default_factory=dict)
+    integrated_recommendations: list[str] = Field(default_factory=list)
+    persona_insights: dict[str, Any] = Field(default_factory=dict)
     enhanced_confidence: float = Field(ge=0.0, le=1.0, default=0.0)
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
@@ -52,7 +49,7 @@ class EnhancedEthicsAgent(PersonaEnhancedAgent):
         self,
         blackboard_service: BlackboardService,
         constitutional_validator: ConstitutionalSafetyValidator,
-        ai_model_service: Optional[AIModelService] = None,
+        ai_model_service: AIModelService | None = None,
     ):
         super().__init__(
             agent_type="enhanced_ethics_agent",
@@ -74,7 +71,7 @@ class EnhancedEthicsAgent(PersonaEnhancedAgent):
         }
 
     async def analyze_ethics_with_persona(
-        self, task_data: Dict[str, Any], persona: Optional[SuperClaudePersona] = None
+        self, task_data: dict[str, Any], persona: SuperClaudePersona | None = None
     ) -> EnhancedEthicalAnalysisResult:
         """Perform ethical analysis with optional persona enhancement"""
 
@@ -128,14 +125,14 @@ class EnhancedEthicsAgent(PersonaEnhancedAgent):
         )
 
     async def _execute_base_functionality(
-        self, task_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, task_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """Execute base ethics agent functionality"""
         base_analysis = await self._perform_base_ethical_analysis(task_data)
         return base_analysis.dict()
 
     async def _perform_base_ethical_analysis(
-        self, task_data: Dict[str, Any]
+        self, task_data: dict[str, Any]
     ) -> EthicalAnalysisResult:
         """Perform base ethical analysis using original ethics agent logic"""
 
@@ -176,7 +173,7 @@ class EnhancedEthicsAgent(PersonaEnhancedAgent):
         risk_level = self._determine_risk_level(
             bias_assessment, fairness_evaluation, harm_potential
         )
-        approved = risk_level in ["low", "medium"] and constitutional_compliance.get(
+        approved = risk_level in {"low", "medium"} and constitutional_compliance.get(
             "compliant", False
         )
         confidence = self._calculate_confidence(
@@ -208,9 +205,9 @@ class EnhancedEthicsAgent(PersonaEnhancedAgent):
     async def _analyzer_persona_enhancement(
         self,
         base_analysis: EthicalAnalysisResult,
-        task_data: Dict[str, Any],
+        task_data: dict[str, Any],
         persona_result: PersonaIntegrationResult,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Apply analyzer persona enhancement to ethical analysis"""
 
         insights = {
@@ -246,9 +243,9 @@ class EnhancedEthicsAgent(PersonaEnhancedAgent):
     async def _security_persona_enhancement(
         self,
         base_analysis: EthicalAnalysisResult,
-        task_data: Dict[str, Any],
+        task_data: dict[str, Any],
         persona_result: PersonaIntegrationResult,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Apply security persona enhancement to ethical analysis"""
 
         insights = {
@@ -282,9 +279,9 @@ class EnhancedEthicsAgent(PersonaEnhancedAgent):
     async def _qa_persona_enhancement(
         self,
         base_analysis: EthicalAnalysisResult,
-        task_data: Dict[str, Any],
+        task_data: dict[str, Any],
         persona_result: PersonaIntegrationResult,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Apply QA persona enhancement to ethical analysis"""
 
         insights = {
@@ -320,9 +317,9 @@ class EnhancedEthicsAgent(PersonaEnhancedAgent):
     async def _refactorer_persona_enhancement(
         self,
         base_analysis: EthicalAnalysisResult,
-        task_data: Dict[str, Any],
+        task_data: dict[str, Any],
         persona_result: PersonaIntegrationResult,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Apply refactorer persona enhancement to ethical analysis"""
 
         insights = {
@@ -358,9 +355,9 @@ class EnhancedEthicsAgent(PersonaEnhancedAgent):
     async def _mentor_persona_enhancement(
         self,
         base_analysis: EthicalAnalysisResult,
-        task_data: Dict[str, Any],
+        task_data: dict[str, Any],
         persona_result: PersonaIntegrationResult,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Apply mentor persona enhancement to ethical analysis"""
 
         insights = {
@@ -395,12 +392,12 @@ class EnhancedEthicsAgent(PersonaEnhancedAgent):
 
     async def _analyze_stakeholder_impact(
         self,
-        model_info: Dict[str, Any],
-        use_case: Dict[str, Any],
-        bias_assessment: Dict[str, Any],
-        fairness_evaluation: Dict[str, Any],
-        harm_potential: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        model_info: dict[str, Any],
+        use_case: dict[str, Any],
+        bias_assessment: dict[str, Any],
+        fairness_evaluation: dict[str, Any],
+        harm_potential: dict[str, Any],
+    ) -> dict[str, Any]:
         """Analyze impact on different stakeholders"""
 
         stakeholders = [
@@ -429,46 +426,46 @@ class EnhancedEthicsAgent(PersonaEnhancedAgent):
         return impact_analysis
 
     def _assess_bias_impact_on_stakeholder(
-        self, stakeholder: str, bias_assessment: Dict[str, Any]
+        self, stakeholder: str, bias_assessment: dict[str, Any]
     ) -> str:
         """Assess bias impact on specific stakeholder"""
         # Simplified implementation
-        if bias_assessment.get("demographic_parity", False):
+        if bias_assessment.get("demographic_parity"):
             return "low"
         return "medium"
 
     def _assess_fairness_impact_on_stakeholder(
-        self, stakeholder: str, fairness_evaluation: Dict[str, Any]
+        self, stakeholder: str, fairness_evaluation: dict[str, Any]
     ) -> str:
         """Assess fairness impact on specific stakeholder"""
         # Simplified implementation
         fairness_score = fairness_evaluation.get("overall_fairness_score", 0.5)
         if fairness_score > 0.8:
             return "low"
-        elif fairness_score > 0.6:
+        if fairness_score > 0.6:
             return "medium"
         return "high"
 
     def _assess_harm_impact_on_stakeholder(
-        self, stakeholder: str, harm_potential: Dict[str, Any]
+        self, stakeholder: str, harm_potential: dict[str, Any]
     ) -> str:
         """Assess harm impact on specific stakeholder"""
         # Simplified implementation
         harm_score = harm_potential.get("overall_harm_score", 0.5)
         if harm_score < 0.3:
             return "low"
-        elif harm_score < 0.6:
+        if harm_score < 0.6:
             return "medium"
         return "high"
 
     async def _check_constitutional_compliance(
         self,
-        model_info: Dict[str, Any],
-        use_case: Dict[str, Any],
-        bias_assessment: Dict[str, Any],
-        fairness_evaluation: Dict[str, Any],
-        harm_potential: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        model_info: dict[str, Any],
+        use_case: dict[str, Any],
+        bias_assessment: dict[str, Any],
+        fairness_evaluation: dict[str, Any],
+        harm_potential: dict[str, Any],
+    ) -> dict[str, Any]:
         """Check constitutional compliance for ethical analysis"""
 
         constitutional_principles = {
@@ -490,37 +487,37 @@ class EnhancedEthicsAgent(PersonaEnhancedAgent):
             / len(constitutional_principles),
         }
 
-    def _check_safety_compliance(self, harm_potential: Dict[str, Any]) -> bool:
+    def _check_safety_compliance(self, harm_potential: dict[str, Any]) -> bool:
         """Check safety principle compliance"""
         harm_score = harm_potential.get("overall_harm_score", 1.0)
         return harm_score < 0.3  # Low harm threshold for safety compliance
 
     def _check_transparency_compliance(
-        self, model_info: Dict[str, Any], use_case: Dict[str, Any]
+        self, model_info: dict[str, Any], use_case: dict[str, Any]
     ) -> bool:
         """Check transparency principle compliance"""
         has_documentation = model_info.get("documentation_available", False)
         has_explainability = use_case.get("explainability_required", False)
         return has_documentation and has_explainability
 
-    def _check_consent_compliance(self, use_case: Dict[str, Any]) -> bool:
+    def _check_consent_compliance(self, use_case: dict[str, Any]) -> bool:
         """Check consent principle compliance"""
         return use_case.get("consent_obtained", False)
 
     def _check_data_privacy_compliance(
-        self, model_info: Dict[str, Any], use_case: Dict[str, Any]
+        self, model_info: dict[str, Any], use_case: dict[str, Any]
     ) -> bool:
         """Check data privacy principle compliance"""
         privacy_preserving = model_info.get("privacy_preserving", False)
         gdpr_compliant = use_case.get("gdpr_compliant", False)
         return privacy_preserving and gdpr_compliant
 
-    def _check_fairness_compliance(self, fairness_evaluation: Dict[str, Any]) -> bool:
+    def _check_fairness_compliance(self, fairness_evaluation: dict[str, Any]) -> bool:
         """Check fairness principle compliance"""
         fairness_score = fairness_evaluation.get("overall_fairness_score", 0.0)
         return fairness_score > 0.7  # High fairness threshold for compliance
 
-    def _check_accountability_compliance(self, use_case: Dict[str, Any]) -> bool:
+    def _check_accountability_compliance(self, use_case: dict[str, Any]) -> bool:
         """Check accountability principle compliance"""
         has_audit_trail = use_case.get("audit_trail_enabled", False)
         has_responsible_party = use_case.get("responsible_party_identified", False)
@@ -528,9 +525,9 @@ class EnhancedEthicsAgent(PersonaEnhancedAgent):
 
     def _determine_risk_level(
         self,
-        bias_assessment: Dict[str, Any],
-        fairness_evaluation: Dict[str, Any],
-        harm_potential: Dict[str, Any],
+        bias_assessment: dict[str, Any],
+        fairness_evaluation: dict[str, Any],
+        harm_potential: dict[str, Any],
     ) -> str:
         """Determine overall risk level"""
 
@@ -542,18 +539,17 @@ class EnhancedEthicsAgent(PersonaEnhancedAgent):
 
         if risk_score < 0.3:
             return "low"
-        elif risk_score < 0.6:
+        if risk_score < 0.6:
             return "medium"
-        elif risk_score < 0.8:
+        if risk_score < 0.8:
             return "high"
-        else:
-            return "critical"
+        return "critical"
 
     def _calculate_confidence(
         self,
-        bias_assessment: Dict[str, Any],
-        fairness_evaluation: Dict[str, Any],
-        harm_potential: Dict[str, Any],
+        bias_assessment: dict[str, Any],
+        fairness_evaluation: dict[str, Any],
+        harm_potential: dict[str, Any],
     ) -> float:
         """Calculate confidence score for ethical analysis"""
 
@@ -567,11 +563,11 @@ class EnhancedEthicsAgent(PersonaEnhancedAgent):
 
     async def _generate_base_recommendations(
         self,
-        bias_assessment: Dict[str, Any],
-        fairness_evaluation: Dict[str, Any],
-        harm_potential: Dict[str, Any],
-        stakeholder_impact: Dict[str, Any],
-    ) -> List[str]:
+        bias_assessment: dict[str, Any],
+        fairness_evaluation: dict[str, Any],
+        harm_potential: dict[str, Any],
+        stakeholder_impact: dict[str, Any],
+    ) -> list[str]:
         """Generate base recommendations for ethical improvements"""
 
         recommendations = [
@@ -603,9 +599,9 @@ class EnhancedEthicsAgent(PersonaEnhancedAgent):
     async def _log_enhanced_analysis(
         self,
         base_analysis: EthicalAnalysisResult,
-        persona: Optional[SuperClaudePersona],
-        persona_insights: Dict[str, Any],
-        integrated_recommendations: List[str],
+        persona: SuperClaudePersona | None,
+        persona_insights: dict[str, Any],
+        integrated_recommendations: list[str],
     ) -> None:
         """Log enhanced ethical analysis to blackboard"""
 

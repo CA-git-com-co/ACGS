@@ -6,6 +6,7 @@ and formal verification capabilities for safety-critical applications.
 """
 
 import asyncio
+import sys
 import tempfile
 from pathlib import Path
 
@@ -34,14 +35,14 @@ class TestFormalVerificationCompletion:
         """Provide sample policy for testing."""
         return """
         package acgs.access_control
-        
+
         default allow = false
-        
+
         allow {
             input.role == "admin"
             input.action == "read"
         }
-        
+
         allow {
             input.role == "user"
             input.action == "read"
@@ -92,7 +93,7 @@ class TestFormalVerificationCompletion:
             import os
             import sys
 
-            sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+            sys.path.append(os.path.join(Path(__file__).parent, ".."))
 
             from services.core.formal_verification.fv_service.app.core.smt_solver_integration import (
                 Z3SMTSolverClient,
@@ -158,7 +159,7 @@ class TestFormalVerificationCompletion:
 
             # Create temporary principles file
             with tempfile.NamedTemporaryFile(
-                mode="w", suffix=".yaml", delete=False
+                encoding="utf-8", mode="w", suffix=".yaml", delete=False
             ) as f:
                 yaml.dump(constitutional_principles, f)
                 principles_file = f.name
@@ -208,7 +209,7 @@ class TestFormalVerificationCompletion:
 
             # Create temporary principles file
             with tempfile.NamedTemporaryFile(
-                mode="w", suffix=".yaml", delete=False
+                encoding="utf-8", mode="w", suffix=".yaml", delete=False
             ) as f:
                 yaml.dump(constitutional_principles, f)
                 principles_file = f.name
@@ -290,7 +291,7 @@ class TestFormalVerificationCompletion:
 
             # Create temporary principles file
             with tempfile.NamedTemporaryFile(
-                mode="w", suffix=".yaml", delete=False
+                encoding="utf-8", mode="w", suffix=".yaml", delete=False
             ) as f:
                 yaml.dump(constitutional_principles, f)
                 principles_file = f.name
@@ -321,10 +322,6 @@ class TestFormalVerificationCompletion:
                     reliability >= TEST_CONFIG["reliability_target"]
                 ), f"Reliability {reliability:.4f} below target {TEST_CONFIG['reliability_target']:.4f}"
 
-                print(
-                    f"Formal verification reliability: {reliability:.4f} (target: {TEST_CONFIG['reliability_target']:.4f})"
-                )
-
             finally:
                 Path(principles_file).unlink()
 
@@ -342,7 +339,7 @@ class TestFormalVerificationCompletion:
 
             # Create temporary principles file
             with tempfile.NamedTemporaryFile(
-                mode="w", suffix=".yaml", delete=False
+                encoding="utf-8", mode="w", suffix=".yaml", delete=False
             ) as f:
                 yaml.dump(constitutional_principles, f)
                 principles_file = f.name
@@ -399,10 +396,6 @@ class TestFormalVerificationCompletion:
                 for requirement, met in safety_requirements_met.items():
                     assert met, f"Safety-critical requirement '{requirement}' not met"
 
-                print(
-                    f"All safety-critical requirements met: {safety_requirements_met}"
-                )
-
             finally:
                 Path(principles_file).unlink()
 
@@ -455,33 +448,20 @@ async def run_formal_verification_tests():
         except Exception as e:
             results["failed"] += 1
             results["errors"].append(f"{test_name}: {e!s}")
-            logger.error(f"❌ {test_name} FAILED: {e}")
+            logger.exception(f"❌ {test_name} FAILED: {e}")
 
     # Print summary
     total_tests = results["passed"] + results["failed"]
     success_rate = results["passed"] / total_tests if total_tests > 0 else 0
     reliability_achieved = success_rate >= TEST_CONFIG["reliability_target"]
 
-    print(f"\n{'=' * 70}")
-    print("FORMAL VERIFICATION COMPLETION TEST RESULTS")
-    print(f"{'=' * 70}")
-    print(f"Total Tests: {total_tests}")
-    print(f"Passed: {results['passed']}")
-    print(f"Failed: {results['failed']}")
-    print(f"Success Rate: {success_rate:.4f}")
-    print(f"Reliability Target: {TEST_CONFIG['reliability_target']:.4f}")
-    print(f"Target Achieved: {'✅ YES' if reliability_achieved else '❌ NO'}")
-
     if results["errors"]:
-        print("\nErrors:")
-        for error in results["errors"]:
-            print(f"  - {error}")
-
-    print(f"{'=' * 70}")
+        for _error in results["errors"]:
+            pass
 
     return reliability_achieved
 
 
 if __name__ == "__main__":
     success = asyncio.run(run_formal_verification_tests())
-    exit(0 if success else 1)
+    sys.exit(0 if success else 1)

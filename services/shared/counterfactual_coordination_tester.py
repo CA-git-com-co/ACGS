@@ -8,13 +8,13 @@ and causal attribution analysis.
 """
 
 import asyncio
-import json
 import logging
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
+from typing import Any
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
@@ -23,13 +23,10 @@ from .ai_model_service import AIModelService
 from .blackboard import BlackboardService, KnowledgeItem
 from .causal_coordination_model import (
     CoordinationAttribute,
-    CoordinationQualityMetric,
     CoordinationScenario,
     SpuriousCoordinationAttribute,
 )
 from .robust_coordination_metrics import (
-    CoordinationMetricType,
-    MetricMeasurement,
     RobustCoordinationMetrics,
 )
 
@@ -74,10 +71,10 @@ class CoordinationCounterfactual:
     modified_scenario: CoordinationScenario
     intervention_type: CoordinationInterventionType
     test_type: CounterfactualTestType
-    target_attribute: Union[CoordinationAttribute, SpuriousCoordinationAttribute]
+    target_attribute: CoordinationAttribute | SpuriousCoordinationAttribute
     expected_outcome: str  # "improvement", "degradation", "no_change"
     constitutional_hash: str = "cdd01ef066bc6cf2"
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
     generation_timestamp: datetime = field(
         default_factory=lambda: datetime.now(timezone.utc)
     )
@@ -101,9 +98,9 @@ class CounterfactualTestResult:
     spurious_resistance_score: float = Field(ge=0.0, le=1.0)
 
     # Performance metrics
-    original_metrics: Dict[str, float] = field(default_factory=dict)
-    modified_metrics: Dict[str, float] = field(default_factory=dict)
-    metric_changes: Dict[str, float] = field(default_factory=dict)
+    original_metrics: dict[str, float] = field(default_factory=dict)
+    modified_metrics: dict[str, float] = field(default_factory=dict)
+    metric_changes: dict[str, float] = field(default_factory=dict)
 
     # Constitutional compliance
     constitutional_compliance_maintained: bool = True
@@ -122,18 +119,18 @@ class CounterfactualTestSuite(BaseModel):
     constitutional_hash: str = "cdd01ef066bc6cf2"
 
     # Test configuration
-    base_scenarios: List[CoordinationScenario] = Field(default_factory=list)
-    test_types_enabled: List[CounterfactualTestType] = Field(default_factory=list)
-    causal_attributes_tested: List[CoordinationAttribute] = Field(default_factory=list)
-    spurious_attributes_tested: List[SpuriousCoordinationAttribute] = Field(
+    base_scenarios: list[CoordinationScenario] = Field(default_factory=list)
+    test_types_enabled: list[CounterfactualTestType] = Field(default_factory=list)
+    causal_attributes_tested: list[CoordinationAttribute] = Field(default_factory=list)
+    spurious_attributes_tested: list[SpuriousCoordinationAttribute] = Field(
         default_factory=list
     )
 
     # Test results
-    counterfactuals_generated: List[CoordinationCounterfactual] = Field(
+    counterfactuals_generated: list[CoordinationCounterfactual] = Field(
         default_factory=list
     )
-    test_results: List[CounterfactualTestResult] = Field(default_factory=list)
+    test_results: list[CounterfactualTestResult] = Field(default_factory=list)
 
     # Summary metrics
     total_tests_executed: int = 0
@@ -145,7 +142,7 @@ class CounterfactualTestSuite(BaseModel):
     creation_timestamp: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc)
     )
-    completion_timestamp: Optional[datetime] = None
+    completion_timestamp: datetime | None = None
 
 
 class CounterfactualCoordinationTester:
@@ -156,65 +153,65 @@ class CounterfactualCoordinationTester:
         CoordinationInterventionType.IMPROVE_COMMUNICATION: """
         Enhance the communication aspects of this coordination scenario:
         {scenario}
-        
+
         Improvements to apply:
         - Increase message clarity and precision
         - Add structured communication protocols
         - Enhance information sharing mechanisms
         - Improve feedback loops between agents
-        
+
         Maintain constitutional hash: cdd01ef066bc6cf2
         Preserve task objectives and agent roles while improving communication.
         """,
         CoordinationInterventionType.DEGRADE_COMMUNICATION: """
         Introduce communication issues into this coordination scenario:
         {scenario}
-        
+
         Degradations to apply:
         - Reduce message clarity
         - Introduce communication delays
         - Add ambiguous instructions
         - Create information bottlenecks
-        
+
         Maintain constitutional hash: cdd01ef066bc6cf2
         Preserve core task while degrading communication quality.
         """,
         CoordinationInterventionType.ENHANCE_TASK_CLARITY: """
         Improve task clarity and objective definition in this coordination scenario:
         {scenario}
-        
+
         Enhancements to apply:
         - Clarify task objectives and success criteria
         - Define clear roles and responsibilities
         - Establish measurable milestones
         - Provide comprehensive context
-        
+
         Maintain constitutional hash: cdd01ef066bc6cf2
         Focus on task clarity while preserving coordination context.
         """,
         CoordinationInterventionType.VARY_AGENT_PERSONALITIES: """
         Modify agent personality traits in this coordination scenario:
         {scenario}
-        
+
         Variations to apply:
         - Change agent communication styles
         - Alter decision-making approaches
         - Modify collaboration preferences
         - Adjust personality characteristics
-        
+
         Maintain constitutional hash: cdd01ef066bc6cf2
         Preserve task objectives while varying agent personalities.
         """,
         CoordinationInterventionType.CHANGE_COMMUNICATION_STYLE: """
         Alter communication style in this coordination scenario:
         {scenario}
-        
+
         Style changes to apply:
         - Modify formality level (formal ↔ informal)
         - Change technical complexity (technical ↔ simplified)
         - Alter verbosity (concise ↔ detailed)
         - Adjust tone (direct ↔ diplomatic)
-        
+
         Maintain constitutional hash: cdd01ef066bc6cf2
         Preserve coordination content while changing communication style.
         """,
@@ -244,7 +241,7 @@ class CounterfactualCoordinationTester:
         self,
         blackboard_service: BlackboardService,
         robust_metrics_service: RobustCoordinationMetrics,
-        ai_model_service: Optional[AIModelService] = None,
+        ai_model_service: AIModelService | None = None,
     ):
         """Initialize counterfactual coordination tester"""
         self.blackboard = blackboard_service
@@ -264,11 +261,11 @@ class CounterfactualCoordinationTester:
 
     async def execute_counterfactual_test_suite(
         self,
-        base_scenarios: List[CoordinationScenario],
+        base_scenarios: list[CoordinationScenario],
         coordination_function: Callable,
-        test_types: Optional[List[CounterfactualTestType]] = None,
-        causal_attributes: Optional[List[CoordinationAttribute]] = None,
-        spurious_attributes: Optional[List[SpuriousCoordinationAttribute]] = None,
+        test_types: list[CounterfactualTestType] | None = None,
+        causal_attributes: list[CoordinationAttribute] | None = None,
+        spurious_attributes: list[SpuriousCoordinationAttribute] | None = None,
     ) -> CounterfactualTestSuite:
         """Execute comprehensive counterfactual test suite"""
 
@@ -340,11 +337,11 @@ class CounterfactualCoordinationTester:
 
     async def _generate_test_counterfactuals(
         self,
-        base_scenarios: List[CoordinationScenario],
-        test_types: List[CounterfactualTestType],
-        causal_attributes: List[CoordinationAttribute],
-        spurious_attributes: List[SpuriousCoordinationAttribute],
-    ) -> List[CoordinationCounterfactual]:
+        base_scenarios: list[CoordinationScenario],
+        test_types: list[CounterfactualTestType],
+        causal_attributes: list[CoordinationAttribute],
+        spurious_attributes: list[SpuriousCoordinationAttribute],
+    ) -> list[CoordinationCounterfactual]:
         """Generate counterfactuals for testing"""
 
         all_counterfactuals = []
@@ -385,8 +382,8 @@ class CounterfactualCoordinationTester:
     async def _generate_causal_counterfactuals(
         self,
         scenario: CoordinationScenario,
-        causal_attributes: List[CoordinationAttribute],
-    ) -> List[CoordinationCounterfactual]:
+        causal_attributes: list[CoordinationAttribute],
+    ) -> list[CoordinationCounterfactual]:
         """Generate counterfactuals for causal sensitivity testing"""
 
         counterfactuals = []
@@ -439,8 +436,8 @@ class CounterfactualCoordinationTester:
     async def _generate_spurious_counterfactuals(
         self,
         scenario: CoordinationScenario,
-        spurious_attributes: List[SpuriousCoordinationAttribute],
-    ) -> List[CoordinationCounterfactual]:
+        spurious_attributes: list[SpuriousCoordinationAttribute],
+    ) -> list[CoordinationCounterfactual]:
         """Generate counterfactuals for spurious invariance testing"""
 
         counterfactuals = []
@@ -469,7 +466,7 @@ class CounterfactualCoordinationTester:
 
     async def _generate_constitutional_counterfactuals(
         self, scenario: CoordinationScenario
-    ) -> List[CoordinationCounterfactual]:
+    ) -> list[CoordinationCounterfactual]:
         """Generate counterfactuals for constitutional compliance testing"""
 
         counterfactuals = []
@@ -505,7 +502,7 @@ class CounterfactualCoordinationTester:
 
     async def _generate_edge_case_counterfactuals(
         self, scenario: CoordinationScenario
-    ) -> List[CoordinationCounterfactual]:
+    ) -> list[CoordinationCounterfactual]:
         """Generate edge case counterfactuals for stress testing"""
 
         counterfactuals = []
@@ -629,7 +626,7 @@ class CounterfactualCoordinationTester:
             return test_result
 
         except Exception as e:
-            self.logger.error(f"Counterfactual test execution failed: {e}")
+            self.logger.exception(f"Counterfactual test execution failed: {e}")
             # Return failed test result
             return CounterfactualTestResult(
                 test_id=test_id,
@@ -659,12 +656,11 @@ class CounterfactualCoordinationTester:
             # Extract quality score
             if isinstance(result, (int, float)):
                 return float(max(0.0, min(1.0, result)))
-            elif isinstance(result, dict):
+            if isinstance(result, dict):
                 return float(
                     result.get("quality_score", result.get("effectiveness", 0.5))
                 )
-            else:
-                return 0.5  # Default neutral score
+            return 0.5  # Default neutral score
 
         except Exception as e:
             self.logger.warning(f"Coordination quality evaluation failed: {e}")
@@ -672,7 +668,7 @@ class CounterfactualCoordinationTester:
 
     async def _collect_coordination_metrics(
         self, coordination_function: Callable, scenario: CoordinationScenario
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Collect detailed coordination metrics"""
 
         metrics = {}
@@ -707,12 +703,11 @@ class CounterfactualCoordinationTester:
 
         if expected_outcome == "improvement":
             return quality_change > threshold
-        elif expected_outcome == "degradation":
+        if expected_outcome == "degradation":
             return quality_change < -threshold
-        elif expected_outcome == "no_change":
+        if expected_outcome == "no_change":
             return abs(quality_change) <= threshold
-        else:
-            return False
+        return False
 
     def _calculate_causal_attribution(
         self, counterfactual: CoordinationCounterfactual, quality_change: float
@@ -723,7 +718,7 @@ class CounterfactualCoordinationTester:
             # For causal tests, measure how well change aligns with expectation
             if counterfactual.expected_outcome == "improvement":
                 return max(0.0, min(1.0, quality_change * 2))  # Scale positive changes
-            elif counterfactual.expected_outcome == "degradation":
+            if counterfactual.expected_outcome == "degradation":
                 return max(0.0, min(1.0, -quality_change * 2))  # Scale negative changes
 
         return 0.5  # Neutral score for non-causal tests
@@ -773,7 +768,7 @@ class CounterfactualCoordinationTester:
     # Helper methods for applying interventions
     async def _apply_causal_improvement(
         self, scenario: CoordinationScenario, attribute: CoordinationAttribute
-    ) -> Optional[CoordinationScenario]:
+    ) -> CoordinationScenario | None:
         """Apply causal improvement intervention"""
 
         # Implementation details would depend on specific coordination system
@@ -998,7 +993,7 @@ class CounterfactualCoordinationTester:
 
         await self.blackboard.add_knowledge(knowledge_item)
 
-    def get_testing_statistics(self) -> Dict[str, Any]:
+    def get_testing_statistics(self) -> dict[str, Any]:
         """Get testing statistics"""
 
         stats = self.testing_stats.copy()

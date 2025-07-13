@@ -1,3 +1,5 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 # ACGS-1 GitHub Actions Workflows
 
 This directory contains the CI/CD workflows for the ACGS-1 project. Due to modernization efforts, many workflows have been consolidated.

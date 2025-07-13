@@ -280,7 +280,7 @@ class OptimizedGovernanceEngine:
                 recommendations=["Manual review required due to validation error"],
             )
 
-            self.logger.error(f"Validation error for {request.policy_id}: {e}")
+            self.logger.exception(f"Validation error for {request.policy_id}: {e}")
             return error_response
 
     async def _get_cached_validation(
@@ -382,7 +382,7 @@ class OptimizedGovernanceEngine:
             matched_patterns = sum(
                 1 for count in constitutional_matches.values() if count > 0
             )
-            base_compliance = matched_patterns / total_patterns
+            matched_patterns / total_patterns
 
             # Apply constitutional AI scoring
             if constitutional_matches.get("constitutional_hash", 0) == 0:
@@ -431,7 +431,7 @@ class OptimizedGovernanceEngine:
             )
 
         except Exception as e:
-            self.logger.error(f"Full validation error: {e}")
+            self.logger.exception(f"Full validation error: {e}")
             # Return non-compliant for errors
             return PolicyValidationResponse(
                 validation_id="",
@@ -546,7 +546,7 @@ class OptimizedGovernanceEngine:
             return results
 
         except Exception as e:
-            self.logger.error(f"Batch validation error: {e}")
+            self.logger.exception(f"Batch validation error: {e}")
             # Return error responses for all requests
             return [
                 PolicyValidationResponse(

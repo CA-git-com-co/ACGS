@@ -5,11 +5,11 @@ Constitutional Hash: cdd01ef066bc6cf2
 FastAPI middleware that automatically integrates cache optimization into ACGS services.
 """
 
-import asyncio
 import json
 import logging
 import time
-from typing import Any, Callable, Dict, Optional
+from collections.abc import Callable
+from typing import Any
 
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.base import BaseHTTPMiddleware
@@ -31,14 +31,14 @@ class CacheOptimizationMiddleware(BaseHTTPMiddleware):
         app: FastAPI,
         service_name: str,
         cache_enabled: bool = True,
-        cache_paths: Optional[Dict[str, Dict[str, Any]]] = None,
+        cache_paths: dict[str, dict[str, Any]] | None = None,
         default_ttl: int = 300,
     ):
         super().__init__(app)
         self.service_name = service_name
         self.cache_enabled = cache_enabled
         self.default_ttl = default_ttl
-        self.cache_manager: Optional[OptimizedCacheManager] = None
+        self.cache_manager: OptimizedCacheManager | None = None
 
         # Default cacheable paths and their configurations
         self.cache_paths = cache_paths or {
@@ -84,7 +84,7 @@ class CacheOptimizationMiddleware(BaseHTTPMiddleware):
                 await self.cache_manager.initialize()
                 logger.info(f"✅ Cache optimization enabled for {self.service_name}")
             except Exception as e:
-                logger.error(
+                logger.exception(
                     f"Failed to initialize cache manager for {self.service_name}: {e}"
                 )
                 self.cache_enabled = False
@@ -96,7 +96,7 @@ class CacheOptimizationMiddleware(BaseHTTPMiddleware):
                 await self.cache_manager.close()
                 logger.info(f"Cache manager closed for {self.service_name}")
             except Exception as e:
-                logger.error(f"Error closing cache manager: {e}")
+                logger.exception(f"Error closing cache manager: {e}")
 
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
         """Process requests with intelligent caching."""
@@ -137,7 +137,7 @@ class CacheOptimizationMiddleware(BaseHTTPMiddleware):
 
         return response
 
-    def _get_cache_config(self, request: Request) -> Optional[Dict[str, Any]]:
+    def _get_cache_config(self, request: Request) -> dict[str, Any] | None:
         """Get cache configuration for the request path."""
         path = str(request.url.path)
         method = request.method
@@ -168,7 +168,7 @@ class CacheOptimizationMiddleware(BaseHTTPMiddleware):
         ]
 
         # Add request body hash for POST/PUT requests
-        if request.method in ["POST", "PUT", "PATCH"]:
+        if request.method in {"POST", "PUT", "PATCH"}:
             try:
                 body = await request.body()
                 if body:
@@ -187,16 +187,14 @@ class CacheOptimizationMiddleware(BaseHTTPMiddleware):
             key_parts.extend([user_id, tenant_id])
 
         # Create final cache key
-        cache_key = ":".join(str(part) for part in key_parts)
-        return cache_key
+        return ":".join(str(part) for part in key_parts)
 
     async def _get_cached_response(
         self, cache_key: str, data_type: str
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """Get cached response if available."""
         try:
-            cached_data = await self.cache_manager.get(cache_key, data_type)
-            return cached_data
+            return await self.cache_manager.get(cache_key, data_type)
         except Exception as e:
             logger.warning(f"Cache get error for {cache_key}: {e}")
             return None
@@ -205,7 +203,7 @@ class CacheOptimizationMiddleware(BaseHTTPMiddleware):
         self,
         cache_key: str,
         response: Response,
-        cache_config: Dict[str, Any],
+        cache_config: dict[str, Any],
         execution_time: float,
     ) -> None:
         """Cache the response."""
@@ -250,7 +248,7 @@ class CacheOptimizationMiddleware(BaseHTTPMiddleware):
         except Exception as e:
             logger.warning(f"Cache set error for {cache_key}: {e}")
 
-    def _create_response_from_cache(self, cached_data: Dict[str, Any]) -> Response:
+    def _create_response_from_cache(self, cached_data: dict[str, Any]) -> Response:
         """Create a Response object from cached data."""
         try:
             # Extract cached response data
@@ -278,14 +276,12 @@ class CacheOptimizationMiddleware(BaseHTTPMiddleware):
             headers["X-Cached-At"] = str(cached_data.get("cached_at", time.time()))
 
             # Create response
-            response = Response(
+            return Response(
                 content=body_content, status_code=status_code, headers=headers
             )
 
-            return response
-
         except Exception as e:
-            logger.error(f"Error creating response from cache: {e}")
+            logger.exception(f"Error creating response from cache: {e}")
             # Return a basic error response
             return Response(
                 content=json.dumps({"error": "Cache retrieval error"}),
@@ -294,7 +290,7 @@ class CacheOptimizationMiddleware(BaseHTTPMiddleware):
             )
 
     def _should_cache_response(
-        self, response: Response, cache_config: Dict[str, Any]
+        self, response: Response, cache_config: dict[str, Any]
     ) -> bool:
         """Determine if response should be cached."""
         # Only cache successful responses
@@ -311,13 +307,10 @@ class CacheOptimizationMiddleware(BaseHTTPMiddleware):
 
         # Don't cache responses that explicitly say not to cache
         cache_control = response.headers.get("Cache-Control", "")
-        if "no-cache" in cache_control or "no-store" in cache_control:
-            return False
-
-        return True
+        return not ("no-cache" in cache_control or "no-store" in cache_control)
 
     def _add_cache_headers(
-        self, response: Response, cache_config: Dict[str, Any], execution_time: float
+        self, response: Response, cache_config: dict[str, Any], execution_time: float
     ) -> None:
         """Add cache-related headers to response."""
         response.headers["X-Cache-Status"] = "MISS"
@@ -334,7 +327,7 @@ def setup_cache_optimization(
     app: FastAPI,
     service_name: str,
     cache_enabled: bool = True,
-    cache_paths: Optional[Dict[str, Dict[str, Any]]] = None,
+    cache_paths: dict[str, dict[str, Any]] | None = None,
     default_ttl: int = 300,
 ) -> CacheOptimizationMiddleware:
     """

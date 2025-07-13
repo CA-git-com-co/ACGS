@@ -107,7 +107,7 @@ class PolicyManifest:
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for JSON serialization"""
-        data = {
+        return {
             "manifest_version": self.manifest_version,
             "generated_at": self.generated_at.isoformat(),
             "dataset_name": self.dataset_name,
@@ -119,7 +119,6 @@ class PolicyManifest:
             "integrity_info": self.integrity_info,
             "metadata": self.metadata,
         }
-        return data
 
     def to_json(self, indent: int = 2) -> str:
         """Convert to JSON string"""
@@ -142,8 +141,8 @@ class ManifestManager:
         dataset_path: str,
         dataset_name: str,
         dataset_version: str,
-        include_patterns: list[str] = None,
-        exclude_patterns: list[str] = None,
+        include_patterns: list[str] | None = None,
+        exclude_patterns: list[str] | None = None,
     ) -> PolicyManifest:
         """
         Generate a comprehensive manifest for a policy dataset.
@@ -299,7 +298,7 @@ class ManifestManager:
                 record_count = len(
                     [line for line in content.split("\n") if line.strip()]
                 )
-            elif file_path.suffix in [".json", ".yaml", ".yml"]:
+            elif file_path.suffix in {".json", ".yaml", ".yml"}:
                 # Single document files
                 record_count = 1
             elif file_path.suffix == ".rego":
@@ -330,9 +329,9 @@ class ManifestManager:
         # File extension based detection
         if file_extension == ".rego":
             return "Rego"
-        if file_extension in [".json", ".jsonl"]:
+        if file_extension in {".json", ".jsonl"}:
             return "JSON"
-        if file_extension in [".yaml", ".yml"]:
+        if file_extension in {".yaml", ".yml"}:
             return "YAML"
 
         # Content-based detection
@@ -383,7 +382,7 @@ class ManifestManager:
             Validation result dictionary
         """
         try:
-            with open(manifest_path) as f:
+            with open(manifest_path, encoding="utf-8") as f:
                 manifest_data = json.load(f)
 
             validation_result = {
@@ -451,14 +450,14 @@ class ManifestManager:
         output_path = Path(output_path)
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(output_path, "w") as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             f.write(manifest.to_json())
 
         logger.info(f"Manifest saved to: {output_path}")
 
     def load_manifest(self, manifest_path: str) -> PolicyManifest:
         """Load manifest from file"""
-        with open(manifest_path) as f:
+        with open(manifest_path, encoding="utf-8") as f:
             data = json.load(f)
 
         # Convert back to PolicyManifest object

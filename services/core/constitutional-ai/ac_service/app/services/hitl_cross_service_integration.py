@@ -192,7 +192,7 @@ class HITLCrossServiceIntegrator:
 
         except Exception as e:
             self.integration_metrics["failed_integrations"] += 1
-            logger.error(f"Cross-service uncertainty assessment failed: {e}")
+            logger.exception(f"Cross-service uncertainty assessment failed: {e}")
 
             # Fallback to local assessment
             fallback_assessment = await self.hitl_sampler.assess_uncertainty(
@@ -477,7 +477,7 @@ class HITLCrossServiceIntegrator:
             }
 
         except Exception as e:
-            logger.error(f"Cross-service oversight coordination failed: {e}")
+            logger.exception(f"Cross-service oversight coordination failed: {e}")
             return {"error": str(e), "oversight_required": True}
 
     async def _notify_services_of_oversight(

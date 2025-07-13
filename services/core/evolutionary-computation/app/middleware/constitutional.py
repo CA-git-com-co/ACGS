@@ -7,7 +7,7 @@ API requests and responses with ACGS integration.
 
 import logging
 import time
-from typing import Callable
+from collections.abc import Callable
 
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -31,7 +31,7 @@ class ConstitutionalComplianceMiddleware(BaseHTTPMiddleware):
         self,
         app,
         strict_mode: bool = True,
-        bypass_paths: list = None,
+        bypass_paths: list | None = None,
         enable_request_validation: bool = True,
         enable_response_validation: bool = True,
     ):
@@ -100,12 +100,10 @@ class ConstitutionalComplianceMiddleware(BaseHTTPMiddleware):
                 response = await self._validate_response(response)
 
             # Add constitutional compliance headers
-            response = self._add_constitutional_headers(response)
-
-            return response
+            return self._add_constitutional_headers(response)
 
         except Exception as e:
-            logger.error(f"Constitutional compliance middleware error: {e}")
+            logger.exception(f"Constitutional compliance middleware error: {e}")
 
             # Return constitutional compliance error response
             return JSONResponse(
@@ -150,7 +148,7 @@ class ConstitutionalComplianceMiddleware(BaseHTTPMiddleware):
                 }
 
             # Check request method compliance
-            if request.method in ["POST", "PUT", "PATCH", "DELETE"]:
+            if request.method in {"POST", "PUT", "PATCH", "DELETE"}:
                 # Ensure constitutional compliance for state-changing operations
                 content_type = request.headers.get("content-type", "")
                 if "application/json" in content_type:
@@ -166,10 +164,10 @@ class ConstitutionalComplianceMiddleware(BaseHTTPMiddleware):
             return {"valid": True, "message": "Constitutional compliance validated"}
 
         except Exception as e:
-            logger.error(f"Request validation error: {e}")
+            logger.exception(f"Request validation error: {e}")
             return {
                 "valid": False,
-                "message": f"Constitutional validation error: {str(e)}",
+                "message": f"Constitutional validation error: {e!s}",
             }
 
     async def _validate_response(self, response: Response) -> Response:
@@ -195,7 +193,7 @@ class ConstitutionalComplianceMiddleware(BaseHTTPMiddleware):
             return response
 
         except Exception as e:
-            logger.error(f"Response validation error: {e}")
+            logger.exception(f"Response validation error: {e}")
             return response
 
     def _add_constitutional_headers(
@@ -288,7 +286,9 @@ class PerformanceMonitoringMiddleware(BaseHTTPMiddleware):
 
         except Exception as e:
             duration = (time.time() - start_time) * 1000
-            logger.error(f"Performance monitoring error after {duration:.2f}ms: {e}")
+            logger.exception(
+                f"Performance monitoring error after {duration:.2f}ms: {e}"
+            )
             raise
 
     def get_performance_stats(self) -> dict:

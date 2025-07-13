@@ -248,8 +248,7 @@ class ConflictManager:
             severity="medium",
         )
 
-        conflict_id = await self.create_conflict(conflict)
-        return conflict_id
+        return await self.create_conflict(conflict)
 
     async def _update_conflict(self, conflict: ConflictItem) -> None:
         """Update conflict data in Redis."""

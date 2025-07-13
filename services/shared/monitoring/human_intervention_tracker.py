@@ -18,13 +18,14 @@ Key Features:
 
 import asyncio
 import logging
+import operator
 import statistics
 import uuid
 from collections import defaultdict, deque
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
 
@@ -100,7 +101,7 @@ class InterventionEvent:
     duration_seconds: float
     confidence_before: float
     confidence_after: float
-    impact_assessment: Optional[float]
+    impact_assessment: float | None
     follow_up_required: bool
     escalation_level: int
     context_metadata: dict[str, Any]
@@ -136,7 +137,7 @@ class ReviewerPerformance:
     improvement_rate: float
     specialization_areas: list[str]
     workload_balance: float
-    satisfaction_rating: Optional[float]
+    satisfaction_rating: float | None
 
 
 @dataclass
@@ -152,8 +153,8 @@ class InterventionRateMetrics:
     average_intervention_duration: float
     success_rate: float
     escalation_rate: float
-    cost_impact: Optional[float]
-    quality_improvement: Optional[float]
+    cost_impact: float | None
+    quality_improvement: float | None
 
 
 @dataclass
@@ -179,7 +180,7 @@ class HumanInterventionTracker:
     Comprehensive human intervention tracking and analysis system
     """
 
-    def __init__(self, config: Optional[dict[str, Any]] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         self.config = config or {}
         self.alerting = AlertingSystem()
         self.audit_logger = AuditLogger()
@@ -261,7 +262,7 @@ class HumanInterventionTracker:
             await asyncio.gather(*tracking_tasks)
 
         except Exception as e:
-            logger.error(f"Intervention tracking failed: {e}")
+            logger.exception(f"Intervention tracking failed: {e}")
             self.running = False
             raise
         finally:
@@ -335,16 +336,16 @@ class HumanInterventionTracker:
             )
 
             # Immediate analysis for critical interventions
-            if event.reason in [
+            if event.reason in {
                 InterventionReason.CONSTITUTIONAL_CONFLICT,
                 InterventionReason.BIAS_DETECTED,
-            ]:
+            }:
                 await self._analyze_critical_intervention(event)
 
             return event_id
 
         except Exception as e:
-            logger.error(f"Failed to record intervention: {e}")
+            logger.exception(f"Failed to record intervention: {e}")
             raise
 
     async def record_decision(self, decision_id: str, decision_data: dict[str, Any]):
@@ -362,9 +363,7 @@ class HumanInterventionTracker:
 
             # Remove old entries
             old_buckets = [
-                bucket
-                for bucket in self.decision_counter.keys()
-                if bucket < cutoff_bucket
+                bucket for bucket in self.decision_counter if bucket < cutoff_bucket
             ]
             for bucket in old_buckets:
                 del self.decision_counter[bucket]
@@ -372,22 +371,21 @@ class HumanInterventionTracker:
                     del self.intervention_counter[bucket]
 
         except Exception as e:
-            logger.error(f"Failed to record decision: {e}")
+            logger.exception(f"Failed to record decision: {e}")
 
     def _get_time_bucket(self, timestamp: datetime, granularity: str) -> str:
         """Get time bucket for aggregation"""
         if granularity == "minute":
             return timestamp.strftime("%Y%m%d%H%M")
-        elif granularity == "hour":
+        if granularity == "hour":
             return timestamp.strftime("%Y%m%d%H")
-        elif granularity == "day":
+        if granularity == "day":
             return timestamp.strftime("%Y%m%d")
-        elif granularity == "week":
+        if granularity == "week":
             # ISO week
             year, week, _ = timestamp.isocalendar()
             return f"{year}W{week:02d}"
-        else:
-            return timestamp.isoformat()
+        return timestamp.isoformat()
 
     async def _run_rate_analysis(self):
         """Run continuous intervention rate analysis"""
@@ -405,7 +403,7 @@ class HumanInterventionTracker:
                 await self._check_rate_anomalies()
 
             except Exception as e:
-                logger.error(f"Rate analysis error: {e}")
+                logger.exception(f"Rate analysis error: {e}")
                 await asyncio.sleep(60)
 
     async def _calculate_intervention_rates(self):
@@ -487,7 +485,7 @@ class HumanInterventionTracker:
                         1
                         for event in window_interventions
                         if event.outcome
-                        in [InterventionOutcome.APPROVED, InterventionOutcome.MODIFIED]
+                        in {InterventionOutcome.APPROVED, InterventionOutcome.MODIFIED}
                     )
                     / len(window_interventions)
                     if window_interventions
@@ -545,7 +543,7 @@ class HumanInterventionTracker:
             self.last_analysis_time = current_time
 
         except Exception as e:
-            logger.error(f"Rate calculation failed: {e}")
+            logger.exception(f"Rate calculation failed: {e}")
 
     async def _check_rate_anomalies(self):
         """Check for intervention rate anomalies"""
@@ -554,7 +552,7 @@ class HumanInterventionTracker:
                 return
 
             current_rates = self.rate_history[-1]
-            current_time = datetime.utcnow()
+            datetime.utcnow()
 
             # Check hourly rate
             hourly_rate = current_rates["hourly_rate"]
@@ -636,7 +634,7 @@ class HumanInterventionTracker:
                 )
 
         except Exception as e:
-            logger.error(f"Rate anomaly check failed: {e}")
+            logger.exception(f"Rate anomaly check failed: {e}")
 
     def _create_rate_alert(
         self,
@@ -722,7 +720,7 @@ class HumanInterventionTracker:
                     await self._detect_intervention_patterns()
 
             except Exception as e:
-                logger.error(f"Pattern detection error: {e}")
+                logger.exception(f"Pattern detection error: {e}")
                 await asyncio.sleep(300)
 
     async def _detect_intervention_patterns(self):
@@ -766,11 +764,11 @@ class HumanInterventionTracker:
                 await self._analyze_pattern_significance(pattern)
 
         except Exception as e:
-            logger.error(f"Pattern detection failed: {e}")
+            logger.exception(f"Pattern detection failed: {e}")
 
     async def _detect_time_based_patterns(
         self, interventions: list[InterventionEvent]
-    ) -> Optional[InterventionPattern]:
+    ) -> InterventionPattern | None:
         """Detect time-based intervention patterns"""
         try:
             # Group interventions by hour of day
@@ -814,12 +812,12 @@ class HumanInterventionTracker:
             return None
 
         except Exception as e:
-            logger.error(f"Time pattern detection failed: {e}")
+            logger.exception(f"Time pattern detection failed: {e}")
             return None
 
     async def _detect_reason_patterns(
         self, interventions: list[InterventionEvent]
-    ) -> Optional[InterventionPattern]:
+    ) -> InterventionPattern | None:
         """Detect reason-based intervention patterns"""
         try:
             # Count interventions by reason
@@ -857,10 +855,10 @@ class HumanInterventionTracker:
                         severity=(
                             "high"
                             if dominant_reason
-                            in [
+                            in {
                                 InterventionReason.CONSTITUTIONAL_CONFLICT,
                                 InterventionReason.BIAS_DETECTED,
-                            ]
+                            }
                             else "medium"
                         ),
                     )
@@ -868,7 +866,7 @@ class HumanInterventionTracker:
             return None
 
         except Exception as e:
-            logger.error(f"Reason pattern detection failed: {e}")
+            logger.exception(f"Reason pattern detection failed: {e}")
             return None
 
     def _get_reason_causes(self, reason: InterventionReason) -> list[str]:
@@ -927,7 +925,7 @@ class HumanInterventionTracker:
 
     async def _detect_reviewer_patterns(
         self, interventions: list[InterventionEvent]
-    ) -> Optional[InterventionPattern]:
+    ) -> InterventionPattern | None:
         """Detect reviewer-based patterns"""
         try:
             # Analyze reviewer workload distribution
@@ -977,12 +975,12 @@ class HumanInterventionTracker:
             return None
 
         except Exception as e:
-            logger.error(f"Reviewer pattern detection failed: {e}")
+            logger.exception(f"Reviewer pattern detection failed: {e}")
             return None
 
     async def _detect_decision_patterns(
         self, interventions: list[InterventionEvent]
-    ) -> Optional[InterventionPattern]:
+    ) -> InterventionPattern | None:
         """Detect decision-related patterns"""
         try:
             # Analyze intervention outcomes
@@ -1029,7 +1027,7 @@ class HumanInterventionTracker:
             return None
 
         except Exception as e:
-            logger.error(f"Decision pattern detection failed: {e}")
+            logger.exception(f"Decision pattern detection failed: {e}")
             return None
 
     async def _analyze_pattern_significance(self, pattern: InterventionPattern):
@@ -1051,7 +1049,7 @@ class HumanInterventionTracker:
             )
 
             # Send alert for significant patterns
-            if pattern.severity in ["high", "critical"] and pattern.confidence > 0.7:
+            if pattern.severity in {"high", "critical"} and pattern.confidence > 0.7:
                 await self.alerting.send_alert(
                     f"intervention_pattern_{pattern.pattern_type}",
                     f"Significant intervention pattern detected: {pattern.description}",
@@ -1059,7 +1057,7 @@ class HumanInterventionTracker:
                 )
 
         except Exception as e:
-            logger.error(f"Pattern significance analysis failed: {e}")
+            logger.exception(f"Pattern significance analysis failed: {e}")
 
     async def _run_performance_analysis(self):
         """Run reviewer performance analysis"""
@@ -1074,7 +1072,7 @@ class HumanInterventionTracker:
                     await self._analyze_reviewer_performance()
 
             except Exception as e:
-                logger.error(f"Performance analysis error: {e}")
+                logger.exception(f"Performance analysis error: {e}")
                 await asyncio.sleep(300)
 
     async def _analyze_reviewer_performance(self):
@@ -1107,7 +1105,7 @@ class HumanInterventionTracker:
                 await self._check_reviewer_performance_issues(performance)
 
         except Exception as e:
-            logger.error(f"Reviewer performance analysis failed: {e}")
+            logger.exception(f"Reviewer performance analysis failed: {e}")
 
     async def _calculate_reviewer_performance(
         self, reviewer_id: str, interventions: list[InterventionEvent]
@@ -1154,7 +1152,7 @@ class HumanInterventionTracker:
             specialization_areas = [
                 reason.value
                 for reason, count in sorted(
-                    reason_counts.items(), key=lambda x: x[1], reverse=True
+                    reason_counts.items(), key=operator.itemgetter(1), reverse=True
                 )[:3]
             ]
 
@@ -1179,7 +1177,7 @@ class HumanInterventionTracker:
                 else ReviewerRole.TECHNICAL_REVIEWER
             )
 
-            performance = ReviewerPerformance(
+            return ReviewerPerformance(
                 reviewer_id=reviewer_id,
                 reviewer_role=reviewer_role,
                 total_interventions=total_interventions,
@@ -1193,10 +1191,8 @@ class HumanInterventionTracker:
                 satisfaction_rating=None,  # Would be collected from feedback
             )
 
-            return performance
-
         except Exception as e:
-            logger.error(f"Reviewer performance calculation failed: {e}")
+            logger.exception(f"Reviewer performance calculation failed: {e}")
             # Return default performance
             return ReviewerPerformance(
                 reviewer_id=reviewer_id,
@@ -1224,7 +1220,7 @@ class HumanInterventionTracker:
 
             consistency_scores = []
 
-            for reason, group_interventions in reason_groups.items():
+            for group_interventions in reason_groups.values():
                 if len(group_interventions) < 2:
                     continue
 
@@ -1331,7 +1327,7 @@ class HumanInterventionTracker:
                 )
 
         except Exception as e:
-            logger.error(f"Performance issue check failed: {e}")
+            logger.exception(f"Performance issue check failed: {e}")
 
     async def _update_reviewer_performance(self, event: InterventionEvent):
         """Update reviewer performance metrics immediately after intervention"""
@@ -1353,7 +1349,7 @@ class HumanInterventionTracker:
                     )
 
         except Exception as e:
-            logger.error(f"Reviewer performance update failed: {e}")
+            logger.exception(f"Reviewer performance update failed: {e}")
 
     async def _analyze_critical_intervention(self, event: InterventionEvent):
         """Immediate analysis for critical interventions"""
@@ -1385,10 +1381,10 @@ class HumanInterventionTracker:
                 for e in self.intervention_history
                 if (
                     e.reason
-                    in [
+                    in {
                         InterventionReason.CONSTITUTIONAL_CONFLICT,
                         InterventionReason.BIAS_DETECTED,
-                    ]
+                    }
                     and e.timestamp >= datetime.utcnow() - timedelta(hours=6)
                 )
             ]
@@ -1402,7 +1398,7 @@ class HumanInterventionTracker:
                 )
 
         except Exception as e:
-            logger.error(f"Critical intervention analysis failed: {e}")
+            logger.exception(f"Critical intervention analysis failed: {e}")
 
     async def _run_alerting_system(self):
         """Run alerting system for intervention tracking"""
@@ -1417,7 +1413,7 @@ class HumanInterventionTracker:
                 await self._check_intervention_system_health()
 
             except Exception as e:
-                logger.error(f"Alerting system error: {e}")
+                logger.exception(f"Alerting system error: {e}")
                 await asyncio.sleep(60)
 
     async def _check_intervention_system_health(self):
@@ -1461,7 +1457,7 @@ class HumanInterventionTracker:
                 )
 
         except Exception as e:
-            logger.error(f"System health check failed: {e}")
+            logger.exception(f"System health check failed: {e}")
 
     async def _run_periodic_reporting(self):
         """Run periodic reporting"""
@@ -1476,7 +1472,7 @@ class HumanInterventionTracker:
                 await self._generate_hourly_report()
 
             except Exception as e:
-                logger.error(f"Periodic reporting error: {e}")
+                logger.exception(f"Periodic reporting error: {e}")
                 await asyncio.sleep(300)
 
     async def _generate_hourly_report(self):
@@ -1512,7 +1508,7 @@ class HumanInterventionTracker:
                 outcome_counts[event.outcome.value] += 1
 
             # Active reviewers
-            active_reviewers = len(set(e.reviewer_id for e in hourly_interventions))
+            active_reviewers = len({e.reviewer_id for e in hourly_interventions})
 
             # Generate report
             report = {
@@ -1546,7 +1542,7 @@ class HumanInterventionTracker:
             )
 
         except Exception as e:
-            logger.error(f"Hourly report generation failed: {e}")
+            logger.exception(f"Hourly report generation failed: {e}")
 
     # Public query methods
 
@@ -1622,14 +1618,14 @@ class HumanInterventionTracker:
                 "type_breakdown": dict(type_counts),
                 "reviewer_activity": dict(reviewer_counts),
                 "patterns_detected": (
-                    len([p for p in self.pattern_history])
+                    len(list(self.pattern_history))
                     if hasattr(self, "pattern_history")
                     else 0
                 ),
             }
 
         except Exception as e:
-            logger.error(f"Intervention summary generation failed: {e}")
+            logger.exception(f"Intervention summary generation failed: {e}")
             return {"error": str(e)}
 
     def get_reviewer_performance_summary(self) -> dict[str, Any]:
@@ -1648,7 +1644,7 @@ class HumanInterventionTracker:
             avg_consistency = statistics.mean(
                 [p.consistency_score for p in all_performances]
             )
-            total_interventions = sum([p.total_interventions for p in all_performances])
+            total_interventions = sum(p.total_interventions for p in all_performances)
 
             # Top performers
             top_accuracy = max(all_performances, key=lambda x: x.accuracy_score)
@@ -1684,7 +1680,7 @@ class HumanInterventionTracker:
             }
 
         except Exception as e:
-            logger.error(f"Reviewer performance summary failed: {e}")
+            logger.exception(f"Reviewer performance summary failed: {e}")
             return {"error": str(e)}
 
     def get_tracking_status(self) -> dict[str, Any]:

@@ -246,7 +246,7 @@ class ConstitutionalCouncilGraph:
             try:
                 proposal_input = AmendmentProposalInput(**proposal_data)
             except ValidationError as e:
-                logger.error(f"Invalid proposal input: {e}")
+                logger.exception(f"Invalid proposal input: {e}")
                 return {
                     **state,
                     "status": WorkflowStatus.FAILED.value,
@@ -298,13 +298,13 @@ class ConstitutionalCouncilGraph:
                     ).isoformat()
                 },
                 "required_stakeholders": self.council_config.required_stakeholder_roles,
-                "messages": state.get("messages", [])
-                + [
+                "messages": [
+                    *state.get("messages", []),
                     {
                         "type": "system",
                         "content": f"Amendment proposal created with ID {amendment.id}",
                         "timestamp": datetime.now(timezone.utc).isoformat(),
-                    }
+                    },
                 ],
             }
 
@@ -312,7 +312,7 @@ class ConstitutionalCouncilGraph:
             return updated_state
 
         except Exception as e:
-            logger.error(f"Failed to create amendment proposal: {e}")
+            logger.exception(f"Failed to create amendment proposal: {e}")
             return {
                 **state,
                 "status": WorkflowStatus.FAILED.value,
@@ -424,13 +424,13 @@ class ConstitutionalCouncilGraph:
                     "last_updated": engagement_status.last_updated.isoformat(),
                 },
                 "current_phase": "constitutional_analysis",
-                "messages": state.get("messages", [])
-                + [
+                "messages": [
+                    *state.get("messages", []),
                     {
                         "type": "system",
                         "content": f"Stakeholder engagement: {engagement_status.engaged_stakeholders}/{engagement_status.total_stakeholders} stakeholders engaged ({engagement_status.engagement_rate:.1%})",
                         "timestamp": datetime.now(timezone.utc).isoformat(),
-                    }
+                    },
                 ],
             }
 
@@ -448,7 +448,7 @@ class ConstitutionalCouncilGraph:
             return updated_state
 
         except Exception as e:
-            logger.error(f"Failed to gather stakeholder feedback: {e}")
+            logger.exception(f"Failed to gather stakeholder feedback: {e}")
             return {
                 **state,
                 "status": WorkflowStatus.FAILED.value,
@@ -536,13 +536,13 @@ class ConstitutionalCouncilGraph:
                     if is_constitutional and not has_conflicts
                     else "refinement_needed"
                 ),
-                "messages": state.get("messages", [])
-                + [
+                "messages": [
+                    *state.get("messages", []),
                     {
                         "type": "system",
                         "content": f"Constitutional analysis completed. Compliance score: {constitutional_analysis['compliance_score']:.2f}",
                         "timestamp": datetime.now(timezone.utc).isoformat(),
-                    }
+                    },
                 ],
             }
 
@@ -552,7 +552,7 @@ class ConstitutionalCouncilGraph:
             return updated_state
 
         except Exception as e:
-            logger.error(f"Failed to analyze constitutionality: {e}")
+            logger.exception(f"Failed to analyze constitutionality: {e}")
             return {
                 **state,
                 "status": WorkflowStatus.FAILED.value,
@@ -640,10 +640,7 @@ class ConstitutionalCouncilGraph:
             if voting_period_ended or (
                 quorum_met and vote_summary["total_votes"] >= total_eligible
             ):
-                if voting_passed:
-                    next_phase = "finalization"
-                else:
-                    next_phase = "refinement_needed"
+                next_phase = "finalization" if voting_passed else "refinement_needed"
             else:
                 next_phase = "voting_in_progress"
 
@@ -666,13 +663,13 @@ class ConstitutionalCouncilGraph:
                     **state.get("phase_deadlines", {}),
                     "voting_deadline": voting_deadline,
                 },
-                "messages": state.get("messages", [])
-                + [
+                "messages": [
+                    *state.get("messages", []),
                     {
                         "type": "system",
                         "content": f"Voting results: {vote_summary['for']} for, {vote_summary['against']} against, {vote_summary['abstain']} abstain. Quorum: {'met' if quorum_met else 'not met'}",
                         "timestamp": datetime.now(timezone.utc).isoformat(),
-                    }
+                    },
                 ],
             }
 
@@ -682,7 +679,7 @@ class ConstitutionalCouncilGraph:
             return updated_state
 
         except Exception as e:
-            logger.error(f"Failed to conduct voting: {e}")
+            logger.exception(f"Failed to conduct voting: {e}")
             return {
                 **state,
                 "status": WorkflowStatus.FAILED.value,
@@ -804,13 +801,13 @@ class ConstitutionalCouncilGraph:
                 "refinement_suggestions": refinement_suggestions,
                 "current_phase": "stakeholder_feedback",  # Return to feedback collection
                 "requires_refinement": True,
-                "messages": state.get("messages", [])
-                + [
+                "messages": [
+                    *state.get("messages", []),
                     {
                         "type": "system",
                         "content": f"Amendment refinement iteration {current_iterations + 1} initiated. {len(refinement_areas)} areas identified for improvement.",
                         "timestamp": datetime.now(timezone.utc).isoformat(),
-                    }
+                    },
                 ],
             }
 
@@ -820,7 +817,7 @@ class ConstitutionalCouncilGraph:
             return updated_state
 
         except Exception as e:
-            logger.error(f"Failed to refine amendment: {e}")
+            logger.exception(f"Failed to refine amendment: {e}")
             return {
                 **state,
                 "status": WorkflowStatus.FAILED.value,
@@ -888,8 +885,8 @@ class ConstitutionalCouncilGraph:
                 "completed_at": datetime.now(timezone.utc).isoformat(),
                 "processing_pipeline_results": finalization_result["pipeline_results"],
                 "audit_trail": finalization_result["audit_trail"],
-                "messages": state.get("messages", [])
-                + [
+                "messages": [
+                    *state.get("messages", []),
                     {
                         "type": "system",
                         "content": f"Amendment {amendment_id} successfully finalized through enhanced processing pipeline",
@@ -898,7 +895,7 @@ class ConstitutionalCouncilGraph:
                         "notifications_sent": finalization_result["pipeline_results"]
                         .get("notifications", {})
                         .get("notifications_sent", 0),
-                    }
+                    },
                 ],
             }
 
@@ -908,7 +905,7 @@ class ConstitutionalCouncilGraph:
             return updated_state
 
         except Exception as e:
-            logger.error(f"Failed to finalize amendment: {e}")
+            logger.exception(f"Failed to finalize amendment: {e}")
             # Trigger enhanced error handling and rollback
             await self._handle_finalization_failure(
                 amendment_id=amendment_id, error=str(e), state=state
@@ -1044,7 +1041,7 @@ class ConstitutionalCouncilGraph:
             }
 
         except Exception as e:
-            logger.error(f"Failed to process amendment finalization: {e}")
+            logger.exception(f"Failed to process amendment finalization: {e}")
             return {"success": False, "error": str(e)}
 
     async def _send_finalization_notifications(
@@ -1138,7 +1135,7 @@ class ConstitutionalCouncilGraph:
             }
 
         except Exception as e:
-            logger.error(f"Failed to send finalization notifications: {e}")
+            logger.exception(f"Failed to send finalization notifications: {e}")
             return {"success": False, "error": str(e), "notifications_sent": 0}
 
     async def _generate_finalization_audit_trail(
@@ -1198,7 +1195,7 @@ class ConstitutionalCouncilGraph:
             return audit_trail
 
         except Exception as e:
-            logger.error(f"Failed to generate audit trail: {e}")
+            logger.exception(f"Failed to generate audit trail: {e}")
             return {
                 "error": str(e),
                 "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -1257,7 +1254,7 @@ class ConstitutionalCouncilGraph:
                 )
 
         except Exception as e:
-            logger.error(f"Failed to handle finalization failure: {e}")
+            logger.exception(f"Failed to handle finalization failure: {e}")
 
     async def _send_failure_notifications(
         self, amendment_id: int, error: str, state: ConstitutionalCouncilState
@@ -1281,7 +1278,7 @@ class ConstitutionalCouncilGraph:
                 }
 
                 # Send failure notifications
-                for stakeholder_id in engagement_status.status_by_stakeholder.keys():
+                for stakeholder_id in engagement_status.status_by_stakeholder:
                     try:
                         await self.stakeholder_service._send_notification(
                             stakeholder=type(
@@ -1302,12 +1299,12 @@ class ConstitutionalCouncilGraph:
                             **failure_content,
                         )
                     except Exception as e:
-                        logger.error(
+                        logger.exception(
                             f"Failed to send failure notification to stakeholder {stakeholder_id}: {e}"
                         )
 
         except Exception as e:
-            logger.error(f"Failed to send failure notifications: {e}")
+            logger.exception(f"Failed to send failure notifications: {e}")
 
     # Enhanced Amendment Processing Pipeline - Parallel Processing Support
     async def process_multiple_amendments_parallel(
@@ -1369,7 +1366,9 @@ class ConstitutionalCouncilGraph:
                         }
 
                     except Exception as e:
-                        logger.error(f"Failed to process amendment {amendment_id}: {e}")
+                        logger.exception(
+                            f"Failed to process amendment {amendment_id}: {e}"
+                        )
                         return {
                             "amendment_id": amendment_id,
                             "success": False,
@@ -1419,7 +1418,7 @@ class ConstitutionalCouncilGraph:
             }
 
         except Exception as e:
-            logger.error(f"Failed to process amendments in parallel: {e}")
+            logger.exception(f"Failed to process amendments in parallel: {e}")
             return {
                 "success": False,
                 "error": str(e),
@@ -1533,7 +1532,7 @@ class ConstitutionalCouncilGraph:
             }
 
         except Exception as e:
-            logger.error(f"Failed to perform automated status transition: {e}")
+            logger.exception(f"Failed to perform automated status transition: {e}")
             return {"success": False, "error": str(e), "amendment_id": amendment_id}
 
     # Conditional routing functions
@@ -1675,7 +1674,7 @@ class ConstitutionalCouncilGraph:
             return final_state
 
         except Exception as e:
-            logger.error(f"Failed to execute Constitutional Council workflow: {e}")
+            logger.exception(f"Failed to execute Constitutional Council workflow: {e}")
             raise
 
     async def get_workflow_state(self, workflow_id: str) -> dict[str, Any] | None:
@@ -1704,7 +1703,7 @@ class ConstitutionalCouncilGraph:
             return checkpoint.values if checkpoint else None
 
         except Exception as e:
-            logger.error(f"Failed to get workflow state for {workflow_id}: {e}")
+            logger.exception(f"Failed to get workflow state for {workflow_id}: {e}")
             return None
 
 

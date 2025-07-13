@@ -6,13 +6,11 @@ and ACGS integration.
 """
 
 import logging
-from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import JSONResponse
 
 from ...models.evolution import (
-    EvolutionRequest,
     EvolutionStatus,
     EvolutionType,
     Individual,
@@ -20,11 +18,10 @@ from ...models.evolution import (
 from ...schemas.evolution import (
     EvolutionRequestCreate,
     EvolutionRequestResponse,
-    EvolutionResultResponse,
     FitnessEvaluationRequest,
     FitnessEvaluationResponse,
 )
-from ...schemas.responses import ErrorResponse, SuccessResponse
+from ...schemas.responses import SuccessResponse
 from ...services.evolution_service import EvolutionService
 from ...services.fitness_service import FitnessService
 
@@ -85,10 +82,10 @@ async def create_evolution_request(
         return response
 
     except Exception as e:
-        logger.error(f"Failed to create evolution request: {e}")
+        logger.exception(f"Failed to create evolution request: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to create evolution request: {str(e)}",
+            detail=f"Failed to create evolution request: {e!s}",
         )
 
 
@@ -115,7 +112,7 @@ async def submit_evolution_request(evolution_id: str) -> SuccessResponse:
         )
 
         return SuccessResponse(
-            message=f"Evolution request submitted successfully",
+            message="Evolution request submitted successfully",
             data={
                 "evolution_id": submitted_id,
                 "status": "submitted",
@@ -126,10 +123,10 @@ async def submit_evolution_request(evolution_id: str) -> SuccessResponse:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Failed to submit evolution request {evolution_id}: {e}")
+        logger.exception(f"Failed to submit evolution request {evolution_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to submit evolution request: {str(e)}",
+            detail=f"Failed to submit evolution request: {e!s}",
         )
 
 
@@ -151,7 +148,7 @@ async def get_evolution_request(evolution_id: str) -> EvolutionRequestResponse:
             )
 
         # Convert to response model
-        response = EvolutionRequestResponse(
+        return EvolutionRequestResponse(
             evolution_id=evolution_request.evolution_id,
             evolution_type=evolution_request.evolution_type,
             status=evolution_request.status,
@@ -165,24 +162,22 @@ async def get_evolution_request(evolution_id: str) -> EvolutionRequestResponse:
             constitutional_hash=CONSTITUTIONAL_HASH,
         )
 
-        return response
-
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Failed to get evolution request {evolution_id}: {e}")
+        logger.exception(f"Failed to get evolution request {evolution_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get evolution request: {str(e)}",
+            detail=f"Failed to get evolution request: {e!s}",
         )
 
 
-@router.get("/requests", response_model=List[EvolutionRequestResponse])
+@router.get("/requests", response_model=list[EvolutionRequestResponse])
 async def list_evolution_requests(
-    status_filter: Optional[EvolutionStatus] = None,
-    evolution_type_filter: Optional[EvolutionType] = None,
+    status_filter: EvolutionStatus | None = None,
+    evolution_type_filter: EvolutionType | None = None,
     limit: int = 100,
-) -> List[EvolutionRequestResponse]:
+) -> list[EvolutionRequestResponse]:
     """
     List evolution requests with optional filtering.
 
@@ -195,10 +190,10 @@ async def list_evolution_requests(
         return []
 
     except Exception as e:
-        logger.error(f"Failed to list evolution requests: {e}")
+        logger.exception(f"Failed to list evolution requests: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to list evolution requests: {str(e)}",
+            detail=f"Failed to list evolution requests: {e!s}",
         )
 
 
@@ -230,7 +225,7 @@ async def evaluate_fitness(
             )
 
         # Create response
-        response = FitnessEvaluationResponse(
+        return FitnessEvaluationResponse(
             evaluation_id=evaluated_individual.individual_id,
             fitness_metrics=evaluated_individual.fitness_metrics,
             evaluation_time_ms=0.0,  # Would be measured in production
@@ -241,15 +236,13 @@ async def evaluate_fitness(
             constitutional_hash=CONSTITUTIONAL_HASH,
         )
 
-        return response
-
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Failed to evaluate fitness: {e}")
+        logger.exception(f"Failed to evaluate fitness: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to evaluate fitness: {str(e)}",
+            detail=f"Failed to evaluate fitness: {e!s}",
         )
 
 
@@ -282,10 +275,10 @@ async def quick_evaluate_fitness(
         )
 
     except Exception as e:
-        logger.error(f"Failed to perform quick fitness evaluation: {e}")
+        logger.exception(f"Failed to perform quick fitness evaluation: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to perform quick fitness evaluation: {str(e)}",
+            detail=f"Failed to perform quick fitness evaluation: {e!s}",
         )
 
 
@@ -311,7 +304,7 @@ async def evolution_health_check() -> JSONResponse:
         )
 
     except Exception as e:
-        logger.error(f"Evolution health check failed: {e}")
+        logger.exception(f"Evolution health check failed: {e}")
         return JSONResponse(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             content={

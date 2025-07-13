@@ -4,7 +4,7 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import time
-from typing import Callable
+from collections.abc import Callable
 
 from fastapi import FastAPI, Request, Response
 from prometheus_client import Counter, Gauge, Histogram, make_asgi_app
@@ -104,7 +104,7 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
 
             return response
 
-        except Exception as e:
+        except Exception:
             # Record error metrics
             duration = time.time() - start_time
             REQUEST_DURATION.labels(self.service_name, endpoint, method, "500").observe(
@@ -182,12 +182,11 @@ Standardized Prometheus metrics collection for all ACGS services with:
 - Custom metrics support
 """
 
+import contextlib
 import logging
-import time
-import traceback
-from datetime import datetime, timezone
+from collections.abc import Callable
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 
 import psutil
 from fastapi import FastAPI, Request, Response
@@ -435,7 +434,7 @@ class ACGSPrometheusMetrics:
         )
 
         # Custom metrics registry
-        self.custom_metrics: Dict[str, Any] = {}
+        self.custom_metrics: dict[str, Any] = {}
 
         # Initialize service-specific metrics
         self.service_uptime_seconds.labels(service=self.service_name).set_function(
@@ -477,7 +476,7 @@ class ACGSPrometheusMetrics:
             ).observe(response_size)
 
     def record_constitutional_validation(
-        self, validation_type: str, result: str, score: Optional[float] = None
+        self, validation_type: str, result: str, score: float | None = None
     ):
         """Record constitutional compliance validation."""
         self.constitutional_validations_total.labels(
@@ -510,7 +509,7 @@ class ACGSPrometheusMetrics:
         ).set(hit_rate)
 
     def record_database_operation(
-        self, operation: str, table: str, result: str, duration: Optional[float] = None
+        self, operation: str, table: str, result: str, duration: float | None = None
     ):
         """Record database operation metrics."""
         self.database_operations_total.labels(
@@ -575,7 +574,7 @@ class ACGSPrometheusMetrics:
         ).inc()
 
     def record_ai_model_request(
-        self, model: str, provider: str, response_time: Optional[float] = None
+        self, model: str, provider: str, response_time: float | None = None
     ):
         """Record AI model request metrics."""
         self.ai_model_requests_total.labels(
@@ -610,7 +609,11 @@ class ACGSPrometheusMetrics:
         ).inc()
 
     def add_custom_metric(
-        self, name: str, metric_type: str, help_text: str, labels: List[str] = None
+        self,
+        name: str,
+        metric_type: str,
+        help_text: str,
+        labels: list[str] | None = None,
     ):
         """Add a custom metric."""
         labels = labels or []
@@ -618,15 +621,15 @@ class ACGSPrometheusMetrics:
 
         if metric_type == "counter":
             metric = Counter(
-                full_name, help_text, labels + ["service"], registry=self.registry
+                full_name, help_text, [*labels, "service"], registry=self.registry
             )
         elif metric_type == "gauge":
             metric = Gauge(
-                full_name, help_text, labels + ["service"], registry=self.registry
+                full_name, help_text, [*labels, "service"], registry=self.registry
             )
         elif metric_type == "histogram":
             metric = Histogram(
-                full_name, help_text, labels + ["service"], registry=self.registry
+                full_name, help_text, [*labels, "service"], registry=self.registry
             )
         else:
             raise ValueError(f"Unsupported metric type: {metric_type}")
@@ -659,10 +662,8 @@ class PrometheusMetricsMiddleware(BaseHTTPMiddleware):
         # Get request size
         request_size = 0
         if hasattr(request, "headers") and "content-length" in request.headers:
-            try:
+            with contextlib.suppress(ValueError, TypeError):
                 request_size = int(request.headers["content-length"])
-            except (ValueError, TypeError):
-                pass
 
         try:
             # Process request
@@ -675,10 +676,8 @@ class PrometheusMetricsMiddleware(BaseHTTPMiddleware):
             # Get response size
             response_size = 0
             if hasattr(response, "headers") and "content-length" in response.headers:
-                try:
+                with contextlib.suppress(ValueError, TypeError):
                     response_size = int(response.headers["content-length"])
-                except (ValueError, TypeError):
-                    pass
 
             # Record metrics
             self.metrics.record_http_request(
@@ -730,9 +729,7 @@ class PrometheusMetricsMiddleware(BaseHTTPMiddleware):
         )
 
         # Replace numeric IDs with {id}
-        path = re.sub(r"/\d+", "/{id}", path)
-
-        return path
+        return re.sub(r"/\d+", "/{id}", path)
 
 
 def setup_prometheus_metrics(
@@ -785,7 +782,7 @@ def setup_prometheus_metrics(
                     metrics.update_system_metrics()
                     await asyncio.sleep(system_metrics_interval)
                 except Exception as e:
-                    logger.error(f"System metrics collection error: {e}")
+                    logger.exception(f"System metrics collection error: {e}")
                     await asyncio.sleep(system_metrics_interval)
 
         @app.on_event("startup")

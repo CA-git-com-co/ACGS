@@ -179,13 +179,7 @@ class TestSingleRequestLatency:
         avg_latency = statistics.mean(latencies)
         p95_latency = statistics.quantiles(latencies, n=20)[18]  # 95th percentile
         p99_latency = statistics.quantiles(latencies, n=100)[98]  # 99th percentile
-        max_latency = max(latencies)
-
-        print("\nSingle Request Latency Statistics:")
-        print(f"Average: {avg_latency:.2f}ms")
-        print(f"95th percentile: {p95_latency:.2f}ms")
-        print(f"99th percentile: {p99_latency:.2f}ms")
-        print(f"Maximum: {max_latency:.2f}ms")
+        max(latencies)
 
         # Performance assertions
         assert (
@@ -230,8 +224,6 @@ class TestSingleRequestLatency:
 
             avg_latency = statistics.mean(latencies)
             results[level.value] = avg_latency
-
-            print(f"{level.value} validation average latency: {avg_latency:.2f}ms")
 
         # Basic should be fastest, comprehensive should still meet target
         assert results["basic"] <= results["standard"] <= results["comprehensive"]
@@ -279,10 +271,6 @@ class TestBatchProcessingPerformance:
             avg_per_request_latency = statistics.mean(latencies)
             batch_results[batch_size] = avg_per_request_latency
 
-            print(
-                f"Batch size {batch_size}: {avg_per_request_latency:.2f}ms per request"
-            )
-
             # Per-request latency should remain low even in batches
             assert (
                 avg_per_request_latency < performance_test_config["target_latency_ms"]
@@ -325,10 +313,6 @@ class TestBatchProcessingPerformance:
             total_latency_ms = (end_time - start_time) * 1000
             total_requests = concurrent_batches * batch_size
             avg_latency_per_request = total_latency_ms / total_requests
-
-            print(
-                f"Concurrent batches {concurrent_batches}: {avg_latency_per_request:.2f}ms per request"
-            )
 
             # Verify all batches completed successfully
             for batch_result in results:
@@ -378,10 +362,6 @@ class TestOPAIntegrationPerformance:
         avg_latency = statistics.mean(latencies)
         p95_latency = statistics.quantiles(latencies, n=20)[18]
 
-        print("\nOPA Decision Latency Statistics:")
-        print(f"Average: {avg_latency:.2f}ms")
-        print(f"95th percentile: {p95_latency:.2f}ms")
-
         assert avg_latency < 10, "OPA decisions should be very fast"
         assert p95_latency < 20, "95th percentile should be well below target"
 
@@ -415,7 +395,6 @@ class TestOPAIntegrationPerformance:
             assert latency_ms < performance_test_config["target_latency_ms"]
 
         avg_latency = statistics.mean(latencies)
-        print(f"Policy validation average latency: {avg_latency:.2f}ms")
 
         assert avg_latency < 5, "Policy validation should be very fast"
 
@@ -446,10 +425,6 @@ class TestMemoryAndResourceUsage:
 
         final_memory = process.memory_info().rss / 1024 / 1024  # MB
         memory_increase = final_memory - initial_memory
-
-        print(
-            f"Memory usage: {initial_memory:.1f}MB -> {final_memory:.1f}MB (+{memory_increase:.1f}MB)"
-        )
 
         # Memory increase should be reasonable
         assert (
@@ -495,7 +470,6 @@ class TestMemoryAndResourceUsage:
             assert cached_response is not None
 
         avg_cache_latency = statistics.mean(cache_hit_latencies)
-        print(f"Cache hit average latency: {avg_cache_latency:.4f}ms")
 
         # Cache hits should be extremely fast
         assert avg_cache_latency < 0.1, "Cache hits should be sub-millisecond"
@@ -548,9 +522,6 @@ class TestThroughputMeasurement:
 
         throughput_per_second = completed_requests / test_duration_seconds
 
-        print(f"Maximum throughput: {throughput_per_second:.1f} requests/second")
-        print(f"Total requests completed: {completed_requests}")
-
         # Should achieve reasonable throughput
         assert (
             throughput_per_second > 100
@@ -588,13 +559,7 @@ class TestThroughputMeasurement:
 
         avg_batch_latency = total_latency / batches_completed
         avg_per_request_latency = avg_batch_latency / batch_size
-        total_requests = batches_completed * batch_size
-
-        print("Sustained load test results:")
-        print(f"Duration: {sustained_duration_seconds}s")
-        print(f"Total requests: {total_requests}")
-        print(f"Average per-request latency: {avg_per_request_latency:.2f}ms")
-        print(f"Requests per second: {total_requests / sustained_duration_seconds:.1f}")
+        batches_completed * batch_size
 
         # Performance should remain stable under sustained load
         assert avg_per_request_latency < 50, "Performance degraded under sustained load"

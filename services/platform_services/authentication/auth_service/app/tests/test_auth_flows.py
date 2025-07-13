@@ -186,7 +186,7 @@ async def test_login_inactive_user(client: AsyncClient):
     # response = await client.post(f"{API_V1_AUTH_PREFIX}/token", data=login_payload)
     # assert response.status_code == status.HTTP_400_BAD_REQUEST
     # assert "Inactive user" in response.json()["detail"]
-    pass  # Placeholder for inactive user test if DB manipulation is added
+    # Placeholder for inactive user test if DB manipulation is added
 
 
 # --- Test Accessing Protected Endpoint (/me) ---

@@ -7,11 +7,12 @@ This module handles application configuration, middleware setup, and service ini
 
 import logging
 import os
+import pathlib
 import sys
 from contextlib import asynccontextmanager
-from typing import Any, Optional
+from typing import Any
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
@@ -20,7 +21,7 @@ from fastapi.responses import JSONResponse
 sys.path.insert(
     0,
     os.path.join(
-        os.path.dirname(__file__),
+        pathlib.Path(__file__).parent,
         "..",
         "..",
         "..",
@@ -99,18 +100,24 @@ class ConstitutionalAIConfig:
         logger.info(f"PostgreSQL DSN: {self.postgres_dsn.replace('password', '***')}")
 
         # Enhanced governance framework configuration
-        self.enable_enhanced_governance = os.getenv("ENABLE_ENHANCED_GOVERNANCE", "true").lower() == "true"
+        self.enable_enhanced_governance = (
+            os.getenv("ENABLE_ENHANCED_GOVERNANCE", "true").lower() == "true"
+        )
         self.governance_performance_targets = {
             "p99_latency_ms": float(os.getenv("GOVERNANCE_P99_TARGET_MS", "5.0")),
             "throughput_rps": float(os.getenv("GOVERNANCE_THROUGHPUT_TARGET", "100.0")),
             "cache_hit_rate": float(os.getenv("GOVERNANCE_CACHE_HIT_TARGET", "0.85")),
             "error_rate": float(os.getenv("GOVERNANCE_ERROR_RATE_TARGET", "0.01")),
-            "constitutional_compliance_rate": float(os.getenv("GOVERNANCE_COMPLIANCE_TARGET", "1.0")),
+            "constitutional_compliance_rate": float(
+                os.getenv("GOVERNANCE_COMPLIANCE_TARGET", "1.0")
+            ),
         }
 
         logger.info(f"Enhanced governance enabled: {self.enable_enhanced_governance}")
         if self.enable_enhanced_governance:
-            logger.info(f"Governance performance targets: {self.governance_performance_targets}")
+            logger.info(
+                f"Governance performance targets: {self.governance_performance_targets}"
+            )
 
     def get_cors_config(self) -> dict:
         """Get CORS configuration."""
@@ -121,14 +128,13 @@ class ConstitutionalAIConfig:
                 "allow_methods": ["GET", "POST", "PUT", "DELETE"],
                 "allow_headers": ["*"],
             }
-        else:
-            # More permissive for development
-            return {
-                "allow_origins": ["*"],
-                "allow_credentials": True,
-                "allow_methods": ["*"],
-                "allow_headers": ["*"],
-            }
+        # More permissive for development
+        return {
+            "allow_origins": ["*"],
+            "allow_credentials": True,
+            "allow_methods": ["*"],
+            "allow_headers": ["*"],
+        }
 
 
 class ServiceLifespan:
@@ -136,10 +142,10 @@ class ServiceLifespan:
 
     def __init__(self):
         self.constitutional_hash = CONSTITUTIONAL_HASH
-        self.compliance_engine: Optional[Any] = None
-        self.violation_detector: Optional[Any] = None
-        self.audit_logger: Optional[Any] = None
-        self.fv_client: Optional[Any] = None
+        self.compliance_engine: Any | None = None
+        self.violation_detector: Any | None = None
+        self.audit_logger: Any | None = None
+        self.fv_client: Any | None = None
 
     @asynccontextmanager
     async def lifespan(self, app: FastAPI):
@@ -185,7 +191,7 @@ class ServiceLifespan:
             await self._initialize_audit_logging()
 
         except Exception as e:
-            logger.error(f"Service initialization failed: {e}")
+            logger.exception(f"Service initialization failed: {e}")
             raise
 
     def _are_enhanced_services_available(self) -> bool:
@@ -220,7 +226,7 @@ class ServiceLifespan:
             logger.info("Enhanced services initialized successfully")
 
         except Exception as e:
-            logger.error(f"Enhanced services initialization failed: {e}")
+            logger.exception(f"Enhanced services initialization failed: {e}")
             raise
 
     async def _initialize_frameworks(self):
@@ -281,7 +287,7 @@ class ServiceLifespan:
             logger.info("Constitutional compliance validated successfully")
 
         except Exception as e:
-            logger.error(f"Constitutional compliance validation failed: {e}")
+            logger.exception(f"Constitutional compliance validation failed: {e}")
             raise
 
     async def _cleanup_services(self):
@@ -306,7 +312,7 @@ class ServiceLifespan:
             logger.info("Services cleaned up successfully")
 
         except Exception as e:
-            logger.error(f"Service cleanup failed: {e}")
+            logger.exception(f"Service cleanup failed: {e}")
 
 
 class MiddlewareManager:
@@ -411,7 +417,7 @@ class MiddlewareManager:
         except ImportError as e:
             logger.warning(f"Health check middleware not available: {e}")
         except Exception as e:
-            logger.error(f"Health check middleware setup failed: {e}")
+            logger.exception(f"Health check middleware setup failed: {e}")
 
     def _setup_prometheus_metrics_middleware(self, app: FastAPI):
         """Setup standardized Prometheus metrics collection with shared infrastructure."""
@@ -427,7 +433,7 @@ class MiddlewareManager:
             logger.info("✅ Standardized Prometheus metrics middleware configured")
 
         except Exception as e:
-            logger.error(f"Prometheus metrics middleware setup failed: {e}")
+            logger.exception(f"Prometheus metrics middleware setup failed: {e}")
 
     def _setup_custom_middleware(self, app: FastAPI):
         """Setup custom middleware."""
@@ -499,13 +505,18 @@ def create_constitutional_ai_app() -> FastAPI:
     # Setup enhanced governance framework integration
     if config.enable_enhanced_governance:
         try:
+            from services.shared.monitoring.intelligent_alerting_system import (
+                AlertingSystem,
+            )
+            from services.shared.security.enhanced_audit_logging import AuditLogger
+
             from ..api.v1.enhanced_governance import (
                 initialize_enhanced_governance_api,
-                router as governance_router,
             )
-            from ..services.constitutional_validation_service import ConstitutionalValidationService
-            from services.shared.monitoring.intelligent_alerting_system import AlertingSystem
-            from services.shared.security.enhanced_audit_logging import AuditLogger
+            from ..api.v1.enhanced_governance import router as governance_router
+            from ..services.constitutional_validation_service import (
+                ConstitutionalValidationService,
+            )
 
             # Initialize dependencies
             audit_logger = AuditLogger()
@@ -528,12 +539,14 @@ def create_constitutional_ai_app() -> FastAPI:
             app.include_router(governance_router)
 
             logger.info("✅ Enhanced governance framework integrated successfully")
-            logger.info(f"📊 Performance targets: {config.governance_performance_targets}")
+            logger.info(
+                f"📊 Performance targets: {config.governance_performance_targets}"
+            )
 
         except ImportError as e:
             logger.warning(f"Enhanced governance framework not available: {e}")
         except Exception as e:
-            logger.error(f"Failed to initialize enhanced governance framework: {e}")
+            logger.exception(f"Failed to initialize enhanced governance framework: {e}")
 
     logger.info("Constitutional AI application created successfully")
     logger.info(f"Constitutional Hash: {CONSTITUTIONAL_HASH}")

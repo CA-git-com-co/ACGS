@@ -110,7 +110,7 @@ class ACGEAuthIntegration:
         except Exception as e:
             ACGE_MODEL_REQUESTS.labels(operation=operation, status="exception").inc()
 
-            logger.error(f"ACGE constitutional validation error: {e}")
+            logger.exception(f"ACGE constitutional validation error: {e}")
             return {
                 "compliance_score": 0.5,  # Default fallback
                 "compliant": False,
@@ -131,7 +131,7 @@ class ConstitutionalAuthMiddleware:
     ) -> dict[str, Any]:
         """Validate constitutional compliance for login attempts."""
 
-        validation_result = await self.acge.validate_constitutional_compliance(
+        return await self.acge.validate_constitutional_compliance(
             operation="login",
             user_data={
                 "username": username,
@@ -146,14 +146,12 @@ class ConstitutionalAuthMiddleware:
             },
         )
 
-        return validation_result
-
     async def validate_token_creation(
         self, user_data: dict[str, Any], token_data: dict[str, Any]
     ) -> dict[str, Any]:
         """Validate constitutional compliance for token creation."""
 
-        validation_result = await self.acge.validate_constitutional_compliance(
+        return await self.acge.validate_constitutional_compliance(
             operation="token_creation",
             user_data=user_data,
             context={
@@ -163,14 +161,12 @@ class ConstitutionalAuthMiddleware:
             },
         )
 
-        return validation_result
-
     async def validate_token_verification(
         self, token_payload: dict[str, Any], request_context: dict[str, Any]
     ) -> dict[str, Any]:
         """Validate constitutional compliance for token verification."""
 
-        validation_result = await self.acge.validate_constitutional_compliance(
+        return await self.acge.validate_constitutional_compliance(
             operation="token_verification",
             user_data={
                 "user_id": token_payload.get("user_id"),
@@ -183,8 +179,6 @@ class ConstitutionalAuthMiddleware:
                 "endpoint": request_context.get("endpoint"),
             },
         )
-
-        return validation_result
 
 
 def create_constitutional_jwt_claims(
@@ -284,7 +278,7 @@ async def constitutional_auth_dependency(
             headers={"WWW-Authenticate": "Bearer"},
         )
     except Exception as e:
-        logger.error(f"Constitutional auth dependency error: {e}")
+        logger.exception(f"Constitutional auth dependency error: {e}")
         raise HTTPException(status_code=500, detail="Constitutional validation error")
 
 

@@ -8,11 +8,12 @@ without requiring database connections.
 # Constitutional Hash: cdd01ef066bc6cf2
 
 import os
+import pathlib
 import sys
 from datetime import datetime, timedelta, timezone
 
 # Add the project root to Python path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, os.path.join(pathlib.Path(__file__).parent, ".."))
 
 from services.core.constitutional_ai.ac_service.services.stakeholder_engagement import (
     FeedbackRecord,
@@ -31,7 +32,6 @@ def test_enums():
     # ensures: Correct function execution
     # sha256: func_hash
     """Test enum definitions."""
-    print("Testing enum definitions...")
 
     # Test NotificationChannel
     assert NotificationChannel.EMAIL == "email"
@@ -58,15 +58,12 @@ def test_enums():
     assert FeedbackStatus.REVIEWED == "reviewed"
     assert FeedbackStatus.INCORPORATED == "incorporated"
 
-    print("✓ All enums defined correctly")
-
 
 def test_notification_record():
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash
     """Test NotificationRecord dataclass."""
-    print("Testing NotificationRecord...")
 
     notification = NotificationRecord(
         id="test_notification_1",
@@ -95,15 +92,12 @@ def test_notification_record():
     assert notification.content["subject"] == "Test Amendment Notification"
     assert notification.retry_count == 0
 
-    print("✓ NotificationRecord works correctly")
-
 
 def test_feedback_record():
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash
     """Test FeedbackRecord dataclass."""
-    print("Testing FeedbackRecord...")
 
     feedback = FeedbackRecord(
         id="test_feedback_1",
@@ -124,15 +118,12 @@ def test_feedback_record():
     assert feedback.status == FeedbackStatus.SUBMITTED
     assert "clarification" in feedback.feedback_content
 
-    print("✓ FeedbackRecord works correctly")
-
 
 def test_stakeholder_engagement_input():
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash
     """Test StakeholderEngagementInput validation."""
-    print("Testing StakeholderEngagementInput...")
 
     # Test valid input
     engagement_input = StakeholderEngagementInput(
@@ -164,15 +155,12 @@ def test_stakeholder_engagement_input():
     assert NotificationChannel.DASHBOARD in default_input.notification_channels
     assert default_input.engagement_period_hours == 72
 
-    print("✓ StakeholderEngagementInput validation works correctly")
-
 
 def test_stakeholder_engagement_status():
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash
     """Test StakeholderEngagementStatus model."""
-    print("Testing StakeholderEngagementStatus...")
 
     deadline = datetime.now(timezone.utc) + timedelta(hours=48)
 
@@ -211,15 +199,12 @@ def test_stakeholder_engagement_status():
     assert status.feedback_by_role["constitutional_expert"] == 1
     assert len(status.status_by_stakeholder) == 4
 
-    print("✓ StakeholderEngagementStatus works correctly")
-
 
 def test_notification_content_structure():
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash
     """Test notification content structure."""
-    print("Testing notification content structure...")
 
     # Simulate notification content creation
     stakeholder = {
@@ -265,17 +250,12 @@ def test_notification_content_structure():
     assert content["engagement"]["hours_remaining"] == 72
     assert "/constitutional-council/amendments/1" in content["actions"]["review_url"]
 
-    print("✓ Notification content structure is correct")
-
 
 def run_all_tests():
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash
     """Run all tests."""
-    print("=" * 60)
-    print("STAKEHOLDER ENGAGEMENT SYSTEM - COMPONENT TESTS")
-    print("=" * 60)
 
     try:
         test_enums()
@@ -285,22 +265,9 @@ def run_all_tests():
         test_stakeholder_engagement_status()
         test_notification_content_structure()
 
-        print("\n" + "=" * 60)
-        print("✅ ALL TESTS PASSED SUCCESSFULLY!")
-        print("=" * 60)
-        print("Stakeholder Engagement System components are working correctly.")
-        print("Key features validated:")
-        print("- Enum definitions for channels, roles, and statuses")
-        print("- NotificationRecord and FeedbackRecord data structures")
-        print("- StakeholderEngagementInput validation")
-        print("- StakeholderEngagementStatus tracking")
-        print("- Notification content structure")
-        print("=" * 60)
-
         return True
 
-    except Exception as e:
-        print(f"\n❌ TEST FAILED: {e}")
+    except Exception:
         import traceback
 
         traceback.print_exc()

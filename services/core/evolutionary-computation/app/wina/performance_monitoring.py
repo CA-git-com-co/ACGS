@@ -205,7 +205,7 @@ class WINAPerformanceCollector:
             return metrics
 
         except Exception as e:
-            logger.error(f"Failed to collect system health metrics: {e}")
+            logger.exception(f"Failed to collect system health metrics: {e}")
             # Return default metrics on error
             return WINASystemHealthMetrics(
                 component_type=component_type,
@@ -239,7 +239,7 @@ class WINAPerformanceCollector:
             self.neuron_activation_metrics.append(metrics)
 
         except Exception as e:
-            logger.error(f"Failed to record neuron activation metrics: {e}")
+            logger.exception(f"Failed to record neuron activation metrics: {e}")
 
     def record_gating_performance(
         self,
@@ -266,7 +266,7 @@ class WINAPerformanceCollector:
             self.gating_metrics.append(metrics)
 
         except Exception as e:
-            logger.error(f"Failed to record gating performance metrics: {e}")
+            logger.exception(f"Failed to record gating performance metrics: {e}")
 
     def record_integration_performance(
         self,
@@ -293,7 +293,7 @@ class WINAPerformanceCollector:
             self.integration_metrics.append(metrics)
 
         except Exception as e:
-            logger.error(f"Failed to record integration performance metrics: {e}")
+            logger.exception(f"Failed to record integration performance metrics: {e}")
 
     def record_constitutional_compliance(
         self,
@@ -318,9 +318,11 @@ class WINAPerformanceCollector:
             self.constitutional_metrics.append(metrics)
 
         except Exception as e:
-            logger.error(f"Failed to record constitutional compliance metrics: {e}")
+            logger.exception(f"Failed to record constitutional compliance metrics: {e}")
 
-    def get_performance_summary(self, time_range: timedelta = None) -> dict[str, Any]:
+    def get_performance_summary(
+        self, time_range: timedelta | None = None
+    ) -> dict[str, Any]:
         """
         Get comprehensive performance summary.
 
@@ -350,7 +352,7 @@ class WINAPerformanceCollector:
                 m for m in self.integration_metrics if m.timestamp >= cutoff_time
             ]
 
-            summary = {
+            return {
                 "monitoring_level": self.monitoring_level.value,
                 "collection_interval": self.collection_interval,
                 "total_collections": self.total_collections,
@@ -370,10 +372,8 @@ class WINAPerformanceCollector:
                 "recommendations": self._generate_performance_recommendations(),
             }
 
-            return summary
-
         except Exception as e:
-            logger.error(f"Failed to generate performance summary: {e}")
+            logger.exception(f"Failed to generate performance summary: {e}")
             return {"error": str(e)}
 
     def _summarize_health_metrics(
@@ -484,7 +484,7 @@ class WINAPerformanceCollector:
                 logger.warning(f"High error rate alert: {metrics.error_rate:.3f}")
 
         except Exception as e:
-            logger.error(f"Failed to check health alerts: {e}")
+            logger.exception(f"Failed to check health alerts: {e}")
 
     def _get_alert_status(self) -> dict[str, Any]:
         """Get current alert status."""
@@ -545,4 +545,4 @@ class WINAPerformanceCollector:
             ]
 
         except Exception as e:
-            logger.error(f"Failed to cleanup old metrics: {e}")
+            logger.exception(f"Failed to cleanup old metrics: {e}")

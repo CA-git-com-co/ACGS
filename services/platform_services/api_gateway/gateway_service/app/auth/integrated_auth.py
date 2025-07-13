@@ -6,17 +6,15 @@ This module provides direct authentication capabilities within the API Gateway,
 reducing the need for a separate authentication service for most operations.
 """
 
-import asyncio
-import hashlib
 import os
 import secrets
 import time
 from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import bcrypt
 import jwt
-from fastapi import HTTPException, Request, status
+from fastapi import Request
 from pydantic import BaseModel
 
 # Constitutional compliance hash
@@ -28,9 +26,9 @@ class TokenData(BaseModel):
 
     user_id: str
     username: str
-    tenant_id: Optional[str] = None
-    roles: List[str] = []
-    permissions: List[str] = []
+    tenant_id: str | None = None
+    roles: list[str] = []
+    permissions: list[str] = []
     exp: int
     iat: int
     constitutional_hash: str
@@ -41,23 +39,23 @@ class UserCredentials(BaseModel):
 
     username: str
     password: str
-    tenant_id: Optional[str] = None
+    tenant_id: str | None = None
 
 
 class AuthenticationResult(BaseModel):
     """Authentication result model."""
 
     success: bool
-    access_token: Optional[str] = None
+    access_token: str | None = None
     token_type: str = "bearer"
     expires_in: int = 3600
-    user_id: Optional[str] = None
-    username: Optional[str] = None
-    tenant_id: Optional[str] = None
-    roles: List[str] = []
-    permissions: List[str] = []
+    user_id: str | None = None
+    username: str | None = None
+    tenant_id: str | None = None
+    roles: list[str] = []
+    permissions: list[str] = []
     constitutional_hash: str = CONSTITUTIONAL_HASH
-    error: Optional[str] = None
+    error: str | None = None
 
 
 class IntegratedAuthManager:
@@ -155,7 +153,7 @@ class IntegratedAuthManager:
         self.auth_attempts[identifier].append(current_time)
         return True
 
-    def create_access_token(self, user_data: Dict[str, Any]) -> str:
+    def create_access_token(self, user_data: dict[str, Any]) -> str:
         """Create JWT access token."""
         now = datetime.now(timezone.utc)
         expires = now + timedelta(minutes=self.token_expire_minutes)
@@ -174,7 +172,7 @@ class IntegratedAuthManager:
 
         return jwt.encode(payload, self.jwt_secret, algorithm=self.jwt_algorithm)
 
-    def verify_token(self, token: str) -> Optional[TokenData]:
+    def verify_token(self, token: str) -> TokenData | None:
         """Verify and decode JWT token."""
         try:
             # Check if token is blacklisted
@@ -263,10 +261,10 @@ class IntegratedAuthManager:
 
         except Exception as e:
             return AuthenticationResult(
-                success=False, error=f"Authentication failed: {str(e)}"
+                success=False, error=f"Authentication failed: {e!s}"
             )
 
-    async def validate_request_auth(self, request: Request) -> Optional[TokenData]:
+    async def validate_request_auth(self, request: Request) -> TokenData | None:
         """Validate authentication for incoming request."""
         try:
             # Get Authorization header
@@ -351,7 +349,7 @@ class IntegratedAuthManager:
         """Check if user has required role."""
         return required_role in token_data.roles
 
-    async def get_user_info(self, user_id: str) -> Optional[Dict[str, Any]]:
+    async def get_user_info(self, user_id: str) -> dict[str, Any] | None:
         """Get user information by ID."""
         for user in self.users_db.values():
             if user["user_id"] == user_id:
@@ -368,7 +366,7 @@ class IntegratedAuthManager:
                 }
         return None
 
-    async def create_user(self, user_data: Dict[str, Any]) -> bool:
+    async def create_user(self, user_data: dict[str, Any]) -> bool:
         """Create a new user (admin only)."""
         try:
             username = user_data["username"]
@@ -391,7 +389,7 @@ class IntegratedAuthManager:
         except Exception:
             return False
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Health check for authentication module."""
         return {
             "healthy": True,

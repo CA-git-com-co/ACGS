@@ -17,6 +17,7 @@ import uuid
 from datetime import datetime, timezone
 from enum import Enum
 
+from app.db.base_class import Base
 from sqlalchemy import (
     JSON,
     Boolean,
@@ -30,8 +31,6 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-
-from ..db.base_class import Base
 
 
 class AgentStatus(str, Enum):
@@ -294,4 +293,3 @@ def extend_user_model():
     This should be integrated into the existing User model definition.
     """
     # User.owned_agents = relationship("Agent", back_populates="owner")
-    pass

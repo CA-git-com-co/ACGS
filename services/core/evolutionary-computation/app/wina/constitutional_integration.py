@@ -157,7 +157,7 @@ class ConstitutionalWINASupport:
             )
 
         except Exception as e:
-            logger.error(f"Failed to initialize efficiency principles: {e}")
+            logger.exception(f"Failed to initialize efficiency principles: {e}")
             raise
 
     async def validate_optimization_compliance(
@@ -229,7 +229,7 @@ class ConstitutionalWINASupport:
             return result
 
         except Exception as e:
-            logger.error(f"Constitutional compliance validation failed: {e}")
+            logger.exception(f"Constitutional compliance validation failed: {e}")
             return ComplianceResult(
                 overall_score=0.0,
                 principle_scores={},
@@ -257,37 +257,28 @@ class ConstitutionalWINASupport:
 
             if constraint.principle == ConstitutionalPrinciple.TRANSPARENCY:
                 # Transparency based on explainability of optimization
-                transparency_score = min(
-                    1.0, base_score + 0.05
-                )  # Slight boost for transparency
-                return transparency_score
+                return min(1.0, base_score + 0.05)  # Slight boost for transparency
 
             if constraint.principle == ConstitutionalPrinciple.ACCOUNTABILITY:
                 # Accountability based on audit trail and decision tracking
-                accountability_score = base_score * 0.95  # Slightly more stringent
-                return accountability_score
+                return base_score * 0.95  # Slightly more stringent
 
             if constraint.principle == ConstitutionalPrinciple.FAIRNESS:
                 # Fairness based on stakeholder impact analysis
-                fairness_score = base_score * 0.90  # More stringent for fairness
-                return fairness_score
+                return base_score * 0.90  # More stringent for fairness
 
             if constraint.principle == ConstitutionalPrinciple.SECURITY:
                 # Security based on preservation of security properties
-                security_score = min(
-                    1.0, base_score + 0.02
-                )  # Small boost for security focus
-                return security_score
+                return min(1.0, base_score + 0.02)  # Small boost for security focus
 
             if constraint.principle == ConstitutionalPrinciple.DEMOCRATIC_OVERSIGHT:
                 # Democratic oversight based on governance mechanism preservation
-                oversight_score = base_score * 0.85  # Most stringent requirement
-                return oversight_score
+                return base_score * 0.85  # Most stringent requirement
 
             return base_score
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Failed to evaluate principle {constraint.principle.value}: {e}"
             )
             return 0.0
@@ -339,7 +330,7 @@ class ConstitutionalWINASupport:
             }
 
         except Exception as e:
-            logger.error(f"Failed to generate compliance summary: {e}")
+            logger.exception(f"Failed to generate compliance summary: {e}")
             return {"error": str(e)}
 
     async def suggest_compliance_improvements(
@@ -382,15 +373,17 @@ class ConstitutionalWINASupport:
 
                 # Add general improvement suggestions
                 if compliance_result.overall_score < 0.8:
-                    suggestions.append(
-                        "Consider reducing optimization aggressiveness to improve compliance"
-                    )
-                    suggestions.append(
-                        "Review constitutional constraints and thresholds"
+                    suggestions.extend(
+                        (
+                            "Consider reducing optimization aggressiveness to improve compliance",
+                            "Review constitutional constraints and thresholds",
+                        )
                     )
 
             return suggestions
 
         except Exception as e:
-            logger.error(f"Failed to generate compliance improvement suggestions: {e}")
+            logger.exception(
+                f"Failed to generate compliance improvement suggestions: {e}"
+            )
             return ["Review constitutional compliance system configuration"]

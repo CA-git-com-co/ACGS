@@ -8,8 +8,6 @@ Immutable value objects representing domain concepts.
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Optional, Set
-from uuid import UUID
 
 from services.shared.domain.base import CONSTITUTIONAL_HASH, ValueObject
 
@@ -140,9 +138,9 @@ class VersionNumber(ValueObject):
 class ApplicationScope(ValueObject):
     """Scope where a principle applies."""
 
-    contexts: Set[str]
-    domains: Set[str]
-    services: Set[str]
+    contexts: set[str]
+    domains: set[str]
+    services: set[str]
 
     def _validate(self) -> None:
         """Validate scope components."""
@@ -172,8 +170,8 @@ class ValidationCriteria(ValueObject):
 
     criteria_type: str  # "logical", "quantitative", "qualitative"
     expression: str
-    threshold: Optional[float] = None
-    metadata: Optional[Dict[str, any]] = None
+    threshold: float | None = None
+    metadata: dict[str, any] | None = None
 
     def _validate(self) -> None:
         """Validate criteria configuration."""
@@ -190,8 +188,8 @@ class FormalConstraints(ValueObject):
     """Machine-readable formal constraints for a principle."""
 
     constraint_language: str  # "z3", "opa", "datalog"
-    constraints: List[str]
-    variables: Dict[str, str]
+    constraints: list[str]
+    variables: dict[str, str]
 
     def _validate(self) -> None:
         """Validate formal constraints."""
@@ -208,15 +206,15 @@ class ComplianceScore(ValueObject):
     """Quantitative measure of constitutional adherence."""
 
     overall_score: float
-    principle_scores: Dict[str, float]
-    violations: List["ViolationDetail"]
+    principle_scores: dict[str, float]
+    violations: list["ViolationDetail"]
     confidence_interval: tuple[float, float]
     calculated_at: datetime
 
     def _validate(self) -> None:
         """Validate compliance score."""
         if not 0.0 <= self.overall_score <= 1.0:
-            raise ValueError(f"Overall score must be between 0.0 and 1.0")
+            raise ValueError("Overall score must be between 0.0 and 1.0")
 
         for principle_id, score in self.principle_scores.items():
             if not 0.0 <= score <= 1.0:
@@ -249,7 +247,7 @@ class ViolationDetail(ValueObject):
     violation_type: str
     severity: ViolationSeverity
     description: str
-    evidence: Dict[str, any]
+    evidence: dict[str, any]
     detected_at: datetime
 
     def _validate(self) -> None:
@@ -267,9 +265,9 @@ class AmendmentJustification(ValueObject):
     rationale: str
     problem_statement: str
     proposed_solution: str
-    expected_benefits: List[str]
-    potential_risks: List[str]
-    evidence_links: List[str]
+    expected_benefits: list[str]
+    potential_risks: list[str]
+    evidence_links: list[str]
 
     def _validate(self) -> None:
         """Validate justification completeness."""
@@ -287,10 +285,10 @@ class AmendmentJustification(ValueObject):
 class ConflictAnalysis(ValueObject):
     """Analysis of conflicts between principles."""
 
-    conflicting_principles: List[tuple[str, str]]
+    conflicting_principles: list[tuple[str, str]]
     conflict_type: str  # "logical", "priority", "scope"
     severity: ViolationSeverity
-    resolution_options: List[str]
+    resolution_options: list[str]
 
     def _validate(self) -> None:
         """Validate conflict analysis."""
@@ -312,9 +310,9 @@ class ConsultationSummary(ValueObject):
     total_participants: int
     support_percentage: float
     oppose_percentage: float
-    key_concerns: List[str]
-    suggested_modifications: List[str]
-    expert_opinions: Dict[str, str]
+    key_concerns: list[str]
+    suggested_modifications: list[str]
+    expert_opinions: dict[str, str]
 
     def _validate(self) -> None:
         """Validate consultation summary."""

@@ -8,7 +8,7 @@ Manages transactions and coordinates changes across multiple repositories.
 import logging
 from abc import ABC, abstractmethod
 from contextlib import asynccontextmanager
-from typing import Any, AsyncContextManager, Dict, List, Optional
+from typing import AsyncContextManager
 
 import asyncpg
 
@@ -26,9 +26,9 @@ class UnitOfWork(ABC):
     def __init__(self, tenant_id: TenantId):
         """Initialize unit of work for specific tenant."""
         self.tenant_id = tenant_id
-        self._new_aggregates: List[AggregateRoot] = []
-        self._dirty_aggregates: List[AggregateRoot] = []
-        self._removed_aggregates: List[AggregateRoot] = []
+        self._new_aggregates: list[AggregateRoot] = []
+        self._dirty_aggregates: list[AggregateRoot] = []
+        self._removed_aggregates: list[AggregateRoot] = []
         self._committed = False
 
     def register_new(self, aggregate: AggregateRoot) -> None:
@@ -68,14 +68,12 @@ class UnitOfWork(ABC):
         5. Commit transaction
         6. Mark as committed
         """
-        pass
 
     @abstractmethod
     async def rollback(self) -> None:
         """Rollback all changes."""
-        pass
 
-    def _collect_domain_events(self) -> List[DomainEvent]:
+    def _collect_domain_events(self) -> list[DomainEvent]:
         """Collect all domain events from modified aggregates."""
         events = []
 
@@ -121,7 +119,7 @@ class PostgreSQLUnitOfWork(UnitOfWork):
         tenant_id: TenantId,
         connection_pool: asyncpg.Pool,
         repository_registry: "RepositoryRegistry",
-        outbox: Optional[OutboxPattern] = None,
+        outbox: OutboxPattern | None = None,
     ):
         """
         Initialize PostgreSQL unit of work.
@@ -136,8 +134,8 @@ class PostgreSQLUnitOfWork(UnitOfWork):
         self.pool = connection_pool
         self.repository_registry = repository_registry
         self.outbox = outbox or get_outbox_pattern()
-        self._connection: Optional[asyncpg.Connection] = None
-        self._transaction: Optional[asyncpg.Transaction] = None
+        self._connection: asyncpg.Connection | None = None
+        self._transaction: asyncpg.Transaction | None = None
 
     async def __aenter__(self) -> "PostgreSQLUnitOfWork":
         """Async context manager entry."""
@@ -220,7 +218,7 @@ class PostgreSQLUnitOfWork(UnitOfWork):
             )
 
         except Exception as e:
-            logger.error(f"Failed to commit transaction: {e}")
+            logger.exception(f"Failed to commit transaction: {e}")
             await self.rollback()
             raise
         finally:
@@ -233,7 +231,7 @@ class PostgreSQLUnitOfWork(UnitOfWork):
                 await self._transaction.rollback()
                 logger.info(f"Rolled back transaction for tenant {self.tenant_id}")
             except Exception as e:
-                logger.error(f"Failed to rollback transaction: {e}")
+                logger.exception(f"Failed to rollback transaction: {e}")
             finally:
                 self._transaction = None
 
@@ -298,7 +296,7 @@ class UnitOfWorkManager:
         self,
         connection_pool: asyncpg.Pool,
         repository_registry: "RepositoryRegistry",
-        outbox: Optional[OutboxPattern] = None,
+        outbox: OutboxPattern | None = None,
     ):
         """
         Initialize unit of work manager.
@@ -438,7 +436,7 @@ class ConstitutionalGovernanceUnitOfWork(PostgreSQLUnitOfWork):
 
 
 # Global unit of work manager instance
-_uow_manager: Optional[UnitOfWorkManager] = None
+_uow_manager: UnitOfWorkManager | None = None
 
 
 def get_unit_of_work_manager() -> UnitOfWorkManager:

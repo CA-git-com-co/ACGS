@@ -5,20 +5,15 @@ Constitutional Hash: cdd01ef066bc6cf2
 Advanced validation with business rules, constitutional compliance, and security.
 """
 
-import json
 import logging
 import re
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Type, Union
+from typing import Any
 
-from ..resilience.exceptions import (
-    ConstitutionalComplianceError,
-    DomainValidationError,
-    InputValidationError,
-    SchemaValidationError,
+from shared.resilience.exceptions import (
     ValidationError,
 )
 
@@ -44,9 +39,9 @@ class ValidationIssue:
     error_code: str
     value: Any = None
     rule_name: str = None
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "field": self.field,
@@ -64,19 +59,19 @@ class ValidationResult:
     """Result of validation operation."""
 
     is_valid: bool
-    issues: List[ValidationIssue] = field(default_factory=list)
-    validated_data: Dict[str, Any] = field(default_factory=dict)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    issues: list[ValidationIssue] = field(default_factory=list)
+    validated_data: dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def add_issue(
         self,
         field: str,
         message: str,
         severity: ValidationSeverity = ValidationSeverity.ERROR,
-        error_code: str = None,
+        error_code: str | None = None,
         value: Any = None,
-        rule_name: str = None,
-        context: Dict[str, Any] = None,
+        rule_name: str | None = None,
+        context: dict[str, Any] | None = None,
     ) -> None:
         """Add a validation issue."""
         issue = ValidationIssue(
@@ -91,25 +86,25 @@ class ValidationResult:
         self.issues.append(issue)
 
         # Mark as invalid if any error or critical issue
-        if severity in [ValidationSeverity.ERROR, ValidationSeverity.CRITICAL]:
+        if severity in {ValidationSeverity.ERROR, ValidationSeverity.CRITICAL}:
             self.is_valid = False
 
     def has_errors(self) -> bool:
         """Check if there are any error-level issues."""
         return any(
-            issue.severity in [ValidationSeverity.ERROR, ValidationSeverity.CRITICAL]
+            issue.severity in {ValidationSeverity.ERROR, ValidationSeverity.CRITICAL}
             for issue in self.issues
         )
 
-    def get_errors(self) -> List[ValidationIssue]:
+    def get_errors(self) -> list[ValidationIssue]:
         """Get only error-level issues."""
         return [
             issue
             for issue in self.issues
-            if issue.severity in [ValidationSeverity.ERROR, ValidationSeverity.CRITICAL]
+            if issue.severity in {ValidationSeverity.ERROR, ValidationSeverity.CRITICAL}
         ]
 
-    def get_warnings(self) -> List[ValidationIssue]:
+    def get_warnings(self) -> list[ValidationIssue]:
         """Get warning-level issues."""
         return [
             issue
@@ -117,7 +112,7 @@ class ValidationResult:
             if issue.severity == ValidationSeverity.WARNING
         ]
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "is_valid": self.is_valid,
@@ -142,16 +137,17 @@ class ValidationResult:
 class ValidationRule(ABC):
     """Abstract base class for validation rules."""
 
-    def __init__(self, name: str, error_message: str = None):
+    def __init__(self, name: str, error_message: str | None = None):
         self.name = name
         self.error_message = error_message or f"Validation rule '{name}' failed"
 
     @abstractmethod
-    async def validate(self, value: Any, context: Dict[str, Any] = None) -> bool:
+    async def validate(self, value: Any, context: dict[str, Any] | None = None) -> bool:
         """Validate a value."""
-        pass
 
-    def get_error_message(self, value: Any, context: Dict[str, Any] = None) -> str:
+    def get_error_message(
+        self, value: Any, context: dict[str, Any] | None = None
+    ) -> str:
         """Get error message for failed validation."""
         return self.error_message
 
@@ -162,20 +158,18 @@ class RequiredRule(ValidationRule):
     def __init__(self):
         super().__init__("required", "Field is required")
 
-    async def validate(self, value: Any, context: Dict[str, Any] = None) -> bool:
+    async def validate(self, value: Any, context: dict[str, Any] | None = None) -> bool:
         if value is None:
             return False
         if isinstance(value, str) and not value.strip():
             return False
-        if isinstance(value, (list, dict)) and len(value) == 0:
-            return False
-        return True
+        return not (isinstance(value, (list, dict)) and len(value) == 0)
 
 
 class LengthRule(ValidationRule):
     """Rule to check string/list length."""
 
-    def __init__(self, min_length: int = None, max_length: int = None):
+    def __init__(self, min_length: int | None = None, max_length: int | None = None):
         self.min_length = min_length
         self.max_length = max_length
 
@@ -187,7 +181,7 @@ class LengthRule(ValidationRule):
 
         super().__init__("length", f"Length must be {' and '.join(message_parts)}")
 
-    async def validate(self, value: Any, context: Dict[str, Any] = None) -> bool:
+    async def validate(self, value: Any, context: dict[str, Any] | None = None) -> bool:
         if value is None:
             return True  # Let RequiredRule handle None values
 
@@ -197,10 +191,7 @@ class LengthRule(ValidationRule):
             if self.min_length is not None and length < self.min_length:
                 return False
 
-            if self.max_length is not None and length > self.max_length:
-                return False
-
-            return True
+            return not (self.max_length is not None and length > self.max_length)
         except TypeError:
             return False
 
@@ -208,11 +199,11 @@ class LengthRule(ValidationRule):
 class RegexRule(ValidationRule):
     """Rule to validate against regular expressions."""
 
-    def __init__(self, pattern: str, message: str = None):
+    def __init__(self, pattern: str, message: str | None = None):
         self.pattern = re.compile(pattern)
         super().__init__("regex", message or f"Value must match pattern: {pattern}")
 
-    async def validate(self, value: Any, context: Dict[str, Any] = None) -> bool:
+    async def validate(self, value: Any, context: dict[str, Any] | None = None) -> bool:
         if value is None:
             return True
 
@@ -244,7 +235,7 @@ class RangeRule(ValidationRule):
     """Rule to validate numeric ranges."""
 
     def __init__(
-        self, min_value: Union[int, float] = None, max_value: Union[int, float] = None
+        self, min_value: int | float | None = None, max_value: int | float | None = None
     ):
         self.min_value = min_value
         self.max_value = max_value
@@ -257,7 +248,7 @@ class RangeRule(ValidationRule):
 
         super().__init__("range", f"Value must be {' and '.join(message_parts)}")
 
-    async def validate(self, value: Any, context: Dict[str, Any] = None) -> bool:
+    async def validate(self, value: Any, context: dict[str, Any] | None = None) -> bool:
         if value is None:
             return True
 
@@ -267,10 +258,7 @@ class RangeRule(ValidationRule):
             if self.min_value is not None and numeric_value < self.min_value:
                 return False
 
-            if self.max_value is not None and numeric_value > self.max_value:
-                return False
-
-            return True
+            return not (self.max_value is not None and numeric_value > self.max_value)
         except (ValueError, TypeError):
             return False
 
@@ -278,13 +266,13 @@ class RangeRule(ValidationRule):
 class ChoicesRule(ValidationRule):
     """Rule to validate against allowed choices."""
 
-    def __init__(self, choices: List[Any]):
+    def __init__(self, choices: list[Any]):
         self.choices = choices
         super().__init__(
             "choices", f"Value must be one of: {', '.join(str(c) for c in choices)}"
         )
 
-    async def validate(self, value: Any, context: Dict[str, Any] = None) -> bool:
+    async def validate(self, value: Any, context: dict[str, Any] | None = None) -> bool:
         return value in self.choices
 
 
@@ -292,16 +280,16 @@ class CustomRule(ValidationRule):
     """Rule for custom validation logic."""
 
     def __init__(
-        self, name: str, validator: Callable[[Any, Dict[str, Any]], bool], message: str
+        self, name: str, validator: Callable[[Any, dict[str, Any]], bool], message: str
     ):
         self.validator = validator
         super().__init__(name, message)
 
-    async def validate(self, value: Any, context: Dict[str, Any] = None) -> bool:
+    async def validate(self, value: Any, context: dict[str, Any] | None = None) -> bool:
         try:
             return self.validator(value, context or {})
         except Exception as e:
-            logger.error(f"Custom validation rule '{self.name}' failed: {e}")
+            logger.exception(f"Custom validation rule '{self.name}' failed: {e}")
             return False
 
 
@@ -313,10 +301,9 @@ class Validator(ABC):
 
     @abstractmethod
     async def validate(
-        self, data: Any, context: Dict[str, Any] = None
+        self, data: Any, context: dict[str, Any] | None = None
     ) -> ValidationResult:
         """Validate data and return result."""
-        pass
 
 
 class InputValidator(Validator):
@@ -324,8 +311,8 @@ class InputValidator(Validator):
 
     def __init__(self, name: str = "input_validator"):
         super().__init__(name)
-        self.field_rules: Dict[str, List[ValidationRule]] = {}
-        self.global_rules: List[ValidationRule] = []
+        self.field_rules: dict[str, list[ValidationRule]] = {}
+        self.global_rules: list[ValidationRule] = []
 
     def add_field_rule(self, field: str, rule: ValidationRule) -> "InputValidator":
         """Add validation rule for specific field."""
@@ -344,7 +331,7 @@ class InputValidator(Validator):
         return self.add_field_rule(field, RequiredRule())
 
     def length(
-        self, field: str, min_length: int = None, max_length: int = None
+        self, field: str, min_length: int | None = None, max_length: int | None = None
     ) -> "InputValidator":
         """Add length validation for field."""
         return self.add_field_rule(field, LengthRule(min_length, max_length))
@@ -360,18 +347,18 @@ class InputValidator(Validator):
     def range(
         self,
         field: str,
-        min_value: Union[int, float] = None,
-        max_value: Union[int, float] = None,
+        min_value: int | float | None = None,
+        max_value: int | float | None = None,
     ) -> "InputValidator":
         """Add range validation for field."""
         return self.add_field_rule(field, RangeRule(min_value, max_value))
 
-    def choices(self, field: str, choices: List[Any]) -> "InputValidator":
+    def choices(self, field: str, choices: list[Any]) -> "InputValidator":
         """Add choices validation for field."""
         return self.add_field_rule(field, ChoicesRule(choices))
 
     def custom(
-        self, field: str, validator: Callable[[Any, Dict[str, Any]], bool], message: str
+        self, field: str, validator: Callable[[Any, dict[str, Any]], bool], message: str
     ) -> "InputValidator":
         """Add custom validation for field."""
         return self.add_field_rule(
@@ -379,7 +366,7 @@ class InputValidator(Validator):
         )
 
     async def validate(
-        self, data: Any, context: Dict[str, Any] = None
+        self, data: Any, context: dict[str, Any] | None = None
     ) -> ValidationResult:
         """Validate input data."""
         result = ValidationResult(is_valid=True)
@@ -411,7 +398,7 @@ class InputValidator(Validator):
                             rule_name=rule.name,
                         )
                 except Exception as e:
-                    logger.error(
+                    logger.exception(
                         f"Error in validation rule '{rule.name}' for field '{field}': {e}"
                     )
                     result.add_issue(
@@ -435,7 +422,7 @@ class InputValidator(Validator):
                         rule_name=rule.name,
                     )
             except Exception as e:
-                logger.error(f"Error in global validation rule '{rule.name}': {e}")
+                logger.exception(f"Error in global validation rule '{rule.name}': {e}")
                 result.add_issue(
                     field="global",
                     message=f"Global validation error: {e}",
@@ -454,7 +441,7 @@ class InputValidator(Validator):
 class SchemaValidator(Validator):
     """JSON Schema validator with enhanced error reporting."""
 
-    def __init__(self, schema: Dict[str, Any], name: str = "schema_validator"):
+    def __init__(self, schema: dict[str, Any], name: str = "schema_validator"):
         super().__init__(name)
         self.schema = schema
 
@@ -468,7 +455,7 @@ class SchemaValidator(Validator):
             self.jsonschema = None
 
     async def validate(
-        self, data: Any, context: Dict[str, Any] = None
+        self, data: Any, context: dict[str, Any] | None = None
     ) -> ValidationResult:
         """Validate data against JSON schema."""
         result = ValidationResult(is_valid=True)
@@ -505,7 +492,7 @@ class SchemaValidator(Validator):
                 result.validated_data = data
 
         except Exception as e:
-            logger.error(f"Schema validation error: {e}")
+            logger.exception(f"Schema validation error: {e}")
             result.add_issue(
                 field="schema",
                 message=f"Schema validation failed: {e}",
@@ -521,19 +508,19 @@ class BusinessRuleValidator(Validator):
 
     def __init__(self, name: str = "business_rule_validator"):
         super().__init__(name)
-        self.business_rules: List[Callable[[Any, Dict[str, Any]], ValidationResult]] = (
+        self.business_rules: list[Callable[[Any, dict[str, Any]], ValidationResult]] = (
             []
         )
 
     def add_rule(
-        self, rule: Callable[[Any, Dict[str, Any]], ValidationResult]
+        self, rule: Callable[[Any, dict[str, Any]], ValidationResult]
     ) -> "BusinessRuleValidator":
         """Add a business rule."""
         self.business_rules.append(rule)
         return self
 
     async def validate(
-        self, data: Any, context: Dict[str, Any] = None
+        self, data: Any, context: dict[str, Any] | None = None
     ) -> ValidationResult:
         """Validate business rules."""
         combined_result = ValidationResult(is_valid=True)
@@ -553,7 +540,7 @@ class BusinessRuleValidator(Validator):
                 combined_result.metadata.update(rule_result.metadata)
 
             except Exception as e:
-                logger.error(f"Business rule validation error: {e}")
+                logger.exception(f"Business rule validation error: {e}")
                 combined_result.add_issue(
                     field="business_rule",
                     message=f"Business rule validation failed: {e}",
@@ -572,7 +559,7 @@ class ConstitutionalValidator(Validator):
         self.required_hash = "cdd01ef066bc6cf2"
 
     async def validate(
-        self, data: Any, context: Dict[str, Any] = None
+        self, data: Any, context: dict[str, Any] | None = None
     ) -> ValidationResult:
         """Validate constitutional compliance."""
         result = ValidationResult(is_valid=True)
@@ -614,9 +601,9 @@ class ConstitutionalValidator(Validator):
 
 # Convenience function for quick validation
 async def validate_input(
-    data: Dict[str, Any],
-    rules: Dict[str, List[ValidationRule]] = None,
-    context: Dict[str, Any] = None,
+    data: dict[str, Any],
+    rules: dict[str, list[ValidationRule]] | None = None,
+    context: dict[str, Any] | None = None,
 ) -> ValidationResult:
     """Quick input validation with specified rules."""
     validator = InputValidator()

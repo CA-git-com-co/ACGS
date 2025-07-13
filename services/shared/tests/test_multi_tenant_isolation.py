@@ -5,10 +5,8 @@ Tests for Redis isolation, network policies, and memory isolation.
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import asyncio
 import time
 import uuid
-from typing import Any, Dict
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -67,12 +65,11 @@ def tenant_redis_client():
 @pytest.fixture
 def memory_framework():
     """Create memory isolation framework for testing."""
-    framework = MemoryIsolationFramework(
+    return MemoryIsolationFramework(
         default_soft_limit=10 * 1024 * 1024,  # 10MB
         default_hard_limit=50 * 1024 * 1024,  # 50MB
         constitutional_hash="cdd01ef066bc6cf2",
     )
-    return framework
 
 
 @pytest.fixture
@@ -391,7 +388,7 @@ class TestMemoryIsolation:
 
         assert leak_info["tenant_id"] == tenant_id
         assert leak_info["potential_leak"] is True
-        assert leak_info["leak_severity"] in ["medium", "high"]
+        assert leak_info["leak_severity"] in {"medium", "high"}
         assert len(leak_info["recommendations"]) > 0
         assert leak_info["constitutional_hash"] == "cdd01ef066bc6cf2"
 

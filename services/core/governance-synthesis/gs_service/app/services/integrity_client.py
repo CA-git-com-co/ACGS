@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import Optional
+import pathlib
 
 import httpx
 
@@ -18,9 +18,9 @@ except ImportError:
         import os
         import sys
 
-        project_root = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "../../../../..")
-        )
+        project_root = pathlib.Path(
+            os.path.join(pathlib.Path(__file__).parent, "../../../../..")
+        ).resolve()
         if project_root not in sys.path:
             sys.path.append(project_root)
         from services.shared.auth import get_auth_headers, get_service_token
@@ -31,7 +31,7 @@ except ImportError:
         async def get_service_token() -> str:
             return "internal_service_token"
 
-        async def get_auth_headers(token: Optional[str] = None) -> dict:
+        async def get_auth_headers(token: str | None = None) -> dict:
             return {"Authorization": f"Bearer {token or await get_service_token()}"}
 
 
@@ -59,8 +59,8 @@ class IntegrityServiceClient:
     async def store_policy_rule(
         self,
         rule_data: PolicyRuleCreate,
-        auth_token: Optional[str] = None,
-    ) -> Optional[PolicyRule]:
+        auth_token: str | None = None,
+    ) -> PolicyRule | None:
         """
         Stores a new policy rule in the Integrity Service with real authentication.
         """
@@ -89,29 +89,29 @@ class IntegrityServiceClient:
             return PolicyRule(**data)
 
         except httpx.HTTPStatusError as e:
-            logger.error(
+            logger.exception(
                 f"HTTP error storing policy rule: {e.response.status_code} -"
                 f" {e.response.text}"
             )
             # Attempt to parse error response for better debugging
             try:
                 error_details = e.response.json()
-                logger.error(f"Error details: {error_details}")
+                logger.exception(f"Error details: {error_details}")
             except Exception:
                 pass  # Ignore if error response is not JSON
             return None
 
         except httpx.RequestError as e:
-            logger.error(f"Request error storing policy rule: {e}")
+            logger.exception(f"Request error storing policy rule: {e}")
             return None
 
         except Exception as e:
-            logger.error(f"Unexpected error storing policy rule: {e}")
+            logger.exception(f"Unexpected error storing policy rule: {e}")
             return None
 
     async def get_policy_rule_by_id(
-        self, rule_id: int, auth_token: Optional[str] = None
-    ) -> Optional[PolicyRule]:
+        self, rule_id: int, auth_token: str | None = None
+    ) -> PolicyRule | None:
         """
         Fetches a policy rule by its ID from the Integrity Service with real authentication.
         """
@@ -135,22 +135,22 @@ class IntegrityServiceClient:
             if e.response.status_code == 404:
                 logger.warning(f"Policy rule {rule_id} not found")
             else:
-                logger.error(
+                logger.exception(
                     f"HTTP error fetching rule {rule_id}: {e.response.status_code} -"
                     f" {e.response.text}"
                 )
             return None
 
         except httpx.RequestError as e:
-            logger.error(f"Request error fetching rule {rule_id}: {e}")
+            logger.exception(f"Request error fetching rule {rule_id}: {e}")
             return None
 
         except Exception as e:
-            logger.error(f"Unexpected error fetching rule {rule_id}: {e}")
+            logger.exception(f"Unexpected error fetching rule {rule_id}: {e}")
             return None
 
     async def get_all_policy_rules(
-        self, auth_token: Optional[str] = None
+        self, auth_token: str | None = None
     ) -> list[PolicyRule]:
         """
         Fetches all policy rules from the Integrity Service.
@@ -183,18 +183,18 @@ class IntegrityServiceClient:
             return rules
 
         except httpx.HTTPStatusError as e:
-            logger.error(
+            logger.exception(
                 f"HTTP error fetching all policy rules: {e.response.status_code} -"
                 f" {e.response.text}"
             )
             return []
 
         except httpx.RequestError as e:
-            logger.error(f"Request error fetching all policy rules: {e}")
+            logger.exception(f"Request error fetching all policy rules: {e}")
             return []
 
         except Exception as e:
-            logger.error(f"Unexpected error fetching all policy rules: {e}")
+            logger.exception(f"Unexpected error fetching all policy rules: {e}")
             return []
 
     async def health_check(self) -> bool:
@@ -205,7 +205,7 @@ class IntegrityServiceClient:
             response = await self.client.get("/health")
             return response.status_code == 200
         except Exception as e:
-            logger.error(f"Health check failed: {e}")
+            logger.exception(f"Health check failed: {e}")
             return False
 
     async def close(self):
@@ -216,7 +216,7 @@ class IntegrityServiceClient:
 
 # Factory function for creating client instances
 def get_integrity_service_client(
-    base_url: Optional[str] = None,
+    base_url: str | None = None,
 ) -> IntegrityServiceClient:
     """Factory function to create an Integrity Service client."""
     return IntegrityServiceClient(base_url or INTEGRITY_SERVICE_URL)
@@ -230,24 +230,18 @@ if __name__ == "__main__":
 
     async def test_integrity_client():
         """Test the enhanced Integrity Service client."""
-        print(f"Testing Enhanced Integrity Client against URL: {INTEGRITY_SERVICE_URL}")
 
         client = IntegrityServiceClient(INTEGRITY_SERVICE_URL)
 
         try:
             # Test health check
-            print("\n1. Testing health check...")
             is_healthy = await client.health_check()
-            print(f"Service healthy: {is_healthy}")
 
             if is_healthy:
                 # Test fetching all rules
-                print("\n2. Testing fetch all policy rules...")
-                all_rules = await client.get_all_policy_rules()
-                print(f"Found {len(all_rules)} existing policy rules")
+                await client.get_all_policy_rules()
 
                 # Test creating a new rule
-                print("\n3. Testing rule creation...")
                 new_rule_data = PolicyRuleCreate(
                     rule_content=(
                         "test_enhanced_rule(X) :- enhanced_condition(X),"
@@ -258,33 +252,16 @@ if __name__ == "__main__":
                 created_rule = await client.store_policy_rule(new_rule_data)
 
                 if created_rule:
-                    print(f"Successfully created rule with ID: {created_rule.id}")
 
                     # Test fetching the created rule
-                    print("\n4. Testing rule fetch by ID...")
                     fetched_rule = await client.get_policy_rule_by_id(created_rule.id)
                     if fetched_rule:
-                        print(
-                            "Successfully fetched rule:"
-                            f" {fetched_rule.rule_content[:50]}..."
-                        )
-                    else:
-                        print("Failed to fetch the created rule")
-                else:
-                    print("Failed to create new rule")
-            else:
-                print("Service is not healthy, skipping API tests")
+                        pass
 
         except Exception as e:
-            logger.error(f"Test failed with error: {e}")
+            logger.exception(f"Test failed with error: {e}")
         finally:
             await client.close()
-            print("\nTesting completed")
 
     # Run the test
-    print("Enhanced Integrity Service client defined.")
-    print(
-        "Run with: python -m"
-        " services.core.governance-synthesis.gs_service.app.services.integrity_client"
-    )
     # asyncio.run(test_integrity_client())

@@ -35,11 +35,6 @@ def main():
     # Enable telemetry
     os.environ.setdefault("TELEMETRY_ENABLED", "true")
 
-    print("🚀 Starting PGC Service with OpenTelemetry distributed tracing")
-    print(f"📊 OTLP Endpoint: {os.environ.get('OTEL_EXPORTER_OTLP_ENDPOINT')}")
-    print(f"🎯 Service Name: {os.environ.get('OTEL_SERVICE_NAME')}")
-    print(f"📈 Sampling Rate: {os.environ.get('OTEL_TRACES_SAMPLER_ARG')}")
-
     # Import and run a minimal FastAPI app for tracing demonstration
     try:
         from fastapi import FastAPI
@@ -113,12 +108,9 @@ def main():
             "workers": 1,
         }
 
-        print(f"🌐 Starting server on port {config['port']}")
-        print("✅ OpenTelemetry distributed tracing enabled")
         uvicorn.run(app, **config)
 
-    except Exception as e:
-        print(f"❌ Failed to start PGC service: {e}")
+    except Exception:
         sys.exit(1)
 
 

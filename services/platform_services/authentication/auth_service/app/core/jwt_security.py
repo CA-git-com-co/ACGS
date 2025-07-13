@@ -6,14 +6,14 @@ key rotation, algorithm validation, and comprehensive security controls.
 """
 
 import base64
+import contextlib
 import hashlib
 import logging
 import secrets
-import time
 import uuid
 from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import Any, Dict, Optional, Set, Tuple
+from typing import Any
 
 import jwt
 from cryptography.hazmat.primitives import hashes
@@ -79,12 +79,12 @@ class JWTSecurityManager:
 
         # Key management
         self.primary_secret = primary_secret
-        self.secondary_secret: Optional[str] = None
-        self.key_rotation_time: Optional[datetime] = None
+        self.secondary_secret: str | None = None
+        self.key_rotation_time: datetime | None = None
 
         # Token blacklists (in production, use Redis)
-        self.revoked_tokens: Set[str] = set()
-        self.active_sessions: Dict[str, Dict[str, Any]] = {}
+        self.revoked_tokens: set[str] = set()
+        self.active_sessions: dict[str, dict[str, Any]] = {}
 
         # Security settings
         self.max_token_age_hours = 24
@@ -138,8 +138,8 @@ class JWTSecurityManager:
         user_id: int,
         roles: list[str],
         client_ip: str = "",
-        expires_delta: Optional[timedelta] = None,
-    ) -> Tuple[str, str, str]:
+        expires_delta: timedelta | None = None,
+    ) -> tuple[str, str, str]:
         """Create secure access token with enhanced security features."""
 
         if expires_delta:
@@ -187,7 +187,7 @@ class JWTSecurityManager:
 
     def create_refresh_token(
         self, subject: str, user_id: int, roles: list[str], client_ip: str = ""
-    ) -> Tuple[str, str, datetime]:
+    ) -> tuple[str, str, datetime]:
         """Create secure refresh token."""
 
         expires_delta = timedelta(days=self.refresh_token_expire_days)
@@ -230,7 +230,7 @@ class JWTSecurityManager:
         except jwt.InvalidTokenError:
             # Try secondary key if available (for key rotation)
             if self.secondary_secret:
-                try:
+                with contextlib.suppress(jwt.InvalidTokenError):
                     payload = jwt.decode(
                         token,
                         self.secondary_secret,
@@ -238,8 +238,6 @@ class JWTSecurityManager:
                         audience="acgs-services",
                         issuer="acgs-auth-service",
                     )
-                except jwt.InvalidTokenError:
-                    pass
 
         if not payload:
             raise jwt.InvalidTokenError("Invalid token")
@@ -286,10 +284,10 @@ class JWTSecurityManager:
             return True
 
         except Exception as e:
-            logger.error(f"Constitutional compliance validation failed: {e}")
+            logger.exception(f"Constitutional compliance validation failed: {e}")
             return False
 
-    def revoke_token(self, jti: str, session_id: Optional[str] = None):
+    def revoke_token(self, jti: str, session_id: str | None = None):
         """Revoke a token by adding its JTI to blacklist."""
         self.revoked_tokens.add(jti)
 

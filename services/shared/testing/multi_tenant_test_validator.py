@@ -7,12 +7,11 @@ to ensure tenant isolation, context propagation, and administrative
 operations work correctly across all ACGS services.
 """
 
-import asyncio
 import logging
 import uuid
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import httpx
 from sqlalchemy import text
@@ -28,9 +27,9 @@ class TenantTestContext:
     tenant_id: str
     user_id: str
     is_admin: bool = False
-    jwt_token: Optional[str] = None
+    jwt_token: str | None = None
 
-    def to_headers(self) -> Dict[str, str]:
+    def to_headers(self) -> dict[str, str]:
         """Convert to HTTP headers."""
         headers = {
             "X-Tenant-ID": self.tenant_id,
@@ -57,7 +56,7 @@ class TenantIsolationViolation:
     description: str
     severity: str
     tenant_context: TenantTestContext
-    violating_data: Optional[Dict[str, Any]] = None
+    violating_data: dict[str, Any] | None = None
     timestamp: datetime = None
 
     def __post_init__(self):
@@ -72,7 +71,7 @@ class MultiTenantTestReport:
     total_tests: int
     passed_tests: int
     failed_tests: int
-    isolation_violations: List[TenantIsolationViolation]
+    isolation_violations: list[TenantIsolationViolation]
     context_propagation_failures: int
     admin_access_failures: int
     constitutional_hash: str = "cdd01ef066bc6cf2"
@@ -104,7 +103,7 @@ class MultiTenantTestValidator:
     CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
     def __init__(self):
-        self.violations: List[TenantIsolationViolation] = []
+        self.violations: list[TenantIsolationViolation] = []
         self.total_tests = 0
         self.passed_tests = 0
         self.failed_tests = 0
@@ -115,8 +114,8 @@ class MultiTenantTestValidator:
         self,
         service_name: str,
         base_url: str,
-        test_endpoints: List[Dict[str, Any]],
-        db_session: Optional[AsyncSession] = None,
+        test_endpoints: list[dict[str, Any]],
+        db_session: AsyncSession | None = None,
     ) -> MultiTenantTestReport:
         """Validate multi-tenant compliance for a service."""
         logger.info(f"Starting multi-tenant validation for {service_name}")
@@ -193,7 +192,7 @@ class MultiTenantTestValidator:
         client: httpx.AsyncClient,
         service_name: str,
         base_url: str,
-        endpoint_config: Dict[str, Any],
+        endpoint_config: dict[str, Any],
         tenant1: TenantTestContext,
         tenant2: TenantTestContext,
     ):
@@ -205,7 +204,7 @@ class MultiTenantTestValidator:
 
         try:
             # Create data for tenant1
-            if method.upper() in ["POST", "PUT"]:
+            if method.upper() in {"POST", "PUT"}:
                 test_data = endpoint_config.get("test_data", {})
                 test_data["tenant_specific_field"] = f"tenant1_data_{uuid.uuid4()}"
 
@@ -281,7 +280,7 @@ class MultiTenantTestValidator:
             self.passed_tests += 1
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Tenant isolation test failed for {service_name}{endpoint}: {e}"
             )
             self.failed_tests += 1
@@ -291,7 +290,7 @@ class MultiTenantTestValidator:
         client: httpx.AsyncClient,
         service_name: str,
         base_url: str,
-        endpoint_config: Dict[str, Any],
+        endpoint_config: dict[str, Any],
         tenant: TenantTestContext,
     ):
         """Test that tenant context is properly propagated."""
@@ -320,7 +319,7 @@ class MultiTenantTestValidator:
                 response = await client.request(method, url, headers=headers_no_tenant)
 
             # Should return 400 or 401 for missing tenant context
-            if response.status_code not in [400, 401, 403]:
+            if response.status_code not in {400, 401, 403}:
                 self._add_violation(
                     service_name,
                     endpoint,
@@ -339,7 +338,7 @@ class MultiTenantTestValidator:
                 url,
                 json=(
                     endpoint_config.get("test_data", {})
-                    if method.upper() in ["POST", "PUT"]
+                    if method.upper() in {"POST", "PUT"}
                     else None
                 ),
                 headers=tenant.to_headers(),
@@ -374,7 +373,7 @@ class MultiTenantTestValidator:
             self.passed_tests += 1
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Context propagation test failed for {service_name}{endpoint}: {e}"
             )
             self.context_propagation_failures += 1
@@ -385,7 +384,7 @@ class MultiTenantTestValidator:
         client: httpx.AsyncClient,
         service_name: str,
         base_url: str,
-        endpoint_config: Dict[str, Any],
+        endpoint_config: dict[str, Any],
         admin_tenant: TenantTestContext,
         regular_tenant: TenantTestContext,
     ):
@@ -402,7 +401,7 @@ class MultiTenantTestValidator:
                 f"{base_url}{admin_endpoint}", headers=regular_tenant.to_headers()
             )
 
-            if response_regular.status_code not in [401, 403]:
+            if response_regular.status_code not in {401, 403}:
                 self._add_violation(
                     service_name,
                     admin_endpoint,
@@ -447,7 +446,7 @@ class MultiTenantTestValidator:
             self.passed_tests += 1
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Admin access test failed for {service_name}{admin_endpoint}: {e}"
             )
             self.admin_access_failures += 1
@@ -457,7 +456,7 @@ class MultiTenantTestValidator:
         self,
         db_session: AsyncSession,
         service_name: str,
-        endpoint_config: Dict[str, Any],
+        endpoint_config: dict[str, Any],
         tenant1: TenantTestContext,
         tenant2: TenantTestContext,
     ):
@@ -520,7 +519,7 @@ class MultiTenantTestValidator:
             self.passed_tests += 1
 
         except Exception as e:
-            logger.error(f"Database isolation test failed for {service_name}: {e}")
+            logger.exception(f"Database isolation test failed for {service_name}: {e}")
             self.failed_tests += 1
 
     def _contains_tenant_data(self, data: Any, tenant_id: str) -> bool:
@@ -550,10 +549,7 @@ class MultiTenantTestValidator:
         tenant_ids_2 = self._extract_tenant_ids(data2)
 
         # Check for contamination
-        if tenant2_id in tenant_ids_1 or tenant1_id in tenant_ids_2:
-            return True
-
-        return False
+        return bool(tenant2_id in tenant_ids_1 or tenant1_id in tenant_ids_2)
 
     def _extract_tenant_ids(self, data: Any) -> set:
         """Extract all tenant IDs from data structure."""
@@ -612,7 +608,7 @@ class MultiTenantTestValidator:
         description: str,
         severity: str,
         tenant_context: TenantTestContext,
-        violating_data: Optional[Dict[str, Any]] = None,
+        violating_data: dict[str, Any] | None = None,
     ):
         """Add a tenant isolation violation."""
         violation = TenantIsolationViolation(
@@ -632,8 +628,8 @@ class MultiTenantTestValidator:
         )
 
     def generate_multi_tenant_report(
-        self, service_reports: Dict[str, MultiTenantTestReport]
-    ) -> Dict[str, Any]:
+        self, service_reports: dict[str, MultiTenantTestReport]
+    ) -> dict[str, Any]:
         """Generate comprehensive multi-tenant testing report."""
         total_tests = sum(r.total_tests for r in service_reports.values())
         total_passed = sum(r.passed_tests for r in service_reports.values())

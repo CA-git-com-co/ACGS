@@ -364,7 +364,7 @@ class WINAPerformanceCollector:
                 await self._update_prometheus_metrics()
 
             except Exception as e:
-                logger.error(f"Error in monitoring loop: {e}")
+                logger.exception(f"Error in monitoring loop: {e}")
                 await asyncio.sleep(5)
 
     async def record_neuron_activation_metrics(
@@ -385,7 +385,7 @@ class WINAPerformanceCollector:
             )
 
         except Exception as e:
-            logger.error(f"Failed to record neuron activation metrics: {e}")
+            logger.exception(f"Failed to record neuron activation metrics: {e}")
             raise WINAMetricsError(f"Neuron activation metrics recording failed: {e}")
 
     async def record_svd_transformation_metrics(
@@ -406,7 +406,7 @@ class WINAPerformanceCollector:
             )
 
         except Exception as e:
-            logger.error(f"Failed to record SVD transformation metrics: {e}")
+            logger.exception(f"Failed to record SVD transformation metrics: {e}")
             raise WINAMetricsError(f"SVD transformation metrics recording failed: {e}")
 
     async def record_dynamic_gating_metrics(
@@ -425,7 +425,7 @@ class WINAPerformanceCollector:
             logger.debug(f"Recorded dynamic gating metrics for gate {metrics.gate_id}")
 
         except Exception as e:
-            logger.error(f"Failed to record dynamic gating metrics: {e}")
+            logger.exception(f"Failed to record dynamic gating metrics: {e}")
             raise WINAMetricsError(f"Dynamic gating metrics recording failed: {e}")
 
     async def record_constitutional_compliance_metrics(
@@ -446,7 +446,7 @@ class WINAPerformanceCollector:
             )
 
         except Exception as e:
-            logger.error(f"Failed to record constitutional compliance metrics: {e}")
+            logger.exception(f"Failed to record constitutional compliance metrics: {e}")
             raise WINAMetricsError(
                 f"Constitutional compliance metrics recording failed: {e}"
             )
@@ -463,7 +463,7 @@ class WINAPerformanceCollector:
             )
 
         except Exception as e:
-            logger.error(f"Failed to record learning feedback metrics: {e}")
+            logger.exception(f"Failed to record learning feedback metrics: {e}")
             raise WINAMetricsError(f"Learning feedback metrics recording failed: {e}")
 
     async def record_integration_metrics(self, metrics: WINAIntegrationMetrics) -> None:
@@ -482,7 +482,7 @@ class WINAPerformanceCollector:
             )
 
         except Exception as e:
-            logger.error(f"Failed to record integration metrics: {e}")
+            logger.exception(f"Failed to record integration metrics: {e}")
             raise WINAMetricsError(f"Integration metrics recording failed: {e}")
 
     async def record_system_health_metrics(
@@ -507,7 +507,7 @@ class WINAPerformanceCollector:
             logger.debug("Recorded system health metrics")
 
         except Exception as e:
-            logger.error(f"Failed to record system health metrics: {e}")
+            logger.exception(f"Failed to record system health metrics: {e}")
             raise WINAMetricsError(f"System health metrics recording failed: {e}")
 
     async def record_component_operation(
@@ -541,7 +541,7 @@ class WINAPerformanceCollector:
             logger.debug(f"Recorded {component.value} operation: {operation_type}")
 
         except Exception as e:
-            logger.error(f"Failed to record component operation: {e}")
+            logger.exception(f"Failed to record component operation: {e}")
 
     async def _collect_real_time_metrics(self) -> None:
         """Collect real-time metrics for monitoring."""
@@ -562,7 +562,7 @@ class WINAPerformanceCollector:
             }
 
         except Exception as e:
-            logger.error(f"Real-time metrics collection failed: {e}")
+            logger.exception(f"Real-time metrics collection failed: {e}")
 
     async def _calculate_neuron_activation_summary(self) -> dict[str, Any]:
         """Calculate neuron activation summary metrics."""
@@ -833,7 +833,7 @@ class WINAPerformanceCollector:
             }
 
         except Exception as e:
-            logger.error(f"Overall performance summary calculation failed: {e}")
+            logger.exception(f"Overall performance summary calculation failed: {e}")
             return {
                 "gflops_reduction_achieved": 0.0,
                 "accuracy_retention": 0.95,
@@ -901,7 +901,7 @@ class WINAPerformanceCollector:
                 logger.warning(f"WINA Performance Alert: {alert['message']}")
 
         except Exception as e:
-            logger.error(f"Performance alert checking failed: {e}")
+            logger.exception(f"Performance alert checking failed: {e}")
 
     async def _update_prometheus_metrics(self) -> None:
         """Update Prometheus metrics with current values."""
@@ -922,7 +922,7 @@ class WINAPerformanceCollector:
                 ).set(overall_perf.get("accuracy_retention", 0.95))
 
         except Exception as e:
-            logger.error(f"Prometheus metrics update failed: {e}")
+            logger.exception(f"Prometheus metrics update failed: {e}")
 
     async def get_real_time_metrics(self) -> dict[str, Any]:
         """Get current real-time metrics."""
@@ -1014,7 +1014,7 @@ class WINAPerformanceCollector:
             return report
 
         except Exception as e:
-            logger.error(f"Performance report generation failed: {e}")
+            logger.exception(f"Performance report generation failed: {e}")
             raise WINAMetricsError(f"Performance report generation failed: {e}")
 
     async def _filter_metrics_by_time_range(
@@ -1108,7 +1108,7 @@ class WINAPerformanceCollector:
             }
 
         except Exception as e:
-            logger.error(f"Overall metrics calculation failed: {e}")
+            logger.exception(f"Overall metrics calculation failed: {e}")
             return {
                 "gflops_reduction": 0.0,
                 "accuracy_retention": 0.95,
@@ -1181,7 +1181,7 @@ class WINAPerformanceCollector:
                 }
 
         except Exception as e:
-            logger.error(f"Component metrics calculation failed: {e}")
+            logger.exception(f"Component metrics calculation failed: {e}")
 
         return component_metrics
 
@@ -1217,7 +1217,7 @@ class WINAPerformanceCollector:
             }
 
         except Exception as e:
-            logger.error(f"Integration metrics calculation failed: {e}")
+            logger.exception(f"Integration metrics calculation failed: {e}")
             return {}
 
     async def _calculate_report_health_metrics(
@@ -1256,7 +1256,7 @@ class WINAPerformanceCollector:
             }
 
         except Exception as e:
-            logger.error(f"Health metrics calculation failed: {e}")
+            logger.exception(f"Health metrics calculation failed: {e}")
             return {}
 
     async def _generate_performance_recommendations(
@@ -1307,7 +1307,7 @@ class WINAPerformanceCollector:
                 recommendations.append("System performing within optimal parameters")
 
         except Exception as e:
-            logger.error(f"Recommendation generation failed: {e}")
+            logger.exception(f"Recommendation generation failed: {e}")
             recommendations.append(
                 "Unable to generate recommendations due to analysis error"
             )
@@ -1375,7 +1375,7 @@ class WINAPerformanceCollector:
             return trends
 
         except Exception as e:
-            logger.error(f"Trend calculation failed: {e}")
+            logger.exception(f"Trend calculation failed: {e}")
             return {}
 
     def get_prometheus_metrics(self) -> str:

@@ -64,8 +64,8 @@ class DatalogEngine:
             try:
                 self.rules.append(rule_str)
                 pyDatalog.load(rule_str)
-            except Exception as e:
-                print(f"Error loading Datalog rule: '{rule_str}'. Error: {e}")
+            except Exception:
+                pass
 
     def add_facts(self, facts: list[str]):
         # requires: Valid input parameters
@@ -83,8 +83,8 @@ class DatalogEngine:
             try:
                 self.facts.append(fact_str)
                 pyDatalog.load(fact_str)
-            except Exception as e:
-                print(f"Error loading Datalog fact: '{fact_str}'. Error: {e}")
+            except Exception:
+                pass
 
     def query(self, query_string: str) -> list:
         """
@@ -100,8 +100,7 @@ class DatalogEngine:
             if result is not None:
                 return list(result.answers)  # result.answers gives list of tuples
             return []  # No results or predicate not defined
-        except Exception as e:
-            print(f"Error executing Datalog query: '{query_string}'. Error: {e}")
+        except Exception:
             return []
 
     def build_facts_from_context(self, context: dict) -> list[str]:
@@ -163,7 +162,6 @@ if __name__ == "__main__":
         "user_role(User, Role) <= user_attribute(User, 'role', Role)",  # More generic rule
     ]
     engine.load_rules(rules_to_load)
-    print("Rules loaded.")
 
     # Add facts from context
     query_context = {
@@ -179,14 +177,9 @@ if __name__ == "__main__":
         "+document_type('report123', 'report')",
     ]
     engine.add_facts(facts_to_add)
-    print(f"Facts added: {facts_to_add}")
 
     # Query
-    print("\nQuerying: can_read('alice', 'report123')")
     result1 = engine.query("can_read('alice', 'report123')")
-    print(
-        f"Result: {result1} (Expected: [()] if true, indicating alice can read report123)"
-    )
     assert result1 == [()]
 
     engine.clear_rules_and_facts()
@@ -214,14 +207,8 @@ if __name__ == "__main__":
         ]
     )
 
-    print("\nQuerying: access_allowed('bob', 'view', 'public_doc')")
     result2 = engine.query("access_allowed('bob', 'view', 'public_doc')")
-    print(f"Result: {result2} (Expected: [()] if true)")
     assert result2 == [()]
 
-    print("\nQuerying: access_allowed('bob', 'edit', 'public_doc')")
     result3 = engine.query("access_allowed('bob', 'edit', 'public_doc')")
-    print(f"Result: {result3} (Expected: [] if false)")
     assert result3 == []
-
-    print("\nAll Datalog engine tests passed (basic).")

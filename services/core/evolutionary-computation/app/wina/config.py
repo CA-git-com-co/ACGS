@@ -103,7 +103,7 @@ def load_wina_config_from_env() -> tuple[dict[str, Any], dict[str, Any]]:
         return wina_config, integration_config
 
     except Exception as e:
-        logger.error(f"Failed to load WINA configuration: {e}")
+        logger.exception(f"Failed to load WINA configuration: {e}")
         logger.info("Using default WINA configuration")
         return DEFAULT_WINA_CONFIG.copy(), DEFAULT_INTEGRATION_CONFIG.copy()
 
@@ -146,7 +146,7 @@ def validate_wina_config(config: dict[str, Any]) -> bool:
         return True
 
     except Exception as e:
-        logger.error(f"WINA configuration validation failed: {e}")
+        logger.exception(f"WINA configuration validation failed: {e}")
         return False
 
 

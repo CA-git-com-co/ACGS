@@ -1,3 +1,5 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 # ACGS-1 Anchor Program Test Suite Validation Report
 
 ## **Research-Grade Governance Specialist Protocol v2.0 Compliance**

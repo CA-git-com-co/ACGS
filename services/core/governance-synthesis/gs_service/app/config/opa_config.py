@@ -10,6 +10,7 @@ Phase 2: Governance Synthesis Hardening with Rego/OPA Integration
 
 import logging
 import os
+import pathlib
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any
@@ -275,13 +276,15 @@ class OPAConfig:
                 )
 
             # Validate server configuration
-            if self.mode in [OPAMode.SERVER, OPAMode.HYBRID]:
+            if self.mode in {OPAMode.SERVER, OPAMode.HYBRID}:
                 if not (1 <= self.server.port <= 65535):
                     logger.error(f"Invalid OPA server port: {self.server.port}")
                     return False
 
             # Validate policy directory
-            if not os.path.exists(os.path.dirname(self.policy.policy_directory)):
+            if not pathlib.Path(
+                pathlib.Path(self.policy.policy_directory).parent
+            ).exists():
                 logger.warning(
                     f"Policy directory parent does not exist: {self.policy.policy_directory}"
                 )
@@ -290,7 +293,7 @@ class OPAConfig:
             return True
 
         except Exception as e:
-            logger.error(f"OPA configuration validation failed: {e}")
+            logger.exception(f"OPA configuration validation failed: {e}")
             return False
 
 

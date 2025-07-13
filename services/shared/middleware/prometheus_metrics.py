@@ -6,14 +6,12 @@ This module provides standardized Prometheus metrics integration for all FastAPI
 Includes request/response metrics, database connection pool metrics, and service health metrics.
 """
 
-import asyncio
 import logging
 import time
+from collections.abc import Callable
 from functools import wraps
-from typing import Any, Callable, Dict
 
 from fastapi import Request, Response
-from fastapi.routing import APIRoute
 from prometheus_client import (
     CONTENT_TYPE_LATEST,
     Counter,
@@ -22,8 +20,7 @@ from prometheus_client import (
     Info,
     generate_latest,
 )
-
-from ..config.infrastructure_config import (
+from shared.config.infrastructure_config import (
     CONSTITUTIONAL_HASH,
     get_acgs_config,
     get_database_manager,
@@ -160,7 +157,7 @@ class PrometheusMiddleware:
             ).observe(response_size)
 
         except Exception as e:
-            logger.error(f"Request processing error: {e}")
+            logger.exception(f"Request processing error: {e}")
             status_code = 500
             response = Response(content="Internal Server Error", status_code=500)
 
@@ -193,8 +190,7 @@ class PrometheusMiddleware:
             route = route.split("?")[0]
 
         # Normalize endpoint name
-        if route.endswith("/"):
-            route = route[:-1]
+        route = route.removesuffix("/")
 
         return route or "/"
 
@@ -221,7 +217,7 @@ def add_prometheus_metrics_endpoint(app, service_name: str):
             return Response(content=generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
         except Exception as e:
-            logger.error(f"Error generating metrics: {e}")
+            logger.exception(f"Error generating metrics: {e}")
             return Response(content="Error generating metrics", status_code=500)
 
     logger.info(f"Added Prometheus metrics endpoint for service: {service_name}")
@@ -252,7 +248,7 @@ async def _update_database_metrics(service_name: str):
         )
 
     except Exception as e:
-        logger.error(f"Error updating database metrics: {e}")
+        logger.exception(f"Error updating database metrics: {e}")
         SERVICE_HEALTH.labels(service=service_name, component="database").set(0)
 
 
@@ -275,7 +271,7 @@ async def _update_redis_metrics(service_name: str):
         )
 
     except Exception as e:
-        logger.error(f"Error updating Redis metrics: {e}")
+        logger.exception(f"Error updating Redis metrics: {e}")
         SERVICE_HEALTH.labels(service=service_name, component="redis").set(0)
 
 
@@ -286,7 +282,7 @@ async def _update_service_health(service_name: str):
         SERVICE_HEALTH.labels(service=service_name, component="service").set(1)
 
     except Exception as e:
-        logger.error(f"Error updating service health: {e}")
+        logger.exception(f"Error updating service health: {e}")
         SERVICE_HEALTH.labels(service=service_name, component="service").set(0)
 
 
@@ -311,7 +307,7 @@ def instrument_database_queries(service_name: str):
 
                 return result
 
-            except Exception as e:
+            except Exception:
                 duration = time.time() - start_time
                 DB_QUERY_DURATION.labels(
                     service=service_name, query_type=f"{query_type}_error"
@@ -344,7 +340,7 @@ def instrument_redis_commands(service_name: str):
 
                 return result
 
-            except Exception as e:
+            except Exception:
                 duration = time.time() - start_time
                 REDIS_COMMAND_DURATION.labels(
                     service=service_name, command=f"{command}_error"
@@ -358,14 +354,14 @@ def instrument_redis_commands(service_name: str):
 
 # Export key components
 __all__ = [
+    "CONSTITUTIONAL_COMPLIANCE",
+    "DB_CONNECTIONS_ACTIVE",
+    "REDIS_CONNECTIONS_ACTIVE",
+    "REQUEST_COUNT",
+    "REQUEST_DURATION",
+    "SERVICE_HEALTH",
     "PrometheusMiddleware",
     "add_prometheus_metrics_endpoint",
     "instrument_database_queries",
     "instrument_redis_commands",
-    "REQUEST_COUNT",
-    "REQUEST_DURATION",
-    "DB_CONNECTIONS_ACTIVE",
-    "REDIS_CONNECTIONS_ACTIVE",
-    "SERVICE_HEALTH",
-    "CONSTITUTIONAL_COMPLIANCE",
 ]

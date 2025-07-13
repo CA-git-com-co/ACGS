@@ -14,13 +14,14 @@ Success Criteria:
 
 import json
 import os
+import pathlib
 import sys
 import time
 from datetime import datetime
 from typing import Any
 
 # Add current directory to path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, pathlib.Path(pathlib.Path(__file__).resolve()).parent)
 
 
 class Priority3ValidationRunner:
@@ -34,13 +35,6 @@ class Priority3ValidationRunner:
 
     def setup_validation_environment(self):
         """Setup environment for comprehensive validation"""
-        print("=" * 80)
-        print("ACGS Code Analysis Engine - Priority 3 Validation Suite")
-        print("=" * 80)
-        print(f"Constitutional Hash: {self.constitutional_hash}")
-        print(f"Service URL: {self.base_url}")
-        print(f"Validation Start Time: {datetime.now().isoformat()}")
-        print("=" * 80)
 
         # Set environment variables
         os.environ["ENVIRONMENT"] = "testing"
@@ -49,13 +43,8 @@ class Priority3ValidationRunner:
         os.environ["REDIS_PASSWORD"] = ""
         os.environ["LOG_LEVEL"] = "INFO"
 
-        print("✓ Environment configured for validation")
-
     def run_integration_tests(self) -> dict[str, Any]:
         """Run comprehensive integration tests"""
-        print("\n" + "=" * 60)
-        print("PHASE 1: INTEGRATION TESTING")
-        print("=" * 60)
 
         try:
             # Import and run integration tests
@@ -72,17 +61,11 @@ class Priority3ValidationRunner:
             )
 
             if integration_passed:
-                print("✅ PHASE 1 PASSED: All integration tests successful")
-            else:
-                print("❌ PHASE 1 FAILED: Integration tests failed")
-                print(
-                    "Failed tests:", results.get("summary", {}).get("failed_tests", [])
-                )
+                pass
 
             return results
 
         except Exception as e:
-            print(f"❌ PHASE 1 FAILED: Integration testing error: {e}")
             error_result = {
                 "status": "failed",
                 "error": str(e),
@@ -93,9 +76,6 @@ class Priority3ValidationRunner:
 
     def run_performance_benchmarks(self) -> dict[str, Any]:
         """Run comprehensive performance benchmarks"""
-        print("\n" + "=" * 60)
-        print("PHASE 2: PERFORMANCE BENCHMARKING")
-        print("=" * 60)
 
         try:
             # Import and run performance benchmarks
@@ -108,27 +88,14 @@ class Priority3ValidationRunner:
 
             # Check if performance targets met
             performance_passed = results.get("summary", {}).get("targets_met", False)
-            performance_score = results.get("summary", {}).get("overall_score", 0)
+            results.get("summary", {}).get("overall_score", 0)
 
             if performance_passed:
-                print(
-                    "✅ PHASE 2 PASSED: All performance targets met (Score:"
-                    f" {performance_score:.1f}/100)"
-                )
-            else:
-                print(
-                    "⚠️ PHASE 2 PARTIAL: Performance targets not fully met (Score:"
-                    f" {performance_score:.1f}/100)"
-                )
-                print(
-                    "Recommendations:",
-                    results.get("summary", {}).get("recommendations", []),
-                )
+                pass
 
             return results
 
         except Exception as e:
-            print(f"❌ PHASE 2 FAILED: Performance benchmarking error: {e}")
             error_result = {
                 "status": "failed",
                 "error": str(e),
@@ -139,9 +106,6 @@ class Priority3ValidationRunner:
 
     def run_monitoring_validation(self) -> dict[str, Any]:
         """Run monitoring and observability validation"""
-        print("\n" + "=" * 60)
-        print("PHASE 3: MONITORING & OBSERVABILITY VALIDATION")
-        print("=" * 60)
 
         try:
             # Import and run monitoring validation
@@ -156,17 +120,11 @@ class Priority3ValidationRunner:
             monitoring_ready = results.get("summary", {}).get("monitoring_ready", False)
 
             if monitoring_ready:
-                print("✅ PHASE 3 PASSED: Monitoring and observability ready")
-            else:
-                print("⚠️ PHASE 3 PARTIAL: Monitoring setup needs attention")
-                print(
-                    "Failed tests:", results.get("summary", {}).get("failed_tests", [])
-                )
+                pass
 
             return results
 
         except Exception as e:
-            print(f"❌ PHASE 3 FAILED: Monitoring validation error: {e}")
             error_result = {
                 "status": "failed",
                 "error": str(e),
@@ -177,9 +135,6 @@ class Priority3ValidationRunner:
 
     def run_constitutional_compliance_validation(self) -> dict[str, Any]:
         """Run constitutional compliance validation across all components"""
-        print("\n" + "=" * 60)
-        print("PHASE 4: CONSTITUTIONAL COMPLIANCE VALIDATION")
-        print("=" * 60)
 
         try:
             import requests
@@ -232,20 +187,11 @@ class Priority3ValidationRunner:
 
             compliance_passed = compliance_rate >= 0.9  # 90% compliance required
 
-            print(f"✓ Constitutional compliance checks: {passed_checks}/{total_checks}")
-            print(f"✓ Compliance rate: {compliance_rate:.1%}")
-
             for check in compliance_checks:
-                status_icon = "✅" if check["status"] == "pass" else "❌"
-                print(
-                    f"{status_icon} {check['endpoint']}:"
-                    f" {'PASS' if check['hash_present'] else 'FAIL'}"
-                )
+                "✅" if check["status"] == "pass" else "❌"
 
             if compliance_passed:
-                print("✅ PHASE 4 PASSED: Constitutional compliance validated")
-            else:
-                print("❌ PHASE 4 FAILED: Constitutional compliance insufficient")
+                pass
 
             result = {
                 "status": "pass" if compliance_passed else "fail",
@@ -261,7 +207,6 @@ class Priority3ValidationRunner:
             return result
 
         except Exception as e:
-            print(f"❌ PHASE 4 FAILED: Constitutional compliance validation error: {e}")
             error_result = {
                 "status": "failed",
                 "error": str(e),
@@ -272,9 +217,6 @@ class Priority3ValidationRunner:
 
     def generate_final_report(self) -> dict[str, Any]:
         """Generate comprehensive final validation report"""
-        print("\n" + "=" * 80)
-        print("PRIORITY 3 VALIDATION FINAL REPORT")
-        print("=" * 80)
 
         total_time = time.time() - self.start_time if self.start_time else 0
 
@@ -288,7 +230,7 @@ class Priority3ValidationRunner:
 
         # Calculate overall success
         phase_scores = []
-        for phase, result in phase_results.items():
+        for result in phase_results.values():
             if result["status"] == "pass":
                 phase_scores.append(100)
             elif result["status"] == "partial":
@@ -311,10 +253,10 @@ class Priority3ValidationRunner:
                 phase_results["integration"]["status"] == "pass"
             ),
             "performance_targets_met": phase_results["performance"]["status"]
-            in [
+            in {
                 "pass",
                 "partial",
-            ],
+            },
             "constitutional_compliance_maintained": (
                 phase_results["constitutional"]["status"] == "pass"
             ),
@@ -322,51 +264,25 @@ class Priority3ValidationRunner:
                 r["status"] == "failed" for r in phase_results.values()
             ),
             "monitoring_operational": phase_results["monitoring"]["status"]
-            in [
+            in {
                 "pass",
                 "partial",
-            ],
+            },
         }
 
         success_criteria_met = all(success_criteria.values())
 
         # Print summary
-        print(f"Overall Score: {overall_score:.1f}/100")
-        print(f"Production Ready: {'YES' if production_ready else 'NO'}")
-        print(f"Success Criteria Met: {'YES' if success_criteria_met else 'NO'}")
-        print(f"Total Execution Time: {total_time:.2f} seconds")
 
-        print("\nPhase Results:")
-        for phase, result in phase_results.items():
-            status_icon = {"pass": "✅", "partial": "⚠️", "failed": "❌"}.get(
-                result["status"], "❓"
-            )
-            print(f"{status_icon} {phase.title()}: {result['status'].upper()}")
+        for result in phase_results.values():
+            {"pass": "✅", "partial": "⚠️", "failed": "❌"}.get(result["status"], "❓")
 
-        print("\nSuccess Criteria:")
-        for criterion, met in success_criteria.items():
-            status_icon = "✅" if met else "❌"
-            print(
-                f"{status_icon} {criterion.replace('_', ' ').title()}:"
-                f" {'MET' if met else 'NOT MET'}"
-            )
+        for _criterion, _met in success_criteria.items():
+            pass
 
         # Final recommendation
-        if production_ready and success_criteria_met:
-            print(
-                "\n🎉 RECOMMENDATION: Service is READY for Phase 1 production"
-                " deployment!"
-            )
-        elif production_ready:
-            print(
-                "\n⚠️ RECOMMENDATION: Service is CONDITIONALLY READY - address partial"
-                " issues before deployment"
-            )
-        else:
-            print(
-                "\n❌ RECOMMENDATION: Service is NOT READY - critical issues must be"
-                " resolved"
-            )
+        if (production_ready and success_criteria_met) or production_ready:
+            pass
 
         return {
             "overall_score": overall_score,
@@ -405,29 +321,27 @@ class Priority3ValidationRunner:
                     "details": result.get("summary", {}),
                 }
 
-            elif phase_key == "performance_benchmarks":
+            if phase_key == "performance_benchmarks":
                 targets_met = result.get("summary", {}).get("targets_met", False)
                 score = result.get("summary", {}).get("overall_score", 0)
                 if targets_met:
                     return {"status": "pass", "score": score}
-                elif score >= 60:
+                if score >= 60:
                     return {"status": "partial", "score": score}
-                else:
-                    return {"status": "failed", "score": score}
+                return {"status": "failed", "score": score}
 
-            elif phase_key == "monitoring_validation":
+            if phase_key == "monitoring_validation":
                 ready = result.get("summary", {}).get("monitoring_ready", False)
                 return {
                     "status": "pass" if ready else "partial",
                     "details": result.get("summary", {}),
                 }
 
-            elif phase_key == "constitutional_compliance":
+            if phase_key == "constitutional_compliance":
                 compliance_rate = result.get("compliance_rate", 0)
                 if compliance_rate >= 0.9:
                     return {"status": "pass", "compliance_rate": compliance_rate}
-                else:
-                    return {"status": "failed", "compliance_rate": compliance_rate}
+                return {"status": "failed", "compliance_rate": compliance_rate}
 
         return {"status": "failed", "reason": "Invalid result format"}
 
@@ -453,12 +367,9 @@ class Priority3ValidationRunner:
             self.run_constitutional_compliance_validation()
 
             # Generate final report
-            final_report = self.generate_final_report()
-
-            return final_report
+            return self.generate_final_report()
 
         except Exception as e:
-            print(f"\n💥 Comprehensive validation failed: {e}")
             return {
                 "status": "failed",
                 "error": str(e),
@@ -477,29 +388,18 @@ def main():
 
         # Save results to file
         results_file = "priority3_comprehensive_validation_results.json"
-        with open(results_file, "w") as f:
+        with open(results_file, "w", encoding="utf-8") as f:
             json.dump(results, f, indent=2)
-
-        print(f"\n✓ Comprehensive results saved to: {results_file}")
 
         # Exit with appropriate code based on results
         if results.get("recommendation") == "ready":
-            print("\n🎉 Priority 3 validation PASSED - Service ready for production!")
             sys.exit(0)
         elif results.get("production_ready", False):
-            print(
-                "\n⚠️ Priority 3 validation PARTIAL - Review recommendations before"
-                " deployment"
-            )
             sys.exit(2)  # Warning exit code
         else:
-            print(
-                "\n❌ Priority 3 validation FAILED - Critical issues must be resolved"
-            )
             sys.exit(1)
 
-    except Exception as e:
-        print(f"\n💥 Priority 3 validation execution failed: {e}")
+    except Exception:
         sys.exit(1)
 
 

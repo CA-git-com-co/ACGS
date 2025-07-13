@@ -11,12 +11,11 @@ from collections import defaultdict, deque
 from typing import Any
 
 import psutil
+from app.utils.constitutional import CONSTITUTIONAL_HASH
+from app.utils.logging import get_logger, performance_logger
 from fastapi import Request, Response
 from prometheus_client import Counter, Gauge, Histogram
 from starlette.middleware.base import BaseHTTPMiddleware
-
-from ..utils.constitutional import CONSTITUTIONAL_HASH
-from ..utils.logging import get_logger, performance_logger
 
 logger = get_logger("middleware.performance")
 
@@ -314,14 +313,12 @@ class PerformanceMiddleware(BaseHTTPMiddleware):
         # Replace UUIDs
         path = re.sub(
             r"/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
-            "/{uuid}",
+            f"/{uuid}",
             path,
         )
 
         # Replace numeric IDs
-        path = re.sub(r"/\d+", "/{id}", path)
-
-        return path
+        return re.sub(r"/\d+", "/{id}", path)
 
     def get_performance_summary(self) -> dict[str, Any]:
         """Get current performance summary."""

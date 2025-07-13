@@ -110,7 +110,7 @@ class EthicsAgent:
                 await self._process_tasks()
                 await asyncio.sleep(self.task_polling_interval)
         except Exception as e:
-            self.logger.error(f"Error in agent loop: {e}")
+            self.logger.exception(f"Error in agent loop: {e}")
         finally:
             await self.stop()
 
@@ -189,7 +189,7 @@ class EthicsAgent:
             return analysis_result
 
         except Exception as e:
-            self.logger.error(f"Error in ethical analysis: {e}")
+            self.logger.exception(f"Error in ethical analysis: {e}")
             # Return safe default
             return EthicalAnalysisResult(
                 approved=False,
@@ -218,7 +218,7 @@ class EthicsAgent:
                     asyncio.create_task(self._handle_task(task))
 
         except Exception as e:
-            self.logger.error(f"Error processing tasks: {e}")
+            self.logger.exception(f"Error processing tasks: {e}")
 
     async def _handle_task(self, task: TaskDefinition) -> None:
         """Handle a specific ethical analysis task."""
@@ -259,7 +259,7 @@ class EthicsAgent:
             await self.blackboard.add_knowledge(knowledge)
 
         except Exception as e:
-            self.logger.error(f"Error handling task {task.id}: {e}")
+            self.logger.exception(f"Error handling task {task.id}: {e}")
             # Mark task as failed
             await self.blackboard.task_manager.update_task_status(
                 task.id,

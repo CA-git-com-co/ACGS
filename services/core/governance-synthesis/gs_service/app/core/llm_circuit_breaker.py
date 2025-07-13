@@ -459,8 +459,6 @@ class LLMCircuitBreaker:
 class CircuitBreakerOpenError(Exception):
     """Exception raised when circuit breaker is open."""
 
-    pass
-
 
 class LLMCircuitBreakerManager:
     """Manager for multiple LLM circuit breakers."""

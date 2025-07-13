@@ -18,6 +18,7 @@ Constitutional Hash: cdd01ef066bc6cf2
 import json
 import logging
 import os
+import pathlib
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from typing import Any
@@ -368,7 +369,7 @@ class MLRoutingOptimizer:
                 )
 
             except Exception as e:
-                logger.error(f"Failed to train {metric_name} model: {e}")
+                logger.exception(f"Failed to train {metric_name} model: {e}")
 
         # Save trained models
         self._save_ml_models()
@@ -396,17 +397,17 @@ class MLRoutingOptimizer:
                 metric_dict["timestamp"] = metric.timestamp.isoformat()
                 data.append(metric_dict)
 
-            with open(self.history_file_path, "w") as f:
+            with open(self.history_file_path, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=2)
 
         except Exception as e:
-            logger.error(f"Failed to save performance history: {e}")
+            logger.exception(f"Failed to save performance history: {e}")
 
     def _load_performance_history(self):
         """Load performance history from disk."""
         try:
-            if os.path.exists(self.history_file_path):
-                with open(self.history_file_path) as f:
+            if pathlib.Path(self.history_file_path).exists():
+                with open(self.history_file_path, encoding="utf-8") as f:
                     data = json.load(f)
 
                 self.performance_history = []
@@ -431,7 +432,7 @@ class MLRoutingOptimizer:
                 )
 
         except Exception as e:
-            logger.error(f"Failed to load performance history: {e}")
+            logger.exception(f"Failed to load performance history: {e}")
 
     def _save_ml_models(self):
         """Save trained ML models to disk."""
@@ -445,12 +446,12 @@ class MLRoutingOptimizer:
             logger.info("ML models saved successfully")
 
         except Exception as e:
-            logger.error(f"Failed to save ML models: {e}")
+            logger.exception(f"Failed to save ML models: {e}")
 
     def _load_ml_models(self):
         """Load trained ML models from disk."""
         try:
-            if os.path.exists(self.model_file_path):
+            if pathlib.Path(self.model_file_path).exists():
                 model_data = joblib.load(self.model_file_path)
                 self.models = model_data["models"]
                 self.scalers = model_data["scalers"]
@@ -461,7 +462,7 @@ class MLRoutingOptimizer:
                 )
 
         except Exception as e:
-            logger.error(f"Failed to load ML models: {e}")
+            logger.exception(f"Failed to load ML models: {e}")
 
     def get_performance_analytics(self) -> dict[str, Any]:
         """Get performance analytics and insights."""

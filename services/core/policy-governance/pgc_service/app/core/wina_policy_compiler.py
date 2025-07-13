@@ -186,7 +186,7 @@ class WINAPolicyCompiler:
             return result
 
         except Exception as e:
-            logger.error(f"WINA-optimized compilation failed: {e}")
+            logger.exception(f"WINA-optimized compilation failed: {e}")
             compilation_time = time.time() - start_time
 
             return WINACompilationResult(
@@ -268,7 +268,7 @@ class WINAPolicyCompiler:
                 validation_results[policy.rule_id] = validation_result
 
             except Exception as e:
-                logger.error(f"Validation failed for policy {policy.rule_id}: {e}")
+                logger.exception(f"Validation failed for policy {policy.rule_id}: {e}")
                 validation_results[policy.rule_id] = PolicyValidationResult(
                     is_valid=False,
                     error_message=str(e),
@@ -339,14 +339,10 @@ class WINAPolicyCompiler:
                     compliance_indicators += 1
 
             # Basic compliance check
-            constitutional_compliance = all_valid and (
-                compliance_indicators > 0 or len(policies) == 0
-            )
-
-            return constitutional_compliance
+            return all_valid and (compliance_indicators > 0 or len(policies) == 0)
 
         except Exception as e:
-            logger.error(f"Compliance verification failed: {e}")
+            logger.exception(f"Compliance verification failed: {e}")
             return False
 
     async def _update_compilation_tracking(self, result: WINACompilationResult) -> None:
@@ -391,7 +387,7 @@ class WINAPolicyCompiler:
             )
 
         except Exception as e:
-            logger.error(f"Failed to update compilation tracking: {e}")
+            logger.exception(f"Failed to update compilation tracking: {e}")
 
     def get_performance_summary(self) -> dict[str, Any]:
         """Get comprehensive performance summary."""

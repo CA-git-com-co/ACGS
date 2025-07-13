@@ -25,7 +25,7 @@ from collections import deque
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
 
@@ -93,7 +93,7 @@ class FeatureDriftResult:
     method_used: DriftDetectionMethod
     baseline_statistics: dict[str, float]
     current_statistics: dict[str, float]
-    p_value: Optional[float]
+    p_value: float | None
     effect_size: float
     recommendations: list[str]
 
@@ -136,7 +136,7 @@ class ModelDriftDetector:
     Advanced model drift detection system for ACGS
     """
 
-    def __init__(self, config: Optional[dict[str, Any]] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         self.config = config or {}
         self.alerting = AlertingSystem()
         self.audit_logger = AuditLogger()
@@ -289,7 +289,7 @@ class ModelDriftDetector:
             await asyncio.gather(*detection_tasks)
 
         except Exception as e:
-            logger.error(f"Drift detection failed: {e}")
+            logger.exception(f"Drift detection failed: {e}")
             self.running = False
             raise
         finally:
@@ -317,7 +317,7 @@ class ModelDriftDetector:
                 self.last_detection_time = datetime.utcnow()
 
             except Exception as e:
-                logger.error(f"Drift detection loop error: {e}")
+                logger.exception(f"Drift detection loop error: {e}")
                 await asyncio.sleep(60)
 
     async def _detect_component_drift(self, component: DriftComponent):
@@ -379,11 +379,13 @@ class ModelDriftDetector:
                     await self._handle_drift_detection(overall_result)
 
         except Exception as e:
-            logger.error(f"Component drift detection failed for {component.value}: {e}")
+            logger.exception(
+                f"Component drift detection failed for {component.value}: {e}"
+            )
 
     async def _collect_current_data(
         self, component: DriftComponent
-    ) -> Optional[dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """Collect current data for drift detection"""
         try:
             current_time = datetime.utcnow()
@@ -443,12 +445,12 @@ class ModelDriftDetector:
             return data
 
         except Exception as e:
-            logger.error(f"Data collection failed for {component.value}: {e}")
+            logger.exception(f"Data collection failed for {component.value}: {e}")
             return None
 
     async def _perform_drift_detection(
         self, component: DriftComponent, config: DriftDetectionConfig
-    ) -> Optional[dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """Perform drift detection using specified method"""
         try:
             baseline_data = self.baseline_data.get(component, [])
@@ -465,28 +467,27 @@ class ModelDriftDetector:
                 return await self._ks_drift_detection(
                     baseline_data, current_data, config
                 )
-            elif config.method == DriftDetectionMethod.POPULATION_STABILITY_INDEX:
+            if config.method == DriftDetectionMethod.POPULATION_STABILITY_INDEX:
                 return await self._psi_drift_detection(
                     baseline_data, current_data, config
                 )
-            elif config.method == DriftDetectionMethod.JENSEN_SHANNON_DIVERGENCE:
+            if config.method == DriftDetectionMethod.JENSEN_SHANNON_DIVERGENCE:
                 return await self._js_drift_detection(
                     baseline_data, current_data, config
                 )
-            elif config.method == DriftDetectionMethod.MAXIMUM_MEAN_DISCREPANCY:
+            if config.method == DriftDetectionMethod.MAXIMUM_MEAN_DISCREPANCY:
                 return await self._mmd_drift_detection(
                     baseline_data, current_data, config
                 )
-            elif config.method == DriftDetectionMethod.STATISTICAL_DISTANCE:
+            if config.method == DriftDetectionMethod.STATISTICAL_DISTANCE:
                 return await self._statistical_distance_detection(
                     baseline_data, current_data, config
                 )
-            else:
-                logger.warning(f"Unknown drift detection method: {config.method}")
-                return None
+            logger.warning(f"Unknown drift detection method: {config.method}")
+            return None
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Drift detection failed with method {config.method.value}: {e}"
             )
             return None
@@ -639,8 +640,7 @@ class ModelDriftDetector:
             # Simplified p-value estimation
             if lambda_val >= 1.36:
                 return 2 * math.exp(-2 * lambda_val * lambda_val)
-            else:
-                return 1.0
+            return 1.0
 
         except Exception:
             return 1.0
@@ -715,8 +715,8 @@ class ModelDriftDetector:
         """Calculate Population Stability Index"""
         try:
             # Determine bin edges from baseline distribution
-            min_val = min(min(baseline), min(current))
-            max_val = max(max(baseline), max(current))
+            min_val = min(*baseline, *current)
+            max_val = max(*baseline, *current)
 
             if min_val == max_val:
                 return 0.0
@@ -786,8 +786,8 @@ class ModelDriftDetector:
         """Calculate Jensen-Shannon divergence"""
         try:
             # Create histograms
-            min_val = min(min(baseline), min(current))
-            max_val = max(max(baseline), max(current))
+            min_val = min(*baseline, *current)
+            max_val = max(*baseline, *current)
 
             if min_val == max_val:
                 return 0.0
@@ -814,9 +814,7 @@ class ModelDriftDetector:
             kl_qm = np.sum(current_dist * np.log(current_dist / m_dist))
 
             # JS divergence
-            js_divergence = 0.5 * (kl_pm + kl_qm)
-
-            return js_divergence
+            return 0.5 * (kl_pm + kl_qm)
 
         except Exception:
             return 0.0
@@ -874,9 +872,7 @@ class ModelDriftDetector:
             current_mean = np.mean(current_array, axis=0)
 
             # Simplified MMD using Euclidean distance
-            mmd_score = np.linalg.norm(baseline_mean - current_mean)
-
-            return mmd_score
+            return np.linalg.norm(baseline_mean - current_mean)
 
         except Exception:
             return 0.0
@@ -936,14 +932,13 @@ class ModelDriftDetector:
         """Determine drift severity from score and thresholds"""
         if score >= config.threshold_critical:
             return DriftSeverity.CRITICAL
-        elif score >= config.threshold_high:
+        if score >= config.threshold_high:
             return DriftSeverity.HIGH
-        elif score >= config.threshold_medium:
+        if score >= config.threshold_medium:
             return DriftSeverity.MEDIUM
-        elif score >= config.threshold_low:
+        if score >= config.threshold_low:
             return DriftSeverity.LOW
-        else:
-            return DriftSeverity.NONE
+        return DriftSeverity.NONE
 
     def _get_feature_drift_recommendations(
         self, feature_name: str, drift_score: float, severity: DriftSeverity
@@ -990,7 +985,7 @@ class ModelDriftDetector:
         component: DriftComponent,
         detection_results: dict[DriftDetectionMethod, float],
         feature_results: list[FeatureDriftResult],
-    ) -> Optional[DriftDetectionResult]:
+    ) -> DriftDetectionResult | None:
         """Combine multiple detection method results"""
         try:
             if not detection_results:
@@ -1044,14 +1039,14 @@ class ModelDriftDetector:
             )
 
             # Determine if immediate action is required
-            requires_immediate_action = overall_severity in [
+            requires_immediate_action = overall_severity in {
                 DriftSeverity.HIGH,
                 DriftSeverity.CRITICAL,
-            ] or any(fr.severity == DriftSeverity.CRITICAL for fr in feature_results)
+            } or any(fr.severity == DriftSeverity.CRITICAL for fr in feature_results)
 
             current_time = datetime.utcnow()
 
-            result = DriftDetectionResult(
+            return DriftDetectionResult(
                 detection_id=str(uuid.uuid4()),
                 timestamp=current_time,
                 component=component,
@@ -1080,10 +1075,8 @@ class ModelDriftDetector:
                 requires_immediate_action=requires_immediate_action,
             )
 
-            return result
-
         except Exception as e:
-            logger.error(f"Failed to combine detection results: {e}")
+            logger.exception(f"Failed to combine detection results: {e}")
             return None
 
     def _generate_remediation_plan(
@@ -1203,7 +1196,7 @@ class ModelDriftDetector:
                 critical_features = sum(
                     1
                     for fr in feature_results
-                    if fr.severity in [DriftSeverity.HIGH, DriftSeverity.CRITICAL]
+                    if fr.severity in {DriftSeverity.HIGH, DriftSeverity.CRITICAL}
                 )
                 total_features = len(feature_results)
                 feature_confidence = 0.5 + 0.5 * (critical_features / total_features)
@@ -1243,9 +1236,7 @@ class ModelDriftDetector:
                     "overall_score": result.overall_drift_score,
                     "confidence": result.confidence,
                     "requires_immediate_action": result.requires_immediate_action,
-                    "methods_used": [
-                        method.value for method in result.method_results.keys()
-                    ],
+                    "methods_used": [method.value for method in result.method_results],
                     "features_affected": len(result.feature_results),
                     "timestamp": result.timestamp.isoformat(),
                 }
@@ -1267,7 +1258,7 @@ class ModelDriftDetector:
                     )
 
         except Exception as e:
-            logger.error(f"Failed to handle drift detection: {e}")
+            logger.exception(f"Failed to handle drift detection: {e}")
 
     async def _create_drift_alert(self, result: DriftDetectionResult) -> DriftAlert:
         """Create drift alert from detection result"""
@@ -1299,13 +1290,13 @@ class ModelDriftDetector:
 
         # Determine stakeholders
         stakeholders = ["ml_engineering_team", "data_science_team"]
-        if result.overall_severity in [DriftSeverity.HIGH, DriftSeverity.CRITICAL]:
+        if result.overall_severity in {DriftSeverity.HIGH, DriftSeverity.CRITICAL}:
             stakeholders.extend(["operations_team", "product_team"])
 
         # Escalation required for critical drift
         escalation_required = result.overall_severity == DriftSeverity.CRITICAL
 
-        alert = DriftAlert(
+        return DriftAlert(
             alert_id=str(uuid.uuid4()),
             detection_result=result,
             alert_level=alert_level,
@@ -1315,8 +1306,6 @@ class ModelDriftDetector:
             escalation_required=escalation_required,
             timestamp=datetime.utcnow(),
         )
-
-        return alert
 
     async def _run_adaptive_threshold_management(self):
         """Manage adaptive thresholds based on historical performance"""
@@ -1331,7 +1320,7 @@ class ModelDriftDetector:
                     await self._update_adaptive_thresholds()
 
             except Exception as e:
-                logger.error(f"Adaptive threshold management error: {e}")
+                logger.exception(f"Adaptive threshold management error: {e}")
                 await asyncio.sleep(300)
 
     async def _update_adaptive_thresholds(self):
@@ -1352,7 +1341,7 @@ class ModelDriftDetector:
                 1
                 for result in recent_detections
                 if not result.requires_immediate_action
-                and result.overall_severity in [DriftSeverity.LOW, DriftSeverity.MEDIUM]
+                and result.overall_severity in {DriftSeverity.LOW, DriftSeverity.MEDIUM}
             )
 
             current_fp_rate = false_positives / len(recent_detections)
@@ -1389,7 +1378,7 @@ class ModelDriftDetector:
             )
 
         except Exception as e:
-            logger.error(f"Adaptive threshold update failed: {e}")
+            logger.exception(f"Adaptive threshold update failed: {e}")
 
     async def _adjust_all_thresholds(self, factor: float):
         """Adjust all detection thresholds by a factor"""
@@ -1413,7 +1402,7 @@ class ModelDriftDetector:
                     await self._update_baselines()
 
             except Exception as e:
-                logger.error(f"Baseline update management error: {e}")
+                logger.exception(f"Baseline update management error: {e}")
                 await asyncio.sleep(3600)
 
     async def _update_baselines(self):
@@ -1426,7 +1415,7 @@ class ModelDriftDetector:
                 if (
                     result.timestamp >= datetime.utcnow() - timedelta(days=7)
                     and result.overall_severity
-                    in [DriftSeverity.HIGH, DriftSeverity.CRITICAL]
+                    in {DriftSeverity.HIGH, DriftSeverity.CRITICAL}
                 )
             ]
 
@@ -1470,7 +1459,7 @@ class ModelDriftDetector:
             )
 
         except Exception as e:
-            logger.error(f"Baseline update failed: {e}")
+            logger.exception(f"Baseline update failed: {e}")
 
     async def _run_drift_pattern_analysis(self):
         """Analyze drift patterns for insights"""
@@ -1484,7 +1473,7 @@ class ModelDriftDetector:
                 await self._analyze_drift_patterns()
 
             except Exception as e:
-                logger.error(f"Drift pattern analysis error: {e}")
+                logger.exception(f"Drift pattern analysis error: {e}")
                 await asyncio.sleep(300)
 
     async def _analyze_drift_patterns(self):
@@ -1509,9 +1498,7 @@ class ModelDriftDetector:
                 hourly_counts[hour] = hourly_counts.get(hour, 0) + 1
 
             # Severity trends
-            severity_trends = []
-            for result in recent_drift:
-                severity_trends.append(result.overall_severity.value)
+            severity_trends = [result.overall_severity.value for result in recent_drift]
 
             # Log pattern analysis
             await self.audit_logger.log_compliance_event(
@@ -1529,7 +1516,7 @@ class ModelDriftDetector:
             )
 
         except Exception as e:
-            logger.error(f"Drift pattern analysis failed: {e}")
+            logger.exception(f"Drift pattern analysis failed: {e}")
 
     # Public methods for baseline management and status
 
@@ -1556,7 +1543,7 @@ class ModelDriftDetector:
             )
 
         except Exception as e:
-            logger.error(f"Failed to establish baseline for {component.value}: {e}")
+            logger.exception(f"Failed to establish baseline for {component.value}: {e}")
             raise
 
     def get_drift_status(self) -> dict[str, Any]:

@@ -232,7 +232,7 @@ class CollectiveConstitutionalAI:
                             )
 
             except Exception as e:
-                logger.error(f"Error creating Polis conversation: {e}")
+                logger.exception(f"Error creating Polis conversation: {e}")
 
         conversation = PolisConversation(
             conversation_id=conversation_id,
@@ -290,11 +290,13 @@ class CollectiveConstitutionalAI:
             # Generate recommendations
             recommendations = []
             if overall_bias > 0.3:
-                recommendations.append(
-                    f"Consider revising language to reduce {category.value} bias"
+                recommendations.extend(
+                    (
+                        f"Consider revising language to reduce {category.value} bias",
+                        "Add explicit fairness constraints",
+                        "Include diverse stakeholder perspectives",
+                    )
                 )
-                recommendations.append("Add explicit fairness constraints")
-                recommendations.append("Include diverse stakeholder perspectives")
 
             result = BiasEvaluationResult(
                 category=category,
@@ -424,9 +426,7 @@ class CollectiveConstitutionalAI:
 
         # Add some randomness to simulate model uncertainty
         noise = np.random.normal(0, 0.05)
-        bias_score = max(0.0, min(1.0, bias_score + noise))
-
-        return bias_score
+        return max(0.0, min(1.0, bias_score + noise))
 
     async def aggregate_collective_input(
         self, conversation_id: str, min_consensus: float = 0.6
@@ -479,7 +479,7 @@ class CollectiveConstitutionalAI:
                                     collective_inputs.append(collective_input)
 
             except Exception as e:
-                logger.error(f"Error fetching Polis data: {e}")
+                logger.exception(f"Error fetching Polis data: {e}")
         else:
             # Mock data for testing when Polis API is not available
             mock_inputs = [
@@ -668,9 +668,11 @@ class CollectiveConstitutionalAI:
         for category in BiasCategory:
             category_scores = []
             for principle in principles:
-                for result in principle.bias_evaluation:
-                    if result.category == category:
-                        category_scores.append(result.bias_score)
+                category_scores.extend(
+                    result.bias_score
+                    for result in principle.bias_evaluation
+                    if result.category == category
+                )
 
             if category_scores:
                 bias_by_category[category.value] = {

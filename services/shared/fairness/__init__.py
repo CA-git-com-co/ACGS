@@ -18,8 +18,8 @@ from .fairlearn_integration import FairlearnBiasDetector, FairnessMitigator
 from .whatif_tool_integration import WhatIfToolAnalyzer
 
 __all__ = [
+    "EnhancedFairnessFramework",
     "FairlearnBiasDetector",
     "FairnessMitigator",
     "WhatIfToolAnalyzer",
-    "EnhancedFairnessFramework",
 ]

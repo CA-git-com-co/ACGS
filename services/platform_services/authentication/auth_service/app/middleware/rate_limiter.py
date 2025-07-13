@@ -5,14 +5,13 @@ Provides sophisticated rate limiting with multiple algorithms,
 user-based limits, and adaptive protection against attacks.
 """
 
-import asyncio
-import json
+import contextlib
 import logging
 import time
 from collections import defaultdict, deque
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
 
 import redis.asyncio as redis
 
@@ -38,15 +37,15 @@ class RateLimitConfig:
     requests: int  # Number of requests allowed
     window: int  # Time window in seconds
     algorithm: RateLimitAlgorithm = RateLimitAlgorithm.SLIDING_WINDOW
-    burst_limit: Optional[int] = None  # Burst allowance
+    burst_limit: int | None = None  # Burst allowance
     block_duration: int = 300  # Block duration in seconds
 
 
 class AdvancedRateLimiter:
     """Advanced rate limiter with multiple algorithms and Redis support."""
 
-    def __init__(self, redis_url: Optional[str] = None):
-        self.redis_client: Optional[redis.Redis] = None
+    def __init__(self, redis_url: str | None = None):
+        self.redis_client: redis.Redis | None = None
         self.redis_url = redis_url
 
         # In-memory storage for when Redis is not available
@@ -118,9 +117,9 @@ class AdvancedRateLimiter:
         self,
         client_ip: str,
         endpoint: str,
-        user_id: Optional[str] = None,
-        user_role: Optional[str] = None,
-    ) -> Tuple[bool, Dict[str, Any]]:
+        user_id: str | None = None,
+        user_role: str | None = None,
+    ) -> tuple[bool, dict[str, Any]]:
         """
         Check if request is allowed based on rate limits.
 
@@ -157,7 +156,7 @@ class AdvancedRateLimiter:
         return allowed, info
 
     def _get_rate_limit_config(
-        self, endpoint: str, user_role: Optional[str] = None
+        self, endpoint: str, user_role: str | None = None
     ) -> RateLimitConfig:
         """Get rate limit configuration for endpoint and user."""
         # User-specific limits take precedence
@@ -168,7 +167,7 @@ class AdvancedRateLimiter:
         return self.endpoint_configs.get(endpoint, self.endpoint_configs["default"])
 
     def _create_rate_limit_key(
-        self, client_ip: str, endpoint: str, user_id: Optional[str] = None
+        self, client_ip: str, endpoint: str, user_id: str | None = None
     ) -> str:
         """Create unique key for rate limiting."""
         if user_id:
@@ -177,16 +176,15 @@ class AdvancedRateLimiter:
 
     async def _sliding_window_check(
         self, key: str, config: RateLimitConfig, now: float
-    ) -> Tuple[bool, Dict[str, Any]]:
+    ) -> tuple[bool, dict[str, Any]]:
         """Sliding window rate limit check."""
         if self.redis_client:
             return await self._redis_sliding_window_check(key, config, now)
-        else:
-            return await self._memory_sliding_window_check(key, config, now)
+        return await self._memory_sliding_window_check(key, config, now)
 
     async def _redis_sliding_window_check(
         self, key: str, config: RateLimitConfig, now: float
-    ) -> Tuple[bool, Dict[str, Any]]:
+    ) -> tuple[bool, dict[str, Any]]:
         """Redis-based sliding window implementation."""
         try:
             pipe = self.redis_client.pipeline()
@@ -226,12 +224,12 @@ class AdvancedRateLimiter:
             }
 
         except Exception as e:
-            logger.error(f"Redis sliding window error: {e}")
+            logger.exception(f"Redis sliding window error: {e}")
             return await self._memory_sliding_window_check(key, config, now)
 
     async def _memory_sliding_window_check(
         self, key: str, config: RateLimitConfig, now: float
-    ) -> Tuple[bool, Dict[str, Any]]:
+    ) -> tuple[bool, dict[str, Any]]:
         """Memory-based sliding window implementation."""
         requests = self.memory_store[key]
 
@@ -260,16 +258,15 @@ class AdvancedRateLimiter:
 
     async def _token_bucket_check(
         self, key: str, config: RateLimitConfig, now: float
-    ) -> Tuple[bool, Dict[str, Any]]:
+    ) -> tuple[bool, dict[str, Any]]:
         """Token bucket rate limit check."""
         if self.redis_client:
             return await self._redis_token_bucket_check(key, config, now)
-        else:
-            return await self._memory_token_bucket_check(key, config, now)
+        return await self._memory_token_bucket_check(key, config, now)
 
     async def _memory_token_bucket_check(
         self, key: str, config: RateLimitConfig, now: float
-    ) -> Tuple[bool, Dict[str, Any]]:
+    ) -> tuple[bool, dict[str, Any]]:
         """Memory-based token bucket implementation."""
         if key not in self.token_buckets:
             self.token_buckets[key] = {"tokens": config.requests, "last_refill": now}
@@ -305,7 +302,7 @@ class AdvancedRateLimiter:
 
     async def _redis_token_bucket_check(
         self, key: str, config: RateLimitConfig, now: float
-    ) -> Tuple[bool, Dict[str, Any]]:
+    ) -> tuple[bool, dict[str, Any]]:
         """Redis-based token bucket implementation."""
         try:
             # Lua script for atomic token bucket operation
@@ -314,15 +311,15 @@ class AdvancedRateLimiter:
             local capacity = tonumber(ARGV[1])
             local refill_rate = tonumber(ARGV[2])
             local now = tonumber(ARGV[3])
-            
+
             local bucket = redis.call('HMGET', key, 'tokens', 'last_refill')
             local tokens = tonumber(bucket[1]) or capacity
             local last_refill = tonumber(bucket[2]) or now
-            
+
             local time_passed = now - last_refill
             local tokens_to_add = time_passed * refill_rate
             tokens = math.min(capacity, tokens + tokens_to_add)
-            
+
             if tokens >= 1 then
                 tokens = tokens - 1
                 redis.call('HMSET', key, 'tokens', tokens, 'last_refill', now)
@@ -349,24 +346,23 @@ class AdvancedRateLimiter:
                     "window": config.window,
                     "tokens_remaining": int(tokens_remaining),
                 }
-            else:
-                return False, {
-                    "error": "Rate limit exceeded",
-                    "limit": config.requests,
-                    "window": config.window,
-                    "tokens_remaining": int(tokens_remaining),
-                    "retry_after": int(
-                        (1 - tokens_remaining) * (config.window / config.requests)
-                    ),
-                }
+            return False, {
+                "error": "Rate limit exceeded",
+                "limit": config.requests,
+                "window": config.window,
+                "tokens_remaining": int(tokens_remaining),
+                "retry_after": int(
+                    (1 - tokens_remaining) * (config.window / config.requests)
+                ),
+            }
 
         except Exception as e:
-            logger.error(f"Redis token bucket error: {e}")
+            logger.exception(f"Redis token bucket error: {e}")
             return await self._memory_token_bucket_check(key, config, now)
 
     async def _fixed_window_check(
         self, key: str, config: RateLimitConfig, now: float
-    ) -> Tuple[bool, Dict[str, Any]]:
+    ) -> tuple[bool, dict[str, Any]]:
         """Fixed window rate limit check."""
         window_start = int(now // config.window) * config.window
         window_key = f"{key}:{window_start}"
@@ -394,7 +390,7 @@ class AdvancedRateLimiter:
                 }
 
             except Exception as e:
-                logger.error(f"Redis fixed window error: {e}")
+                logger.exception(f"Redis fixed window error: {e}")
 
         # Fallback to memory
         if window_key not in self.memory_store:
@@ -455,12 +451,10 @@ class AdvancedRateLimiter:
         block_until = now + config.block_duration
 
         if self.redis_client:
-            try:
+            with contextlib.suppress(Exception):
                 await self.redis_client.setex(
                     f"blocked_ip:{client_ip}", config.block_duration, str(block_until)
                 )
-            except Exception:
-                pass
 
         # Also store in memory as fallback
         self.blocked_ips[client_ip] = block_until
@@ -472,10 +466,8 @@ class AdvancedRateLimiter:
     async def unblock_ip(self, client_ip: str):
         """Manually unblock an IP address."""
         if self.redis_client:
-            try:
+            with contextlib.suppress(Exception):
                 await self.redis_client.delete(f"blocked_ip:{client_ip}")
-            except Exception:
-                pass
 
         if client_ip in self.blocked_ips:
             del self.blocked_ips[client_ip]

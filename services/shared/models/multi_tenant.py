@@ -11,6 +11,7 @@ import uuid
 from datetime import datetime, timezone
 from enum import Enum
 
+from shared.database import Base
 from sqlalchemy import (
     JSON,
     Boolean,
@@ -27,8 +28,6 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import declarative_mixin, relationship
-
-from ..database import Base
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -350,24 +349,24 @@ class TenantMixin:
     """
 
     @declared_attr
-    def tenant_id(cls):
+    def tenant_id(self):
         return Column(
             UUID(as_uuid=True), ForeignKey("tenants.id"), nullable=False, index=True
         )
 
     @declared_attr
-    def __table_args__(cls):
+    def __table_args__(self):
         # Get existing table args if any
-        existing_args = getattr(cls, "_table_args", ())
+        existing_args = getattr(self, "_table_args", ())
         if isinstance(existing_args, dict):
             existing_args = (existing_args,)
         elif existing_args is None:
             existing_args = ()
 
         # Add tenant index
-        tenant_index = Index(f"idx_{cls.__tablename__}_tenant", "tenant_id")
+        tenant_index = Index(f"idx_{self.__tablename__}_tenant", "tenant_id")
 
-        return existing_args + (tenant_index,)
+        return (*existing_args, tenant_index)
 
 
 @declarative_mixin
@@ -394,15 +393,15 @@ class AuditMixin:
     deleted_at = Column(DateTime(timezone=True), nullable=True, index=True)
 
     @declared_attr
-    def created_by_user_id(cls):
+    def created_by_user_id(self):
         return Column(Integer, nullable=True)
 
     @declared_attr
-    def updated_by_user_id(cls):
+    def updated_by_user_id(self):
         return Column(Integer, nullable=True)
 
     @declared_attr
-    def deleted_by_user_id(cls):
+    def deleted_by_user_id(self):
         return Column(Integer, nullable=True)
 
 

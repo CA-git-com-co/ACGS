@@ -8,7 +8,7 @@ This module provides a unified way to apply comprehensive security across all se
 
 import logging
 import os
-from typing import Any, Dict, Optional
+from typing import Any
 
 from fastapi import FastAPI, HTTPException, Request
 
@@ -133,7 +133,7 @@ def apply_acgs_security_middleware(
         )
 
     except Exception as e:
-        logger.error(
+        logger.exception(
             f"Failed to apply security middleware to {service_name}: {e}",
             extra={
                 "service": service_name,
@@ -208,8 +208,8 @@ def create_secure_endpoint_decorator(
 
 
 def validate_request_body(
-    data: Dict[str, Any], security_level: SecurityLevel = SecurityLevel.MEDIUM
-) -> Dict[str, Any]:
+    data: dict[str, Any], security_level: SecurityLevel = SecurityLevel.MEDIUM
+) -> dict[str, Any]:
     """
     Validate and sanitize request body data.
 
@@ -251,7 +251,7 @@ def validate_request_body(
         raise HTTPException(status_code=400, detail="Request body validation failed")
 
 
-def get_security_headers() -> Dict[str, str]:
+def get_security_headers() -> dict[str, str]:
     """
     Get standard ACGS security headers.
 
@@ -323,7 +323,7 @@ class SecurityMetrics:
         """Increment CSRF failures counter."""
         self.csrf_failures += 1
 
-    def get_metrics(self) -> Dict[str, int]:
+    def get_metrics(self) -> dict[str, int]:
         """Get current security metrics."""
         return {
             "blocked_requests": self.blocked_requests,

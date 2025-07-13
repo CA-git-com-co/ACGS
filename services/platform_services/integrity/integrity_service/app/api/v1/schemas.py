@@ -4,8 +4,7 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 from datetime import datetime, timezone
-from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -31,7 +30,7 @@ class CryptoKeyCreate(BaseACGSSchema):
     key_type: str = Field(..., description="Type of key (RSA, ECDSA, etc.)")
     key_size: int = Field(default=2048, description="Key size in bits")
     purpose: str = Field(..., description="Purpose of the key")
-    metadata: Optional[Dict[str, Any]] = Field(default_factory=dict)
+    metadata: dict[str, Any] | None = Field(default_factory=dict)
 
 
 class CryptoKey(BaseACGSSchema):
@@ -43,15 +42,15 @@ class CryptoKey(BaseACGSSchema):
     purpose: str = Field(..., description="Purpose of the key")
     public_key: str = Field(..., description="Public key data")
     created_at: datetime = Field(..., description="Creation timestamp")
-    expires_at: Optional[datetime] = Field(None, description="Expiration timestamp")
+    expires_at: datetime | None = Field(None, description="Expiration timestamp")
     is_active: bool = Field(default=True, description="Whether key is active")
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class CryptoKeyList(BaseACGSSchema):
     """Schema for listing cryptographic keys."""
 
-    keys: List[CryptoKey] = Field(..., description="List of keys")
+    keys: list[CryptoKey] = Field(..., description="List of keys")
     total_count: int = Field(..., description="Total number of keys")
 
 
@@ -61,7 +60,7 @@ class SignatureRequest(BaseACGSSchema):
     content: str = Field(..., description="Content to sign", min_length=1)
     key_id: str = Field(..., description="Key ID to use for signing")
     algorithm: str = Field(default="SHA-256", description="Hash algorithm")
-    metadata: Optional[Dict[str, Any]] = Field(default_factory=dict)
+    metadata: dict[str, Any] | None = Field(default_factory=dict)
 
 
 class SignatureResponse(BaseACGSSchema):
@@ -90,14 +89,14 @@ class SignatureVerificationResult(BaseACGSSchema):
     key_id: str = Field(..., description="Key ID used")
     algorithm: str = Field(..., description="Hash algorithm")
     verified_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    details: Optional[Dict[str, Any]] = Field(default_factory=dict)
+    details: dict[str, Any] | None = Field(default_factory=dict)
 
 
 # Merkle tree schemas
 class MerkleTreeBuild(BaseACGSSchema):
     """Schema for building Merkle trees."""
 
-    data_items: List[str] = Field(..., description="Data items for tree", min_length=1)
+    data_items: list[str] = Field(..., description="Data items for tree", min_length=1)
     hash_algorithm: str = Field(default="SHA-256", description="Hash algorithm")
 
 
@@ -122,7 +121,7 @@ class MerkleProofResult(BaseACGSSchema):
     """Schema for Merkle proof results."""
 
     is_valid: bool = Field(..., description="Whether proof is valid")
-    proof_path: List[str] = Field(..., description="Proof path hashes")
+    proof_path: list[str] = Field(..., description="Proof path hashes")
     leaf_index: int = Field(..., description="Index of the leaf")
     root_hash: str = Field(..., description="Root hash")
 
@@ -131,7 +130,7 @@ class MerkleProofVerification(BaseACGSSchema):
     """Schema for Merkle proof verification."""
 
     leaf_data: str = Field(..., description="Leaf data")
-    proof_path: List[str] = Field(..., description="Proof path")
+    proof_path: list[str] = Field(..., description="Proof path")
     root_hash: str = Field(..., description="Expected root hash")
     leaf_index: int = Field(..., description="Leaf index")
 
@@ -158,9 +157,7 @@ class TimestampVerification(BaseACGSSchema):
 
     data: str = Field(..., description="Original data")
     timestamp_token: str = Field(..., description="Timestamp token")
-    expected_timestamp: Optional[datetime] = Field(
-        None, description="Expected timestamp"
-    )
+    expected_timestamp: datetime | None = Field(None, description="Expected timestamp")
 
 
 class TimestampVerificationResult(BaseACGSSchema):
@@ -190,8 +187,8 @@ class IntegrityCheckResult(BaseACGSSchema):
     resource_type: str = Field(..., description="Resource type")
     resource_id: str = Field(..., description="Resource ID")
     integrity_score: float = Field(..., description="Integrity score (0-1)")
-    violations: List[str] = Field(default_factory=list, description="Violations found")
-    recommendations: List[str] = Field(
+    violations: list[str] = Field(default_factory=list, description="Violations found")
+    recommendations: list[str] = Field(
         default_factory=list, description="Recommendations"
     )
     checked_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
@@ -204,10 +201,10 @@ class AuditLogEntry(BaseACGSSchema):
     event_type: str = Field(..., description="Type of event")
     service_name: str = Field(..., description="Service name")
     action: str = Field(..., description="Action performed")
-    user_id: Optional[str] = Field(None, description="User ID")
-    resource_type: Optional[str] = Field(None, description="Resource type")
-    resource_id: Optional[str] = Field(None, description="Resource ID")
-    details: Dict[str, Any] = Field(default_factory=dict, description="Event details")
+    user_id: str | None = Field(None, description="User ID")
+    resource_type: str | None = Field(None, description="Resource type")
+    resource_id: str | None = Field(None, description="Resource ID")
+    details: dict[str, Any] = Field(default_factory=dict, description="Event details")
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
@@ -219,10 +216,8 @@ class AuditLogResponse(BaseACGSSchema):
     service_name: str = Field(..., description="Service name")
     action: str = Field(..., description="Action")
     timestamp: datetime = Field(..., description="Timestamp")
-    signature: Optional[str] = Field(None, description="Digital signature")
-    hash_chain_position: Optional[int] = Field(
-        None, description="Position in hash chain"
-    )
+    signature: str | None = Field(None, description="Digital signature")
+    hash_chain_position: int | None = Field(None, description="Position in hash chain")
 
 
 # Health and status schemas
@@ -233,10 +228,10 @@ class ServiceHealth(BaseACGSSchema):
     service: str = Field(..., description="Service name")
     version: str = Field(..., description="Service version")
     uptime_seconds: float = Field(..., description="Uptime in seconds")
-    dependencies: Dict[str, str] = Field(
+    dependencies: dict[str, str] = Field(
         default_factory=dict, description="Dependency status"
     )
-    performance_metrics: Dict[str, Any] = Field(
+    performance_metrics: dict[str, Any] = Field(
         default_factory=dict, description="Performance metrics"
     )
 
@@ -249,9 +244,9 @@ class ServiceStatus(BaseACGSSchema):
     status: str = Field(..., description="Service status")
     phase: str = Field(..., description="Development phase")
     routers_available: bool = Field(..., description="Whether routers are available")
-    endpoints: Dict[str, List[str]] = Field(
+    endpoints: dict[str, list[str]] = Field(
         default_factory=dict, description="Available endpoints"
     )
-    capabilities: Dict[str, Any] = Field(
+    capabilities: dict[str, Any] = Field(
         default_factory=dict, description="Service capabilities"
     )

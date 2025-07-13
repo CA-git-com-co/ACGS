@@ -8,16 +8,15 @@ version but with significantly reduced complexity and improved performance.
 
 import logging
 import uuid
-from typing import Any, Dict, Optional
+from typing import Any
 
 import jwt
 from fastapi import HTTPException, Request, status
+from shared.database import AsyncSessionLocal
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse
-
-from ..database import AsyncSessionLocal
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -31,9 +30,9 @@ class SimpleTenantContext:
     def __init__(
         self,
         tenant_id: uuid.UUID,
-        user_id: Optional[int] = None,
+        user_id: int | None = None,
         is_admin: bool = False,
-        organization_id: Optional[uuid.UUID] = None,
+        organization_id: uuid.UUID | None = None,
     ):
         self.tenant_id = tenant_id
         self.user_id = user_id
@@ -58,7 +57,7 @@ class SimpleTenantMiddleware(BaseHTTPMiddleware):
         app,
         jwt_secret_key: str,
         jwt_algorithm: str = "HS256",
-        exclude_paths: Optional[list] = None,
+        exclude_paths: list | None = None,
     ):
         super().__init__(app)
         self.jwt_secret_key = jwt_secret_key
@@ -106,7 +105,7 @@ class SimpleTenantMiddleware(BaseHTTPMiddleware):
         except HTTPException:
             raise
         except Exception as e:
-            logger.error(f"Tenant middleware error: {e}")
+            logger.exception(f"Tenant middleware error: {e}")
             return JSONResponse(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 content={"detail": "Tenant context processing failed"},
@@ -114,7 +113,7 @@ class SimpleTenantMiddleware(BaseHTTPMiddleware):
 
     async def _extract_tenant_context(
         self, request: Request
-    ) -> Optional[SimpleTenantContext]:
+    ) -> SimpleTenantContext | None:
         """Extract tenant context from JWT token or headers."""
 
         # Try Authorization header first
@@ -184,7 +183,7 @@ class SimpleTenantMiddleware(BaseHTTPMiddleware):
             logger.debug(f"Set database context for tenant {context.tenant_id}")
 
         except Exception as e:
-            logger.error(f"Failed to set database context: {e}")
+            logger.exception(f"Failed to set database context: {e}")
             await db.close()
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN, detail="Tenant access denied"
@@ -241,20 +240,20 @@ class SimpleTenantService:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def get_current_tenant(self) -> Optional[Dict[str, Any]]:
+    async def get_current_tenant(self) -> dict[str, Any] | None:
         """Get current tenant information."""
         result = await self.db.execute(
             text(
                 """
             SELECT id, name, status, security_level, constitutional_compliance_score
-            FROM tenants 
+            FROM tenants
             WHERE id = current_setting('app.current_tenant_id', true)::uuid
         """
             )
         )
         return dict(result.fetchone()) if result.rowcount > 0 else None
 
-    async def get_tenant_users(self) -> list[Dict[str, Any]]:
+    async def get_tenant_users(self) -> list[dict[str, Any]]:
         """Get users for current tenant."""
         result = await self.db.execute(
             text(
@@ -274,8 +273,8 @@ class SimpleTenantService:
             text(
                 """
             SELECT EXISTS(
-                SELECT 1 FROM tenant_users 
-                WHERE user_id = :user_id 
+                SELECT 1 FROM tenant_users
+                WHERE user_id = :user_id
                 AND tenant_id = current_setting('app.current_tenant_id', true)::uuid
                 AND is_active = true
             )
@@ -286,7 +285,7 @@ class SimpleTenantService:
         return result.scalar()
 
     async def log_access(
-        self, action: str, resource: str = None, result: str = "success"
+        self, action: str, resource: str | None = None, result: str = "success"
     ):
         """Log tenant access for simplified auditing."""
         await self.db.execute(
@@ -313,7 +312,7 @@ class SimpleTenantService:
 async def with_tenant_context(
     db: AsyncSession,
     tenant_id: uuid.UUID,
-    user_id: Optional[int] = None,
+    user_id: int | None = None,
     is_admin: bool = False,
 ):
     """Context manager for setting tenant context in database operations."""
@@ -329,14 +328,14 @@ async def with_tenant_context(
 
 
 async def create_tenant_aware_query(
-    table_name: str, conditions: Dict[str, Any] = None
+    table_name: str, conditions: dict[str, Any] | None = None
 ) -> str:
     """Create a tenant-aware SQL query string."""
     base_query = f"SELECT * FROM {table_name}"
 
     where_conditions = []
     if conditions:
-        where_conditions.extend([f"{k} = :{k}" for k in conditions.keys()])
+        where_conditions.extend([f"{k} = :{k}" for k in conditions])
 
     if where_conditions:
         return f"{base_query} WHERE {' AND '.join(where_conditions)}"

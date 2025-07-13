@@ -370,16 +370,16 @@ class RealTimeComplianceEngine:
                 )
 
             except Exception as e:
-                logger.error(f"Rule evaluation failed for {rule['id']}: {e}")
+                logger.exception(f"Rule evaluation failed for {rule['id']}: {e}")
                 violations.append(f"Rule evaluation error: {rule['id']}")
                 compliance_score -= 0.1
 
         # Constitutional analysis for thorough compliance
         constitutional_analysis = None
-        if context.required_compliance_level in [
+        if context.required_compliance_level in {
             ComplianceLevel.THOROUGH,
             ComplianceLevel.CRITICAL,
-        ]:
+        }:
             constitutional_analysis = await self._perform_constitutional_analysis(
                 context
             )
@@ -483,7 +483,7 @@ class RealTimeComplianceEngine:
         """Evaluate user authorization rule."""
 
         # Basic authorization check
-        if context.user_id in ["admin", "system"]:
+        if context.user_id in {"admin", "system"}:
             return {
                 "passed": True,
                 "violation": None,

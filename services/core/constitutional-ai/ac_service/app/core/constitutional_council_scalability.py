@@ -152,7 +152,7 @@ class RapidAmendmentHandler:
             # self.redis_client = await get_redis_client("constitutional_council")
             logger.info("Rapid co-evolution handler initialized (Redis disabled)")
         except Exception as e:
-            logger.error(f"Failed to initialize rapid co-evolution handler: {e}")
+            logger.exception(f"Failed to initialize rapid co-evolution handler: {e}")
             # Continue without Redis if it fails
 
     async def process_rapid_amendment(
@@ -364,7 +364,7 @@ class RapidAmendmentHandler:
 
         except Exception as e:
             await db.rollback()
-            logger.error(f"Failed to create rapid amendment: {e}")
+            logger.exception(f"Failed to create rapid amendment: {e}")
             raise
 
     def _get_voting_window(self, urgency_level: CoEvolutionMode) -> int:
@@ -481,7 +481,7 @@ class RapidAmendmentHandler:
             }
 
             # Cache for 1 hour for rapid amendments, 24 hours for normal
-            ttl = 3600 if amendment.urgency_level in ["rapid", "emergency"] else 86400
+            ttl = 3600 if amendment.urgency_level in {"rapid", "emergency"} else 86400
             await self.redis_client.set_json(cache_key, amendment_data, ttl)
 
             # Add to active amendments set
@@ -491,7 +491,7 @@ class RapidAmendmentHandler:
             )
 
         except Exception as e:
-            logger.error(f"Failed to cache amendment {amendment.id}: {e}")
+            logger.exception(f"Failed to cache amendment {amendment.id}: {e}")
 
     async def update_amendment_with_optimistic_locking(
         self,
@@ -559,7 +559,7 @@ class RapidAmendmentHandler:
             }
         except Exception as e:
             await db.rollback()
-            logger.error(f"Failed to update amendment {amendment_id}: {e}")
+            logger.exception(f"Failed to update amendment {amendment_id}: {e}")
             return {"success": False, "error": str(e)}
 
 
@@ -619,7 +619,7 @@ class AsyncVotingManager:
         if not amendment:
             return {"valid": False, "error": "Amendment not found"}
 
-        if amendment.status not in ["proposed", "voting"]:
+        if amendment.status not in {"proposed", "voting"}:
             return {
                 "valid": False,
                 "error": f"Amendment not in voting state: {amendment.status}",
@@ -669,7 +669,7 @@ class AsyncVotingManager:
             return {"success": True}
 
         except Exception as e:
-            logger.error(f"Error processing vote: {e}")
+            logger.exception(f"Error processing vote: {e}")
             await db.rollback()
             return {"success": False, "error": str(e)}
 
@@ -758,7 +758,7 @@ class ConstitutionalCouncilScalabilityFramework:
         throughput = len(amendments) / (30 * 24)  # Amendments per hour
 
         # Calculate average voting time for completed amendments
-        completed = [a for a in amendments if a.status in ["approved", "rejected"]]
+        completed = [a for a in amendments if a.status in {"approved", "rejected"}]
         avg_voting_time = 0.0
         if completed:
             voting_times = []

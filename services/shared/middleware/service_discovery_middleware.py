@@ -10,8 +10,8 @@ import logging
 import os
 import socket
 import uuid
-from contextlib import asynccontextmanager
-from typing import Any, Dict, Optional
+from contextlib import asynccontextmanager, suppress
+from typing import Any
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.base import BaseHTTPMiddleware
@@ -38,9 +38,9 @@ class ServiceDiscoveryMiddleware(BaseHTTPMiddleware):
         app: FastAPI,
         service_name: str,
         service_version: str = "1.0.0",
-        capabilities: Optional[list] = None,
+        capabilities: list | None = None,
         heartbeat_interval: int = 15,
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ):
         super().__init__(app)
         self.service_name = service_name
@@ -51,8 +51,8 @@ class ServiceDiscoveryMiddleware(BaseHTTPMiddleware):
         self.instance_id = str(uuid.uuid4())
         self.host = self._get_host()
         self.port = self._get_port()
-        self.heartbeat_task: Optional[asyncio.Task] = None
-        self.registry: Optional[ACGSServiceRegistry] = None
+        self.heartbeat_task: asyncio.Task | None = None
+        self.registry: ACGSServiceRegistry | None = None
 
     def _get_host(self) -> str:
         """Get the host address for this service."""
@@ -96,7 +96,7 @@ class ServiceDiscoveryMiddleware(BaseHTTPMiddleware):
                 logger.error(f"Failed to register service: {self.service_name}")
 
         except Exception as e:
-            logger.error(f"Service registration failed: {e}")
+            logger.exception(f"Service registration failed: {e}")
 
     async def shutdown(self) -> None:
         """Service shutdown - unregister from service registry."""
@@ -104,10 +104,8 @@ class ServiceDiscoveryMiddleware(BaseHTTPMiddleware):
             # Stop heartbeat task
             if self.heartbeat_task:
                 self.heartbeat_task.cancel()
-                try:
+                with suppress(asyncio.CancelledError):
                     await self.heartbeat_task
-                except asyncio.CancelledError:
-                    pass
 
             # Unregister service
             if self.registry:
@@ -119,7 +117,7 @@ class ServiceDiscoveryMiddleware(BaseHTTPMiddleware):
             logger.info(f"Service unregistered: {self.service_name}/{self.instance_id}")
 
         except Exception as e:
-            logger.error(f"Service unregistration failed: {e}")
+            logger.exception(f"Service unregistration failed: {e}")
 
     async def _heartbeat_loop(self) -> None:
         """Background task to send regular heartbeats."""
@@ -144,7 +142,7 @@ class ServiceDiscoveryMiddleware(BaseHTTPMiddleware):
                 logger.info("Heartbeat task cancelled")
                 break
             except Exception as e:
-                logger.error(f"Heartbeat error: {e}")
+                logger.exception(f"Heartbeat error: {e}")
 
     async def dispatch(self, request: Request, call_next):
         """Process requests and add service discovery headers."""
@@ -163,9 +161,9 @@ def setup_service_discovery(
     app: FastAPI,
     service_name: str,
     service_version: str = "1.0.0",
-    capabilities: Optional[list] = None,
+    capabilities: list | None = None,
     heartbeat_interval: int = 15,
-    metadata: Optional[Dict[str, Any]] = None,
+    metadata: dict[str, Any] | None = None,
 ) -> None:
     """
     Setup service discovery for a FastAPI application.
@@ -264,8 +262,7 @@ def setup_service_discovery(
                 status_code=503, detail="Service registry not available"
             )
 
-        stats = await middleware.registry.get_registry_stats()
-        return stats
+        return await middleware.registry.get_registry_stats()
 
     logger.info(
         f"Service discovery configured for {service_name} (Constitutional Hash: {CONSTITUTIONAL_HASH})"
@@ -288,7 +285,7 @@ class ServiceDiscoveryClient:
         """Close the service discovery client."""
         await self.registry.close()
 
-    async def discover_service(self, service_name: str) -> Optional[str]:
+    async def discover_service(self, service_name: str) -> str | None:
         """
         Discover a service and return its URL.
 
@@ -305,7 +302,7 @@ class ServiceDiscoveryClient:
             return f"http://{instance.host}:{instance.port}"
         return None
 
-    async def discover_all_services(self) -> Dict[str, str]:
+    async def discover_all_services(self) -> dict[str, str]:
         """
         Discover all services and return their URLs.
 
@@ -338,7 +335,7 @@ class ServiceDiscoveryClient:
 
 
 # Global service discovery client
-_discovery_client: Optional[ServiceDiscoveryClient] = None
+_discovery_client: ServiceDiscoveryClient | None = None
 
 
 async def get_discovery_client() -> ServiceDiscoveryClient:

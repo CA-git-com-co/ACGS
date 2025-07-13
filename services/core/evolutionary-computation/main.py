@@ -230,7 +230,7 @@ class EvaluationCriteria:
             return result
 
         except Exception as e:
-            logger.error("Evaluation failed", agent_id=agent_id, error=str(e))
+            logger.exception("Evaluation failed", agent_id=agent_id, error=str(e))
             raise HTTPException(status_code=500, detail=f"Evaluation failed: {e}")
 
     async def check_constitutional_compliance(
@@ -273,7 +273,7 @@ class EvaluationCriteria:
             return compliance_result
 
         except Exception as e:
-            logger.error("Constitutional compliance check failed", error=str(e))
+            logger.exception("Constitutional compliance check failed", error=str(e))
             return {"score": 0.0, "details": f"Error: {e}"}
 
     async def analyze_performance_delta(
@@ -298,7 +298,9 @@ class EvaluationCriteria:
             return max(-0.5, min(0.5, performance_delta))  # Clamp to reasonable range
 
         except Exception as e:
-            logger.error("Performance analysis failed", agent_id=agent_id, error=str(e))
+            logger.exception(
+                "Performance analysis failed", agent_id=agent_id, error=str(e)
+            )
             return 0.1  # Conservative estimate
 
     async def get_baseline_metrics(self, agent_id: str) -> dict[str, Any] | None:
@@ -346,7 +348,7 @@ class EvaluationCriteria:
             }
 
         except Exception as e:
-            logger.error("Anomaly detection failed", error=str(e))
+            logger.exception("Anomaly detection failed", error=str(e))
             return {"score": 0.0, "details": f"Error: {e}"}
 
     async def assess_risk(self, new_version: dict[str, Any]) -> dict[str, Any]:
@@ -358,7 +360,7 @@ class EvaluationCriteria:
             if new_version.get("privilege_escalation"):
                 risk_score += 0.4
 
-            if new_version.get("external_dependencies", []):
+            if new_version.get("external_dependencies"):
                 risk_score += 0.2
 
             if new_version.get("experimental_features"):
@@ -370,7 +372,7 @@ class EvaluationCriteria:
             }
 
         except Exception as e:
-            logger.error("Risk assessment failed", error=str(e))
+            logger.exception("Risk assessment failed", error=str(e))
             return {"score": 0.5, "details": f"Error: {e}"}
 
 
@@ -410,7 +412,7 @@ class ApprovalWorkflow:
             return await self.human_review_required(evolution_request, evaluation)
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 "Workflow processing failed",
                 evolution_id=evolution_request.evolution_id,
                 error=str(e),
@@ -461,7 +463,7 @@ class ApprovalWorkflow:
             }
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 "Auto-approval failed", evolution_id=request.evolution_id, error=str(e)
             )
             return await self.escalate_to_human(request, f"Auto-approval error: {e}")
@@ -500,7 +502,7 @@ class ApprovalWorkflow:
             }
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 "Fast-track review setup failed",
                 evolution_id=request.evolution_id,
                 error=str(e),
@@ -543,7 +545,7 @@ class ApprovalWorkflow:
             }
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 "Human review setup failed",
                 evolution_id=request.evolution_id,
                 error=str(e),
@@ -607,7 +609,7 @@ class ApprovalWorkflow:
             return await self.human_review_required(request, evaluation)
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 "Escalation failed", evolution_id=request.evolution_id, error=str(e)
             )
             raise HTTPException(status_code=500, detail=f"Escalation failed: {e}")
@@ -634,7 +636,7 @@ class ApprovalWorkflow:
             return deployment_result
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 "Deployment failed", evolution_id=request.evolution_id, error=str(e)
             )
             return {
@@ -670,7 +672,7 @@ class ApprovalWorkflow:
                     evolution_id,
                 )
         except Exception as e:
-            logger.error(
+            logger.exception(
                 "Database update failed", evolution_id=evolution_id, error=str(e)
             )
 
@@ -753,7 +755,7 @@ class HumanReviewInterface:
             }
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 "Review task creation failed",
                 evolution_id=evolution_request.evolution_id,
                 error=str(e),
@@ -771,8 +773,7 @@ class HumanReviewInterface:
             for section, modifications in changes.items():
                 diff_lines.append(f"=== {section} ===")
                 if isinstance(modifications, list):
-                    for mod in modifications:
-                        diff_lines.append(f"+ {mod}")
+                    diff_lines.extend(f"+ {mod}" for mod in modifications)
                 elif isinstance(modifications, dict):
                     for key, value in modifications.items():
                         diff_lines.append(f"  {key}: {value}")
@@ -847,7 +848,7 @@ class RollbackManager:
             }
 
         except Exception as e:
-            logger.error("Rollback failed", agent_id=agent_id, error=str(e))
+            logger.exception("Rollback failed", agent_id=agent_id, error=str(e))
             rollback_operations.labels(reason="failed").inc()
             raise HTTPException(status_code=500, detail=f"Rollback failed: {e}")
 
@@ -875,7 +876,7 @@ class RollbackManager:
                 return None
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 "Failed to get current version", agent_id=agent_id, error=str(e)
             )
             return None
@@ -904,7 +905,7 @@ class RollbackManager:
                 return None
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 "Failed to get previous version", agent_id=agent_id, error=str(e)
             )
             return None
@@ -957,7 +958,7 @@ class RollbackManager:
             await asyncio.sleep(0.1)
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 "Version deployment failed",
                 agent_id=agent_id,
                 rollback_id=rollback_id,
@@ -1024,8 +1025,7 @@ rollback_manager: RollbackManager | None = None
 
 @app.on_event("startup")
 async def startup():
-    global db_pool, redis, policy_client, audit_client
-    global criteria, workflow, review_interface, rollback_manager
+    global db_pool, redis, policy_client, audit_client, criteria, workflow, review_interface, rollback_manager
 
     try:
         # Initialize database
@@ -1056,7 +1056,7 @@ async def startup():
         )
 
     except Exception as e:
-        logger.error("Startup failed", error=str(e))
+        logger.exception("Startup failed", error=str(e))
         raise
 
 
@@ -1077,7 +1077,7 @@ async def shutdown():
         logger.info("Evolution Oversight Service stopped")
 
     except Exception as e:
-        logger.error("Shutdown failed", error=str(e))
+        logger.exception("Shutdown failed", error=str(e))
 
 
 async def create_tables():
@@ -1118,7 +1118,7 @@ async def create_tables():
         logger.info("Database tables created successfully")
 
     except Exception as e:
-        logger.error("Table creation failed", error=str(e))
+        logger.exception("Table creation failed", error=str(e))
         raise
 
 
@@ -1169,7 +1169,7 @@ async def submit_evolution(
         }
 
     except Exception as e:
-        logger.error(
+        logger.exception(
             "Evolution submission failed",
             evolution_id=request.evolution_id,
             error=str(e),
@@ -1193,7 +1193,7 @@ async def process_evolution_async(request: EvolutionRequest):
             auto_approval_rate.set(current_rate * 0.9 + 0.1)  # Moving average
 
     except Exception as e:
-        logger.error(
+        logger.exception(
             "Async evolution processing failed",
             evolution_id=request.evolution_id,
             error=str(e),
@@ -1246,7 +1246,7 @@ async def get_evolution_status(evolution_id: str):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(
+        logger.exception(
             "Evolution status query failed", evolution_id=evolution_id, error=str(e)
         )
         raise HTTPException(status_code=500, detail=f"Status query failed: {e}")
@@ -1281,7 +1281,7 @@ async def rollback_evolution(evolution_id: str, reason: str = "Manual rollback")
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("Rollback failed", evolution_id=evolution_id, error=str(e))
+        logger.exception("Rollback failed", evolution_id=evolution_id, error=str(e))
         raise HTTPException(status_code=500, detail=f"Rollback failed: {e}")
 
 
@@ -1300,27 +1300,26 @@ async def get_pending_reviews():
             """
             )
 
-            tasks = []
-            for row in rows:
-                tasks.append(
-                    {
-                        "task_id": row["task_id"],
-                        "evolution_id": row["evolution_id"],
-                        "agent_id": row["agent_id"],
-                        "priority": row["priority"],
-                        "total_score": row["total_score"],
-                        "created_at": row["created_at"].isoformat(),
-                        "age_minutes": (
-                            datetime.now(timezone.utc) - row["created_at"]
-                        ).total_seconds()
-                        / 60,
-                    }
-                )
+            tasks = [
+                {
+                    "task_id": row["task_id"],
+                    "evolution_id": row["evolution_id"],
+                    "agent_id": row["agent_id"],
+                    "priority": row["priority"],
+                    "total_score": row["total_score"],
+                    "created_at": row["created_at"].isoformat(),
+                    "age_minutes": (
+                        datetime.now(timezone.utc) - row["created_at"]
+                    ).total_seconds()
+                    / 60,
+                }
+                for row in rows
+            ]
 
             return {"pending_tasks": tasks, "total_count": len(tasks)}
 
     except Exception as e:
-        logger.error("Pending reviews query failed", error=str(e))
+        logger.exception("Pending reviews query failed", error=str(e))
         raise HTTPException(status_code=500, detail=f"Query failed: {e}")
 
 
@@ -1386,7 +1385,7 @@ async def approve_review(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("Review approval failed", task_id=task_id, error=str(e))
+        logger.exception("Review approval failed", task_id=task_id, error=str(e))
         raise HTTPException(status_code=500, detail=f"Approval failed: {e}")
 
 
@@ -1452,7 +1451,7 @@ async def reject_review(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("Review rejection failed", task_id=task_id, error=str(e))
+        logger.exception("Review rejection failed", task_id=task_id, error=str(e))
         raise HTTPException(status_code=500, detail=f"Rejection failed: {e}")
 
 
@@ -1474,23 +1473,22 @@ async def get_agent_evolution_history(agent_id: str, limit: int = 20):
                 limit,
             )
 
-            history = []
-            for row in rows:
-                history.append(
-                    {
-                        "evolution_id": row["evolution_id"],
-                        "version": row["version"],
-                        "status": row["status"],
-                        "total_score": row["total_score"],
-                        "decision": row["decision"],
-                        "decision_timestamp": (
-                            row["decision_timestamp"].isoformat()
-                            if row["decision_timestamp"]
-                            else None
-                        ),
-                        "created_at": row["created_at"].isoformat(),
-                    }
-                )
+            history = [
+                {
+                    "evolution_id": row["evolution_id"],
+                    "version": row["version"],
+                    "status": row["status"],
+                    "total_score": row["total_score"],
+                    "decision": row["decision"],
+                    "decision_timestamp": (
+                        row["decision_timestamp"].isoformat()
+                        if row["decision_timestamp"]
+                        else None
+                    ),
+                    "created_at": row["created_at"].isoformat(),
+                }
+                for row in rows
+            ]
 
             return {
                 "agent_id": agent_id,
@@ -1499,7 +1497,9 @@ async def get_agent_evolution_history(agent_id: str, limit: int = 20):
             }
 
     except Exception as e:
-        logger.error("Evolution history query failed", agent_id=agent_id, error=str(e))
+        logger.exception(
+            "Evolution history query failed", agent_id=agent_id, error=str(e)
+        )
         raise HTTPException(status_code=500, detail=f"History query failed: {e}")
 
 
@@ -1553,7 +1553,7 @@ async def get_metrics():
         }
 
     except Exception as e:
-        logger.error("Metrics query failed", error=str(e))
+        logger.exception("Metrics query failed", error=str(e))
         raise HTTPException(status_code=500, detail=f"Metrics query failed: {e}")
 
 
@@ -1562,17 +1562,9 @@ if __name__ == "__main__":
     import os
     import sys
 
-    print(f"⚠️  Legacy Evolution Service on port {SERVICE_PORT}")
-    print("🔄 Please use the new Unified Evolution/Compiler Service on port 8006")
-    print("📍 Run: python unified_main.py")
-    print("🔗 API Docs: http://localhost:8006/docs")
-
     # Option to auto-redirect to unified service
     if "--redirect" in sys.argv:
-        print("🚀 Starting unified service...")
         os.system("python unified_main.py")
-    else:
-        print("💡 Add --redirect flag to automatically start unified service")
 
     # uvicorn.run(
     #     "main:app", host="0.0.0.0", port=SERVICE_PORT, log_level="info", reload=False

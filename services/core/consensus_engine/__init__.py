@@ -21,16 +21,16 @@ from .consensus_mechanisms import (
 )
 
 __all__ = [
-    "ConsensusEngine",
     "ConsensusAlgorithm",
+    "ConsensusEngine",
     "ConsensusSession",
-    "VoteOption",
-    "Vote",
-    "MajorityVoteConsensus",
-    "WeightedVoteConsensus",
-    "RankedChoiceConsensus",
     "ConsensusThresholdConsensus",
-    "HierarchicalOverrideConsensus",
     "ConstitutionalPriorityConsensus",
     "ExpertMediationConsensus",
+    "HierarchicalOverrideConsensus",
+    "MajorityVoteConsensus",
+    "RankedChoiceConsensus",
+    "Vote",
+    "VoteOption",
+    "WeightedVoteConsensus",
 ]

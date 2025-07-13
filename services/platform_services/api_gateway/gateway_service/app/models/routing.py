@@ -8,7 +8,6 @@ and routing decisions with constitutional compliance.
 import uuid
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -105,21 +104,21 @@ class RouteMatch(BaseModel):
     match_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
 
     # Matching criteria
-    path: Optional[str] = Field(None, description="Path to match")
+    path: str | None = Field(None, description="Path to match")
     path_type: MatchType = Field(
         default=MatchType.PREFIX, description="Path matching type"
     )
 
-    method: Optional[str] = Field(None, description="HTTP method to match")
-    headers: Dict[str, str] = Field(
+    method: str | None = Field(None, description="HTTP method to match")
+    headers: dict[str, str] = Field(
         default_factory=dict, description="Headers to match"
     )
-    query_params: Dict[str, str] = Field(
+    query_params: dict[str, str] = Field(
         default_factory=dict, description="Query params to match"
     )
 
     # Host matching
-    host: Optional[str] = Field(None, description="Host to match")
+    host: str | None = Field(None, description="Host to match")
     host_type: MatchType = Field(
         default=MatchType.EXACT, description="Host matching type"
     )
@@ -149,7 +148,7 @@ class RouteRule(BaseModel):
 
     # Target configuration
     target_service: str = Field(..., description="Target service name")
-    target_path: Optional[str] = Field(None, description="Target path transformation")
+    target_path: str | None = Field(None, description="Target path transformation")
 
     # Load balancing
     load_balancing_strategy: LoadBalancingStrategy = Field(
@@ -164,9 +163,7 @@ class RouteRule(BaseModel):
 
     # Security and rate limiting
     auth_required: bool = Field(default=True, description="Authentication required")
-    rate_limit_rpm: Optional[int] = Field(
-        None, ge=1, description="Rate limit per minute"
-    )
+    rate_limit_rpm: int | None = Field(None, ge=1, description="Rate limit per minute")
 
     # Constitutional compliance
     constitutional_compliance_required: bool = Field(default=True)
@@ -187,7 +184,7 @@ class RoutingDecision(BaseModel):
     request_id: str = Field(..., description="Associated request ID")
 
     # Routing decision
-    matched_rule: Optional[RouteRule] = Field(None, description="Matched route rule")
+    matched_rule: RouteRule | None = Field(None, description="Matched route rule")
     target_service: str = Field(..., description="Target service")
     target_instance: ServiceInstance = Field(
         ..., description="Selected service instance"

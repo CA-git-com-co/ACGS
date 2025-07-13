@@ -375,7 +375,7 @@ class ClusterBasedModelSelector:
             return selected_models
 
         except Exception as e:
-            logger.error(f"Error in cluster-based model selection: {e}")
+            logger.exception(f"Error in cluster-based model selection: {e}")
             return available_models
 
 
@@ -554,7 +554,7 @@ class EnhancedMultiModelValidator:
                 predictions.append(prediction)
 
             except Exception as e:
-                logger.error(f"Error getting prediction from {model_id}: {e}")
+                logger.exception(f"Error getting prediction from {model_id}: {e}")
                 continue
 
         return predictions
@@ -600,8 +600,7 @@ class EnhancedMultiModelValidator:
         bias_count = sum(1 for keyword in bias_keywords if keyword in prediction_lower)
 
         # Normalize bias score (higher = more biased)
-        bias_score = min(bias_count * 0.2, 1.0)
-        return bias_score
+        return min(bias_count * 0.2, 1.0)
 
     async def _boosting_majority_vote(
         self, predictions: list[ModelPrediction], context: ValidationContext

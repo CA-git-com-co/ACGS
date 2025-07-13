@@ -67,7 +67,6 @@ class MockDB:
 
     async def flush(self):
         """Mock flush method."""
-        pass
 
     async def commit(self):
         """Mock commit method."""
@@ -87,7 +86,6 @@ class MockDB:
 
 async def test_agent_creation():
     """Test agent creation functionality."""
-    print("🧪 Testing Agent Creation...")
 
     service = AgentService()
     db = MockDB()
@@ -120,16 +118,6 @@ async def test_agent_creation():
             db=db, agent_data=agent_data, created_by_user_id=1, client_ip="127.0.0.1"
         )
 
-        print("✅ Agent created successfully:")
-        print(f"   - Agent ID: {agent.agent_id}")
-        print(f"   - Name: {agent.name}")
-        print(f"   - Type: {agent.agent_type}")
-        print(f"   - Status: {agent.status}")
-        print(f"   - API Key: {api_key[:20]}...")
-        print(f"   - Owner: {agent.owner_user_id}")
-        print(f"   - Capabilities: {agent.capabilities}")
-        print(f"   - Compliance Level: {agent.compliance_level}")
-
         # Verify agent properties
         assert agent.agent_id == "test-coding-agent-001"
         assert agent.name == "Test Coding Agent"
@@ -141,17 +129,14 @@ async def test_agent_creation():
         assert agent.requires_human_approval is True
         assert api_key.startswith("acgs_agent_")
 
-        print("✅ All agent creation assertions passed!")
         return agent, api_key
 
-    except Exception as e:
-        print(f"❌ Agent creation failed: {e}")
+    except Exception:
         raise
 
 
 async def test_agent_update():
     """Test agent update functionality."""
-    print("\n🧪 Testing Agent Update...")
 
     service = AgentService()
     db = MockDB()
@@ -168,7 +153,7 @@ async def test_agent_update():
         compliance_level="standard",
     )
 
-    agent, _ = await service.create_agent(
+    _agent, _ = await service.create_agent(
         db=db, agent_data=agent_data, created_by_user_id=1
     )
 
@@ -189,12 +174,6 @@ async def test_agent_update():
             updated_by_user_id=1,
         )
 
-        print("✅ Agent updated successfully:")
-        print(f"   - Name: {updated_agent.name}")
-        print(f"   - Description: {updated_agent.description}")
-        print(f"   - Capabilities: {updated_agent.capabilities}")
-        print(f"   - Compliance Level: {updated_agent.compliance_level}")
-
         # Verify updates
         assert updated_agent.name == "Updated Name"
         assert updated_agent.description == "Updated description"
@@ -202,17 +181,14 @@ async def test_agent_update():
         assert "compliance_monitoring" in updated_agent.capabilities
         assert updated_agent.compliance_level == "high"
 
-        print("✅ All agent update assertions passed!")
         return updated_agent
 
-    except Exception as e:
-        print(f"❌ Agent update failed: {e}")
+    except Exception:
         raise
 
 
 async def test_agent_status_management():
     """Test agent status management."""
-    print("\n🧪 Testing Agent Status Management...")
 
     service = AgentService()
     db = MockDB()
@@ -225,7 +201,7 @@ async def test_agent_status_management():
         owner_user_id=1,
     )
 
-    agent, _ = await service.create_agent(
+    _agent, _ = await service.create_agent(
         db=db, agent_data=agent_data, created_by_user_id=1
     )
 
@@ -248,20 +224,16 @@ async def test_agent_status_management():
                 updated_by_user_id=1,
             )
 
-            print(f"✅ Status updated to {new_status.value}: {reason}")
             assert updated_agent.status == new_status.value
 
-        print("✅ All status transition assertions passed!")
         return updated_agent
 
-    except Exception as e:
-        print(f"❌ Agent status management failed: {e}")
+    except Exception:
         raise
 
 
 async def test_agent_authentication():
     """Test agent authentication."""
-    print("\n🧪 Testing Agent Authentication...")
 
     service = AgentService()
     db = MockDB()
@@ -274,7 +246,7 @@ async def test_agent_authentication():
         owner_user_id=1,
     )
 
-    agent, api_key = await service.create_agent(
+    _agent, api_key = await service.create_agent(
         db=db, agent_data=agent_data, created_by_user_id=1
     )
 
@@ -297,7 +269,6 @@ async def test_agent_authentication():
 
         assert auth_agent is not None
         assert auth_agent.agent_id == "test-auth-agent"
-        print("✅ Agent authentication successful")
 
         # Test failed authentication with wrong key
         failed_auth = await service.authenticate_agent(
@@ -308,20 +279,15 @@ async def test_agent_authentication():
         )
 
         assert failed_auth is None
-        print("✅ Failed authentication with wrong key (expected)")
 
-        print("✅ All authentication assertions passed!")
         return auth_agent
 
-    except Exception as e:
-        print(f"❌ Agent authentication failed: {e}")
+    except Exception:
         raise
 
 
 async def main():
     """Run all tests."""
-    print("🚀 Starting Agent Identity Management System Tests")
-    print("=" * 60)
 
     try:
         # Run all tests
@@ -330,17 +296,7 @@ async def main():
         await test_agent_status_management()
         await test_agent_authentication()
 
-        print("\n" + "=" * 60)
-        print("🎉 All tests passed successfully!")
-        print("\n📋 Test Summary:")
-        print("   ✅ Agent Creation")
-        print("   ✅ Agent Update")
-        print("   ✅ Status Management")
-        print("   ✅ Authentication")
-        print("\n🏗️ Agent Identity Management System is ready for deployment!")
-
-    except Exception as e:
-        print(f"\n❌ Test suite failed: {e}")
+    except Exception:
         sys.exit(1)
 
 

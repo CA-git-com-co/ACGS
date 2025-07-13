@@ -215,7 +215,7 @@ class RedisCacheManager:
             logger.info("Redis cache manager initialized successfully")
 
         except Exception as e:
-            logger.error(f"Failed to initialize Redis cache manager: {e}")
+            logger.exception(f"Failed to initialize Redis cache manager: {e}")
             self.redis_client = None
             raise
 
@@ -267,7 +267,7 @@ class RedisCacheManager:
                             self.metrics["integrity_failures"] += 1
 
                 except Exception as e:
-                    logger.error(f"Redis cache lookup failed: {e}")
+                    logger.exception(f"Redis cache lookup failed: {e}")
                     self._handle_circuit_breaker_failure()
 
             # Cache miss
@@ -329,14 +329,14 @@ class RedisCacheManager:
                     serialized_entry = self._serialize_cache_entry(entry)
                     await self.redis_client.setex(f"pgc:{key}", ttl, serialized_entry)
                 except Exception as e:
-                    logger.error(f"Redis cache put failed: {e}")
+                    logger.exception(f"Redis cache put failed: {e}")
                     self._handle_circuit_breaker_failure()
                     # Continue with L1 cache only
 
             return True
 
         except Exception as e:
-            logger.error(f"Cache put operation failed: {e}")
+            logger.exception(f"Cache put operation failed: {e}")
             return False
 
     def _generate_hmac(self, key: str, value: Any) -> str:
@@ -346,10 +346,7 @@ class RedisCacheManager:
         # sha256: hmac_generation_v1.0
 
         data = f"{key}:{json.dumps(value, sort_keys=True)}"
-        signature = hmac.new(
-            self.hmac_secret, data.encode(), hashlib.sha256
-        ).hexdigest()
-        return signature
+        return hmac.new(self.hmac_secret, data.encode(), hashlib.sha256).hexdigest()
 
     def _verify_integrity(self, entry: CacheEntry) -> bool:
         """Verify cache entry integrity using HMAC."""
@@ -414,7 +411,7 @@ class RedisCacheManager:
             entry_data = json.loads(data)
             return CacheEntry(**entry_data)
         except Exception as e:
-            logger.error(f"Failed to deserialize cache entry: {e}")
+            logger.exception(f"Failed to deserialize cache entry: {e}")
             return None
 
     def _update_access_stats(self, entry: CacheEntry, level: CacheLevel) -> None:
@@ -460,7 +457,7 @@ class RedisCacheManager:
             try:
                 await self.redis_client.delete(f"pgc:{key}")
             except Exception as e:
-                logger.error(f"Redis cache invalidation failed: {e}")
+                logger.exception(f"Redis cache invalidation failed: {e}")
                 success = False
 
         return success
@@ -475,7 +472,7 @@ class RedisCacheManager:
 
         # Invalidate from L1 memory cache
         keys_to_remove = [
-            k for k in self.memory_cache.keys() if self._matches_pattern(k, pattern)
+            k for k in self.memory_cache if self._matches_pattern(k, pattern)
         ]
         for key in keys_to_remove:
             self._remove_from_memory_cache(key)
@@ -490,7 +487,7 @@ class RedisCacheManager:
                     await self.redis_client.delete(*keys)
                     invalidated_count += len(keys)
             except Exception as e:
-                logger.error(f"Redis pattern invalidation failed: {e}")
+                logger.exception(f"Redis pattern invalidation failed: {e}")
 
         self.metrics["invalidations"] += invalidated_count
         return invalidated_count
@@ -580,7 +577,7 @@ class RedisCacheManager:
             )
 
         except Exception as e:
-            logger.error(f"Constitutional hash validation failed: {e}")
+            logger.exception(f"Constitutional hash validation failed: {e}")
             self.metrics["constitutional_validation_errors"] = (
                 self.metrics.get("constitutional_validation_errors", 0) + 1
             )
@@ -610,7 +607,7 @@ class RedisCacheManager:
             logger.info("Constitutional hash monitoring initialized")
 
         except Exception as e:
-            logger.error(f"Constitutional hash monitoring setup failed: {e}")
+            logger.exception(f"Constitutional hash monitoring setup failed: {e}")
 
     async def _invalidate_all_constitutional_data(self) -> None:
         """Invalidate all cached data due to constitutional hash change."""
@@ -643,7 +640,7 @@ class RedisCacheManager:
             )
 
         except Exception as e:
-            logger.error(f"Constitutional data invalidation failed: {e}")
+            logger.exception(f"Constitutional data invalidation failed: {e}")
 
     async def validate_constitutional_compliance(self, key: str, value: Any) -> bool:
         """Validate that cached data complies with current constitutional hash."""
@@ -668,7 +665,7 @@ class RedisCacheManager:
             return True
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Constitutional compliance validation failed for key {key}: {e}"
             )
             return False
@@ -704,7 +701,7 @@ class RedisCacheManager:
             }
 
         except Exception as e:
-            logger.error(f"Failed to get constitutional state: {e}")
+            logger.exception(f"Failed to get constitutional state: {e}")
             return {
                 "constitutional_hash": self.constitutional_hash,
                 "error": str(e),

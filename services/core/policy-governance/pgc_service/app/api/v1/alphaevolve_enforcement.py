@@ -216,7 +216,7 @@ async def evaluate_ec_batch(request_data: dict[str, Any]):
         return response
 
     except Exception as e:
-        logger.error(f"Error during EC batch evaluation: {e}")
+        logger.exception(f"Error during EC batch evaluation: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"EC batch evaluation failed: {e!s}",
@@ -273,7 +273,7 @@ async def evaluate_single_proposal(request_data: dict[str, Any]):
         return response
 
     except Exception as e:
-        logger.error(f"Error during single proposal evaluation: {e}")
+        logger.exception(f"Error during single proposal evaluation: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Single proposal evaluation failed: {e!s}",
@@ -416,7 +416,7 @@ async def _evaluate_single_proposal_optimized(
 
     except Exception as e:
         latency_ms = (time.time() - eval_start_time) * 1000
-        logger.error(f"Error evaluating proposal {proposal.proposal_id}: {e}")
+        logger.exception(f"Error evaluating proposal {proposal.proposal_id}: {e}")
 
         return ECEnforcementDecision(
             proposal_id=proposal.proposal_id,

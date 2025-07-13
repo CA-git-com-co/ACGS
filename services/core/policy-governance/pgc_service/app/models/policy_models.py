@@ -4,14 +4,15 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import os
+import pathlib
 import sys
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import Field
 
 sys.path.append(
-    os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "..", "shared")
+    os.path.join(pathlib.Path(__file__).parent, "..", "..", "..", "..", "..", "shared")
 )
 
 from validation.constitutional_validator import (
@@ -34,13 +35,13 @@ class PolicyValidationRequest(ConstitutionalRequest):
 
     policy_id: str = Field(..., description="Unique policy identifier")
     policy_type: PolicyType = Field(..., description="Type of policy")
-    policy_content: Dict[str, Any] = Field(
+    policy_content: dict[str, Any] = Field(
         ..., description="Policy content to validate"
     )
     validation_level: str = Field(
         default="strict", description="Validation strictness level"
     )
-    metadata: Optional[Dict[str, Any]] = Field(
+    metadata: dict[str, Any] | None = Field(
         default_factory=dict, description="Additional metadata"
     )
 
@@ -50,16 +51,16 @@ class PolicyValidationResponse(ConstitutionalResponse):
 
     policy_id: str = Field(..., description="Policy identifier")
     validation_result: bool = Field(..., description="Overall validation result")
-    validation_details: List[Dict[str, Any]] = Field(
+    validation_details: list[dict[str, Any]] = Field(
         default_factory=list, description="Detailed validation results"
     )
     compliance_score: float = Field(
         ..., description="Compliance score (0-100)", ge=0, le=100
     )
-    violations: List[str] = Field(
+    violations: list[str] = Field(
         default_factory=list, description="List of violations found"
     )
-    recommendations: List[str] = Field(
+    recommendations: list[str] = Field(
         default_factory=list, description="Recommendations for improvement"
     )
 
@@ -71,11 +72,11 @@ class PolicyCreateRequest(ConstitutionalRequest):
         ..., description="Policy name", min_length=1, max_length=255
     )
     policy_type: PolicyType = Field(..., description="Type of policy")
-    policy_content: Dict[str, Any] = Field(..., description="Policy content")
-    description: Optional[str] = Field(
+    policy_content: dict[str, Any] = Field(..., description="Policy content")
+    description: str | None = Field(
         None, description="Policy description", max_length=1000
     )
-    tags: List[str] = Field(default_factory=list, description="Policy tags")
+    tags: list[str] = Field(default_factory=list, description="Policy tags")
     enabled: bool = Field(default=True, description="Whether policy is enabled")
 
 
@@ -94,12 +95,12 @@ class PolicyUpdateRequest(ConstitutionalRequest):
     """Request model for updating policies with constitutional compliance."""
 
     policy_id: str = Field(..., description="Policy identifier to update")
-    policy_content: Optional[Dict[str, Any]] = Field(
+    policy_content: dict[str, Any] | None = Field(
         None, description="Updated policy content"
     )
-    description: Optional[str] = Field(None, description="Updated description")
-    tags: Optional[List[str]] = Field(None, description="Updated tags")
-    enabled: Optional[bool] = Field(None, description="Updated enabled status")
+    description: str | None = Field(None, description="Updated description")
+    tags: list[str] | None = Field(None, description="Updated tags")
+    enabled: bool | None = Field(None, description="Updated enabled status")
 
 
 class PolicyUpdateResponse(ConstitutionalResponse):
@@ -108,7 +109,7 @@ class PolicyUpdateResponse(ConstitutionalResponse):
     policy_id: str = Field(..., description="Updated policy identifier")
     status: str = Field(..., description="Update status")
     validation_passed: bool = Field(..., description="Whether validation passed")
-    changes_applied: List[str] = Field(
+    changes_applied: list[str] = Field(
         default_factory=list, description="List of changes applied"
     )
 
@@ -119,9 +120,9 @@ class PolicyRetrieveResponse(ConstitutionalResponse):
     policy_id: str = Field(..., description="Policy identifier")
     policy_name: str = Field(..., description="Policy name")
     policy_type: PolicyType = Field(..., description="Policy type")
-    policy_content: Dict[str, Any] = Field(..., description="Policy content")
-    description: Optional[str] = Field(None, description="Policy description")
-    tags: List[str] = Field(default_factory=list, description="Policy tags")
+    policy_content: dict[str, Any] = Field(..., description="Policy content")
+    description: str | None = Field(None, description="Policy description")
+    tags: list[str] = Field(default_factory=list, description="Policy tags")
     enabled: bool = Field(..., description="Whether policy is enabled")
     created_at: str = Field(..., description="Creation timestamp")
     updated_at: str = Field(..., description="Last update timestamp")
@@ -131,7 +132,7 @@ class PolicyRetrieveResponse(ConstitutionalResponse):
 class PolicyListResponse(ConstitutionalResponse):
     """Response model for policy listing with constitutional compliance."""
 
-    policies: List[PolicyRetrieveResponse] = Field(
+    policies: list[PolicyRetrieveResponse] = Field(
         default_factory=list, description="List of policies"
     )
     total_count: int = Field(..., description="Total number of policies", ge=0)

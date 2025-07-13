@@ -170,8 +170,7 @@ class FederatedLearningOrchestrator:
             salt=salt,
             iterations=100000,
         )
-        key = base64.urlsafe_b64encode(kdf.derive(password))
-        return key
+        return base64.urlsafe_b64encode(kdf.derive(password))
 
     def _initialize_constitutional_constraints(self):
         # requires: Valid input parameters
@@ -531,7 +530,7 @@ class FederatedLearningOrchestrator:
         """Calculate gradient norm for model weights."""
         total_norm = 0.0
 
-        for _layer_name, weights in model_weights.items():
+        for weights in model_weights.values():
             if isinstance(weights, list | np.ndarray):
                 weights_array = np.array(weights)
                 layer_norm = np.linalg.norm(weights_array)
@@ -543,8 +542,7 @@ class FederatedLearningOrchestrator:
         """Sign model update for verification."""
         weights_json = json.dumps(model_weights, sort_keys=True, default=str)
         signature_data = f"{weights_json}:{public_key}"
-        signature = hashlib.sha256(signature_data.encode()).hexdigest()
-        return signature
+        return hashlib.sha256(signature_data.encode()).hexdigest()
 
     async def _initialize_global_model(
         self, federated_round: FederatedRound, strategy: FederatedLearningStrategy

@@ -227,7 +227,7 @@ async def verify_policy_constitutional_compliance(
         return response
 
     except Exception as e:
-        logger.error(f"Policy verification failed: {e}")
+        logger.exception(f"Policy verification failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Verification failed: {e!s}",
@@ -278,7 +278,7 @@ async def verify_proof_obligations(
         return responses
 
     except Exception as e:
-        logger.error(f"Proof obligation verification failed: {e}")
+        logger.exception(f"Proof obligation verification failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Proof obligation verification failed: {e!s}",
@@ -327,7 +327,7 @@ async def generate_proof_obligations(
         return responses
 
     except Exception as e:
-        logger.error(f"Proof obligation generation failed: {e}")
+        logger.exception(f"Proof obligation generation failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Proof obligation generation failed: {e!s}",
@@ -409,7 +409,7 @@ async def get_constitutional_principles() -> dict[str, Any]:
         return principles
 
     except Exception as e:
-        logger.error(f"Failed to get constitutional principles: {e}")
+        logger.exception(f"Failed to get constitutional principles: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to get constitutional principles: {e!s}",
@@ -430,7 +430,7 @@ async def health_check() -> dict[str, Any]:
     """
     try:
         # Test Z3 solver initialization
-        engine = FormalVerificationEngine(timeout_ms=5000)
+        FormalVerificationEngine(timeout_ms=5000)
 
         return {
             "status": "healthy",
@@ -441,7 +441,7 @@ async def health_check() -> dict[str, Any]:
         }
 
     except Exception as e:
-        logger.error(f"Health check failed: {e}")
+        logger.exception(f"Health check failed: {e}")
         return {
             "status": "unhealthy",
             "service": "formal-verification-service",
@@ -491,7 +491,7 @@ async def generate_advanced_proof(
         return proof_result
 
     except Exception as e:
-        logger.error(f"Advanced proof generation failed: {e}")
+        logger.exception(f"Advanced proof generation failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Advanced proof generation failed: {e!s}",
@@ -534,7 +534,7 @@ async def verify_temporal_properties(
         return verification_result
 
     except Exception as e:
-        logger.error(f"Temporal property verification failed: {e}")
+        logger.exception(f"Temporal property verification failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Temporal property verification failed: {e!s}",
@@ -573,7 +573,7 @@ async def generate_proof_certificate(
         return certificate_result
 
     except Exception as e:
-        logger.error(f"Certificate generation failed: {e}")
+        logger.exception(f"Certificate generation failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Certificate generation failed: {e!s}",

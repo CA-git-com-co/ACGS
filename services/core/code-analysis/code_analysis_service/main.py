@@ -8,7 +8,7 @@ Service Port: 8007
 """
 
 import logging
-import os
+import pathlib
 import sys
 from contextlib import asynccontextmanager
 
@@ -20,7 +20,7 @@ from fastapi.responses import JSONResponse
 from prometheus_fastapi_instrumentator import Instrumentator
 
 # Add the service directory to Python path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, pathlib.Path(pathlib.Path(__file__).resolve()).parent)
 
 from app.api.v1.router import api_router
 from app.core.file_watcher import FileWatcherService
@@ -144,7 +144,7 @@ async def lifespan(app: FastAPI):
         yield
 
     except Exception as e:
-        logger.error(f"Failed to start ACGS Code Analysis Engine: {e}")
+        logger.exception(f"Failed to start ACGS Code Analysis Engine: {e}")
         raise
 
     finally:
@@ -170,7 +170,7 @@ async def lifespan(app: FastAPI):
                 logger.info("Database connections closed")
 
         except Exception as e:
-            logger.error(f"Error during shutdown: {e}")
+            logger.exception(f"Error during shutdown: {e}")
 
         logger.info("ACGS Code Analysis Engine shutdown completed")
 
@@ -314,7 +314,7 @@ async def health_check():
                 status_code=503 if health_status["status"] == "unhealthy" else 200,
                 content=health_status,
             )
-        elif not_initialized_checks:
+        if not_initialized_checks:
             health_status["status"] = "degraded"
             health_status["message"] = (
                 f"Some services not initialized: {', '.join(not_initialized_checks)}"
@@ -323,7 +323,7 @@ async def health_check():
         return JSONResponse(status_code=200, content=health_status)
 
     except Exception as e:
-        logger.error(f"Health check failed: {e}")
+        logger.exception(f"Health check failed: {e}")
         return JSONResponse(
             status_code=503,
             content={
@@ -338,7 +338,7 @@ async def health_check():
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     """Global exception handler with constitutional compliance"""
-    logger.error(f"Unhandled exception: {exc}", exc_info=True)
+    logger.error(f"Unhandled exception: {exc}")
 
     return JSONResponse(
         status_code=500,

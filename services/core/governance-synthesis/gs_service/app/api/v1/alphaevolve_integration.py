@@ -135,7 +135,7 @@ async def ec_constitutional_prompting(
         return response
 
     except Exception as e:
-        logger.error(f"Error during EC constitutional prompting: {e}")
+        logger.exception(f"Error during EC constitutional prompting: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"EC constitutional prompting failed: {e!s}",
@@ -244,7 +244,7 @@ async def ec_governance_evaluation(
         return response
 
     except Exception as e:
-        logger.error(f"Error during EC governance evaluation: {e}")
+        logger.exception(f"Error during EC governance evaluation: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"EC governance evaluation failed: {e!s}",
@@ -444,9 +444,11 @@ def _generate_population_filters(
         filters.append("Apply batch processing for large populations")
 
     # Add filters from guidance
-    for recommendation in structured_guidance.get("recommendations", []):
-        if "filter" in recommendation.lower():
-            filters.append(recommendation)
+    filters.extend(
+        recommendation
+        for recommendation in structured_guidance.get("recommendations", [])
+        if "filter" in recommendation.lower()
+    )
 
     # Add default constitutional filters
     filters.extend(

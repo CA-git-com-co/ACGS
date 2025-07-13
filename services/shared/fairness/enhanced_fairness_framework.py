@@ -19,7 +19,7 @@ import logging
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -52,8 +52,8 @@ class ComprehensiveFairnessResult:
     """Combined result from multiple fairness evaluation methods"""
 
     overall_bias_level: BiasLevel
-    fairlearn_result: Optional[BiasDetectionResult]
-    whatif_result: Optional[BiasAnalysisResult]
+    fairlearn_result: BiasDetectionResult | None
+    whatif_result: BiasAnalysisResult | None
     combined_score: float
     consensus_recommendations: list[str]
     requires_immediate_action: bool
@@ -80,7 +80,7 @@ class EnhancedFairnessFramework:
     Comprehensive fairness framework combining multiple state-of-the-art tools
     """
 
-    def __init__(self, config: Optional[dict[str, Any]] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         self.config = config or {}
 
         # Initialize component detectors
@@ -119,7 +119,7 @@ class EnhancedFairnessFramework:
         model: Any,
         data: pd.DataFrame,
         target_column: str,
-        predictions: Optional[np.ndarray] = None,
+        predictions: np.ndarray | None = None,
     ) -> ComprehensiveFairnessResult:
         """
         Comprehensive fairness evaluation using multiple methodologies
@@ -153,11 +153,11 @@ class EnhancedFairnessFramework:
             y_true = data[target_column].values
 
             # Run evaluations based on mode
-            if self.mode in [
+            if self.mode in {
                 FairnessFrameworkMode.FAIRLEARN_ONLY,
                 FairnessFrameworkMode.COMBINED,
                 FairnessFrameworkMode.ADAPTIVE,
-            ]:
+            }:
                 try:
                     fairlearn_result = (
                         await self.fairlearn_detector.detect_bias_fairlearn(
@@ -167,11 +167,11 @@ class EnhancedFairnessFramework:
                 except Exception as e:
                     logger.warning(f"Fairlearn evaluation failed: {e}")
 
-            if self.mode in [
+            if self.mode in {
                 FairnessFrameworkMode.WHATIF_ONLY,
                 FairnessFrameworkMode.COMBINED,
                 FairnessFrameworkMode.ADAPTIVE,
-            ]:
+            }:
                 try:
                     # Run What-If Tool analysis for primary protected attribute
                     primary_attribute = (
@@ -219,10 +219,10 @@ class EnhancedFairnessFramework:
             )
 
             # Send alerts if necessary
-            if combined_result.overall_bias_level in [
+            if combined_result.overall_bias_level in {
                 BiasLevel.HIGH,
                 BiasLevel.CRITICAL,
-            ]:
+            }:
                 await self.alerting.send_alert(
                     "high_bias_comprehensive",
                     f"High bias detected: {combined_result.overall_bias_level.value},"
@@ -237,7 +237,7 @@ class EnhancedFairnessFramework:
             return combined_result
 
         except Exception as e:
-            logger.error(f"Comprehensive fairness evaluation failed: {e}")
+            logger.exception(f"Comprehensive fairness evaluation failed: {e}")
             return ComprehensiveFairnessResult(
                 overall_bias_level=BiasLevel.CRITICAL,
                 fairlearn_result=None,
@@ -252,8 +252,8 @@ class EnhancedFairnessFramework:
 
     async def _combine_fairness_results(
         self,
-        fairlearn_result: Optional[BiasDetectionResult],
-        whatif_result: Optional[BiasAnalysisResult],
+        fairlearn_result: BiasDetectionResult | None,
+        whatif_result: BiasAnalysisResult | None,
     ) -> ComprehensiveFairnessResult:
         """
         Combine results from multiple fairness evaluation methods
@@ -298,7 +298,7 @@ class EnhancedFairnessFramework:
 
             # Determine if immediate action is required
             requires_immediate_action = (
-                overall_bias_level in [BiasLevel.HIGH, BiasLevel.CRITICAL]
+                overall_bias_level in {BiasLevel.HIGH, BiasLevel.CRITICAL}
                 or combined_score > self.bias_thresholds["high"]
             )
 
@@ -335,7 +335,7 @@ class EnhancedFairnessFramework:
             )
 
         except Exception as e:
-            logger.error(f"Result combination failed: {e}")
+            logger.exception(f"Result combination failed: {e}")
             return ComprehensiveFairnessResult(
                 overall_bias_level=BiasLevel.CRITICAL,
                 fairlearn_result=fairlearn_result,
@@ -354,17 +354,16 @@ class EnhancedFairnessFramework:
         """Convert numeric bias score to bias level"""
         if score >= self.bias_thresholds["critical"]:
             return BiasLevel.CRITICAL
-        elif score >= self.bias_thresholds["high"]:
+        if score >= self.bias_thresholds["high"]:
             return BiasLevel.HIGH
-        elif score >= self.bias_thresholds["medium"]:
+        if score >= self.bias_thresholds["medium"]:
             return BiasLevel.MEDIUM
-        elif score >= self.bias_thresholds["low"]:
+        if score >= self.bias_thresholds["low"]:
             return BiasLevel.LOW
-        else:
-            return BiasLevel.NONE
+        return BiasLevel.NONE
 
     async def detect_fairness_drift(
-        self, lookback_days: Optional[int] = None
+        self, lookback_days: int | None = None
     ) -> FairnessDriftResult:
         """
         Detect drift in fairness metrics over time
@@ -486,7 +485,7 @@ class EnhancedFairnessFramework:
             return result
 
         except Exception as e:
-            logger.error(f"Fairness drift detection failed: {e}")
+            logger.exception(f"Fairness drift detection failed: {e}")
             return FairnessDriftResult(
                 drift_detected=True,  # Conservative: assume drift when detection fails
                 drift_magnitude=1.0,
@@ -526,10 +525,10 @@ class EnhancedFairnessFramework:
                     self.fairness_history[-1] if self.fairness_history else None
                 )
 
-                if recent_results and recent_results.overall_bias_level in [
+                if recent_results and recent_results.overall_bias_level in {
                     BiasLevel.HIGH,
                     BiasLevel.CRITICAL,
-                ]:
+                }:
                     mitigation_strategy = "constraints"
                 elif (
                     recent_results
@@ -572,14 +571,14 @@ class EnhancedFairnessFramework:
             return mitigated_model
 
         except Exception as e:
-            logger.error(f"Bias mitigation failed: {e}")
+            logger.exception(f"Bias mitigation failed: {e}")
             return model
 
     def _update_evaluation_metrics(self, evaluation_time: float, bias_level: BiasLevel):
         """Update framework performance metrics"""
         self.evaluation_metrics["total_evaluations"] += 1
 
-        if bias_level in [BiasLevel.HIGH, BiasLevel.CRITICAL]:
+        if bias_level in {BiasLevel.HIGH, BiasLevel.CRITICAL}:
             self.evaluation_metrics["high_bias_detections"] += 1
 
         # Update rolling average evaluation time
@@ -648,12 +647,12 @@ class EnhancedFairnessFramework:
                 else:
                     trend = "stable"
             else:
-                bias_level_counts = {level: 0 for level in BiasLevel}
+                bias_level_counts = dict.fromkeys(BiasLevel, 0)
                 avg_bias_score = 0.0
                 max_bias_score = 0.0
                 trend = "no_data"
 
-            report = {
+            return {
                 "report_period": {
                     "start_date": cutoff_date.isoformat(),
                     "end_date": datetime.utcnow().isoformat(),
@@ -683,10 +682,8 @@ class EnhancedFairnessFramework:
                 "generated_at": datetime.utcnow().isoformat(),
             }
 
-            return report
-
         except Exception as e:
-            logger.error(f"Fairness report generation failed: {e}")
+            logger.exception(f"Fairness report generation failed: {e}")
             return {"error": str(e), "generated_at": datetime.utcnow().isoformat()}
 
     def _get_attribute_status(
@@ -712,7 +709,7 @@ class EnhancedFairnessFramework:
 
 # Example usage and factory function
 async def create_enhanced_fairness_framework(
-    config: Optional[dict[str, Any]] = None,
+    config: dict[str, Any] | None = None,
 ) -> EnhancedFairnessFramework:
     """
     Factory function to create and initialize the enhanced fairness framework

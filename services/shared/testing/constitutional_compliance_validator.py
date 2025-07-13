@@ -6,12 +6,11 @@ This module provides automated constitutional compliance validation
 across all ACGS services and API endpoints.
 """
 
-import asyncio
 import json
 import logging
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 from urllib.parse import urljoin
 
 import httpx
@@ -29,8 +28,8 @@ class ComplianceViolation:
     description: str
     severity: str  # "critical", "high", "medium", "low"
     timestamp: datetime
-    request_data: Optional[Dict[str, Any]] = None
-    response_data: Optional[Dict[str, Any]] = None
+    request_data: dict[str, Any] | None = None
+    response_data: dict[str, Any] | None = None
 
 
 @dataclass
@@ -39,7 +38,7 @@ class ComplianceReport:
 
     total_endpoints_tested: int
     compliant_endpoints: int
-    violations: List[ComplianceViolation]
+    violations: list[ComplianceViolation]
     compliance_rate: float
     constitutional_hash: str
     test_timestamp: datetime
@@ -57,7 +56,7 @@ class ConstitutionalComplianceValidator:
     REQUIRED_HEADERS = ["X-Constitutional-Hash", "X-Constitutional-Compliance"]
 
     def __init__(self):
-        self.violations: List[ComplianceViolation] = []
+        self.violations: list[ComplianceViolation] = []
         self.tested_endpoints = 0
         self.compliant_endpoints = 0
 
@@ -65,8 +64,8 @@ class ConstitutionalComplianceValidator:
         self,
         service_name: str,
         base_url: str,
-        endpoints: List[Dict[str, Any]],
-        auth_headers: Optional[Dict[str, str]] = None,
+        endpoints: list[dict[str, Any]],
+        auth_headers: dict[str, str] | None = None,
     ) -> ComplianceReport:
         """Validate constitutional compliance for all endpoints of a service."""
         logger.info(f"Starting constitutional compliance validation for {service_name}")
@@ -108,8 +107,8 @@ class ConstitutionalComplianceValidator:
         client: httpx.AsyncClient,
         service_name: str,
         base_url: str,
-        endpoint_config: Dict[str, Any],
-        auth_headers: Optional[Dict[str, str]],
+        endpoint_config: dict[str, Any],
+        auth_headers: dict[str, str] | None,
     ):
         """Validate constitutional compliance for a single endpoint."""
         endpoint = endpoint_config["path"]
@@ -171,7 +170,7 @@ class ConstitutionalComplianceValidator:
                 service_name,
                 endpoint,
                 "request_error",
-                f"Request error during compliance validation: {str(e)}",
+                f"Request error during compliance validation: {e!s}",
                 "high",
             )
         except Exception as e:
@@ -179,7 +178,7 @@ class ConstitutionalComplianceValidator:
                 service_name,
                 endpoint,
                 "unexpected_error",
-                f"Unexpected error during compliance validation: {str(e)}",
+                f"Unexpected error during compliance validation: {e!s}",
                 "critical",
             )
 
@@ -188,7 +187,7 @@ class ConstitutionalComplianceValidator:
         service_name: str,
         endpoint: str,
         response: httpx.Response,
-        request_data: Dict[str, Any],
+        request_data: dict[str, Any],
     ):
         """Validate constitutional compliance in HTTP response."""
         violations_found = False
@@ -273,8 +272,8 @@ class ConstitutionalComplianceValidator:
         self,
         service_name: str,
         endpoint: str,
-        response_data: Dict[str, Any],
-        request_data: Dict[str, Any],
+        response_data: dict[str, Any],
+        request_data: dict[str, Any],
     ):
         """Validate constitutional compliance in JSON response data."""
         violations_found = False
@@ -309,7 +308,7 @@ class ConstitutionalComplianceValidator:
         service_name: str,
         endpoint: str,
         data: Any,
-        request_data: Dict[str, Any],
+        request_data: dict[str, Any],
         path: str,
     ):
         """Validate constitutional compliance in nested data structures."""
@@ -350,8 +349,8 @@ class ConstitutionalComplianceValidator:
         violation_type: str,
         description: str,
         severity: str,
-        request_data: Optional[Dict[str, Any]] = None,
-        response_data: Optional[Dict[str, Any]] = None,
+        request_data: dict[str, Any] | None = None,
+        response_data: dict[str, Any] | None = None,
     ):
         """Add a constitutional compliance violation."""
         violation = ComplianceViolation(
@@ -371,7 +370,7 @@ class ConstitutionalComplianceValidator:
             f"{violation_type} - {description}"
         )
 
-    def _safe_json_parse(self, response: httpx.Response) -> Optional[Dict[str, Any]]:
+    def _safe_json_parse(self, response: httpx.Response) -> dict[str, Any] | None:
         """Safely parse JSON response."""
         try:
             return response.json()
@@ -379,8 +378,8 @@ class ConstitutionalComplianceValidator:
             return None
 
     async def validate_all_acgs_services(
-        self, service_configs: Dict[str, Dict[str, Any]]
-    ) -> Dict[str, ComplianceReport]:
+        self, service_configs: dict[str, dict[str, Any]]
+    ) -> dict[str, ComplianceReport]:
         """Validate constitutional compliance across all ACGS services."""
         logger.info("Starting comprehensive ACGS constitutional compliance validation")
 
@@ -397,7 +396,7 @@ class ConstitutionalComplianceValidator:
                 reports[service_name] = report
 
             except Exception as e:
-                logger.error(f"Failed to validate {service_name}: {str(e)}")
+                logger.exception(f"Failed to validate {service_name}: {e!s}")
                 # Create error report
                 reports[service_name] = ComplianceReport(
                     total_endpoints_tested=0,
@@ -407,7 +406,7 @@ class ConstitutionalComplianceValidator:
                             service_name=service_name,
                             endpoint="*",
                             violation_type="validation_failure",
-                            description=f"Failed to validate service: {str(e)}",
+                            description=f"Failed to validate service: {e!s}",
                             severity="critical",
                             timestamp=datetime.utcnow(),
                         )
@@ -433,8 +432,8 @@ class ConstitutionalComplianceValidator:
         return reports
 
     def generate_compliance_report_json(
-        self, reports: Dict[str, ComplianceReport]
-    ) -> Dict[str, Any]:
+        self, reports: dict[str, ComplianceReport]
+    ) -> dict[str, Any]:
         """Generate JSON compliance report."""
         return {
             "constitutional_hash": self.CONSTITUTIONAL_HASH,

@@ -12,11 +12,11 @@ import asyncio
 import logging
 import time
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any
 from uuid import UUID, uuid4
 
 import redis.asyncio as redis
-from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from prometheus_client import Counter, Gauge, Histogram, generate_latest
 from pydantic import BaseModel, Field
@@ -93,12 +93,12 @@ class ConstitutionalResponse(BaseModel):
 
     success: bool = Field(..., description="Operation success status")
     message: str = Field(..., description="Response message")
-    data: Optional[Dict[str, Any]] = Field(default=None, description="Response data")
+    data: dict[str, Any] | None = Field(default=None, description="Response data")
     constitutional_hash: str = Field(
         default=CONSTITUTIONAL_HASH, description="Constitutional compliance hash"
     )
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    performance_metrics: Dict[str, float] = Field(
+    performance_metrics: dict[str, float] = Field(
         default_factory=dict, description="Performance metrics"
     )
 
@@ -119,7 +119,7 @@ class ConstitutionalServiceExample:
         self.constitutional_hash = CONSTITUTIONAL_HASH
         self.service_name = SERVICE_NAME
         self.service_version = SERVICE_VERSION
-        self.redis_client: Optional[redis.Redis] = None
+        self.redis_client: redis.Redis | None = None
         self.constitutional_validator = None
         self.performance_metrics = {}
 
@@ -151,7 +151,7 @@ class ConstitutionalServiceExample:
             )
 
         except Exception as e:
-            self.logger.error(f"Service initialization failed: {e}")
+            self.logger.exception(f"Service initialization failed: {e}")
             raise
 
     async def validate_startup_compliance(self) -> bool:
@@ -191,13 +191,13 @@ class ConstitutionalServiceExample:
             return True
 
         except Exception as e:
-            self.logger.error(f"Startup compliance validation failed: {e}")
+            self.logger.exception(f"Startup compliance validation failed: {e}")
             return False
 
     async def process_constitutional_request(
         self,
         request: ConstitutionalRequest,
-        tenant_context: Optional[Dict[str, Any]] = None,
+        tenant_context: dict[str, Any] | None = None,
     ) -> ConstitutionalResponse:
         """
         Process a request with full constitutional compliance validation.
@@ -246,7 +246,7 @@ class ConstitutionalServiceExample:
             self._update_performance_metrics(processing_time, "success")
 
             # Step 8: Create constitutional response
-            response = ConstitutionalResponse(
+            return ConstitutionalResponse(
                 success=True,
                 message=f"Successfully processed {request.action}",
                 data=result_data,
@@ -258,12 +258,10 @@ class ConstitutionalServiceExample:
                 },
             )
 
-            return response
-
         except Exception as e:
             # Error handling with constitutional compliance
             processing_time = (time.perf_counter() - start_time) * 1000
-            self.logger.error(f"Request processing failed: {e}")
+            self.logger.exception(f"Request processing failed: {e}")
 
             # Generate audit events for failures
             await self._generate_audit_events(request, {"error": str(e)}, "failure")
@@ -274,7 +272,7 @@ class ConstitutionalServiceExample:
             # Return constitutional error response
             return ConstitutionalResponse(
                 success=False,
-                message=f"Request processing failed: {str(e)}",
+                message=f"Request processing failed: {e!s}",
                 constitutional_hash=CONSTITUTIONAL_HASH,
                 performance_metrics={
                     "processing_time_ms": processing_time,
@@ -285,7 +283,7 @@ class ConstitutionalServiceExample:
 
     async def _check_cache(
         self, request: ConstitutionalRequest
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """Check Redis cache for previous results."""
         if not self.redis_client:
             return None
@@ -305,7 +303,7 @@ class ConstitutionalServiceExample:
         return None
 
     async def _cache_result(
-        self, request: ConstitutionalRequest, result_data: Dict[str, Any]
+        self, request: ConstitutionalRequest, result_data: dict[str, Any]
     ):
         """Cache result for future requests."""
         if not self.redis_client:
@@ -329,7 +327,7 @@ class ConstitutionalServiceExample:
 
     async def _execute_business_logic(
         self, request: ConstitutionalRequest
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Execute the core business logic for the request.
 
@@ -340,7 +338,7 @@ class ConstitutionalServiceExample:
         await asyncio.sleep(0.002)  # 2ms simulation
 
         # Example business logic
-        result = {
+        return {
             "action_processed": request.action,
             "tenant_id": str(request.tenant_id),
             "processing_node": SERVICE_NAME,
@@ -349,10 +347,8 @@ class ConstitutionalServiceExample:
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
-        return result
-
     async def _generate_audit_events(
-        self, request: ConstitutionalRequest, result_data: Dict[str, Any], outcome: str
+        self, request: ConstitutionalRequest, result_data: dict[str, Any], outcome: str
     ):
         """Generate comprehensive audit events for constitutional compliance."""
         try:
@@ -379,7 +375,7 @@ class ConstitutionalServiceExample:
             self.logger.info(f"Audit event generated: {audit_event['event_type']}")
 
         except Exception as e:
-            self.logger.error(f"Audit event generation failed: {e}")
+            self.logger.exception(f"Audit event generation failed: {e}")
 
     def _update_performance_metrics(self, processing_time_ms: float, outcome: str):
         """Update Prometheus performance metrics."""
@@ -404,10 +400,10 @@ class ConstitutionalServiceExample:
             }
 
         except Exception as e:
-            self.logger.error(f"Performance metrics update failed: {e}")
+            self.logger.exception(f"Performance metrics update failed: {e}")
 
     def _create_response_from_cache(
-        self, cached_data: Dict[str, Any], start_time: float
+        self, cached_data: dict[str, Any], start_time: float
     ) -> ConstitutionalResponse:
         """Create response from cached data."""
         processing_time = (time.perf_counter() - start_time) * 1000
@@ -424,7 +420,7 @@ class ConstitutionalServiceExample:
             },
         )
 
-    async def get_health_status(self) -> Dict[str, Any]:
+    async def get_health_status(self) -> dict[str, Any]:
         """Get service health status with constitutional compliance validation."""
         try:
             health_status = {
@@ -520,7 +516,7 @@ def create_constitutional_app() -> FastAPI:
     @app.post("/api/v1/process", response_model=ConstitutionalResponse)
     async def process_request(
         request: ConstitutionalRequest,
-        tenant_context: Optional[Dict[str, Any]] = (
+        tenant_context: dict[str, Any] | None = (
             Depends(get_tenant_context) if MULTI_TENANT_AVAILABLE else None
         ),
     ):
@@ -541,7 +537,7 @@ def create_constitutional_app() -> FastAPI:
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Validation failed: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Validation failed: {e!s}")
 
     return app
 

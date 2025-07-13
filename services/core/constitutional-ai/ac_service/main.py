@@ -23,7 +23,6 @@ Performance Targets:
 
 import logging
 import sys
-from pathlib import Path
 
 import uvicorn
 
@@ -59,13 +58,13 @@ def main():
         )
 
     except ImportError as e:
-        logger.error(f"Failed to import refactored app: {e}")
-        logger.error(
+        logger.exception(f"Failed to import refactored app: {e}")
+        logger.exception(
             "Please ensure all dependencies are installed and the app/ structure is complete"
         )
         sys.exit(1)
     except Exception as e:
-        logger.error(f"Failed to start Constitutional AI service: {e}")
+        logger.exception(f"Failed to start Constitutional AI service: {e}")
         sys.exit(1)
 
 

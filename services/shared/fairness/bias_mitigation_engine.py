@@ -25,7 +25,7 @@ from collections import defaultdict, deque
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
 
@@ -156,7 +156,7 @@ class BiasMitigationEngine:
     Advanced bias mitigation engine for constitutional AI systems
     """
 
-    def __init__(self, config: Optional[dict[str, Any]] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         self.config = config or {}
         self.alerting = AlertingSystem()
         self.audit_logger = AuditLogger()
@@ -234,30 +234,26 @@ class BiasMitigationEngine:
         for i, strategy1 in enumerate(strategies):
             for j, strategy2 in enumerate(strategies):
                 if i == j:
-                    compatibility[(strategy1, strategy2)] = (
+                    compatibility[strategy1, strategy2] = (
                         1.0  # Perfect self-compatibility
                     )
                 elif (
                     "preprocessing" in strategy1.value
                     and "preprocessing" in strategy2.value
                 ):
-                    compatibility[(strategy1, strategy2)] = (
+                    compatibility[strategy1, strategy2] = (
                         0.3  # Low compatibility between preprocessing methods
                     )
                 elif (
                     "inprocessing" in strategy1.value
                     and "inprocessing" in strategy2.value
                 ):
-                    compatibility[(strategy1, strategy2)] = (
-                        0.2  # Very low compatibility
-                    )
+                    compatibility[strategy1, strategy2] = 0.2  # Very low compatibility
                 elif (
                     "postprocessing" in strategy1.value
                     and "postprocessing" in strategy2.value
                 ):
-                    compatibility[(strategy1, strategy2)] = (
-                        0.4  # Moderate compatibility
-                    )
+                    compatibility[strategy1, strategy2] = 0.4  # Moderate compatibility
                 elif (
                     "preprocessing" in strategy1.value
                     and "postprocessing" in strategy2.value
@@ -265,7 +261,7 @@ class BiasMitigationEngine:
                     "postprocessing" in strategy1.value
                     and "preprocessing" in strategy2.value
                 ):
-                    compatibility[(strategy1, strategy2)] = 0.8  # High compatibility
+                    compatibility[strategy1, strategy2] = 0.8  # High compatibility
                 elif (
                     "inprocessing" in strategy1.value
                     and "postprocessing" in strategy2.value
@@ -273,9 +269,9 @@ class BiasMitigationEngine:
                     "postprocessing" in strategy1.value
                     and "inprocessing" in strategy2.value
                 ):
-                    compatibility[(strategy1, strategy2)] = 0.6  # Good compatibility
+                    compatibility[strategy1, strategy2] = 0.6  # Good compatibility
                 else:
-                    compatibility[(strategy1, strategy2)] = (
+                    compatibility[strategy1, strategy2] = (
                         0.5  # Default moderate compatibility
                     )
 
@@ -352,7 +348,7 @@ class BiasMitigationEngine:
             await asyncio.gather(*mitigation_tasks)
 
         except Exception as e:
-            logger.error(f"Bias mitigation engine failed: {e}")
+            logger.exception(f"Bias mitigation engine failed: {e}")
             self.running = False
             raise
         finally:
@@ -378,7 +374,7 @@ class BiasMitigationEngine:
                 self.last_mitigation_check = datetime.utcnow()
 
             except Exception as e:
-                logger.error(f"Mitigation monitoring error: {e}")
+                logger.exception(f"Mitigation monitoring error: {e}")
                 await asyncio.sleep(60)
 
     async def _check_mitigation_triggers(self):
@@ -396,7 +392,7 @@ class BiasMitigationEngine:
                 metric
                 for metric in self.bias_monitor.metric_history
                 if metric.timestamp >= recent_cutoff
-                and metric.severity in [BiasSeverity.HIGH, BiasSeverity.CRITICAL]
+                and metric.severity in {BiasSeverity.HIGH, BiasSeverity.CRITICAL}
             ]
 
             # Group metrics by context and attribute for targeted mitigation
@@ -421,7 +417,7 @@ class BiasMitigationEngine:
                     )
 
         except Exception as e:
-            logger.error(f"Mitigation trigger check failed: {e}")
+            logger.exception(f"Mitigation trigger check failed: {e}")
 
     async def _trigger_mitigation(
         self,
@@ -467,7 +463,7 @@ class BiasMitigationEngine:
                 await self._request_human_approval_for_mitigation(mitigation_plan)
 
         except Exception as e:
-            logger.error(f"Mitigation trigger failed: {e}")
+            logger.exception(f"Mitigation trigger failed: {e}")
 
     async def _create_mitigation_plan(
         self,
@@ -476,7 +472,7 @@ class BiasMitigationEngine:
         protected_attr: ProtectedAttribute,
         severity: BiasSeverity,
         metrics: list[Any],
-    ) -> Optional[MitigationPlan]:
+    ) -> MitigationPlan | None:
         """Create bias mitigation plan"""
         try:
             plan_id = str(uuid.uuid4())
@@ -571,7 +567,7 @@ class BiasMitigationEngine:
             return plan
 
         except Exception as e:
-            logger.error(f"Mitigation plan creation failed: {e}")
+            logger.exception(f"Mitigation plan creation failed: {e}")
             return None
 
     async def _select_mitigation_strategies(
@@ -613,14 +609,14 @@ class BiasMitigationEngine:
                 )
 
             # Add constitutional strategies for constitutional contexts
-            if context in [
+            if context in {
                 BiasContext.CONSTITUTIONAL_ANALYSIS,
                 BiasContext.LEGAL_INTERPRETATION,
-            ]:
+            }:
                 strategies.append(MitigationStrategy.CONSTITUTIONAL_PRINCIPLE_ALIGNMENT)
 
             # Add human-in-the-loop for high severity
-            if severity in [BiasSeverity.HIGH, BiasSeverity.CRITICAL]:
+            if severity in {BiasSeverity.HIGH, BiasSeverity.CRITICAL}:
                 strategies.append(MitigationStrategy.HUMAN_IN_THE_LOOP_CORRECTION)
 
             # Add ensemble methods for complex cases
@@ -646,7 +642,7 @@ class BiasMitigationEngine:
             return filtered_strategies[:5]
 
         except Exception as e:
-            logger.error(f"Strategy selection failed: {e}")
+            logger.exception(f"Strategy selection failed: {e}")
             return []
 
     async def _create_mitigation_action(
@@ -657,7 +653,7 @@ class BiasMitigationEngine:
         context: BiasContext,
         severity: BiasSeverity,
         metrics: list[Any],
-    ) -> Optional[MitigationAction]:
+    ) -> MitigationAction | None:
         """Create individual mitigation action"""
         try:
             action_id = str(uuid.uuid4())
@@ -689,7 +685,7 @@ class BiasMitigationEngine:
             # Identify prerequisites
             prerequisites = await self._identify_prerequisites(strategy, context)
 
-            action = MitigationAction(
+            return MitigationAction(
                 action_id=action_id,
                 strategy=strategy,
                 target_bias_type=bias_type,
@@ -704,10 +700,8 @@ class BiasMitigationEngine:
                 prerequisites=prerequisites,
             )
 
-            return action
-
         except Exception as e:
-            logger.error(f"Mitigation action creation failed: {e}")
+            logger.exception(f"Mitigation action creation failed: {e}")
             return None
 
     async def _get_strategy_parameters(
@@ -726,27 +720,27 @@ class BiasMitigationEngine:
                     "random_state": 42,
                 }
 
-            elif strategy == MitigationStrategy.PREPROCESSING_REWEIGHTING:
+            if strategy == MitigationStrategy.PREPROCESSING_REWEIGHTING:
                 return {
                     "reweighting_method": "inverse_propensity",
                     "smoothing_factor": 0.1,
                 }
 
-            elif strategy == MitigationStrategy.POSTPROCESSING_THRESHOLD_OPTIMIZATION:
+            if strategy == MitigationStrategy.POSTPROCESSING_THRESHOLD_OPTIMIZATION:
                 return {
                     "optimization_metric": bias_type.value,
                     "constraint_type": "equality",
                     "tolerance": 0.05,
                 }
 
-            elif strategy == MitigationStrategy.POSTPROCESSING_CALIBRATION:
+            if strategy == MitigationStrategy.POSTPROCESSING_CALIBRATION:
                 return {
                     "calibration_method": "platt_scaling",
                     "group_specific": True,
                     "cross_validation_folds": 5,
                 }
 
-            elif strategy == MitigationStrategy.CONSTITUTIONAL_PRINCIPLE_ALIGNMENT:
+            if strategy == MitigationStrategy.CONSTITUTIONAL_PRINCIPLE_ALIGNMENT:
                 return {
                     "primary_principle": "equal_protection",
                     "alignment_strength": 0.8,
@@ -755,7 +749,7 @@ class BiasMitigationEngine:
                     ),
                 }
 
-            elif strategy == MitigationStrategy.HUMAN_IN_THE_LOOP_CORRECTION:
+            if strategy == MitigationStrategy.HUMAN_IN_THE_LOOP_CORRECTION:
                 return {
                     "review_threshold": 0.7,
                     "escalation_criteria": ["high_bias", "constitutional_conflict"],
@@ -766,12 +760,11 @@ class BiasMitigationEngine:
                     ),
                 }
 
-            else:
-                # Default parameters
-                return {"method": "default", "strength": 0.5, "iterations": 10}
+            # Default parameters
+            return {"method": "default", "strength": 0.5, "iterations": 10}
 
         except Exception as e:
-            logger.error(f"Parameter generation failed for {strategy.value}: {e}")
+            logger.exception(f"Parameter generation failed for {strategy.value}: {e}")
             return {}
 
     async def _estimate_improvement(
@@ -821,7 +814,7 @@ class BiasMitigationEngine:
             return min(expected_improvement, max_improvement)
 
         except Exception as e:
-            logger.error(f"Improvement estimation failed: {e}")
+            logger.exception(f"Improvement estimation failed: {e}")
             return 0.1
 
     async def _estimate_implementation_time(
@@ -965,7 +958,7 @@ class BiasMitigationEngine:
             return risks
 
         except Exception as e:
-            logger.error(f"Risk assessment failed: {e}")
+            logger.exception(f"Risk assessment failed: {e}")
             return {"overall": "unknown"}
 
     async def _identify_fallback_strategies(
@@ -1102,7 +1095,7 @@ class BiasMitigationEngine:
             )
 
         except Exception as e:
-            logger.error(f"Automatic mitigation execution failed: {e}")
+            logger.exception(f"Automatic mitigation execution failed: {e}")
             if plan.plan_id in self.active_mitigations:
                 self.active_mitigations[plan.plan_id]["status"] = "error"
                 self.active_mitigations[plan.plan_id]["error"] = str(e)
@@ -1217,7 +1210,7 @@ class BiasMitigationEngine:
             return result
 
         except Exception as e:
-            logger.error(f"Mitigation action execution failed: {e}")
+            logger.exception(f"Mitigation action execution failed: {e}")
             return MitigationResult(
                 result_id=str(uuid.uuid4()),
                 plan_id="",
@@ -1327,7 +1320,7 @@ class BiasMitigationEngine:
             )
 
         except Exception as e:
-            logger.error(f"Strategy effectiveness update failed: {e}")
+            logger.exception(f"Strategy effectiveness update failed: {e}")
 
     async def _execute_emergency_mitigation(self, plan: MitigationPlan):
         """Execute emergency bias mitigation"""
@@ -1371,7 +1364,7 @@ class BiasMitigationEngine:
             )
 
         except Exception as e:
-            logger.error(f"Emergency mitigation failed: {e}")
+            logger.exception(f"Emergency mitigation failed: {e}")
 
     async def _request_human_approval_for_mitigation(self, plan: MitigationPlan):
         """Request human approval for mitigation plan"""
@@ -1416,7 +1409,7 @@ class BiasMitigationEngine:
             logger.info(f"Human approval requested for mitigation plan {plan.plan_id}")
 
         except Exception as e:
-            logger.error(f"Human approval request failed: {e}")
+            logger.exception(f"Human approval request failed: {e}")
 
     async def _run_automatic_mitigation(self):
         """Run automatic mitigation engine"""
@@ -1434,7 +1427,7 @@ class BiasMitigationEngine:
                 # This would typically be triggered by the monitoring system
 
             except Exception as e:
-                logger.error(f"Automatic mitigation error: {e}")
+                logger.exception(f"Automatic mitigation error: {e}")
                 await asyncio.sleep(300)
 
     async def _run_real_time_correction(self):
@@ -1455,7 +1448,7 @@ class BiasMitigationEngine:
                 # For now, we'll simulate periodic corrections
 
             except Exception as e:
-                logger.error(f"Real-time correction error: {e}")
+                logger.exception(f"Real-time correction error: {e}")
                 await asyncio.sleep(60)
 
     async def apply_real_time_correction(
@@ -1533,7 +1526,7 @@ class BiasMitigationEngine:
             return corrected_decision
 
         except Exception as e:
-            logger.error(f"Real-time correction failed: {e}")
+            logger.exception(f"Real-time correction failed: {e}")
             return decision_data  # Return original if correction fails
 
     async def _detect_decision_bias(
@@ -1545,19 +1538,19 @@ class BiasMitigationEngine:
 
             # Extract relevant features
             protected_attributes = decision_data.get("protected_attributes", {})
-            decision_score = decision_data.get("decision_score", 0.5)
-            context = decision_data.get("context", "unknown")
+            decision_data.get("decision_score", 0.5)
+            decision_data.get("context", "unknown")
 
             # Simple bias detection based on protected attributes
             # In practice, this would use sophisticated bias detection algorithms
 
             for attr, value in protected_attributes.items():
                 # Simulate bias detection for different attributes
-                if attr == "race_ethnicity" and value in ["black", "hispanic"]:
+                if attr == "race_ethnicity" and value in {"black", "hispanic"}:
                     bias_scores[attr] = np.random.uniform(0.1, 0.3)
                 elif attr == "gender" and value == "female":
                     bias_scores[attr] = np.random.uniform(0.05, 0.2)
-                elif attr == "age" and value in ["18-30", "70+"]:
+                elif attr == "age" and value in {"18-30", "70+"}:
                     bias_scores[attr] = np.random.uniform(0.05, 0.15)
                 else:
                     bias_scores[attr] = np.random.uniform(0.0, 0.05)
@@ -1565,7 +1558,7 @@ class BiasMitigationEngine:
             return bias_scores
 
         except Exception as e:
-            logger.error(f"Decision bias detection failed: {e}")
+            logger.exception(f"Decision bias detection failed: {e}")
             return {}
 
     async def _select_correction_method(
@@ -1574,20 +1567,19 @@ class BiasMitigationEngine:
         """Select appropriate bias correction method"""
         try:
             max_bias = max(bias_detected.values()) if bias_detected else 0
-            context = decision_data.get("context", "unknown")
+            decision_data.get("context", "unknown")
 
             if max_bias > 0.3:
                 # High bias - use constitutional override
                 return "constitutional_override"
-            elif max_bias > 0.2:
+            if max_bias > 0.2:
                 # Medium bias - use outcome redistribution
                 return "outcome_redistribution"
-            elif max_bias > 0.1:
+            if max_bias > 0.1:
                 # Low bias - use score calibration
                 return "score_calibration"
-            else:
-                # Minimal bias - use threshold adjustment
-                return "threshold_adjustment"
+            # Minimal bias - use threshold adjustment
+            return "threshold_adjustment"
 
         except Exception:
             return "threshold_adjustment"
@@ -1644,7 +1636,7 @@ class BiasMitigationEngine:
             return corrected_data
 
         except Exception as e:
-            logger.error(f"Bias correction application failed: {e}")
+            logger.exception(f"Bias correction application failed: {e}")
             return decision_data
 
     async def _calculate_constitutional_score(
@@ -1707,7 +1699,7 @@ class BiasMitigationEngine:
                 await self._analyze_mitigation_effectiveness()
 
             except Exception as e:
-                logger.error(f"Effectiveness analysis error: {e}")
+                logger.exception(f"Effectiveness analysis error: {e}")
                 await asyncio.sleep(300)
 
     async def _analyze_mitigation_effectiveness(self):
@@ -1762,7 +1754,7 @@ class BiasMitigationEngine:
             )
 
         except Exception as e:
-            logger.error(f"Effectiveness analysis failed: {e}")
+            logger.exception(f"Effectiveness analysis failed: {e}")
 
     async def _run_strategy_optimization(self):
         """Run strategy optimization based on performance"""
@@ -1776,7 +1768,7 @@ class BiasMitigationEngine:
                 await self._optimize_mitigation_strategies()
 
             except Exception as e:
-                logger.error(f"Strategy optimization error: {e}")
+                logger.exception(f"Strategy optimization error: {e}")
                 await asyncio.sleep(600)
 
     async def _optimize_mitigation_strategies(self):
@@ -1813,7 +1805,7 @@ class BiasMitigationEngine:
                 )
 
         except Exception as e:
-            logger.error(f"Strategy optimization failed: {e}")
+            logger.exception(f"Strategy optimization failed: {e}")
 
     # Public methods for external integration
 
@@ -1884,7 +1876,7 @@ class BiasMitigationEngine:
             }
 
         except Exception as e:
-            logger.error(f"Status retrieval failed: {e}")
+            logger.exception(f"Status retrieval failed: {e}")
             return {"error": str(e)}
 
     async def manual_mitigation_request(
@@ -1928,7 +1920,7 @@ class BiasMitigationEngine:
             return plan.plan_id
 
         except Exception as e:
-            logger.error(f"Manual mitigation request failed: {e}")
+            logger.exception(f"Manual mitigation request failed: {e}")
             raise
 
     def get_mitigation_history(
@@ -1993,9 +1985,7 @@ class BiasMitigationEngine:
                                 if c.correction_method == method
                             ]
                         )
-                        for method in set(
-                            c.correction_method for c in window_corrections
-                        )
+                        for method in {c.correction_method for c in window_corrections}
                     }
                     if window_corrections
                     else {}
@@ -2003,7 +1993,7 @@ class BiasMitigationEngine:
             }
 
         except Exception as e:
-            logger.error(f"History retrieval failed: {e}")
+            logger.exception(f"History retrieval failed: {e}")
             return {"error": str(e)}
 
 
@@ -2034,7 +2024,7 @@ async def example_usage():
         )
         logger.info(f"Manual mitigation plan created: {plan_id}")
     except Exception as e:
-        logger.error(f"Manual mitigation request failed: {e}")
+        logger.exception(f"Manual mitigation request failed: {e}")
 
     # Simulate real-time correction
     decision_data = {

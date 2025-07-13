@@ -15,8 +15,6 @@ Architecture:
 
 import logging
 
-from fastapi import FastAPI
-
 # Constitutional compliance
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
@@ -25,7 +23,6 @@ logger = logging.getLogger(__name__)
 # Create application using refactored configuration
 # Import optimized constitutional middleware
 from services.shared.middleware.constitutional_validation import (
-    ConstitutionalValidationMiddleware,
     setup_constitutional_validation,
 )
 
@@ -43,9 +40,9 @@ setup_constitutional_validation(
 )
 
 # Constitutional compliance logging
-logger.info(f"✅ Optimized constitutional middleware enabled for constitutional-ai")
-logger.info(f"📋 Constitutional Hash: cdd01ef066bc6cf2")
-logger.info(f"🎯 Performance Target: <0.5ms validation")
+logger.info("✅ Optimized constitutional middleware enabled for constitutional-ai")
+logger.info("📋 Constitutional Hash: cdd01ef066bc6cf2")
+logger.info("🎯 Performance Target: <0.5ms validation")
 
 
 # Setup API endpoints
@@ -131,7 +128,6 @@ async def validate_constitutional_integrity():
 __all__ = ["app"]
 
 if __name__ == "__main__":
-    import os
     import sys
     from pathlib import Path
 

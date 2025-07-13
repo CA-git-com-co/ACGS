@@ -190,10 +190,11 @@ class FVServiceClient:
                 if attempt < self.retry_attempts - 1:
                     await asyncio.sleep(self.retry_delay_ms / 1000)
                 else:
-                    logger.error(
+                    logger.exception(
                         f"Request to {url} failed after {self.retry_attempts} attempts"
                     )
                     raise
+        return None
 
     async def _execute_request(
         self, method: str, url: str, data: dict[str, Any] | None
@@ -229,13 +230,15 @@ class FVServiceClient:
             return response.json()
 
         except httpx.HTTPStatusError as e:
-            logger.error(f"HTTP error: {e.response.status_code} - {e.response.text}")
+            logger.exception(
+                f"HTTP error: {e.response.status_code} - {e.response.text}"
+            )
             raise
         except httpx.RequestError as e:
-            logger.error(f"Request error: {e!s}")
+            logger.exception(f"Request error: {e!s}")
             raise
         except Exception as e:
-            logger.error(f"Unexpected error: {e!s}")
+            logger.exception(f"Unexpected error: {e!s}")
             raise
         finally:
             duration_ms = (time.time() - start_time) * 1000

@@ -25,7 +25,7 @@ from collections.abc import AsyncGenerator, Callable
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Optional, Union
+from typing import Any
 
 # Kafka imports (would be installed via pip install kafka-python-ng or confluent-kafka)
 try:
@@ -79,12 +79,12 @@ class KafkaMessage:
     """Kafka message structure"""
 
     topic: str
-    key: Optional[str]
+    key: str | None
     value: Any
-    headers: Optional[dict[str, str]]
-    partition: Optional[int]
-    offset: Optional[int]
-    timestamp: Optional[datetime]
+    headers: dict[str, str] | None
+    partition: int | None
+    offset: int | None
+    timestamp: datetime | None
     message_id: str
     constitutional_compliant: bool = True
 
@@ -217,7 +217,7 @@ class KafkaProducer:
             return True
 
         except Exception as e:
-            logger.error(f"Kafka producer initialization failed: {e}")
+            logger.exception(f"Kafka producer initialization failed: {e}")
             return await self._initialize_fallback()
 
     async def _initialize_fallback(self) -> bool:
@@ -227,19 +227,18 @@ class KafkaProducer:
             logger.info("Fallback producer initialized")
             return True
         except Exception as e:
-            logger.error(f"Fallback producer initialization failed: {e}")
+            logger.exception(f"Fallback producer initialization failed: {e}")
             return False
 
     def _get_serializer(self) -> Callable:
         """Get appropriate message serializer"""
         if self.message_format == MessageFormat.JSON:
             return lambda x: json.dumps(x, default=str).encode("utf-8")
-        elif self.message_format == MessageFormat.PICKLE:
+        if self.message_format == MessageFormat.PICKLE:
             return pickle.dumps
-        else:
-            return lambda x: str(x).encode("utf-8")
+        return lambda x: str(x).encode("utf-8")
 
-    def _get_compression_type(self) -> Optional[str]:
+    def _get_compression_type(self) -> str | None:
         """Get Kafka compression type"""
         compression_map = {
             CompressionType.NONE: None,
@@ -250,14 +249,14 @@ class KafkaProducer:
         }
         return compression_map.get(self.compression_type)
 
-    def _get_acks_config(self) -> Union[str, int]:
+    def _get_acks_config(self) -> str | int:
         """Get acknowledgment configuration"""
         if self.delivery_guarantee == DeliveryGuarantee.AT_MOST_ONCE:
             return 0
-        elif self.delivery_guarantee == DeliveryGuarantee.AT_LEAST_ONCE:
+        if self.delivery_guarantee == DeliveryGuarantee.AT_LEAST_ONCE:
             return 1
-        else:  # EXACTLY_ONCE
-            return "all"
+        # EXACTLY_ONCE
+        return "all"
 
     async def validate_constitutional_compliance(self, message: KafkaMessage) -> bool:
         """Validate message for constitutional compliance"""
@@ -299,16 +298,16 @@ class KafkaProducer:
             return True
 
         except Exception as e:
-            logger.error(f"Constitutional compliance validation failed: {e}")
+            logger.exception(f"Constitutional compliance validation failed: {e}")
             return False
 
     async def send_message(
         self,
         topic: str,
         value: Any,
-        key: Optional[str] = None,
-        headers: Optional[dict[str, str]] = None,
-        partition: Optional[int] = None,
+        key: str | None = None,
+        headers: dict[str, str] | None = None,
+        partition: int | None = None,
     ) -> bool:
         """
         Send message to Kafka topic
@@ -393,12 +392,12 @@ class KafkaProducer:
             return False
 
         except KafkaError as e:
-            logger.error(f"Kafka error sending message {message_id}: {e}")
+            logger.exception(f"Kafka error sending message {message_id}: {e}")
             await self._handle_send_failure(message, str(e))
             return False
 
         except Exception as e:
-            logger.error(f"Unexpected error sending message {message_id}: {e}")
+            logger.exception(f"Unexpected error sending message {message_id}: {e}")
             await self._handle_send_failure(message, str(e))
             return False
 
@@ -463,7 +462,7 @@ class KafkaProducer:
             }
 
         except Exception as e:
-            logger.error(f"Batch send failed: {e}")
+            logger.exception(f"Batch send failed: {e}")
             return {
                 "total_messages": len(messages),
                 "successful_sends": 0,
@@ -492,7 +491,7 @@ class KafkaProducer:
             )
 
         except Exception as e:
-            logger.error(f"Failed to send message to DLQ: {e}")
+            logger.exception(f"Failed to send message to DLQ: {e}")
 
     async def _handle_send_failure(self, message: KafkaMessage, error: str):
         """Handle message send failure"""
@@ -533,14 +532,14 @@ class KafkaProducer:
         if time_elapsed > 0:
             self.metrics.throughput_msgs_per_sec = total_attempts / time_elapsed
 
-    async def flush(self, timeout: Optional[float] = None) -> bool:
+    async def flush(self, timeout: float | None = None) -> bool:
         """Flush pending messages"""
         try:
             if KAFKA_AVAILABLE and hasattr(self.producer, "flush"):
                 self.producer.flush(timeout=timeout)
             return True
         except Exception as e:
-            logger.error(f"Producer flush failed: {e}")
+            logger.exception(f"Producer flush failed: {e}")
             return False
 
     async def close(self):
@@ -550,7 +549,7 @@ class KafkaProducer:
                 self.producer.close()
             logger.info("Kafka producer closed successfully")
         except Exception as e:
-            logger.error(f"Error closing Kafka producer: {e}")
+            logger.exception(f"Error closing Kafka producer: {e}")
 
     def get_metrics(self) -> dict[str, Any]:
         """Get producer performance metrics"""
@@ -642,7 +641,7 @@ class KafkaConsumer:
             return True
 
         except Exception as e:
-            logger.error(f"Kafka consumer initialization failed: {e}")
+            logger.exception(f"Kafka consumer initialization failed: {e}")
             return await self._initialize_fallback()
 
     async def _initialize_fallback(self) -> bool:
@@ -652,17 +651,16 @@ class KafkaConsumer:
             logger.info("Fallback consumer initialized")
             return True
         except Exception as e:
-            logger.error(f"Fallback consumer initialization failed: {e}")
+            logger.exception(f"Fallback consumer initialization failed: {e}")
             return False
 
     def _get_deserializer(self) -> Callable:
         """Get appropriate message deserializer"""
         if self.message_format == MessageFormat.JSON:
             return lambda x: json.loads(x.decode("utf-8")) if x else None
-        elif self.message_format == MessageFormat.PICKLE:
+        if self.message_format == MessageFormat.PICKLE:
             return lambda x: pickle.loads(x) if x else None
-        else:
-            return lambda x: x.decode("utf-8") if x else None
+        return lambda x: x.decode("utf-8") if x else None
 
     def set_message_handler(self, handler: Callable[[KafkaMessage], bool]):
         """Set message processing handler"""
@@ -696,14 +694,14 @@ class KafkaConsumer:
                 await asyncio.sleep(0.01)  # Prevent tight loop
 
         except Exception as e:
-            logger.error(f"Consumer error: {e}")
+            logger.exception(f"Consumer error: {e}")
             await self.alerting.send_alert(
                 "kafka_consumer_error", f"Consumer failed: {e!s}", severity="high"
             )
         finally:
             self.running = False
 
-    async def _process_message(self, raw_message: Any, topic_partition: Optional[Any]):
+    async def _process_message(self, raw_message: Any, topic_partition: Any | None):
         """Process individual message"""
         start_time = datetime.utcnow()
 
@@ -771,7 +769,7 @@ class KafkaConsumer:
             )
 
         except Exception as e:
-            logger.error(f"Message processing failed: {e}")
+            logger.exception(f"Message processing failed: {e}")
             await self._update_consumer_metrics(False, 0)
 
     async def _validate_message_compliance(self, message: KafkaMessage) -> bool:
@@ -793,7 +791,7 @@ class KafkaConsumer:
             return True
 
         except Exception as e:
-            logger.error(f"Message compliance validation failed: {e}")
+            logger.exception(f"Message compliance validation failed: {e}")
             return False
 
     async def _call_message_handler(self, message: KafkaMessage) -> bool:
@@ -808,7 +806,7 @@ class KafkaConsumer:
             logger.warning(f"Message handler timeout: {message.message_id}")
             return False
         except Exception as e:
-            logger.error(f"Message handler error: {e}")
+            logger.exception(f"Message handler error: {e}")
             return False
 
     async def _update_consumer_metrics(self, success: bool, processing_time_ms: float):
@@ -852,7 +850,7 @@ class KafkaConsumer:
                 self.consumer.close()
             logger.info("Kafka consumer closed successfully")
         except Exception as e:
-            logger.error(f"Error closing Kafka consumer: {e}")
+            logger.exception(f"Error closing Kafka consumer: {e}")
 
     def get_metrics(self) -> dict[str, Any]:
         """Get consumer performance metrics"""
@@ -913,7 +911,7 @@ class KafkaStreamProcessor:
                 await asyncio.sleep(self.slide_interval_ms / 1000)
 
             except Exception as e:
-                logger.error(f"Window management error: {e}")
+                logger.exception(f"Window management error: {e}")
 
     async def process_stream_message(self, message: KafkaMessage) -> bool:
         """Process message in streaming context"""
@@ -939,7 +937,7 @@ class KafkaStreamProcessor:
             return True
 
         except Exception as e:
-            logger.error(f"Stream message processing failed: {e}")
+            logger.exception(f"Stream message processing failed: {e}")
             return False
 
     def _get_window_id(self, timestamp: datetime) -> str:
@@ -969,7 +967,7 @@ class KafkaStreamProcessor:
                 try:
                     await processor_func(messages, window_id)
                 except Exception as e:
-                    logger.error(f"Processor {processor_name} failed: {e}")
+                    logger.exception(f"Processor {processor_name} failed: {e}")
 
             # Log window processing
             await self.audit_logger.log_streaming_event(
@@ -982,7 +980,7 @@ class KafkaStreamProcessor:
             )
 
         except Exception as e:
-            logger.error(f"Window processing failed: {e}")
+            logger.exception(f"Window processing failed: {e}")
 
     async def stop_processing(self):
         """Stop stream processing"""
@@ -1001,8 +999,8 @@ class FallbackProducer:
         self,
         topic: str,
         value: Any,
-        key: Optional[str] = None,
-        headers: Optional[dict] = None,
+        key: str | None = None,
+        headers: dict | None = None,
     ):
         """Send message to local queue"""
         message = {
@@ -1059,8 +1057,7 @@ async def example_usage():
     await producer.initialize()
 
     # Send messages
-    success = await producer.send_message("test-topic", {"message": "Hello, Kafka!"})
-    print(f"Message sent: {success}")
+    await producer.send_message("test-topic", {"message": "Hello, Kafka!"})
 
     # Initialize consumer
     consumer = KafkaConsumer(consumer_config)
@@ -1068,13 +1065,12 @@ async def example_usage():
 
     # Set message handler
     async def handle_message(message: KafkaMessage) -> bool:
-        print(f"Received: {message.value}")
         return True
 
     consumer.set_message_handler(handle_message)
 
     # Start consuming (in background)
-    consume_task = asyncio.create_task(consumer.start_consuming())
+    asyncio.create_task(consumer.start_consuming())
 
     # Wait a bit then stop
     await asyncio.sleep(5)

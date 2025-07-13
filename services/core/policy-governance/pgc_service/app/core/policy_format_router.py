@@ -196,7 +196,7 @@ class PolicyFormatRouter:
             )
 
         except Exception as e:
-            logger.error(f"Conversion error: {e}")
+            logger.exception(f"Conversion error: {e}")
             return PolicyConversionResult(
                 success=False,
                 converted_content=None,
@@ -308,11 +308,15 @@ class PolicyFormatRouter:
                 head = head.strip()
                 body = body.strip()
 
-                rego_lines.append("allow {")
-                rego_lines.append(f"    # {head}")
-                rego_lines.append(f"    {self._convert_datalog_body_to_rego(body)}")
-                rego_lines.append("}")
-                rego_lines.append("")
+                rego_lines.extend(
+                    (
+                        "allow {",
+                        f"    # {head}",
+                        f"    {self._convert_datalog_body_to_rego(body)}",
+                        "}",
+                        "",
+                    )
+                )
 
         rego_content = "\n".join(rego_lines)
 
@@ -443,8 +447,7 @@ class PolicyFormatRouter:
     def _convert_datalog_body_to_rego(self, body: str) -> str:
         """Convert Datalog body to Rego syntax"""
         # Basic conversion of Datalog predicates to Rego
-        body = body.replace("&", "\n    ")
-        return body
+        return body.replace("&", "\n    ")
 
     def validate_rego_syntax(self, rego_content: str) -> PolicyValidationResult:
         """
@@ -458,7 +461,7 @@ class PolicyFormatRouter:
         """
         try:
             with tempfile.NamedTemporaryFile(
-                mode="w", suffix=".rego", delete=False
+                encoding="utf-8", mode="w", suffix=".rego", delete=False
             ) as f:
                 f.write(rego_content)
                 temp_file = f.name

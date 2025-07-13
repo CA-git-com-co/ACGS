@@ -16,12 +16,11 @@ Key Test Areas:
 """
 
 import asyncio
+import time
+from unittest.mock import AsyncMock
+
 import numpy as np
 import pytest
-import time
-from unittest.mock import AsyncMock, MagicMock, patch
-from typing import Dict, List
-
 from app.services.enhanced_governance_framework import (
     DomainAdaptiveGovernance,
     DomainType,
@@ -29,7 +28,6 @@ from app.services.enhanced_governance_framework import (
     GovernanceFrameworkIntegration,
     GovernanceResult,
     ProductionGovernanceFramework,
-    create_enhanced_governance_integration,
 )
 from app.services.governance_monitoring import (
     GovernanceMonitor,
@@ -45,7 +43,7 @@ class TestProductionGovernanceFramework:
     """Test suite for ProductionGovernanceFramework"""
 
     @pytest.fixture
-    def sample_principles(self) -> List[str]:
+    def sample_principles(self) -> list[str]:
         """Sample constitutional principles for testing"""
         return [
             "democratic_participation",
@@ -84,7 +82,11 @@ class TestProductionGovernanceFramework:
 
     @pytest.fixture
     def governance_framework(
-        self, sample_principles, governance_config, mock_audit_logger, mock_alerting_system
+        self,
+        sample_principles,
+        governance_config,
+        mock_audit_logger,
+        mock_alerting_system,
     ) -> ProductionGovernanceFramework:
         """Create governance framework instance for testing"""
         return ProductionGovernanceFramework(
@@ -112,7 +114,9 @@ class TestProductionGovernanceFramework:
 
         assert isinstance(sampled, list)
         assert len(sampled) <= governance_framework.m
-        assert all(principle in governance_framework.principles for principle in sampled)
+        assert all(
+            principle in governance_framework.principles for principle in sampled
+        )
         # Should have unique principles
         assert len(sampled) == len(set(sampled))
 
@@ -121,12 +125,12 @@ class TestProductionGovernanceFramework:
         """Test basic governance functionality"""
         query = "Should we implement new privacy policy?"
         context = {"domain": "privacy", "urgency": "high"}
-        
+
         result = await governance_framework.govern(query, context)
-        
+
         assert isinstance(result, GovernanceResult)
         assert result.governance_id.startswith("gov_")
-        assert result.consensus_result in ["comply", "violate", "uncertain"]
+        assert result.consensus_result in {"comply", "violate", "uncertain"}
         assert 0.0 <= result.confidence <= 1.0
         assert 0.0 <= result.compliance_score <= 1.0
         assert result.constitutional_hash == CONSTITUTIONAL_HASH
@@ -139,12 +143,14 @@ class TestProductionGovernanceFramework:
         """Test consensus aggregation with confidence calibration"""
         query = "Test query"
         context = {}
-        
-        decisions, consensus, confidence = await governance_framework._consensus_aggregation(query, context)
-        
+
+        decisions, consensus, confidence = (
+            await governance_framework._consensus_aggregation(query, context)
+        )
+
         assert isinstance(decisions, list)
         assert len(decisions) == governance_framework.B
-        assert consensus in ["comply", "violate", "uncertain"]
+        assert consensus in {"comply", "violate", "uncertain"}
         assert 0.0 <= confidence <= 1.0
         # Confidence should be calibrated (lower than raw confidence)
         raw_confidence = decisions.count(consensus) / len(decisions)
@@ -155,9 +161,11 @@ class TestProductionGovernanceFramework:
         """Test out-of-bag compliance diagnostics"""
         query = "Test query"
         context = {}
-        
-        violation_rates, flagged_trees = await governance_framework._oob_compliance_check(query, context)
-        
+
+        violation_rates, flagged_trees = (
+            await governance_framework._oob_compliance_check(query, context)
+        )
+
         assert isinstance(violation_rates, list)
         assert len(violation_rates) == governance_framework.B
         assert all(0.0 <= rate <= 1.0 for rate in violation_rates)
@@ -170,14 +178,19 @@ class TestProductionGovernanceFramework:
         query = "Test query"
         context = {}
         flagged_trees = [0, 2]
-        
-        importance_scores, helpful_principles = await governance_framework._principle_importance_analysis(
-            query, context, flagged_trees
+
+        importance_scores, helpful_principles = (
+            await governance_framework._principle_importance_analysis(
+                query, context, flagged_trees
+            )
         )
-        
+
         assert isinstance(importance_scores, dict)
         assert len(importance_scores) == len(governance_framework.principles)
-        assert all(principle in governance_framework.principles for principle in importance_scores.keys())
+        assert all(
+            principle in governance_framework.principles
+            for principle in importance_scores
+        )
         assert isinstance(helpful_principles, list)
         # Helpful principles should have negative importance
         assert all(importance_scores[principle] < 0 for principle in helpful_principles)
@@ -186,9 +199,11 @@ class TestProductionGovernanceFramework:
         """Test confidence calibration"""
         raw_confidence = 0.8
         sample_size = 5
-        
-        calibrated = governance_framework._calibrate_confidence(raw_confidence, sample_size)
-        
+
+        calibrated = governance_framework._calibrate_confidence(
+            raw_confidence, sample_size
+        )
+
         assert 0.0 <= calibrated <= 1.0
         assert calibrated <= raw_confidence  # Should be more conservative
 
@@ -196,12 +211,16 @@ class TestProductionGovernanceFramework:
         """Test compliance score calculation"""
         violation_rates = [0.1, 0.05, 0.2, 0.0, 0.15]
         confidence = 0.8
-        
-        compliance_score = governance_framework._calculate_compliance_score(violation_rates, confidence)
-        
+
+        compliance_score = governance_framework._calculate_compliance_score(
+            violation_rates, confidence
+        )
+
         assert 0.0 <= compliance_score <= 1.0
         # Should be weighted by confidence
-        expected_compliance = (1.0 - sum(violation_rates) / len(violation_rates)) * confidence
+        expected_compliance = (
+            1.0 - sum(violation_rates) / len(violation_rates)
+        ) * confidence
         assert abs(compliance_score - expected_compliance) < 0.01
 
     def test_recommendation_generation(self, governance_framework):
@@ -210,23 +229,26 @@ class TestProductionGovernanceFramework:
         confidence = 0.4  # Below threshold
         flagged_trees = [0, 2]
         importance_scores = {"principle1": -0.2, "principle2": 0.1}
-        
+
         recommendations = governance_framework._generate_recommendations(
             consensus_result, confidence, flagged_trees, importance_scores
         )
-        
+
         assert isinstance(recommendations, list)
         assert len(recommendations) > 0
         # Should include recommendations for low confidence and violations
         assert any("confidence" in rec.lower() for rec in recommendations)
-        assert any("violate" in rec.lower() or "revision" in rec.lower() for rec in recommendations)
+        assert any(
+            "violate" in rec.lower() or "revision" in rec.lower()
+            for rec in recommendations
+        )
 
 
 class TestDomainAdaptiveGovernance:
     """Test suite for DomainAdaptiveGovernance"""
 
     @pytest.fixture
-    def sample_principles(self) -> List[str]:
+    def sample_principles(self) -> list[str]:
         """Sample constitutional principles for testing"""
         return [
             "democratic_participation",
@@ -245,7 +267,7 @@ class TestDomainAdaptiveGovernance:
         )
         assert healthcare_framework.config.confidence_threshold == 0.8
         assert healthcare_framework.config.violation_threshold == 0.05
-        
+
         # Test finance domain
         finance_framework = DomainAdaptiveGovernance(
             principles=sample_principles,
@@ -253,7 +275,7 @@ class TestDomainAdaptiveGovernance:
         )
         assert finance_framework.config.confidence_threshold == 0.7
         assert finance_framework.config.violation_threshold == 0.08
-        
+
         # Test general domain (default)
         general_framework = DomainAdaptiveGovernance(
             principles=sample_principles,
@@ -265,21 +287,21 @@ class TestDomainAdaptiveGovernance:
     async def test_domain_specific_governance(self, sample_principles):
         """Test governance behavior varies by domain"""
         query = "Should we implement new data collection policy?"
-        
+
         # Healthcare should be more strict
         healthcare_framework = DomainAdaptiveGovernance(
             principles=sample_principles,
             domain=DomainType.HEALTHCARE,
         )
         healthcare_result = await healthcare_framework.govern(query)
-        
+
         # General domain should be less strict
         general_framework = DomainAdaptiveGovernance(
             principles=sample_principles,
             domain=DomainType.GENERAL,
         )
         general_result = await general_framework.govern(query)
-        
+
         # Both should return valid results
         assert isinstance(healthcare_result, GovernanceResult)
         assert isinstance(general_result, GovernanceResult)
@@ -294,26 +316,32 @@ class TestGovernanceFrameworkIntegration:
     def mock_constitutional_validator(self) -> AsyncMock:
         """Mock constitutional validator"""
         validator = AsyncMock()
-        validator.validate_constitutional_compliance = AsyncMock(return_value={
-            "overall_compliant": True,
-            "compliance_score": 0.9,
-            "next_steps": ["Proceed to implementation"],
-        })
+        validator.validate_constitutional_compliance = AsyncMock(
+            return_value={
+                "overall_compliant": True,
+                "compliance_score": 0.9,
+                "next_steps": ["Proceed to implementation"],
+            }
+        )
         return validator
 
     @pytest.fixture
     def mock_formal_verification_client(self) -> AsyncMock:
         """Mock formal verification client"""
         client = AsyncMock()
-        client.verify_governance_decision = AsyncMock(return_value={
-            "verified": True,
-            "verification_score": 0.95,
-            "recommendations": ["Formal verification passed"],
-        })
+        client.verify_governance_decision = AsyncMock(
+            return_value={
+                "verified": True,
+                "verification_score": 0.95,
+                "recommendations": ["Formal verification passed"],
+            }
+        )
         return client
 
     @pytest.fixture
-    def integration(self, mock_constitutional_validator, mock_formal_verification_client) -> GovernanceFrameworkIntegration:
+    def integration(
+        self, mock_constitutional_validator, mock_formal_verification_client
+    ) -> GovernanceFrameworkIntegration:
         """Create integration instance for testing"""
         return GovernanceFrameworkIntegration(
             constitutional_validator=mock_constitutional_validator,
@@ -335,14 +363,14 @@ class TestGovernanceFrameworkIntegration:
         query = "Should we implement new AI governance policy?"
         domain = DomainType.GENERAL
         context = {"priority": "high"}
-        
+
         result = await integration.evaluate_governance(
             query=query,
             domain=domain,
             context=context,
             include_formal_verification=True,
         )
-        
+
         assert isinstance(result, dict)
         assert "evaluation_id" in result
         assert "domain" in result
@@ -352,10 +380,10 @@ class TestGovernanceFrameworkIntegration:
         assert "constitutional_validation" in result
         assert "formal_verification" in result
         assert result["constitutional_hash"] == CONSTITUTIONAL_HASH
-        
+
         # Verify constitutional validator was called
         integration.constitutional_validator.validate_constitutional_compliance.assert_called_once()
-        
+
         # Verify formal verification was called
         integration.formal_verification_client.verify_governance_decision.assert_called_once()
 
@@ -363,12 +391,12 @@ class TestGovernanceFrameworkIntegration:
     async def test_evaluation_without_formal_verification(self, integration):
         """Test evaluation without formal verification"""
         query = "Test query"
-        
+
         result = await integration.evaluate_governance(
             query=query,
             include_formal_verification=False,
         )
-        
+
         assert result["formal_verification"] is None
         # Formal verification should not be called
         integration.formal_verification_client.verify_governance_decision.assert_not_called()
@@ -398,7 +426,7 @@ class TestGovernanceMonitor:
             cache_hit=True,
             constitutional_compliant=True,
         )
-        
+
         assert len(monitor.latency_samples) == 1
         assert len(monitor.error_samples) == 1
         assert len(monitor.cache_samples) == 1
@@ -408,37 +436,45 @@ class TestGovernanceMonitor:
         """Test performance metrics calculation"""
         # Add sample data
         current_time = time.time()
-        monitor.latency_samples.extend([
-            (current_time, 1.0),
-            (current_time, 2.0),
-            (current_time, 3.0),
-            (current_time, 4.0),
-            (current_time, 5.0),
-        ])
-        monitor.error_samples.extend([
-            (current_time, False),
-            (current_time, False),
-            (current_time, True),
-            (current_time, False),
-            (current_time, False),
-        ])
-        monitor.cache_samples.extend([
-            (current_time, True),
-            (current_time, True),
-            (current_time, False),
-            (current_time, True),
-            (current_time, True),
-        ])
-        monitor.compliance_samples.extend([
-            (current_time, True),
-            (current_time, True),
-            (current_time, True),
-            (current_time, True),
-            (current_time, False),
-        ])
-        
+        monitor.latency_samples.extend(
+            [
+                (current_time, 1.0),
+                (current_time, 2.0),
+                (current_time, 3.0),
+                (current_time, 4.0),
+                (current_time, 5.0),
+            ]
+        )
+        monitor.error_samples.extend(
+            [
+                (current_time, False),
+                (current_time, False),
+                (current_time, True),
+                (current_time, False),
+                (current_time, False),
+            ]
+        )
+        monitor.cache_samples.extend(
+            [
+                (current_time, True),
+                (current_time, True),
+                (current_time, False),
+                (current_time, True),
+                (current_time, True),
+            ]
+        )
+        monitor.compliance_samples.extend(
+            [
+                (current_time, True),
+                (current_time, True),
+                (current_time, True),
+                (current_time, True),
+                (current_time, False),
+            ]
+        )
+
         metrics = monitor.get_current_metrics()
-        
+
         assert isinstance(metrics, PerformanceMetrics)
         assert metrics.p99_latency_ms == 5.0
         assert metrics.p50_latency_ms == 3.0
@@ -449,7 +485,7 @@ class TestGovernanceMonitor:
     def test_health_status_healthy(self, monitor):
         """Test health status when system is healthy"""
         health = monitor.get_health_status()
-        
+
         assert health["status"] == HealthStatus.HEALTHY.value
         assert "timestamp" in health
         assert "metrics" in health
@@ -460,11 +496,11 @@ class TestGovernanceMonitor:
         """Test circuit breaker functionality"""
         # Initially closed
         assert not monitor.is_circuit_breaker_open()
-        
+
         # Simulate failures to open circuit breaker
         for _ in range(5):  # failure_threshold = 5
             asyncio.run(monitor._update_circuit_breaker(False))
-        
+
         assert monitor.circuit_breaker.is_open
         assert monitor.is_circuit_breaker_open()
 
@@ -473,14 +509,16 @@ class TestGovernanceMonitor:
         """Test alerting for performance violations"""
         # Simulate high latency
         current_time = time.time()
-        monitor.latency_samples.extend([
-            (current_time, 10.0),  # Above 5ms target
-            (current_time, 15.0),
-            (current_time, 20.0),
-        ])
-        
+        monitor.latency_samples.extend(
+            [
+                (current_time, 10.0),  # Above 5ms target
+                (current_time, 15.0),
+                (current_time, 20.0),
+            ]
+        )
+
         await monitor._check_performance_violations()
-        
+
         # Should trigger alert for P99 latency violation
         monitor.alerting_system.send_alert.assert_called()
 
@@ -493,7 +531,7 @@ class TestPerformanceValidation:
         """Test P99 latency < 5ms target"""
         principles = ["test_principle_1", "test_principle_2"]
         framework = ProductionGovernanceFramework(principles=principles, B=3)
-        
+
         # Measure latency for multiple requests
         latencies = []
         for _ in range(10):
@@ -501,10 +539,10 @@ class TestPerformanceValidation:
             await framework.govern("test query")
             latency_ms = (time.time() - start_time) * 1000
             latencies.append(latency_ms)
-        
+
         # Calculate P99 latency
         p99_latency = float(np.percentile(latencies, 99))
-        
+
         # Should meet ACGS-2 target
         assert p99_latency < 5.0, f"P99 latency {p99_latency:.2f}ms exceeds 5ms target"
 
@@ -513,29 +551,31 @@ class TestPerformanceValidation:
         """Test 100% constitutional compliance requirement"""
         principles = ["test_principle"]
         framework = ProductionGovernanceFramework(principles=principles)
-        
+
         result = await framework.govern("test query")
-        
+
         # All results must include constitutional hash
         assert result.constitutional_hash == CONSTITUTIONAL_HASH
-        assert hasattr(result, 'constitutional_hash')
-        
+        assert hasattr(result, "constitutional_hash")
+
         # Compliance score should be calculated
         assert 0.0 <= result.compliance_score <= 1.0
 
     def test_cache_hit_rate_target(self):
         """Test >85% cache hit rate target"""
         monitor = GovernanceMonitor()
-        
+
         # Simulate cache hits
         current_time = time.time()
         cache_samples = [True] * 90 + [False] * 10  # 90% hit rate
         monitor.cache_samples.extend([(current_time, hit) for hit in cache_samples])
-        
+
         metrics = monitor.get_current_metrics()
-        
+
         # Should meet ACGS-2 target
-        assert metrics.cache_hit_rate >= 0.85, f"Cache hit rate {metrics.cache_hit_rate:.2%} below 85% target"
+        assert (
+            metrics.cache_hit_rate >= 0.85
+        ), f"Cache hit rate {metrics.cache_hit_rate:.2%} below 85% target"
 
 
 # Test configuration
@@ -548,4 +588,10 @@ def event_loop():
 
 
 if __name__ == "__main__":
-    pytest.main([__file__, "-v", "--cov=services.core.constitutional_ai.ac_service.app.services"])
+    pytest.main(
+        [
+            __file__,
+            "-v",
+            "--cov=services.core.constitutional_ai.ac_service.app.services",
+        ]
+    )

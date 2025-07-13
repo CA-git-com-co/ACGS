@@ -6,9 +6,9 @@ Orchestrates the complex amendment approval workflow across multiple contexts.
 """
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
 
-from services.shared.domain.base import EntityId, TenantId
+from services.shared.domain.base import TenantId
 from services.shared.infrastructure.saga import (
     CommandDispatcher,
     SagaDefinition,
@@ -233,10 +233,10 @@ class AmendmentCommandDispatcher(CommandDispatcher):
     async def dispatch(
         self,
         command_type: str,
-        command_data: Dict[str, Any],
-        context: Dict[str, Any],
+        command_data: dict[str, Any],
+        context: dict[str, Any],
         timeout: int = 300,
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """Dispatch command to appropriate handler."""
 
         if command_type not in self.command_handlers:
@@ -254,21 +254,21 @@ class AmendmentCommandDispatcher(CommandDispatcher):
             return result
 
         except Exception as e:
-            logger.error(f"Command {command_type} failed: {e}")
+            logger.exception(f"Command {command_type} failed: {e}")
             raise
 
     # Multi-Agent Coordination Commands
 
     async def _request_impact_analysis(
-        self, command_data: Dict[str, Any], context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, command_data: dict[str, Any], context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Request impact analysis from multi-agent coordination service."""
 
         # This would make an HTTP call to the Multi-Agent Coordinator service
         # For now, simulate the analysis
 
         amendment_id = command_data["amendment_id"]
-        required_agents = command_data["required_agents"]
+        command_data["required_agents"]
 
         logger.info(f"Requesting impact analysis for amendment {amendment_id}")
 
@@ -292,8 +292,8 @@ class AmendmentCommandDispatcher(CommandDispatcher):
         return {"impact_analysis_result": analysis_result, "analysis_completed": True}
 
     async def _cancel_impact_analysis(
-        self, command_data: Dict[str, Any], context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, command_data: dict[str, Any], context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Cancel ongoing impact analysis."""
 
         amendment_id = command_data["amendment_id"]
@@ -310,8 +310,8 @@ class AmendmentCommandDispatcher(CommandDispatcher):
     # Constitutional Governance Commands
 
     async def _initiate_public_consultation(
-        self, command_data: Dict[str, Any], context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, command_data: dict[str, Any], context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Initiate public consultation process."""
 
         amendment_id = command_data["amendment_id"]
@@ -343,8 +343,8 @@ class AmendmentCommandDispatcher(CommandDispatcher):
         }
 
     async def _cancel_public_consultation(
-        self, command_data: Dict[str, Any], context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, command_data: dict[str, Any], context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Cancel public consultation."""
 
         amendment_id = command_data["amendment_id"]
@@ -357,8 +357,8 @@ class AmendmentCommandDispatcher(CommandDispatcher):
         return {"consultation_cancelled": True, "cancellation_reason": reason}
 
     async def _wait_consultation_completion(
-        self, command_data: Dict[str, Any], context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, command_data: dict[str, Any], context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Wait for public consultation to complete."""
 
         amendment_id = command_data["amendment_id"]
@@ -389,8 +389,8 @@ class AmendmentCommandDispatcher(CommandDispatcher):
         }
 
     async def _compile_approval_package(
-        self, command_data: Dict[str, Any], context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, command_data: dict[str, Any], context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Compile all approval materials into a package."""
 
         amendment_id = command_data["amendment_id"]
@@ -425,8 +425,8 @@ class AmendmentCommandDispatcher(CommandDispatcher):
         return {"approval_package": approval_package, "package_compiled": True}
 
     async def _delete_approval_package(
-        self, command_data: Dict[str, Any], context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, command_data: dict[str, Any], context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Delete compiled approval package."""
 
         amendment_id = command_data["amendment_id"]
@@ -436,8 +436,8 @@ class AmendmentCommandDispatcher(CommandDispatcher):
         return {"package_deleted": True}
 
     async def _make_final_decision(
-        self, command_data: Dict[str, Any], context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, command_data: dict[str, Any], context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Make final approval decision based on all evidence."""
 
         amendment_id = command_data["amendment_id"]
@@ -485,8 +485,8 @@ class AmendmentCommandDispatcher(CommandDispatcher):
         }
 
     async def _reverse_approval_decision(
-        self, command_data: Dict[str, Any], context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, command_data: dict[str, Any], context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Reverse approval decision (compensation)."""
 
         amendment_id = command_data["amendment_id"]
@@ -499,8 +499,8 @@ class AmendmentCommandDispatcher(CommandDispatcher):
         return {"decision_reversed": True, "reversal_reason": reason}
 
     async def _apply_constitutional_changes(
-        self, command_data: Dict[str, Any], context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, command_data: dict[str, Any], context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Apply approved constitutional changes."""
 
         amendment_id = command_data["amendment_id"]
@@ -525,8 +525,8 @@ class AmendmentCommandDispatcher(CommandDispatcher):
         }
 
     async def _revert_constitutional_changes(
-        self, command_data: Dict[str, Any], context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, command_data: dict[str, Any], context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Revert constitutional changes (compensation)."""
 
         amendment_id = command_data["amendment_id"]
@@ -537,8 +537,8 @@ class AmendmentCommandDispatcher(CommandDispatcher):
         return {"changes_reverted": True, "restored_from_backup": restore_from_backup}
 
     async def _notify_completion(
-        self, command_data: Dict[str, Any], context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, command_data: dict[str, Any], context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Notify stakeholders of amendment completion."""
 
         amendment_id = command_data["amendment_id"]
@@ -558,8 +558,8 @@ class AmendmentCommandDispatcher(CommandDispatcher):
     # External System Commands
 
     async def _request_expert_review(
-        self, command_data: Dict[str, Any], context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, command_data: dict[str, Any], context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Request expert review from external systems."""
 
         amendment_id = command_data["amendment_id"]
@@ -596,8 +596,8 @@ class AmendmentCommandDispatcher(CommandDispatcher):
         }
 
     async def _cancel_expert_review(
-        self, command_data: Dict[str, Any], context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, command_data: dict[str, Any], context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Cancel expert review."""
 
         amendment_id = command_data["amendment_id"]
@@ -610,8 +610,8 @@ class AmendmentCommandDispatcher(CommandDispatcher):
     # Formal Verification Commands
 
     async def _request_formal_verification(
-        self, command_data: Dict[str, Any], context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, command_data: dict[str, Any], context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Request formal verification."""
 
         amendment_id = command_data["amendment_id"]
@@ -645,7 +645,7 @@ async def start_amendment_approval_saga(
     amendment_id: str,
     tenant_id: TenantId,
     proposer_id: str,
-    correlation_id: Optional[str] = None,
+    correlation_id: str | None = None,
 ) -> str:
     """
     Start the constitutional amendment approval saga.

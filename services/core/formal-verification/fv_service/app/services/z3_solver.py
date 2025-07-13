@@ -7,20 +7,26 @@ of constitutional policies and governance rules within the ACGS framework.
 
 import logging
 import os
+import pathlib
 
 # Import the advanced proof engine
 import sys
 import time
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 import z3
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../../.."))
-from advanced_proof_engine import AdvancedProofEngine
+sys.path.append(os.path.join(pathlib.Path(__file__).parent, "../../../.."))
+from advanced_proof_engine import (
+    AdvancedProofEngine,
+)
 from advanced_proof_engine import ProofObligation as AdvancedProofObligation
-from advanced_proof_engine import ProofStrategy, PropertyType
+from advanced_proof_engine import (
+    ProofStrategy,
+    PropertyType,
+)
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -57,7 +63,7 @@ class VerificationReport:
     obligation_id: str
     result: VerificationResult
     proof_time_ms: float
-    counterexample: Optional[dict[str, Any]] = None
+    counterexample: dict[str, Any] | None = None
     proof_trace: list[str] = None
     constitutional_compliance: bool = False
     confidence_score: float = 0.0
@@ -193,7 +199,7 @@ class Z3ConstitutionalSolver:
                     confidence_score=confidence,
                 )
 
-            elif result == z3.unsat:
+            if result == z3.unsat:
                 return VerificationReport(
                     obligation_id=f"policy_verification_{int(time.time())}",
                     result=VerificationResult.INVALID,
@@ -202,17 +208,17 @@ class Z3ConstitutionalSolver:
                     confidence_score=1.0,  # High confidence in unsatisfiability
                 )
 
-            else:  # unknown
-                return VerificationReport(
-                    obligation_id=f"policy_verification_{int(time.time())}",
-                    result=VerificationResult.UNKNOWN,
-                    proof_time_ms=proof_time,
-                    constitutional_compliance=False,
-                    confidence_score=0.0,
-                )
+            # unknown
+            return VerificationReport(
+                obligation_id=f"policy_verification_{int(time.time())}",
+                result=VerificationResult.UNKNOWN,
+                proof_time_ms=proof_time,
+                constitutional_compliance=False,
+                confidence_score=0.0,
+            )
 
         except Exception as e:
-            logger.error(f"Verification error: {e}")
+            logger.exception(f"Verification error: {e}")
             return VerificationReport(
                 obligation_id=f"policy_verification_{int(time.time())}",
                 result=VerificationResult.ERROR,
@@ -271,7 +277,7 @@ class Z3ConstitutionalSolver:
                     confidence_score=1.0,
                 )
 
-            elif result == z3.sat:
+            if result == z3.sat:
                 # Counterexample found
                 model = local_solver.model()
                 counterexample = self._extract_counterexample(model)
@@ -285,17 +291,17 @@ class Z3ConstitutionalSolver:
                     confidence_score=0.8,
                 )
 
-            else:  # unknown
-                return VerificationReport(
-                    obligation_id=obligation.id,
-                    result=VerificationResult.UNKNOWN,
-                    proof_time_ms=proof_time,
-                    constitutional_compliance=False,
-                    confidence_score=0.0,
-                )
+            # unknown
+            return VerificationReport(
+                obligation_id=obligation.id,
+                result=VerificationResult.UNKNOWN,
+                proof_time_ms=proof_time,
+                constitutional_compliance=False,
+                confidence_score=0.0,
+            )
 
         except Exception as e:
-            logger.error(f"Proof obligation verification error: {e}")
+            logger.exception(f"Proof obligation verification error: {e}")
             return VerificationReport(
                 obligation_id=obligation.id,
                 result=VerificationResult.ERROR,
@@ -304,7 +310,7 @@ class Z3ConstitutionalSolver:
                 confidence_score=0.0,
             )
 
-    def _parse_constraint(self, constraint: str) -> Optional[z3.BoolRef]:
+    def _parse_constraint(self, constraint: str) -> z3.BoolRef | None:
         """
         Parse string constraint into Z3 formula.
 
@@ -321,30 +327,30 @@ class Z3ConstitutionalSolver:
             # Handle basic boolean operations
             if constraint == "human_dignity":
                 return self.human_dignity
-            elif constraint == "fairness":
+            if constraint == "fairness":
                 return self.fairness
-            elif constraint == "transparency":
+            if constraint == "transparency":
                 return self.transparency
-            elif constraint == "accountability":
+            if constraint == "accountability":
                 return self.accountability
-            elif constraint == "privacy":
+            if constraint == "privacy":
                 return self.privacy
-            elif constraint == "non_discrimination":
+            if constraint == "non_discrimination":
                 return self.non_discrimination
-            elif constraint == "democratic_governance":
+            if constraint == "democratic_governance":
                 return self.democratic_governance
-            elif constraint == "constitutional_compliant":
+            if constraint == "constitutional_compliant":
                 return self.constitutional_compliant
-            elif constraint == "policy_valid":
+            if constraint == "policy_valid":
                 return self.policy_valid
 
             # Handle negations
-            elif constraint.startswith("not "):
+            if constraint.startswith("not "):
                 sub_constraint = self._parse_constraint(constraint[4:])
                 return z3.Not(sub_constraint) if sub_constraint else None
 
             # Handle conjunctions
-            elif " and " in constraint:
+            if " and " in constraint:
                 parts = constraint.split(" and ")
                 clauses = [self._parse_constraint(part) for part in parts]
                 if all(c is not None for c in clauses):
@@ -599,7 +605,7 @@ class Z3ConstitutionalSolver:
             }
 
         except Exception as e:
-            logger.error(f"Advanced proof generation failed: {e}")
+            logger.exception(f"Advanced proof generation failed: {e}")
             return {
                 "proof_id": f"error_{int(time.time())}",
                 "status": "error",
@@ -671,7 +677,7 @@ class Z3ConstitutionalSolver:
             }
 
         except Exception as e:
-            logger.error(f"Temporal property verification failed: {e}")
+            logger.exception(f"Temporal property verification failed: {e}")
             return {
                 "policy_text": policy_text,
                 "temporal_verification_results": [],
@@ -720,15 +726,14 @@ class Z3ConstitutionalSolver:
                     ),
                     "valid": True,
                 }
-            else:
-                return {
-                    "valid": False,
-                    "error": "Failed to generate certificate",
-                    "constitutional_compliance": False,
-                }
+            return {
+                "valid": False,
+                "error": "Failed to generate certificate",
+                "constitutional_compliance": False,
+            }
 
         except Exception as e:
-            logger.error(f"Certificate generation failed: {e}")
+            logger.exception(f"Certificate generation failed: {e}")
             return {"valid": False, "error": str(e), "constitutional_compliance": False}
 
     def reset_solver(self):
@@ -757,7 +762,7 @@ class FormalVerificationEngine:
         )
 
     async def verify_policy_constitutional_compliance(
-        self, policy_content: str, policy_metadata: dict[str, Any] = None
+        self, policy_content: str, policy_metadata: dict[str, Any] | None = None
     ) -> VerificationReport:
         """
         Verify constitutional compliance of a policy.
@@ -780,7 +785,7 @@ class FormalVerificationEngine:
             return report
 
         except Exception as e:
-            logger.error(f"Policy verification failed: {e}")
+            logger.exception(f"Policy verification failed: {e}")
             return VerificationReport(
                 obligation_id=f"policy_error_{int(time.time())}",
                 result=VerificationResult.ERROR,
@@ -815,7 +820,7 @@ class FormalVerificationEngine:
             return reports
 
         except Exception as e:
-            logger.error(f"Proof obligation verification failed: {e}")
+            logger.exception(f"Proof obligation verification failed: {e}")
             return []
 
     def _extract_constraints_from_policy(self, policy_content: str) -> list[str]:

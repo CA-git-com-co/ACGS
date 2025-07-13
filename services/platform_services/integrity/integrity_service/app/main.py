@@ -15,17 +15,23 @@ Key Features:
 
 import logging
 import os
+import pathlib
 import sys
 import time
 from contextlib import asynccontextmanager
-
-import asyncpg
 
 # Add shared config path
 sys.path.insert(
     0,
     os.path.join(
-        os.path.dirname(__file__), "..", "..", "..", "..", "..", "services", "shared"
+        pathlib.Path(__file__).parent,
+        "..",
+        "..",
+        "..",
+        "..",
+        "..",
+        "services",
+        "shared",
     ),
 )
 
@@ -37,7 +43,6 @@ from config.infrastructure_config import (
     cleanup_infrastructure,
     get_acgs_config,
     get_database_manager,
-    get_redis_manager,
     initialize_infrastructure,
 )
 
@@ -45,12 +50,10 @@ from config.infrastructure_config import (
 from middleware.prometheus_metrics import (
     PrometheusMiddleware,
     add_prometheus_metrics_endpoint,
-    instrument_database_queries,
 )
 
 # Import optimized constitutional middleware
 from services.shared.middleware.constitutional_validation import (
-    ConstitutionalValidationMiddleware,
     setup_constitutional_validation,
 )
 
@@ -77,9 +80,7 @@ try:
     )
 
     ACGS_ERROR_HANDLING_AVAILABLE = True
-    print(f"✅ ACGS Error handling loaded for {service_name}")
-except ImportError as e:
-    print(f"⚠️ ACGS Error handling not available for {service_name}: {e}")
+except ImportError:
     ACGS_ERROR_HANDLING_AVAILABLE = False
 
 
@@ -103,9 +104,7 @@ try:
     )
 
     ACGS_SECURITY_AVAILABLE = True
-    print(f"✅ ACGS Security middleware loaded for {service_name}")
-except ImportError as e:
-    print(f"⚠️ ACGS Security middleware not available for {service_name}: {e}")
+except ImportError:
     ACGS_SECURITY_AVAILABLE = False
 
 
@@ -116,11 +115,11 @@ try:
     from pathlib import Path
 
     # Add the correct path to services/shared
-    current_dir = os.path.dirname(os.path.abspath(__file__))
+    current_dir = Path(Path(__file__).resolve()).parent
     shared_path = os.path.join(
         current_dir, "..", "..", "..", "..", "services", "shared"
     )
-    sys.path.insert(0, os.path.abspath(shared_path))
+    sys.path.insert(0, Path(shared_path).resolve())
 
     from clients.tenant_service_client import TenantServiceClient, service_registry
     from middleware.tenant_middleware import (
@@ -132,9 +131,7 @@ try:
     )
 
     MULTI_TENANT_AVAILABLE = True
-    print("✅ Multi-tenant components loaded successfully")
-except ImportError as e:
-    print(f"⚠️ Multi-tenant components not available: {e}")
+except ImportError:
     MULTI_TENANT_AVAILABLE = False
 
 # Import production security middleware
@@ -145,9 +142,7 @@ try:
     )
 
     SECURITY_MIDDLEWARE_AVAILABLE = True
-    print("✅ Production security middleware loaded successfully")
-except ImportError as e:
-    print(f"⚠️ Production security middleware not available: {e}")
+except ImportError:
     SECURITY_MIDDLEWARE_AVAILABLE = False
 
     def apply_production_security_middleware(app, service_name, config=None):
@@ -162,20 +157,18 @@ try:
     import os
 
     # Add the correct path to services/shared
-    current_dir = os.path.dirname(os.path.abspath(__file__))
+    current_dir = Path(Path(__file__).resolve()).parent
     shared_path = os.path.join(
         current_dir, "..", "..", "..", "..", "services", "shared"
     )
-    sys.path.insert(0, os.path.abspath(shared_path))
+    sys.path.insert(0, Path(shared_path).resolve())
 
     from services.shared.comprehensive_audit_logger import (
         apply_audit_logging_to_service,
     )
 
     AUDIT_LOGGING_AVAILABLE = True
-    print("✅ Comprehensive audit logging loaded successfully")
-except ImportError as e:
-    print(f"⚠️ Comprehensive audit logging not available: {e}")
+except ImportError:
     AUDIT_LOGGING_AVAILABLE = False
 
 from fastapi import FastAPI, Request
@@ -185,7 +178,7 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 # Import shared components
 try:
     # Try to import from services.shared first
-    sys.path.insert(0, os.path.abspath(shared_path))
+    sys.path.insert(0, Path(shared_path).resolve())
     from api_models import HealthCheckResponse, ServiceInfo, create_success_response
     from middleware import add_production_middleware, create_exception_handlers
 
@@ -292,12 +285,10 @@ async def lifespan(app: FastAPI):
             "port": config.DATABASE_PORT,
             "database": config.DATABASE_NAME,
             "user": config.DATABASE_USER,
-            "password": config.DATABASE_PASSWORD
+            "password": config.DATABASE_PASSWORD,
         }
 
-        redis_config = {
-            "url": f"redis://{config.REDIS_HOST}:{config.REDIS_PORT}"
-        }
+        redis_config = {"url": f"redis://{config.REDIS_HOST}:{config.REDIS_PORT}"}
 
         persistent_audit_logger = PersistentAuditLogger(db_config, redis_config)
         await persistent_audit_logger.initialize()
@@ -314,18 +305,18 @@ async def lifespan(app: FastAPI):
                 error=e,
                 context={
                     "operation": "service_initialization",
-                    "constitutional_hash": CONSTITUTIONAL_HASH
+                    "constitutional_hash": CONSTITUTIONAL_HASH,
                 },
-                service_name="integrity-service"
+                service_name="integrity-service",
             )
         else:
-            logger.error(f"❌ Service initialization failed: {e}")
+            logger.exception(f"❌ Service initialization failed: {e}")
         yield
     finally:
         logger.info("🔄 Shutting down Integrity Service")
 
         # Cleanup persistent audit logger
-        if hasattr(app.state, 'persistent_audit_logger'):
+        if hasattr(app.state, "persistent_audit_logger"):
             await app.state.persistent_audit_logger.cleanup()
             logger.info("✅ Persistent audit logger cleaned up")
 
@@ -353,9 +344,9 @@ setup_constitutional_validation(
 )
 
 # Constitutional compliance logging
-logger.info(f"✅ Optimized constitutional middleware enabled for integrity")
-logger.info(f"📋 Constitutional Hash: cdd01ef066bc6cf2")
-logger.info(f"🎯 Performance Target: <0.5ms validation")
+logger.info("✅ Optimized constitutional middleware enabled for integrity")
+logger.info("📋 Constitutional Hash: cdd01ef066bc6cf2")
+logger.info("🎯 Performance Target: <0.5ms validation")
 
 
 # Add Prometheus Middleware for standardized monitoring
@@ -396,10 +387,6 @@ if MULTI_TENANT_AVAILABLE:
 
     # Add tenant security middleware
     app.add_middleware(TenantSecurityMiddleware)
-
-    print("✅ Multi-tenant middleware applied to integrity service")
-else:
-    print("⚠️ Multi-tenant middleware not available for integrity service")
 
 
 @app.middleware("http")
@@ -455,16 +442,6 @@ async def add_security_headers(request, call_next):
 # Apply comprehensive audit logging
 if AUDIT_LOGGING_AVAILABLE:
     apply_audit_logging_to_service(app, "integrity_service")
-    print("✅ Comprehensive audit logging applied to integrity service")
-    print("🔒 Audit features enabled:")
-    print("   - Tamper-proof logs with cryptographic integrity")
-    print("   - Compliance tracking (SOC 2, ISO 27001, NIST)")
-    print("   - Real-time security event monitoring")
-    print("   - Constitutional governance audit trail")
-    print("   - Automated log retention and archival")
-    print("   - Performance metrics and alerting")
-else:
-    print("⚠️ Audit logging not available for integrity service")
 
 # Apply production-grade security middleware
 if SECURITY_MIDDLEWARE_AVAILABLE:
@@ -475,9 +452,6 @@ if SECURITY_MIDDLEWARE_AVAILABLE:
         enable_threat_detection=True,
     )
     apply_production_security_middleware(app, "integrity_service", security_config)
-    print("✅ Production security middleware applied to integrity service")
-else:
-    print("⚠️ Security middleware not available for integrity service")
 
 
 # Add enhanced security middleware
@@ -545,11 +519,11 @@ for exc_type, handler in exception_handlers.items():
 try:
     from .api.v1.appeals import router as appeals_router
     from .api.v1.crypto import router as crypto_router
+    from .api.v1.github_webhooks import github_router
     from .api.v1.integrity import router as integrity_router
     from .api.v1.persistent_audit import router as persistent_audit_router
     from .api.v1.persistent_audit_api import router as persistent_audit_api_router
     from .api.v1.research_data import router as research_router
-    from .api.v1.github_webhooks import github_router
 
     ROUTERS_AVAILABLE = True
     logger.info("All API routers imported successfully")
@@ -567,7 +541,7 @@ async def root(request: Request):
     getattr(request.state, "correlation_id", None)
     getattr(request.state, "response_time_ms", None)
 
-    service_info = ServiceInfo(
+    return ServiceInfo(
         service="ACGS-1 Production Integrity Service",
         version=SERVICE_VERSION,
         status="operational",
@@ -587,8 +561,6 @@ async def root(request: Request):
         health_check="/health",
     )
 
-    return service_info
-
 
 @app.get("/health")
 async def health_check(request: Request):
@@ -599,7 +571,7 @@ async def health_check(request: Request):
     getattr(request.state, "correlation_id", None)
     uptime_seconds = time.time() - service_start_time
 
-    health_info = HealthCheckResponse(
+    return HealthCheckResponse(
         status="healthy",
         service=SERVICE_NAME,
         version=SERVICE_VERSION,
@@ -618,8 +590,6 @@ async def health_check(request: Request):
             "api_endpoints": 15 if ROUTERS_AVAILABLE else 3,
         },
     )
-
-    return health_info
 
 
 @app.get("/api/v1/status")
@@ -746,12 +716,12 @@ async def get_constitutional_hash_validation():
                 error=e,
                 context={
                     "operation": "constitutional_hash_validation",
-                    "constitutional_hash": CONSTITUTIONAL_HASH
+                    "constitutional_hash": CONSTITUTIONAL_HASH,
                 },
-                service_name="integrity-service"
+                service_name="integrity-service",
             )
         else:
-            logger.error(f"Constitutional hash validation failed: {e}")
+            logger.exception(f"Constitutional hash validation failed: {e}")
         return {
             "constitutional_hash": "cdd01ef066bc6cf2",
             "validation_status": "error",
@@ -783,12 +753,8 @@ if ROUTERS_AVAILABLE:
         app.include_router(
             persistent_audit_router, prefix="/api/v1", tags=["Persistent Audit Trail"]
         )
-        app.include_router(
-            persistent_audit_api_router, tags=["Persistent Audit API"]
-        )
-        app.include_router(
-            github_router, prefix="/api/v1", tags=["GitHub Integration"]
-        )
+        app.include_router(persistent_audit_api_router, tags=["Persistent Audit API"])
+        app.include_router(github_router, prefix="/api/v1", tags=["GitHub Integration"])
         logger.info("✅ All API routers included successfully")
     except Exception as e:
         if ACGS_ERROR_HANDLING_AVAILABLE:
@@ -796,10 +762,10 @@ if ROUTERS_AVAILABLE:
                 error=e,
                 context={
                     "operation": "router_inclusion",
-                    "constitutional_hash": CONSTITUTIONAL_HASH
+                    "constitutional_hash": CONSTITUTIONAL_HASH,
                 },
                 service_name="integrity-service",
-                level="warning"
+                level="warning",
             )
         else:
             logger.warning(f"⚠️ Failed to include some routers: {e}")

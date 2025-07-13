@@ -72,7 +72,7 @@ class MultiTierCache:
             return None
 
         except Exception as e:
-            logger.error(f"Cache get error for key {key}: {e}")
+            logger.exception(f"Cache get error for key {key}: {e}")
             return None
 
     async def set(self, key: str, value: Any, ttl: int | None = None) -> bool:
@@ -100,7 +100,7 @@ class MultiTierCache:
             return True
 
         except Exception as e:
-            logger.error(f"Cache set error for key {key}: {e}")
+            logger.exception(f"Cache set error for key {key}: {e}")
             return False
 
     async def delete(self, key: str) -> bool:
@@ -120,7 +120,7 @@ class MultiTierCache:
             return True
 
         except Exception as e:
-            logger.error(f"Cache delete error for key {key}: {e}")
+            logger.exception(f"Cache delete error for key {key}: {e}")
             return False
 
     async def clear(self) -> bool:
@@ -139,7 +139,7 @@ class MultiTierCache:
             return True
 
         except Exception as e:
-            logger.error(f"Cache clear error: {e}")
+            logger.exception(f"Cache clear error: {e}")
             return False
 
     def _evict_memory_cache(self):

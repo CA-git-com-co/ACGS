@@ -48,7 +48,7 @@ class ConstitutionalCache:
             await self.redis_client.ping()
             logger.info("Constitutional cache initialized successfully")
         except Exception as e:
-            logger.error(f"Failed to initialize constitutional cache: {e}")
+            logger.exception(f"Failed to initialize constitutional cache: {e}")
             self.redis_client = None
 
     async def get_validation_result(self, cache_key: str) -> dict[str, Any] | None:
@@ -136,16 +136,17 @@ class ConstitutionalCache:
     def _hash_content(self, data: dict[str, Any]) -> str:
         """Generate hash of content for cache key."""
         # Extract relevant content for hashing
-        content_items = []
 
-        for key in ["title", "description", "content", "constitutional_principles"]:
-            if key in data:
-                content_items.append(f"{key}:{data[key]}")
+        content_items = [
+            f"{key}:{data[key]}"
+            for key in ["title", "description", "content", "constitutional_principles"]
+            if key in data
+        ]
 
         content_string = "|".join(content_items)
         return hashlib.sha256(content_string.encode()).hexdigest()[:32]
 
-    async def invalidate_cache(self, pattern: str = None):
+    async def invalidate_cache(self, pattern: str | None = None):
         """
         Invalidate cached validation results.
 
@@ -170,7 +171,7 @@ class ConstitutionalCache:
                 )
 
         except Exception as e:
-            logger.error(f"Cache invalidation failed: {e}")
+            logger.exception(f"Cache invalidation failed: {e}")
 
     async def get_cache_stats(self) -> dict[str, Any]:
         """
@@ -189,7 +190,7 @@ class ConstitutionalCache:
             # Get Redis info
             info = await self.redis_client.info()
 
-            stats = {
+            return {
                 "status": "active",
                 "total_keys": len(keys),
                 "redis_memory_used": info.get("used_memory_human", "unknown"),
@@ -198,10 +199,8 @@ class ConstitutionalCache:
                 "default_ttl": self.cache_ttl,
             }
 
-            return stats
-
         except Exception as e:
-            logger.error(f"Failed to get cache stats: {e}")
+            logger.exception(f"Failed to get cache stats: {e}")
             return {"status": "error", "error": str(e)}
 
     async def close(self):

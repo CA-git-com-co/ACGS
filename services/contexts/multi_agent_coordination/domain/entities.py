@@ -6,8 +6,7 @@ Core entities for agent coordination and orchestration.
 """
 
 from datetime import datetime
-from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from services.shared.domain.base import (
     Entity,
@@ -44,20 +43,20 @@ class Agent(MultiTenantAggregateRoot):
         agent_id: EntityId,
         tenant_id: TenantId,
         agent_type: str,
-        capabilities: List[AgentCapability],
+        capabilities: list[AgentCapability],
         status: AgentStatus,
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ):
         super().__init__(agent_id, tenant_id)
         self.agent_type = agent_type
         self._capabilities = capabilities.copy()
         self._status = status
         self.metadata = metadata or {}
-        self._current_tasks: List[EntityId] = []
-        self._performance_history: List[Dict[str, Any]] = []
+        self._current_tasks: list[EntityId] = []
+        self._performance_history: list[dict[str, Any]] = []
 
     @property
-    def capabilities(self) -> List[AgentCapability]:
+    def capabilities(self) -> list[AgentCapability]:
         """Get agent capabilities."""
         return self._capabilities.copy()
 
@@ -67,7 +66,7 @@ class Agent(MultiTenantAggregateRoot):
         return self._status
 
     @property
-    def current_tasks(self) -> List[EntityId]:
+    def current_tasks(self) -> list[EntityId]:
         """Get currently assigned tasks."""
         return self._current_tasks.copy()
 
@@ -117,7 +116,7 @@ class Agent(MultiTenantAggregateRoot):
         )
 
     def complete_task(
-        self, task_id: EntityId, result: Dict[str, Any], performance_score: float
+        self, task_id: EntityId, result: dict[str, Any], performance_score: float
     ) -> None:
         """Mark task as completed and record performance."""
         if task_id not in self._current_tasks:
@@ -151,14 +150,13 @@ class Agent(MultiTenantAggregateRoot):
 
     def set_status(self, status: AgentStatus) -> None:
         """Update agent status."""
-        old_status = self._status
         self._status = status
 
         # Clear tasks if going offline
         if status == AgentStatus.OFFLINE:
             self._current_tasks.clear()
 
-    def get_performance_metrics(self) -> Dict[str, float]:
+    def get_performance_metrics(self) -> dict[str, float]:
         """Calculate performance metrics from history."""
         if not self._performance_history:
             return {"average_performance": 0.0, "task_count": 0, "success_rate": 0.0}
@@ -182,7 +180,7 @@ class Agent(MultiTenantAggregateRoot):
     def _can_handle_task(self, requirements: TaskRequirements) -> bool:
         """Check if agent can handle task requirements."""
         required_capabilities = set(requirements.required_capabilities)
-        agent_capabilities = set(cap.capability_type for cap in self._capabilities)
+        agent_capabilities = {cap.capability_type for cap in self._capabilities}
         return required_capabilities.issubset(agent_capabilities)
 
     def _get_max_concurrent_tasks(self) -> int:
@@ -204,26 +202,26 @@ class CoordinationSession(MultiTenantAggregateRoot):
         tenant_id: TenantId,
         objective: CoordinationObjective,
         initiator_id: str,
-        required_agents: List[str],
+        required_agents: list[str],
     ):
         super().__init__(session_id, tenant_id)
         self.objective = objective
         self.initiator_id = initiator_id
         self.required_agents = required_agents.copy()
-        self._participating_agents: List[EntityId] = []
-        self._tasks: List["CoordinationTask"] = []
+        self._participating_agents: list[EntityId] = []
+        self._tasks: list[CoordinationTask] = []
         self._status = "pending"
-        self._results: Dict[str, Any] = {}
-        self.started_at: Optional[datetime] = None
-        self.completed_at: Optional[datetime] = None
+        self._results: dict[str, Any] = {}
+        self.started_at: datetime | None = None
+        self.completed_at: datetime | None = None
 
     @property
-    def participating_agents(self) -> List[EntityId]:
+    def participating_agents(self) -> list[EntityId]:
         """Get participating agents."""
         return self._participating_agents.copy()
 
     @property
-    def tasks(self) -> List["CoordinationTask"]:
+    def tasks(self) -> list["CoordinationTask"]:
         """Get coordination tasks."""
         return self._tasks.copy()
 
@@ -233,11 +231,11 @@ class CoordinationSession(MultiTenantAggregateRoot):
         return self._status
 
     @property
-    def results(self) -> Dict[str, Any]:
+    def results(self) -> dict[str, Any]:
         """Get session results."""
         return self._results.copy()
 
-    def start_session(self, participating_agents: List[EntityId]) -> None:
+    def start_session(self, participating_agents: list[EntityId]) -> None:
         """Start the coordination session."""
         if self._status != "pending":
             raise ValueError(f"Session {self.id} already started")
@@ -260,12 +258,12 @@ class CoordinationSession(MultiTenantAggregateRoot):
 
     def add_task(self, task: "CoordinationTask") -> None:
         """Add task to coordination session."""
-        if self._status not in ["active", "pending"]:
+        if self._status not in {"active", "pending"}:
             raise ValueError(f"Cannot add tasks to {self._status} session")
 
         self._tasks.append(task)
 
-    def complete_session(self, final_results: Dict[str, Any]) -> None:
+    def complete_session(self, final_results: dict[str, Any]) -> None:
         """Complete the coordination session."""
         if self._status != "active":
             raise ValueError(f"Session {self.id} is not active")
@@ -274,7 +272,7 @@ class CoordinationSession(MultiTenantAggregateRoot):
         self._results = final_results.copy()
         self.completed_at = datetime.utcnow()
 
-    def get_session_summary(self) -> Dict[str, Any]:
+    def get_session_summary(self) -> dict[str, Any]:
         """Get summary of coordination session."""
         return {
             "session_id": str(self.id),
@@ -286,7 +284,7 @@ class CoordinationSession(MultiTenantAggregateRoot):
             "results": self._results,
         }
 
-    def _calculate_duration_minutes(self) -> Optional[float]:
+    def _calculate_duration_minutes(self) -> float | None:
         """Calculate session duration in minutes."""
         if not self.started_at:
             return None
@@ -310,7 +308,7 @@ class CoordinationTask(Entity):
         assigned_agent_id: EntityId,
         task_type: str,
         requirements: TaskRequirements,
-        dependencies: List[EntityId] = None,
+        dependencies: list[EntityId] | None = None,
     ):
         super().__init__(task_id)
         self.session_id = session_id
@@ -319,10 +317,10 @@ class CoordinationTask(Entity):
         self.requirements = requirements
         self.dependencies = dependencies or []
         self._status = TaskStatus.PENDING
-        self._result: Optional[Dict[str, Any]] = None
+        self._result: dict[str, Any] | None = None
         self.assigned_at = datetime.utcnow()
-        self.started_at: Optional[datetime] = None
-        self.completed_at: Optional[datetime] = None
+        self.started_at: datetime | None = None
+        self.completed_at: datetime | None = None
 
     @property
     def status(self) -> TaskStatus:
@@ -330,7 +328,7 @@ class CoordinationTask(Entity):
         return self._status
 
     @property
-    def result(self) -> Optional[Dict[str, Any]]:
+    def result(self) -> dict[str, Any] | None:
         """Get task result."""
         return self._result.copy() if self._result else None
 
@@ -344,7 +342,7 @@ class CoordinationTask(Entity):
         self._status = TaskStatus.IN_PROGRESS
         self.started_at = datetime.utcnow()
 
-    def complete_task(self, result: Dict[str, Any]) -> None:
+    def complete_task(self, result: dict[str, Any]) -> None:
         """Complete the task with results."""
         if self._status != TaskStatus.IN_PROGRESS:
             raise ValueError(f"Task {self.id} is not in progress")
@@ -359,7 +357,7 @@ class CoordinationTask(Entity):
         self._result = {"error": error}
         self.completed_at = datetime.utcnow()
 
-    def can_execute(self, completed_tasks: List[EntityId]) -> bool:
+    def can_execute(self, completed_tasks: list[EntityId]) -> bool:
         """Check if task can be executed based on dependencies."""
         if self._status != TaskStatus.PENDING:
             return False
@@ -367,7 +365,7 @@ class CoordinationTask(Entity):
         # All dependencies must be completed
         return all(dep_id in completed_tasks for dep_id in self.dependencies)
 
-    def get_task_duration(self) -> Optional[float]:
+    def get_task_duration(self) -> float | None:
         """Get task execution duration in minutes."""
         if not self.started_at or not self.completed_at:
             return None

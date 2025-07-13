@@ -1,3 +1,5 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 # Contributor Covenant Code of Conduct
 
 ## Our Pledge

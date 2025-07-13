@@ -10,11 +10,12 @@ including notification dispatch, feedback collection, and real-time updates.
 import asyncio
 import logging
 import os
+import pathlib
 import sys
 from datetime import datetime, timezone
 
 # Add the project root to Python path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, os.path.join(pathlib.Path(__file__).parent, ".."))
 
 from services.core.constitutional_ai.ac_service.models import ACAmendment
 from services.core.constitutional_ai.ac_service.services.stakeholder_engagement import (
@@ -233,29 +234,6 @@ async def test_stakeholder_engagement():
         logger.info("All tests completed successfully!")
 
         # Print summary
-        print("\n" + "=" * 60)
-        print("STAKEHOLDER ENGAGEMENT SYSTEM TEST SUMMARY")
-        print("=" * 60)
-        print(f"Amendment ID: {test_amendment.id}")
-        print(
-            f"Total Stakeholders: {updated_status.total_stakeholders if updated_status else 0}"
-        )
-        print(
-            f"Engaged Stakeholders: {updated_status.engaged_stakeholders if updated_status else 0}"
-        )
-        print(
-            f"Engagement Rate: {updated_status.engagement_rate:.1%}"
-            if updated_status
-            else "0%"
-        )
-        print(
-            f"Notifications Sent: {updated_status.notifications_sent if updated_status else 0}"
-        )
-        print(f"Feedback Received: {len(all_feedback)}")
-        print(
-            f"Feedback by Role: {updated_status.feedback_by_role if updated_status else {}}"
-        )
-        print("=" * 60)
 
 
 if __name__ == "__main__":

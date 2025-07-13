@@ -8,7 +8,7 @@ compliance, Z3 SMT solver integration, and ACGS framework integration.
 import asyncio
 import logging
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import redis.asyncio as aioredis
 from prometheus_client import Counter, Gauge, Histogram
@@ -44,7 +44,7 @@ class FormalVerificationService:
     request-scoped caching, and sub-5ms P99 latency targets for ACGS integration.
     """
 
-    def __init__(self, redis_client: Optional[aioredis.Redis] = None):
+    def __init__(self, redis_client: aioredis.Redis | None = None):
         """Initialize formal verification service."""
         self.redis = redis_client
         self.constitutional_engine = ConstitutionalVerificationEngine()
@@ -53,9 +53,9 @@ class FormalVerificationService:
         self.setup_metrics()
 
         # Service state tracking with O(1) lookups
-        self.active_verifications: Dict[str, VerificationRequest] = {}
-        self.verification_cache: Dict[str, VerificationResult] = {}
-        self.proof_cache: Dict[str, ProofResult] = {}
+        self.active_verifications: dict[str, VerificationRequest] = {}
+        self.verification_cache: dict[str, VerificationResult] = {}
+        self.proof_cache: dict[str, ProofResult] = {}
 
         logger.info(
             "FormalVerificationService initialized with constitutional compliance"
@@ -129,7 +129,7 @@ class FormalVerificationService:
             return request.request_id
 
         except Exception as e:
-            logger.error(f"Failed to submit verification request: {e}")
+            logger.exception(f"Failed to submit verification request: {e}")
             self.verification_requests_total.labels(
                 verification_type=request.verification_type, status="failed"
             ).inc()
@@ -145,7 +145,7 @@ class FormalVerificationService:
 
     async def get_verification_status(
         self, request_id: str
-    ) -> Optional[VerificationRequest]:
+    ) -> VerificationRequest | None:
         """
         Get verification status with O(1) lookup performance.
 
@@ -180,7 +180,7 @@ class FormalVerificationService:
 
     async def get_verification_result(
         self, request_id: str
-    ) -> Optional[VerificationResult]:
+    ) -> VerificationResult | None:
         """
         Get verification result with O(1) lookup performance.
 
@@ -246,7 +246,7 @@ class FormalVerificationService:
             return result
 
         except Exception as e:
-            logger.error(f"Constitutional verification failed: {e}")
+            logger.exception(f"Constitutional verification failed: {e}")
             self.verification_requests_total.labels(
                 verification_type="constitutional", status="failed"
             ).inc()
@@ -283,7 +283,7 @@ class FormalVerificationService:
             return result
 
         except Exception as e:
-            logger.error(f"Policy validation failed: {e}")
+            logger.exception(f"Policy validation failed: {e}")
             self.verification_requests_total.labels(
                 verification_type="policy_validation", status="failed"
             ).inc()
@@ -318,7 +318,7 @@ class FormalVerificationService:
             return response
 
         except Exception as e:
-            logger.error(f"SMT solving failed: {e}")
+            logger.exception(f"SMT solving failed: {e}")
             self.verification_requests_total.labels(
                 verification_type="smt_solving", status="failed"
             ).inc()
@@ -332,7 +332,7 @@ class FormalVerificationService:
 
     async def generate_proof_obligations(
         self, verification_request: VerificationRequest
-    ) -> List[ProofObligation]:
+    ) -> list[ProofObligation]:
         """
         Generate proof obligations for verification request.
 
@@ -360,7 +360,7 @@ class FormalVerificationService:
             return proof_obligations
 
         except Exception as e:
-            logger.error(f"Failed to generate proof obligations: {e}")
+            logger.exception(f"Failed to generate proof obligations: {e}")
             raise
 
     async def _validate_verification_request(
@@ -375,7 +375,6 @@ class FormalVerificationService:
                 )
 
             # Additional constitutional validation would go here
-            pass
 
     async def _process_verification_request(self, request: VerificationRequest) -> None:
         """Process verification request asynchronously."""
@@ -417,7 +416,9 @@ class FormalVerificationService:
             logger.info(f"Verification completed: {request.request_id}")
 
         except Exception as e:
-            logger.error(f"Verification process failed for {request.request_id}: {e}")
+            logger.exception(
+                f"Verification process failed for {request.request_id}: {e}"
+            )
             request.status = VerificationStatus.FAILED
 
     async def _process_proof_obligation(
@@ -425,7 +426,7 @@ class FormalVerificationService:
     ) -> ProofResult:
         """Process individual proof obligation."""
         # Simplified proof processing - would be more comprehensive in production
-        proof_result = ProofResult(
+        return ProofResult(
             obligation_id=obligation.obligation_id,
             verification_request_id=obligation.verification_request_id,
             status=obligation.status,
@@ -436,9 +437,7 @@ class FormalVerificationService:
             constitutional_hash=CONSTITUTIONAL_HASH,
         )
 
-        return proof_result
-
-    async def get_service_health(self) -> Dict[str, Any]:
+    async def get_service_health(self) -> dict[str, Any]:
         """
         Get service health status.
 

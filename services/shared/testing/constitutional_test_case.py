@@ -10,12 +10,11 @@ import asyncio
 import json
 import statistics
 import time
-from typing import Any, Dict, List, Optional
-from unittest.mock import AsyncMock, MagicMock
+from typing import Any
+from unittest.mock import MagicMock
 
 import httpx
 import pytest
-from fastapi.testclient import TestClient
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
@@ -116,13 +115,13 @@ class ConstitutionalTestCase:
             except json.JSONDecodeError:
                 pass  # Not JSON, skip body validation
 
-    def assert_constitutional_compliance_dict(self, data: Dict[str, Any]):
+    def assert_constitutional_compliance_dict(self, data: dict[str, Any]):
         """Validate constitutional compliance in dictionary data."""
         assert (
             data.get("constitutional_hash") == self.CONSTITUTIONAL_HASH
         ), f"Missing or invalid constitutional hash in data: {data}"
 
-    def assert_tenant_isolation(self, data: Dict[str, Any], expected_tenant_id: str):
+    def assert_tenant_isolation(self, data: dict[str, Any], expected_tenant_id: str):
         """Validate tenant isolation in response data."""
         if isinstance(data, dict):
             if "tenant_id" in data:
@@ -175,18 +174,15 @@ class ConstitutionalTestCase:
 
         # Calculate RPS (requests per second)
         total_time = sum(latencies) / 1000  # Convert to seconds
-        actual_rps = num_requests / total_time if total_time > 0 else 0
+        num_requests / total_time if total_time > 0 else 0
 
         # Note: This is a simplified RPS calculation for testing
         # In practice, concurrent requests would be needed for true RPS testing
-        print(
-            f"Performance metrics: P99={p99_latency:.2f}ms, Sequential RPS={actual_rps:.1f}"
-        )
 
     async def assert_cache_hit_rate(
         self,
         redis_client: Redis,
-        cache_operations: List[callable],
+        cache_operations: list[callable],
         target_hit_rate: float = 0.85,
     ):
         """Validate cache hit rate meets target."""
@@ -212,7 +208,7 @@ class ConstitutionalTestCase:
 
     def create_test_headers(
         self, tenant_context: SimpleTenantContext = None
-    ) -> Dict[str, str]:
+    ) -> dict[str, str]:
         """Create standard test headers with constitutional compliance."""
         headers = {
             "X-Constitutional-Hash": self.CONSTITUTIONAL_HASH,
@@ -251,7 +247,7 @@ class ConstitutionalTestCase:
     def mock_service_response(
         self,
         status_code: int = 200,
-        data: Dict[str, Any] = None,
+        data: dict[str, Any] | None = None,
         constitutional_compliant: bool = True,
     ) -> MagicMock:
         """Create mock service response with constitutional compliance."""
@@ -274,8 +270,8 @@ class ConstitutionalTestCase:
         return mock_response
 
     async def setup_test_data(
-        self, db_session: AsyncSession, tenant_id: str = None
-    ) -> Dict[str, Any]:
+        self, db_session: AsyncSession, tenant_id: str | None = None
+    ) -> dict[str, Any]:
         """Setup common test data with constitutional compliance."""
         tenant_id = tenant_id or self.test_tenant_id
 
@@ -311,9 +307,7 @@ class ConstitutionalAsyncTestCase(ConstitutionalTestCase):
     async def setup_async_test(self):
         """Setup for async tests."""
         self.validate_test_environment()
-        yield
         # Cleanup after test
-        pass
 
 
 # Pytest configuration for constitutional compliance

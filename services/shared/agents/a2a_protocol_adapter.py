@@ -23,7 +23,7 @@ import uuid
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 import aiohttp
 from pydantic import BaseModel, Field
@@ -62,10 +62,10 @@ class A2AMessage(BaseModel):
     content: dict[str, Any] = Field(..., description="Message payload")
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     constitutional_hash: str = Field(default=CONSTITUTIONAL_HASH)
-    correlation_id: Optional[str] = Field(
+    correlation_id: str | None = Field(
         None, description="For request/response correlation"
     )
-    expires_at: Optional[datetime] = Field(None, description="Message expiration")
+    expires_at: datetime | None = Field(None, description="Message expiration")
     priority: int = Field(
         default=3, description="Message priority (1=highest, 5=lowest)"
     )
@@ -80,8 +80,8 @@ class A2ATaskRequest(BaseModel):
     parameters: dict[str, Any] = Field(default_factory=dict)
     requirements: dict[str, Any] = Field(default_factory=dict)
     constraints: list[str] = Field(default_factory=list)
-    deadline: Optional[datetime] = Field(None)
-    callback_url: Optional[str] = Field(None)
+    deadline: datetime | None = Field(None)
+    callback_url: str | None = Field(None)
     constitutional_requirements: dict[str, Any] = Field(default_factory=dict)
 
 
@@ -90,8 +90,8 @@ class A2ATaskResponse(BaseModel):
 
     task_id: str = Field(..., description="Original task identifier")
     status: str = Field(..., description="Task execution status")
-    result: Optional[dict[str, Any]] = Field(None, description="Task result")
-    error_message: Optional[str] = Field(None, description="Error details if failed")
+    result: dict[str, Any] | None = Field(None, description="Task result")
+    error_message: str | None = Field(None, description="Error details if failed")
     execution_time_seconds: float = Field(default=0.0)
     constitutional_compliance: dict[str, Any] = Field(default_factory=dict)
     metadata: dict[str, Any] = Field(default_factory=dict)
@@ -107,7 +107,7 @@ class A2AConnection:
     authentication: dict[str, Any]
     capabilities: list[str]
     is_active: bool = True
-    last_heartbeat: Optional[datetime] = None
+    last_heartbeat: datetime | None = None
     message_count: int = 0
     error_count: int = 0
 
@@ -135,7 +135,7 @@ class A2AProtocolAdapter:
         self.audit_logger = audit_logger
 
         # HTTP session for A2A communication
-        self.session: Optional[aiohttp.ClientSession] = None
+        self.session: aiohttp.ClientSession | None = None
 
         # Active connections to external frameworks
         self.connections: dict[str, A2AConnection] = {}
@@ -177,7 +177,7 @@ class A2AProtocolAdapter:
             logger.info("A2A Protocol Adapter initialized successfully")
 
         except Exception as e:
-            logger.error(f"Failed to initialize A2A adapter: {e!s}")
+            logger.exception(f"Failed to initialize A2A adapter: {e!s}")
             raise
 
     async def shutdown(self) -> None:
@@ -189,7 +189,7 @@ class A2AProtocolAdapter:
             logger.info("A2A Protocol Adapter shutdown completed")
 
         except Exception as e:
-            logger.error(f"Error during A2A adapter shutdown: {e!s}")
+            logger.exception(f"Error during A2A adapter shutdown: {e!s}")
 
     async def register_framework_connection(
         self,
@@ -230,13 +230,10 @@ class A2AProtocolAdapter:
                     f"Registered A2A connection to {framework_name}: {connection_id}"
                 )
                 return connection_id
-            else:
-                raise ConnectionError(
-                    f"Failed to establish connection to {framework_name}"
-                )
+            raise ConnectionError(f"Failed to establish connection to {framework_name}")
 
         except Exception as e:
-            logger.error(f"Failed to register framework connection: {e!s}")
+            logger.exception(f"Failed to register framework connection: {e!s}")
             raise
 
     async def send_message(
@@ -301,18 +298,17 @@ class A2AProtocolAdapter:
                     )
 
                     return response_data
-                else:
-                    connection.error_count += 1
-                    self.metrics["connection_errors"] += 1
-                    raise aiohttp.ClientResponseError(
-                        request_info=response.request_info,
-                        history=response.history,
-                        status=response.status,
-                        message=f"A2A message failed: {response_data}",
-                    )
+                connection.error_count += 1
+                self.metrics["connection_errors"] += 1
+                raise aiohttp.ClientResponseError(
+                    request_info=response.request_info,
+                    history=response.history,
+                    status=response.status,
+                    message=f"A2A message failed: {response_data}",
+                )
 
         except Exception as e:
-            logger.error(f"Failed to send A2A message: {e!s}")
+            logger.exception(f"Failed to send A2A message: {e!s}")
             self.metrics["connection_errors"] += 1
             raise
 
@@ -332,7 +328,7 @@ class A2AProtocolAdapter:
             )
 
             # Send task request
-            response = await self.send_message(connection_id, message)
+            await self.send_message(connection_id, message)
 
             # Track task delegation
             self.metrics["tasks_delegated"] += 1
@@ -343,7 +339,7 @@ class A2AProtocolAdapter:
             return message.message_id
 
         except Exception as e:
-            logger.error(f"Failed to delegate task: {e!s}")
+            logger.exception(f"Failed to delegate task: {e!s}")
             raise
 
     async def receive_message(self, message_data: dict[str, Any]) -> dict[str, Any]:
@@ -371,19 +367,18 @@ class A2AProtocolAdapter:
             # Process based on message type
             if message.message_type == A2AMessageType.TASK_RESPONSE:
                 return await self._handle_task_response(message)
-            elif message.message_type == A2AMessageType.CAPABILITY_INQUIRY:
+            if message.message_type == A2AMessageType.CAPABILITY_INQUIRY:
                 return await self._handle_capability_inquiry(message)
-            elif message.message_type == A2AMessageType.COORDINATION_REQUEST:
+            if message.message_type == A2AMessageType.COORDINATION_REQUEST:
                 return await self._handle_coordination_request(message)
-            else:
-                logger.warning(f"Unhandled A2A message type: {message.message_type}")
-                return {
-                    "status": "acknowledged",
-                    "message": "Message received but not processed",
-                }
+            logger.warning(f"Unhandled A2A message type: {message.message_type}")
+            return {
+                "status": "acknowledged",
+                "message": "Message received but not processed",
+            }
 
         except Exception as e:
-            logger.error(f"Failed to receive A2A message: {e!s}")
+            logger.exception(f"Failed to receive A2A message: {e!s}")
             return {"status": "error", "message": str(e)}
 
     async def get_framework_capabilities(self, connection_id: str) -> list[str]:
@@ -401,7 +396,7 @@ class A2AProtocolAdapter:
             return response.get("capabilities", [])
 
         except Exception as e:
-            logger.error(f"Failed to query framework capabilities: {e!s}")
+            logger.exception(f"Failed to query framework capabilities: {e!s}")
             return []
 
     async def _validate_message_compliance(
@@ -427,7 +422,7 @@ class A2AProtocolAdapter:
             )
 
         except Exception as e:
-            logger.error(f"Failed to validate message compliance: {e!s}")
+            logger.exception(f"Failed to validate message compliance: {e!s}")
             return False, 0.0
 
     async def _test_connection(self, connection: A2AConnection) -> bool:
@@ -444,7 +439,7 @@ class A2AProtocolAdapter:
                 return response.status == 200
 
         except Exception as e:
-            logger.error(f"Connection test failed: {e!s}")
+            logger.exception(f"Connection test failed: {e!s}")
             return False
 
     async def _prepare_auth_headers(self, connection: A2AConnection) -> dict[str, str]:
@@ -486,7 +481,7 @@ class A2AProtocolAdapter:
             return {"status": "processed", "task_id": task_response.task_id}
 
         except Exception as e:
-            logger.error(f"Failed to handle task response: {e!s}")
+            logger.exception(f"Failed to handle task response: {e!s}")
             return {"status": "error", "message": str(e)}
 
     async def _handle_capability_inquiry(self, message: A2AMessage) -> dict[str, Any]:
@@ -509,7 +504,7 @@ class A2AProtocolAdapter:
             }
 
         except Exception as e:
-            logger.error(f"Failed to handle capability inquiry: {e!s}")
+            logger.exception(f"Failed to handle capability inquiry: {e!s}")
             return {"status": "error", "message": str(e)}
 
     async def _handle_coordination_request(self, message: A2AMessage) -> dict[str, Any]:
@@ -525,7 +520,7 @@ class A2AProtocolAdapter:
             }
 
         except Exception as e:
-            logger.error(f"Failed to handle coordination request: {e!s}")
+            logger.exception(f"Failed to handle coordination request: {e!s}")
             return {"status": "error", "message": str(e)}
 
     def _update_response_time_metric(self, response_time: float) -> None:

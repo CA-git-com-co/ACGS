@@ -1,3 +1,5 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 # Service Down Runbook - ACGS-1 Constitutional Governance System
 
 ## Alert: ACGSServiceDown

@@ -135,7 +135,7 @@ class PGPAssuranceService:
             return private_pem, public_pem
 
         except Exception as e:
-            logger.error(f"Error generating key pair: {e}")
+            logger.exception(f"Error generating key pair: {e}")
             raise
 
     def sign_ac_version(
@@ -194,7 +194,7 @@ class PGPAssuranceService:
             return digital_signature
 
         except Exception as e:
-            logger.error(f"Error signing AC version: {e}")
+            logger.exception(f"Error signing AC version: {e}")
             raise
 
     def verify_signature(self, data: str, signature: DigitalSignature) -> bool:
@@ -233,7 +233,7 @@ class PGPAssuranceService:
             logger.warning("Signature verification failed")
             return False
         except Exception as e:
-            logger.error(f"Error verifying signature: {e}")
+            logger.exception(f"Error verifying signature: {e}")
             raise
 
     # Hash Functions Implementation
@@ -257,7 +257,7 @@ class PGPAssuranceService:
             return hash_obj.hexdigest()
 
         except Exception as e:
-            logger.error(f"Error computing hash: {e}")
+            logger.exception(f"Error computing hash: {e}")
             raise
 
     def verify_integrity(
@@ -271,7 +271,7 @@ class PGPAssuranceService:
             computed_hash = self.compute_hash(data, algorithm)
             return computed_hash == expected_hash
         except Exception as e:
-            logger.error(f"Error verifying integrity: {e}")
+            logger.exception(f"Error verifying integrity: {e}")
             return False
 
     # Merkle Trees Implementation
@@ -323,7 +323,7 @@ class PGPAssuranceService:
             return root.hash_value
 
         except Exception as e:
-            logger.error(f"Error building Merkle tree: {e}")
+            logger.exception(f"Error building Merkle tree: {e}")
             raise
 
     def verify_merkle_proof(
@@ -351,7 +351,7 @@ class PGPAssuranceService:
             return current_hash == root_hash
 
         except Exception as e:
-            logger.error(f"Error verifying Merkle proof: {e}")
+            logger.exception(f"Error verifying Merkle proof: {e}")
             return False
 
     def get_merkle_root(self, tree_id: str) -> str | None:
@@ -377,7 +377,7 @@ class PGPAssuranceService:
             logger.info(f"Key pair stored: {key_id}")
 
         except Exception as e:
-            logger.error(f"Error storing key pair: {e}")
+            logger.exception(f"Error storing key pair: {e}")
             raise
 
     def get_public_key(self, key_id: str) -> bytes | None:
@@ -412,7 +412,7 @@ class PGPAssuranceService:
             logger.info(f"Keys rotated successfully: {key_id}")
 
         except Exception as e:
-            logger.error(f"Error rotating keys: {e}")
+            logger.exception(f"Error rotating keys: {e}")
             raise
 
     # RFC 3161 Timestamping Implementation
@@ -460,7 +460,7 @@ class PGPAssuranceService:
             return timestamp_token
 
         except Exception as e:
-            logger.error(f"Error creating timestamp: {e}")
+            logger.exception(f"Error creating timestamp: {e}")
             raise
 
     def verify_timestamp(
@@ -495,7 +495,7 @@ class PGPAssuranceService:
             return timestamp_token.verification_status
 
         except Exception as e:
-            logger.error(f"Error verifying timestamp: {e}")
+            logger.exception(f"Error verifying timestamp: {e}")
             return False
 
     def get_timestamp_info(self, timestamp_token: TimestampToken) -> dict[str, Any]:
@@ -514,7 +514,7 @@ class PGPAssuranceService:
             }
 
         except Exception as e:
-            logger.error(f"Error getting timestamp info: {e}")
+            logger.exception(f"Error getting timestamp info: {e}")
             return {}
 
     # Comprehensive Integrity Verification
@@ -563,7 +563,7 @@ class PGPAssuranceService:
             return package
 
         except Exception as e:
-            logger.error(f"Error creating integrity package: {e}")
+            logger.exception(f"Error creating integrity package: {e}")
             raise
 
     def verify_integrity_package(self, data: str, package: dict[str, Any]) -> bool:
@@ -621,5 +621,5 @@ class PGPAssuranceService:
             return True
 
         except Exception as e:
-            logger.error(f"Error verifying integrity package: {e}")
+            logger.exception(f"Error verifying integrity package: {e}")
             return False

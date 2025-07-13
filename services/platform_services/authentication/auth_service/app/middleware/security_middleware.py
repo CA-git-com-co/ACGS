@@ -10,13 +10,12 @@ import json
 import logging
 import time
 from collections import defaultdict, deque
-from typing import Any, Dict, Optional
+from typing import Any
 
+from app.core.input_validation import InputValidator, log_security_event
 from fastapi import HTTPException, Request, Response, status
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
-
-from ..core.input_validation import InputValidator, log_security_event
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -47,8 +46,7 @@ class RateLimiter:
         if client_ip in self.blocked_ips:
             if now < self.blocked_ips[client_ip]:
                 return False
-            else:
-                del self.blocked_ips[client_ip]
+            del self.blocked_ips[client_ip]
 
         # Check rate limit
         if len(self.requests[key]) >= limit:
@@ -73,7 +71,7 @@ class RateLimiter:
 class SecurityMiddleware(BaseHTTPMiddleware):
     """Comprehensive security middleware for Auth service."""
 
-    def __init__(self, app, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, app, config: dict[str, Any] | None = None):
         super().__init__(app)
         self.config = config or {}
         self.rate_limiter = RateLimiter()
@@ -143,10 +141,10 @@ class SecurityMiddleware(BaseHTTPMiddleware):
                     )
 
             # 4. Input validation for POST requests
-            if request.method == "POST" and endpoint in [
+            if request.method == "POST" and endpoint in {
                 "/api/v1/auth/login",
                 "/api/v1/auth/token",
-            ]:
+            }:
                 await self._validate_login_request(request, client_ip)
 
             # Process request
@@ -261,7 +259,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
         except HTTPException:
             raise
         except Exception as e:
-            logger.error(f"Error validating login request: {e}")
+            logger.exception(f"Error validating login request: {e}")
 
     def _add_security_headers(self, response: Response):
         """Add security headers to response."""

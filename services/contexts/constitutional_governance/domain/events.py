@@ -7,13 +7,12 @@ Events representing important occurrences in the constitutional domain.
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from services.shared.domain.base import EntityId
 from services.shared.domain.events import DomainEvent, EventMetadata
 
 from .value_objects import (
-    ConstitutionalHash,
     ConsultationSummary,
     ViolationDetail,
     ViolationSeverity,
@@ -28,12 +27,12 @@ class ConstitutionAmended(DomainEvent):
         self,
         aggregate_id: EntityId,
         constitution_version: str,
-        amended_principles: List[str],
+        amended_principles: list[str],
         new_hash: str,
         effective_date: datetime,
-        approved_by: List[str],
-        occurred_at: Optional[datetime] = None,
-        metadata: Optional[EventMetadata] = None,
+        approved_by: list[str],
+        occurred_at: datetime | None = None,
+        metadata: EventMetadata | None = None,
     ):
         super().__init__(aggregate_id, occurred_at, metadata)
         self.constitution_version = constitution_version
@@ -45,7 +44,7 @@ class ConstitutionAmended(DomainEvent):
     def _get_event_version(self) -> str:
         return "1.0"
 
-    def get_event_data(self) -> Dict[str, Any]:
+    def get_event_data(self) -> dict[str, Any]:
         return {
             "constitution_version": self.constitution_version,
             "amended_principles": self.amended_principles,
@@ -66,9 +65,9 @@ class PrincipleViolationDetected(DomainEvent):
         violation_details: ViolationDetail,
         severity: ViolationSeverity,
         detected_by: str,
-        context: Dict[str, Any],
-        occurred_at: Optional[datetime] = None,
-        metadata: Optional[EventMetadata] = None,
+        context: dict[str, Any],
+        occurred_at: datetime | None = None,
+        metadata: EventMetadata | None = None,
     ):
         super().__init__(aggregate_id, occurred_at, metadata)
         self.principle_id = principle_id
@@ -80,7 +79,7 @@ class PrincipleViolationDetected(DomainEvent):
     def _get_event_version(self) -> str:
         return "1.0"
 
-    def get_event_data(self) -> Dict[str, Any]:
+    def get_event_data(self) -> dict[str, Any]:
         return {
             "principle_id": self.principle_id,
             "violation_details": self.violation_details.to_dict(),
@@ -99,11 +98,11 @@ class AmendmentProposed(DomainEvent):
         aggregate_id: EntityId,
         amendment_id: EntityId,
         proposer: str,
-        affected_principles: List[str],
-        justification: Dict[str, Any],
+        affected_principles: list[str],
+        justification: dict[str, Any],
         consultation_required: bool,
-        occurred_at: Optional[datetime] = None,
-        metadata: Optional[EventMetadata] = None,
+        occurred_at: datetime | None = None,
+        metadata: EventMetadata | None = None,
     ):
         super().__init__(aggregate_id, occurred_at, metadata)
         self.amendment_id = amendment_id
@@ -115,7 +114,7 @@ class AmendmentProposed(DomainEvent):
     def _get_event_version(self) -> str:
         return "1.0"
 
-    def get_event_data(self) -> Dict[str, Any]:
+    def get_event_data(self) -> dict[str, Any]:
         return {
             "amendment_id": str(self.amendment_id),
             "proposer": self.proposer,
@@ -138,8 +137,8 @@ class PublicConsultationCompleted(DomainEvent):
         public_comment_count: int,
         expert_review_count: int,
         consultation_summary: ConsultationSummary,
-        occurred_at: Optional[datetime] = None,
-        metadata: Optional[EventMetadata] = None,
+        occurred_at: datetime | None = None,
+        metadata: EventMetadata | None = None,
     ):
         super().__init__(aggregate_id, occurred_at, metadata)
         self.amendment_id = amendment_id
@@ -152,7 +151,7 @@ class PublicConsultationCompleted(DomainEvent):
     def _get_event_version(self) -> str:
         return "1.0"
 
-    def get_event_data(self) -> Dict[str, Any]:
+    def get_event_data(self) -> dict[str, Any]:
         return {
             "amendment_id": str(self.amendment_id),
             "consultation_id": str(self.consultation_id),
@@ -172,9 +171,9 @@ class AmendmentApproved(DomainEvent):
         aggregate_id: EntityId,
         amendment_id: EntityId,
         approved_at: datetime,
-        approval_details: Dict[str, Any],
-        occurred_at: Optional[datetime] = None,
-        metadata: Optional[EventMetadata] = None,
+        approval_details: dict[str, Any],
+        occurred_at: datetime | None = None,
+        metadata: EventMetadata | None = None,
     ):
         super().__init__(aggregate_id, occurred_at, metadata)
         self.amendment_id = amendment_id
@@ -184,7 +183,7 @@ class AmendmentApproved(DomainEvent):
     def _get_event_version(self) -> str:
         return "1.0"
 
-    def get_event_data(self) -> Dict[str, Any]:
+    def get_event_data(self) -> dict[str, Any]:
         return {
             "amendment_id": str(self.amendment_id),
             "approved_at": self.approved_at.isoformat(),
@@ -202,8 +201,8 @@ class AmendmentRejected(DomainEvent):
         amendment_id: EntityId,
         rejected_at: datetime,
         rejection_reason: str,
-        occurred_at: Optional[datetime] = None,
-        metadata: Optional[EventMetadata] = None,
+        occurred_at: datetime | None = None,
+        metadata: EventMetadata | None = None,
     ):
         super().__init__(aggregate_id, occurred_at, metadata)
         self.amendment_id = amendment_id
@@ -213,7 +212,7 @@ class AmendmentRejected(DomainEvent):
     def _get_event_version(self) -> str:
         return "1.0"
 
-    def get_event_data(self) -> Dict[str, Any]:
+    def get_event_data(self) -> dict[str, Any]:
         return {
             "amendment_id": str(self.amendment_id),
             "rejected_at": self.rejected_at.isoformat(),
@@ -228,12 +227,12 @@ class ConflictDetected(DomainEvent):
     def __init__(
         self,
         aggregate_id: EntityId,
-        conflicting_principles: List[tuple[str, str]],
+        conflicting_principles: list[tuple[str, str]],
         conflict_type: str,
         severity: ViolationSeverity,
-        resolution_options: List[str],
-        occurred_at: Optional[datetime] = None,
-        metadata: Optional[EventMetadata] = None,
+        resolution_options: list[str],
+        occurred_at: datetime | None = None,
+        metadata: EventMetadata | None = None,
     ):
         super().__init__(aggregate_id, occurred_at, metadata)
         self.conflicting_principles = conflicting_principles
@@ -244,7 +243,7 @@ class ConflictDetected(DomainEvent):
     def _get_event_version(self) -> str:
         return "1.0"
 
-    def get_event_data(self) -> Dict[str, Any]:
+    def get_event_data(self) -> dict[str, Any]:
         return {
             "conflicting_principles": [
                 {"principle1": p[0], "principle2": p[1]}
@@ -266,9 +265,9 @@ class ConflictResolved(DomainEvent):
         conflict_id: str,
         resolution_strategy: str,
         resolved_by: str,
-        resolution_details: Dict[str, Any],
-        occurred_at: Optional[datetime] = None,
-        metadata: Optional[EventMetadata] = None,
+        resolution_details: dict[str, Any],
+        occurred_at: datetime | None = None,
+        metadata: EventMetadata | None = None,
     ):
         super().__init__(aggregate_id, occurred_at, metadata)
         self.conflict_id = conflict_id
@@ -279,7 +278,7 @@ class ConflictResolved(DomainEvent):
     def _get_event_version(self) -> str:
         return "1.0"
 
-    def get_event_data(self) -> Dict[str, Any]:
+    def get_event_data(self) -> dict[str, Any]:
         return {
             "conflict_id": self.conflict_id,
             "resolution_strategy": self.resolution_strategy,
@@ -296,11 +295,11 @@ class ConstitutionActivated(DomainEvent):
         self,
         aggregate_id: EntityId,
         constitution_version: str,
-        previous_version: Optional[str],
+        previous_version: str | None,
         activated_by: str,
         activation_reason: str,
-        occurred_at: Optional[datetime] = None,
-        metadata: Optional[EventMetadata] = None,
+        occurred_at: datetime | None = None,
+        metadata: EventMetadata | None = None,
     ):
         super().__init__(aggregate_id, occurred_at, metadata)
         self.constitution_version = constitution_version
@@ -311,7 +310,7 @@ class ConstitutionActivated(DomainEvent):
     def _get_event_version(self) -> str:
         return "1.0"
 
-    def get_event_data(self) -> Dict[str, Any]:
+    def get_event_data(self) -> dict[str, Any]:
         return {
             "constitution_version": self.constitution_version,
             "previous_version": self.previous_version,
@@ -331,8 +330,8 @@ class ConstitutionSuperseded(DomainEvent):
         new_version: str,
         superseded_by: str,
         superseded_reason: str,
-        occurred_at: Optional[datetime] = None,
-        metadata: Optional[EventMetadata] = None,
+        occurred_at: datetime | None = None,
+        metadata: EventMetadata | None = None,
     ):
         super().__init__(aggregate_id, occurred_at, metadata)
         self.old_version = old_version
@@ -343,7 +342,7 @@ class ConstitutionSuperseded(DomainEvent):
     def _get_event_version(self) -> str:
         return "1.0"
 
-    def get_event_data(self) -> Dict[str, Any]:
+    def get_event_data(self) -> dict[str, Any]:
         return {
             "old_version": self.old_version,
             "new_version": self.new_version,
@@ -359,13 +358,13 @@ class ComplianceEvaluationPerformed(DomainEvent):
     def __init__(
         self,
         aggregate_id: EntityId,
-        action: Dict[str, Any],
-        context: Dict[str, Any],
+        action: dict[str, Any],
+        context: dict[str, Any],
         compliance_score: float,
-        evaluated_principles: List[str],
-        violations_found: List[ViolationDetail],
-        occurred_at: Optional[datetime] = None,
-        metadata: Optional[EventMetadata] = None,
+        evaluated_principles: list[str],
+        violations_found: list[ViolationDetail],
+        occurred_at: datetime | None = None,
+        metadata: EventMetadata | None = None,
     ):
         super().__init__(aggregate_id, occurred_at, metadata)
         self.action = action
@@ -377,7 +376,7 @@ class ComplianceEvaluationPerformed(DomainEvent):
     def _get_event_version(self) -> str:
         return "1.0"
 
-    def get_event_data(self) -> Dict[str, Any]:
+    def get_event_data(self) -> dict[str, Any]:
         return {
             "action": self.action,
             "context": self.context,
@@ -397,9 +396,9 @@ class PrincipleDeactivated(DomainEvent):
         principle_id: str,
         deactivation_reason: str,
         deactivated_by: str,
-        replacement_principle_id: Optional[str] = None,
-        occurred_at: Optional[datetime] = None,
-        metadata: Optional[EventMetadata] = None,
+        replacement_principle_id: str | None = None,
+        occurred_at: datetime | None = None,
+        metadata: EventMetadata | None = None,
     ):
         super().__init__(aggregate_id, occurred_at, metadata)
         self.principle_id = principle_id
@@ -410,7 +409,7 @@ class PrincipleDeactivated(DomainEvent):
     def _get_event_version(self) -> str:
         return "1.0"
 
-    def get_event_data(self) -> Dict[str, Any]:
+    def get_event_data(self) -> dict[str, Any]:
         return {
             "principle_id": self.principle_id,
             "deactivation_reason": self.deactivation_reason,
@@ -429,9 +428,9 @@ class MetaRuleApplied(DomainEvent):
         meta_rule_id: str,
         conflict_id: str,
         resolution_outcome: str,
-        affected_principles: List[str],
-        occurred_at: Optional[datetime] = None,
-        metadata: Optional[EventMetadata] = None,
+        affected_principles: list[str],
+        occurred_at: datetime | None = None,
+        metadata: EventMetadata | None = None,
     ):
         super().__init__(aggregate_id, occurred_at, metadata)
         self.meta_rule_id = meta_rule_id
@@ -442,7 +441,7 @@ class MetaRuleApplied(DomainEvent):
     def _get_event_version(self) -> str:
         return "1.0"
 
-    def get_event_data(self) -> Dict[str, Any]:
+    def get_event_data(self) -> dict[str, Any]:
         return {
             "meta_rule_id": self.meta_rule_id,
             "conflict_id": self.conflict_id,

@@ -9,8 +9,9 @@ import asyncio
 import signal
 import threading
 import time
+from collections.abc import Callable
 from contextlib import contextmanager
-from typing import Any, Callable, Optional, TypeVar
+from typing import TypeVar
 
 # Constitutional compliance
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -38,7 +39,7 @@ class TimeoutManager:
         self.constitutional_hash = CONSTITUTIONAL_HASH
 
     @contextmanager
-    def timeout(self, seconds: Optional[float] = None):
+    def timeout(self, seconds: float | None = None):
         """
         Context manager for timeout operations with constitutional compliance.
 
@@ -67,7 +68,7 @@ class TimeoutManager:
             signal.alarm(0)
             signal.signal(signal.SIGALRM, old_handler)
 
-    async def async_timeout(self, coro, seconds: Optional[float] = None):
+    async def async_timeout(self, coro, seconds: float | None = None):
         """
         Async timeout wrapper with constitutional compliance.
 
@@ -92,7 +93,7 @@ class TimeoutManager:
             )
 
     def threaded_timeout(
-        self, func: Callable[[], T], seconds: Optional[float] = None
+        self, func: Callable[[], T], seconds: float | None = None
     ) -> T:
         """
         Execute function with timeout in separate thread.
@@ -145,12 +146,12 @@ class ConstitutionalTimeoutMixin:
         self.timeout_manager = TimeoutManager()
         self.constitutional_hash = CONSTITUTIONAL_HASH
 
-    async def with_constitutional_timeout(self, coro, timeout: Optional[float] = None):
+    async def with_constitutional_timeout(self, coro, timeout: float | None = None):
         """Execute coroutine with constitutional timeout."""
         return await self.timeout_manager.async_timeout(coro, timeout)
 
     @contextmanager
-    def constitutional_timeout(self, timeout: Optional[float] = None):
+    def constitutional_timeout(self, timeout: float | None = None):
         """Context manager for constitutional timeout."""
         with self.timeout_manager.timeout(timeout):
             yield
@@ -227,7 +228,7 @@ class PerformanceTimeoutManager(TimeoutManager):
             result = await self.async_timeout(coro, timeout_duration)
             execution_time = time.perf_counter() - start_time
             return result, execution_time
-        except TimeoutError as e:
+        except TimeoutError:
             execution_time = time.perf_counter() - start_time
             raise TimeoutError(
                 f"Performance test failed: {operation_type} took >{timeout_duration}s "
@@ -237,12 +238,12 @@ class PerformanceTimeoutManager(TimeoutManager):
 
 # Export for backward compatibility
 __all__ = [
-    "TimeoutError",
-    "TimeoutManager",
+    "CONSTITUTIONAL_HASH",
     "ConstitutionalTimeoutMixin",
     "PerformanceTimeoutManager",
-    "with_timeout",
+    "TimeoutError",
+    "TimeoutManager",
     "async_with_timeout",
     "default_timeout_manager",
-    "CONSTITUTIONAL_HASH",
+    "with_timeout",
 ]

@@ -9,24 +9,24 @@ This module provides advanced resource management capabilities including:
 """
 
 import asyncio
-import threading
+import contextlib
 import time
 from collections import defaultdict, deque
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any
 
 import psutil
 import structlog
+from shared.redis_client import ACGSRedisClient
 from sqlalchemy import create_engine
 from sqlalchemy.pool import QueuePool
 
 from ...infrastructure.database.connection_pool_config import (
-    ConnectionPoolConfig,
     ServiceConnectionPools,
 )
-from ..redis_client import ACGSRedisClient
 
 logger = structlog.get_logger(__name__)
 
@@ -88,7 +88,7 @@ class AlertRule:
     level: AlertLevel
     duration_seconds: float = 60.0  # Must be above threshold for this duration
     enabled: bool = True
-    callback: Optional[Callable] = None
+    callback: Callable | None = None
 
 
 @dataclass
@@ -120,29 +120,29 @@ class EnhancedResourceManager:
         self.cleanup_interval = cleanup_interval
 
         # Resource tracking
-        self.resource_metrics: Dict[ResourceType, ResourceMetrics] = {}
-        self.resource_history: Dict[ResourceType, deque] = defaultdict(
+        self.resource_metrics: dict[ResourceType, ResourceMetrics] = {}
+        self.resource_history: dict[ResourceType, deque] = defaultdict(
             lambda: deque(maxlen=3600)  # Keep 1 hour of history at 10s intervals
         )
 
         # Configuration
-        self.thresholds: Dict[ResourceType, ResourceThresholds] = (
+        self.thresholds: dict[ResourceType, ResourceThresholds] = (
             self._init_default_thresholds()
         )
-        self.alert_rules: List[AlertRule] = []
-        self.scaling_policies: Dict[ResourceType, ScalingPolicy] = {}
+        self.alert_rules: list[AlertRule] = []
+        self.scaling_policies: dict[ResourceType, ScalingPolicy] = {}
 
         # Connection pool management
-        self.connection_pools: Dict[str, Any] = {}
-        self.pool_stats: Dict[str, Dict[str, Any]] = defaultdict(dict)
+        self.connection_pools: dict[str, Any] = {}
+        self.pool_stats: dict[str, dict[str, Any]] = defaultdict(dict)
 
         # Alert tracking
-        self.active_alerts: Dict[str, datetime] = {}
+        self.active_alerts: dict[str, datetime] = {}
         self.alert_history: deque = deque(maxlen=1000)
 
         # Background tasks
-        self._monitoring_task: Optional[asyncio.Task] = None
-        self._cleanup_task: Optional[asyncio.Task] = None
+        self._monitoring_task: asyncio.Task | None = None
+        self._cleanup_task: asyncio.Task | None = None
         self._running = False
 
         # Performance metrics
@@ -155,7 +155,7 @@ class EnhancedResourceManager:
             "start_time": datetime.now(),
         }
 
-    def _init_default_thresholds(self) -> Dict[ResourceType, ResourceThresholds]:
+    def _init_default_thresholds(self) -> dict[ResourceType, ResourceThresholds]:
         """Initialize default resource thresholds."""
         return {
             ResourceType.DATABASE_CONNECTIONS: ResourceThresholds(
@@ -224,10 +224,8 @@ class EnhancedResourceManager:
         for task in [self._monitoring_task, self._cleanup_task]:
             if task and not task.done():
                 task.cancel()
-                try:
+                with contextlib.suppress(asyncio.CancelledError):
                     await task
-                except asyncio.CancelledError:
-                    pass
 
         # Close connection pools
         await self._close_connection_pools()
@@ -236,7 +234,7 @@ class EnhancedResourceManager:
 
     async def _initialize_connection_pools(self):
         """Initialize database connection pools for all services."""
-        for service_name in ServiceConnectionPools.SERVICE_CONFIGS.keys():
+        for service_name in ServiceConnectionPools.SERVICE_CONFIGS:
             try:
                 config = ServiceConnectionPools.get_config(service_name)
 
@@ -263,7 +261,7 @@ class EnhancedResourceManager:
                 )
 
             except Exception as e:
-                logger.error(
+                logger.exception(
                     "Failed to initialize connection pool",
                     service=service_name,
                     error=str(e),
@@ -276,7 +274,7 @@ class EnhancedResourceManager:
                 engine.dispose()
                 logger.debug("Closed connection pool", service=service_name)
             except Exception as e:
-                logger.error(
+                logger.exception(
                     "Error closing connection pool", service=service_name, error=str(e)
                 )
 
@@ -359,7 +357,7 @@ class EnhancedResourceManager:
                     self._update_performance_metrics()
 
                 except Exception as e:
-                    logger.error("Error in monitoring loop", error=str(e))
+                    logger.exception("Error in monitoring loop", error=str(e))
 
                 # Maintain monitoring interval
                 elapsed = time.time() - start_time
@@ -519,7 +517,7 @@ class EnhancedResourceManager:
                 }
 
             except Exception as e:
-                logger.error(
+                logger.exception(
                     "Error collecting database metrics",
                     service=service_name,
                     error=str(e),
@@ -549,7 +547,7 @@ class EnhancedResourceManager:
                 )
 
         except Exception as e:
-            logger.error("Error collecting Redis metrics", error=str(e))
+            logger.exception("Error collecting Redis metrics", error=str(e))
 
     async def _check_alert_rules(self):
         """Check all alert rules and fire alerts if needed."""
@@ -611,7 +609,7 @@ class EnhancedResourceManager:
             try:
                 await rule.callback(alert_data)
             except Exception as e:
-                logger.error("Error executing alert callback", error=str(e))
+                logger.exception("Error executing alert callback", error=str(e))
 
         logger.warning(
             "Resource alert fired",
@@ -645,12 +643,12 @@ class EnhancedResourceManager:
             # Determine if scaling is needed
             should_scale_up = (
                 metric.utilization_percent >= policy.scale_up_threshold
-                and metric.trend in ["increasing", "stable"]
+                and metric.trend in {"increasing", "stable"}
             )
 
             should_scale_down = (
                 metric.utilization_percent <= policy.scale_down_threshold
-                and metric.trend in ["decreasing", "stable"]
+                and metric.trend in {"decreasing", "stable"}
             )
 
             if should_scale_up:
@@ -705,7 +703,7 @@ class EnhancedResourceManager:
             )
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 "Error applying auto-scaling",
                 resource_type=resource_type.value,
                 direction=direction,
@@ -745,7 +743,7 @@ class EnhancedResourceManager:
                     )
 
             except Exception as e:
-                logger.error(
+                logger.exception(
                     "Error scaling database connections",
                     service=service_name,
                     error=str(e),
@@ -782,7 +780,7 @@ class EnhancedResourceManager:
                 )
 
                 # Clean up old resource history
-                for resource_type, history in self.resource_history.items():
+                for history in self.resource_history.values():
                     while (
                         history
                         and (datetime.now() - history[0]["timestamp"]).total_seconds()
@@ -805,7 +803,7 @@ class EnhancedResourceManager:
         # This is a simplified metric
         self.performance_metrics["average_response_time"] = self.monitoring_interval
 
-    def get_resource_status(self) -> Dict[str, Any]:
+    def get_resource_status(self) -> dict[str, Any]:
         """Get comprehensive resource status."""
         return {
             "resource_metrics": {

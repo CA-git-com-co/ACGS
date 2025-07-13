@@ -159,7 +159,9 @@ CONSTITUTIONAL COMPLIANCE REQUIREMENTS:
             return constitutional_context
 
         except Exception as e:
-            logger.error(f"Failed to build constitutional context for '{context}': {e}")
+            logger.exception(
+                f"Failed to build constitutional context for '{context}': {e}"
+            )
             return {
                 "context": context,
                 "category": category,
@@ -225,7 +227,7 @@ CONSTITUTIONAL COMPLIANCE REQUIREMENTS:
             return relevant_principles
 
         except Exception as e:
-            logger.error(f"Failed to fetch relevant principles: {e}")
+            logger.exception(f"Failed to fetch relevant principles: {e}")
             # Fallback to the original method
             try:
                 all_principles = await ac_service_client.list_principles(
@@ -252,7 +254,9 @@ CONSTITUTIONAL COMPLIANCE REQUIREMENTS:
 
                 return relevant_principles
             except Exception as fallback_error:
-                logger.error(f"Fallback principle fetch also failed: {fallback_error}")
+                logger.exception(
+                    f"Fallback principle fetch also failed: {fallback_error}"
+                )
                 return []
 
     def _principle_applies_to_context(
@@ -449,10 +453,7 @@ Step 3: PROACTIVE COMPLIANCE
             relevant_precedents = []
             context_keywords = context.lower().split()
 
-            for (
-                _precedent_key,
-                precedent_data,
-            ) in self.constitutional_precedents.items():
+            for precedent_data in self.constitutional_precedents.values():
                 # Check if precedent is relevant to current context
                 if any(
                     keyword in precedent_data.get("keywords", [])
@@ -478,7 +479,7 @@ Step 3: PROACTIVE COMPLIANCE
             }
 
         except Exception as e:
-            logger.error(f"Failed to retrieve constitutional precedents: {e}")
+            logger.exception(f"Failed to retrieve constitutional precedents: {e}")
             return {"precedents": [], "total_found": 0, "error": str(e)}
 
     async def _refresh_precedent_cache(self):
@@ -522,7 +523,7 @@ Step 3: PROACTIVE COMPLIANCE
             logger.info("Constitutional precedent cache refreshed")
 
         except Exception as e:
-            logger.error(f"Failed to refresh precedent cache: {e}")
+            logger.exception(f"Failed to refresh precedent cache: {e}")
 
     async def build_constitutional_prompt(
         self,
@@ -732,7 +733,7 @@ REASONING STEPS TO FOLLOW:
         context = constitutional_context.get("context", "general")
         principle_count = constitutional_context.get("principle_count", 0)
 
-        instructions = f"""
+        return f"""
 ENHANCED SYNTHESIS INSTRUCTIONS:
 Context: {context}
 Applicable Principles: {principle_count}
@@ -775,8 +776,6 @@ POSITIVE LANGUAGE PATTERNS TO USE:
 - "Proactively implement..." instead of "Avoid..."
 - "Continuously maintain..." instead of "Do not compromise..."
 """
-
-        return instructions
 
     def _apply_positive_patterns(self, text: str) -> str:
         """Apply positive action-focused patterns to text."""
@@ -847,7 +846,7 @@ POSITIVE LANGUAGE PATTERNS TO USE:
         context = constitutional_context.get("context", "general")
         principle_count = constitutional_context.get("principle_count", 0)
 
-        instructions = f"""
+        return f"""
 SYNTHESIS INSTRUCTIONS:
 Context: {context}
 Applicable Principles: {principle_count}
@@ -866,8 +865,6 @@ If principles conflict, resolve using this hierarchy:
 3. Explicit normative statements guide interpretation
 4. When in doubt, choose the most restrictive interpretation that satisfies all principles
 """
-
-        return instructions
 
     async def build_wina_enhanced_constitutional_context(
         self,
@@ -917,7 +914,7 @@ If principles conflict, resolve using this hierarchy:
                         wina_analysis_results[str(principle.get("id"))] = analysis
 
                     except Exception as e:
-                        logger.error(
+                        logger.exception(
                             f"WINA analysis failed for principle {principle.get('id')}: {e}"
                         )
                         wina_analysis_results[str(principle.get("id"))] = {
@@ -943,7 +940,7 @@ If principles conflict, resolve using this hierarchy:
                 )
 
             except Exception as e:
-                logger.error(f"WINA enhancement failed: {e}")
+                logger.exception(f"WINA enhancement failed: {e}")
                 constitutional_context["wina_enabled"] = False
                 constitutional_context["wina_error"] = str(e)
         else:
@@ -1029,11 +1026,11 @@ If principles conflict, resolve using this hierarchy:
                 f"Implement additional safety monitoring for: {', '.join(safety_critical_principles)}"
             )
 
-        recommendations.append(
-            "Monitor constitutional compliance continuously during optimization"
-        )
-        recommendations.append(
-            "Implement fallback mechanisms for optimization failures"
+        recommendations.extend(
+            (
+                "Monitor constitutional compliance continuously during optimization",
+                "Implement fallback mechanisms for optimization failures",
+            )
         )
 
         return recommendations
@@ -1061,7 +1058,7 @@ If principles conflict, resolve using this hierarchy:
         )
 
         # Add WINA enhancements if available
-        if constitutional_context.get("wina_enabled", False):
+        if constitutional_context.get("wina_enabled"):
             wina_section = self._build_wina_optimization_section(constitutional_context)
 
             # Insert WINA section before synthesis instructions

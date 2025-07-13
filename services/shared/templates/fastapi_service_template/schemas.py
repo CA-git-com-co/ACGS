@@ -13,7 +13,7 @@ This module provides standardized Pydantic schemas for ACGS services including:
 import uuid
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, Generic, List, Optional, TypeVar, Union
+from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -71,13 +71,13 @@ class APIResponse(ConstitutionalBaseModel, Generic[DataType]):
         description="Response status indicator", example=ResponseStatus.SUCCESS
     )
 
-    message: Optional[str] = Field(
+    message: str | None = Field(
         None,
         description="Human-readable response message",
         example="Operation completed successfully",
     )
 
-    data: Optional[DataType] = Field(None, description="Response payload data")
+    data: DataType | None = Field(None, description="Response payload data")
 
     timestamp: datetime = Field(
         default_factory=datetime.utcnow,
@@ -85,13 +85,13 @@ class APIResponse(ConstitutionalBaseModel, Generic[DataType]):
         example="2024-01-01T12:00:00Z",
     )
 
-    request_id: Optional[str] = Field(
+    request_id: str | None = Field(
         None,
         description="Unique request identifier for tracing",
         example="req_123456789",
     )
 
-    service_name: Optional[str] = Field(
+    service_name: str | None = Field(
         None,
         description="Name of the service that generated this response",
         example="constitutional-core",
@@ -114,15 +114,15 @@ class ErrorResponse(APIResponse[None]):
 
     status: ResponseStatus = ResponseStatus.ERROR
 
-    error_code: Optional[str] = Field(
+    error_code: str | None = Field(
         None, description="Machine-readable error code", example="VALIDATION_ERROR"
     )
 
-    error_details: Optional[Dict[str, Any]] = Field(
+    error_details: dict[str, Any] | None = Field(
         None, description="Additional error context and details"
     )
 
-    trace_id: Optional[str] = Field(
+    trace_id: str | None = Field(
         None,
         description="Unique trace identifier for debugging",
         example="trace_987654321",
@@ -155,7 +155,7 @@ class PaginationMeta(BaseModel):
     has_previous: bool = Field(description="Whether there are previous pages")
 
 
-class PaginatedResponse(APIResponse[List[DataType]]):
+class PaginatedResponse(APIResponse[list[DataType]]):
     """Response model for paginated data with metadata."""
 
     pagination: PaginationMeta = Field(description="Pagination metadata")
@@ -164,15 +164,15 @@ class PaginatedResponse(APIResponse[List[DataType]]):
 class FilterParams(BaseModel):
     """Base class for filtering parameters."""
 
-    search: Optional[str] = Field(
+    search: str | None = Field(
         None, description="General search term", min_length=1, max_length=100
     )
 
-    sort_by: Optional[str] = Field(
+    sort_by: str | None = Field(
         None, description="Field to sort by", example="created_at"
     )
 
-    sort_order: Optional[str] = Field(
+    sort_order: str | None = Field(
         default="desc",
         pattern="^(asc|desc)$",
         description="Sort order: asc or desc",
@@ -197,13 +197,13 @@ class TenantAwareModel(ConstitutionalBaseModel):
 class UserContextModel(BaseModel):
     """Model representing user context in requests."""
 
-    user_id: Optional[int] = Field(None, description="User identifier", example=12345)
+    user_id: int | None = Field(None, description="User identifier", example=12345)
 
     is_admin: bool = Field(
         default=False, description="Whether user has admin privileges"
     )
 
-    roles: List[str] = Field(
+    roles: list[str] = Field(
         default_factory=list,
         description="User roles and permissions",
         example=["user", "tenant_admin"],
@@ -235,7 +235,7 @@ class HealthCheckResponse(ConstitutionalBaseModel):
 
     environment: str = Field(description="Deployment environment", example="production")
 
-    components: Dict[str, str] = Field(
+    components: dict[str, str] = Field(
         default_factory=dict,
         description="Component health status",
         example={"database": "healthy", "redis": "healthy", "external_api": "healthy"},
@@ -251,7 +251,7 @@ class ConstitutionalValidationRequest(ConstitutionalBaseModel):
         max_length=10000,
     )
 
-    context: Optional[Dict[str, Any]] = Field(
+    context: dict[str, Any] | None = Field(
         default_factory=dict, description="Additional context for validation"
     )
 
@@ -273,11 +273,11 @@ class ConstitutionalValidationResponse(ConstitutionalBaseModel):
         ge=0.0, le=1.0, description="Constitutional compliance score (0.0 to 1.0)"
     )
 
-    violations: List[str] = Field(
+    violations: list[str] = Field(
         default_factory=list, description="List of constitutional violations found"
     )
 
-    recommendations: List[str] = Field(
+    recommendations: list[str] = Field(
         default_factory=list, description="Recommendations for improving compliance"
     )
 
@@ -339,11 +339,11 @@ class ExampleCreateRequest(TenantAwareModel):
         example="Example Resource",
     )
 
-    description: Optional[str] = Field(
+    description: str | None = Field(
         None, description="Resource description", max_length=1000
     )
 
-    metadata: Optional[Dict[str, Any]] = Field(
+    metadata: dict[str, Any] | None = Field(
         default_factory=dict, description="Additional metadata"
     )
 
@@ -363,7 +363,7 @@ class ExampleResponse(TenantAwareModel):
 
     name: str = Field(description="Resource name")
 
-    description: Optional[str] = Field(None, description="Resource description")
+    description: str | None = Field(None, description="Resource description")
 
     status: str = Field(description="Resource status", example="active")
 
@@ -371,7 +371,7 @@ class ExampleResponse(TenantAwareModel):
 
     updated_at: datetime = Field(description="Last update timestamp")
 
-    metadata: Dict[str, Any] = Field(
+    metadata: dict[str, Any] = Field(
         default_factory=dict, description="Additional metadata"
     )
 

@@ -18,4 +18,4 @@ from .hybrid_explainability_engine import HybridExplainabilityEngine
 from .lime_integration import LIMEExplainer
 from .shap_integration import SHAPExplainer
 
-__all__ = ["SHAPExplainer", "LIMEExplainer", "HybridExplainabilityEngine"]
+__all__ = ["HybridExplainabilityEngine", "LIMEExplainer", "SHAPExplainer"]

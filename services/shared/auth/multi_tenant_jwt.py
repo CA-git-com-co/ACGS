@@ -9,7 +9,7 @@ Constitutional Hash: cdd01ef066bc6cf2
 
 import uuid
 from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, Optional
+from typing import Any
 
 import jwt
 
@@ -32,7 +32,7 @@ class MultiTenantJWTHandler:
         self.access_token_expire_minutes = access_token_expire_minutes
 
     async def create_access_token(
-        self, data: Dict[str, Any], expires_delta: Optional[timedelta] = None
+        self, data: dict[str, Any], expires_delta: timedelta | None = None
     ) -> str:
         """Create a JWT access token with the provided data."""
         to_encode = data.copy()
@@ -56,25 +56,22 @@ class MultiTenantJWTHandler:
         if "constitutional_hash" not in to_encode:
             to_encode["constitutional_hash"] = CONSTITUTIONAL_HASH
 
-        encoded_jwt = jwt.encode(to_encode, self.secret_key, algorithm=self.algorithm)
-        return encoded_jwt
+        return jwt.encode(to_encode, self.secret_key, algorithm=self.algorithm)
 
-    async def decode_token(self, token: str) -> Dict[str, Any]:
+    async def decode_token(self, token: str) -> dict[str, Any]:
         """Decode and verify a JWT token."""
         try:
-            payload = jwt.decode(token, self.secret_key, algorithms=[self.algorithm])
-            return payload
+            return jwt.decode(token, self.secret_key, algorithms=[self.algorithm])
         except jwt.ExpiredSignatureError:
             raise ValueError("Token has expired")
         except jwt.InvalidTokenError as e:
-            raise ValueError(f"Invalid token: {str(e)}")
+            raise ValueError(f"Invalid token: {e!s}")
 
-    def decode_token_sync(self, token: str) -> Dict[str, Any]:
+    def decode_token_sync(self, token: str) -> dict[str, Any]:
         """Synchronous version of decode_token for compatibility."""
         try:
-            payload = jwt.decode(token, self.secret_key, algorithms=[self.algorithm])
-            return payload
+            return jwt.decode(token, self.secret_key, algorithms=[self.algorithm])
         except jwt.ExpiredSignatureError:
             raise ValueError("Token has expired")
         except jwt.InvalidTokenError as e:
-            raise ValueError(f"Invalid token: {str(e)}")
+            raise ValueError(f"Invalid token: {e!s}")

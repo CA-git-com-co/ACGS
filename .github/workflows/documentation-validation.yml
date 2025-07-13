@@ -1,33 +1,49 @@
-name: ACGS Documentation Validation Pipeline
+# ACGS-2 Documentation Validation Workflow
+# Constitutional Hash: cdd01ef066bc6cf2
+
+name: Documentation Validation
 
 on:
   push:
-    branches: [main, master, develop]
+    branches: [ main, develop ]
     paths:
-      - "docs/**"
-      - "README.md"
-      - "infrastructure/**"
-      - "config/**"
-      - "services/**"
+      - '**/*.md'
+      - '**/*.rst'
+      - '**/*.txt'
+      - 'docs/**'
+      - '.github/workflows/documentation-validation.yml'
   pull_request:
-    branches: [main, master, develop]
+    branches: [ main, develop ]
     paths:
-      - "docs/**"
-      - "README.md"
-      - "infrastructure/**"
-      - "config/**"
+      - '**/*.md'
+      - '**/*.rst'
+      - '**/*.txt'
+      - 'docs/**'
+      - '.github/workflows/documentation-validation.yml'
   workflow_dispatch:
+    inputs:
+      target_compliance:
+        description: 'Target constitutional compliance percentage'
+        required: false
+        default: '80'
+        type: string
+      full_validation:
+        description: 'Run full validation including link checking'
+        required: false
+        default: true
+        type: boolean
   schedule:
     # Run daily at 2 AM UTC for continuous validation
     - cron: "0 2 * * *"
 
 permissions:
   contents: read
-  issues: write
   pull-requests: write
+  checks: write
 
 env:
   CONSTITUTIONAL_HASH: "cdd01ef066bc6cf2"
+  TARGET_COMPLIANCE: ${{ github.event.inputs.target_compliance || '80' }}
   PYTHON_VERSION: "3.11"
   NODE_VERSION: "18"
 

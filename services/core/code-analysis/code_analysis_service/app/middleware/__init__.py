@@ -9,6 +9,6 @@ from .performance import PerformanceMiddleware
 
 __all__ = [
     "AuthenticationMiddleware",
-    "PerformanceMiddleware",
     "ConstitutionalComplianceMiddleware",
+    "PerformanceMiddleware",
 ]

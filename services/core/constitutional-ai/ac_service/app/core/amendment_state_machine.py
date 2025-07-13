@@ -313,13 +313,13 @@ class AmendmentStateMachine:
                 return result
 
             except SQLAlchemyError as e:
-                logger.error(f"Database error in state transition: {e}")
+                logger.exception(f"Database error in state transition: {e}")
                 await self._record_failed_transition(context, f"Database error: {e!s}")
                 self.metrics.record_policy_operation("state_transition", "db_error")
                 return {"success": False, "error": f"Database error: {e!s}"}
 
             except Exception as e:
-                logger.error(f"Unexpected error in state transition: {e}")
+                logger.exception(f"Unexpected error in state transition: {e}")
                 await self._record_failed_transition(
                     context, f"Unexpected error: {e!s}"
                 )
@@ -409,7 +409,7 @@ class AmendmentStateMachine:
             return {"success": True, "new_version": amendment.version}
 
         except Exception as e:
-            logger.error(f"Failed to update amendment state: {e}")
+            logger.exception(f"Failed to update amendment state: {e}")
             return {"success": False, "error": str(e)}
 
     async def _publish_workflow_event(self, event: WorkflowEvent):
@@ -437,7 +437,7 @@ class AmendmentStateMachine:
             )
 
         except Exception as e:
-            logger.error(f"Failed to publish workflow event: {e}")
+            logger.exception(f"Failed to publish workflow event: {e}")
 
     async def _execute_event_handlers(
         self,
@@ -455,7 +455,7 @@ class AmendmentStateMachine:
                 try:
                     await handler(db, context, transition)
                 except Exception as e:
-                    logger.error(f"Event handler failed for {event.value}: {e}")
+                    logger.exception(f"Event handler failed for {event.value}: {e}")
                     # Continue with other handlers even if one fails
 
     async def _record_successful_transition(
@@ -479,7 +479,7 @@ class AmendmentStateMachine:
                 )  # 24 hours
 
             except Exception as e:
-                logger.error(f"Failed to record successful transition: {e}")
+                logger.exception(f"Failed to record successful transition: {e}")
 
     async def _record_failed_transition(self, context: WorkflowContext, error: str):
         # requires: Valid input parameters
@@ -507,7 +507,7 @@ class AmendmentStateMachine:
                 )  # 24 hours
 
             except Exception as e:
-                logger.error(f"Failed to record failed transition: {e}")
+                logger.exception(f"Failed to record failed transition: {e}")
 
     # Condition checkers
     async def _check_review_approval(
@@ -548,7 +548,9 @@ class AmendmentStateMachine:
             logger.info(f"Implementing amendment {context.amendment_id}")
             return {"success": True}
         except Exception as e:
-            logger.error(f"Failed to implement amendment {context.amendment_id}: {e}")
+            logger.exception(
+                f"Failed to implement amendment {context.amendment_id}: {e}"
+            )
             return {"success": False, "error": str(e)}
 
 

@@ -6,9 +6,8 @@ Z3 SMT solver integration, and ACGS framework integration.
 """
 
 import logging
-from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import JSONResponse
 
 from ...models.constitutional import (
@@ -20,7 +19,6 @@ from ...models.constitutional import (
 from ...models.smt import SMTSolverRequest, SMTSolverResponse
 from ...models.verification import (
     VerificationRequest,
-    VerificationResult,
     VerificationStatus,
 )
 from ...services.formal_verification_service import FormalVerificationService
@@ -71,10 +69,10 @@ async def create_verification_request(
         }
 
     except Exception as e:
-        logger.error(f"Failed to create verification request: {e}")
+        logger.exception(f"Failed to create verification request: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to create verification request: {str(e)}",
+            detail=f"Failed to create verification request: {e!s}",
         )
 
 
@@ -112,10 +110,10 @@ async def get_verification_status(request_id: str) -> JSONResponse:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Failed to get verification status {request_id}: {e}")
+        logger.exception(f"Failed to get verification status {request_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get verification status: {str(e)}",
+            detail=f"Failed to get verification status: {e!s}",
         )
 
 
@@ -161,10 +159,10 @@ async def get_verification_result(request_id: str) -> JSONResponse:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Failed to get verification result {request_id}: {e}")
+        logger.exception(f"Failed to get verification result {request_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get verification result: {str(e)}",
+            detail=f"Failed to get verification result: {e!s}",
         )
 
 
@@ -188,10 +186,10 @@ async def verify_constitutional_compliance(
         return result
 
     except Exception as e:
-        logger.error(f"Constitutional verification failed: {e}")
+        logger.exception(f"Constitutional verification failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Constitutional verification failed: {str(e)}",
+            detail=f"Constitutional verification failed: {e!s}",
         )
 
 
@@ -213,10 +211,10 @@ async def validate_policy(
         return result
 
     except Exception as e:
-        logger.error(f"Policy validation failed: {e}")
+        logger.exception(f"Policy validation failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Policy validation failed: {str(e)}",
+            detail=f"Policy validation failed: {e!s}",
         )
 
 
@@ -236,17 +234,17 @@ async def solve_smt(request_data: SMTSolverRequest) -> SMTSolverResponse:
         return response
 
     except Exception as e:
-        logger.error(f"SMT solving failed: {e}")
+        logger.exception(f"SMT solving failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"SMT solving failed: {str(e)}",
+            detail=f"SMT solving failed: {e!s}",
         )
 
 
 @router.get("/requests")
 async def list_verification_requests(
-    status_filter: Optional[VerificationStatus] = None,
-    verification_type: Optional[str] = None,
+    status_filter: VerificationStatus | None = None,
+    verification_type: str | None = None,
     limit: int = 100,
 ) -> JSONResponse:
     """
@@ -272,10 +270,10 @@ async def list_verification_requests(
         )
 
     except Exception as e:
-        logger.error(f"Failed to list verification requests: {e}")
+        logger.exception(f"Failed to list verification requests: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to list verification requests: {str(e)}",
+            detail=f"Failed to list verification requests: {e!s}",
         )
 
 
@@ -301,7 +299,7 @@ async def verification_health_check() -> JSONResponse:
         )
 
     except Exception as e:
-        logger.error(f"Verification health check failed: {e}")
+        logger.exception(f"Verification health check failed: {e}")
         return JSONResponse(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             content={

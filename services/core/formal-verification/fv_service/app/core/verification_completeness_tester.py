@@ -7,7 +7,6 @@ positive vs negative cases.
 """
 
 import asyncio
-import json
 import logging
 import time
 from dataclasses import dataclass
@@ -198,7 +197,7 @@ class VerificationCompletenessTester:
                     failed_count += 1
 
             except Exception as e:
-                logger.error(f"Error running test case {test_case.name}: {e}")
+                logger.exception(f"Error running test case {test_case.name}: {e}")
                 error_result = CompletenessTestResult(
                     test_case_name=test_case.name,
                     expected_result=test_case.expected_result,
@@ -370,13 +369,11 @@ class VerificationCompletenessTester:
         boundary_norm = boundary_score / boundary_count if boundary_count > 0 else 0
 
         # Calculate weighted score
-        completeness_score = (
+        return (
             positive_weight * positive_norm
             + negative_weight * negative_norm
             + boundary_weight * boundary_norm
         )
-
-        return completeness_score
 
     def _result_to_dict(self, result: CompletenessTestResult) -> dict[str, Any]:
         """Convert result to dictionary for JSON serialization."""
@@ -400,26 +397,15 @@ async def run_completeness_testing_example():
     tester = VerificationCompletenessTester()
     results = await tester.run_completeness_tests()
 
-    print("=== Verification Completeness Test Results ===")
-    print(json.dumps(results, indent=2))
-
     # Check for critical issues
     if results["negative_case_pass_rate"] < 0.8:
-        print(
-            "⚠️  WARNING: Low negative case pass rate - verification may not properly detect violations"
-        )
+        pass
 
     if results["positive_case_pass_rate"] < 0.8:
-        print(
-            "⚠️  WARNING: Low positive case pass rate - verification may be too strict"
-        )
+        pass
 
     if results["verification_completeness_score"] < 0.7:
-        print(
-            "❌ CRITICAL: Low verification completeness score - SMT encoding needs improvement"
-        )
-    else:
-        print("✅ Verification completeness score acceptable")
+        pass
 
 
 if __name__ == "__main__":

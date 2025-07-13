@@ -15,14 +15,16 @@ Key Features:
 
 import logging
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 
-from services.shared.middleware.constitutional_validation import validate_constitutional_hash
+from services.shared.middleware.constitutional_validation import (
+    validate_constitutional_hash,
+)
 from services.shared.validation.constitutional_validator import CONSTITUTIONAL_HASH
+
 from ..services.enhanced_governance_framework import (
     DomainType,
     GovernanceFrameworkIntegration,
@@ -36,31 +38,42 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/enhanced-governance", tags=["Enhanced Governance"])
 
 # Global instances (initialized in main.py)
-governance_integration: Optional[GovernanceFrameworkIntegration] = None
-governance_monitor: Optional[GovernanceMonitor] = None
+governance_integration: GovernanceFrameworkIntegration | None = None
+governance_monitor: GovernanceMonitor | None = None
 
 
 # Pydantic models
 class GovernanceRequest(BaseModel):
     """Request model for governance evaluation"""
+
     query: str = Field(..., description="Query to evaluate for governance compliance")
-    domain: str = Field(default="general", description="Domain type (general, healthcare, finance, research, legal)")
-    context: Optional[Dict[str, Any]] = Field(default=None, description="Additional context for evaluation")
-    include_formal_verification: bool = Field(default=False, description="Include formal verification in evaluation")
-    constitutional_hash: str = Field(default=CONSTITUTIONAL_HASH, description="Constitutional compliance hash")
+    domain: str = Field(
+        default="general",
+        description="Domain type (general, healthcare, finance, research, legal)",
+    )
+    context: dict[str, Any] | None = Field(
+        default=None, description="Additional context for evaluation"
+    )
+    include_formal_verification: bool = Field(
+        default=False, description="Include formal verification in evaluation"
+    )
+    constitutional_hash: str = Field(
+        default=CONSTITUTIONAL_HASH, description="Constitutional compliance hash"
+    )
 
 
 class GovernanceResponse(BaseModel):
     """Response model for governance evaluation"""
+
     evaluation_id: str
     domain: str
     final_decision: str
     overall_compliance_score: float
     confidence: float
-    enhanced_governance: Dict[str, Any]
-    constitutional_validation: Optional[Dict[str, Any]]
-    formal_verification: Optional[Dict[str, Any]]
-    recommendations: List[str]
+    enhanced_governance: dict[str, Any]
+    constitutional_validation: dict[str, Any] | None
+    formal_verification: dict[str, Any] | None
+    recommendations: list[str]
     processing_time_ms: float
     constitutional_hash: str
     timestamp: str
@@ -68,16 +81,18 @@ class GovernanceResponse(BaseModel):
 
 class HealthResponse(BaseModel):
     """Response model for health checks"""
+
     status: str
     timestamp: str
-    metrics: Dict[str, float]
-    circuit_breaker: Dict[str, Any]
-    issues: List[str]
+    metrics: dict[str, float]
+    circuit_breaker: dict[str, Any]
+    issues: list[str]
     constitutional_hash: str
 
 
 class MetricsResponse(BaseModel):
     """Response model for performance metrics"""
+
     p99_latency_ms: float
     p95_latency_ms: float
     p50_latency_ms: float
@@ -95,7 +110,7 @@ async def get_governance_integration() -> GovernanceFrameworkIntegration:
     if governance_integration is None:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Governance integration not initialized"
+            detail="Governance integration not initialized",
         )
     return governance_integration
 
@@ -105,18 +120,20 @@ async def get_governance_monitor() -> GovernanceMonitor:
     if governance_monitor is None:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Governance monitor not initialized"
+            detail="Governance monitor not initialized",
         )
     return governance_monitor
 
 
 # Circuit breaker check
-async def check_circuit_breaker(monitor: GovernanceMonitor = Depends(get_governance_monitor)):
+async def check_circuit_breaker(
+    monitor: GovernanceMonitor = Depends(get_governance_monitor),
+):
     """Check if circuit breaker is open"""
     if monitor.is_circuit_breaker_open():
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Service temporarily unavailable - circuit breaker is open"
+            detail="Service temporarily unavailable - circuit breaker is open",
         )
 
 
@@ -130,29 +147,29 @@ async def evaluate_governance(
 ) -> GovernanceResponse:
     """
     Evaluate governance compliance using enhanced framework.
-    
+
     This endpoint provides comprehensive governance evaluation using the 4-step
     algorithm with domain-adaptive capabilities and constitutional compliance.
     """
     start_time = time.time()
-    
+
     try:
         # Validate constitutional hash
         if not validate_constitutional_hash(request.constitutional_hash):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Invalid constitutional hash. Expected: {CONSTITUTIONAL_HASH}"
+                detail=f"Invalid constitutional hash. Expected: {CONSTITUTIONAL_HASH}",
             )
-        
+
         # Parse domain type
         try:
             domain = DomainType(request.domain.lower())
         except ValueError:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Invalid domain type. Must be one of: {[d.value for d in DomainType]}"
+                detail=f"Invalid domain type. Must be one of: {[d.value for d in DomainType]}",
             )
-        
+
         # Perform governance evaluation
         result = await integration.evaluate_governance(
             query=request.query,
@@ -160,7 +177,7 @@ async def evaluate_governance(
             context=request.context,
             include_formal_verification=request.include_formal_verification,
         )
-        
+
         # Record monitoring metrics
         processing_time_ms = (time.time() - start_time) * 1000
         await monitor.record_request(
@@ -169,9 +186,9 @@ async def evaluate_governance(
             cache_hit=processing_time_ms < 1.0,  # Assume cache hit if very fast
             constitutional_compliant=result["overall_compliance_score"] >= 0.8,
         )
-        
+
         return GovernanceResponse(**result)
-        
+
     except HTTPException:
         # Record failed request
         processing_time_ms = (time.time() - start_time) * 1000
@@ -191,11 +208,11 @@ async def evaluate_governance(
             cache_hit=False,
             constitutional_compliant=False,
         )
-        
-        logger.error("Governance evaluation failed: %s", e)
+
+        logger.exception("Governance evaluation failed: %s", e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal server error during governance evaluation"
+            detail="Internal server error during governance evaluation",
         )
 
 
@@ -205,7 +222,7 @@ async def get_health_status(
 ) -> HealthResponse:
     """
     Get comprehensive health status for the governance framework.
-    
+
     This endpoint provides health information for readiness and liveness probes,
     including performance metrics and circuit breaker status.
     """
@@ -213,10 +230,10 @@ async def get_health_status(
         health_data = monitor.get_health_status()
         return HealthResponse(**health_data)
     except Exception as e:
-        logger.error("Health check failed: %s", e)
+        logger.exception("Health check failed: %s", e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Health check failed"
+            detail="Health check failed",
         )
 
 
@@ -226,7 +243,7 @@ async def get_performance_metrics(
 ) -> MetricsResponse:
     """
     Get current performance metrics for the governance framework.
-    
+
     This endpoint provides detailed performance metrics including latency,
     throughput, cache hit rates, and constitutional compliance rates.
     """
@@ -244,18 +261,18 @@ async def get_performance_metrics(
             constitutional_hash=CONSTITUTIONAL_HASH,
         )
     except Exception as e:
-        logger.error("Metrics collection failed: %s", e)
+        logger.exception("Metrics collection failed: %s", e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Metrics collection failed"
+            detail="Metrics collection failed",
         )
 
 
 @router.get("/domains")
-async def get_supported_domains() -> Dict[str, Any]:
+async def get_supported_domains() -> dict[str, Any]:
     """
     Get list of supported governance domains.
-    
+
     Returns information about available domain types and their configurations.
     """
     return {
@@ -264,9 +281,11 @@ async def get_supported_domains() -> Dict[str, Any]:
                 "name": domain.value,
                 "description": f"Governance framework optimized for {domain.value} domain",
                 "confidence_threshold": getattr(
-                    DomainAdaptiveGovernance.DOMAIN_CONFIGS.get(domain, GovernanceConfig()),
+                    DomainAdaptiveGovernance.DOMAIN_CONFIGS.get(
+                        domain, GovernanceConfig()
+                    ),
                     "confidence_threshold",
-                    0.6
+                    0.6,
                 ),
             }
             for domain in DomainType
@@ -279,7 +298,7 @@ async def get_supported_domains() -> Dict[str, Any]:
 async def evaluate_domain_governance(
     domain: str,
     query: str,
-    context: Optional[Dict[str, Any]] = None,
+    context: dict[str, Any] | None = None,
     include_formal_verification: bool = False,
     integration: GovernanceFrameworkIntegration = Depends(get_governance_integration),
     monitor: GovernanceMonitor = Depends(get_governance_monitor),
@@ -287,7 +306,7 @@ async def evaluate_domain_governance(
 ) -> GovernanceResponse:
     """
     Evaluate governance for a specific domain.
-    
+
     Convenience endpoint for domain-specific governance evaluation.
     """
     request = GovernanceRequest(
@@ -296,7 +315,7 @@ async def evaluate_domain_governance(
         context=context,
         include_formal_verification=include_formal_verification,
     )
-    
+
     return await evaluate_governance(request, integration, monitor, _)
 
 
@@ -309,7 +328,7 @@ def initialize_enhanced_governance_api(
 ) -> None:
     """
     Initialize enhanced governance API with dependencies.
-    
+
     Args:
         constitutional_validator: ACGS constitutional validation service
         audit_logger: ACGS audit logging system
@@ -317,7 +336,7 @@ def initialize_enhanced_governance_api(
         formal_verification_client: Formal verification service client
     """
     global governance_integration, governance_monitor
-    
+
     try:
         # Initialize governance integration
         governance_integration = create_enhanced_governance_integration(
@@ -326,14 +345,14 @@ def initialize_enhanced_governance_api(
             alerting_system=alerting_system,
             formal_verification_client=formal_verification_client,
         )
-        
+
         # Initialize governance monitor
         governance_monitor = GovernanceMonitor(
             alerting_system=alerting_system,
         )
-        
+
         logger.info("Enhanced governance API initialized successfully")
-        
+
     except Exception as e:
-        logger.error("Failed to initialize enhanced governance API: %s", e)
+        logger.exception("Failed to initialize enhanced governance API: %s", e)
         raise

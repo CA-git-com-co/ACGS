@@ -45,7 +45,6 @@ from .qwen3_embedding_client import (
 
 # External service clients
 try:
-    pass
 
     HTTP_CLIENT_AVAILABLE = True
 except ImportError:
@@ -209,7 +208,9 @@ class EnhancedConstitutionalAnalyzer:
             return True
 
         except Exception as e:
-            logger.error(f"Failed to initialize Enhanced Constitutional Analyzer: {e}")
+            logger.exception(
+                f"Failed to initialize Enhanced Constitutional Analyzer: {e}"
+            )
             return False
 
     async def analyze_principle_similarity(
@@ -302,7 +303,7 @@ class EnhancedConstitutionalAnalyzer:
 
         except Exception as e:
             self._performance_metrics["error_count"] += 1
-            logger.error(f"Error in principle similarity analysis: {e}")
+            logger.exception(f"Error in principle similarity analysis: {e}")
 
             return ConflictAnalysisResult(
                 entity1_id=principle1.id,
@@ -407,7 +408,7 @@ class EnhancedConstitutionalAnalyzer:
 
         except Exception as e:
             self._performance_metrics["error_count"] += 1
-            logger.error(f"Error in policy compliance analysis: {e}")
+            logger.exception(f"Error in policy compliance analysis: {e}")
 
             return ComplianceAnalysisResult(
                 policy_id=policy.id,
@@ -496,7 +497,7 @@ class EnhancedConstitutionalAnalyzer:
                 return self._heuristic_conflict_analysis(similarity_score)
 
         except Exception as e:
-            logger.error(f"Error in conflict analysis: {e}")
+            logger.exception(f"Error in conflict analysis: {e}")
             return self._heuristic_conflict_analysis(similarity_score)
 
     def _heuristic_conflict_analysis(
@@ -602,7 +603,7 @@ class EnhancedConstitutionalAnalyzer:
             return self._default_resolution_suggestions(severity)
 
         except Exception as e:
-            logger.error(f"Error generating resolution suggestions: {e}")
+            logger.exception(f"Error generating resolution suggestions: {e}")
             return self._default_resolution_suggestions(severity)
 
     def _default_resolution_suggestions(self, severity: ConflictSeverity) -> list[str]:
@@ -756,7 +757,7 @@ class EnhancedConstitutionalAnalyzer:
             }
 
         except Exception as e:
-            logger.error(f"Error checking principle violation: {e}")
+            logger.exception(f"Error checking principle violation: {e}")
             return {
                 "is_violation": True,
                 "severity": "unknown",
@@ -881,7 +882,7 @@ class EnhancedConstitutionalAnalyzer:
             }
 
         except Exception as e:
-            logger.error(f"Error in policy creation workflow analysis: {e}")
+            logger.exception(f"Error in policy creation workflow analysis: {e}")
             return {
                 "workflow_type": "policy_creation",
                 "policy_id": proposed_policy.id,
@@ -955,7 +956,7 @@ class EnhancedConstitutionalAnalyzer:
             }
 
         except Exception as e:
-            logger.error(f"Error in constitutional compliance workflow: {e}")
+            logger.exception(f"Error in constitutional compliance workflow: {e}")
             return {
                 "workflow_type": "constitutional_compliance",
                 "policy_id": policy_id,
@@ -1032,7 +1033,7 @@ class EnhancedConstitutionalAnalyzer:
             }
 
         except Exception as e:
-            logger.error(f"Error in WINA oversight workflow: {e}")
+            logger.exception(f"Error in WINA oversight workflow: {e}")
             return {
                 "workflow_type": "wina_oversight",
                 "action_id": governance_action.get("id", "unknown"),
@@ -1059,13 +1060,15 @@ class EnhancedConstitutionalAnalyzer:
             recommendations.append(
                 f"Improve constitutional compliance (current: {compliance_result.compliance_score:.2f})"
             )
-            for violation in compliance_result.violations:
-                if isinstance(violation, dict) and "remediation" in violation:
-                    recommendations.append(violation["remediation"])
+            recommendations.extend(
+                violation["remediation"]
+                for violation in compliance_result.violations
+                if isinstance(violation, dict) and "remediation" in violation
+            )
 
         # Add conflict resolution recommendations
         for conflict in conflict_analyses:
-            if conflict.severity in [ConflictSeverity.HIGH, ConflictSeverity.CRITICAL]:
+            if conflict.severity in {ConflictSeverity.HIGH, ConflictSeverity.CRITICAL}:
                 recommendations.extend(conflict.resolution_suggestions)
 
         return recommendations[:5]  # Limit to top 5 recommendations
@@ -1142,22 +1145,27 @@ class EnhancedConstitutionalAnalyzer:
         recommendations = []
 
         if not compliance_result.compliant:
-            recommendations.append(
-                "Immediate review required due to compliance violations"
-            )
-            recommendations.append(
-                "Suspend action until constitutional compliance achieved"
+            recommendations.extend(
+                (
+                    "Immediate review required due to compliance violations",
+                    "Suspend action until constitutional compliance achieved",
+                )
             )
 
         if compliance_result.compliance_score < 0.8:
-            recommendations.append("Enhanced monitoring recommended")
-            recommendations.append("Stakeholder consultation advised")
+            recommendations.extend(
+                ("Enhanced monitoring recommended", "Stakeholder consultation advised")
+            )
 
         # Context-specific recommendations
         risk_level = oversight_context.get("risk_level", "medium")
         if risk_level == "high":
-            recommendations.append("Multi-stakeholder approval required")
-            recommendations.append("Formal constitutional review process")
+            recommendations.extend(
+                (
+                    "Multi-stakeholder approval required",
+                    "Formal constitutional review process",
+                )
+            )
 
         return recommendations
 
@@ -1541,7 +1549,7 @@ async def integrate_with_pgc_service(
         )
 
         # Generate enforcement recommendation
-        enforcement_recommendation = {
+        return {
             "policy_id": policy_id,
             "enforcement_action": (
                 "allow" if compliance_result["compliant"] else "block"
@@ -1558,10 +1566,8 @@ async def integrate_with_pgc_service(
             ),
         }
 
-        return enforcement_recommendation
-
     except Exception as e:
-        logger.error(f"Error in PGC service integration: {e}")
+        logger.exception(f"Error in PGC service integration: {e}")
         return {
             "policy_id": policy_id,
             "enforcement_action": "block",  # Fail-safe: block on error
@@ -1609,7 +1615,7 @@ if __name__ == "__main__":
             logger.info("All examples completed successfully!")
 
         except Exception as e:
-            logger.error(f"Error running examples: {e}")
+            logger.exception(f"Error running examples: {e}")
         finally:
             # Clean up
             await close_enhanced_constitutional_analyzer()

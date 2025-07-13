@@ -8,7 +8,7 @@ for multi-agent operations in the ACGS system.
 import logging
 from datetime import datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
@@ -121,7 +121,7 @@ class ConstitutionalSafetyValidator:
             self.rules[rule.id] = rule
 
     async def validate_action(
-        self, action_data: dict[str, Any], context: Optional[dict[str, Any]] = None
+        self, action_data: dict[str, Any], context: dict[str, Any] | None = None
     ) -> ComplianceResult:
         """Validate an agent action against constitutional rules"""
         violations = []
@@ -148,7 +148,7 @@ class ConstitutionalSafetyValidator:
                 min_confidence = min(min_confidence, rule_result.get("confidence", 1.0))
 
             except Exception as e:
-                self.logger.error(f"Error validating rule {rule.name}: {e}")
+                self.logger.exception(f"Error validating rule {rule.name}: {e}")
                 violations.append(f"Validation error for rule {rule.name}")
                 highest_severity = SafetyLevel.HIGH
 
@@ -167,7 +167,7 @@ class ConstitutionalSafetyValidator:
         self,
         rule: ConstitutionalRule,
         action_data: dict[str, Any],
-        context: Optional[dict[str, Any]],
+        context: dict[str, Any] | None,
     ) -> dict[str, Any]:
         """Validate action data against a specific rule"""
         # This is a simplified implementation - in practice, each rule would have
@@ -175,28 +175,27 @@ class ConstitutionalSafetyValidator:
 
         if rule.validation_function == "validate_human_oversight":
             return await self._validate_human_oversight(action_data, context)
-        elif rule.validation_function == "validate_data_privacy":
+        if rule.validation_function == "validate_data_privacy":
             return await self._validate_data_privacy(action_data, context)
-        elif rule.validation_function == "validate_transparency":
+        if rule.validation_function == "validate_transparency":
             return await self._validate_transparency(action_data, context)
-        elif rule.validation_function == "validate_resource_usage":
+        if rule.validation_function == "validate_resource_usage":
             return await self._validate_resource_usage(action_data, context)
-        elif rule.validation_function == "validate_security_compliance":
+        if rule.validation_function == "validate_security_compliance":
             return await self._validate_security_compliance(action_data, context)
-        elif rule.validation_function == "validate_operational_transparency":
+        if rule.validation_function == "validate_operational_transparency":
             return await self._validate_operational_transparency(action_data, context)
-        elif rule.validation_function == "validate_operation_reversibility":
+        if rule.validation_function == "validate_operation_reversibility":
             return await self._validate_operation_reversibility(action_data, context)
-        else:
-            return {
-                "is_compliant": True,
-                "violations": [],
-                "recommendations": [],
-                "confidence": 1.0,
-            }
+        return {
+            "is_compliant": True,
+            "violations": [],
+            "recommendations": [],
+            "confidence": 1.0,
+        }
 
     async def _validate_human_oversight(
-        self, action_data: dict[str, Any], context: Optional[dict[str, Any]]
+        self, action_data: dict[str, Any], context: dict[str, Any] | None
     ) -> dict[str, Any]:
         """Validate human oversight requirements"""
         # Check if action requires human oversight
@@ -221,7 +220,7 @@ class ConstitutionalSafetyValidator:
         }
 
     async def _validate_data_privacy(
-        self, action_data: dict[str, Any], context: Optional[dict[str, Any]]
+        self, action_data: dict[str, Any], context: dict[str, Any] | None
     ) -> dict[str, Any]:
         """Validate data privacy requirements"""
         # Check for personal data handling
@@ -244,7 +243,7 @@ class ConstitutionalSafetyValidator:
         }
 
     async def _validate_transparency(
-        self, action_data: dict[str, Any], context: Optional[dict[str, Any]]
+        self, action_data: dict[str, Any], context: dict[str, Any] | None
     ) -> dict[str, Any]:
         """Validate transparency requirements"""
         # Check if decision is explainable
@@ -266,7 +265,7 @@ class ConstitutionalSafetyValidator:
         }
 
     async def _validate_resource_usage(
-        self, action_data: dict[str, Any], context: Optional[dict[str, Any]]
+        self, action_data: dict[str, Any], context: dict[str, Any] | None
     ) -> dict[str, Any]:
         """Validate resource usage limits"""
         # Check resource usage
@@ -287,7 +286,7 @@ class ConstitutionalSafetyValidator:
         }
 
     async def _validate_security_compliance(
-        self, action_data: dict[str, Any], context: Optional[dict[str, Any]]
+        self, action_data: dict[str, Any], context: dict[str, Any] | None
     ) -> dict[str, Any]:
         """Validate security compliance"""
         # Check security requirements
@@ -313,7 +312,7 @@ class ConstitutionalSafetyValidator:
         }
 
     async def _validate_operational_transparency(
-        self, action_data: dict[str, Any], context: Optional[dict[str, Any]]
+        self, action_data: dict[str, Any], context: dict[str, Any] | None
     ) -> dict[str, Any]:
         """Validate operational transparency requirements"""
         violations = []
@@ -357,7 +356,7 @@ class ConstitutionalSafetyValidator:
         }
 
     async def _validate_operation_reversibility(
-        self, action_data: dict[str, Any], context: Optional[dict[str, Any]]
+        self, action_data: dict[str, Any], context: dict[str, Any] | None
     ) -> dict[str, Any]:
         """Validate operation reversibility requirements"""
         violations = []
@@ -366,13 +365,13 @@ class ConstitutionalSafetyValidator:
         operation_type = action_data.get("operation_type", "unknown")
 
         # Check for state-changing operations
-        if operation_type in ["create", "update", "delete", "modify"]:
+        if operation_type in {"create", "update", "delete", "modify"}:
             # Check for rollback mechanism
-            if not action_data.get("rollback_enabled", False):
+            if not action_data.get("rollback_enabled"):
                 violations.append("State-changing operation lacks rollback mechanism")
 
             # Check for state backup before operation
-            if not action_data.get("state_backup_created", False):
+            if not action_data.get("state_backup_created"):
                 violations.append("No state backup created before operation")
 
             # Check for rollback procedure documentation
@@ -380,13 +379,13 @@ class ConstitutionalSafetyValidator:
                 violations.append("Missing rollback procedure documentation")
 
         # Check for transaction support
-        if operation_type in ["batch", "bulk", "transaction"]:
-            if not action_data.get("transaction_support", False):
+        if operation_type in {"batch", "bulk", "transaction"}:
+            if not action_data.get("transaction_support"):
                 violations.append("Batch operation lacks transaction support")
 
         # Check for operation checkpoints
-        if action_data.get("long_running", False):
-            if not action_data.get("checkpoint_enabled", False):
+        if action_data.get("long_running"):
+            if not action_data.get("checkpoint_enabled"):
                 recommendations.append("Enable checkpoints for long-running operations")
 
         # Check for rollback testing
@@ -394,8 +393,8 @@ class ConstitutionalSafetyValidator:
             recommendations.append("Test rollback procedures regularly")
 
         # Check for emergency stop mechanism
-        if operation_type in ["critical", "high_impact"]:
-            if not action_data.get("emergency_stop_available", False):
+        if operation_type in {"critical", "high_impact"}:
+            if not action_data.get("emergency_stop_available"):
                 violations.append("Critical operation lacks emergency stop mechanism")
 
         return {
@@ -458,7 +457,7 @@ class ConstitutionalSafetyFramework:
         self,
         operation_type: str,
         operation_data: dict[str, Any],
-        context: Optional[dict[str, Any]] = None,
+        context: dict[str, Any] | None = None,
     ) -> ComplianceResult:
         """
         Validate any ACGS operation for constitutional compliance.

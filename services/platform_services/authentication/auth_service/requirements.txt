@@ -1,3 +1,5 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
 asyncpg==0.29.0

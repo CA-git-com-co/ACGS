@@ -183,7 +183,7 @@ async def run_optimization_algorithm(
         )
 
     except Exception as e:
-        logger.error(f"Optimization algorithm failed: {e}")
+        logger.exception(f"Optimization algorithm failed: {e}")
         raise HTTPException(status_code=500, detail=f"Optimization failed: {e!s}")
 
 
@@ -259,7 +259,7 @@ async def start_real_time_monitoring(
         )
 
     except Exception as e:
-        logger.error(f"Real-time monitoring failed: {e}")
+        logger.exception(f"Real-time monitoring failed: {e}")
         raise HTTPException(status_code=500, detail=f"Monitoring failed: {e!s}")
 
 
@@ -306,7 +306,7 @@ async def get_active_alerts(
         }
 
     except Exception as e:
-        logger.error(f"Failed to get active alerts: {e}")
+        logger.exception(f"Failed to get active alerts: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to get alerts: {e!s}")
 
 
@@ -355,7 +355,7 @@ async def execute_pgc_integration(
         )
 
     except Exception as e:
-        logger.error(f"PGC integration failed: {e}")
+        logger.exception(f"PGC integration failed: {e}")
         raise HTTPException(status_code=500, detail=f"PGC integration failed: {e!s}")
 
 
@@ -382,7 +382,7 @@ async def get_pgc_integration_status(
         }
 
     except Exception as e:
-        logger.error(f"Failed to get PGC integration status: {e}")
+        logger.exception(f"Failed to get PGC integration status: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to get PGC status: {e!s}")
 
 
@@ -485,7 +485,7 @@ async def get_analytics_overview(
         )
 
     except Exception as e:
-        logger.error(f"Failed to get analytics overview: {e}")
+        logger.exception(f"Failed to get analytics overview: {e}")
         raise HTTPException(status_code=500, detail=f"Analytics failed: {e!s}")
 
 
@@ -544,7 +544,7 @@ async def get_performance_metrics(
         return {"metrics": metrics, "timestamp": time.time()}
 
     except Exception as e:
-        logger.error(f"Failed to get performance metrics: {e}")
+        logger.exception(f"Failed to get performance metrics: {e}")
         raise HTTPException(
             status_code=500, detail=f"Performance metrics failed: {e!s}"
         )

@@ -6,7 +6,7 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 from contextlib import asynccontextmanager
-from typing import Any, Optional
+from typing import Any
 
 import asyncpg
 from app.utils.constitutional import (
@@ -58,7 +58,7 @@ class DatabaseManager:
         self.command_timeout = command_timeout
 
         # Connection pool
-        self.pool: Optional[Pool] = None
+        self.pool: Pool | None = None
         self.is_connected = False
 
         logger.info(

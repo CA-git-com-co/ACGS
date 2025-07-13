@@ -17,7 +17,7 @@ class User(BaseModel):
 
 
 # Mock authentication functions
-async def get_current_user_from_token(token: str = None) -> User:
+async def get_current_user_from_token(token: str | None = None) -> User:
     """Mock function to get current user from token."""
     return User(roles=["admin", "fv_admin"])
 

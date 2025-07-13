@@ -8,16 +8,16 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import logging
+import pathlib
 import uuid
 from datetime import datetime, timedelta, timezone
-from typing import Any, Optional
+from typing import Any
 
 import jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel, Field
+from shared.repositories.tenant_repository import TenantContext, TenantRepository
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from ..repositories.tenant_repository import TenantContext, TenantRepository
 
 # Import user service client (use relative import or environment-based import)
 try:
@@ -29,7 +29,7 @@ except ImportError:
     import os
     import sys
 
-    sys.path.append(os.path.join(os.path.dirname(__file__), "../../../.."))
+    sys.path.append(os.path.join(pathlib.Path(__file__).parent, "../../../.."))
     from services.platform_services.authentication.auth_service.app.services.user_service import (
         UserServiceClient,
     )
@@ -56,9 +56,9 @@ class TenantTokenPayload(BaseModel):
     """Structure for tenant-aware JWT token payload."""
 
     sub: str  # User ID
-    tenant_id: Optional[str] = None
-    organization_id: Optional[str] = None
-    role: Optional[str] = None
+    tenant_id: str | None = None
+    organization_id: str | None = None
+    role: str | None = None
     permissions: list[str] = Field(default_factory=list)
     access_level: str = "standard"
     security_level: str = "basic"
@@ -78,17 +78,17 @@ class TenantUserInfo(BaseModel):
     user_id: int
     username: str
     email: str
-    tenant_id: Optional[uuid.UUID] = None
-    organization_id: Optional[uuid.UUID] = None
+    tenant_id: uuid.UUID | None = None
+    organization_id: uuid.UUID | None = None
     role: str = "user"
     permissions: list[str] = Field(default_factory=list)
     access_level: str = "standard"
     security_level: str = "basic"
     is_active: bool = True
     constitutional_compliance_required: bool = True
-    last_login: Optional[datetime] = None
-    tenant_name: Optional[str] = None
-    organization_name: Optional[str] = None
+    last_login: datetime | None = None
+    tenant_name: str | None = None
+    organization_name: str | None = None
 
 
 class TenantAuthenticationService:
@@ -117,8 +117,8 @@ class TenantAuthenticationService:
         session: AsyncSession,
         username: str,
         password: str,
-        tenant_id: Optional[uuid.UUID] = None,
-    ) -> Optional[TenantUserInfo]:
+        tenant_id: uuid.UUID | None = None,
+    ) -> TenantUserInfo | None:
         """
         Authenticate a user and validate access to a specific tenant.
 
@@ -166,33 +166,32 @@ class TenantAuthenticationService:
                 tenant_name=tenant.name,
                 organization_name="Organization Name",  # Would be fetched from org service
             )
-        else:
-            # Get first available tenant for user
-            user_tenants = await tenant_repo.get_user_tenants(real_user_id)
-            if not user_tenants:
-                raise TenantAccessDeniedError(f"User {username} has no tenant access")
+        # Get first available tenant for user
+        user_tenants = await tenant_repo.get_user_tenants(real_user_id)
+        if not user_tenants:
+            raise TenantAccessDeniedError(f"User {username} has no tenant access")
 
-            first_tenant_info = user_tenants[0]
-            tenant = first_tenant_info["tenant"]
+        first_tenant_info = user_tenants[0]
+        tenant = first_tenant_info["tenant"]
 
-            return TenantUserInfo(
-                user_id=real_user_id,
-                username=real_username,
-                email=real_email,
-                tenant_id=tenant.id,
-                organization_id=tenant.organization_id,
-                role=first_tenant_info["role"],
-                permissions=first_tenant_info["permissions"],
-                access_level=first_tenant_info["access_level"],
-                security_level=tenant.security_level,
-                constitutional_compliance_required=tenant.constitutional_hash
-                == CONSTITUTIONAL_HASH,
-                tenant_name=tenant.name,
-                organization_name="Organization Name",
-            )
+        return TenantUserInfo(
+            user_id=real_user_id,
+            username=real_username,
+            email=real_email,
+            tenant_id=tenant.id,
+            organization_id=tenant.organization_id,
+            role=first_tenant_info["role"],
+            permissions=first_tenant_info["permissions"],
+            access_level=first_tenant_info["access_level"],
+            security_level=tenant.security_level,
+            constitutional_compliance_required=tenant.constitutional_hash
+            == CONSTITUTIONAL_HASH,
+            tenant_name=tenant.name,
+            organization_name="Organization Name",
+        )
 
     def create_tenant_access_token(
-        self, user_info: TenantUserInfo, expires_delta: Optional[timedelta] = None
+        self, user_info: TenantUserInfo, expires_delta: timedelta | None = None
     ) -> str:
         """Create a JWT access token with tenant context."""
 
@@ -227,7 +226,7 @@ class TenantAuthenticationService:
         return jwt.encode(payload, self.secret_key, algorithm=self.algorithm)
 
     def create_tenant_refresh_token(
-        self, user_info: TenantUserInfo, expires_delta: Optional[timedelta] = None
+        self, user_info: TenantUserInfo, expires_delta: timedelta | None = None
     ) -> str:
         """Create a JWT refresh token with tenant context."""
 
@@ -485,7 +484,7 @@ class TenantPermissionChecker:
         self,
         user_permissions: list[str],
         required_permission: str,
-        user_role: str = None,
+        user_role: str | None = None,
     ) -> bool:
         """
         Check if user has the required permission.
@@ -509,7 +508,7 @@ class TenantPermissionChecker:
         user_context: TenantContext,
         resource_type: str,
         resource_action: str,
-        resource_tenant_id: Optional[uuid.UUID] = None,
+        resource_tenant_id: uuid.UUID | None = None,
     ) -> bool:
         """
         Check if user can access a specific resource.

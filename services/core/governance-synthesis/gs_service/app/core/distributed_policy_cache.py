@@ -308,7 +308,7 @@ class DistributedPolicyCache:
                     await asyncio.sleep(0.01)
 
             except Exception as e:
-                logger.error(f"Error in Raft consensus loop: {e}")
+                logger.exception(f"Error in Raft consensus loop: {e}")
                 await asyncio.sleep(1.0)
 
     async def _leader_heartbeat(self):
@@ -541,7 +541,7 @@ class DistributedPolicyCache:
             self.last_applied = log_entry.index
 
         except Exception as e:
-            logger.error(f"Failed to apply log entry {log_entry.index}: {e}")
+            logger.exception(f"Failed to apply log entry {log_entry.index}: {e}")
 
     async def _apply_policy_update(self, data: dict[str, Any]):
         """Apply policy update to local cache."""

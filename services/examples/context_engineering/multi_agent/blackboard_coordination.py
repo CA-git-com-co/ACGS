@@ -13,7 +13,7 @@ import json
 import logging
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 from uuid import UUID, uuid4
 
 import redis.asyncio as redis
@@ -48,17 +48,15 @@ class CoordinationMessage(BaseModel):
 
     message_id: UUID = Field(default_factory=uuid4)
     from_agent: str = Field(..., description="Source agent identifier")
-    to_agent: Optional[str] = Field(
+    to_agent: str | None = Field(
         default=None, description="Target agent (None for broadcast)"
     )
     message_type: str = Field(..., description="Type of coordination message")
-    content: Dict[str, Any] = Field(..., description="Message content")
+    content: dict[str, Any] = Field(..., description="Message content")
     priority: int = Field(default=1, description="Message priority (1=low, 5=critical)")
     constitutional_hash: str = Field(default=CONSTITUTIONAL_HASH)
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    expires_at: Optional[datetime] = Field(
-        default=None, description="Message expiration"
-    )
+    expires_at: datetime | None = Field(default=None, description="Message expiration")
 
 
 class CoordinationTask(BaseModel):
@@ -67,18 +65,18 @@ class CoordinationTask(BaseModel):
     task_id: UUID = Field(default_factory=uuid4)
     task_type: str = Field(..., description="Type of task")
     description: str = Field(..., description="Task description")
-    assigned_agent: Optional[str] = Field(default=None, description="Assigned agent")
-    required_agents: List[AgentType] = Field(
+    assigned_agent: str | None = Field(default=None, description="Assigned agent")
+    required_agents: list[AgentType] = Field(
         default_factory=list, description="Required agent types"
     )
     status: TaskStatus = Field(default=TaskStatus.PENDING)
     progress: float = Field(default=0.0, description="Task progress (0.0-1.0)")
-    result: Optional[Dict[str, Any]] = Field(default=None, description="Task result")
+    result: dict[str, Any] | None = Field(default=None, description="Task result")
     constitutional_compliance: bool = Field(default=True)
     constitutional_hash: str = Field(default=CONSTITUTIONAL_HASH)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    deadline: Optional[datetime] = Field(default=None, description="Task deadline")
+    deadline: datetime | None = Field(default=None, description="Task deadline")
 
 
 class BlackboardCoordinator:
@@ -96,9 +94,9 @@ class BlackboardCoordinator:
         self.agent_id = agent_id
         self.agent_type = agent_type
         self.constitutional_hash = CONSTITUTIONAL_HASH
-        self.redis_client: Optional[redis.Redis] = None
+        self.redis_client: redis.Redis | None = None
         self.is_active = False
-        self.subscribed_channels: List[str] = []
+        self.subscribed_channels: list[str] = []
 
         # Performance tracking
         self.coordination_metrics = {
@@ -134,7 +132,7 @@ class BlackboardCoordinator:
             return True
 
         except Exception as e:
-            self.logger.error(f"Blackboard initialization failed: {e}")
+            self.logger.exception(f"Blackboard initialization failed: {e}")
             return False
 
     async def _register_agent(self):
@@ -193,11 +191,11 @@ class BlackboardCoordinator:
                     await self._process_coordination_message(message)
 
         except Exception as e:
-            self.logger.error(f"Subscription handling failed: {e}")
+            self.logger.exception(f"Subscription handling failed: {e}")
         finally:
             await pubsub.close()
 
-    async def _process_coordination_message(self, message: Dict[str, Any]):
+    async def _process_coordination_message(self, message: dict[str, Any]):
         """Process incoming coordination message with constitutional validation."""
         try:
             # Parse message
@@ -228,7 +226,7 @@ class BlackboardCoordinator:
             )
 
         except Exception as e:
-            self.logger.error(f"Message processing failed: {e}")
+            self.logger.exception(f"Message processing failed: {e}")
 
     async def _route_coordination_message(self, message: CoordinationMessage):
         """Route coordination message to appropriate handler."""
@@ -274,7 +272,7 @@ class BlackboardCoordinator:
             await self._accept_task(task)
 
         except Exception as e:
-            self.logger.error(f"Task assignment handling failed: {e}")
+            self.logger.exception(f"Task assignment handling failed: {e}")
 
     async def _can_handle_task(self, task: CoordinationTask) -> bool:
         """Check if agent can handle the assigned task."""
@@ -286,11 +284,7 @@ class BlackboardCoordinator:
         capabilities = self._get_agent_capabilities()
         task_requirements = task.content.get("requirements", [])
 
-        for requirement in task_requirements:
-            if requirement not in capabilities:
-                return False
-
-        return True
+        return all(requirement in capabilities for requirement in task_requirements)
 
     async def _accept_task(self, task: CoordinationTask):
         """Accept and start executing a task."""
@@ -398,11 +392,11 @@ class BlackboardCoordinator:
                 },
             )
 
-            self.logger.error(f"Task {task.task_id} failed: {e}")
+            self.logger.exception(f"Task {task.task_id} failed: {e}")
 
     async def _execute_constitutional_analysis(
         self, task: CoordinationTask
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Execute constitutional analysis task."""
         # Simulate constitutional analysis (placeholder)
         await asyncio.sleep(0.002)  # 2ms simulation
@@ -418,7 +412,7 @@ class BlackboardCoordinator:
 
     async def _execute_performance_validation(
         self, task: CoordinationTask
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Execute performance validation task."""
         # Simulate performance validation
         await asyncio.sleep(0.001)  # 1ms simulation
@@ -434,7 +428,7 @@ class BlackboardCoordinator:
 
     async def _execute_consensus_participation(
         self, task: CoordinationTask
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Execute consensus participation task."""
         # Simulate consensus participation
         await asyncio.sleep(0.003)  # 3ms simulation
@@ -447,7 +441,7 @@ class BlackboardCoordinator:
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
-    async def _execute_generic_task(self, task: CoordinationTask) -> Dict[str, Any]:
+    async def _execute_generic_task(self, task: CoordinationTask) -> dict[str, Any]:
         """Execute generic task."""
         # Simulate generic task execution
         await asyncio.sleep(0.002)  # 2ms simulation
@@ -463,8 +457,8 @@ class BlackboardCoordinator:
     async def send_coordination_message(
         self,
         message_type: str,
-        content: Dict[str, Any],
-        to_agent: Optional[str] = None,
+        content: dict[str, Any],
+        to_agent: str | None = None,
         priority: int = 1,
     ) -> bool:
         """Send coordination message via blackboard."""
@@ -502,10 +496,10 @@ class BlackboardCoordinator:
             return True
 
         except Exception as e:
-            self.logger.error(f"Failed to send coordination message: {e}")
+            self.logger.exception(f"Failed to send coordination message: {e}")
             return False
 
-    async def _log_coordination_event(self, event_type: str, details: Dict[str, Any]):
+    async def _log_coordination_event(self, event_type: str, details: dict[str, Any]):
         """Log coordination event for audit trail."""
         event = {
             "event_type": f"blackboard_{event_type}",
@@ -521,7 +515,7 @@ class BlackboardCoordinator:
         await self.redis_client.lpush(audit_key, json.dumps(event))
         await self.redis_client.expire(audit_key, 86400 * 7)  # 7 day retention
 
-    def _get_agent_capabilities(self) -> List[str]:
+    def _get_agent_capabilities(self) -> list[str]:
         """Get agent capabilities based on agent type."""
         capabilities_map = {
             AgentType.ORCHESTRATOR: [
@@ -557,7 +551,7 @@ class BlackboardCoordinator:
 
         return capabilities_map.get(self.agent_type, ["basic_coordination"])
 
-    async def get_coordination_status(self) -> Dict[str, Any]:
+    async def get_coordination_status(self) -> dict[str, Any]:
         """Get current coordination status and metrics."""
         return {
             "agent_id": self.agent_id,
@@ -591,7 +585,7 @@ class BlackboardCoordinator:
             self.logger.info(f"Agent {self.agent_id} shutdown completed")
 
         except Exception as e:
-            self.logger.error(f"Shutdown failed: {e}")
+            self.logger.exception(f"Shutdown failed: {e}")
 
 
 # Example usage and testing
@@ -621,11 +615,8 @@ async def main():
     await asyncio.sleep(2)
 
     # Check coordination status
-    ethics_status = await ethics_agent.get_coordination_status()
-    legal_status = await legal_agent.get_coordination_status()
-
-    print("Ethics Agent Status:", json.dumps(ethics_status, indent=2))
-    print("Legal Agent Status:", json.dumps(legal_status, indent=2))
+    await ethics_agent.get_coordination_status()
+    await legal_agent.get_coordination_status()
 
     # Shutdown
     await ethics_agent.shutdown()

@@ -425,7 +425,7 @@ class DemocraticGovernanceOrchestrator:
             return proposal
 
         except Exception as e:
-            logger.error(f"Error initiating governance proposal: {e}")
+            logger.exception(f"Error initiating governance proposal: {e}")
             raise
 
     async def advance_workflow_stage(
@@ -520,7 +520,7 @@ class DemocraticGovernanceOrchestrator:
             return proposal
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Error advancing workflow stage for proposal {proposal_id}: {e}"
             )
             raise
@@ -623,7 +623,9 @@ class DemocraticGovernanceOrchestrator:
             }
 
         except Exception as e:
-            logger.error(f"Error recording approval for proposal {proposal_id}: {e}")
+            logger.exception(
+                f"Error recording approval for proposal {proposal_id}: {e}"
+            )
             raise
 
     async def finalize_proposal(
@@ -728,7 +730,7 @@ class DemocraticGovernanceOrchestrator:
             }
 
         except Exception as e:
-            logger.error(f"Error finalizing proposal {proposal_id}: {e}")
+            logger.exception(f"Error finalizing proposal {proposal_id}: {e}")
             raise
 
     # Helper methods for workflow operations
@@ -763,7 +765,7 @@ class DemocraticGovernanceOrchestrator:
             return audit_entry
 
         except Exception as e:
-            logger.error(f"Error creating audit entry: {e}")
+            logger.exception(f"Error creating audit entry: {e}")
             raise
 
     async def _generate_cryptographic_proof(
@@ -785,12 +787,10 @@ class DemocraticGovernanceOrchestrator:
 
             # Generate cryptographic hash as proof
             proof_json = json.dumps(proof_data, sort_keys=True, separators=(",", ":"))
-            cryptographic_proof = hashlib.sha3_256(proof_json.encode()).hexdigest()
-
-            return cryptographic_proof
+            return hashlib.sha3_256(proof_json.encode()).hexdigest()
 
         except Exception as e:
-            logger.error(f"Error generating cryptographic proof: {e}")
+            logger.exception(f"Error generating cryptographic proof: {e}")
             raise
 
     def _generate_proposal_hash(self, proposal: GovernanceProposal) -> str:
@@ -816,7 +816,7 @@ class DemocraticGovernanceOrchestrator:
             return hashlib.sha3_256(hashable_json.encode()).hexdigest()
 
         except Exception as e:
-            logger.error(f"Error generating proposal hash: {e}")
+            logger.exception(f"Error generating proposal hash: {e}")
             raise
 
     async def _validate_stage_transition(
@@ -892,7 +892,7 @@ class DemocraticGovernanceOrchestrator:
     ) -> dict[str, Any]:
         """Generate comprehensive audit report for finalized proposal."""
         try:
-            audit_report = {
+            return {
                 "proposal_id": proposal.proposal_id,
                 "title": proposal.title,
                 "decision_type": proposal.decision_type.value,
@@ -910,10 +910,8 @@ class DemocraticGovernanceOrchestrator:
                 "generated_at": datetime.now(timezone.utc).isoformat(),
             }
 
-            return audit_report
-
         except Exception as e:
-            logger.error(f"Error generating audit report: {e}")
+            logger.exception(f"Error generating audit report: {e}")
             raise
 
     async def _archive_approved_proposal(

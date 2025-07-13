@@ -335,11 +335,11 @@ class ConflictAuditSystem:
                 e
                 for e in audit_entries
                 if e.event_type
-                in [
+                in {
                     AuditEventType.RESOLUTION_ATTEMPTED,
                     AuditEventType.RESOLUTION_SUCCEEDED,
                     AuditEventType.RESOLUTION_FAILED,
-                ]
+                }
             ]
             escalation_entries = [
                 e
@@ -352,17 +352,16 @@ class ConflictAuditSystem:
                 detection_entries[0].event_data if detection_entries else None
             )
 
-            resolution_attempts = []
-            for entry in resolution_entries:
-                resolution_attempts.append(
-                    {
-                        "timestamp": entry.timestamp.isoformat(),
-                        "strategy": entry.event_data.get("strategy_used"),
-                        "success": entry.event_data.get("success"),
-                        "confidence": entry.event_data.get("confidence_score"),
-                        "processing_time": entry.event_data.get("processing_time"),
-                    }
-                )
+            resolution_attempts = [
+                {
+                    "timestamp": entry.timestamp.isoformat(),
+                    "strategy": entry.event_data.get("strategy_used"),
+                    "success": entry.event_data.get("success"),
+                    "confidence": entry.event_data.get("confidence_score"),
+                    "processing_time": entry.event_data.get("processing_time"),
+                }
+                for entry in resolution_entries
+            ]
 
             escalation_trace = (
                 escalation_entries[0].event_data if escalation_entries else None
@@ -399,7 +398,9 @@ class ConflictAuditSystem:
             )
 
         except Exception as e:
-            logger.error(f"Failed to generate conflict trace for {conflict_id}: {e}")
+            logger.exception(
+                f"Failed to generate conflict trace for {conflict_id}: {e}"
+            )
             raise
 
     async def collect_performance_metrics(self, db: AsyncSession) -> PerformanceMetrics:
@@ -456,5 +457,5 @@ class ConflictAuditSystem:
             return metrics
 
         except Exception as e:
-            logger.error(f"Failed to collect performance metrics: {e}")
+            logger.exception(f"Failed to collect performance metrics: {e}")
             raise

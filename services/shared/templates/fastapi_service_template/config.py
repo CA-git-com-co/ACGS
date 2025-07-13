@@ -11,9 +11,8 @@ This module provides standardized configuration management for ACGS services inc
 - Monitoring and observability configuration
 """
 
-import os
 from functools import lru_cache
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from pydantic import BaseSettings, Field, validator
 
@@ -84,7 +83,7 @@ class RedisConfig(BaseSettings):
     max_connections: int = Field(
         default=50,  # Increased from 20 to 50
         env="REDIS_MAX_CONNECTIONS",
-        description="Maximum Redis connections"
+        description="Maximum Redis connections",
     )
 
     # Caching settings
@@ -120,7 +119,7 @@ class SecurityConfig(BaseSettings):
     )
 
     # CORS settings
-    cors_origins: List[str] = Field(
+    cors_origins: list[str] = Field(
         default=["*"], env="CORS_ORIGINS", description="Allowed CORS origins"
     )
 
@@ -131,7 +130,7 @@ class SecurityConfig(BaseSettings):
     )
 
     # Host validation
-    allowed_hosts: List[str] = Field(
+    allowed_hosts: list[str] = Field(
         default=["*"], env="ALLOWED_HOSTS", description="Allowed host names"
     )
 
@@ -147,14 +146,14 @@ class SecurityConfig(BaseSettings):
     )
 
     @validator("cors_origins", pre=True)
-    def parse_cors_origins(cls, v):
+    def parse_cors_origins(self, v):
         """Parse CORS origins from environment variable."""
         if isinstance(v, str):
             return [origin.strip() for origin in v.split(",")]
         return v
 
     @validator("allowed_hosts", pre=True)
-    def parse_allowed_hosts(cls, v):
+    def parse_allowed_hosts(self, v):
         """Parse allowed hosts from environment variable."""
         if isinstance(v, str):
             return [host.strip() for host in v.split(",")]
@@ -206,7 +205,7 @@ class ConstitutionalConfig(BaseSettings):
     )
 
     @validator("hash")
-    def validate_constitutional_hash(cls, v):
+    def validate_constitutional_hash(self, v):
         """Validate constitutional hash format."""
         if len(v) != 16:  # Expected length for hash
             raise ValueError(f"Invalid constitutional hash format: {v}")
@@ -291,12 +290,12 @@ class MonitoringConfig(BaseSettings):
         default=False, env="ENABLE_TRACING", description="Enable distributed tracing"
     )
 
-    jaeger_endpoint: Optional[str] = Field(
+    jaeger_endpoint: str | None = Field(
         default=None, env="JAEGER_ENDPOINT", description="Jaeger tracing endpoint"
     )
 
     @validator("log_level")
-    def validate_log_level(cls, v):
+    def validate_log_level(self, v):
         """Validate log level."""
         valid_levels = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
         if v.upper() not in valid_levels:
@@ -335,13 +334,13 @@ class APIConfig(BaseSettings):
         default=True, env="API_ENABLE_REDOC", description="Enable ReDoc documentation"
     )
 
-    docs_url: Optional[str] = Field(
+    docs_url: str | None = Field(
         default="/docs",
         env="API_DOCS_URL",
         description="URL for Swagger UI documentation",
     )
 
-    redoc_url: Optional[str] = Field(
+    redoc_url: str | None = Field(
         default="/redoc", env="API_REDOC_URL", description="URL for ReDoc documentation"
     )
 
@@ -404,7 +403,7 @@ class ServiceConfig(BaseSettings):
         env_nested_delimiter = "__"
 
     @validator("environment")
-    def validate_environment(cls, v):
+    def validate_environment(self, v):
         """Validate environment setting."""
         valid_environments = ["development", "staging", "production", "test"]
         if v.lower() not in valid_environments:
@@ -429,7 +428,7 @@ class ServiceConfig(BaseSettings):
         """Check if running in development environment."""
         return self.environment == "development"
 
-    def get_cors_settings(self) -> Dict[str, Any]:
+    def get_cors_settings(self) -> dict[str, Any]:
         """Get CORS settings for FastAPI."""
         return {
             "allow_origins": self.security.cors_origins,
@@ -438,7 +437,7 @@ class ServiceConfig(BaseSettings):
             "allow_headers": ["*"],
         }
 
-    def get_api_metadata(self) -> Dict[str, Any]:
+    def get_api_metadata(self) -> dict[str, Any]:
         """Get API metadata for FastAPI app creation."""
         return {
             "title": self.api.title,
@@ -450,7 +449,7 @@ class ServiceConfig(BaseSettings):
         }
 
 
-@lru_cache()
+@lru_cache
 def get_settings() -> ServiceConfig:
     """
     Get cached service settings.
@@ -499,7 +498,7 @@ def get_test_config() -> ServiceConfig:
 
 
 # Configuration validation utilities
-def validate_production_config(config: ServiceConfig) -> List[str]:
+def validate_production_config(config: ServiceConfig) -> list[str]:
     """
     Validate configuration for production deployment.
 
@@ -534,11 +533,11 @@ def validate_production_config(config: ServiceConfig) -> List[str]:
 
 # Export main configuration
 __all__ = [
+    "CONSTITUTIONAL_HASH",
     "ServiceConfig",
-    "get_settings",
     "get_development_config",
     "get_production_config",
+    "get_settings",
     "get_test_config",
     "validate_production_config",
-    "CONSTITUTIONAL_HASH",
 ]

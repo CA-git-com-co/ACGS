@@ -9,16 +9,18 @@ Provides basic constitutional compliance verification and health checks.
 import logging
 import time
 from datetime import datetime, timezone
-from typing import Any, Dict
+from typing import Any
 
 import uvicorn
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 # Import fast constitutional validator
-from .fast_constitutional_validator import get_fast_validator, validate_constitutional_fast
+from .fast_constitutional_validator import (
+    get_fast_validator,
+    validate_constitutional_fast,
+)
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -51,16 +53,16 @@ app.add_middleware(
         "http://localhost:3000",  # Grafana dashboard
         "http://localhost:8080",  # API Gateway
         "http://localhost:9090",  # Prometheus
-        "https://acgs.local",     # Production domain
+        "https://acgs.local",  # Production domain
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=[
-        "Content-Type", 
-        "Authorization", 
+        "Content-Type",
+        "Authorization",
         "X-Constitutional-Hash",
         "X-Tenant-ID",
-        "X-Request-ID"
+        "X-Request-ID",
     ],
 )
 
@@ -79,14 +81,14 @@ class HealthResponse(BaseModel):
     version: str
     constitutional_hash: str
     uptime_seconds: float
-    components: Dict[str, Any]
+    components: dict[str, Any]
 
 
 class ConstitutionalValidationRequest(BaseModel):
     """Constitutional validation request model."""
 
     content: str
-    context: Dict[str, Any] = {}
+    context: dict[str, Any] = {}
     principles: list[str] = []
     require_formal_proof: bool = False
 
@@ -100,7 +102,7 @@ class ConstitutionalValidationResult(BaseModel):
     reasoning: list[str] = []
     recommendations: list[str] = []
     constitutional_hash: str = CONSTITUTIONAL_HASH
-    metadata: Dict[str, Any] = {}
+    metadata: dict[str, Any] = {}
 
 
 # =============================================================================
@@ -163,9 +165,9 @@ async def validate_constitutional_compliance(request: ConstitutionalValidationRe
         validation_result = await validate_constitutional_fast(
             content=request.content,
             context=request.context,
-            principles=request.principles
+            principles=request.principles,
         )
-        
+
         return ConstitutionalValidationResult(
             compliant=validation_result["compliant"],
             score=validation_result["score"],
@@ -177,10 +179,10 @@ async def validate_constitutional_compliance(request: ConstitutionalValidationRe
         )
 
     except Exception as e:
-        logger.error(f"Constitutional validation failed: {e}")
+        logger.exception(f"Constitutional validation failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Constitutional validation failed: {str(e)}",
+            detail=f"Constitutional validation failed: {e!s}",
         )
 
 
@@ -243,7 +245,7 @@ async def get_performance_metrics():
     """Get constitutional validation performance metrics."""
     validator = get_fast_validator()
     cache_stats = validator.get_cache_stats()
-    
+
     return {
         "constitutional_hash": CONSTITUTIONAL_HASH,
         "service": SERVICE_NAME,
@@ -251,9 +253,11 @@ async def get_performance_metrics():
         "metrics": cache_stats,
         "optimization_level": "ENHANCED_CACHING",
         "target_p99_latency_ms": 1.0,
-        "current_avg_latency_ms": cache_stats["performance_metrics"]["avg_validation_time_ms"],
+        "current_avg_latency_ms": cache_stats["performance_metrics"][
+            "avg_validation_time_ms"
+        ],
         "cache_effectiveness": cache_stats["cache_performance"]["overall_hit_rate"],
-        "timestamp": datetime.now(timezone.utc).isoformat()
+        "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
 

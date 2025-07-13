@@ -30,7 +30,7 @@ class FeedbackInput(BaseModel):
     )
 
     @field_validator("feedback_value")
-    def validate_feedback_value(cls, v, info):
+    def validate_feedback_value(self, v, info):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash

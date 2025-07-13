@@ -6,7 +6,7 @@ Pydantic schemas for API request/response validation.
 """
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field, validator
 
@@ -18,13 +18,13 @@ class AgentCapabilitySchema(BaseModel):
     proficiency_level: float = Field(
         ..., ge=0.0, le=1.0, description="Proficiency level (0.0-1.0)"
     )
-    domain_knowledge: List[str] = Field(
+    domain_knowledge: list[str] = Field(
         ..., description="List of domain knowledge areas"
     )
-    resource_requirements: Dict[str, Any] = Field(
+    resource_requirements: dict[str, Any] = Field(
         default_factory=dict, description="Resource requirements"
     )
-    performance_indicators: Dict[str, float] = Field(
+    performance_indicators: dict[str, float] = Field(
         default_factory=dict, description="Performance indicators"
     )
 
@@ -32,14 +32,14 @@ class AgentCapabilitySchema(BaseModel):
 class TaskRequirementsSchema(BaseModel):
     """Schema for task requirements."""
 
-    required_capabilities: List[str] = Field(..., description="Required capabilities")
+    required_capabilities: list[str] = Field(..., description="Required capabilities")
     minimum_proficiency: float = Field(
         ..., ge=0.0, le=1.0, description="Minimum proficiency level"
     )
     estimated_duration_minutes: int = Field(
         ..., gt=0, description="Estimated duration in minutes"
     )
-    resource_limits: Dict[str, Any] = Field(
+    resource_limits: dict[str, Any] = Field(
         default_factory=dict, description="Resource limits"
     )
     priority_level: int = Field(..., ge=1, le=5, description="Priority level (1-5)")
@@ -53,14 +53,14 @@ class CoordinationObjectiveSchema(BaseModel):
 
     objective_type: str = Field(..., description="Type of objective")
     description: str = Field(..., description="Objective description")
-    success_criteria: List[str] = Field(..., description="Success criteria")
-    quality_thresholds: Dict[str, float] = Field(
+    success_criteria: list[str] = Field(..., description="Success criteria")
+    quality_thresholds: dict[str, float] = Field(
         default_factory=dict, description="Quality thresholds"
     )
-    time_constraints: Dict[str, int] = Field(
+    time_constraints: dict[str, int] = Field(
         default_factory=dict, description="Time constraints in minutes"
     )
-    stakeholder_requirements: List[str] = Field(
+    stakeholder_requirements: list[str] = Field(
         default_factory=list, description="Stakeholder requirements"
     )
 
@@ -72,15 +72,15 @@ class AgentRegistrationRequest(BaseModel):
     """Request schema for agent registration."""
 
     agent_type: str = Field(..., description="Type of agent")
-    capabilities: List[AgentCapabilitySchema] = Field(
+    capabilities: list[AgentCapabilitySchema] = Field(
         ..., description="Agent capabilities"
     )
-    metadata: Optional[Dict[str, Any]] = Field(
+    metadata: dict[str, Any] | None = Field(
         default=None, description="Additional metadata"
     )
 
     @validator("agent_type")
-    def validate_agent_type(cls, v):
+    def validate_agent_type(self, v):
         allowed_types = ["ethics", "legal", "operational", "specialist", "coordinator"]
         if v not in allowed_types:
             raise ValueError(f"Agent type must be one of: {allowed_types}")
@@ -94,7 +94,7 @@ class AgentStatusUpdateRequest(BaseModel):
     reason: str = Field(..., description="Reason for status change")
 
     @validator("new_status")
-    def validate_status(cls, v):
+    def validate_status(self, v):
         allowed_statuses = ["available", "busy", "offline", "maintenance"]
         if v not in allowed_statuses:
             raise ValueError(f"Status must be one of: {allowed_statuses}")
@@ -104,14 +104,14 @@ class AgentStatusUpdateRequest(BaseModel):
 class TaskAssignmentRequest(BaseModel):
     """Request schema for task assignment."""
 
-    required_capabilities: List[str] = Field(..., description="Required capabilities")
+    required_capabilities: list[str] = Field(..., description="Required capabilities")
     minimum_proficiency: float = Field(
         ..., ge=0.0, le=1.0, description="Minimum proficiency level"
     )
     estimated_duration_minutes: int = Field(
         ..., gt=0, description="Estimated duration in minutes"
     )
-    resource_limits: Dict[str, Any] = Field(
+    resource_limits: dict[str, Any] = Field(
         default_factory=dict, description="Resource limits"
     )
     priority_level: int = Field(..., ge=1, le=5, description="Priority level (1-5)")
@@ -123,7 +123,7 @@ class TaskAssignmentRequest(BaseModel):
 class TaskCompletionRequest(BaseModel):
     """Request schema for task completion."""
 
-    result: Dict[str, Any] = Field(..., description="Task execution result")
+    result: dict[str, Any] = Field(..., description="Task execution result")
     performance_score: float = Field(
         ..., ge=0.0, le=1.0, description="Performance score (0.0-1.0)"
     )
@@ -136,11 +136,11 @@ class CoordinationSessionRequest(BaseModel):
         ..., description="Coordination objective"
     )
     initiator_id: str = Field(..., description="ID of session initiator")
-    required_agents: List[str] = Field(..., description="Required agent types")
-    participating_agents: List[str] = Field(..., description="Participating agent IDs")
+    required_agents: list[str] = Field(..., description="Required agent types")
+    participating_agents: list[str] = Field(..., description="Participating agent IDs")
 
     @validator("participating_agents")
-    def validate_participating_agents(cls, v):
+    def validate_participating_agents(self, v):
         if not v:
             raise ValueError("At least one participating agent is required")
         return v
@@ -149,7 +149,7 @@ class CoordinationSessionRequest(BaseModel):
 class SessionCompletionRequest(BaseModel):
     """Request schema for session completion."""
 
-    final_results: Dict[str, Any] = Field(..., description="Final session results")
+    final_results: dict[str, Any] = Field(..., description="Final session results")
 
 
 class ImpactAnalysisRequest(BaseModel):
@@ -157,16 +157,16 @@ class ImpactAnalysisRequest(BaseModel):
 
     subject_id: str = Field(..., description="ID of subject being analyzed")
     analysis_type: str = Field(..., description="Type of analysis")
-    required_agents: List[str] = Field(..., description="Required agent types")
-    context_data: Dict[str, Any] = Field(
+    required_agents: list[str] = Field(..., description="Required agent types")
+    context_data: dict[str, Any] = Field(
         default_factory=dict, description="Analysis context data"
     )
-    deadline: Optional[str] = Field(
+    deadline: str | None = Field(
         default=None, description="Analysis deadline (ISO format)"
     )
 
     @validator("analysis_type")
-    def validate_analysis_type(cls, v):
+    def validate_analysis_type(self, v):
         allowed_types = [
             "constitutional_impact",
             "policy_compliance",
@@ -187,8 +187,8 @@ class AgentResponse(BaseModel):
     agent_id: str = Field(..., description="Agent ID")
     agent_type: str = Field(..., description="Agent type")
     status: str = Field(..., description="Current status")
-    capabilities: List[Dict[str, Any]] = Field(..., description="Agent capabilities")
-    metadata: Dict[str, Any] = Field(
+    capabilities: list[dict[str, Any]] = Field(..., description="Agent capabilities")
+    metadata: dict[str, Any] = Field(
         default_factory=dict, description="Additional metadata"
     )
 
@@ -197,12 +197,10 @@ class SessionResponse(BaseModel):
     """Response schema for coordination session."""
 
     session_id: str = Field(..., description="Session ID")
-    objective: Dict[str, Any] = Field(..., description="Session objective")
+    objective: dict[str, Any] = Field(..., description="Session objective")
     status: str = Field(..., description="Session status")
-    participating_agents: List[str] = Field(..., description="Participating agent IDs")
-    started_at: Optional[datetime] = Field(
-        default=None, description="Session start time"
-    )
+    participating_agents: list[str] = Field(..., description="Participating agent IDs")
+    started_at: datetime | None = Field(default=None, description="Session start time")
 
 
 class AnalysisResponse(BaseModel):
@@ -211,7 +209,7 @@ class AnalysisResponse(BaseModel):
     analysis_id: str = Field(..., description="Analysis ID")
     subject_id: str = Field(..., description="Subject ID")
     analysis_type: str = Field(..., description="Analysis type")
-    result: Dict[str, Any] = Field(..., description="Analysis result")
+    result: dict[str, Any] = Field(..., description="Analysis result")
     status: str = Field(..., description="Analysis status")
 
 
@@ -223,8 +221,8 @@ class TaskResponse(BaseModel):
     status: str = Field(..., description="Task status")
     requirements: TaskRequirementsSchema = Field(..., description="Task requirements")
     assigned_at: datetime = Field(..., description="Assignment timestamp")
-    started_at: Optional[datetime] = Field(default=None, description="Start timestamp")
-    completed_at: Optional[datetime] = Field(
+    started_at: datetime | None = Field(default=None, description="Start timestamp")
+    completed_at: datetime | None = Field(
         default=None, description="Completion timestamp"
     )
 
@@ -247,7 +245,7 @@ class ErrorResponse(BaseModel):
 
     error: str = Field(..., description="Error type")
     message: str = Field(..., description="Error message")
-    details: Optional[Dict[str, Any]] = Field(default=None, description="Error details")
+    details: dict[str, Any] | None = Field(default=None, description="Error details")
     constitutional_hash: str = Field(
         default="cdd01ef066bc6cf2", description="Constitutional hash"
     )

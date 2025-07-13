@@ -1,3 +1,5 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 # Contributing to Model Context Protocol Inspector
 
 Thanks for your interest in contributing! This guide explains how to get involved.

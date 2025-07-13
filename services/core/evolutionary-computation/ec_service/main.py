@@ -127,7 +127,7 @@ async def lifespan(app: FastAPI):
             logger.info("✅ Leader election enabled for EC service")
 
         except Exception as e:
-            logger.error(f"❌ Failed to initialize leader election: {e}")
+            logger.exception(f"❌ Failed to initialize leader election: {e}")
             leader_election_service = None
     else:
         logger.info("⚠️ Leader election disabled for EC service")
@@ -546,7 +546,7 @@ async def submit_evolution_request(request: EvolutionRequestModel):
         }
 
     except Exception as e:
-        logger.error(f"Failed to submit evolution request: {e}")
+        logger.exception(f"Failed to submit evolution request: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -564,7 +564,7 @@ async def get_evolution_status(evolution_id: str):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Failed to get evolution status: {e}")
+        logger.exception(f"Failed to get evolution status: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -576,7 +576,7 @@ async def get_pending_reviews():
         return {"pending_reviews": pending_reviews, "count": len(pending_reviews)}
 
     except Exception as e:
-        logger.error(f"Failed to get pending reviews: {e}")
+        logger.exception(f"Failed to get pending reviews: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -604,7 +604,7 @@ async def submit_review_decision(task_id: str, decision: ReviewDecisionModel):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Failed to submit review decision: {e}")
+        logger.exception(f"Failed to submit review decision: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 

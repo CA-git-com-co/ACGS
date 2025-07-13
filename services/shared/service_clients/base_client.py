@@ -9,7 +9,7 @@ with each other, preventing circular dependencies.
 import asyncio
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Optional
+from typing import Any
 
 import httpx
 from pydantic import BaseModel
@@ -35,7 +35,7 @@ class BaseServiceClient(ABC):
     def __init__(self, config: ServiceClientConfig):
         self.config = config
         self.logger = logging.getLogger(self.__class__.__name__)
-        self._client: Optional[httpx.AsyncClient] = None
+        self._client: httpx.AsyncClient | None = None
 
     async def __aenter__(self):
         await self.connect()
@@ -66,9 +66,9 @@ class BaseServiceClient(ABC):
         self,
         method: str,
         endpoint: str,
-        data: Optional[Dict[str, Any]] = None,
-        params: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        data: dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """
         Make a request to another service with retry logic
         """
@@ -90,15 +90,15 @@ class BaseServiceClient(ABC):
                 await asyncio.sleep(2**attempt)  # Exponential backoff
 
             except httpx.HTTPStatusError as e:
-                self.logger.error(
+                self.logger.exception(
                     f"HTTP error {e.response.status_code}: {e.response.text}"
                 )
                 raise
+        return None
 
     @abstractmethod
     async def health_check(self) -> bool:
         """Check if the target service is healthy"""
-        pass
 
 
 class ConstitutionalCoreClient(BaseServiceClient):
@@ -112,40 +112,40 @@ class ConstitutionalCoreClient(BaseServiceClient):
             return False
 
     async def validate_constitutional_compliance(
-        self, request_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, request_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """Validate constitutional compliance"""
         return await self.request(
             "POST", "/api/v1/constitutional/validate", data=request_data
         )
 
     async def verify_formal_specification(
-        self, request_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, request_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """Verify formal specification using Z3 SMT solver"""
         return await self.request(
             "POST", "/api/v1/verification/verify", data=request_data
         )
 
     async def evaluate_unified_compliance(
-        self, request_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, request_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """Evaluate both constitutional and formal compliance"""
         return await self.request(
             "POST", "/api/v1/unified/compliance", data=request_data
         )
 
-    async def list_constitutional_principles(self) -> Dict[str, Any]:
+    async def list_constitutional_principles(self) -> dict[str, Any]:
         """List all constitutional principles"""
         return await self.request("GET", "/api/v1/constitutional/principles")
 
-    async def get_constitutional_principle(self, principle_id: str) -> Dict[str, Any]:
+    async def get_constitutional_principle(self, principle_id: str) -> dict[str, Any]:
         """Get a specific constitutional principle"""
         return await self.request(
             "GET", f"/api/v1/constitutional/principles/{principle_id}"
         )
 
-    async def get_verification_capabilities(self) -> Dict[str, Any]:
+    async def get_verification_capabilities(self) -> dict[str, Any]:
         """Get formal verification capabilities"""
         return await self.request("GET", "/api/v1/verification/capabilities")
 
@@ -160,29 +160,29 @@ class GovernanceEngineClient(BaseServiceClient):
         except Exception:
             return False
 
-    async def synthesize_policy(self, request_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def synthesize_policy(self, request_data: dict[str, Any]) -> dict[str, Any]:
         """Synthesize a policy"""
         return await self.request(
             "POST", "/api/v1/synthesis/synthesize", data=request_data
         )
 
-    async def enforce_policy(self, request_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def enforce_policy(self, request_data: dict[str, Any]) -> dict[str, Any]:
         """Enforce a policy"""
         return await self.request(
             "POST", "/api/v1/enforcement/enforce", data=request_data
         )
 
-    async def check_compliance(self, request_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def check_compliance(self, request_data: dict[str, Any]) -> dict[str, Any]:
         """Check compliance"""
         return await self.request("POST", "/api/v1/compliance/check", data=request_data)
 
-    async def list_workflows(self) -> Dict[str, Any]:
+    async def list_workflows(self) -> dict[str, Any]:
         """List available workflows"""
         return await self.request("GET", "/api/v1/workflows")
 
     async def execute_workflow(
-        self, workflow_id: str, parameters: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, workflow_id: str, parameters: dict[str, Any]
+    ) -> dict[str, Any]:
         """Execute a workflow"""
         return await self.request(
             "POST", f"/api/v1/workflows/{workflow_id}/execute", data=parameters

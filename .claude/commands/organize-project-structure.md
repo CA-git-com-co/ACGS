@@ -1,3 +1,5 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 # ACGS-2 Project Structure Organization & Optimization Prompt
 
 ## Context

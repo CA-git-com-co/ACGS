@@ -8,20 +8,19 @@ This module implements comprehensive performance optimizations including:
 - Computational bottleneck analysis and optimization
 """
 
-import asyncio
 import hashlib
 import json
 import logging
 import time
 from functools import wraps
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import redis.asyncio as aioredis
 
 logger = logging.getLogger(__name__)
 
 # Global Redis connection pool
-redis_pool: Optional[aioredis.ConnectionPool] = None
+redis_pool: aioredis.ConnectionPool | None = None
 
 # Performance metrics
 synthesis_metrics = {
@@ -60,7 +59,7 @@ async def initialize_redis_pool() -> aioredis.ConnectionPool:
             )
             logger.info("✅ Redis connection pool initialized for GS service")
         except Exception as e:
-            logger.error(f"❌ Failed to initialize Redis pool: {e}")
+            logger.exception(f"❌ Failed to initialize Redis pool: {e}")
             raise
 
     return redis_pool
@@ -127,11 +126,10 @@ def cache_synthesis_response(ttl: int = 600, key_prefix: str = "gs"):
                                 f"Synthesis cache hit for {func.__name__} ({synthesis_time_ms:.2f}ms)"
                             )
                             return response
-                        else:
-                            logger.warning(
-                                f"Constitutional hash mismatch in synthesis cache: {cache_key}"
-                            )
-                            await redis_client.delete(cache_key)
+                        logger.warning(
+                            f"Constitutional hash mismatch in synthesis cache: {cache_key}"
+                        )
+                        await redis_client.delete(cache_key)
 
                     except json.JSONDecodeError:
                         logger.warning(f"Invalid JSON in synthesis cache: {cache_key}")
@@ -159,7 +157,7 @@ def cache_synthesis_response(ttl: int = 600, key_prefix: str = "gs"):
                 return result
 
             except Exception as e:
-                logger.error(
+                logger.exception(
                     f"Synthesis cache operation failed for {func.__name__}: {e}"
                 )
                 # Fallback to direct execution
@@ -243,10 +241,10 @@ async def precompile_governance_patterns():
         logger.info(f"Pre-compiled {len(patterns)} governance patterns")
 
     except Exception as e:
-        logger.error(f"Failed to pre-compile governance patterns: {e}")
+        logger.exception(f"Failed to pre-compile governance patterns: {e}")
 
 
-async def get_governance_pattern(pattern_name: str) -> Optional[Dict[str, Any]]:
+async def get_governance_pattern(pattern_name: str) -> dict[str, Any] | None:
     """Get pre-compiled governance pattern with O(1) lookup"""
     # Try memory cache first (fastest)
     if pattern_name in governance_patterns_cache:
@@ -272,7 +270,7 @@ async def get_governance_pattern(pattern_name: str) -> Optional[Dict[str, Any]]:
     return None
 
 
-async def apply_wina_optimization(policy_data: Dict[str, Any]) -> Dict[str, Any]:
+async def apply_wina_optimization(policy_data: dict[str, Any]) -> dict[str, Any]:
     """Apply WINA (Weight Informed Neuron Activation) optimization for policy governance consistency"""
     start_time = time.time()
 
@@ -315,11 +313,11 @@ async def apply_wina_optimization(policy_data: Dict[str, Any]) -> Dict[str, Any]
         return optimized_policy
 
     except Exception as e:
-        logger.error(f"WINA optimization failed: {e}")
+        logger.exception(f"WINA optimization failed: {e}")
         return policy_data
 
 
-async def get_synthesis_performance_metrics() -> Dict[str, Any]:
+async def get_synthesis_performance_metrics() -> dict[str, Any]:
     """Get current synthesis performance metrics"""
     cache_hit_rate = 0.0
     total_cache_requests = (

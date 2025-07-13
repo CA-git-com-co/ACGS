@@ -5,8 +5,7 @@ Constitutional Hash: cdd01ef066bc6cf2
 Domain events for multi-agent coordination activities.
 """
 
-from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any
 
 from services.shared.domain.base import EntityId
 from services.shared.domain.events import DomainEvent
@@ -20,7 +19,7 @@ class AgentRegisteredEvent(DomainEvent):
         aggregate_id: EntityId,
         agent_id: EntityId,
         agent_type: str,
-        new_capability: Dict[str, Any],
+        new_capability: dict[str, Any],
         **kwargs,
     ):
         super().__init__(aggregate_id=aggregate_id, **kwargs)
@@ -31,7 +30,7 @@ class AgentRegisteredEvent(DomainEvent):
     def _get_event_version(self) -> str:
         return "1.0"
 
-    def get_event_data(self) -> Dict[str, Any]:
+    def get_event_data(self) -> dict[str, Any]:
         return {
             "agent_id": str(self.agent_id),
             "agent_type": self.agent_type,
@@ -60,7 +59,7 @@ class AgentStatusChangedEvent(DomainEvent):
     def _get_event_version(self) -> str:
         return "1.0"
 
-    def get_event_data(self) -> Dict[str, Any]:
+    def get_event_data(self) -> dict[str, Any]:
         return {
             "agent_id": str(self.agent_id),
             "old_status": self.old_status,
@@ -77,7 +76,7 @@ class TaskAssignedEvent(DomainEvent):
         aggregate_id: EntityId,
         agent_id: EntityId,
         task_id: EntityId,
-        task_requirements: Dict[str, Any],
+        task_requirements: dict[str, Any],
         **kwargs,
     ):
         super().__init__(aggregate_id=aggregate_id, **kwargs)
@@ -88,7 +87,7 @@ class TaskAssignedEvent(DomainEvent):
     def _get_event_version(self) -> str:
         return "1.0"
 
-    def get_event_data(self) -> Dict[str, Any]:
+    def get_event_data(self) -> dict[str, Any]:
         return {
             "agent_id": str(self.agent_id),
             "task_id": str(self.task_id),
@@ -117,7 +116,7 @@ class TaskStartedEvent(DomainEvent):
     def _get_event_version(self) -> str:
         return "1.0"
 
-    def get_event_data(self) -> Dict[str, Any]:
+    def get_event_data(self) -> dict[str, Any]:
         return {
             "task_id": str(self.task_id),
             "agent_id": str(self.agent_id),
@@ -134,7 +133,7 @@ class TaskCompletedEvent(DomainEvent):
         aggregate_id: EntityId,
         agent_id: EntityId,
         task_id: EntityId,
-        result: Dict[str, Any],
+        result: dict[str, Any],
         performance_score: float,
         **kwargs,
     ):
@@ -147,7 +146,7 @@ class TaskCompletedEvent(DomainEvent):
     def _get_event_version(self) -> str:
         return "1.0"
 
-    def get_event_data(self) -> Dict[str, Any]:
+    def get_event_data(self) -> dict[str, Any]:
         return {
             "agent_id": str(self.agent_id),
             "task_id": str(self.task_id),
@@ -177,7 +176,7 @@ class TaskFailedEvent(DomainEvent):
     def _get_event_version(self) -> str:
         return "1.0"
 
-    def get_event_data(self) -> Dict[str, Any]:
+    def get_event_data(self) -> dict[str, Any]:
         return {
             "task_id": str(self.task_id),
             "agent_id": str(self.agent_id),
@@ -193,8 +192,8 @@ class CoordinationSessionStartedEvent(DomainEvent):
         self,
         aggregate_id: EntityId,
         session_id: EntityId,
-        objective: Dict[str, Any],
-        participating_agents: List[str],
+        objective: dict[str, Any],
+        participating_agents: list[str],
         **kwargs,
     ):
         super().__init__(aggregate_id=aggregate_id, **kwargs)
@@ -205,7 +204,7 @@ class CoordinationSessionStartedEvent(DomainEvent):
     def _get_event_version(self) -> str:
         return "1.0"
 
-    def get_event_data(self) -> Dict[str, Any]:
+    def get_event_data(self) -> dict[str, Any]:
         return {
             "session_id": str(self.session_id),
             "objective": self.objective,
@@ -220,8 +219,8 @@ class CoordinationSessionCompletedEvent(DomainEvent):
         self,
         aggregate_id: EntityId,
         session_id: EntityId,
-        results: Dict[str, Any],
-        metrics: Dict[str, float],
+        results: dict[str, Any],
+        metrics: dict[str, float],
         duration_minutes: float,
         **kwargs,
     ):
@@ -234,7 +233,7 @@ class CoordinationSessionCompletedEvent(DomainEvent):
     def _get_event_version(self) -> str:
         return "1.0"
 
-    def get_event_data(self) -> Dict[str, Any]:
+    def get_event_data(self) -> dict[str, Any]:
         return {
             "session_id": str(self.session_id),
             "results": self.results,
@@ -250,9 +249,9 @@ class AgentCollaborationEvent(DomainEvent):
         self,
         aggregate_id: EntityId,
         primary_agent_id: EntityId,
-        collaborating_agents: List[EntityId],
+        collaborating_agents: list[EntityId],
         collaboration_type: str,
-        shared_context: Dict[str, Any],
+        shared_context: dict[str, Any],
         **kwargs,
     ):
         super().__init__(aggregate_id=aggregate_id, **kwargs)
@@ -264,7 +263,7 @@ class AgentCollaborationEvent(DomainEvent):
     def _get_event_version(self) -> str:
         return "1.0"
 
-    def get_event_data(self) -> Dict[str, Any]:
+    def get_event_data(self) -> dict[str, Any]:
         return {
             "primary_agent_id": str(self.primary_agent_id),
             "collaborating_agents": [
@@ -282,7 +281,7 @@ class CoordinationConflictEvent(DomainEvent):
         self,
         aggregate_id: EntityId,
         session_id: EntityId,
-        conflicting_agents: List[EntityId],
+        conflicting_agents: list[EntityId],
         conflict_type: str,
         conflict_description: str,
         resolution_strategy: str,
@@ -298,7 +297,7 @@ class CoordinationConflictEvent(DomainEvent):
     def _get_event_version(self) -> str:
         return "1.0"
 
-    def get_event_data(self) -> Dict[str, Any]:
+    def get_event_data(self) -> dict[str, Any]:
         return {
             "session_id": str(self.session_id),
             "conflicting_agents": [
@@ -331,7 +330,7 @@ class ResourceAllocationEvent(DomainEvent):
     def _get_event_version(self) -> str:
         return "1.0"
 
-    def get_event_data(self) -> Dict[str, Any]:
+    def get_event_data(self) -> dict[str, Any]:
         return {
             "agent_id": str(self.agent_id),
             "resource_type": self.resource_type,
@@ -347,7 +346,7 @@ class PerformanceMetricsUpdatedEvent(DomainEvent):
         self,
         aggregate_id: EntityId,
         agent_id: EntityId,
-        metrics: Dict[str, float],
+        metrics: dict[str, float],
         measurement_period: str,
         **kwargs,
     ):
@@ -359,7 +358,7 @@ class PerformanceMetricsUpdatedEvent(DomainEvent):
     def _get_event_version(self) -> str:
         return "1.0"
 
-    def get_event_data(self) -> Dict[str, Any]:
+    def get_event_data(self) -> dict[str, Any]:
         return {
             "agent_id": str(self.agent_id),
             "metrics": self.metrics,

@@ -113,14 +113,12 @@ async def verify_policies(
     principle_ids_to_fetch = set()
 
     if request_data.ac_principle_refs:
-        for ref in request_data.ac_principle_refs:
-            principle_ids_to_fetch.add(ref.id)
+        principle_ids_to_fetch.update(ref.id for ref in request_data.ac_principle_refs)
     else:
         # If not specified, use source_principle_ids from the fetched policy rules
         for rule in policy_rules_to_verify:
             if rule.source_principle_ids:
-                for pid in rule.source_principle_ids:
-                    principle_ids_to_fetch.add(pid)
+                principle_ids_to_fetch.update(rule.source_principle_ids)
 
     if not principle_ids_to_fetch:
         # If no principles are identified, verification cannot proceed meaningfully against custom obligations
@@ -149,7 +147,6 @@ async def verify_policies(
         missing_pids = principle_ids_to_fetch - found_pids
         # Decide: error out, or proceed with found principles?
         # For now, proceed with found principles, but a real system might log/error.
-        print(f"Warning: Could not fetch AC principles with IDs: {list(missing_pids)}")
         if not fetched_ac_principles:
             results = [
                 schemas.VerificationResult(
@@ -175,7 +172,7 @@ async def verify_policies(
     # 4. Update verification status in Integrity Service for each rule
     for result in verification_results:
         # Only update if status is not "error" (error might be due to FV service itself)
-        if result.status in ["verified", "failed"]:
+        if result.status in {"verified", "failed"}:
             updated_rule = await integrity_service_client.update_policy_rule_status(
                 rule_id=result.policy_rule_id,
                 status=result.status,  # "verified" or "failed"
@@ -247,8 +244,7 @@ async def tiered_verification(
     principle_ids_to_fetch = set()
     for rule in fetched_rules:
         if rule.source_principle_ids:
-            for pid in rule.source_principle_ids:
-                principle_ids_to_fetch.add(pid)
+            principle_ids_to_fetch.update(rule.source_principle_ids)
 
     ac_principles = []
     if principle_ids_to_fetch:
@@ -258,11 +254,9 @@ async def tiered_verification(
         )
 
     # Perform tiered validation
-    response = await tiered_validation_pipeline.validate_tiered(
+    return await tiered_validation_pipeline.validate_tiered(
         request=request_data, policy_rules=fetched_rules, ac_principles=ac_principles
     )
-
-    return response
 
 
 @router.post(
@@ -289,11 +283,9 @@ async def safety_property_check(
     )
 
     # Perform safety property checking
-    response = await safety_property_checker.check_safety_properties(
+    return await safety_property_checker.check_safety_properties(
         request=request_data, policy_rules=all_rules
     )
-
-    return response
 
 
 @router.post(
@@ -334,11 +326,9 @@ async def conflict_detection(
         all_rules_by_set[rule_set_name] = filtered_rules
 
     # Perform conflict detection
-    response = await conflict_detector.detect_conflicts(
+    return await conflict_detector.detect_conflicts(
         request=request_data, all_policy_rules=all_rules_by_set
     )
-
-    return response
 
 
 @router.get(
@@ -438,12 +428,11 @@ async def parallel_verify_policies(
             )
 
         # Use enhanced parallel validation pipeline
-        response = await parallel_pipeline.process_verification_request(
+        return await parallel_pipeline.process_verification_request(
             request_data,
             enable_parallel=enable_parallel,
             constitutional_context=constitutional_context,
         )
-        return response
 
     except Exception as e:
         raise HTTPException(
@@ -589,7 +578,7 @@ async def verify_constitutional_compliance(
 
     except Exception as e:
         total_time_ms = (time.time() - verification_start) * 1000
-        logger.error(
+        logger.exception(
             f"Constitutional compliance verification failed after {total_time_ms:.2f}ms: {e}"
         )
 
@@ -696,7 +685,9 @@ async def generate_formal_proof(
 
     except Exception as e:
         proof_time_ms = (time.time() - proof_start) * 1000
-        logger.error(f"Formal proof generation failed after {proof_time_ms:.2f}ms: {e}")
+        logger.exception(
+            f"Formal proof generation failed after {proof_time_ms:.2f}ms: {e}"
+        )
 
         raise HTTPException(
             status_code=500, detail=f"Formal proof generation failed: {e!s}"
@@ -729,7 +720,7 @@ async def get_verification_performance_metrics(
         metrics = verification_engine.get_performance_metrics()
 
         # Enhance with additional derived metrics
-        enhanced_metrics = {
+        return {
             "verification_engine_metrics": metrics,
             "performance_analysis": {
                 "verification_grade": (
@@ -755,8 +746,6 @@ async def get_verification_performance_metrics(
             },
             "timestamp": datetime.utcnow().isoformat(),
         }
-
-        return enhanced_metrics
 
     except Exception as e:
         raise HTTPException(
@@ -828,8 +817,7 @@ async def get_parallel_pipeline_stats(
     Task 7: Get parallel validation pipeline performance statistics.
     """
     try:
-        stats = await parallel_pipeline.get_pipeline_statistics()
-        return stats
+        return await parallel_pipeline.get_pipeline_statistics()
 
     except Exception as e:
         raise HTTPException(
@@ -866,11 +854,11 @@ async def websocket_progress_endpoint(websocket: WebSocket):
             except WebSocketDisconnect:
                 break
             except Exception as e:
-                logger.error(f"WebSocket error: {e}")
+                logger.exception(f"WebSocket error: {e}")
                 break
 
     except Exception as e:
-        logger.error(f"WebSocket connection error: {e}")
+        logger.exception(f"WebSocket connection error: {e}")
     finally:
         await websocket_streamer.disconnect(websocket)
 
@@ -914,11 +902,9 @@ async def bias_detection_analysis(
         )
 
     # Perform bias detection analysis
-    response = await bias_detector.detect_bias(
+    return await bias_detector.detect_bias(
         request=request_data, policy_rules=fetched_rules
     )
-
-    return response
 
 
 @router.post(
@@ -958,11 +944,9 @@ async def fairness_validation_analysis(
         )
 
     # Perform fairness validation
-    response = await bias_detector.validate_fairness(
+    return await bias_detector.validate_fairness(
         request=request_data, policy_rules=fetched_rules
     )
-
-    return response
 
 
 @router.get("/bias-metrics", response_model=list[dict], status_code=status.HTTP_200_OK)
@@ -973,7 +957,7 @@ async def get_available_bias_metrics(
     Phase 3: Get available bias detection metrics and their configurations.
     """
     # Return predefined bias metrics
-    bias_metrics = [
+    return [
         {
             "metric_id": "demographic_parity",
             "metric_type": "statistical",
@@ -1008,8 +992,6 @@ async def get_available_bias_metrics(
         },
     ]
 
-    return bias_metrics
-
 
 @router.get(
     "/fairness-properties", response_model=list[dict], status_code=status.HTTP_200_OK
@@ -1021,7 +1003,7 @@ async def get_available_fairness_properties(
     Phase 3: Get available fairness properties and their definitions.
     """
     # Return predefined fairness properties
-    fairness_properties = [
+    return [
         {
             "property_id": "demographic_parity",
             "property_type": "demographic_parity",
@@ -1055,5 +1037,3 @@ async def get_available_fairness_properties(
             "criticality_level": "medium",
         },
     ]
-
-    return fairness_properties

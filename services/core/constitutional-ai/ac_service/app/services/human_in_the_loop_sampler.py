@@ -268,7 +268,7 @@ class HumanInTheLoopSampler:
             return assessment
 
         except Exception as e:
-            logger.error(f"Uncertainty assessment failed: {e}")
+            logger.exception(f"Uncertainty assessment failed: {e}")
             # Return conservative assessment on error
             return UncertaintyAssessment(
                 decision_id=decision_context.get("decision_id", "error_decision"),
@@ -324,7 +324,7 @@ class HumanInTheLoopSampler:
             uncertainties[UncertaintyDimension.COMPLEXITY] = complexity_uncertainty
 
         except Exception as e:
-            logger.error(f"Dimensional uncertainty calculation failed: {e}")
+            logger.exception(f"Dimensional uncertainty calculation failed: {e}")
             # Return high uncertainty on error
             uncertainties = dict.fromkeys(UncertaintyDimension, 0.8)
 
@@ -387,7 +387,7 @@ class HumanInTheLoopSampler:
             return max(0.1, min(0.9, constitutional_uncertainty))
 
         except Exception as e:
-            logger.error(f"Constitutional uncertainty assessment failed: {e}")
+            logger.exception(f"Constitutional uncertainty assessment failed: {e}")
             return 0.8
 
     async def _assess_technical_uncertainty(
@@ -409,7 +409,7 @@ class HumanInTheLoopSampler:
             technical_uncertainty = 0.2  # Base uncertainty
 
             for indicator, weight in complexity_indicators.items():
-                if decision_context.get(indicator, False):
+                if decision_context.get(indicator):
                     technical_uncertainty += weight
 
             # Check for implementation precedent
@@ -425,7 +425,7 @@ class HumanInTheLoopSampler:
             return max(0.1, min(0.9, technical_uncertainty))
 
         except Exception as e:
-            logger.error(f"Technical uncertainty assessment failed: {e}")
+            logger.exception(f"Technical uncertainty assessment failed: {e}")
             return 0.6
 
     async def _assess_stakeholder_uncertainty(
@@ -434,7 +434,7 @@ class HumanInTheLoopSampler:
         """Assess uncertainty in stakeholder consensus."""
         try:
             # Check for explicit stakeholder conflicts
-            if decision_context.get("stakeholder_conflicts", False):
+            if decision_context.get("stakeholder_conflicts"):
                 return 0.8
 
             # Assess stakeholder diversity
@@ -468,7 +468,7 @@ class HumanInTheLoopSampler:
             return max(0.1, min(0.9, total_uncertainty))
 
         except Exception as e:
-            logger.error(f"Stakeholder uncertainty assessment failed: {e}")
+            logger.exception(f"Stakeholder uncertainty assessment failed: {e}")
             return 0.5
 
     async def _assess_precedent_uncertainty(
@@ -507,7 +507,7 @@ class HumanInTheLoopSampler:
             return max(0.1, min(0.8, precedent_uncertainty))
 
         except Exception as e:
-            logger.error(f"Precedent uncertainty assessment failed: {e}")
+            logger.exception(f"Precedent uncertainty assessment failed: {e}")
             return 0.6
 
     async def _assess_complexity_uncertainty(
@@ -578,7 +578,7 @@ class HumanInTheLoopSampler:
             return max(0.1, min(0.9, complexity_uncertainty))
 
         except Exception as e:
-            logger.error(f"Complexity uncertainty assessment failed: {e}")
+            logger.exception(f"Complexity uncertainty assessment failed: {e}")
             return 0.5
 
     def _calculate_overall_uncertainty(
@@ -597,7 +597,7 @@ class HumanInTheLoopSampler:
             return max(0.0, min(1.0, scaled_uncertainty))
 
         except Exception as e:
-            logger.error(f"Overall uncertainty calculation failed: {e}")
+            logger.exception(f"Overall uncertainty calculation failed: {e}")
             return 0.8
 
     async def _estimate_ai_confidence(
@@ -625,13 +625,13 @@ class HumanInTheLoopSampler:
                 base_confidence += 0.1
 
             # Penalize for novel scenarios
-            if decision_context.get("novel_scenario", False):
+            if decision_context.get("novel_scenario"):
                 base_confidence -= 0.2
 
             return max(0.1, min(0.95, base_confidence))
 
         except Exception as e:
-            logger.error(f"AI confidence estimation failed: {e}")
+            logger.exception(f"AI confidence estimation failed: {e}")
             return 0.5
 
     async def _identify_sampling_triggers(
@@ -657,13 +657,13 @@ class HumanInTheLoopSampler:
             # Novel scenario trigger
             if dimensional_uncertainties.get(
                 UncertaintyDimension.PRECEDENT, 0
-            ) > 0.7 or decision_context.get("novel_scenario", False):
+            ) > 0.7 or decision_context.get("novel_scenario"):
                 triggers.append(SamplingTrigger.NOVEL_SCENARIO)
 
             # Stakeholder conflict trigger
             if dimensional_uncertainties.get(
                 UncertaintyDimension.STAKEHOLDER, 0
-            ) > 0.6 or decision_context.get("stakeholder_conflicts", False):
+            ) > 0.6 or decision_context.get("stakeholder_conflicts"):
                 triggers.append(SamplingTrigger.STAKEHOLDER_CONFLICT)
 
             # Constitutional ambiguity trigger
@@ -674,15 +674,15 @@ class HumanInTheLoopSampler:
                 triggers.append(SamplingTrigger.CONSTITUTIONAL_AMBIGUITY)
 
             # Safety critical trigger
-            if decision_context.get("safety_critical", False):
+            if decision_context.get("safety_critical"):
                 triggers.append(SamplingTrigger.SAFETY_CRITICAL)
 
             # Escalation required trigger (from conflict resolution)
-            if decision_context.get("escalation_required", False):
+            if decision_context.get("escalation_required"):
                 triggers.append(SamplingTrigger.ESCALATION_REQUIRED)
 
         except Exception as e:
-            logger.error(f"Trigger identification failed: {e}")
+            logger.exception(f"Trigger identification failed: {e}")
             # Conservative approach - trigger high uncertainty
             triggers = [SamplingTrigger.HIGH_UNCERTAINTY]
 
@@ -723,13 +723,10 @@ class HumanInTheLoopSampler:
                 1 for trigger in triggers_activated if trigger in moderate_triggers
             )
 
-            if moderate_trigger_count >= 2:
-                return True
-
-            return False
+            return moderate_trigger_count >= 2
 
         except Exception as e:
-            logger.error(f"Human oversight determination failed: {e}")
+            logger.exception(f"Human oversight determination failed: {e}")
             return True  # Conservative approach
 
     async def _recommend_oversight_level(
@@ -774,7 +771,7 @@ class HumanInTheLoopSampler:
             return EscalationLevel.TECHNICAL_REVIEW
 
         except Exception as e:
-            logger.error(f"Oversight level recommendation failed: {e}")
+            logger.exception(f"Oversight level recommendation failed: {e}")
             return EscalationLevel.CONSTITUTIONAL_COUNCIL  # Conservative approach
 
     async def process_human_feedback(
@@ -846,7 +843,7 @@ class HumanInTheLoopSampler:
             return True
 
         except Exception as e:
-            logger.error(f"Human feedback processing failed: {e}")
+            logger.exception(f"Human feedback processing failed: {e}")
             return False
 
     async def _perform_adaptive_learning(self):
@@ -909,7 +906,7 @@ class HumanInTheLoopSampler:
             )
 
         except Exception as e:
-            logger.error(f"Adaptive learning failed: {e}")
+            logger.exception(f"Adaptive learning failed: {e}")
 
     def _adjust_thresholds(self, adjustment: float):
         # requires: Valid input parameters
@@ -942,7 +939,7 @@ class HumanInTheLoopSampler:
             )
 
         except Exception as e:
-            logger.error(f"Threshold adjustment failed: {e}")
+            logger.exception(f"Threshold adjustment failed: {e}")
 
     async def get_performance_metrics(self) -> dict[str, Any]:
         """Get current performance metrics for the HITL sampler."""
@@ -983,7 +980,7 @@ class HumanInTheLoopSampler:
             }
 
         except Exception as e:
-            logger.error(f"Performance metrics calculation failed: {e}")
+            logger.exception(f"Performance metrics calculation failed: {e}")
             return {"error": str(e)}
 
     # Helper methods
@@ -999,7 +996,7 @@ class HumanInTheLoopSampler:
             )
             return result.scalars().all()
         except Exception as e:
-            logger.error(f"Failed to get principles: {e}")
+            logger.exception(f"Failed to get principles: {e}")
             return []
 
     async def _find_similar_decisions(
@@ -1035,7 +1032,7 @@ class HumanInTheLoopSampler:
             return similar_decisions
 
         except Exception as e:
-            logger.error(f"Similar decisions search failed: {e}")
+            logger.exception(f"Similar decisions search failed: {e}")
             return []
 
     def _calculate_recency_score(self, timestamp: datetime | None) -> float:
@@ -1051,7 +1048,7 @@ class HumanInTheLoopSampler:
             return max(0.1, min(1.0, recency_score))
 
         except Exception as e:
-            logger.error(f"Recency score calculation failed: {e}")
+            logger.exception(f"Recency score calculation failed: {e}")
             return 0.3
 
     async def trigger_human_oversight(
@@ -1121,5 +1118,5 @@ class HumanInTheLoopSampler:
             return escalation_request
 
         except Exception as e:
-            logger.error(f"Human oversight trigger failed: {e}")
+            logger.exception(f"Human oversight trigger failed: {e}")
             return None

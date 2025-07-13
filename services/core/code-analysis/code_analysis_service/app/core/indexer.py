@@ -10,10 +10,13 @@ import hashlib
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
-from ..utils.constitutional import CONSTITUTIONAL_HASH, ensure_constitutional_compliance
-from ..utils.logging import get_logger, performance_logger
+from app.utils.constitutional import (
+    CONSTITUTIONAL_HASH,
+    ensure_constitutional_compliance,
+)
+from app.utils.logging import get_logger, performance_logger
 
 logger = get_logger("core.indexer")
 
@@ -25,9 +28,9 @@ class IndexerService:
 
     def __init__(
         self,
-        db_manager: Optional[Any] = None,
-        cache_service: Optional[Any] = None,
-        supported_languages: Optional[list[str]] = None,
+        db_manager: Any | None = None,
+        cache_service: Any | None = None,
+        supported_languages: list[str] | None = None,
     ):
         """
         Initialize indexer service.
@@ -126,7 +129,7 @@ class IndexerService:
         self.active_analyses.add(file_path)
 
         try:
-            start_time = time.time()
+            time.time()
 
             # Start performance tracking
             operation_id = f"analyze_file_{int(time.time())}"
@@ -296,12 +299,13 @@ class IndexerService:
                 )
 
             # Find files to analyze
-            files_to_analyze = []
             pattern = "**/*" if recursive else "*"
 
-            for file_path in path.glob(pattern):
-                if file_path.is_file() and self._should_analyze_file(str(file_path)):
-                    files_to_analyze.append(str(file_path))
+            files_to_analyze = [
+                str(file_path)
+                for file_path in path.glob(pattern)
+                if file_path.is_file() and self._should_analyze_file(str(file_path))
+            ]
 
             logger.info(
                 f"Found {len(files_to_analyze)} files to analyze in {directory_path}",
@@ -454,11 +458,7 @@ class IndexerService:
             "venv",
         ]
 
-        for pattern in ignore_patterns:
-            if pattern in str(path):
-                return False
-
-        return True
+        return all(pattern not in str(path) for pattern in ignore_patterns)
 
     async def _is_file_up_to_date(self, file_path: str) -> bool:
         """Check if file analysis is up to date."""
@@ -496,9 +496,9 @@ class IndexerService:
                 lines = content.split("\n")
                 for line in lines:
                     line = line.strip()
-                    if line.startswith("def ") or line.startswith("class "):
+                    if line.startswith(("def ", "class ")):
                         symbols_found += 1
-                    elif line.startswith("import ") or line.startswith("from "):
+                    elif line.startswith(("import ", "from ")):
                         dependencies_found += 1
 
             return {

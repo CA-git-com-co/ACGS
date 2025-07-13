@@ -27,7 +27,7 @@ from collections import deque
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -59,7 +59,7 @@ class PerformanceTarget(BaseModel):
     improvement_percentage: float = Field(
         default=0.0, description="Improvement from baseline"
     )
-    baseline_value: Optional[float] = Field(
+    baseline_value: float | None = Field(
         None, description="Baseline value for comparison"
     )
     threshold_warning: float = Field(..., description="Warning threshold")
@@ -77,8 +77,8 @@ class MetricDataPoint:
     timestamp: datetime
     metric_type: MetricType
     value: float
-    agent_id: Optional[str] = None
-    workflow_id: Optional[str] = None
+    agent_id: str | None = None
+    workflow_id: str | None = None
     context: dict[str, Any] = field(default_factory=dict)
     constitutional_hash: str = CONSTITUTIONAL_HASH
 
@@ -94,8 +94,8 @@ class PerformanceAlert:
     current_value: float
     threshold_value: float
     timestamp: datetime
-    agent_id: Optional[str] = None
-    workflow_id: Optional[str] = None
+    agent_id: str | None = None
+    workflow_id: str | None = None
     resolved: bool = False
 
 
@@ -195,8 +195,8 @@ class EnhancedPerformanceMonitor:
 
         # Background tasks
         self.is_running = False
-        self.cleanup_task: Optional[asyncio.Task] = None
-        self.analysis_task: Optional[asyncio.Task] = None
+        self.cleanup_task: asyncio.Task | None = None
+        self.analysis_task: asyncio.Task | None = None
 
         logger.info(
             "Enhanced Performance Monitor initialized with revolutionary metrics"
@@ -215,7 +215,7 @@ class EnhancedPerformanceMonitor:
             logger.info("Enhanced Performance Monitor started")
 
         except Exception as e:
-            logger.error(f"Failed to start performance monitor: {e!s}")
+            logger.exception(f"Failed to start performance monitor: {e!s}")
             raise
 
     async def stop(self) -> None:
@@ -232,15 +232,15 @@ class EnhancedPerformanceMonitor:
             logger.info("Enhanced Performance Monitor stopped")
 
         except Exception as e:
-            logger.error(f"Error stopping performance monitor: {e!s}")
+            logger.exception(f"Error stopping performance monitor: {e!s}")
 
     async def record_metric(
         self,
         metric_type: MetricType,
         value: float,
-        agent_id: Optional[str] = None,
-        workflow_id: Optional[str] = None,
-        context: Optional[dict[str, Any]] = None,
+        agent_id: str | None = None,
+        workflow_id: str | None = None,
+        context: dict[str, Any] | None = None,
     ) -> None:
         """Record a performance metric measurement"""
         try:
@@ -264,13 +264,13 @@ class EnhancedPerformanceMonitor:
             logger.debug(f"Recorded {metric_type.value}: {value} for agent {agent_id}")
 
         except Exception as e:
-            logger.error(f"Failed to record metric: {e!s}")
+            logger.exception(f"Failed to record metric: {e!s}")
 
     async def record_communication_overhead(
         self,
         baseline_messages: int,
         optimized_messages: int,
-        agent_id: Optional[str] = None,
+        agent_id: str | None = None,
     ) -> None:
         """Record communication overhead reduction"""
         try:
@@ -296,13 +296,13 @@ class EnhancedPerformanceMonitor:
                 target.improvement_percentage = reduction_percentage
 
         except Exception as e:
-            logger.error(f"Failed to record communication overhead: {e!s}")
+            logger.exception(f"Failed to record communication overhead: {e!s}")
 
     async def record_response_latency(
         self,
         baseline_latency: float,
         current_latency: float,
-        agent_id: Optional[str] = None,
+        agent_id: str | None = None,
     ) -> None:
         """Record response latency improvement"""
         try:
@@ -328,13 +328,13 @@ class EnhancedPerformanceMonitor:
                 target.improvement_percentage = improvement_percentage
 
         except Exception as e:
-            logger.error(f"Failed to record response latency: {e!s}")
+            logger.exception(f"Failed to record response latency: {e!s}")
 
     async def record_coordination_efficiency(
         self,
         successful_coordinations: int,
         total_coordinations: int,
-        workflow_id: Optional[str] = None,
+        workflow_id: str | None = None,
     ) -> None:
         """Record coordination efficiency metrics"""
         try:
@@ -355,13 +355,13 @@ class EnhancedPerformanceMonitor:
                 target.current_value = efficiency
 
         except Exception as e:
-            logger.error(f"Failed to record coordination efficiency: {e!s}")
+            logger.exception(f"Failed to record coordination efficiency: {e!s}")
 
     async def record_document_communication_effectiveness(
         self,
         successful_exchanges: int,
         total_exchanges: int,
-        workflow_id: Optional[str] = None,
+        workflow_id: str | None = None,
     ) -> None:
         """Record document-based communication effectiveness"""
         try:
@@ -384,12 +384,12 @@ class EnhancedPerformanceMonitor:
                 target.current_value = effectiveness
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Failed to record document communication effectiveness: {e!s}"
             )
 
     async def record_p99_latency(
-        self, latency_ms: float, agent_id: Optional[str] = None
+        self, latency_ms: float, agent_id: str | None = None
     ) -> None:
         """Record P99 latency measurement"""
         try:
@@ -405,13 +405,13 @@ class EnhancedPerformanceMonitor:
             target.current_value = latency_ms
 
         except Exception as e:
-            logger.error(f"Failed to record P99 latency: {e!s}")
+            logger.exception(f"Failed to record P99 latency: {e!s}")
 
     async def record_constitutional_compliance(
         self,
         compliant_operations: int,
         total_operations: int,
-        agent_id: Optional[str] = None,
+        agent_id: str | None = None,
     ) -> None:
         """Record constitutional compliance rate"""
         try:
@@ -433,7 +433,7 @@ class EnhancedPerformanceMonitor:
                 target.current_value = compliance_rate
 
         except Exception as e:
-            logger.error(f"Failed to record constitutional compliance: {e!s}")
+            logger.exception(f"Failed to record constitutional compliance: {e!s}")
 
     async def get_performance_summary(self) -> dict[str, Any]:
         """Get comprehensive performance summary"""
@@ -482,15 +482,15 @@ class EnhancedPerformanceMonitor:
             return summary
 
         except Exception as e:
-            logger.error(f"Failed to get performance summary: {e!s}")
+            logger.exception(f"Failed to get performance summary: {e!s}")
             return {"error": str(e)}
 
     async def _check_performance_alerts(
         self,
         metric_type: MetricType,
         value: float,
-        agent_id: Optional[str] = None,
-        workflow_id: Optional[str] = None,
+        agent_id: str | None = None,
+        workflow_id: str | None = None,
     ) -> None:
         """Check if metric value triggers performance alerts"""
         try:
@@ -515,13 +515,12 @@ class EnhancedPerformanceMonitor:
                 elif value < target.threshold_warning:
                     alert_severity = "warning"
                     threshold_value = target.threshold_warning
-            else:
-                if value > target.threshold_critical:
-                    alert_severity = "critical"
-                    threshold_value = target.threshold_critical
-                elif value > target.threshold_warning:
-                    alert_severity = "warning"
-                    threshold_value = target.threshold_warning
+            elif value > target.threshold_critical:
+                alert_severity = "critical"
+                threshold_value = target.threshold_critical
+            elif value > target.threshold_warning:
+                alert_severity = "warning"
+                threshold_value = target.threshold_warning
 
             if alert_severity:
                 alert_id = (
@@ -548,14 +547,13 @@ class EnhancedPerformanceMonitor:
                 logger.warning(f"Performance alert: {alert.message}")
 
         except Exception as e:
-            logger.error(f"Failed to check performance alerts: {e!s}")
+            logger.exception(f"Failed to check performance alerts: {e!s}")
 
     def _is_target_achieved(self, target: PerformanceTarget) -> bool:
         """Check if performance target is achieved"""
         if target.is_higher_better:
             return target.current_value >= target.target_value
-        else:
-            return target.current_value <= target.target_value
+        return target.current_value <= target.target_value
 
     def _get_recent_values(
         self, metric_type: MetricType, minutes: int = 10
@@ -563,15 +561,14 @@ class EnhancedPerformanceMonitor:
         """Get recent metric values within specified time window"""
         try:
             cutoff_time = datetime.now(timezone.utc) - timedelta(minutes=minutes)
-            recent_values = [
+            return [
                 point.value
                 for point in self.metrics[metric_type]
                 if point.timestamp >= cutoff_time
             ]
-            return recent_values
 
         except Exception as e:
-            logger.error(f"Failed to get recent values: {e!s}")
+            logger.exception(f"Failed to get recent values: {e!s}")
             return []
 
     async def _cleanup_loop(self) -> None:
@@ -582,7 +579,7 @@ class EnhancedPerformanceMonitor:
                 await asyncio.sleep(3600)  # Cleanup every hour
 
             except Exception as e:
-                logger.error(f"Error in cleanup loop: {e!s}")
+                logger.exception(f"Error in cleanup loop: {e!s}")
                 await asyncio.sleep(3600)
 
     async def _analysis_loop(self) -> None:
@@ -593,7 +590,7 @@ class EnhancedPerformanceMonitor:
                 await asyncio.sleep(300)  # Analyze every 5 minutes
 
             except Exception as e:
-                logger.error(f"Error in analysis loop: {e!s}")
+                logger.exception(f"Error in analysis loop: {e!s}")
                 await asyncio.sleep(300)
 
     async def _cleanup_old_metrics(self) -> None:
@@ -612,7 +609,7 @@ class EnhancedPerformanceMonitor:
             self.stats["last_cleanup"] = datetime.now(timezone.utc)
 
         except Exception as e:
-            logger.error(f"Failed to cleanup old metrics: {e!s}")
+            logger.exception(f"Failed to cleanup old metrics: {e!s}")
 
     async def _analyze_performance_trends(self) -> None:
         """Analyze performance trends and update targets"""
@@ -638,4 +635,4 @@ class EnhancedPerformanceMonitor:
             )
 
         except Exception as e:
-            logger.error(f"Failed to analyze performance trends: {e!s}")
+            logger.exception(f"Failed to analyze performance trends: {e!s}")

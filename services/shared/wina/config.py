@@ -274,7 +274,7 @@ def save_wina_config(
         },
     }
 
-    with open(config_path, "w") as f:
+    with open(config_path, "w", encoding="utf-8") as f:
         json.dump(config_data, f, indent=2)
 
 
@@ -290,7 +290,7 @@ def load_wina_config_from_file(
     Returns:
         Tuple of (WINAConfig, WINAIntegrationConfig)
     """
-    with open(config_path) as f:
+    with open(config_path, encoding="utf-8") as f:
         config_data = json.load(f)
 
     wina_data = config_data.get("wina_config", {})

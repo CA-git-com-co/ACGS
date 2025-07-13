@@ -135,7 +135,7 @@ class GFLOPsTracker:
             return estimated_gflops
 
         except Exception as e:
-            logger.error(f"GFLOPs estimation failed: {e}")
+            logger.exception(f"GFLOPs estimation failed: {e}")
             raise WINAMetricsError(f"GFLOPs estimation failed: {e}")
 
     def estimate_optimized_gflops(
@@ -173,7 +173,7 @@ class GFLOPsTracker:
             return optimized_gflops
 
         except Exception as e:
-            logger.error(f"Optimized GFLOPs estimation failed: {e}")
+            logger.exception(f"Optimized GFLOPs estimation failed: {e}")
             raise WINAMetricsError(f"Optimized GFLOPs estimation failed: {e}")
 
     def track_layer_gflops(self, layer_name: str, gflops: float) -> None:
@@ -289,7 +289,7 @@ class PerformanceMonitor:
                 # This is a placeholder for the monitoring logic
 
             except Exception as e:
-                logger.error(f"Error in monitoring loop: {e}")
+                logger.exception(f"Error in monitoring loop: {e}")
                 await asyncio.sleep(5)  # Brief pause before retrying
 
     def record_performance_snapshot(self, snapshot: WINAPerformanceSnapshot) -> None:
@@ -332,7 +332,7 @@ class PerformanceMonitor:
                 )
 
         except Exception as e:
-            logger.error(f"Failed to record performance snapshot: {e}")
+            logger.exception(f"Failed to record performance snapshot: {e}")
             raise WINAMetricsError(f"Snapshot recording failed: {e}")
 
     def _check_performance_alerts(self, snapshot: WINAPerformanceSnapshot) -> None:
@@ -429,7 +429,7 @@ class PerformanceMonitor:
         accuracy_retentions = [s.accuracy_retention for s in snapshots]
         sparsities = [s.sparsity_achieved for s in snapshots]
 
-        summary = {
+        return {
             "time_window_minutes": window_minutes,
             "total_snapshots": len(snapshots),
             "gflops_reduction": {
@@ -460,8 +460,6 @@ class PerformanceMonitor:
                 ]
             ),
         }
-
-        return summary
 
 
 class WINAMetrics:
@@ -547,7 +545,7 @@ class WINAMetrics:
             self.current_metrics.update(metrics)
 
         except Exception as e:
-            logger.error(f"Failed to record optimization metrics: {e}")
+            logger.exception(f"Failed to record optimization metrics: {e}")
             raise WINAMetricsError(f"Optimization recording failed: {e}")
 
     async def get_current_metrics(self) -> dict[str, Any]:

@@ -16,7 +16,7 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 import asyncpg
 from cryptography.hazmat.primitives import hashes
@@ -65,15 +65,15 @@ class AuditEvent:
     description: str
     event_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    user_id: Optional[str] = None
-    session_id: Optional[str] = None
-    resource_id: Optional[str] = None
+    user_id: str | None = None
+    session_id: str | None = None
+    resource_id: str | None = None
     metadata: dict[str, Any] = field(default_factory=dict)
     severity: AuditSeverity = AuditSeverity.MEDIUM
     constitutional_hash: str = CONSTITUTIONAL_HASH
-    ip_address: Optional[str] = None
-    user_agent: Optional[str] = None
-    request_id: Optional[str] = None
+    ip_address: str | None = None
+    user_agent: str | None = None
+    request_id: str | None = None
 
 
 @dataclass
@@ -143,7 +143,7 @@ class CryptographicAuditChain:
             logger.info("Cryptographic keys initialized for audit trail signing")
 
         except Exception as e:
-            logger.error(f"Failed to initialize cryptographic keys: {e}")
+            logger.exception(f"Failed to initialize cryptographic keys: {e}")
             raise
 
     async def append_event(self, event: AuditEvent) -> str:
@@ -178,7 +178,7 @@ class CryptographicAuditChain:
             return block.block_id
 
         except Exception as e:
-            logger.error(f"Failed to append audit event: {e}")
+            logger.exception(f"Failed to append audit event: {e}")
             raise
 
     async def _store_audit_event(self, event: AuditEvent):
@@ -212,10 +212,10 @@ class CryptographicAuditChain:
                 )
 
         except Exception as e:
-            logger.error(f"Failed to store audit event: {e}")
+            logger.exception(f"Failed to store audit event: {e}")
             raise
 
-    async def _get_current_block(self) -> Optional[AuditBlock]:
+    async def _get_current_block(self) -> AuditBlock | None:
         """Get the current active audit block."""
         try:
             async with self.db_pool.acquire() as conn:
@@ -233,7 +233,7 @@ class CryptographicAuditChain:
                 return None
 
         except Exception as e:
-            logger.error(f"Failed to get current block: {e}")
+            logger.exception(f"Failed to get current block: {e}")
             return None
 
     async def _should_create_new_block(self, current_block: AuditBlock) -> bool:
@@ -318,7 +318,7 @@ class CryptographicAuditChain:
             return block
 
         except Exception as e:
-            logger.error(f"Failed to create new audit block: {e}")
+            logger.exception(f"Failed to create new audit block: {e}")
             raise
 
     async def _get_pending_events(self) -> list[AuditEvent]:
@@ -359,7 +359,7 @@ class CryptographicAuditChain:
                 return events
 
         except Exception as e:
-            logger.error(f"Failed to get pending events: {e}")
+            logger.exception(f"Failed to get pending events: {e}")
             return []
 
     async def _get_last_block_hash(self) -> str:
@@ -377,14 +377,13 @@ class CryptographicAuditChain:
 
                 if row:
                     return row["block_hash"]
-                else:
-                    # Genesis block hash
-                    return hashlib.sha256(
-                        f"genesis_block:{CONSTITUTIONAL_HASH}".encode()
-                    ).hexdigest()
+                # Genesis block hash
+                return hashlib.sha256(
+                    f"genesis_block:{CONSTITUTIONAL_HASH}".encode()
+                ).hexdigest()
 
         except Exception as e:
-            logger.error(f"Failed to get last block hash: {e}")
+            logger.exception(f"Failed to get last block hash: {e}")
             return "0000000000000000000000000000000000000000000000000000000000000000"
 
     async def _get_next_block_number(self) -> int:
@@ -399,11 +398,10 @@ class CryptographicAuditChain:
 
                 if row and row["max_number"] is not None:
                     return row["max_number"] + 1
-                else:
-                    return 1  # First block
+                return 1  # First block
 
         except Exception as e:
-            logger.error(f"Failed to get next block number: {e}")
+            logger.exception(f"Failed to get next block number: {e}")
             return 1
 
     def _calculate_merkle_root(self, events: list[AuditEvent]) -> str:
@@ -447,7 +445,7 @@ class CryptographicAuditChain:
             return event_hashes[0]
 
         except Exception as e:
-            logger.error(f"Failed to calculate Merkle root: {e}")
+            logger.exception(f"Failed to calculate Merkle root: {e}")
             return hashlib.sha256(b"error_calculating_merkle_root").hexdigest()
 
     def _sign_block(self, block_hash: str) -> str:
@@ -468,7 +466,7 @@ class CryptographicAuditChain:
             return base64.b64encode(signature).decode()
 
         except Exception as e:
-            logger.error(f"Failed to sign block: {e}")
+            logger.exception(f"Failed to sign block: {e}")
             return "signature_error"
 
     async def _store_audit_block(self, block: AuditBlock):
@@ -495,7 +493,7 @@ class CryptographicAuditChain:
                 )  # Mark as finalized immediately
 
         except Exception as e:
-            logger.error(f"Failed to store audit block: {e}")
+            logger.exception(f"Failed to store audit block: {e}")
             raise
 
     async def _mark_events_included(self, event_ids: list[str], block_id: str):
@@ -512,7 +510,7 @@ class CryptographicAuditChain:
                     )
 
         except Exception as e:
-            logger.error(f"Failed to mark events as included: {e}")
+            logger.exception(f"Failed to mark events as included: {e}")
             raise
 
     async def _add_event_to_block(
@@ -524,7 +522,7 @@ class CryptographicAuditChain:
         return current_block
 
     async def verify_integrity(
-        self, start_block: int = 1, end_block: Optional[int] = None
+        self, start_block: int = 1, end_block: int | None = None
     ) -> IntegrityVerificationResult:
         """
         Verify integrity of the audit trail chain.
@@ -618,7 +616,7 @@ class CryptographicAuditChain:
             return result
 
         except Exception as e:
-            logger.error(f"Integrity verification failed: {e}")
+            logger.exception(f"Integrity verification failed: {e}")
             verification_time = (time.time() - start_time) * 1000
             return IntegrityVerificationResult(
                 is_valid=False,
@@ -631,7 +629,7 @@ class CryptographicAuditChain:
             )
 
     async def _get_blocks_for_verification(
-        self, start_block: int, end_block: Optional[int]
+        self, start_block: int, end_block: int | None
     ) -> list[dict[str, Any]]:
         """Get blocks for integrity verification."""
         try:
@@ -659,10 +657,10 @@ class CryptographicAuditChain:
                 return [dict(row) for row in rows]
 
         except Exception as e:
-            logger.error(f"Failed to get blocks for verification: {e}")
+            logger.exception(f"Failed to get blocks for verification: {e}")
             return []
 
-    async def _get_block_hash(self, block_number: int) -> Optional[str]:
+    async def _get_block_hash(self, block_number: int) -> str | None:
         """Get hash of specific block."""
         try:
             async with self.db_pool.acquire() as conn:
@@ -676,7 +674,7 @@ class CryptographicAuditChain:
                 return row["block_hash"] if row else None
 
         except Exception as e:
-            logger.error(f"Failed to get block hash: {e}")
+            logger.exception(f"Failed to get block hash: {e}")
             return None
 
     async def _verify_block_signature(self, block_data: dict[str, Any]) -> bool:
@@ -739,7 +737,7 @@ class CryptographicAuditChain:
                 return events
 
         except Exception as e:
-            logger.error(f"Failed to get block events: {e}")
+            logger.exception(f"Failed to get block events: {e}")
             return []
 
     async def _row_to_audit_block(self, row) -> AuditBlock:
@@ -760,7 +758,7 @@ class CryptographicAuditChain:
             )
 
         except Exception as e:
-            logger.error(f"Failed to convert row to audit block: {e}")
+            logger.exception(f"Failed to convert row to audit block: {e}")
             raise
 
     async def get_audit_trail_stats(self) -> dict[str, Any]:
@@ -815,7 +813,7 @@ class CryptographicAuditChain:
                 }
 
         except Exception as e:
-            logger.error(f"Failed to get audit trail stats: {e}")
+            logger.exception(f"Failed to get audit trail stats: {e}")
             return {
                 "constitutional_hash": CONSTITUTIONAL_HASH,
                 "error": str(e),
@@ -910,7 +908,7 @@ async def create_audit_tables(db_pool: asyncpg.Pool):
         logger.info("Audit trail database tables created successfully")
 
     except Exception as e:
-        logger.error(f"Failed to create audit trail tables: {e}")
+        logger.exception(f"Failed to create audit trail tables: {e}")
         raise
 
 
@@ -921,14 +919,14 @@ async def log_audit_event(
     action: str,
     resource_type: str,
     description: str,
-    user_id: Optional[str] = None,
-    resource_id: Optional[str] = None,
-    metadata: Optional[dict[str, Any]] = None,
+    user_id: str | None = None,
+    resource_id: str | None = None,
+    metadata: dict[str, Any] | None = None,
     severity: AuditSeverity = AuditSeverity.MEDIUM,
-    session_id: Optional[str] = None,
-    ip_address: Optional[str] = None,
-    user_agent: Optional[str] = None,
-    request_id: Optional[str] = None,
+    session_id: str | None = None,
+    ip_address: str | None = None,
+    user_agent: str | None = None,
+    request_id: str | None = None,
 ) -> str:
     """
     Convenience function to log an audit event.

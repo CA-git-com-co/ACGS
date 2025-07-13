@@ -140,7 +140,7 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
             # Re-raise HTTP exceptions
             raise
         except Exception as e:
-            logger.error(f"Constitutional validation middleware error: {e}")
+            logger.exception(f"Constitutional validation middleware error: {e}")
             self.circuit_breaker_failures += 1
 
             if self.enable_strict_validation:
@@ -206,7 +206,7 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
             }
 
         except Exception as e:
-            logger.error(f"Constitutional compliance validation failed: {e}")
+            logger.exception(f"Constitutional compliance validation failed: {e}")
             return {
                 "valid": False,
                 "reason": f"Validation error: {e!s}",
@@ -274,7 +274,7 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
                 }
 
             # Validate request body for policy operations (if present)
-            if request.method in ["POST", "PUT", "PATCH"]:
+            if request.method in {"POST", "PUT", "PATCH"}:
                 # Would validate request body against constitutional requirements
                 # For now, assume valid if we reach this point
                 pass
@@ -286,7 +286,7 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
             }
 
         except Exception as e:
-            logger.error(f"Policy operation validation failed: {e}")
+            logger.exception(f"Policy operation validation failed: {e}")
             return {
                 "valid": False,
                 "reason": f"Policy validation error: {e!s}",

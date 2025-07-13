@@ -9,13 +9,15 @@ import asyncio
 import time
 from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
+from app.utils.constitutional import (
+    CONSTITUTIONAL_HASH,
+    ensure_constitutional_compliance,
+)
+from app.utils.logging import get_logger, performance_logger
 from watchdog.events import FileSystemEvent, FileSystemEventHandler
 from watchdog.observers import Observer
-
-from ..utils.constitutional import CONSTITUTIONAL_HASH, ensure_constitutional_compliance
-from ..utils.logging import get_logger, performance_logger
 
 logger = get_logger("core.file_watcher")
 
@@ -152,11 +154,7 @@ class CodeFileHandler(FileSystemEventHandler):
             return False
 
         # Check ignore patterns
-        for pattern in self.ignore_patterns:
-            if pattern in str(path):
-                return False
-
-        return True
+        return all(pattern not in str(path) for pattern in self.ignore_patterns)
 
 
 class FileWatcherService:
@@ -167,9 +165,9 @@ class FileWatcherService:
     def __init__(
         self,
         watch_paths: list[str],
-        indexer_service: Optional[Any] = None,
-        supported_extensions: Optional[list[str]] = None,
-        ignore_patterns: Optional[list[str]] = None,
+        indexer_service: Any | None = None,
+        supported_extensions: list[str] | None = None,
+        ignore_patterns: list[str] | None = None,
     ):
         """
         Initialize file watcher service.
@@ -202,7 +200,7 @@ class FileWatcherService:
         ]
 
         # Watchdog components
-        self.observer: Optional[Observer] = None
+        self.observer: Observer | None = None
         self.handlers: list[CodeFileHandler] = []
 
         # State tracking
@@ -329,7 +327,7 @@ class FileWatcherService:
             )
 
             # Process file change
-            if self.indexer_service and event_type in ["created", "modified"]:
+            if self.indexer_service and event_type in {"created", "modified"}:
                 # Queue file for reanalysis
                 asyncio.create_task(self._queue_file_analysis(file_path))
             elif event_type == "deleted":

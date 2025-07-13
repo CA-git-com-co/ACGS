@@ -243,7 +243,7 @@ async def create_research_export(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Failed to create research export: {e!s}")
+        logger.exception(f"Failed to create research export: {e!s}")
         raise HTTPException(
             status_code=500, detail=f"Failed to create research export: {e!s}"
         )
@@ -308,7 +308,7 @@ async def list_research_exports(
         return response_exports
 
     except Exception as e:
-        logger.error(f"Failed to list research exports: {e!s}")
+        logger.exception(f"Failed to list research exports: {e!s}")
         raise HTTPException(
             status_code=500, detail=f"Failed to list research exports: {e!s}"
         )
@@ -333,7 +333,7 @@ async def get_research_export(
                 status_code=404, detail=f"Research export {export_id} not found"
             )
 
-        response = ResearchExportResponse(
+        return ResearchExportResponse(
             id=export.id,
             export_name=export.export_name,
             export_description=export.export_description,
@@ -354,12 +354,10 @@ async def get_research_export(
             ),
         )
 
-        return response
-
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Failed to get research export {export_id}: {e!s}")
+        logger.exception(f"Failed to get research export {export_id}: {e!s}")
         raise HTTPException(
             status_code=500, detail=f"Failed to get research export: {e!s}"
         )
@@ -408,7 +406,7 @@ async def download_research_export_data(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Failed to download research export {export_id}: {e!s}")
+        logger.exception(f"Failed to download research export {export_id}: {e!s}")
         raise HTTPException(
             status_code=500, detail=f"Failed to download research export: {e!s}"
         )
@@ -449,7 +447,9 @@ async def get_export_statistical_summary(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Failed to get statistical summary for export {export_id}: {e!s}")
+        logger.exception(
+            f"Failed to get statistical summary for export {export_id}: {e!s}"
+        )
         raise HTTPException(
             status_code=500, detail=f"Failed to get statistical summary: {e!s}"
         )
@@ -488,7 +488,7 @@ async def verify_export_integrity(
             export.pgp_signature is not None and export.signed_by_key_id is not None
         )
 
-        verification_result = {
+        return {
             "export_id": export_id,
             "hash_verified": hash_verified,
             "signature_verified": signature_verified,
@@ -502,12 +502,10 @@ async def verify_export_integrity(
             },
         }
 
-        return verification_result
-
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Failed to verify export integrity for {export_id}: {e!s}")
+        logger.exception(f"Failed to verify export integrity for {export_id}: {e!s}")
         raise HTTPException(
             status_code=500, detail=f"Failed to verify export integrity: {e!s}"
         )
@@ -543,7 +541,7 @@ async def delete_research_export(
         raise
     except Exception as e:
         await db.rollback()
-        logger.error(f"Failed to delete research export {export_id}: {e!s}")
+        logger.exception(f"Failed to delete research export {export_id}: {e!s}")
         raise HTTPException(
             status_code=500, detail=f"Failed to delete research export: {e!s}"
         )

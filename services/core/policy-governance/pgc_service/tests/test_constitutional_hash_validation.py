@@ -107,10 +107,10 @@ class TestConstitutionalHashValidator:
 
         result = await validator.validate_constitutional_hash(None, context)
 
-        assert result.status in [
+        assert result.status in {
             ConstitutionalHashStatus.INVALID,
             ConstitutionalHashStatus.MISMATCH,
-        ]
+        }
         assert result.hash_valid is False
         assert result.compliance_score < 0.7
         assert len(result.violations) > 0

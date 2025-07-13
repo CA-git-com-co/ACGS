@@ -24,7 +24,7 @@ from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, Path(Path(Path(__file__).resolve()).parent).parent)
 
 from app.models.database import Base
 from app.services.cache_service import CacheService
@@ -68,7 +68,7 @@ def test_settings() -> Settings:
 
     # Create temporary directory for test database
     test_db_dir = tempfile.mkdtemp(prefix="acgs_test_db_")
-    test_db_path = os.path.join(test_db_dir, "test.db")
+    os.path.join(test_db_dir, "test.db")
 
     # Override settings for testing
     test_env = {
@@ -98,7 +98,7 @@ def test_settings() -> Settings:
     yield settings
 
     # Cleanup
-    if os.path.exists(test_db_dir):
+    if Path(test_db_dir).exists():
         shutil.rmtree(test_db_dir)
 
 

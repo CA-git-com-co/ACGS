@@ -373,8 +373,7 @@ class JWTManager:
                 )
 
             # Remove Bearer prefix if present
-            if token.startswith("Bearer "):
-                token = token[7:]
+            token = token.removeprefix("Bearer ")
 
             payload = jwt.decode(token, self.secret_key, algorithms=[self.algorithm])
 
@@ -475,12 +474,10 @@ class VulnerabilityScanner:
 
     async def _check_dependency_vulnerabilities(self) -> list[dict[str, Any]]:
         """Check for known dependency vulnerabilities."""
-        vulnerabilities = []
+        return []
 
         # This would integrate with tools like Safety, Bandit, etc.
         # For now, return placeholder results
-
-        return vulnerabilities
 
     async def _check_configuration_security(self) -> list[dict[str, Any]]:
         """Check security configuration."""
@@ -514,7 +511,6 @@ class VulnerabilityScanner:
 
     async def _check_input_validation(self) -> list[dict[str, Any]]:
         """Check input validation security."""
-        vulnerabilities = []
 
         # Test input validation with known attack patterns
         test_inputs = [
@@ -526,19 +522,17 @@ class VulnerabilityScanner:
         ]
 
         validator = InputValidator()
-        for test_input in test_inputs:
-            if validator.validate_input(test_input):
-                vulnerabilities.append(
-                    {
-                        "type": "input_validation",
-                        "severity": "high",
-                        "title": "Input validation bypass",
-                        "description": f"Malicious input not detected: {test_input[:50]}...",
-                        "recommendation": "Strengthen input validation patterns",
-                    }
-                )
-
-        return vulnerabilities
+        return [
+            {
+                "type": "input_validation",
+                "severity": "high",
+                "title": "Input validation bypass",
+                "description": f"Malicious input not detected: {test_input[:50]}...",
+                "recommendation": "Strengthen input validation patterns",
+            }
+            for test_input in test_inputs
+            if validator.validate_input(test_input)
+        ]
 
     async def _check_authentication_security(self) -> list[dict[str, Any]]:
         """Check authentication security."""
@@ -586,7 +580,10 @@ class SecurityComplianceService:
         return request.client.host if request.client else "unknown"
 
     def validate_request(
-        self, request: Request, max_requests: int = None, window_minutes: int = None
+        self,
+        request: Request,
+        max_requests: int | None = None,
+        window_minutes: int | None = None,
     ) -> bool:
         """Validate incoming request for security compliance."""
         client_ip = self.get_client_ip(request)
@@ -621,12 +618,11 @@ class SecurityComplianceService:
     ) -> dict[str, Any]:
         """Authenticate request using JWT token."""
         try:
-            payload = self.jwt_manager.verify_token(credentials.credentials)
-            return payload
+            return self.jwt_manager.verify_token(credentials.credentials)
         except HTTPException:
             raise
         except Exception as e:
-            logger.error("Authentication error", error=str(e))
+            logger.exception("Authentication error", error=str(e))
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication failed"
             )
@@ -746,7 +742,7 @@ def get_security_service() -> SecurityComplianceService:
     return _security_service
 
 
-def security_required(required_roles: list[str] = None):
+def security_required(required_roles: list[str] | None = None):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash

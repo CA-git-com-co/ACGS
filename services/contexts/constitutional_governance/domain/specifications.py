@@ -5,7 +5,7 @@ Constitutional Hash: cdd01ef066bc6cf2
 Specifications for complex domain queries and business rules.
 """
 
-from typing import Any, Dict
+from typing import Any
 
 from services.shared.domain.specifications import Specification
 
@@ -13,7 +13,6 @@ from .entities import AmendmentProposal, Constitution, Principle
 from .value_objects import (
     AmendmentStatus,
     ConstitutionStatus,
-    PriorityWeight,
     ViolationSeverity,
 )
 
@@ -29,7 +28,7 @@ class ActiveConstitutionSpec(Specification[Constitution]):
 class ApplicablePrincipleSpec(Specification[Principle]):
     """Specification for principles applicable to a specific context."""
 
-    def __init__(self, context: Dict[str, Any]):
+    def __init__(self, context: dict[str, Any]):
         """Initialize with evaluation context."""
         self.context = context
 
@@ -66,11 +65,7 @@ class ValidAmendmentSpec(Specification[AmendmentProposal]):
             return False
 
         # Check each amendment is valid
-        for amend in amendment.amendments:
-            if not self._is_amendment_valid(amend):
-                return False
-
-        return True
+        return all(self._is_amendment_valid(amend) for amend in amendment.amendments)
 
     def _is_amendment_valid(self, amendment) -> bool:
         """Check if individual amendment is valid."""
@@ -136,19 +131,11 @@ class PublicConsultationRequiredSpec(Specification[AmendmentProposal]):
             return True
 
         # High-impact changes require consultation
-        if self._has_high_impact(amendment):
-            return True
-
-        return False
+        return bool(self._has_high_impact(amendment))
 
     def _affects_fundamental_principles(self, amendment: AmendmentProposal) -> bool:
         """Check if amendment affects fundamental principles."""
         # This would check against a list of fundamental principle categories
-        fundamental_categories = {
-            "core_rights",
-            "system_safety",
-            "democratic_participation",
-        }
 
         # For now, simplified check
         return len(amendment.amendments) > 0
@@ -171,18 +158,12 @@ class ExpertReviewRequiredSpec(Specification[AmendmentProposal]):
             return True
 
         # Safety-related amendments require expert review
-        if self._affects_safety_principles(amendment):
-            return True
-
-        return False
+        return bool(self._affects_safety_principles(amendment))
 
     def _is_technical_amendment(self, amendment: AmendmentProposal) -> bool:
         """Check if amendment is technical in nature."""
         # Check if any amendment involves formal constraints
-        for amend in amendment.amendments:
-            if amend.new_validation:
-                return True
-        return False
+        return any(amend.new_validation for amend in amendment.amendments)
 
     def _affects_safety_principles(self, amendment: AmendmentProposal) -> bool:
         """Check if amendment affects safety principles."""

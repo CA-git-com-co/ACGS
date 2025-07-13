@@ -8,7 +8,7 @@ Centralized settings with environment-specific configurations and validation.
 import logging
 import os
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from .config_manager import get_config_manager
 
@@ -36,7 +36,7 @@ class DatabaseSettings:
         """Get database connection string."""
         return f"postgresql://{self.username}:{self.password}@{self.host}:{self.port}/{self.database}"
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "host": self.host,
@@ -65,9 +65,9 @@ class CacheSettings:
     compression: bool = False
     serializer: str = "json"  # json, pickle, msgpack
     cluster_mode: bool = False
-    sentinel_hosts: List[str] = field(default_factory=list)
+    sentinel_hosts: list[str] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "redis_url": self.redis_url,
@@ -87,14 +87,14 @@ class LoggingSettings:
 
     level: str = "INFO"
     format: str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    file_path: Optional[str] = None
+    file_path: str | None = None
     max_file_size: int = 10 * 1024 * 1024  # 10MB
     backup_count: int = 5
     enable_console: bool = True
     enable_structured: bool = False
     structured_format: str = "json"  # json, ecs
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "level": self.level,
@@ -120,12 +120,12 @@ class SecuritySettings:
     max_login_attempts: int = 5
     lockout_duration_minutes: int = 30
     enable_2fa: bool = False
-    allowed_origins: List[str] = field(default_factory=lambda: ["*"])
+    allowed_origins: list[str] = field(default_factory=lambda: ["*"])
     rate_limit_per_minute: int = 100
     enable_csrf_protection: bool = True
     session_timeout_minutes: int = 60
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "secret_key": "***" if self.secret_key else "",
@@ -157,7 +157,7 @@ class MonitoringSettings:
     alert_webhook_url: str = ""
     prometheus_pushgateway: str = ""
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "enable_metrics": self.enable_metrics,
@@ -184,7 +184,7 @@ class ConstitutionalSettings:
     compliance_check_interval: int = 60
     violation_alert_threshold: int = 1
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "hash_value": self.hash_value,
@@ -211,7 +211,7 @@ class PerformanceSettings:
     enable_circuit_breaker: bool = True
     circuit_breaker_threshold: int = 5
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "enable_caching": self.enable_caching,
@@ -229,7 +229,7 @@ class PerformanceSettings:
 class Settings:
     """Main application settings."""
 
-    def __init__(self, environment: str = None):
+    def __init__(self, environment: str | None = None):
         self.environment = environment or os.getenv("ENVIRONMENT", "development")
         self._config_manager = get_config_manager()
 
@@ -405,7 +405,7 @@ class Settings:
         """Check if running in testing mode."""
         return self.environment == "testing"
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert all settings to dictionary."""
         return {
             "environment": self.environment,
@@ -419,7 +419,7 @@ class Settings:
             "constitutional_hash": "cdd01ef066bc6cf2",
         }
 
-    def validate(self) -> List[str]:
+    def validate(self) -> list[str]:
         """Validate settings and return list of issues."""
         issues = []
 
@@ -449,7 +449,7 @@ class Settings:
 
 
 # Global settings instance
-_global_settings: Optional[Settings] = None
+_global_settings: Settings | None = None
 
 
 def get_settings() -> Settings:
@@ -496,16 +496,14 @@ def validate_settings(settings: Settings = None) -> bool:
         for issue in issues:
             logger.error(f"  - {issue}")
         return False
-    else:
-        logger.info("Settings validation passed")
-        return True
+    logger.info("Settings validation passed")
+    return True
 
 
 # Configuration file helpers
 def create_sample_config_files() -> None:
     """Create sample configuration files for each environment."""
     import json
-    import os
     from pathlib import Path
 
     config_dir = Path("config")
@@ -549,7 +547,7 @@ def create_sample_config_files() -> None:
     }
 
     # Write base config
-    with open(config_dir / "config.json", "w") as f:
+    with open(config_dir / "config.json", "w", encoding="utf-8") as f:
         json.dump(base_config, f, indent=2)
 
     # Development config
@@ -558,7 +556,7 @@ def create_sample_config_files() -> None:
     dev_config["logging"] = {"level": "DEBUG"}
     dev_config["constitutional"]["strict_mode"] = False
 
-    with open(config_dir / "config.development.json", "w") as f:
+    with open(config_dir / "config.development.json", "w", encoding="utf-8") as f:
         json.dump(dev_config, f, indent=2)
 
     # Production config
@@ -567,7 +565,7 @@ def create_sample_config_files() -> None:
     prod_config["security"]["enable_2fa"] = True
     prod_config["logging"] = {"level": "INFO", "file_path": "/var/log/acgs/app.log"}
 
-    with open(config_dir / "config.production.json", "w") as f:
+    with open(config_dir / "config.production.json", "w", encoding="utf-8") as f:
         json.dump(prod_config, f, indent=2)
 
     logger.info(f"Sample configuration files created in {config_dir}")

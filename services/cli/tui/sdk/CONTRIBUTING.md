@@ -1,3 +1,5 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 ## Setting up the environment
 
 To set up the repository, run:

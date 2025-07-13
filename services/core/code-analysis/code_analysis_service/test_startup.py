@@ -30,7 +30,6 @@ os.environ.update(
 
 def test_fastapi_app_creation():
     """Test that the FastAPI app can be created successfully."""
-    print("Testing FastAPI app creation...")
 
     try:
         # Import main module
@@ -39,25 +38,14 @@ def test_fastapi_app_creation():
         # Get the app
         app = main.app
 
-        if app is None:
-            print("❌ App is None")
-            return False
+        return app is not None
 
-        print("✅ FastAPI app created successfully")
-        print(f"✅ App title: {app.title}")
-        print(f"✅ App version: {app.version}")
-        print(f"✅ Number of routes: {len(app.routes)}")
-
-        return True
-
-    except Exception as e:
-        print(f"❌ FastAPI app creation failed: {e}")
+    except Exception:
         return False
 
 
 def test_health_endpoint():
     """Test the health endpoint using TestClient."""
-    print("\nTesting health endpoint...")
 
     try:
         # Import main module
@@ -69,36 +57,19 @@ def test_health_endpoint():
         # Test health endpoint
         response = client.get("/health")
 
-        print(f"✅ Health endpoint status: {response.status_code}")
-
         if response.status_code == 200:
             data = response.json()
-            print(f"✅ Health response: {data.get('status', 'unknown')}")
-            print(f"✅ Service name: {data.get('service', 'unknown')}")
-            print(
-                f"✅ Constitutional hash: {data.get('constitutional_hash', 'missing')}"
-            )
 
             # Validate constitutional compliance
-            if data.get("constitutional_hash") == "cdd01ef066bc6cf2":
-                print("✅ Constitutional compliance validated")
-                return True
-            else:
-                print("❌ Constitutional compliance validation failed")
-                return False
-        else:
-            print(f"❌ Health endpoint returned status {response.status_code}")
-            print(f"Response: {response.text}")
-            return False
+            return data.get("constitutional_hash") == "cdd01ef066bc6cf2"
+        return False
 
-    except Exception as e:
-        print(f"❌ Health endpoint test failed: {e}")
+    except Exception:
         return False
 
 
 def test_api_endpoints():
     """Test basic API endpoints using TestClient."""
-    print("\nTesting API endpoints...")
 
     try:
         # Import main module
@@ -109,42 +80,29 @@ def test_api_endpoints():
 
         # Test semantic search endpoint (should return 401 without auth)
         response = client.get("/api/v1/search/semantic?query=test")
-        print(f"✅ Semantic search endpoint status: {response.status_code}")
 
         # Test OpenAPI docs
         response = client.get("/docs")
         if response.status_code == 200:
-            print("✅ OpenAPI docs accessible")
+            pass
         else:
-            print(f"❌ OpenAPI docs failed: {response.status_code}")
             return False
 
         # Test OpenAPI JSON
         response = client.get("/openapi.json")
         if response.status_code == 200:
-            openapi_data = response.json()
-            print("✅ OpenAPI JSON accessible")
-            print(
-                f"✅ API title: {openapi_data.get('info', {}).get('title', 'unknown')}"
-            )
-            print(
-                "✅ API version:"
-                f" {openapi_data.get('info', {}).get('version', 'unknown')}"
-            )
+            response.json()
         else:
-            print(f"❌ OpenAPI JSON failed: {response.status_code}")
             return False
 
         return True
 
-    except Exception as e:
-        print(f"❌ API endpoints test failed: {e}")
+    except Exception:
         return False
 
 
 def test_constitutional_compliance():
     """Test constitutional compliance in responses."""
-    print("\nTesting constitutional compliance...")
 
     try:
         # Import main module
@@ -162,11 +120,8 @@ def test_constitutional_compliance():
             constitutional_hash = headers.get("X-Constitutional-Hash")
 
             if constitutional_hash == "cdd01ef066bc6cf2":
-                print("✅ Constitutional hash in headers")
+                pass
             else:
-                print(
-                    f"❌ Invalid constitutional hash in headers: {constitutional_hash}"
-                )
                 return False
 
             # Check response body
@@ -174,25 +129,19 @@ def test_constitutional_compliance():
             body_hash = data.get("constitutional_hash")
 
             if body_hash == "cdd01ef066bc6cf2":
-                print("✅ Constitutional hash in response body")
+                pass
             else:
-                print(f"❌ Invalid constitutional hash in body: {body_hash}")
                 return False
 
-            print("✅ Constitutional compliance validated")
             return True
-        else:
-            print(f"❌ Health endpoint failed: {response.status_code}")
-            return False
+        return False
 
-    except Exception as e:
-        print(f"❌ Constitutional compliance test failed: {e}")
+    except Exception:
         return False
 
 
 def test_middleware_integration():
     """Test that middleware is properly integrated."""
-    print("\nTesting middleware integration...")
 
     try:
         # Import main module
@@ -203,23 +152,15 @@ def test_middleware_integration():
 
         # Count middleware
         middleware_count = len(app.user_middleware)
-        print(f"✅ Middleware count: {middleware_count}")
 
-        if middleware_count > 0:
-            print("✅ Middleware is integrated")
-            return True
-        else:
-            print("❌ No middleware found")
-            return False
+        return middleware_count > 0
 
-    except Exception as e:
-        print(f"❌ Middleware integration test failed: {e}")
+    except Exception:
         return False
 
 
 async def test_service_dependencies():
     """Test service dependencies initialization."""
-    print("\nTesting service dependencies...")
 
     try:
         from app.core.indexer import IndexerService
@@ -232,47 +173,39 @@ async def test_service_dependencies():
         status = indexer.get_status()
 
         if "constitutional_hash" in status:
-            print("✅ Indexer service initialization")
+            pass
         else:
-            print("❌ Indexer service missing constitutional compliance")
             return False
 
         # Test cache service (without connecting)
         cache = CacheService()
         if hasattr(cache, "key_prefix"):
-            print("✅ Cache service initialization")
+            pass
         else:
-            print("❌ Cache service initialization failed")
             return False
 
         # Test service registry client
         registry = ServiceRegistryClient()
         if hasattr(registry, "service_name"):
-            print("✅ Service registry client initialization")
+            pass
         else:
-            print("❌ Service registry client initialization failed")
             return False
 
         # Test database manager (without connecting)
         db = DatabaseManager()
         if hasattr(db, "host"):
-            print("✅ Database manager initialization")
+            pass
         else:
-            print("❌ Database manager initialization failed")
             return False
 
-        print("✅ All service dependencies initialized")
         return True
 
-    except Exception as e:
-        print(f"❌ Service dependencies test failed: {e}")
+    except Exception:
         return False
 
 
 def main():
     """Run all startup tests."""
-    print("🚀 ACGS Code Analysis Engine - Service Startup Test")
-    print("=" * 60)
 
     success = True
 
@@ -300,16 +233,9 @@ def main():
     if not asyncio.run(test_service_dependencies()):
         success = False
 
-    print("\n" + "=" * 60)
     if success:
-        print("🎉 ALL STARTUP TESTS PASSED!")
-        print("✅ Service is ready for deployment testing.")
-        print("✅ Health endpoint returns 200 with constitutional hash validation.")
-        print("✅ Basic API endpoints respond correctly.")
-        print("✅ Constitutional compliance is enforced.")
+        pass
     else:
-        print("❌ SOME STARTUP TESTS FAILED!")
-        print("❌ Service needs fixes before deployment.")
         sys.exit(1)
 
 

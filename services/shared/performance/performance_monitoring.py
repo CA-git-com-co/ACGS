@@ -7,9 +7,9 @@ import asyncio
 import functools
 import logging
 import time
-from typing import Any, Callable, Dict, List, Optional
+from collections.abc import Callable
+from typing import Any
 
-import redis.asyncio as redis
 from prometheus_client import Counter, Gauge, Histogram
 
 # Constitutional compliance hash
@@ -77,9 +77,8 @@ def track_performance_metrics(service_name: str, endpoint: str, method: str = "P
             status = "success"
 
             try:
-                result = await func(*args, **kwargs)
-                return result
-            except Exception as e:
+                return await func(*args, **kwargs)
+            except Exception:
                 status = "error"
                 raise
             finally:
@@ -100,7 +99,7 @@ def track_performance_metrics(service_name: str, endpoint: str, method: str = "P
                 if duration * 1000 > P99_LATENCY_TARGET_MS:
                     P99_LATENCY_VIOLATIONS.labels(service_name, endpoint).inc()
                     logger.warning(
-                        f"Performance alert: {service_name}.{endpoint} took {duration*1000:.2f}ms "
+                        f"Performance alert: {service_name}.{endpoint} took {duration * 1000:.2f}ms "
                         f"(threshold: {P99_LATENCY_TARGET_MS}ms) [hash: {CONSTITUTIONAL_HASH}]"
                     )
 
@@ -110,9 +109,8 @@ def track_performance_metrics(service_name: str, endpoint: str, method: str = "P
             status = "success"
 
             try:
-                result = func(*args, **kwargs)
-                return result
-            except Exception as e:
+                return func(*args, **kwargs)
+            except Exception:
                 status = "error"
                 raise
             finally:
@@ -133,15 +131,14 @@ def track_performance_metrics(service_name: str, endpoint: str, method: str = "P
                 if duration * 1000 > P99_LATENCY_TARGET_MS:
                     P99_LATENCY_VIOLATIONS.labels(service_name, endpoint).inc()
                     logger.warning(
-                        f"Performance alert: {service_name}.{endpoint} took {duration*1000:.2f}ms "
+                        f"Performance alert: {service_name}.{endpoint} took {duration * 1000:.2f}ms "
                         f"(threshold: {P99_LATENCY_TARGET_MS}ms) [hash: {CONSTITUTIONAL_HASH}]"
                     )
 
         # Return appropriate wrapper based on function type
         if asyncio.iscoroutinefunction(func):
             return async_wrapper
-        else:
-            return sync_wrapper
+        return sync_wrapper
 
     return decorator
 
@@ -214,7 +211,7 @@ class PerformanceAnalyzer:
     def __init__(self):
         self.constitutional_hash = CONSTITUTIONAL_HASH
 
-    def analyze_latency_distribution(self, durations: List[float]) -> Dict[str, float]:
+    def analyze_latency_distribution(self, durations: list[float]) -> dict[str, float]:
         """
         Analyze latency distribution and calculate percentiles.
 
@@ -247,7 +244,7 @@ class PerformanceAnalyzer:
 
         return percentiles
 
-    def _percentile(self, sorted_list: List[float], percentile: float) -> float:
+    def _percentile(self, sorted_list: list[float], percentile: float) -> float:
         """Calculate percentile from sorted list."""
         if not sorted_list:
             return 0.0
@@ -255,14 +252,13 @@ class PerformanceAnalyzer:
         index = (percentile / 100) * (len(sorted_list) - 1)
         if index.is_integer():
             return sorted_list[int(index)]
-        else:
-            lower = sorted_list[int(index)]
-            upper = sorted_list[int(index) + 1]
-            return lower + (upper - lower) * (index - int(index))
+        lower = sorted_list[int(index)]
+        upper = sorted_list[int(index) + 1]
+        return lower + (upper - lower) * (index - int(index))
 
     def check_performance_compliance(
         self, latency_p99_ms: float, throughput_rps: float, cache_hit_rate: float
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Check if performance metrics meet compliance targets.
 
@@ -302,7 +298,7 @@ class PerformanceAnalyzer:
         return compliance
 
 
-def setup_performance_monitoring(service_name: str) -> Dict[str, Any]:
+def setup_performance_monitoring(service_name: str) -> dict[str, Any]:
     """
     Set up performance monitoring for a service.
 

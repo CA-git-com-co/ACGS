@@ -8,9 +8,8 @@ Provides validation, serialization, and documentation for agent-related operatio
 from datetime import datetime
 from typing import Any
 
+from app.models.agent import AgentStatus, AgentType
 from pydantic import BaseModel, EmailStr, Field, validator
-
-from ..models.agent import AgentStatus, AgentType
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -96,7 +95,7 @@ class AgentCreate(AgentBase):
     tags: list[str] = Field(default_factory=list, description="Searchable tags")
 
     @validator("agent_id")
-    def validate_agent_id(cls, v):
+    def validate_agent_id(self, v):
         """Validate agent ID format."""
         if not v.replace("-", "").replace("_", "").isalnum():
             raise ValueError(
@@ -105,9 +104,9 @@ class AgentCreate(AgentBase):
         return v.lower()
 
     @validator("compliance_level")
-    def validate_compliance_level(cls, v):
+    def validate_compliance_level(self, v):
         """Validate compliance level."""
-        if v not in ["standard", "high", "critical"]:
+        if v not in {"standard", "high", "critical"}:
             raise ValueError(
                 "Compliance level must be one of: standard, high, critical"
             )
@@ -151,9 +150,9 @@ class AgentUpdate(BaseModel):
     tags: list[str] | None = None
 
     @validator("compliance_level")
-    def validate_compliance_level(cls, v):
+    def validate_compliance_level(self, v):
         """Validate compliance level."""
-        if v is not None and v not in ["standard", "high", "critical"]:
+        if v is not None and v not in {"standard", "high", "critical"}:
             raise ValueError(
                 "Compliance level must be one of: standard, high, critical"
             )
@@ -223,7 +222,7 @@ class AgentStatusUpdate(BaseModel):
     )
 
     @validator("status")
-    def validate_status_transition(cls, v):
+    def validate_status_transition(self, v):
         """Validate status transition is allowed."""
         # Add business logic for valid status transitions
         return v
@@ -313,9 +312,9 @@ class AgentSearchRequest(BaseModel):
     sort_order: str = Field(default="desc", description="Sort order: asc or desc")
 
     @validator("sort_order")
-    def validate_sort_order(cls, v):
+    def validate_sort_order(self, v):
         """Validate sort order."""
-        if v not in ["asc", "desc"]:
+        if v not in {"asc", "desc"}:
             raise ValueError("Sort order must be asc or desc")
         return v
 

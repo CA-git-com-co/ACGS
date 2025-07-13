@@ -9,7 +9,7 @@ import logging
 import time
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List
+from typing import Any
 
 # Constitutional compliance
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -44,9 +44,9 @@ class SecurityMonitor:
     def log_security_event(
         self,
         event_type: SecurityEventType,
-        details: Dict[str, Any],
-        source_ip: str = None,
-        user_id: str = None,
+        details: dict[str, Any],
+        source_ip: str | None = None,
+        user_id: str | None = None,
     ) -> None:
         """Log a security event."""
         event = {
@@ -65,7 +65,10 @@ class SecurityMonitor:
         self._check_alert_thresholds(event_type, source_ip, user_id)
 
     def _check_alert_thresholds(
-        self, event_type: SecurityEventType, source_ip: str = None, user_id: str = None
+        self,
+        event_type: SecurityEventType,
+        source_ip: str | None = None,
+        user_id: str | None = None,
     ) -> None:
         """Check if alert thresholds are exceeded."""
         threshold = self.alert_thresholds.get(event_type)
@@ -97,9 +100,9 @@ class SecurityMonitor:
     def _trigger_security_alert(
         self,
         event_type: SecurityEventType,
-        events: List[Dict[str, Any]],
-        source_ip: str = None,
-        user_id: str = None,
+        events: list[dict[str, Any]],
+        source_ip: str | None = None,
+        user_id: str | None = None,
     ) -> None:
         """Trigger security alert."""
         alert = {
@@ -118,7 +121,7 @@ class SecurityMonitor:
         # In production, this would send alerts to monitoring systems
         # For now, just log the alert
 
-    def get_security_summary(self) -> Dict[str, Any]:
+    def get_security_summary(self) -> dict[str, Any]:
         """Get security events summary."""
         current_time = time.time()
         recent_events = [

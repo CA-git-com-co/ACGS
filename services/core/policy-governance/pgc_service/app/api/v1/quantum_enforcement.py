@@ -139,7 +139,7 @@ async def register_quantum_policy(request: QuantumPolicyRegistration):
         }
 
     except Exception as e:
-        logger.error(f"Quantum policy registration failed: {e!s}")
+        logger.exception(f"Quantum policy registration failed: {e!s}")
         raise HTTPException(status_code=500, detail=f"Registration failed: {e!s}")
 
 
@@ -260,7 +260,7 @@ async def quantum_policy_enforcement(request: QuantumEnforcementRequest):
         )
 
     except Exception as e:
-        logger.error(f"Quantum enforcement failed: {e!s}")
+        logger.exception(f"Quantum enforcement failed: {e!s}")
         raise HTTPException(status_code=500, detail=f"Enforcement failed: {e!s}")
 
 
@@ -295,7 +295,7 @@ async def trigger_observer_effect(request: QuantumObservationRequest):
         }
 
     except Exception as e:
-        logger.error(f"Observer effect failed: {e!s}")
+        logger.exception(f"Observer effect failed: {e!s}")
         raise HTTPException(status_code=500, detail=f"Observation failed: {e!s}")
 
 
@@ -330,7 +330,7 @@ async def update_uncertainty_parameter(request: UncertaintyUpdateRequest):
         }
 
     except Exception as e:
-        logger.error(f"Uncertainty update failed: {e!s}")
+        logger.exception(f"Uncertainty update failed: {e!s}")
         raise HTTPException(status_code=500, detail=f"Update failed: {e!s}")
 
 
@@ -381,7 +381,7 @@ async def get_quantum_state(policy_id: str):
         }
 
     except Exception as e:
-        logger.error(f"Get quantum state failed: {e!s}")
+        logger.exception(f"Get quantum state failed: {e!s}")
         raise HTTPException(status_code=500, detail=f"Query failed: {e!s}")
 
 
@@ -410,7 +410,7 @@ async def quantum_health_check():
         }
 
     except Exception as e:
-        logger.error(f"Quantum health check failed: {e!s}")
+        logger.exception(f"Quantum health check failed: {e!s}")
         return {
             "qpe_service": {"healthy": False, "error": str(e)},
             "client_metrics": qpe_client.get_metrics(),
@@ -454,5 +454,5 @@ async def _fallback_opa_evaluation(policy_id: str, context: dict[str, Any]) -> b
         return response.result.get("allow", False)
 
     except Exception as e:
-        logger.error(f"Fallback OPA evaluation failed: {e!s}")
+        logger.exception(f"Fallback OPA evaluation failed: {e!s}")
         return False  # Fail closed for security

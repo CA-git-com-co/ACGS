@@ -9,10 +9,10 @@ import logging
 from datetime import datetime, timezone
 from typing import Any
 
+from app.models import AuditLog, PolicyRule
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..models import AuditLog, PolicyRule
 from .crypto_service import crypto_service, merkle_service
 from .key_management import key_manager
 from .timestamp_service import timestamp_manager
@@ -118,7 +118,7 @@ class IntegrityVerificationService:
             }
 
         except Exception as e:
-            logger.error(f"Error signing policy rule {rule_id}: {e}")
+            logger.exception(f"Error signing policy rule {rule_id}: {e}")
             await db.rollback()
             raise
 
@@ -213,7 +213,7 @@ class IntegrityVerificationService:
             }
 
         except Exception as e:
-            logger.error(f"Error signing audit log {log_id}: {e}")
+            logger.exception(f"Error signing audit log {log_id}: {e}")
             await db.rollback()
             raise
 
@@ -310,7 +310,7 @@ class IntegrityVerificationService:
             return verification_results
 
         except Exception as e:
-            logger.error(f"Error verifying policy rule {rule_id}: {e}")
+            logger.exception(f"Error verifying policy rule {rule_id}: {e}")
             raise
 
     async def verify_audit_log_integrity(
@@ -421,7 +421,7 @@ class IntegrityVerificationService:
             return verification_results
 
         except Exception as e:
-            logger.error(f"Error verifying audit log {log_id}: {e}")
+            logger.exception(f"Error verifying audit log {log_id}: {e}")
             raise
 
     async def _get_previous_log_hash(
@@ -451,7 +451,7 @@ class IntegrityVerificationService:
             return previous_log.entry_hash if previous_log else None
 
         except Exception as e:
-            logger.error(f"Error getting previous log hash: {e}")
+            logger.exception(f"Error getting previous log hash: {e}")
             return None
 
 

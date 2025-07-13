@@ -5,6 +5,8 @@ title: 'Implement governance metrics dashboard'
 labels: good first issue, frontend, monitoring
 assignees: ''
 ---
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 
 ## Description
 Create real-time dashboard for governance system metrics

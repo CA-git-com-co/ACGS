@@ -19,7 +19,7 @@ import uuid
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Optional, Union
+from typing import Any
 
 from services.shared.constitutional_safety_framework import (
     ConstitutionalSafetyFramework,
@@ -87,7 +87,7 @@ class AgentConfig:
     capabilities: list[str]
     constraints: dict[str, Any]
     tools_allowed: list[str]
-    resource_limits: dict[str, Union[int, float]]
+    resource_limits: dict[str, int | float]
     reporting_level: str
     escalation_threshold: float
     created_at: datetime
@@ -133,9 +133,9 @@ class GeneratedPolicy:
     content: dict[str, Any]
     constitutional_compliance_score: float
     generated_by: str
-    approved_by: Optional[str]
-    implementation_date: Optional[datetime]
-    expiry_date: Optional[datetime]
+    approved_by: str | None
+    implementation_date: datetime | None
+    expiry_date: datetime | None
     dependencies: list[str]
     conflict_resolutions: list[str]
     test_results: dict[str, Any]
@@ -216,7 +216,7 @@ class PolicyBuilder:
                 self._constitutional_ai_initialized = True
                 logger.info("Hybrid Governance Engine integrated successfully")
             except Exception as e:
-                logger.error(f"Failed to initialize Constitutional AI: {e!s}")
+                logger.exception(f"Failed to initialize Constitutional AI: {e!s}")
                 self.constitutional_ai = None
 
         logger.info("PolicyBuilder initialization completed")
@@ -301,7 +301,7 @@ class PolicyBuilder:
             return policy
 
         except Exception as e:
-            logger.error(f"Error generating policy: {e!s}")
+            logger.exception(f"Error generating policy: {e!s}")
             await self.alerting_system.send_alert(
                 {
                     "severity": "high",
@@ -375,7 +375,7 @@ class PolicyBuilder:
             return config
 
         except Exception as e:
-            logger.error(f"Error creating agent config: {e!s}")
+            logger.exception(f"Error creating agent config: {e!s}")
             raise
 
     async def validate_policy(self, policy: GeneratedPolicy) -> dict[str, Any]:
@@ -417,7 +417,7 @@ class PolicyBuilder:
             results["approval_required"] = (
                 policy.constitutional_compliance_score < 0.8
                 or len(conflict_results.get("conflicts", [])) > 0
-                or policy.priority in [PolicyPriority.CRITICAL, PolicyPriority.HIGH]
+                or policy.priority in {PolicyPriority.CRITICAL, PolicyPriority.HIGH}
             )
 
             # Store test results
@@ -426,7 +426,7 @@ class PolicyBuilder:
             return results
 
         except Exception as e:
-            logger.error(f"Error validating policy: {e!s}")
+            logger.exception(f"Error validating policy: {e!s}")
             raise
 
     async def _load_constitutional_principles(self) -> None:
@@ -625,7 +625,7 @@ class PolicyBuilder:
                     )
 
             # Fallback to template-based policy generation
-            policy_content = {
+            return {
                 "template_id": template.template_id,
                 "objective": requirements.get("objective", "Improve system governance"),
                 "scope": template.scope.value,
@@ -644,10 +644,8 @@ class PolicyBuilder:
                 "llm_generated": False,
             }
 
-            return policy_content
-
         except Exception as e:
-            logger.error(f"Error in policy content generation: {e!s}")
+            logger.exception(f"Error in policy content generation: {e!s}")
             # Return minimal safe policy on error
             return {
                 "template_id": template.template_id,
@@ -711,17 +709,14 @@ class PolicyBuilder:
                 )
 
                 return max(0.0, compliance_score)
-            else:
-                # Fallback to basic constitutional framework validation
-                constitutional_refs = policy_content.get(
-                    "constitutional_references", []
-                )
-                if len(constitutional_refs) > 0:
-                    return min(0.9, 0.6 + (len(constitutional_refs) * 0.1))
-                return 0.5
+            # Fallback to basic constitutional framework validation
+            constitutional_refs = policy_content.get("constitutional_references", [])
+            if len(constitutional_refs) > 0:
+                return min(0.9, 0.6 + (len(constitutional_refs) * 0.1))
+            return 0.5
 
         except Exception as e:
-            logger.error(f"Constitutional compliance validation error: {e!s}")
+            logger.exception(f"Constitutional compliance validation error: {e!s}")
             # Fallback to conservative score on error
             return 0.3
 
@@ -747,14 +742,11 @@ class PolicyBuilder:
         self, policy_content: dict[str, Any], conflicts: list[str]
     ) -> list[str]:
         """Generate resolutions for policy conflicts"""
-        resolutions = []
 
-        for conflict_id in conflicts:
-            resolutions.append(
-                f"Resolve conflict with policy {conflict_id} through prioritization"
-            )
-
-        return resolutions
+        return [
+            f"Resolve conflict with policy {conflict_id} through prioritization"
+            for conflict_id in conflicts
+        ]
 
     def _calculate_expiry_date(self, policy_type: PolicyType) -> datetime:
         """Calculate expiry date based on policy type"""
@@ -784,7 +776,7 @@ class PolicyBuilder:
     ) -> str:
         """Build LLM prompt for policy generation"""
 
-        prompt = f"""You are an AI policy generation assistant for the ACGS (Autonomous Constitutional Governance System).
+        return f"""You are an AI policy generation assistant for the ACGS (Autonomous Constitutional Governance System).
 
 Generate a governance policy based on the following specifications:
 
@@ -826,10 +818,8 @@ Return a JSON object with the following structure:
 
 Generate a comprehensive policy that addresses the user's objectives while maintaining constitutional compliance and democratic governance principles."""
 
-        return prompt
-
     async def _apply_constitutional_constraints(
-        self, role: str, capabilities: list[str], domain: Optional[str]
+        self, role: str, capabilities: list[str], domain: str | None
     ) -> dict[str, Any]:
         """Apply constitutional constraints to agent configuration"""
         constraints = {
@@ -874,7 +864,7 @@ Generate a comprehensive policy that addresses the user's objectives while maint
 
     def _calculate_resource_limits(
         self, role: str, capabilities: list[str], priority: str
-    ) -> dict[str, Union[int, float]]:
+    ) -> dict[str, int | float]:
         """Calculate resource limits for agent"""
         base_limits = {
             "max_memory_mb": 512,

@@ -225,7 +225,7 @@ class VotingMechanismService:
             return session_id
 
         except Exception as e:
-            logger.error(f"Failed to create voting session: {e}")
+            logger.exception(f"Failed to create voting session: {e}")
             raise
 
     async def cast_vote(
@@ -300,7 +300,7 @@ class VotingMechanismService:
             return True
 
         except Exception as e:
-            logger.error(f"Failed to cast vote: {e}")
+            logger.exception(f"Failed to cast vote: {e}")
             raise
 
     async def calculate_voting_result(self, session_id: str) -> VotingResult:
@@ -390,7 +390,7 @@ class VotingMechanismService:
             return voting_result
 
         except Exception as e:
-            logger.error(f"Failed to calculate voting result: {e}")
+            logger.exception(f"Failed to calculate voting result: {e}")
             raise
 
     async def finalize_voting_session(self, session_id: str) -> VotingResult:
@@ -431,7 +431,7 @@ class VotingMechanismService:
             return result
 
         except Exception as e:
-            logger.error(f"Failed to finalize voting session: {e}")
+            logger.exception(f"Failed to finalize voting session: {e}")
             raise
 
     async def get_voting_status(self, session_id: str) -> dict[str, Any]:
@@ -487,7 +487,7 @@ class VotingMechanismService:
             }
 
         except Exception as e:
-            logger.error(f"Failed to get voting status: {e}")
+            logger.exception(f"Failed to get voting status: {e}")
             raise
 
     # Private helper methods
@@ -569,11 +569,11 @@ class VotingMechanismService:
         algorithm = session.algorithm
         required_threshold = session.threshold
 
-        if algorithm in [
+        if algorithm in {
             ConsensusAlgorithm.SIMPLE_MAJORITY,
             ConsensusAlgorithm.SUPERMAJORITY,
             ConsensusAlgorithm.QUALIFIED_MAJORITY,
-        ]:
+        }:
             # Standard majority-based algorithms
             if total_votes == 0:
                 return False, 0.0, "no_consensus"

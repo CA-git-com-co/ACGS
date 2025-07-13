@@ -5,11 +5,9 @@ Extends existing ACGS performance monitoring with multi-agent metrics and WINA o
 
 import asyncio
 import logging
-import time
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, Optional, Tuple
-from uuid import uuid4
+from typing import Any
 
 from ...shared.blackboard import BlackboardService
 from ...shared.performance_monitoring import PerformanceMonitor
@@ -50,7 +48,7 @@ class CoordinationMetrics:
     coordination_efficiency: float
     conflict_resolution_rate: float
     consensus_success_rate: float
-    blackboard_performance: Dict[str, Any]
+    blackboard_performance: dict[str, Any]
     system_throughput: float
 
 
@@ -75,9 +73,9 @@ class MultiAgentPerformanceMonitor:
     def __init__(
         self,
         blackboard_service: BlackboardService,
-        wina_core: Optional[WINACore] = None,
-        wina_performance_monitor: Optional[WINAPerformanceCollector] = None,
-        base_performance_monitor: Optional[PerformanceMonitor] = None,
+        wina_core: WINACore | None = None,
+        wina_performance_monitor: WINAPerformanceCollector | None = None,
+        base_performance_monitor: PerformanceMonitor | None = None,
     ):
         self.blackboard = blackboard_service
         self.wina_core = wina_core
@@ -88,9 +86,9 @@ class MultiAgentPerformanceMonitor:
         self.is_monitoring = False
 
         # Performance data storage
-        self.agent_metrics: Dict[str, AgentPerformanceMetrics] = {}
-        self.coordination_history: List[CoordinationMetrics] = []
-        self.wina_optimization_history: List[WINAOptimizationMetrics] = []
+        self.agent_metrics: dict[str, AgentPerformanceMetrics] = {}
+        self.coordination_history: list[CoordinationMetrics] = []
+        self.wina_optimization_history: list[WINAOptimizationMetrics] = []
 
         # Performance thresholds
         self.performance_thresholds = {
@@ -143,7 +141,7 @@ class MultiAgentPerformanceMonitor:
                 await asyncio.sleep(30)  # Collect every 30 seconds
 
             except Exception as e:
-                self.logger.error(f"Error in agent metrics collection: {str(e)}")
+                self.logger.exception(f"Error in agent metrics collection: {e!s}")
                 await asyncio.sleep(60)
 
     async def _collect_agent_metrics(self, agent_id: str) -> None:
@@ -173,10 +171,11 @@ class MultiAgentPerformanceMonitor:
             success_rate = completed_tasks / total_tasks if total_tasks > 0 else 1.0
 
             # Calculate average processing time
-            processing_times = []
-            for knowledge in agent_knowledge:
-                if "processing_time" in knowledge.content:
-                    processing_times.append(knowledge.content["processing_time"])
+            processing_times = [
+                knowledge.content["processing_time"]
+                for knowledge in agent_knowledge
+                if "processing_time" in knowledge.content
+            ]
 
             avg_processing_time = (
                 sum(processing_times) / len(processing_times)
@@ -239,8 +238,8 @@ class MultiAgentPerformanceMonitor:
                 )
 
         except Exception as e:
-            self.logger.error(
-                f"Error collecting metrics for agent {agent_id}: {str(e)}"
+            self.logger.exception(
+                f"Error collecting metrics for agent {agent_id}: {e!s}"
             )
 
     async def _coordination_metrics_collection_loop(self) -> None:
@@ -269,11 +268,13 @@ class MultiAgentPerformanceMonitor:
                 await asyncio.sleep(60)  # Collect every minute
 
             except Exception as e:
-                self.logger.error(f"Error in coordination metrics collection: {str(e)}")
+                self.logger.exception(
+                    f"Error in coordination metrics collection: {e!s}"
+                )
                 await asyncio.sleep(120)
 
     async def _calculate_coordination_metrics(
-        self, blackboard_metrics: Dict[str, Any]
+        self, blackboard_metrics: dict[str, Any]
     ) -> CoordinationMetrics:
         """Calculate system-wide coordination metrics"""
 
@@ -366,10 +367,10 @@ class MultiAgentPerformanceMonitor:
                 await asyncio.sleep(optimization_interval * 60)  # Convert to seconds
 
             except Exception as e:
-                self.logger.error(f"Error in WINA optimization loop: {str(e)}")
+                self.logger.exception(f"Error in WINA optimization loop: {e!s}")
                 await asyncio.sleep(300)  # Wait 5 minutes on error
 
-    async def _perform_wina_optimization(self) -> Optional[WINAOptimizationMetrics]:
+    async def _perform_wina_optimization(self) -> WINAOptimizationMetrics | None:
         """Perform WINA optimization based on current performance"""
         if not self.wina_core:
             return None
@@ -412,7 +413,7 @@ class MultiAgentPerformanceMonitor:
             )
 
         except Exception as e:
-            self.logger.error(f"Error in WINA optimization: {str(e)}")
+            self.logger.exception(f"Error in WINA optimization: {e!s}")
             return None
 
     async def _performance_analysis_loop(self) -> None:
@@ -427,7 +428,7 @@ class MultiAgentPerformanceMonitor:
                 await asyncio.sleep(300)  # 5 minutes
 
             except Exception as e:
-                self.logger.error(f"Error in performance analysis: {str(e)}")
+                self.logger.exception(f"Error in performance analysis: {e!s}")
                 await asyncio.sleep(600)  # Wait longer on error
 
     async def _alerting_loop(self) -> None:
@@ -444,10 +445,10 @@ class MultiAgentPerformanceMonitor:
                 await asyncio.sleep(60)  # Check every minute
 
             except Exception as e:
-                self.logger.error(f"Error in alerting loop: {str(e)}")
+                self.logger.exception(f"Error in alerting loop: {e!s}")
                 await asyncio.sleep(120)
 
-    async def _check_performance_thresholds(self) -> List[Dict[str, Any]]:
+    async def _check_performance_thresholds(self) -> list[dict[str, Any]]:
         """Check if any performance metrics exceed thresholds"""
         alerts = []
 
@@ -547,7 +548,7 @@ class MultiAgentPerformanceMonitor:
 
         return alerts
 
-    async def _send_performance_alert(self, alert: Dict[str, Any]) -> None:
+    async def _send_performance_alert(self, alert: dict[str, Any]) -> None:
         """Send performance alert"""
         # Add alert knowledge to blackboard
         from ...shared.blackboard import KnowledgeItem
@@ -570,21 +571,20 @@ class MultiAgentPerformanceMonitor:
 
     # Helper methods for metric calculations
 
-    def _determine_agent_type(self, agent_id: str, agent_knowledge: List) -> str:
+    def _determine_agent_type(self, agent_id: str, agent_knowledge: list) -> str:
         """Determine agent type from knowledge"""
         if "ethics" in agent_id.lower():
             return "ethics_agent"
-        elif "legal" in agent_id.lower():
+        if "legal" in agent_id.lower():
             return "legal_agent"
-        elif "operational" in agent_id.lower():
+        if "operational" in agent_id.lower():
             return "operational_agent"
-        elif "coordinator" in agent_id.lower():
+        if "coordinator" in agent_id.lower():
             return "coordinator"
-        else:
-            return "unknown"
+        return "unknown"
 
     async def _calculate_constitutional_compliance_rate(
-        self, agent_id: str, agent_knowledge: List
+        self, agent_id: str, agent_knowledge: list
     ) -> float:
         """Calculate constitutional compliance rate for an agent"""
         compliant_decisions = 0
@@ -613,7 +613,7 @@ class MultiAgentPerformanceMonitor:
         return min(1.0, efficiency_score)
 
     async def _calculate_collaboration_score(
-        self, agent_id: str, agent_knowledge: List
+        self, agent_id: str, agent_knowledge: list
     ) -> float:
         """Calculate collaboration score based on knowledge sharing and coordination"""
         # Simple implementation - could be enhanced
@@ -627,7 +627,7 @@ class MultiAgentPerformanceMonitor:
     async def _get_agent_current_load(self, agent_id: str) -> int:
         """Get current task load for an agent"""
         # Query for in-progress tasks assigned to this agent
-        blackboard_metrics = await self.blackboard.get_metrics()
+        await self.blackboard.get_metrics()
         # This would need to be implemented in the blackboard to track agent-specific loads
         return 0  # Placeholder
 
@@ -636,7 +636,7 @@ class MultiAgentPerformanceMonitor:
         # This would integrate with the consensus engine
         return 0.85  # Placeholder
 
-    async def _get_current_system_performance(self) -> Dict[str, Any]:
+    async def _get_current_system_performance(self) -> dict[str, Any]:
         """Get current system performance metrics"""
         if not self.coordination_history:
             return {}
@@ -652,7 +652,7 @@ class MultiAgentPerformanceMonitor:
             "average_completion_time": latest_metrics.average_request_completion_time,
         }
 
-    async def _get_historical_performance(self) -> Dict[str, Any]:
+    async def _get_historical_performance(self) -> dict[str, Any]:
         """Get historical performance for comparison"""
         if len(self.coordination_history) < 2:
             return {}
@@ -685,31 +685,28 @@ class MultiAgentPerformanceMonitor:
     async def _analyze_performance_trends(self) -> None:
         """Analyze performance trends over time"""
         # Implementation for trend analysis
-        pass
 
     async def _detect_performance_anomalies(self) -> None:
         """Detect performance anomalies using statistical methods"""
         # Implementation for anomaly detection
-        pass
 
     async def _generate_optimization_recommendations(self) -> None:
         """Generate optimization recommendations based on performance data"""
         # Implementation for generating recommendations
-        pass
 
     # Public API methods
 
     async def get_agent_performance(
         self, agent_id: str
-    ) -> Optional[AgentPerformanceMetrics]:
+    ) -> AgentPerformanceMetrics | None:
         """Get performance metrics for a specific agent"""
         return self.agent_metrics.get(agent_id)
 
-    async def get_system_performance(self) -> Optional[CoordinationMetrics]:
+    async def get_system_performance(self) -> CoordinationMetrics | None:
         """Get current system performance metrics"""
         return self.coordination_history[-1] if self.coordination_history else None
 
-    async def get_wina_optimization_status(self) -> Optional[WINAOptimizationMetrics]:
+    async def get_wina_optimization_status(self) -> WINAOptimizationMetrics | None:
         """Get latest WINA optimization metrics"""
         return (
             self.wina_optimization_history[-1]
@@ -717,7 +714,7 @@ class MultiAgentPerformanceMonitor:
             else None
         )
 
-    async def get_performance_summary(self) -> Dict[str, Any]:
+    async def get_performance_summary(self) -> dict[str, Any]:
         """Get comprehensive performance summary"""
         system_perf = await self.get_system_performance()
         wina_status = await self.get_wina_optimization_status()
@@ -757,13 +754,13 @@ class MultiAgentPerformanceMonitor:
         }
 
     async def update_performance_thresholds(
-        self, new_thresholds: Dict[str, float]
+        self, new_thresholds: dict[str, float]
     ) -> None:
         """Update performance thresholds"""
         self.performance_thresholds.update(new_thresholds)
         self.logger.info(f"Performance thresholds updated: {new_thresholds}")
 
-    async def trigger_manual_optimization(self) -> Optional[WINAOptimizationMetrics]:
+    async def trigger_manual_optimization(self) -> WINAOptimizationMetrics | None:
         """Manually trigger WINA optimization"""
         if not self.wina_core:
             return None

@@ -23,7 +23,7 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 import asyncpg
 import httpx
@@ -85,10 +85,10 @@ app.add_middleware(
 )
 
 # Global service state
-db_pool: Optional[asyncpg.Pool] = None
-redis_client: Optional[aioredis.Redis] = None
+db_pool: asyncpg.Pool | None = None
+redis_client: aioredis.Redis | None = None
 service_clients: dict[str, httpx.AsyncClient] = {}
-evolutionary_optimizer: Optional[EvolutionaryAgentOptimizer] = None
+evolutionary_optimizer: EvolutionaryAgentOptimizer | None = None
 
 
 # Data models
@@ -151,7 +151,7 @@ class CompilationResult:
 
     compilation_id: str
     status: CompilationStatus
-    compiled_output: Optional[str] = None
+    compiled_output: str | None = None
     compilation_time_ms: float = 0.0
     constitutional_compliance_score: float = 0.0
     optimization_applied: list[str] = field(default_factory=list)
@@ -232,7 +232,7 @@ class CompilationResponseModel(BaseModel):
     status: CompilationStatus
     compilation_time_ms: float
     constitutional_compliance_score: float
-    compiled_output: Optional[str] = None
+    compiled_output: str | None = None
     optimization_applied: list[str] = []
     errors: list[str] = []
     warnings: list[str] = []
@@ -248,7 +248,7 @@ class EvolutionResponseModel(BaseModel):
     evaluation_score: float
     constitutional_compliance_score: float
     approval_required: bool
-    estimated_review_time: Optional[str] = None
+    estimated_review_time: str | None = None
     constitutional_hash: str = CONSTITUTIONAL_HASH
     recommendations: list[str] = []
 
@@ -374,7 +374,7 @@ class ConstitutionalCompiler:
             return result
 
         except Exception as e:
-            logger.error(f"Compilation {compilation_id} failed: {e}")
+            logger.exception(f"Compilation {compilation_id} failed: {e}")
             return CompilationResult(
                 compilation_id=compilation_id,
                 status=CompilationStatus.FAILED,
@@ -404,11 +404,10 @@ class ConstitutionalCompiler:
             if response.status_code == 200:
                 result = response.json()
                 return result.get("compliance_score", 0.5)
-            else:
-                logger.warning(
-                    f"Constitutional compliance check failed: {response.status_code}"
-                )
-                return 0.5
+            logger.warning(
+                f"Constitutional compliance check failed: {response.status_code}"
+            )
+            return 0.5
 
         except Exception as e:
             logger.warning(f"Constitutional compliance verification failed: {e}")
@@ -446,11 +445,11 @@ class ConstitutionalCompiler:
 
                 # Check for potentially dangerous operations
                 dangerous_patterns = ["exec(", "eval(", "__import__", "open("]
-                for pattern in dangerous_patterns:
-                    if pattern in request.source_content:
-                        warnings.append(
-                            f"Potentially dangerous operation detected: {pattern}"
-                        )
+                warnings.extend(
+                    f"Potentially dangerous operation detected: {pattern}"
+                    for pattern in dangerous_patterns
+                    if pattern in request.source_content
+                )
 
             return {"valid": len(errors) == 0, "errors": errors, "warnings": warnings}
 
@@ -510,7 +509,7 @@ def verify_constitutional_compliance():
     return True  # Placeholder for runtime verification
 """
 
-                elif compilation_type == CompilationType.AGENT_CODE:
+                if compilation_type == CompilationType.AGENT_CODE:
                     return f"""
 # ACGS Agent Code
 # Constitutional Hash: {CONSTITUTIONAL_HASH}
@@ -537,7 +536,7 @@ __constitutional_runtime_check__()
             return source
 
         except Exception as e:
-            logger.error(f"Executable generation failed: {e}")
+            logger.exception(f"Executable generation failed: {e}")
             return source
 
     async def _verify_compiled_output(
@@ -591,7 +590,7 @@ __constitutional_runtime_check__()
 
     async def _check_compilation_cache(
         self, request: CompilationRequest
-    ) -> Optional[CompilationResult]:
+    ) -> CompilationResult | None:
         """Check if compilation result is cached."""
         try:
             cache_key = self._generate_cache_key(request)
@@ -703,7 +702,7 @@ class AgentEvolutionEngine:
                     request, compilation_result, risk_score
                 )
 
-            elif (
+            if (
                 compilation_result.constitutional_compliance_score >= 0.8
                 and risk_score <= 0.5
             ):
@@ -712,14 +711,13 @@ class AgentEvolutionEngine:
                     request, compilation_result, risk_score
                 )
 
-            else:
-                # Reject high-risk or non-compliant changes
-                return await self._reject_evolution(
-                    request, compilation_result, risk_score
-                )
+            # Reject high-risk or non-compliant changes
+            return await self._reject_evolution(request, compilation_result, risk_score)
 
         except Exception as e:
-            logger.error(f"Evolution processing failed for {request.evolution_id}: {e}")
+            logger.exception(
+                f"Evolution processing failed for {request.evolution_id}: {e}"
+            )
             return {
                 "evolution_id": request.evolution_id,
                 "status": EvolutionStatus.FAILED,
@@ -798,7 +796,7 @@ class AgentEvolutionEngine:
             }
 
         except Exception as e:
-            logger.error(f"Auto-approval failed: {e}")
+            logger.exception(f"Auto-approval failed: {e}")
             raise
 
     async def _require_human_review(
@@ -843,7 +841,7 @@ class AgentEvolutionEngine:
             }
 
         except Exception as e:
-            logger.error(f"Human review setup failed: {e}")
+            logger.exception(f"Human review setup failed: {e}")
             raise
 
     async def _reject_evolution(
@@ -902,13 +900,13 @@ class AgentEvolutionEngine:
             }
 
         except Exception as e:
-            logger.error(f"Evolution rejection failed: {e}")
+            logger.exception(f"Evolution rejection failed: {e}")
             raise
 
 
 # Global service instances
-compiler_engine: Optional[ConstitutionalCompiler] = None
-evolution_engine: Optional[AgentEvolutionEngine] = None
+compiler_engine: ConstitutionalCompiler | None = None
+evolution_engine: AgentEvolutionEngine | None = None
 
 
 # Dependency injection
@@ -966,7 +964,7 @@ async def startup():
         logger.info(f"Constitutional Hash: {CONSTITUTIONAL_HASH}")
 
     except Exception as e:
-        logger.error(f"Startup failed: {e}")
+        logger.exception(f"Startup failed: {e}")
         raise
 
 
@@ -993,7 +991,7 @@ async def shutdown():
         logger.info("Service shutdown complete")
 
     except Exception as e:
-        logger.error(f"Shutdown error: {e}")
+        logger.exception(f"Shutdown error: {e}")
 
 
 async def create_database_tables():
@@ -1078,7 +1076,7 @@ async def create_database_tables():
         logger.info("Database tables created successfully")
 
     except Exception as e:
-        logger.error(f"Database table creation failed: {e}")
+        logger.exception(f"Database table creation failed: {e}")
         raise
 
 
@@ -1148,7 +1146,7 @@ async def compile_source(
         )
 
     except Exception as e:
-        logger.error(f"Compilation endpoint failed: {e}")
+        logger.exception(f"Compilation endpoint failed: {e}")
         raise HTTPException(status_code=500, detail=f"Compilation failed: {e!s}")
 
 
@@ -1199,7 +1197,7 @@ async def evolve_agent(
         )
 
     except Exception as e:
-        logger.error(f"Evolution endpoint failed: {e}")
+        logger.exception(f"Evolution endpoint failed: {e}")
         raise HTTPException(status_code=500, detail=f"Evolution failed: {e!s}")
 
 
@@ -1233,7 +1231,7 @@ async def get_compilation_status(compilation_id: str):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Compilation status query failed: {e}")
+        logger.exception(f"Compilation status query failed: {e}")
         raise HTTPException(status_code=500, detail="Status query failed")
 
 
@@ -1272,7 +1270,7 @@ async def get_evolution_status(evolution_id: str):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Evolution status query failed: {e}")
+        logger.exception(f"Evolution status query failed: {e}")
         raise HTTPException(status_code=500, detail="Status query failed")
 
 
@@ -1332,7 +1330,7 @@ async def get_service_metrics():
         }
 
     except Exception as e:
-        logger.error(f"Metrics query failed: {e}")
+        logger.exception(f"Metrics query failed: {e}")
         raise HTTPException(status_code=500, detail="Metrics query failed")
 
 
@@ -1349,8 +1347,8 @@ class AgentOptimizationRequest(BaseModel):
     algorithm_type: str = Field(
         default="genetic", description="genetic or multi_objective"
     )
-    evolution_params: Optional[dict[str, Any]] = None
-    optimization_name: Optional[str] = None
+    evolution_params: dict[str, Any] | None = None
+    optimization_name: str | None = None
 
 
 @app.post("/api/v1/evolutionary/optimize")
@@ -1449,7 +1447,7 @@ async def optimize_agent_evolutionary(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Evolutionary optimization failed: {e}")
+        logger.exception(f"Evolutionary optimization failed: {e}")
         raise HTTPException(status_code=500, detail=f"Optimization failed: {e!s}")
 
 
@@ -1480,7 +1478,7 @@ async def get_optimization_result(optimization_id: str):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Failed to get optimization result: {e}")
+        logger.exception(f"Failed to get optimization result: {e}")
         raise HTTPException(
             status_code=500, detail="Failed to retrieve optimization result"
         )
@@ -1503,29 +1501,28 @@ async def get_optimization_history(limit: int = 20):
                 limit,
             )
 
-            history = []
-            for row in rows:
-                history.append(
-                    {
-                        "optimization_id": row["optimization_id"],
-                        "algorithm_type": row["algorithm_type"],
-                        "objectives": json.loads(row["objectives"]),
-                        "best_fitness": (
-                            float(row["best_fitness"]) if row["best_fitness"] else 0.0
-                        ),
-                        "constitutional_compliance": (
-                            float(row["constitutional_compliance"])
-                            if row["constitutional_compliance"]
-                            else 0.0
-                        ),
-                        "created_at": row["created_at"].isoformat(),
-                    }
-                )
+            history = [
+                {
+                    "optimization_id": row["optimization_id"],
+                    "algorithm_type": row["algorithm_type"],
+                    "objectives": json.loads(row["objectives"]),
+                    "best_fitness": (
+                        float(row["best_fitness"]) if row["best_fitness"] else 0.0
+                    ),
+                    "constitutional_compliance": (
+                        float(row["constitutional_compliance"])
+                        if row["constitutional_compliance"]
+                        else 0.0
+                    ),
+                    "created_at": row["created_at"].isoformat(),
+                }
+                for row in rows
+            ]
 
             return {"optimization_history": history, "total_count": len(history)}
 
     except Exception as e:
-        logger.error(f"Failed to get optimization history: {e}")
+        logger.exception(f"Failed to get optimization history: {e}")
         raise HTTPException(
             status_code=500, detail="Failed to retrieve optimization history"
         )
@@ -1552,7 +1549,7 @@ async def analyze_evolution_convergence(optimization_id: str):
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
-        logger.error(f"Convergence analysis failed: {e}")
+        logger.exception(f"Convergence analysis failed: {e}")
         raise HTTPException(status_code=500, detail=f"Analysis failed: {e!s}")
 
 

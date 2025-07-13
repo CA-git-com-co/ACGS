@@ -5,6 +5,8 @@ title: 'Optimize Solana program account sizes'
 labels: good first issue, blockchain, optimization
 assignees: ''
 ---
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 
 ## Description
 Analyze and optimize account structures to reduce rent costs

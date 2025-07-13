@@ -6,12 +6,9 @@ Core entities representing constitutional concepts.
 """
 
 from datetime import datetime
-from typing import Dict, List, Optional, Set
-from uuid import UUID
 
 from services.shared.domain.base import (
     CONSTITUTIONAL_HASH,
-    AggregateRoot,
     Entity,
     EntityId,
     InvalidEntityStateException,
@@ -21,10 +18,8 @@ from services.shared.domain.base import (
 
 from .events import (
     AmendmentApproved,
-    AmendmentProposed,
     AmendmentRejected,
     ConstitutionAmended,
-    PrincipleViolationDetected,
     PublicConsultationCompleted,
 )
 from .value_objects import (
@@ -41,7 +36,6 @@ from .value_objects import (
     PriorityWeight,
     ValidationCriteria,
     VersionNumber,
-    ViolationDetail,
     ViolationSeverity,
 )
 
@@ -51,16 +45,16 @@ class Principle(Entity):
 
     def __init__(
         self,
-        principle_id: Optional[EntityId],
+        principle_id: EntityId | None,
         name: str,
         content: str,
         priority_weight: PriorityWeight,
         scope: ApplicationScope,
         validation_criteria: ValidationCriteria,
-        constraints: Optional[FormalConstraints] = None,
-        category: Optional[str] = None,
-        keywords: Optional[List[str]] = None,
-        rationale: Optional[str] = None,
+        constraints: FormalConstraints | None = None,
+        category: str | None = None,
+        keywords: list[str] | None = None,
+        rationale: str | None = None,
     ):
         """Initialize a principle."""
         super().__init__(principle_id)
@@ -75,7 +69,7 @@ class Principle(Entity):
         self.rationale = rationale
         self._is_active = True
 
-    def evaluate_compliance(self, context: Dict[str, any]) -> ComplianceScore:
+    def evaluate_compliance(self, context: dict[str, any]) -> ComplianceScore:
         """Evaluate compliance with this principle in a given context."""
         # This would contain actual evaluation logic
         # For now, return a mock score
@@ -87,7 +81,7 @@ class Principle(Entity):
             calculated_at=datetime.utcnow(),
         )
 
-    def conflicts_with(self, other: "Principle") -> Optional[ConflictAnalysis]:
+    def conflicts_with(self, other: "Principle") -> ConflictAnalysis | None:
         """Check if this principle conflicts with another."""
         # Check for logical conflicts
         if self._has_logical_conflict(other):
@@ -151,11 +145,11 @@ class MetaRule(Entity):
 
     def __init__(
         self,
-        meta_rule_id: Optional[EntityId],
+        meta_rule_id: EntityId | None,
         name: str,
         rule_logic: str,
         precedence_level: int,
-        applicable_principles: Set[str],
+        applicable_principles: set[str],
         conflict_resolution_strategy: str,
     ):
         """Initialize a meta-rule."""
@@ -171,10 +165,9 @@ class MetaRule(Entity):
         # Implement conflict resolution logic
         if self.conflict_resolution_strategy == "precedence":
             return f"Apply precedence level {self.precedence_level}"
-        elif self.conflict_resolution_strategy == "scope":
+        if self.conflict_resolution_strategy == "scope":
             return "Narrow scope to eliminate conflict"
-        else:
-            return "Escalate to human oversight"
+        return "Escalate to human oversight"
 
     def validate_invariants(self) -> None:
         """Validate meta-rule invariants."""
@@ -189,11 +182,11 @@ class Constitution(MultiTenantAggregateRoot):
 
     def __init__(
         self,
-        constitution_id: Optional[EntityId],
+        constitution_id: EntityId | None,
         tenant_id: TenantId,
         version: VersionNumber,
-        principles: Optional[List[Principle]] = None,
-        meta_rules: Optional[List[MetaRule]] = None,
+        principles: list[Principle] | None = None,
+        meta_rules: list[MetaRule] | None = None,
     ):
         """Initialize a constitution."""
         super().__init__(constitution_id, tenant_id)
@@ -284,7 +277,7 @@ class Constitution(MultiTenantAggregateRoot):
         self.status = ConstitutionStatus.SUPERSEDED
         self.increment_version()
 
-    def validate_consistency(self) -> List[ConflictAnalysis]:
+    def validate_consistency(self) -> list[ConflictAnalysis]:
         """Validate internal consistency of all principles."""
         conflicts = []
 
@@ -298,7 +291,7 @@ class Constitution(MultiTenantAggregateRoot):
         return conflicts
 
     def calculate_compliance_score(
-        self, action: Dict[str, any], context: Dict[str, any]
+        self, action: dict[str, any], context: dict[str, any]
     ) -> ComplianceScore:
         """Calculate overall compliance score for an action."""
         applicable_principles = self._get_applicable_principles(action, context)
@@ -329,7 +322,9 @@ class Constitution(MultiTenantAggregateRoot):
         else:
             weighted_sum = sum(
                 score * p.priority_weight.value
-                for p, score in zip(applicable_principles, principle_scores.values())
+                for p, score in zip(
+                    applicable_principles, principle_scores.values(), strict=False
+                )
             )
             overall_score = weighted_sum / total_weight
 
@@ -342,19 +337,18 @@ class Constitution(MultiTenantAggregateRoot):
         )
 
     def _get_applicable_principles(
-        self, action: Dict[str, any], context: Dict[str, any]
-    ) -> List[Principle]:
+        self, action: dict[str, any], context: dict[str, any]
+    ) -> list[Principle]:
         """Get principles applicable to an action in a context."""
-        applicable = []
 
-        for principle in self.principles:
-            if self._is_principle_applicable(principle, action, context):
-                applicable.append(principle)
-
-        return applicable
+        return [
+            principle
+            for principle in self.principles
+            if self._is_principle_applicable(principle, action, context)
+        ]
 
     def _is_principle_applicable(
-        self, principle: Principle, action: Dict[str, any], context: Dict[str, any]
+        self, principle: Principle, action: dict[str, any], context: dict[str, any]
     ) -> bool:
         """Check if a principle applies to an action/context."""
         # Check scope applicability
@@ -407,13 +401,13 @@ class Amendment(Entity):
 
     def __init__(
         self,
-        amendment_id: Optional[EntityId],
+        amendment_id: EntityId | None,
         principle_id: str,
-        new_content: Optional[str] = None,
-        new_priority: Optional[PriorityWeight] = None,
-        new_scope: Optional[ApplicationScope] = None,
-        new_validation: Optional[ValidationCriteria] = None,
-        justification: Optional[AmendmentJustification] = None,
+        new_content: str | None = None,
+        new_priority: PriorityWeight | None = None,
+        new_scope: ApplicationScope | None = None,
+        new_validation: ValidationCriteria | None = None,
+        justification: AmendmentJustification | None = None,
     ):
         """Initialize an amendment."""
         super().__init__(amendment_id)
@@ -443,7 +437,7 @@ class PublicConsultation(Entity):
 
     def __init__(
         self,
-        consultation_id: Optional[EntityId],
+        consultation_id: EntityId | None,
         amendment_id: str,
         start_date: datetime,
         end_date: datetime,
@@ -455,9 +449,9 @@ class PublicConsultation(Entity):
         self.start_date = start_date
         self.end_date = end_date
         self.required_participants = required_participants
-        self.stakeholder_inputs: List[StakeholderInput] = []
-        self.public_comments: List[Dict[str, any]] = []
-        self.expert_reviews: List[Dict[str, any]] = []
+        self.stakeholder_inputs: list[StakeholderInput] = []
+        self.public_comments: list[dict[str, any]] = []
+        self.expert_reviews: list[dict[str, any]] = []
 
     def add_stakeholder_input(self, input: "StakeholderInput") -> None:
         """Add stakeholder input to the consultation."""
@@ -502,13 +496,13 @@ class StakeholderInput(Entity):
 
     def __init__(
         self,
-        input_id: Optional[EntityId],
+        input_id: EntityId | None,
         stakeholder_id: str,
         stakeholder_type: str,  # "citizen", "expert", "organization"
         supports_amendment: bool,
-        concerns: List[str],
-        suggestions: List[str],
-        submitted_at: Optional[datetime] = None,
+        concerns: list[str],
+        suggestions: list[str],
+        submitted_at: datetime | None = None,
     ):
         """Initialize stakeholder input."""
         super().__init__(input_id)
@@ -533,10 +527,10 @@ class AmendmentProposal(MultiTenantAggregateRoot):
 
     def __init__(
         self,
-        proposal_id: Optional[EntityId],
+        proposal_id: EntityId | None,
         tenant_id: TenantId,
         proposer_id: str,
-        amendments: List[Amendment],
+        amendments: list[Amendment],
         justification: AmendmentJustification,
     ):
         """Initialize amendment proposal."""
@@ -545,10 +539,10 @@ class AmendmentProposal(MultiTenantAggregateRoot):
         self.amendments = amendments
         self.justification = justification
         self.status = AmendmentStatus.PROPOSED
-        self.public_consultation: Optional[PublicConsultation] = None
-        self.approval_workflow: Optional[ApprovalWorkflow] = None
+        self.public_consultation: PublicConsultation | None = None
+        self.approval_workflow: ApprovalWorkflow | None = None
         self.submitted_at = datetime.utcnow()
-        self.decided_at: Optional[datetime] = None
+        self.decided_at: datetime | None = None
 
     def start_public_consultation(
         self, start_date: datetime, end_date: datetime, required_participants: int = 100
@@ -642,7 +636,7 @@ class AmendmentProposal(MultiTenantAggregateRoot):
 
     def withdraw(self, reason: str) -> None:
         """Withdraw the amendment proposal."""
-        if self.status in [AmendmentStatus.APPROVED, AmendmentStatus.REJECTED]:
+        if self.status in {AmendmentStatus.APPROVED, AmendmentStatus.REJECTED}:
             raise InvalidEntityStateException(
                 f"Cannot withdraw amendment in status {self.status}"
             )
@@ -667,27 +661,6 @@ class AmendmentProposal(MultiTenantAggregateRoot):
         self.justification._validate()
 
         # Status transitions
-        valid_transitions = {
-            AmendmentStatus.PROPOSED: [
-                AmendmentStatus.IN_REVIEW,
-                AmendmentStatus.WITHDRAWN,
-            ],
-            AmendmentStatus.IN_REVIEW: [
-                AmendmentStatus.IN_CONSULTATION,
-                AmendmentStatus.APPROVED,
-                AmendmentStatus.REJECTED,
-                AmendmentStatus.WITHDRAWN,
-            ],
-            AmendmentStatus.IN_CONSULTATION: [
-                AmendmentStatus.IN_REVIEW,
-                AmendmentStatus.APPROVED,
-                AmendmentStatus.REJECTED,
-                AmendmentStatus.WITHDRAWN,
-            ],
-            AmendmentStatus.APPROVED: [],
-            AmendmentStatus.REJECTED: [],
-            AmendmentStatus.WITHDRAWN: [],
-        }
 
         # This check would be used during status transitions
         # Currently just validates the status is valid
@@ -700,20 +673,20 @@ class ApprovalWorkflow(Entity):
 
     def __init__(
         self,
-        workflow_id: Optional[EntityId],
+        workflow_id: EntityId | None,
         amendment_id: str,
-        required_steps: List[ApprovalStep],
+        required_steps: list[ApprovalStep],
     ):
         """Initialize approval workflow."""
         super().__init__(workflow_id)
         self.amendment_id = amendment_id
         self.required_steps = required_steps
-        self.completed_steps: Dict[ApprovalStep, datetime] = {}
-        self.current_step: Optional[ApprovalStep] = (
+        self.completed_steps: dict[ApprovalStep, datetime] = {}
+        self.current_step: ApprovalStep | None = (
             required_steps[0] if required_steps else None
         )
 
-    def complete_step(self, step: ApprovalStep, result: Dict[str, any]) -> None:
+    def complete_step(self, step: ApprovalStep, result: dict[str, any]) -> None:
         """Mark a step as completed."""
         if step != self.current_step:
             raise InvalidEntityStateException(

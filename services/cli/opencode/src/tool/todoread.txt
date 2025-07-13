@@ -1,3 +1,5 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 Use this tool to read the current to-do list for the session. This tool should be used proactively and frequently to ensure that you are aware of
 the status of the current task list. You should make use of this tool as often as possible, especially in the following situations:
 - At the beginning of conversations to see what's pending

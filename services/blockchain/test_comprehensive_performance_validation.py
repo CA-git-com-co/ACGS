@@ -8,9 +8,10 @@ import asyncio
 import logging
 import random
 import statistics
+import sys
 import time
 from dataclasses import dataclass
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -53,7 +54,7 @@ class PerformanceValidator:
 
     async def simulate_governance_request(
         self, request_type: str, user_id: int
-    ) -> Tuple[bool, float]:
+    ) -> tuple[bool, float]:
         """Simulate a governance system request."""
         start_time = time.time()
 
@@ -97,7 +98,7 @@ class PerformanceValidator:
 
     async def simulate_user_session(
         self, user_id: int, session_duration: float, requests_per_second: float
-    ) -> List[Tuple[bool, float]]:
+    ) -> list[tuple[bool, float]]:
         """Simulate a user session with multiple requests."""
         results = []
         request_types = [
@@ -130,12 +131,6 @@ class PerformanceValidator:
     async def run_load_test(self, test: PerformanceTest) -> TestResult:
         """Run a load test scenario."""
         logger.info(f"🔍 Running {test.name}")
-        print(f"\n📊 {test.name}")
-        print(f"   Description: {test.description}")
-        print(f"   Concurrent Users: {test.concurrent_users}")
-        print(f"   Test Duration: {test.test_duration}s")
-        print(f"   Target Response Time: {test.target_response_time}ms")
-        print(f"   Target Success Rate: {test.target_success_rate}%")
 
         # Start concurrent user sessions
         start_time = time.time()
@@ -195,7 +190,7 @@ class PerformanceValidator:
         )
         availability = success_rate  # Simplified availability calculation
 
-        result = TestResult(
+        return TestResult(
             test_name=test.name,
             total_requests=total_requests,
             successful_requests=successful_requests,
@@ -209,33 +204,11 @@ class PerformanceValidator:
         )
 
         # Print results
-        print(f"   ✅ Total Requests: {total_requests}")
-        print(f"   ✅ Successful Requests: {successful_requests}")
-        print(f"   ❌ Failed Requests: {failed_requests}")
-        print(f"   📊 Average Response Time: {avg_response_time:.2f}ms")
-        print(f"   📊 95th Percentile: {p95_response_time:.2f}ms")
-        print(f"   📊 99th Percentile: {p99_response_time:.2f}ms")
-        print(f"   ✅ Success Rate: {success_rate:.1f}%")
-        print(f"   ⚡ Throughput: {throughput:.1f} requests/second")
-        print(f"   🎯 Availability: {availability:.1f}%")
 
         # Validate targets
-        meets_response_target = p95_response_time <= test.target_response_time
-        meets_success_target = success_rate >= test.target_success_rate
 
-        print(
-            f"   🎯 Response Time Target: {'✅ MET' if meets_response_target else '❌ NOT MET'}"
-        )
-        print(
-            f"   🎯 Success Rate Target: {'✅ MET' if meets_success_target else '❌ NOT MET'}"
-        )
-
-        return result
-
-    async def validate_comprehensive_performance(self) -> Dict[str, Any]:
+    async def validate_comprehensive_performance(self) -> dict[str, Any]:
         """Run comprehensive performance validation."""
-        print("🔍 Comprehensive Performance Validation")
-        print("=" * 60)
 
         # Define test scenarios
         test_scenarios = [
@@ -293,19 +266,17 @@ class PerformanceValidator:
 
         return self.analyze_overall_performance(results)
 
-    def analyze_overall_performance(self, results: List[TestResult]) -> Dict[str, Any]:
+    def analyze_overall_performance(self, results: list[TestResult]) -> dict[str, Any]:
         """Analyze overall performance across all tests."""
-        print("\n📈 Overall Performance Analysis")
-        print("=" * 50)
 
         # Calculate aggregate metrics
         total_requests = sum(r.total_requests for r in results)
         total_successful = sum(r.successful_requests for r in results)
-        total_failed = sum(r.failed_requests for r in results)
+        sum(r.failed_requests for r in results)
 
         avg_response_times = [r.avg_response_time for r in results]
         p95_response_times = [r.p95_response_time for r in results]
-        success_rates = [r.success_rate for r in results]
+        [r.success_rate for r in results]
         throughputs = [r.throughput for r in results]
         availabilities = [r.availability for r in results]
 
@@ -314,61 +285,24 @@ class PerformanceValidator:
         overall_success_rate = (
             (total_successful / total_requests * 100) if total_requests > 0 else 0
         )
-        overall_throughput = statistics.mean(throughputs)
+        statistics.mean(throughputs)
         overall_availability = statistics.mean(availabilities)
-
-        print(f"📊 Aggregate Statistics:")
-        print(f"   Total Requests Processed: {total_requests:,}")
-        print(f"   Total Successful Requests: {total_successful:,}")
-        print(f"   Total Failed Requests: {total_failed:,}")
-        print(f"   Overall Average Response Time: {overall_avg_response:.2f}ms")
-        print(f"   Overall 95th Percentile Response Time: {overall_p95_response:.2f}ms")
-        print(f"   Overall Success Rate: {overall_success_rate:.1f}%")
-        print(f"   Overall Throughput: {overall_throughput:.1f} requests/second")
-        print(f"   Overall Availability: {overall_availability:.1f}%")
 
         # Validate primary targets
         target_response_time = 500.0  # ms
-        target_concurrent_users = 1000
         target_availability = 99.5  # %
 
         meets_response_target = overall_p95_response <= target_response_time
         meets_concurrency_target = any(r.test_name == "Peak Load Test" for r in results)
         meets_availability_target = overall_availability >= target_availability
 
-        print(f"\n🎯 Primary Target Validation:")
-        print(f"   Target Response Time (95th percentile): ≤{target_response_time}ms")
-        print(f"   Achieved Response Time: {overall_p95_response:.2f}ms")
-        print(
-            f"   Response Time Target: {'✅ MET' if meets_response_target else '❌ NOT MET'}"
-        )
-
-        print(f"   Target Concurrent Users: ≥{target_concurrent_users}")
         peak_test = next((r for r in results if r.test_name == "Peak Load Test"), None)
         if peak_test:
-            print(f"   Achieved Concurrent Users: 1000 (Peak Load Test)")
-            print(
-                f"   Concurrency Target: {'✅ MET' if meets_concurrency_target else '❌ NOT MET'}"
-            )
-
-        print(f"   Target System Availability: ≥{target_availability}%")
-        print(f"   Achieved Availability: {overall_availability:.1f}%")
-        print(
-            f"   Availability Target: {'✅ MET' if meets_availability_target else '❌ NOT MET'}"
-        )
+            pass
 
         # Test-specific analysis
-        print(f"\n📋 Test-Specific Results:")
-        for result in results:
-            status = (
-                "✅ PASSED"
-                if (result.p95_response_time <= 500 and result.success_rate >= 95)
-                else "⚠️ REVIEW"
-            )
-            print(f"   {result.test_name}: {status}")
-            print(
-                f"     Response Time: {result.p95_response_time:.1f}ms | Success Rate: {result.success_rate:.1f}%"
-            )
+        for _result in results:
+            pass
 
         return {
             "success": True,
@@ -386,33 +320,11 @@ class PerformanceValidator:
 
 async def main():
     """Main function."""
-    print("🚀 Starting Comprehensive Performance Validation")
-    print("=" * 70)
 
     validator = PerformanceValidator()
     result = await validator.validate_comprehensive_performance()
 
     if result["success"]:
-        print("\n🎯 Performance Validation Summary")
-        print("=" * 60)
-        print(f"📊 Total Requests Processed: {result['total_requests']:,}")
-        print(
-            f"⚡ Overall Average Response Time: {result['overall_avg_response']:.2f}ms"
-        )
-        print(
-            f"📊 Overall 95th Percentile Response Time: {result['overall_p95_response']:.2f}ms"
-        )
-        print(f"✅ Overall Success Rate: {result['overall_success_rate']:.1f}%")
-        print(f"🎯 Overall Availability: {result['overall_availability']:.1f}%")
-        print(
-            f"🎯 Response Time Target: {'MET' if result['meets_response_target'] else 'NOT MET'}"
-        )
-        print(
-            f"🎯 Concurrency Target: {'MET' if result['meets_concurrency_target'] else 'NOT MET'}"
-        )
-        print(
-            f"🎯 Availability Target: {'MET' if result['meets_availability_target'] else 'NOT MET'}"
-        )
 
         all_targets_met = all(
             [
@@ -423,15 +335,11 @@ async def main():
         )
 
         if all_targets_met:
-            print("\n🎉 Comprehensive performance validation successful!")
-            print("   All performance targets achieved!")
-            exit(0)
+            sys.exit(0)
         else:
-            print("\n⚠️ Some performance targets not fully met.")
-            exit(1)
+            sys.exit(1)
     else:
-        print("\n❌ Performance validation failed.")
-        exit(1)
+        sys.exit(1)
 
 
 if __name__ == "__main__":

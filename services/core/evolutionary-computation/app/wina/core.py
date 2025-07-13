@@ -101,7 +101,7 @@ class WINACore:
     async def optimize_neural_weights(
         self,
         input_weights: dict[str, list[float]],
-        constitutional_constraints: list[dict[str, Any]] = None,
+        constitutional_constraints: list[dict[str, Any]] | None = None,
     ) -> WINAOptimizationResult:
         """
         Optimize neural weights with constitutional constraints.
@@ -153,7 +153,7 @@ class WINACore:
 
         except Exception as e:
             optimization_time = (time.time() - start_time) * 1000
-            logger.error(f"WINA optimization {optimization_id} failed: {e}")
+            logger.exception(f"WINA optimization {optimization_id} failed: {e}")
 
             return WINAOptimizationResult(
                 optimization_id=optimization_id,
@@ -304,5 +304,5 @@ class WINACore:
             return True
 
         except Exception as e:
-            logger.error(f"Constitutional compliance validation failed: {e}")
+            logger.exception(f"Constitutional compliance validation failed: {e}")
             return False

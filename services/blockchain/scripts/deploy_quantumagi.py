@@ -47,8 +47,8 @@ class QuantumagiDeployer:
         }
 
         try:
-            if os.path.exists(self.config_path):
-                with open(self.config_path) as f:
+            if Path(self.config_path).exists():
+                with open(self.config_path, encoding="utf-8") as f:
                     user_config = json.load(f)
                     default_config.update(user_config)
         except Exception as e:
@@ -84,7 +84,7 @@ class QuantumagiDeployer:
             await self._print_deployment_summary()
 
         except Exception as e:
-            logger.error(f"❌ Deployment failed: {e}")
+            logger.exception(f"❌ Deployment failed: {e}")
             raise
 
     async def _build_and_deploy_program(self):
@@ -95,7 +95,9 @@ class QuantumagiDeployer:
         os.chdir(self.project_root)
 
         # Build the program
-        result = subprocess.run(["anchor", "build"], capture_output=True, text=True)
+        result = subprocess.run(
+            ["anchor", "build"], check=False, capture_output=True, text=True
+        )
         if result.returncode != 0:
             raise Exception(f"Build failed: {result.stderr}")
 
@@ -113,7 +115,7 @@ class QuantumagiDeployer:
             self.config["deployer_keypair_path"],
         ]
 
-        result = subprocess.run(deploy_cmd, capture_output=True, text=True)
+        result = subprocess.run(deploy_cmd, check=False, capture_output=True, text=True)
         if result.returncode != 0:
             raise Exception(f"Deployment failed: {result.stderr}")
 
@@ -134,7 +136,7 @@ class QuantumagiDeployer:
 
         # Fallback: read from keypair file
         try:
-            with open(self.config["program_keypair_path"]) as f:
+            with open(self.config["program_keypair_path"], encoding="utf-8") as f:
                 json.load(f)
                 # Convert keypair to program ID (simplified)
                 return "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"  # Placeholder
@@ -197,10 +199,10 @@ class QuantumagiDeployer:
         from solders.keypair import Keypair
 
         # Expand user path
-        path = os.path.expanduser(keypair_path)
+        path = Path(keypair_path).expanduser()
 
         try:
-            with open(path) as f:
+            with open(path, encoding="utf-8") as f:
                 keypair_data = json.load(f)
                 return Keypair.from_bytes(bytes(keypair_data))
         except Exception as e:
@@ -219,6 +221,7 @@ class QuantumagiDeployer:
         if requirements_file.exists():
             result = subprocess.run(
                 [sys.executable, "-m", "pip", "install", "-r", str(requirements_file)],
+                check=False,
                 capture_output=True,
                 text=True,
             )
@@ -312,16 +315,16 @@ class QuantumagiDeployer:
             # Test connection to ACGS backend
             import aiohttp
 
-            async with aiohttp.ClientSession() as session:
-                async with session.get(
+            async with (
+                aiohttp.ClientSession() as session,
+                session.get(
                     f"{self.config['integration']['acgs_backend_url']}/health"
-                ) as response:
-                    if response.status == 200:
-                        logger.info("✅ ACGS backend connection successful")
-                    else:
-                        logger.warning(
-                            f"ACGS backend returned status: {response.status}"
-                        )
+                ) as response,
+            ):
+                if response.status == 200:
+                    logger.info("✅ ACGS backend connection successful")
+                else:
+                    logger.warning(f"ACGS backend returned status: {response.status}")
 
         except Exception as e:
             logger.warning(f"Could not connect to ACGS backend: {e}")
@@ -334,6 +337,7 @@ class QuantumagiDeployer:
             # Run anchor tests
             result = subprocess.run(
                 ["anchor", "test", "--skip-deploy"],
+                check=False,
                 capture_output=True,
                 text=True,
                 cwd=self.project_root,
@@ -349,7 +353,7 @@ class QuantumagiDeployer:
 
     async def _print_deployment_summary(self):
         """Print deployment summary"""
-        summary = f"""
+        f"""
 
 🎉 Quantumagi Deployment Summary
 ================================
@@ -369,8 +373,6 @@ Documentation: ./README.md
 Client Examples: ./client/
         """
 
-        print(summary)
-
 
 async def main():
     """Main deployment function"""
@@ -381,7 +383,7 @@ async def main():
     except KeyboardInterrupt:
         logger.info("Deployment cancelled by user")
     except Exception as e:
-        logger.error(f"Deployment failed: {e}")
+        logger.exception(f"Deployment failed: {e}")
         sys.exit(1)
 
 

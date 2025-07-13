@@ -239,7 +239,7 @@ async def create_workflow(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(
+        logger.exception(
             f"Workflow creation failed: {e}", extra={"correlation_id": correlation_id}
         )
 
@@ -348,7 +348,7 @@ async def list_workflows(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(
+        logger.exception(
             f"Workflow listing failed: {e}", extra={"correlation_id": correlation_id}
         )
 
@@ -404,7 +404,7 @@ async def get_workflow_status(workflow_id: str, http_request: Request):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(
+        logger.exception(
             f"Get workflow status failed: {e}", extra={"correlation_id": correlation_id}
         )
 
@@ -465,7 +465,7 @@ async def start_workflow(workflow_id: str, http_request: Request):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(
+        logger.exception(
             f"Start workflow failed: {e}", extra={"correlation_id": correlation_id}
         )
 
@@ -526,7 +526,7 @@ async def cancel_workflow(workflow_id: str, http_request: Request):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(
+        logger.exception(
             f"Cancel workflow failed: {e}", extra={"correlation_id": correlation_id}
         )
 
@@ -659,7 +659,7 @@ async def get_workflow_metrics(http_request: Request):
         return response_data
 
     except Exception as e:
-        logger.error(
+        logger.exception(
             f"Get workflow metrics failed: {e}",
             extra={"correlation_id": correlation_id},
         )

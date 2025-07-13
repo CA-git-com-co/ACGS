@@ -34,7 +34,7 @@ class DevnetValidator:
         program_ids_file = self.project_root / "devnet_program_ids.json"
 
         if program_ids_file.exists():
-            with open(program_ids_file) as f:
+            with open(program_ids_file, encoding="utf-8") as f:
                 data = json.load(f)
                 return data.get("programs", {})
         else:
@@ -70,6 +70,7 @@ class DevnetValidator:
                         "--url",
                         f"https://api.{self.cluster}.solana.com",
                     ],
+                    check=False,
                     capture_output=True,
                     text=True,
                     timeout=30,
@@ -101,7 +102,7 @@ class DevnetValidator:
                     "accessible": False,
                     "error": str(e),
                 }
-                logger.error(f"❌ Failed to validate {program_name}: {e}")
+                logger.exception(f"❌ Failed to validate {program_name}: {e}")
 
         self.validation_results["program_deployment"] = validation_results
         return validation_results
@@ -116,7 +117,7 @@ class DevnetValidator:
             result = {"status": "❌ Constitution data not found", "file_exists": False}
         else:
             try:
-                with open(constitution_file) as f:
+                with open(constitution_file, encoding="utf-8") as f:
                     constitution_data = json.load(f)
 
                 result = {
@@ -138,7 +139,7 @@ class DevnetValidator:
                     "file_exists": True,
                     "error": str(e),
                 }
-                logger.error(f"❌ Constitution validation failed: {e}")
+                logger.exception(f"❌ Constitution validation failed: {e}")
 
         self.validation_results["constitution"] = result
         return result
@@ -153,7 +154,7 @@ class DevnetValidator:
             result = {"status": "❌ Initial policies not found", "file_exists": False}
         else:
             try:
-                with open(policies_file) as f:
+                with open(policies_file, encoding="utf-8") as f:
                     policies_data = json.load(f)
 
                 policy_count = len(policies_data)
@@ -180,7 +181,7 @@ class DevnetValidator:
                     "file_exists": True,
                     "error": str(e),
                 }
-                logger.error(f"❌ Policies validation failed: {e}")
+                logger.exception(f"❌ Policies validation failed: {e}")
 
         self.validation_results["policies"] = result
         return result
@@ -198,7 +199,7 @@ class DevnetValidator:
             }
         else:
             try:
-                with open(governance_file) as f:
+                with open(governance_file, encoding="utf-8") as f:
                     governance_data = json.load(f)
 
                 account_types = list(governance_data.keys())
@@ -224,7 +225,7 @@ class DevnetValidator:
                     "file_exists": True,
                     "error": str(e),
                 }
-                logger.error(f"❌ Governance accounts validation failed: {e}")
+                logger.exception(f"❌ Governance accounts validation failed: {e}")
 
         self.validation_results["governance_accounts"] = result
         return result
@@ -254,7 +255,7 @@ class DevnetValidator:
                     "file_exists": True,
                     "error": str(e),
                 }
-                logger.error(f"❌ Client connectivity validation failed: {e}")
+                logger.exception(f"❌ Client connectivity validation failed: {e}")
 
         self.validation_results["client_connectivity"] = result
         return result
@@ -291,14 +292,16 @@ class DevnetValidator:
 
         # Calculate overall status
         all_validations = []
-        for _category, results in self.validation_results.items():
+        for results in self.validation_results.values():
             if isinstance(results, dict) and "status" in results:
                 all_validations.append("✅" in results["status"])
             elif isinstance(results, dict):
                 # Handle nested results (like program deployment)
-                for _item, item_results in results.items():
-                    if isinstance(item_results, dict) and "status" in item_results:
-                        all_validations.append("✅" in item_results["status"])
+                all_validations.extend(
+                    "✅" in item_results["status"]
+                    for item_results in results.values()
+                    if isinstance(item_results, dict) and "status" in item_results
+                )
 
         overall_success = all(all_validations) if all_validations else False
 
@@ -332,7 +335,7 @@ class DevnetValidator:
         report_file = (
             self.project_root / f"devnet_validation_report_{self.cluster}.json"
         )
-        with open(report_file, "w") as f:
+        with open(report_file, "w", encoding="utf-8") as f:
             json.dump(report, f, indent=2)
 
         logger.info(f"Validation report saved to: {report_file}")
@@ -414,7 +417,7 @@ async def main():
                 logger.info(f"  📋 {rec}")
 
     except Exception as e:
-        logger.error(f"Devnet validation failed: {e}")
+        logger.exception(f"Devnet validation failed: {e}")
         sys.exit(1)
 
 

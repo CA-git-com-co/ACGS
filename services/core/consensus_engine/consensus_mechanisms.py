@@ -3,12 +3,11 @@ Consensus Mechanisms for Multi-Agent Conflict Resolution
 Implements various consensus algorithms for resolving conflicts between agents.
 """
 
-import asyncio
 import logging
-import time
+import operator
 from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
@@ -38,9 +37,9 @@ class VoteOption(BaseModel):
     option_name: str
     description: str
     proposed_by: str
-    supporting_data: Dict[str, Any] = Field(default_factory=dict)
+    supporting_data: dict[str, Any] = Field(default_factory=dict)
     constitutional_score: float = Field(default=0.5, ge=0.0, le=1.0)
-    risk_assessment: Dict[str, Any] = Field(default_factory=dict)
+    risk_assessment: dict[str, Any] = Field(default_factory=dict)
 
 
 class Vote(BaseModel):
@@ -61,16 +60,16 @@ class ConsensusSession(BaseModel):
     session_id: str = Field(default_factory=lambda: str(uuid4()))
     conflict_id: str
     algorithm: ConsensusAlgorithm
-    participants: List[str] = Field(default_factory=list)
-    options: List[VoteOption] = Field(default_factory=list)
-    votes: List[Vote] = Field(default_factory=list)
+    participants: list[str] = Field(default_factory=list)
+    options: list[VoteOption] = Field(default_factory=list)
+    votes: list[Vote] = Field(default_factory=list)
     status: str = Field(
         default="active"
     )  # 'active', 'completed', 'failed', 'escalated'
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    deadline: Optional[datetime] = None
-    result: Optional[Dict[str, Any]] = None
-    session_config: Dict[str, Any] = Field(default_factory=dict)
+    deadline: datetime | None = None
+    result: dict[str, Any] | None = None
+    session_config: dict[str, Any] = Field(default_factory=dict)
 
 
 class MajorityVoteConsensus:
@@ -79,7 +78,7 @@ class MajorityVoteConsensus:
     @staticmethod
     async def execute_consensus(
         session: ConsensusSession, blackboard: BlackboardService
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Execute majority vote consensus"""
 
         if not session.votes:
@@ -129,7 +128,7 @@ class WeightedVoteConsensus:
     @staticmethod
     async def execute_consensus(
         session: ConsensusSession, blackboard: BlackboardService
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Execute weighted vote consensus"""
 
         if not session.votes:
@@ -188,7 +187,7 @@ class RankedChoiceConsensus:
     @staticmethod
     async def execute_consensus(
         session: ConsensusSession, blackboard: BlackboardService
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Execute ranked choice consensus"""
 
         if not session.votes:
@@ -207,7 +206,9 @@ class RankedChoiceConsensus:
             option_scores[vote.option_id] += vote.confidence * vote.weight
 
         # Sort options by score
-        sorted_options = sorted(option_scores.items(), key=lambda x: x[1], reverse=True)
+        sorted_options = sorted(
+            option_scores.items(), key=operator.itemgetter(1), reverse=True
+        )
 
         # Check if top option has sufficient support
         if not sorted_options:
@@ -263,7 +264,7 @@ class ConsensusThresholdConsensus:
     @staticmethod
     async def execute_consensus(
         session: ConsensusSession, blackboard: BlackboardService
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Execute consensus threshold mechanism"""
 
         if not session.votes:
@@ -356,7 +357,7 @@ class HierarchicalOverrideConsensus:
     @staticmethod
     async def execute_consensus(
         session: ConsensusSession, blackboard: BlackboardService
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Execute hierarchical override consensus"""
 
         # Define hierarchy levels
@@ -439,7 +440,7 @@ class ConstitutionalPriorityConsensus:
     @staticmethod
     async def execute_consensus(
         session: ConsensusSession, blackboard: BlackboardService
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Execute constitutional priority consensus"""
 
         if not session.options:
@@ -456,9 +457,6 @@ class ConstitutionalPriorityConsensus:
         # Check if it meets minimum constitutional threshold
         min_constitutional_score = session.session_config.get(
             "min_constitutional_score", 0.7
-        )
-        meets_constitutional_threshold = (
-            top_constitutional_option.constitutional_score >= min_constitutional_score
         )
 
         # Consider votes as well - weighted by constitutional compliance
@@ -531,12 +529,12 @@ class ExpertMediationConsensus:
     @staticmethod
     async def execute_consensus(
         session: ConsensusSession, blackboard: BlackboardService
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Execute expert mediation consensus"""
 
         # Check if human experts are involved
         expert_votes = [
-            v for v in session.votes if v.voter_type in ["human_expert", "human"]
+            v for v in session.votes if v.voter_type in {"human_expert", "human"}
         ]
 
         if not expert_votes:
@@ -590,7 +588,7 @@ class ExpertMediationConsensus:
 
         # Consider agent input as supporting evidence
         agent_votes = [
-            v for v in session.votes if v.voter_type not in ["human_expert", "human"]
+            v for v in session.votes if v.voter_type not in {"human_expert", "human"}
         ]
         agent_support = {}
         if agent_votes:
@@ -633,7 +631,7 @@ class ConsensusEngine:
     def __init__(self, blackboard_service: BlackboardService):
         self.blackboard = blackboard_service
         self.logger = logging.getLogger(__name__)
-        self.active_sessions: Dict[str, ConsensusSession] = {}
+        self.active_sessions: dict[str, ConsensusSession] = {}
 
         # Algorithm implementations
         self.algorithms = {
@@ -650,10 +648,10 @@ class ConsensusEngine:
         self,
         conflict: ConflictItem,
         algorithm: ConsensusAlgorithm,
-        participants: List[str],
-        options: List[VoteOption],
+        participants: list[str],
+        options: list[VoteOption],
         deadline_hours: int = 24,
-        session_config: Optional[Dict[str, Any]] = None,
+        session_config: dict[str, Any] | None = None,
     ) -> str:
         """Initiate a consensus session for conflict resolution"""
 
@@ -735,7 +733,7 @@ class ConsensusEngine:
         self.logger.info(f"Vote cast by {voter_id} in session {session_id}")
         return True
 
-    async def execute_consensus(self, session_id: str) -> Optional[Dict[str, Any]]:
+    async def execute_consensus(self, session_id: str) -> dict[str, Any] | None:
         """Execute consensus algorithm for a session"""
 
         if session_id not in self.active_sessions:
@@ -775,14 +773,14 @@ class ConsensusEngine:
             return result
 
         except Exception as e:
-            self.logger.error(
-                f"Error executing consensus for session {session_id}: {str(e)}"
+            self.logger.exception(
+                f"Error executing consensus for session {session_id}: {e!s}"
             )
             session.status = "failed"
             session.result = {"success": False, "error": str(e)}
             return session.result
 
-    async def get_session_status(self, session_id: str) -> Optional[Dict[str, Any]]:
+    async def get_session_status(self, session_id: str) -> dict[str, Any] | None:
         """Get status of a consensus session"""
 
         if session_id not in self.active_sessions:
@@ -803,7 +801,7 @@ class ConsensusEngine:
             "created_at": session.created_at.isoformat(),
         }
 
-    async def check_session_deadlines(self) -> List[str]:
+    async def check_session_deadlines(self) -> list[str]:
         """Check for sessions that have passed their deadlines"""
 
         current_time = datetime.now(timezone.utc)
@@ -836,7 +834,7 @@ class ConsensusEngine:
         self,
         session_id: str,
         escalation_type: str = "human_review",
-        escalation_data: Optional[Dict[str, Any]] = None,
+        escalation_data: dict[str, Any] | None = None,
     ) -> bool:
         """Escalate a consensus session"""
 
@@ -866,7 +864,7 @@ class ConsensusEngine:
         self,
         session: ConsensusSession,
         event_type: str,
-        event_data: Optional[Dict[str, Any]] = None,
+        event_data: dict[str, Any] | None = None,
     ) -> None:
         """Add session event knowledge to blackboard"""
 
@@ -919,13 +917,13 @@ class ConsensusEngine:
             elif "extend_deadline" in next_steps:
                 # Extend deadline by 24 hours
                 if session.deadline:
-                    session.deadline = session.deadline + timedelta(hours=24)
+                    session.deadline += timedelta(hours=24)
                     session.status = "active"  # Reactivate session
         else:
             # Default escalation
             await self.escalate_session(session.session_id, "human_review")
 
-    async def get_consensus_metrics(self) -> Dict[str, Any]:
+    async def get_consensus_metrics(self) -> dict[str, Any]:
         """Get metrics about consensus sessions"""
 
         total_sessions = len(self.active_sessions)
@@ -994,11 +992,11 @@ class ConsensusEngine:
 
         sessions_to_remove = []
         for session_id, session in self.active_sessions.items():
-            if session.created_at < cutoff_time and session.status in [
+            if session.created_at < cutoff_time and session.status in {
                 "completed",
                 "failed",
                 "escalated",
-            ]:
+            }:
                 sessions_to_remove.append(session_id)
 
         for session_id in sessions_to_remove:

@@ -31,11 +31,11 @@ __all__ = [
     "EvolutionStatus",
     "EvolutionType",
     "FitnessMetrics",
-    "Individual",
-    "Population",
     "HumanReviewTask",
+    "Individual",
     "OversightDecision",
     "OversightLevel",
     "OversightRequest",
+    "Population",
     "RiskAssessment",
 ]

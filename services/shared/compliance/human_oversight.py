@@ -23,7 +23,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 from services.shared.monitoring.intelligent_alerting_system import AlertingSystem
 from services.shared.security.enhanced_audit_logging import AuditLogger
@@ -144,7 +144,7 @@ class OversightDecision:
     reviewer_id: str
     intervention_type: InterventionType
     decision_rationale: str
-    modified_recommendation: Optional[dict[str, Any]]
+    modified_recommendation: dict[str, Any] | None
     confidence_in_decision: float
     review_time_minutes: int
     additional_safeguards: list[str]
@@ -158,7 +158,7 @@ class HumanOversightManager:
     EU AI Act Human Oversight Management System
     """
 
-    def __init__(self, config: Optional[dict[str, Any]] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         self.config = config or {}
         self.alerting = AlertingSystem()
         self.audit_logger = AuditLogger()
@@ -386,7 +386,7 @@ class HumanOversightManager:
 
     async def evaluate_oversight_requirement(
         self, ai_decision: dict[str, Any], decision_context: dict[str, Any]
-    ) -> Optional[OversightRequest]:
+    ) -> OversightRequest | None:
         """
         Evaluate whether AI decision requires human oversight
 
@@ -402,12 +402,14 @@ class HumanOversightManager:
                 return None
 
             # Check all escalation rules
-            triggered_rules = []
-            for rule_id, rule in self.escalation_rules.items():
-                if rule.active and await self._evaluate_escalation_rule(
+            triggered_rules = [
+                rule
+                for rule in self.escalation_rules.values()
+                if rule.active
+                and await self._evaluate_escalation_rule(
                     rule, ai_decision, decision_context
-                ):
-                    triggered_rules.append(rule)
+                )
+            ]
 
             if not triggered_rules:
                 return None
@@ -450,7 +452,7 @@ class HumanOversightManager:
             return request
 
         except Exception as e:
-            logger.error(f"Oversight evaluation failed: {e}")
+            logger.exception(f"Oversight evaluation failed: {e}")
             raise
 
     async def _evaluate_escalation_rule(
@@ -467,41 +469,41 @@ class HumanOversightManager:
                 confidence = ai_decision.get("confidence_score", 1.0)
                 return confidence < conditions.get("confidence_threshold", 0.8)
 
-            elif rule.trigger == EscalationTrigger.HIGH_RISK_DECISION:
+            if rule.trigger == EscalationTrigger.HIGH_RISK_DECISION:
                 risk_score = decision_context.get("risk_assessment", {}).get(
                     "risk_score", 0.0
                 )
                 return risk_score > conditions.get("risk_score_threshold", 0.7)
 
-            elif rule.trigger == EscalationTrigger.CONSTITUTIONAL_CONFLICT:
+            if rule.trigger == EscalationTrigger.CONSTITUTIONAL_CONFLICT:
                 return decision_context.get("constitutional_conflict_detected", False)
 
-            elif rule.trigger == EscalationTrigger.BIAS_DETECTED:
+            if rule.trigger == EscalationTrigger.BIAS_DETECTED:
                 bias_score = decision_context.get("bias_assessment", {}).get(
                     "bias_score", 0.0
                 )
                 return bias_score > conditions.get("bias_score_threshold", 0.3)
 
-            elif rule.trigger == EscalationTrigger.POLICY_IMPACT:
-                return decision_context.get("policy_impact_level", "low") in [
+            if rule.trigger == EscalationTrigger.POLICY_IMPACT:
+                return decision_context.get("policy_impact_level", "low") in {
                     "high",
                     "critical",
-                ]
+                }
 
-            elif rule.trigger == EscalationTrigger.CITIZEN_APPEAL:
+            if rule.trigger == EscalationTrigger.CITIZEN_APPEAL:
                 return decision_context.get("citizen_appeal_submitted", False)
 
-            elif rule.trigger == EscalationTrigger.SYSTEM_UNCERTAINTY:
+            if rule.trigger == EscalationTrigger.SYSTEM_UNCERTAINTY:
                 uncertainty = ai_decision.get("uncertainty_score", 0.0)
                 return uncertainty > conditions.get("uncertainty_threshold", 0.5)
 
-            elif rule.trigger == EscalationTrigger.REGULATORY_REQUIREMENT:
+            if rule.trigger == EscalationTrigger.REGULATORY_REQUIREMENT:
                 return decision_context.get("regulatory_review_required", False)
 
             return False
 
         except Exception as e:
-            logger.error(f"Escalation rule evaluation failed: {e}")
+            logger.exception(f"Escalation rule evaluation failed: {e}")
             return False
 
     async def _create_oversight_request(
@@ -528,7 +530,7 @@ class HumanOversightManager:
             "constitutional_implications", False
         )
 
-        request = OversightRequest(
+        return OversightRequest(
             request_id=request_id,
             ai_decision_id=ai_decision.get("decision_id", str(uuid.uuid4())),
             decision_context=decision_context,
@@ -545,8 +547,6 @@ class HumanOversightManager:
             citizen_impact=citizen_impact,
             constitutional_implications=constitutional_implications,
         )
-
-        return request
 
     async def _assign_reviewers(self, request: OversightRequest, rule: EscalationRule):
         """Assign appropriate reviewers to oversight request"""
@@ -582,12 +582,12 @@ class HumanOversightManager:
                 await self._escalate_assignment_failure(request, rule)
 
         except Exception as e:
-            logger.error(f"Reviewer assignment failed: {e}")
+            logger.exception(f"Reviewer assignment failed: {e}")
             request.status = "assignment_failed"
 
     async def _find_available_reviewer(
         self, role: ReviewerRole, request: OversightRequest
-    ) -> Optional[HumanReviewer]:
+    ) -> HumanReviewer | None:
         """Find available reviewer with specified role"""
         try:
             eligible_reviewers = [
@@ -630,7 +630,7 @@ class HumanOversightManager:
             )
 
         except Exception as e:
-            logger.error(f"Reviewer search failed: {e}")
+            logger.exception(f"Reviewer search failed: {e}")
             return None
 
     async def _escalate_assignment_failure(
@@ -670,7 +670,7 @@ class HumanOversightManager:
                 )
 
         except Exception as e:
-            logger.error(f"Assignment failure escalation failed: {e}")
+            logger.exception(f"Assignment failure escalation failed: {e}")
 
     async def _send_oversight_alerts(self, request: OversightRequest):
         """Send alerts for oversight request"""
@@ -703,7 +703,7 @@ class HumanOversightManager:
                     await self._notify_reviewer(reviewer, request)
 
         except Exception as e:
-            logger.error(f"Oversight alert sending failed: {e}")
+            logger.exception(f"Oversight alert sending failed: {e}")
 
     async def _notify_reviewer(
         self, reviewer: HumanReviewer, request: OversightRequest
@@ -728,7 +728,7 @@ class HumanOversightManager:
             )
 
         except Exception as e:
-            logger.error(f"Reviewer notification failed: {e}")
+            logger.exception(f"Reviewer notification failed: {e}")
 
     async def submit_oversight_decision(
         self,
@@ -736,7 +736,7 @@ class HumanOversightManager:
         reviewer_id: str,
         intervention_type: InterventionType,
         decision_rationale: str,
-        modified_recommendation: Optional[dict[str, Any]] = None,
+        modified_recommendation: dict[str, Any] | None = None,
         confidence: float = 1.0,
     ) -> OversightDecision:
         """
@@ -851,7 +851,7 @@ class HumanOversightManager:
             return decision
 
         except Exception as e:
-            logger.error(f"Oversight decision submission failed: {e}")
+            logger.exception(f"Oversight decision submission failed: {e}")
             raise
 
     def _determine_additional_safeguards(
@@ -885,7 +885,7 @@ class HumanOversightManager:
     ) -> bool:
         """Determine if follow-up review is required"""
         return (
-            intervention_type in [InterventionType.MODIFY, InterventionType.OVERRIDE]
+            intervention_type in {InterventionType.MODIFY, InterventionType.OVERRIDE}
             or request.escalation_reason == EscalationTrigger.CONSTITUTIONAL_CONFLICT
             or request.priority == 0  # Highest priority cases
         )
@@ -910,7 +910,7 @@ class HumanOversightManager:
             )
 
         except Exception as e:
-            logger.error(f"Decision alert sending failed: {e}")
+            logger.exception(f"Decision alert sending failed: {e}")
 
     def register_intervention_callback(
         self,
@@ -924,13 +924,15 @@ class HumanOversightManager:
         """Check for overdue oversight requests and take action"""
         try:
             current_time = datetime.utcnow()
-            overdue_requests = []
 
-            for request in self.oversight_requests.values():
+            overdue_requests = [
+                request
+                for request in self.oversight_requests.values()
                 if (
                     request.status.startswith("pending") or request.status == "assigned"
-                ) and current_time > request.deadline:
-                    overdue_requests.append(request)
+                )
+                and current_time > request.deadline
+            ]
 
             for request in overdue_requests:
                 await self._handle_overdue_request(request)
@@ -938,7 +940,7 @@ class HumanOversightManager:
             return overdue_requests
 
         except Exception as e:
-            logger.error(f"Overdue request check failed: {e}")
+            logger.exception(f"Overdue request check failed: {e}")
             return []
 
     async def _handle_overdue_request(self, request: OversightRequest):
@@ -984,7 +986,7 @@ class HumanOversightManager:
             )
 
         except Exception as e:
-            logger.error(f"Overdue request handling failed: {e}")
+            logger.exception(f"Overdue request handling failed: {e}")
 
     async def _create_timeout_decision(
         self, request: OversightRequest
@@ -1032,7 +1034,7 @@ class HumanOversightManager:
                 await self._notify_reviewer(supervisor, request)
 
         except Exception as e:
-            logger.error(f"Overdue request escalation failed: {e}")
+            logger.exception(f"Overdue request escalation failed: {e}")
 
     def get_oversight_metrics(self) -> dict[str, Any]:
         """Get human oversight performance metrics"""
@@ -1057,14 +1059,14 @@ class HumanOversightManager:
         pending_requests = sum(
             1
             for request in self.oversight_requests.values()
-            if request.status in ["pending_assignment", "assigned"]
+            if request.status in {"pending_assignment", "assigned"}
         )
 
         # Count overdue requests
         overdue_requests = sum(
             1
             for request in self.oversight_requests.values()
-            if request.status in ["pending_assignment", "assigned"]
+            if request.status in {"pending_assignment", "assigned"}
             and current_time > request.deadline
         )
 
@@ -1085,13 +1087,13 @@ class HumanOversightManager:
         }
 
     def get_pending_requests(
-        self, reviewer_id: Optional[str] = None
+        self, reviewer_id: str | None = None
     ) -> list[OversightRequest]:
         """Get pending oversight requests, optionally filtered by reviewer"""
         pending_requests = [
             request
             for request in self.oversight_requests.values()
-            if request.status in ["pending_assignment", "assigned"]
+            if request.status in {"pending_assignment", "assigned"}
         ]
 
         if reviewer_id:
@@ -1135,7 +1137,7 @@ class HumanOversightManager:
             )
 
         except Exception as e:
-            logger.error(f"Reviewer status update failed: {e}")
+            logger.exception(f"Reviewer status update failed: {e}")
             raise
 
 

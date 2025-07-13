@@ -8,7 +8,7 @@ This module contains the core constitutional validation logic.
 import logging
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any
 
 # Constitutional compliance
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -22,8 +22,8 @@ class ValidationResult:
 
     is_valid: bool
     compliance_score: float
-    violations: List[Dict[str, Any]]
-    recommendations: List[str]
+    violations: list[dict[str, Any]]
+    recommendations: list[str]
     timestamp: datetime
     constitutional_hash: str = CONSTITUTIONAL_HASH
 
@@ -35,7 +35,7 @@ class ConstitutionalValidator:
         self.constitutional_hash = CONSTITUTIONAL_HASH
         logger.info("ConstitutionalValidator initialized")
 
-    def validate_constitutional_hash(self) -> Dict[str, Any]:
+    def validate_constitutional_hash(self) -> dict[str, Any]:
         """Validate constitutional hash compliance."""
         return {
             "hash": self.constitutional_hash,
@@ -48,13 +48,13 @@ class ConstitutionalValidator:
             ),
         }
 
-    def _advanced_democratic_check(self, policy: Dict[str, Any]) -> Dict[str, Any]:
+    def _advanced_democratic_check(self, policy: dict[str, Any]) -> dict[str, Any]:
         """Advanced democratic principle validation."""
         violations = []
         score = 1.0
 
         # Check for representative governance
-        if not policy.get("representative_governance", False):
+        if not policy.get("representative_governance"):
             violations.append(
                 {
                     "type": "democratic_deficit",
@@ -66,7 +66,7 @@ class ConstitutionalValidator:
             score -= 0.3
 
         # Check for participatory elements
-        if not policy.get("public_participation", False):
+        if not policy.get("public_participation"):
             violations.append(
                 {
                     "type": "participation_deficit",
@@ -78,7 +78,7 @@ class ConstitutionalValidator:
             score -= 0.2
 
         # Check for majority rule with minority protection
-        if not policy.get("minority_protection", False):
+        if not policy.get("minority_protection"):
             violations.append(
                 {
                     "type": "minority_rights_deficit",
@@ -90,7 +90,7 @@ class ConstitutionalValidator:
             score -= 0.3
 
         # Check for regular review mechanisms
-        if not policy.get("regular_review", False):
+        if not policy.get("regular_review"):
             violations.append(
                 {
                     "type": "review_deficit",
@@ -108,13 +108,13 @@ class ConstitutionalValidator:
             "constitutional_hash": self.constitutional_hash,
         }
 
-    def _advanced_transparency_check(self, policy: Dict[str, Any]) -> Dict[str, Any]:
+    def _advanced_transparency_check(self, policy: dict[str, Any]) -> dict[str, Any]:
         """Advanced transparency principle validation."""
         violations = []
         score = 1.0
 
         # Check for open access to information
-        if not policy.get("open_access", False):
+        if not policy.get("open_access"):
             violations.append(
                 {
                     "type": "access_deficit",
@@ -126,7 +126,7 @@ class ConstitutionalValidator:
             score -= 0.4
 
         # Check for clear decision-making processes
-        if not policy.get("clear_processes", False):
+        if not policy.get("clear_processes"):
             violations.append(
                 {
                     "type": "process_opacity",
@@ -138,7 +138,7 @@ class ConstitutionalValidator:
             score -= 0.2
 
         # Check for public documentation
-        if not policy.get("public_documentation", False):
+        if not policy.get("public_documentation"):
             violations.append(
                 {
                     "type": "documentation_deficit",
@@ -150,7 +150,7 @@ class ConstitutionalValidator:
             score -= 0.2
 
         # Check for audit trails
-        if not policy.get("audit_trails", False):
+        if not policy.get("audit_trails"):
             violations.append(
                 {
                     "type": "audit_deficit",
@@ -168,13 +168,13 @@ class ConstitutionalValidator:
             "constitutional_hash": self.constitutional_hash,
         }
 
-    def _advanced_constitutional_check(self, policy: Dict[str, Any]) -> Dict[str, Any]:
+    def _advanced_constitutional_check(self, policy: dict[str, Any]) -> dict[str, Any]:
         """Advanced constitutional principle validation."""
         violations = []
         score = 1.0
 
         # Check for constitutional authority
-        if not policy.get("constitutional_authority", False):
+        if not policy.get("constitutional_authority"):
             violations.append(
                 {
                     "type": "authority_deficit",
@@ -186,7 +186,7 @@ class ConstitutionalValidator:
             score -= 0.5
 
         # Check for fundamental rights protection
-        if not policy.get("rights_protection", False):
+        if not policy.get("rights_protection"):
             violations.append(
                 {
                     "type": "rights_deficit",
@@ -210,7 +210,7 @@ class ConstitutionalValidator:
             score -= 0.4
 
         # Check for separation of powers
-        if not policy.get("separation_of_powers", False):
+        if not policy.get("separation_of_powers"):
             violations.append(
                 {
                     "type": "power_concentration",
@@ -228,13 +228,13 @@ class ConstitutionalValidator:
             "constitutional_hash": self.constitutional_hash,
         }
 
-    def _advanced_accountability_check(self, policy: Dict[str, Any]) -> Dict[str, Any]:
+    def _advanced_accountability_check(self, policy: dict[str, Any]) -> dict[str, Any]:
         """Advanced accountability principle validation."""
         violations = []
         score = 1.0
 
         # Check for clear responsibility assignment
-        if not policy.get("clear_responsibility", False):
+        if not policy.get("clear_responsibility"):
             violations.append(
                 {
                     "type": "responsibility_deficit",
@@ -246,7 +246,7 @@ class ConstitutionalValidator:
             score -= 0.3
 
         # Check for performance metrics
-        if not policy.get("performance_metrics", False):
+        if not policy.get("performance_metrics"):
             violations.append(
                 {
                     "type": "metrics_deficit",
@@ -258,7 +258,7 @@ class ConstitutionalValidator:
             score -= 0.2
 
         # Check for oversight mechanisms
-        if not policy.get("oversight_mechanisms", False):
+        if not policy.get("oversight_mechanisms"):
             violations.append(
                 {
                     "type": "oversight_deficit",
@@ -270,7 +270,7 @@ class ConstitutionalValidator:
             score -= 0.3
 
         # Check for corrective action procedures
-        if not policy.get("corrective_actions", False):
+        if not policy.get("corrective_actions"):
             violations.append(
                 {
                     "type": "correction_deficit",
@@ -288,13 +288,13 @@ class ConstitutionalValidator:
             "constitutional_hash": self.constitutional_hash,
         }
 
-    def _advanced_rights_check(self, policy: Dict[str, Any]) -> Dict[str, Any]:
+    def _advanced_rights_check(self, policy: dict[str, Any]) -> dict[str, Any]:
         """Advanced rights protection validation."""
         violations = []
         score = 1.0
 
         # Check for individual rights protection
-        if not policy.get("individual_rights", False):
+        if not policy.get("individual_rights"):
             violations.append(
                 {
                     "type": "individual_rights_deficit",
@@ -306,7 +306,7 @@ class ConstitutionalValidator:
             score -= 0.4
 
         # Check for collective rights consideration
-        if not policy.get("collective_rights", False):
+        if not policy.get("collective_rights"):
             violations.append(
                 {
                     "type": "collective_rights_deficit",
@@ -318,7 +318,7 @@ class ConstitutionalValidator:
             score -= 0.3
 
         # Check for due process
-        if not policy.get("due_process", False):
+        if not policy.get("due_process"):
             violations.append(
                 {
                     "type": "due_process_deficit",
@@ -330,7 +330,7 @@ class ConstitutionalValidator:
             score -= 0.3
 
         # Check for equal protection
-        if not policy.get("equal_protection", False):
+        if not policy.get("equal_protection"):
             violations.append(
                 {
                     "type": "equality_deficit",
@@ -349,7 +349,7 @@ class ConstitutionalValidator:
         }
 
     def _calculate_average_severity(
-        self, validation_results: List[Dict[str, Any]]
+        self, validation_results: list[dict[str, Any]]
     ) -> str:
         """Calculate average severity of violations."""
         severity_weights = {"low": 1, "medium": 2, "high": 3, "critical": 4}
@@ -370,14 +370,13 @@ class ConstitutionalValidator:
 
         if average_weight <= 1.5:
             return "low"
-        elif average_weight <= 2.5:
+        if average_weight <= 2.5:
             return "medium"
-        elif average_weight <= 3.5:
+        if average_weight <= 3.5:
             return "high"
-        else:
-            return "critical"
+        return "critical"
 
-    async def validate_comprehensive(self, policy: Dict[str, Any]) -> ValidationResult:
+    async def validate_comprehensive(self, policy: dict[str, Any]) -> ValidationResult:
         """Perform comprehensive constitutional validation."""
         try:
             # Run all validation checks
@@ -419,5 +418,5 @@ class ConstitutionalValidator:
             )
 
         except Exception as e:
-            logger.error(f"Comprehensive validation failed: {e}")
+            logger.exception(f"Comprehensive validation failed: {e}")
             raise

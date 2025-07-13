@@ -8,7 +8,7 @@ import logging
 import uuid
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -46,12 +46,12 @@ class AuditEvent:
         event_type: AuditEventType,
         service_name: str,
         action: str,
-        user_id: Optional[str] = None,
-        resource_type: Optional[str] = None,
-        resource_id: Optional[str] = None,
-        details: Optional[Dict[str, Any]] = None,
+        user_id: str | None = None,
+        resource_type: str | None = None,
+        resource_id: str | None = None,
+        details: dict[str, Any] | None = None,
         severity: AuditSeverity = AuditSeverity.MEDIUM,
-        correlation_id: Optional[str] = None,
+        correlation_id: str | None = None,
     ):
         self.event_id = str(uuid.uuid4())
         self.event_type = event_type
@@ -66,7 +66,7 @@ class AuditEvent:
         self.timestamp = datetime.now(timezone.utc)
         self.constitutional_hash = CONSTITUTIONAL_HASH
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert audit event to dictionary."""
         return {
             "event_id": self.event_id,
@@ -106,7 +106,7 @@ class CryptographicAuditChain:
     """Cryptographic audit chain with hash chaining for integrity."""
 
     def __init__(self):
-        self.chain: List[Dict[str, Any]] = []
+        self.chain: list[dict[str, Any]] = []
         self.constitutional_hash = CONSTITUTIONAL_HASH
         self.genesis_hash = self._calculate_genesis_hash()
 
@@ -121,7 +121,7 @@ class CryptographicAuditChain:
         combined_content = f"{previous_hash}:{event_content}"
         return hashlib.sha256(combined_content.encode("utf-8")).hexdigest()
 
-    async def add_event(self, event: AuditEvent) -> Dict[str, Any]:
+    async def add_event(self, event: AuditEvent) -> dict[str, Any]:
         """Add an event to the audit chain."""
         try:
             # Get previous hash
@@ -160,10 +160,10 @@ class CryptographicAuditChain:
             }
 
         except Exception as e:
-            logger.error(f"Failed to add event to audit chain: {e}")
+            logger.exception(f"Failed to add event to audit chain: {e}")
             raise
 
-    async def verify_chain_integrity(self) -> Dict[str, Any]:
+    async def verify_chain_integrity(self) -> dict[str, Any]:
         """Verify the integrity of the entire audit chain."""
         try:
             if not self.chain:
@@ -221,10 +221,10 @@ class CryptographicAuditChain:
             }
 
         except Exception as e:
-            logger.error(f"Chain integrity verification failed: {e}")
+            logger.exception(f"Chain integrity verification failed: {e}")
             raise
 
-    async def get_chain_stats(self) -> Dict[str, Any]:
+    async def get_chain_stats(self) -> dict[str, Any]:
         """Get statistics about the audit chain."""
         try:
             if not self.chain:
@@ -267,7 +267,7 @@ class CryptographicAuditChain:
             }
 
         except Exception as e:
-            logger.error(f"Chain statistics retrieval failed: {e}")
+            logger.exception(f"Chain statistics retrieval failed: {e}")
             raise
 
 
@@ -279,13 +279,13 @@ async def log_audit_event(
     event_type: AuditEventType,
     service_name: str,
     action: str,
-    user_id: Optional[str] = None,
-    resource_type: Optional[str] = None,
-    resource_id: Optional[str] = None,
-    details: Optional[Dict[str, Any]] = None,
+    user_id: str | None = None,
+    resource_type: str | None = None,
+    resource_id: str | None = None,
+    details: dict[str, Any] | None = None,
     severity: AuditSeverity = AuditSeverity.MEDIUM,
-    correlation_id: Optional[str] = None,
-) -> Dict[str, Any]:
+    correlation_id: str | None = None,
+) -> dict[str, Any]:
     """Log an audit event to the global audit chain."""
     try:
         event = AuditEvent(
@@ -310,7 +310,7 @@ async def log_audit_event(
         }
 
     except Exception as e:
-        logger.error(f"Audit event logging failed: {e}")
+        logger.exception(f"Audit event logging failed: {e}")
         return {
             "success": False,
             "error": str(e),

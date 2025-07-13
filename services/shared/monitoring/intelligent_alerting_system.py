@@ -10,20 +10,25 @@ This module provides advanced alerting capabilities including:
 """
 
 import asyncio
-import json
+import contextlib
 import statistics
 import time
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import structlog
+from shared.redis_client import ACGSRedisClient
+from shared.resource_management.enhanced_resource_manager import (
+    AlertLevel,
+    ResourceType,
+)
 
-from ..redis_client import ACGSRedisClient
-from ..resource_management.enhanced_resource_manager import AlertLevel, ResourceType
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 logger = structlog.get_logger(__name__)
 
@@ -63,7 +68,7 @@ class AnomalyPattern:
     expected_value: float
     confidence: float
     description: str
-    related_metrics: List[str] = field(default_factory=list)
+    related_metrics: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -77,24 +82,24 @@ class AlertContext:
     current_value: float
     threshold: float
     duration_seconds: float
-    related_alerts: List[str] = field(default_factory=list)
+    related_alerts: list[str] = field(default_factory=list)
     root_cause_probability: float = 0.0
-    historical_pattern: Optional[str] = None
-    recommended_actions: List[str] = field(default_factory=list)
+    historical_pattern: str | None = None
+    recommended_actions: list[str] = field(default_factory=list)
 
 
 @dataclass
 class NotificationRule:
     """Rules for notification routing."""
 
-    resource_types: List[ResourceType]
-    alert_levels: List[AlertLevel]
-    channels: List[NotificationChannel]
+    resource_types: list[ResourceType]
+    alert_levels: list[AlertLevel]
+    channels: list[NotificationChannel]
     escalation_time: float = 300.0  # 5 minutes
     rate_limit_window: float = 60.0  # 1 minute
     rate_limit_count: int = 5
     enabled: bool = True
-    filters: Dict[str, Any] = field(default_factory=dict)
+    filters: dict[str, Any] = field(default_factory=dict)
 
 
 class AnomalyDetector:
@@ -103,10 +108,10 @@ class AnomalyDetector:
     def __init__(self, window_size: int = 100, sensitivity: float = 2.0):
         self.window_size = window_size
         self.sensitivity = sensitivity
-        self.baseline_data: Dict[ResourceType, deque] = defaultdict(
+        self.baseline_data: dict[ResourceType, deque] = defaultdict(
             lambda: deque(maxlen=window_size)
         )
-        self.seasonal_patterns: Dict[ResourceType, List[float]] = {}
+        self.seasonal_patterns: dict[ResourceType, list[float]] = {}
 
     def add_data_point(
         self, resource_type: ResourceType, value: float, timestamp: datetime
@@ -122,7 +127,7 @@ class AnomalyDetector:
 
     def detect_anomalies(
         self, resource_type: ResourceType, current_value: float
-    ) -> List[AnomalyPattern]:
+    ) -> list[AnomalyPattern]:
         """Detect anomalies in the current value."""
         anomalies = []
         data = self.baseline_data[resource_type]
@@ -132,7 +137,7 @@ class AnomalyDetector:
 
         # Get historical values
         values = [d["value"] for d in data]
-        timestamps = [d["timestamp"] for d in data]
+        [d["timestamp"] for d in data]
 
         # Statistical anomaly detection
         mean_value = statistics.mean(values)
@@ -207,7 +212,7 @@ class AnomalyDetector:
 
         return anomalies
 
-    def _calculate_trend(self, values: List[float]) -> float:
+    def _calculate_trend(self, values: list[float]) -> float:
         """Calculate trend (slope) of values."""
         if len(values) < 2:
             return 0.0
@@ -228,7 +233,7 @@ class AnomalyDetector:
         # Calculate average for each hour
         pattern = []
         for hour in range(24):
-            if hour in hourly_averages and hourly_averages[hour]:
+            if hourly_averages.get(hour):
                 pattern.append(statistics.mean(hourly_averages[hour]))
             else:
                 pattern.append(0.0)
@@ -237,7 +242,7 @@ class AnomalyDetector:
 
     def _get_seasonal_expectation(
         self, resource_type: ResourceType, timestamp: datetime
-    ) -> Optional[float]:
+    ) -> float | None:
         """Get seasonal expectation for a timestamp."""
         if resource_type not in self.seasonal_patterns:
             return None
@@ -251,8 +256,8 @@ class AlertCorrelator:
 
     def __init__(self, correlation_window: float = 300.0):  # 5 minutes
         self.correlation_window = correlation_window
-        self.alert_groups: Dict[str, List[AlertContext]] = {}
-        self.correlation_rules: List[Callable] = []
+        self.alert_groups: dict[str, list[AlertContext]] = {}
+        self.correlation_rules: list[Callable] = []
 
         # Initialize default correlation rules
         self._init_correlation_rules()
@@ -260,7 +265,7 @@ class AlertCorrelator:
     def _init_correlation_rules(self):
         """Initialize default correlation rules."""
 
-        def memory_cpu_correlation(alerts: List[AlertContext]) -> bool:
+        def memory_cpu_correlation(alerts: list[AlertContext]) -> bool:
             """High memory usage often correlates with high CPU usage."""
             memory_alerts = [
                 a for a in alerts if a.resource_type == ResourceType.MEMORY
@@ -268,7 +273,7 @@ class AlertCorrelator:
             cpu_alerts = [a for a in alerts if a.resource_type == ResourceType.CPU]
             return len(memory_alerts) > 0 and len(cpu_alerts) > 0
 
-        def db_connection_correlation(alerts: List[AlertContext]) -> bool:
+        def db_connection_correlation(alerts: list[AlertContext]) -> bool:
             """Database connection issues often correlate with performance issues."""
             db_alerts = [
                 a
@@ -278,7 +283,7 @@ class AlertCorrelator:
             perf_alerts = [
                 a
                 for a in alerts
-                if a.resource_type in [ResourceType.CPU, ResourceType.MEMORY]
+                if a.resource_type in {ResourceType.CPU, ResourceType.MEMORY}
             ]
             return len(db_alerts) > 0 and len(perf_alerts) > 0
 
@@ -286,7 +291,7 @@ class AlertCorrelator:
             [memory_cpu_correlation, db_connection_correlation]
         )
 
-    def add_alert(self, alert: AlertContext) -> Optional[str]:
+    def add_alert(self, alert: AlertContext) -> str | None:
         """Add an alert and return correlation group ID if correlated."""
         current_time = alert.timestamp
 
@@ -299,7 +304,7 @@ class AlertCorrelator:
                 for existing_alert in group_alerts
             ):
                 # Check correlation rules
-                test_group = group_alerts + [alert]
+                test_group = [*group_alerts, alert]
                 if any(rule(test_group) for rule in self.correlation_rules):
                     group_alerts.append(alert)
                     alert.related_alerts = [
@@ -317,7 +322,7 @@ class AlertCorrelator:
 
         return group_id
 
-    def _update_root_cause_probabilities(self, alerts: List[AlertContext]):
+    def _update_root_cause_probabilities(self, alerts: list[AlertContext]):
         """Update root cause probabilities for correlated alerts."""
         # Simple heuristic: earlier alerts are more likely to be root causes
         alerts.sort(key=lambda a: a.timestamp)
@@ -358,21 +363,21 @@ class IntelligentAlertingSystem:
         self.alert_correlator = AlertCorrelator(correlation_window=correlation_window)
 
         # Configuration
-        self.notification_rules: List[NotificationRule] = []
-        self.adaptive_thresholds: Dict[ResourceType, Dict[str, float]] = defaultdict(
+        self.notification_rules: list[NotificationRule] = []
+        self.adaptive_thresholds: dict[ResourceType, dict[str, float]] = defaultdict(
             dict
         )
 
         # State tracking
-        self.active_alerts: Dict[str, AlertContext] = {}
+        self.active_alerts: dict[str, AlertContext] = {}
         self.alert_history: deque = deque(maxlen=10000)
-        self.notification_rate_limits: Dict[str, deque] = defaultdict(
+        self.notification_rate_limits: dict[str, deque] = defaultdict(
             lambda: deque(maxlen=100)
         )
 
         # Background tasks
-        self._analysis_task: Optional[asyncio.Task] = None
-        self._cleanup_task: Optional[asyncio.Task] = None
+        self._analysis_task: asyncio.Task | None = None
+        self._cleanup_task: asyncio.Task | None = None
         self._running = False
 
         # Performance metrics
@@ -412,10 +417,8 @@ class IntelligentAlertingSystem:
         for task in [self._analysis_task, self._cleanup_task]:
             if task and not task.done():
                 task.cancel()
-                try:
+                with contextlib.suppress(asyncio.CancelledError):
                     await task
-                except asyncio.CancelledError:
-                    pass
 
         logger.info("Intelligent alerting system stopped")
 
@@ -453,7 +456,7 @@ class IntelligentAlertingSystem:
         self,
         resource_type: ResourceType,
         current_value: float,
-        timestamp: Optional[datetime] = None,
+        timestamp: datetime | None = None,
     ):
         """Process a metric update and detect anomalies."""
         if timestamp is None:
@@ -565,7 +568,7 @@ class IntelligentAlertingSystem:
         self,
         resource_type: ResourceType,
         current_value: float,
-        anomalies: List[AnomalyPattern],
+        anomalies: list[AnomalyPattern],
     ):
         """Update adaptive thresholds based on patterns."""
         # Simple adaptive threshold logic
@@ -601,7 +604,7 @@ class IntelligentAlertingSystem:
                     critical=critical_threshold,
                 )
 
-    def _get_recommended_actions(self, anomaly: AnomalyPattern) -> List[str]:
+    def _get_recommended_actions(self, anomaly: AnomalyPattern) -> list[str]:
         """Get recommended actions for an anomaly."""
         actions = []
 
@@ -640,11 +643,11 @@ class IntelligentAlertingSystem:
 
     def _get_threshold_recommended_actions(
         self, resource_type: ResourceType, level: AlertLevel
-    ) -> List[str]:
+    ) -> list[str]:
         """Get recommended actions for threshold alerts."""
         actions = []
 
-        if level in [AlertLevel.CRITICAL, AlertLevel.EMERGENCY]:
+        if level in {AlertLevel.CRITICAL, AlertLevel.EMERGENCY}:
             actions.append("Immediate investigation required")
 
             if resource_type == ResourceType.MEMORY:
@@ -704,7 +707,7 @@ class IntelligentAlertingSystem:
                     rate_limit_history.append(datetime.now())
                     self.metrics["notifications_sent"] += 1
                 except Exception as e:
-                    logger.error(
+                    logger.exception(
                         "Failed to send notification",
                         channel=channel.value,
                         error=str(e),
@@ -813,11 +816,11 @@ class IntelligentAlertingSystem:
         except asyncio.CancelledError:
             logger.info("Cleanup loop cancelled")
 
-    def get_adaptive_thresholds(self, resource_type: ResourceType) -> Dict[str, float]:
+    def get_adaptive_thresholds(self, resource_type: ResourceType) -> dict[str, float]:
         """Get current adaptive thresholds for a resource type."""
         return self.adaptive_thresholds[resource_type].copy()
 
-    def get_alert_statistics(self) -> Dict[str, Any]:
+    def get_alert_statistics(self) -> dict[str, Any]:
         """Get comprehensive alert statistics."""
         return {
             "metrics": self.metrics,
@@ -834,7 +837,7 @@ class IntelligentAlertingSystem:
     async def acknowledge_alert(self, alert_id: str, acknowledged_by: str):
         """Acknowledge an alert."""
         if alert_id in self.active_alerts:
-            alert = self.active_alerts[alert_id]
+            self.active_alerts[alert_id]
 
             # Store acknowledgment
             ack_key = f"acgs:alert_ack:{alert_id}"
@@ -858,7 +861,7 @@ class IntelligentAlertingSystem:
     ):
         """Resolve an alert."""
         if alert_id in self.active_alerts:
-            alert = self.active_alerts[alert_id]
+            self.active_alerts[alert_id]
 
             # Store resolution
             resolution_key = f"acgs:alert_resolution:{alert_id}"

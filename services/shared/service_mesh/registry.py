@@ -182,10 +182,9 @@ class ServiceRegistry:
 
             # Check for environment-specific URL override
             url_key = f"{env_prefix}{service_name}_URL"
-            if url_key in os.environ:
-                if service_type in self._services:
-                    self._services[service_type].base_url = os.environ[url_key]
-                    logger.info(f"Override {service_name} URL: {os.environ[url_key]}")
+            if url_key in os.environ and service_type in self._services:
+                self._services[service_type].base_url = os.environ[url_key]
+                logger.info(f"Override {service_name} URL: {os.environ[url_key]}")
 
             # Check for port override
             port_key = f"{env_prefix}{service_name}_PORT"
@@ -269,11 +268,11 @@ class ServiceRegistry:
         services = list(self._services.values())
 
         if tags:
-            filtered_services = []
-            for service in services:
-                if any(tag in service.tags for tag in tags):
-                    filtered_services.append(service)
-            return filtered_services
+            return [
+                service
+                for service in services
+                if any(tag in service.tags for tag in tags)
+            ]
 
         return services
 

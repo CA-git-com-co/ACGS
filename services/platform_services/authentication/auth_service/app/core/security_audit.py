@@ -1,13 +1,13 @@
 # Enterprise Security Audit Logging
+import operator
 import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
+from app.models import SecurityEvent
 from fastapi import Request
 from sqlalchemy import and_, desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from ..models import SecurityEvent
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -317,7 +317,9 @@ class SecurityAuditLogger:
             if event.ip_address:
                 ip_counts[event.ip_address] = ip_counts.get(event.ip_address, 0) + 1
 
-        top_ips = sorted(ip_counts.items(), key=lambda x: x[1], reverse=True)[:10]
+        top_ips = sorted(ip_counts.items(), key=operator.itemgetter(1), reverse=True)[
+            :10
+        ]
 
         return {
             "period": {

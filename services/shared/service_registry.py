@@ -9,11 +9,11 @@ import asyncio
 import json
 import logging
 import time
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, suppress
 from dataclasses import asdict, dataclass
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 import redis.asyncio as redis
 
@@ -44,17 +44,17 @@ class ServiceInstance:
     status: ServiceStatus
     version: str
     constitutional_hash: str
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
     last_heartbeat: datetime
     registration_time: datetime
     health_check_url: str
-    capabilities: List[str]
+    capabilities: list[str]
 
     def is_expired(self, ttl_seconds: int = 30) -> bool:
         """Check if service instance has expired based on last heartbeat."""
         return (datetime.utcnow() - self.last_heartbeat).total_seconds() > ttl_seconds
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         data = asdict(self)
         data["last_heartbeat"] = self.last_heartbeat.isoformat()
@@ -63,7 +63,7 @@ class ServiceInstance:
         return data
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "ServiceInstance":
+    def from_dict(cls, data: dict[str, Any]) -> "ServiceInstance":
         """Create instance from dictionary."""
         data["last_heartbeat"] = datetime.fromisoformat(data["last_heartbeat"])
         data["registration_time"] = datetime.fromisoformat(data["registration_time"])
@@ -81,13 +81,13 @@ class ACGSServiceRegistry:
     def __init__(self, redis_url: str = "redis://localhost:6389", redis_db: int = 7):
         self.redis_url = redis_url
         self.redis_db = redis_db
-        self.redis_client: Optional[redis.Redis] = None
+        self.redis_client: redis.Redis | None = None
         self.registry_key_prefix = "acgs:service_registry"
         self.heartbeat_key_prefix = "acgs:heartbeat"
         self.constitutional_hash = CONSTITUTIONAL_HASH
         self.ttl_seconds = 30  # Service instance TTL
         self.cleanup_interval = 10  # Cleanup expired services every 10 seconds
-        self._cleanup_task: Optional[asyncio.Task] = None
+        self._cleanup_task: asyncio.Task | None = None
 
     async def initialize(self) -> None:
         """Initialize the service registry."""
@@ -107,17 +107,15 @@ class ACGSServiceRegistry:
             self._cleanup_task = asyncio.create_task(self._cleanup_expired_services())
 
         except Exception as e:
-            logger.error(f"Failed to initialize service registry: {e}")
+            logger.exception(f"Failed to initialize service registry: {e}")
             raise
 
     async def close(self) -> None:
         """Close the service registry and cleanup resources."""
         if self._cleanup_task:
             self._cleanup_task.cancel()
-            try:
+            with suppress(asyncio.CancelledError):
                 await self._cleanup_task
-            except asyncio.CancelledError:
-                pass
 
         if self.redis_client:
             await self.redis_client.close()
@@ -139,8 +137,8 @@ class ACGSServiceRegistry:
         host: str,
         port: int,
         version: str,
-        capabilities: List[str],
-        metadata: Optional[Dict[str, Any]] = None,
+        capabilities: list[str],
+        metadata: dict[str, Any] | None = None,
     ) -> bool:
         """
         Register a service instance.
@@ -205,7 +203,7 @@ class ACGSServiceRegistry:
             return True
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Failed to register service {service_name}/{instance_id}: {e}"
             )
             return False
@@ -244,7 +242,7 @@ class ACGSServiceRegistry:
             return True
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Failed to unregister service {service_name}/{instance_id}: {e}"
             )
             return False
@@ -254,7 +252,7 @@ class ACGSServiceRegistry:
         service_name: str,
         instance_id: str,
         status: ServiceStatus = ServiceStatus.HEALTHY,
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ) -> bool:
         """
         Send heartbeat for a service instance.
@@ -301,14 +299,14 @@ class ACGSServiceRegistry:
             return True
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Failed to send heartbeat for {service_name}/{instance_id}: {e}"
             )
             return False
 
     async def discover_services(
-        self, service_name: Optional[str] = None
-    ) -> List[ServiceInstance]:
+        self, service_name: str | None = None
+    ) -> list[ServiceInstance]:
         """
         Discover available service instances.
 
@@ -348,10 +346,10 @@ class ACGSServiceRegistry:
             return services
 
         except Exception as e:
-            logger.error(f"Failed to discover services: {e}")
+            logger.exception(f"Failed to discover services: {e}")
             return []
 
-    async def get_healthy_instances(self, service_name: str) -> List[ServiceInstance]:
+    async def get_healthy_instances(self, service_name: str) -> list[ServiceInstance]:
         """
         Get healthy instances of a specific service.
 
@@ -368,7 +366,7 @@ class ACGSServiceRegistry:
             if instance.status == ServiceStatus.HEALTHY
         ]
 
-    async def get_service_capabilities(self, service_name: str) -> Set[str]:
+    async def get_service_capabilities(self, service_name: str) -> set[str]:
         """
         Get aggregated capabilities for a service.
 
@@ -384,7 +382,7 @@ class ACGSServiceRegistry:
             capabilities.update(instance.capabilities)
         return capabilities
 
-    async def get_registry_stats(self) -> Dict[str, Any]:
+    async def get_registry_stats(self) -> dict[str, Any]:
         """
         Get service registry statistics.
 
@@ -420,7 +418,7 @@ class ACGSServiceRegistry:
             return stats
 
         except Exception as e:
-            logger.error(f"Failed to get registry stats: {e}")
+            logger.exception(f"Failed to get registry stats: {e}")
             return {"error": str(e)}
 
     def _validate_constitutional_compliance(self) -> bool:
@@ -468,11 +466,11 @@ class ACGSServiceRegistry:
                 logger.info("Service registry cleanup task cancelled")
                 break
             except Exception as e:
-                logger.error(f"Error in service registry cleanup: {e}")
+                logger.exception(f"Error in service registry cleanup: {e}")
 
 
 # Global service registry instance
-_service_registry: Optional[ACGSServiceRegistry] = None
+_service_registry: ACGSServiceRegistry | None = None
 
 
 async def get_service_registry() -> ACGSServiceRegistry:
@@ -490,8 +488,8 @@ async def register_current_service(
     host: str,
     port: int,
     version: str,
-    capabilities: List[str],
-    metadata: Optional[Dict[str, Any]] = None,
+    capabilities: list[str],
+    metadata: dict[str, Any] | None = None,
 ) -> bool:
     """Convenience function to register the current service."""
     registry = await get_service_registry()
@@ -504,7 +502,7 @@ async def send_heartbeat(
     service_name: str,
     instance_id: str,
     status: ServiceStatus = ServiceStatus.HEALTHY,
-    metadata: Optional[Dict[str, Any]] = None,
+    metadata: dict[str, Any] | None = None,
 ) -> bool:
     """Convenience function to send heartbeat."""
     registry = await get_service_registry()

@@ -223,7 +223,7 @@ class PublicConsultationService:
             return proposal
 
         except Exception as e:
-            logger.error(f"Failed to submit public proposal: {e}")
+            logger.exception(f"Failed to submit public proposal: {e}")
             raise
 
     async def collect_public_feedback(
@@ -290,7 +290,7 @@ class PublicConsultationService:
             return feedback
 
         except Exception as e:
-            logger.error(f"Failed to collect public feedback: {e}")
+            logger.exception(f"Failed to collect public feedback: {e}")
             raise
 
     async def get_consultation_metrics(
@@ -310,11 +310,9 @@ class PublicConsultationService:
             # Calculate time window
             if time_period_days:
                 datetime.utcnow() - timedelta(days=time_period_days)
-            else:
-                pass
 
             # Mock metrics calculation (would use actual database queries)
-            metrics = ConsultationMetrics(
+            return ConsultationMetrics(
                 total_proposals=self.consultation_stats["total_proposals_submitted"],
                 active_consultations=max(
                     1, self.consultation_stats["total_proposals_submitted"] // 3
@@ -332,10 +330,8 @@ class PublicConsultationService:
                 completion_rate=0.68,
             )
 
-            return metrics
-
         except Exception as e:
-            logger.error(f"Failed to get consultation metrics: {e}")
+            logger.exception(f"Failed to get consultation metrics: {e}")
             return ConsultationMetrics()
 
     async def advance_proposal_to_council(
@@ -390,7 +386,7 @@ class PublicConsultationService:
             }
 
         except Exception as e:
-            logger.error(f"Failed to advance proposal to council: {e}")
+            logger.exception(f"Failed to advance proposal to council: {e}")
             return {"success": False, "error": str(e)}
 
     # Helper methods
@@ -541,7 +537,7 @@ class PublicConsultationService:
                 "reason": f"Insufficient public support (minimum: {self.config['min_support_threshold']})",
             }
 
-        if proposal.status not in [ConsultationStatus.OPEN, ConsultationStatus.ACTIVE]:
+        if proposal.status not in {ConsultationStatus.OPEN, ConsultationStatus.ACTIVE}:
             return {
                 "eligible": False,
                 "reason": "Proposal not in eligible status for advancement",

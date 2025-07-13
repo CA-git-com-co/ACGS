@@ -8,15 +8,15 @@ OpenTelemetry-compatible distributed tracing for request flow monitoring.
 import asyncio
 import logging
 import threading
-import time
 import uuid
 from abc import ABC, abstractmethod
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, AsyncGenerator, Callable, Dict, List, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -46,14 +46,14 @@ class SpanContext:
 
     trace_id: str
     span_id: str
-    parent_span_id: Optional[str] = None
-    baggage: Dict[str, str] = field(default_factory=dict)
+    parent_span_id: str | None = None
+    baggage: dict[str, str] = field(default_factory=dict)
 
     def is_valid(self) -> bool:
         """Check if span context is valid."""
         return bool(self.trace_id and self.span_id)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "trace_id": self.trace_id,
@@ -69,9 +69,9 @@ class SpanEvent:
 
     name: str
     timestamp: datetime
-    attributes: Dict[str, Any] = field(default_factory=dict)
+    attributes: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "name": self.name,
@@ -87,13 +87,13 @@ class Span:
     operation_name: str
     span_context: SpanContext
     start_time: datetime = field(default_factory=datetime.utcnow)
-    end_time: Optional[datetime] = None
+    end_time: datetime | None = None
     status: SpanStatus = SpanStatus.OK
     kind: SpanKind = SpanKind.INTERNAL
-    attributes: Dict[str, Any] = field(default_factory=dict)
-    events: List[SpanEvent] = field(default_factory=list)
-    logs: List[str] = field(default_factory=list)
-    tags: Dict[str, str] = field(default_factory=dict)
+    attributes: dict[str, Any] = field(default_factory=dict)
+    events: list[SpanEvent] = field(default_factory=list)
+    logs: list[str] = field(default_factory=list)
+    tags: dict[str, str] = field(default_factory=dict)
 
     def __post_init__(self):
         """Initialize span with constitutional compliance."""
@@ -111,7 +111,7 @@ class Span:
         self.tags[key] = value
         return self
 
-    def add_event(self, name: str, attributes: Dict[str, Any] = None) -> "Span":
+    def add_event(self, name: str, attributes: dict[str, Any] | None = None) -> "Span":
         """Add event to span."""
         event = SpanEvent(
             name=name, timestamp=datetime.utcnow(), attributes=attributes or {}
@@ -124,7 +124,7 @@ class Span:
         self.logs.append(f"{datetime.utcnow().isoformat()}: {message}")
         return self
 
-    def set_status(self, status: SpanStatus, description: str = None) -> "Span":
+    def set_status(self, status: SpanStatus, description: str | None = None) -> "Span":
         """Set span status."""
         self.status = status
         if description:
@@ -159,13 +159,13 @@ class Span:
         return self.end_time is not None
 
     @property
-    def duration_ms(self) -> Optional[float]:
+    def duration_ms(self) -> float | None:
         """Get span duration in milliseconds."""
         if not self.is_finished:
             return None
         return (self.end_time - self.start_time).total_seconds() * 1000
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert span to dictionary representation."""
         return {
             "operation_name": self.operation_name,
@@ -187,15 +187,14 @@ class TraceExporter(ABC):
     """Abstract base class for trace exporters."""
 
     @abstractmethod
-    async def export(self, spans: List[Span]) -> None:
+    async def export(self, spans: list[Span]) -> None:
         """Export spans to external system."""
-        pass
 
 
 class ConsoleTraceExporter(TraceExporter):
     """Console trace exporter for development."""
 
-    async def export(self, spans: List[Span]) -> None:
+    async def export(self, spans: list[Span]) -> None:
         """Export spans to console."""
         for span in spans:
             logger.info(
@@ -211,7 +210,7 @@ class JaegerTraceExporter(TraceExporter):
     def __init__(self, endpoint: str = "http://localhost:14268/api/traces"):
         self.endpoint = endpoint
 
-    async def export(self, spans: List[Span]) -> None:
+    async def export(self, spans: list[Span]) -> None:
         """Export spans to Jaeger."""
         # In production, use jaeger-client or opentelemetry-exporter-jaeger
         logger.info(f"Would export {len(spans)} spans to Jaeger at {self.endpoint}")
@@ -224,14 +223,14 @@ class TracingManager:
 
     def __init__(self, service_name: str = "acgs_service"):
         self.service_name = service_name
-        self._exporters: List[TraceExporter] = []
-        self._active_spans: Dict[str, Span] = {}
-        self._finished_spans: List[Span] = []
+        self._exporters: list[TraceExporter] = []
+        self._active_spans: dict[str, Span] = {}
+        self._finished_spans: list[Span] = []
         self._export_batch_size = 100
         self._export_timeout = 30.0
         self._export_interval = 10.0
         self._running = False
-        self._export_task: Optional[asyncio.Task] = None
+        self._export_task: asyncio.Task | None = None
         self._lock = threading.Lock()
 
     def add_exporter(self, exporter: TraceExporter) -> None:
@@ -242,9 +241,9 @@ class TracingManager:
     def create_span(
         self,
         operation_name: str,
-        parent_context: Optional[SpanContext] = None,
+        parent_context: SpanContext | None = None,
         kind: SpanKind = SpanKind.INTERNAL,
-        attributes: Dict[str, Any] = None,
+        attributes: dict[str, Any] | None = None,
     ) -> Span:
         """Create a new span."""
 
@@ -319,7 +318,7 @@ class TracingManager:
                     exporter.export(spans_to_export), timeout=self._export_timeout
                 )
             except Exception as e:
-                logger.error(
+                logger.exception(
                     f"Error exporting spans with {type(exporter).__name__}: {e}"
                 )
 
@@ -338,7 +337,7 @@ class TracingManager:
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                logger.error(f"Error in trace export loop: {e}")
+                logger.exception(f"Error in trace export loop: {e}")
                 await asyncio.sleep(self._export_interval)
 
     def stop_export_loop(self) -> None:
@@ -351,12 +350,12 @@ class TracingManager:
         """Flush all pending spans."""
         await self._export_batch()
 
-    def get_active_spans(self) -> List[Span]:
+    def get_active_spans(self) -> list[Span]:
         """Get all active spans."""
         with self._lock:
             return list(self._active_spans.values())
 
-    def get_trace_stats(self) -> Dict[str, Any]:
+    def get_trace_stats(self) -> dict[str, Any]:
         """Get tracing statistics."""
         with self._lock:
             return {
@@ -370,7 +369,7 @@ class TracingManager:
 
 
 # Context variable for current span
-_current_span: ContextVar[Optional[Span]] = ContextVar("current_span", default=None)
+_current_span: ContextVar[Span | None] = ContextVar("current_span", default=None)
 
 # Global tracing manager
 _global_tracer = TracingManager()
@@ -381,12 +380,12 @@ def get_tracer() -> TracingManager:
     return _global_tracer
 
 
-def get_current_span() -> Optional[Span]:
+def get_current_span() -> Span | None:
     """Get the current active span."""
     return _current_span.get()
 
 
-def set_current_span(span: Optional[Span]) -> None:
+def set_current_span(span: Span | None) -> None:
     """Set the current active span."""
     _current_span.set(span)
 
@@ -395,8 +394,8 @@ def set_current_span(span: Optional[Span]) -> None:
 async def trace_operation(
     operation_name: str,
     kind: SpanKind = SpanKind.INTERNAL,
-    attributes: Dict[str, Any] = None,
-    parent_context: Optional[SpanContext] = None,
+    attributes: dict[str, Any] | None = None,
+    parent_context: SpanContext | None = None,
 ) -> AsyncGenerator[Span, None]:
     """Context manager for tracing operations."""
     tracer = get_tracer()
@@ -437,7 +436,7 @@ class TraceLogger:
     def __init__(self, logger_name: str):
         self.logger = logging.getLogger(logger_name)
 
-    def _add_trace_info(self, extra: Dict[str, Any] = None) -> Dict[str, Any]:
+    def _add_trace_info(self, extra: dict[str, Any] | None = None) -> dict[str, Any]:
         """Add trace information to log extra."""
         if extra is None:
             extra = {}
@@ -455,29 +454,29 @@ class TraceLogger:
         extra["constitutional_hash"] = "cdd01ef066bc6cf2"
         return extra
 
-    def debug(self, msg: str, *args, extra: Dict[str, Any] = None, **kwargs):
+    def debug(self, msg: str, *args, extra: dict[str, Any] | None = None, **kwargs):
         """Log debug with trace info."""
         self.logger.debug(msg, *args, extra=self._add_trace_info(extra), **kwargs)
 
-    def info(self, msg: str, *args, extra: Dict[str, Any] = None, **kwargs):
+    def info(self, msg: str, *args, extra: dict[str, Any] | None = None, **kwargs):
         """Log info with trace info."""
         self.logger.info(msg, *args, extra=self._add_trace_info(extra), **kwargs)
 
-    def warning(self, msg: str, *args, extra: Dict[str, Any] = None, **kwargs):
+    def warning(self, msg: str, *args, extra: dict[str, Any] | None = None, **kwargs):
         """Log warning with trace info."""
         self.logger.warning(msg, *args, extra=self._add_trace_info(extra), **kwargs)
 
-    def error(self, msg: str, *args, extra: Dict[str, Any] = None, **kwargs):
+    def error(self, msg: str, *args, extra: dict[str, Any] | None = None, **kwargs):
         """Log error with trace info."""
         self.logger.error(msg, *args, extra=self._add_trace_info(extra), **kwargs)
 
-    def critical(self, msg: str, *args, extra: Dict[str, Any] = None, **kwargs):
+    def critical(self, msg: str, *args, extra: dict[str, Any] | None = None, **kwargs):
         """Log critical with trace info."""
         self.logger.critical(msg, *args, extra=self._add_trace_info(extra), **kwargs)
 
 
 # Decorator for automatic tracing
-def traced(operation_name: str = None, kind: SpanKind = SpanKind.INTERNAL):
+def traced(operation_name: str | None = None, kind: SpanKind = SpanKind.INTERNAL):
     """Decorator for automatic function tracing."""
 
     def decorator(func):
@@ -491,26 +490,24 @@ def traced(operation_name: str = None, kind: SpanKind = SpanKind.INTERNAL):
                     return await func(*args, **kwargs)
 
             return async_wrapper
-        else:
 
-            def sync_wrapper(*args, **kwargs):
-                op_name = operation_name or f"{func.__module__}.{func.__name__}"
-                # For sync functions, we'll use a simple approach
-                tracer = get_tracer()
-                span = tracer.create_span(op_name, kind=kind)
-                span.set_attribute("function.name", func.__name__)
-                span.set_attribute("function.module", func.__module__)
+        def sync_wrapper(*args, **kwargs):
+            op_name = operation_name or f"{func.__module__}.{func.__name__}"
+            # For sync functions, we'll use a simple approach
+            tracer = get_tracer()
+            span = tracer.create_span(op_name, kind=kind)
+            span.set_attribute("function.name", func.__name__)
+            span.set_attribute("function.module", func.__module__)
 
-                try:
-                    result = func(*args, **kwargs)
-                    return result
-                except Exception as e:
-                    span.record_exception(e)
-                    raise
-                finally:
-                    tracer.finish_span(span)
+            try:
+                return func(*args, **kwargs)
+            except Exception as e:
+                span.record_exception(e)
+                raise
+            finally:
+                tracer.finish_span(span)
 
-            return sync_wrapper
+        return sync_wrapper
 
     return decorator
 

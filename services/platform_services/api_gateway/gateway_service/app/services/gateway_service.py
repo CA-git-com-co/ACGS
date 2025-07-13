@@ -5,23 +5,21 @@ High-level service layer for API gateway operations with constitutional complian
 service mesh integration, and ACGS framework integration.
 """
 
-import asyncio
 import logging
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import aiohttp
 import redis.asyncio as aioredis
-from prometheus_client import Counter, Gauge, Histogram
-
-from ..models.gateway import (
+from app.models.gateway import (
     GatewayRequest,
     GatewayResponse,
-    RouteConfig,
     ServiceEndpoint,
     ServiceHealth,
 )
-from ..models.routing import RoutingDecision, ServiceInstance
+from app.models.routing import RoutingDecision, ServiceInstance
+from prometheus_client import Counter, Gauge, Histogram
+
 from .load_balancer import LoadBalancerService
 from .routing_service import RoutingService
 from .service_discovery import ServiceDiscoveryService
@@ -40,7 +38,7 @@ class GatewayService:
     request-scoped caching, and sub-5ms P99 latency targets for ACGS integration.
     """
 
-    def __init__(self, redis_client: Optional[aioredis.Redis] = None):
+    def __init__(self, redis_client: aioredis.Redis | None = None):
         """Initialize gateway service."""
         self.redis = redis_client
         self.routing_service = RoutingService(redis_client)
@@ -50,12 +48,12 @@ class GatewayService:
         self.setup_metrics()
 
         # Service state tracking with O(1) lookups
-        self.active_requests: Dict[str, GatewayRequest] = {}
-        self.service_endpoints: Dict[str, List[ServiceEndpoint]] = {}
-        self.request_cache: Dict[str, Any] = {}
+        self.active_requests: dict[str, GatewayRequest] = {}
+        self.service_endpoints: dict[str, list[ServiceEndpoint]] = {}
+        self.request_cache: dict[str, Any] = {}
 
         # HTTP client for upstream requests
-        self.http_client: Optional[aiohttp.ClientSession] = None
+        self.http_client: aiohttp.ClientSession | None = None
 
         logger.info("GatewayService initialized with constitutional compliance")
 
@@ -149,7 +147,9 @@ class GatewayService:
             return response
 
         except Exception as e:
-            logger.error(f"Failed to process gateway request {request.request_id}: {e}")
+            logger.exception(
+                f"Failed to process gateway request {request.request_id}: {e}"
+            )
 
             # Create error response
             error_response = GatewayResponse(
@@ -193,7 +193,7 @@ class GatewayService:
                     f"Gateway request processing took {duration:.2f}ms (>5ms target)"
                 )
 
-    async def get_service_health(self, service_name: str) -> Optional[ServiceHealth]:
+    async def get_service_health(self, service_name: str) -> ServiceHealth | None:
         """
         Get health status for a service.
 
@@ -241,7 +241,7 @@ class GatewayService:
             return success
 
         except Exception as e:
-            logger.error(f"Failed to register service {endpoint.service_name}: {e}")
+            logger.exception(f"Failed to register service {endpoint.service_name}: {e}")
             return False
 
     async def _validate_constitutional_compliance(
@@ -302,7 +302,7 @@ class GatewayService:
                 ).observe(upstream_time_ms)
 
                 # Create gateway response
-                gateway_response = GatewayResponse(
+                return GatewayResponse(
                     request_id=request.request_id,
                     status_code=upstream_response.status,
                     headers=response_headers,
@@ -315,10 +315,8 @@ class GatewayService:
                     constitutional_hash=CONSTITUTIONAL_HASH,
                 )
 
-                return gateway_response
-
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Failed to forward request to {routing_decision.target_service}: {e}"
             )
             raise
@@ -337,9 +335,9 @@ class GatewayService:
             logger.info(f"Loaded {len(self.service_endpoints)} service configurations")
 
         except Exception as e:
-            logger.error(f"Failed to load service endpoints: {e}")
+            logger.exception(f"Failed to load service endpoints: {e}")
 
-    async def get_gateway_health(self) -> Dict[str, Any]:
+    async def get_gateway_health(self) -> dict[str, Any]:
         """
         Get gateway health status.
 

@@ -151,7 +151,7 @@ class FailoverCircuitBreaker:
                 self._record_success(instance_id)
                 return result
 
-        except Exception as e:
+        except Exception:
             self._record_failure(instance_id)
 
             # Attempt failover based on strategy
@@ -171,7 +171,7 @@ class FailoverCircuitBreaker:
                 return await self._load_shed_failover(
                     operation, instance_id, *args, **kwargs
                 )
-            raise e
+            raise
 
     async def _immediate_failover(
         self, operation: Callable, failed_instance: str, *args, **kwargs
@@ -194,7 +194,7 @@ class FailoverCircuitBreaker:
                 self._notify_failover(failed_instance, backup_id)
                 return result
         except Exception as e:
-            logger.error(f"Backup instance {backup_id} also failed: {e}")
+            logger.exception(f"Backup instance {backup_id} also failed: {e}")
             raise
 
     async def _graceful_failover(
@@ -339,7 +339,7 @@ class FailoverCircuitBreaker:
             try:
                 callback(failed_instance, backup_instance)
             except Exception as e:
-                logger.error(f"Error in failover callback: {e}")
+                logger.exception(f"Error in failover callback: {e}")
 
     def register_failover_callback(self, callback: Callable[[str, str], None]):
         # requires: Valid input parameters

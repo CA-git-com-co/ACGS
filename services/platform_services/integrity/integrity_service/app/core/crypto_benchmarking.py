@@ -7,7 +7,6 @@ measurements and provides precise benchmarking for PGP operations.
 
 import asyncio
 import hashlib
-import json
 import logging
 import os
 import statistics
@@ -312,8 +311,8 @@ class CryptoBenchmarker:
 
         if baseline_key not in results or baseline_payload not in results[baseline_key]:
             # Fallback to first available result
-            baseline_key = list(results.keys())[0]
-            baseline_payload = list(results[baseline_key].keys())[0]
+            baseline_key = next(iter(results.keys()))
+            baseline_payload = next(iter(results[baseline_key].keys()))
 
         baseline_results = results[baseline_key][baseline_payload]
 
@@ -439,20 +438,13 @@ async def run_crypto_benchmarking_example():
     benchmarker = CryptoBenchmarker(config)
     results = await benchmarker.benchmark_all_operations()
 
-    print("=== Cryptographic Overhead Benchmark Results ===")
-    print(json.dumps(results, indent=2))
-
     # Check for performance issues
     overhead = results["system_overhead_analysis"]
     if overhead["throughput_impact_percent"] > 10:
-        print(
-            f"⚠️  WARNING: High throughput impact: {overhead['throughput_impact_percent']:.1f}%"
-        )
+        pass
 
     if overhead["latency_overhead_ms"] > 20:
-        print(
-            f"⚠️  WARNING: High latency overhead: {overhead['latency_overhead_ms']:.1f}ms"
-        )
+        pass
 
 
 if __name__ == "__main__":

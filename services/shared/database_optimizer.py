@@ -26,7 +26,7 @@ logger = structlog.get_logger(__name__)
 class DatabasePerformanceOptimizer:
     """Advanced database performance optimizer for ACGS-1."""
 
-    def __init__(self, database_url: str = None):
+    def __init__(self, database_url: str | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -51,7 +51,7 @@ class DatabasePerformanceOptimizer:
             logger.info("Database optimizer initialized successfully")
             return True
         except Exception as e:
-            logger.error("Failed to initialize database optimizer", error=str(e))
+            logger.exception("Failed to initialize database optimizer", error=str(e))
             return False
 
     async def analyze_current_performance(self) -> dict[str, Any]:
@@ -167,7 +167,7 @@ class DatabasePerformanceOptimizer:
                 metrics["database_size"] = dict(db_size.fetchone()._mapping)
 
         except Exception as e:
-            logger.error("Error analyzing database performance", error=str(e))
+            logger.exception("Error analyzing database performance", error=str(e))
 
         # System resource usage
         metrics["system_resources"] = {
@@ -303,7 +303,7 @@ class DatabasePerformanceOptimizer:
                         )
 
         except Exception as e:
-            logger.error("Error creating performance indexes", error=str(e))
+            logger.exception("Error creating performance indexes", error=str(e))
 
         return index_results
 
@@ -368,7 +368,7 @@ class DatabasePerformanceOptimizer:
                 optimization_results["recommended_settings"] = recommended
 
         except Exception as e:
-            logger.error("Error optimizing connection pool", error=str(e))
+            logger.exception("Error optimizing connection pool", error=str(e))
 
         return optimization_results
 
@@ -420,7 +420,7 @@ class DatabasePerformanceOptimizer:
                     )
 
         except Exception as e:
-            logger.error("Error identifying slow queries", error=str(e))
+            logger.exception("Error identifying slow queries", error=str(e))
 
         self.slow_queries = slow_queries
         return slow_queries
@@ -466,7 +466,7 @@ class DatabasePerformanceOptimizer:
                         )
 
         except Exception as e:
-            logger.error("Error during vacuum and analyze", error=str(e))
+            logger.exception("Error during vacuum and analyze", error=str(e))
 
         return maintenance_results
 
@@ -601,7 +601,7 @@ def monitor_db_performance(operation_name: str):
                         return result
                     except Exception as e:
                         duration = time.time() - start_time
-                        logger.error(
+                        logger.exception(
                             f"Database operation failed: {operation_name}",
                             duration_seconds=duration,
                             error=str(e),
@@ -627,7 +627,7 @@ def monitor_db_performance(operation_name: str):
                 return result
             except Exception as e:
                 duration = time.time() - start_time
-                logger.error(
+                logger.exception(
                     f"Database operation failed: {operation_name}",
                     duration_seconds=duration,
                     error=str(e),

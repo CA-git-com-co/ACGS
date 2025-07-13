@@ -229,7 +229,7 @@ class EnhancedServiceStabilizer:
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                logger.error(f"Health monitoring error: {e}")
+                logger.exception(f"Health monitoring error: {e}")
                 await asyncio.sleep(5.0)
 
     async def _perform_health_checks(self):
@@ -237,9 +237,10 @@ class EnhancedServiceStabilizer:
         # ensures: Correct function execution
         # sha256: func_hash
         """Perform health checks on all services."""
-        tasks = []
-        for service_type in self.service_health.keys():
-            tasks.append(self._check_service_health(service_type))
+        tasks = [
+            self._check_service_health(service_type)
+            for service_type in self.service_health
+        ]
 
         if tasks:
             await asyncio.gather(*tasks, return_exceptions=True)
@@ -321,7 +322,7 @@ class EnhancedServiceStabilizer:
             return True
 
         return all(
-            status in ["connected", "operational", "healthy", True]
+            status in {"connected", "operational", "healthy", True}
             for status in dependencies.values()
         )
 
@@ -379,7 +380,7 @@ class EnhancedServiceStabilizer:
             )
 
         except Exception as e:
-            logger.error(f"Failover failed for {service_type.value}: {e}")
+            logger.exception(f"Failover failed for {service_type.value}: {e}")
 
     async def _performance_monitoring_loop(self):
         # requires: Valid input parameters
@@ -397,7 +398,7 @@ class EnhancedServiceStabilizer:
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                logger.error(f"Performance monitoring error: {e}")
+                logger.exception(f"Performance monitoring error: {e}")
                 await asyncio.sleep(10.0)
 
     async def _collect_performance_metrics(self):
@@ -423,7 +424,7 @@ class EnhancedServiceStabilizer:
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                logger.error(f"Predictive analysis error: {e}")
+                logger.exception(f"Predictive analysis error: {e}")
                 await asyncio.sleep(30.0)
 
     async def _perform_predictive_analysis(self):
@@ -492,34 +493,46 @@ class EnhancedServiceStabilizer:
         if n * x2_sum - x_sum * x_sum == 0:
             return 0.0
 
-        slope = (n * xy_sum - x_sum * y_sum) / (n * x2_sum - x_sum * x_sum)
-        return slope
+        return (n * xy_sum - x_sum * y_sum) / (n * x2_sum - x_sum * x_sum)
 
     def _generate_recommendations(self, health: ServiceHealth) -> list[str]:
         """Generate recommendations based on service health."""
         recommendations = []
 
         if health.response_time_ms > self.config.alert_thresholds["response_time_ms"]:
-            recommendations.append("Consider scaling up service instances")
-            recommendations.append("Review database query performance")
+            recommendations.extend(
+                (
+                    "Consider scaling up service instances",
+                    "Review database query performance",
+                )
+            )
 
         if (
             health.error_rate_percent
             > self.config.alert_thresholds["error_rate_percent"]
         ):
-            recommendations.append("Investigate error logs for root cause")
-            recommendations.append("Consider circuit breaker activation")
+            recommendations.extend(
+                (
+                    "Investigate error logs for root cause",
+                    "Consider circuit breaker activation",
+                )
+            )
 
         if (
             health.availability_percent
             < self.config.alert_thresholds["availability_percent"]
         ):
-            recommendations.append("Enable auto-failover mechanisms")
-            recommendations.append("Add redundant service instances")
+            recommendations.extend(
+                ("Enable auto-failover mechanisms", "Add redundant service instances")
+            )
 
         if health.predicted_failure_risk > 0.5:
-            recommendations.append("Proactive service restart recommended")
-            recommendations.append("Monitor resource utilization closely")
+            recommendations.extend(
+                (
+                    "Proactive service restart recommended",
+                    "Monitor resource utilization closely",
+                )
+            )
 
         return recommendations
 
@@ -535,7 +548,7 @@ class EnhancedServiceStabilizer:
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                logger.error(f"Auto-recovery error: {e}")
+                logger.exception(f"Auto-recovery error: {e}")
                 await asyncio.sleep(10.0)
 
     async def _attempt_service_recovery(self):
@@ -574,7 +587,7 @@ class EnhancedServiceStabilizer:
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                logger.error(f"Metrics cleanup error: {e}")
+                logger.exception(f"Metrics cleanup error: {e}")
                 await asyncio.sleep(300.0)
 
     async def _cleanup_old_metrics(self):
@@ -586,7 +599,7 @@ class EnhancedServiceStabilizer:
             hours=self.config.metrics_retention_hours
         )
 
-        for service_type in self.health_history.keys():
+        for service_type in self.health_history:
             history = self.health_history[service_type]
             self.health_history[service_type] = [
                 h for h in history if h.last_check > cutoff_time
@@ -653,7 +666,7 @@ class EnhancedServiceStabilizer:
             try:
                 callback(alert_type, alert_data)
             except Exception as e:
-                logger.error(f"Alert callback error: {e}")
+                logger.exception(f"Alert callback error: {e}")
 
     def register_alert_callback(self, callback: Callable[[str, dict[str, Any]], None]):
         # requires: Valid input parameters

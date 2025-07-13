@@ -65,7 +65,7 @@ class CacheManager:
             logger.info("Cache manager initialized successfully")
 
         except Exception as e:
-            logger.error("Failed to initialize cache manager", error=str(e))
+            logger.exception("Failed to initialize cache manager", error=str(e))
             raise
 
     async def _initialize_caches(self):
@@ -174,7 +174,7 @@ class CacheManager:
                 logger.info("Governance rules cache warmed", rules=len(critical_rules))
 
         except Exception as e:
-            logger.error("Failed to warm governance rules cache", error=str(e))
+            logger.exception("Failed to warm governance rules cache", error=str(e))
 
     async def _warm_static_configuration(self):
         # requires: Valid input parameters
@@ -204,16 +204,15 @@ class CacheManager:
 
             cache = self.caches.get("static_configuration")
             if cache:
-                warming_data = []
-                for item in config_items:
-                    warming_data.append(
-                        {
-                            "key": item["key"],
-                            "value": item["value"],
-                            "ttl": CACHE_TTL_POLICIES["static_configuration"],
-                            "tags": ["configuration"],
-                        }
-                    )
+                warming_data = [
+                    {
+                        "key": item["key"],
+                        "value": item["value"],
+                        "ttl": CACHE_TTL_POLICIES["static_configuration"],
+                        "tags": ["configuration"],
+                    }
+                    for item in config_items
+                ]
 
                 await cache.warm_cache(warming_data)
                 logger.info(
@@ -221,7 +220,7 @@ class CacheManager:
                 )
 
         except Exception as e:
-            logger.error("Failed to warm static configuration cache", error=str(e))
+            logger.exception("Failed to warm static configuration cache", error=str(e))
 
     async def get_cache(self, cache_type: str) -> MultiTierCache | None:
         """Get cache instance by type."""

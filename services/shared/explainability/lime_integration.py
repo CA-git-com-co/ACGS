@@ -21,7 +21,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
 
@@ -64,7 +64,7 @@ class LIMEExplanation:
 
     feature_importance: dict[str, float]
     local_prediction: float
-    local_prediction_proba: Optional[list[float]]
+    local_prediction_proba: list[float] | None
     explanation_score: float
     intercept: float
     r_squared: float
@@ -73,7 +73,7 @@ class LIMEExplanation:
     num_features: int
     computation_time: float
     timestamp: datetime
-    instance_id: Optional[str] = None
+    instance_id: str | None = None
 
 
 @dataclass
@@ -94,7 +94,7 @@ class LIMEExplainer:
     Production-ready LIME explainer with optimization and quality assessment
     """
 
-    def __init__(self, config: Optional[dict[str, Any]] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         self.config = config or {}
         self.alerting = AlertingSystem()
         self.audit_logger = AuditLogger()
@@ -128,8 +128,8 @@ class LIMEExplainer:
         self,
         training_data: np.ndarray,
         feature_names: list[str],
-        class_names: Optional[list[str]] = None,
-        categorical_features: Optional[list[int]] = None,
+        class_names: list[str] | None = None,
+        categorical_features: list[int] | None = None,
     ) -> bool:
         """
         Initialize LIME tabular explainer
@@ -183,12 +183,12 @@ class LIMEExplainer:
             return True
 
         except Exception as e:
-            logger.error(f"LIME tabular explainer initialization failed: {e}")
+            logger.exception(f"LIME tabular explainer initialization failed: {e}")
             return await self._initialize_fallback_explainer("tabular", feature_names)
 
     async def initialize_text_explainer(
         self,
-        class_names: Optional[list[str]] = None,
+        class_names: list[str] | None = None,
         bow: bool = True,
         split_expression: str = r"\W+",
     ) -> bool:
@@ -238,7 +238,7 @@ class LIMEExplainer:
             return True
 
         except Exception as e:
-            logger.error(f"LIME text explainer initialization failed: {e}")
+            logger.exception(f"LIME text explainer initialization failed: {e}")
             return await self._initialize_fallback_explainer("text", [])
 
     async def _initialize_fallback_explainer(
@@ -257,15 +257,15 @@ class LIMEExplainer:
             return True
 
         except Exception as e:
-            logger.error(f"Fallback explainer initialization failed: {e}")
+            logger.exception(f"Fallback explainer initialization failed: {e}")
             return False
 
     async def explain_tabular_instance(
         self,
         instance: np.ndarray,
         predict_fn: Callable,
-        num_features: Optional[int] = None,
-        num_samples: Optional[int] = None,
+        num_features: int | None = None,
+        num_samples: int | None = None,
     ) -> LIMEExplanation:
         """
         Generate LIME explanation for tabular data instance
@@ -387,7 +387,7 @@ class LIMEExplainer:
             return result
 
         except Exception as e:
-            logger.error(f"LIME tabular explanation failed: {e}")
+            logger.exception(f"LIME tabular explanation failed: {e}")
             self.metrics["failed_explanations"] += 1
 
             computation_time = (datetime.utcnow() - start_time).total_seconds()
@@ -443,7 +443,7 @@ class LIMEExplainer:
             )
 
         except Exception as e:
-            logger.error(f"Fallback tabular explanation failed: {e}")
+            logger.exception(f"Fallback tabular explanation failed: {e}")
             return LIMEExplanation(
                 feature_importance={"fallback_error": 1.0},
                 local_prediction=0.0,
@@ -463,8 +463,8 @@ class LIMEExplainer:
         self,
         text: str,
         predict_fn: Callable,
-        num_features: Optional[int] = None,
-        num_samples: Optional[int] = None,
+        num_features: int | None = None,
+        num_samples: int | None = None,
     ) -> LIMEExplanation:
         """
         Generate LIME explanation for text instance
@@ -554,7 +554,7 @@ class LIMEExplainer:
             return result
 
         except Exception as e:
-            logger.error(f"LIME text explanation failed: {e}")
+            logger.exception(f"LIME text explanation failed: {e}")
             self.metrics["failed_explanations"] += 1
 
             computation_time = (datetime.utcnow() - start_time).total_seconds()
@@ -584,9 +584,9 @@ class LIMEExplainer:
 
             # Assign equal importance to all words (very basic)
             uniform_importance = 1.0 / len(words) if words else 0.0
-            feature_importance = {
-                word: uniform_importance for word in words[: self.num_features]
-            }
+            feature_importance = dict.fromkeys(
+                words[: self.num_features], uniform_importance
+            )
 
             return LIMEExplanation(
                 feature_importance=feature_importance,
@@ -604,7 +604,7 @@ class LIMEExplainer:
             )
 
         except Exception as e:
-            logger.error(f"Fallback text explanation failed: {e}")
+            logger.exception(f"Fallback text explanation failed: {e}")
             return LIMEExplanation(
                 feature_importance={"fallback_error": 1.0},
                 local_prediction=0.0,
@@ -705,7 +705,7 @@ class LIMEExplainer:
             )
 
         except Exception as e:
-            logger.error(f"Explanation quality assessment failed: {e}")
+            logger.exception(f"Explanation quality assessment failed: {e}")
             return LIMEExplanationQuality(
                 r_squared=0.0,
                 prediction_accuracy=0.0,
@@ -782,16 +782,10 @@ async def example_usage():
     if success:
         # Generate explanation
         test_instance = np.random.randn(10)
-        explanation = await explainer.explain_tabular_instance(
-            test_instance, mock_predict_fn
-        )
-
-        print(f"Feature importance: {explanation.feature_importance}")
-        print(f"R-squared: {explanation.r_squared}")
+        await explainer.explain_tabular_instance(test_instance, mock_predict_fn)
 
         # Get performance summary
-        summary = explainer.get_performance_summary()
-        print(f"Performance: {summary}")
+        explainer.get_performance_summary()
 
 
 if __name__ == "__main__":

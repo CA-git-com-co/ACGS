@@ -5,11 +5,10 @@ Constitutional Hash: cdd01ef066bc6cf2
 Provides standardized API response models and utilities for all ACGS services.
 """
 
-import time
 import uuid
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -47,28 +46,24 @@ class APIResponse(BaseModel):
 
     success: bool = Field(..., description="Whether the request was successful")
     message: str = Field(..., description="Human-readable message")
-    data: Optional[Any] = Field(None, description="Response data")
-    error_code: Optional[ErrorCode] = Field(
-        None, description="Error code if applicable"
-    )
-    correlation_id: Optional[str] = Field(None, description="Request correlation ID")
+    data: Any | None = Field(None, description="Response data")
+    error_code: ErrorCode | None = Field(None, description="Error code if applicable")
+    correlation_id: str | None = Field(None, description="Request correlation ID")
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     constitutional_hash: str = Field(
         default=CONSTITUTIONAL_HASH, description="Constitutional compliance hash"
     )
-    service_name: Optional[str] = Field(
-        None, description="Name of the responding service"
-    )
+    service_name: str | None = Field(None, description="Name of the responding service")
 
 
 class ErrorResponse(APIResponse):
     """Standardized error response model."""
 
     success: bool = Field(default=False, description="Always false for error responses")
-    error_details: Optional[Dict[str, Any]] = Field(
+    error_details: dict[str, Any] | None = Field(
         None, description="Additional error details"
     )
-    validation_errors: Optional[List[Dict[str, str]]] = Field(
+    validation_errors: list[dict[str, str]] | None = Field(
         None, description="Field validation errors"
     )
 
@@ -81,10 +76,10 @@ class SuccessResponse(APIResponse):
 
 def create_success_response(
     message: str = "Operation completed successfully",
-    data: Optional[Any] = None,
-    service_name: Optional[str] = None,
-    correlation_id: Optional[str] = None,
-) -> Dict[str, Any]:
+    data: Any | None = None,
+    service_name: str | None = None,
+    correlation_id: str | None = None,
+) -> dict[str, Any]:
     """Create a standardized success response."""
 
     response = SuccessResponse(
@@ -100,11 +95,11 @@ def create_success_response(
 def create_error_response(
     message: str,
     error_code: ErrorCode = ErrorCode.INTERNAL_ERROR,
-    error_details: Optional[Dict[str, Any]] = None,
-    validation_errors: Optional[List[Dict[str, str]]] = None,
-    service_name: Optional[str] = None,
-    correlation_id: Optional[str] = None,
-) -> Dict[str, Any]:
+    error_details: dict[str, Any] | None = None,
+    validation_errors: list[dict[str, str]] | None = None,
+    service_name: str | None = None,
+    correlation_id: str | None = None,
+) -> dict[str, Any]:
     """Create a standardized error response."""
 
     response = ErrorResponse(
@@ -120,11 +115,11 @@ def create_error_response(
 
 
 def create_validation_error_response(
-    validation_errors: List[Dict[str, str]],
+    validation_errors: list[dict[str, str]],
     message: str = "Validation failed",
-    service_name: Optional[str] = None,
-    correlation_id: Optional[str] = None,
-) -> Dict[str, Any]:
+    service_name: str | None = None,
+    correlation_id: str | None = None,
+) -> dict[str, Any]:
     """Create a standardized validation error response."""
 
     return create_error_response(
@@ -138,10 +133,10 @@ def create_validation_error_response(
 
 def create_not_found_response(
     resource: str,
-    resource_id: Optional[str] = None,
-    service_name: Optional[str] = None,
-    correlation_id: Optional[str] = None,
-) -> Dict[str, Any]:
+    resource_id: str | None = None,
+    service_name: str | None = None,
+    correlation_id: str | None = None,
+) -> dict[str, Any]:
     """Create a standardized not found error response."""
 
     message = f"{resource} not found"
@@ -158,9 +153,9 @@ def create_not_found_response(
 
 def create_unauthorized_response(
     message: str = "Authentication required",
-    service_name: Optional[str] = None,
-    correlation_id: Optional[str] = None,
-) -> Dict[str, Any]:
+    service_name: str | None = None,
+    correlation_id: str | None = None,
+) -> dict[str, Any]:
     """Create a standardized unauthorized error response."""
 
     return create_error_response(
@@ -173,9 +168,9 @@ def create_unauthorized_response(
 
 def create_forbidden_response(
     message: str = "Access denied",
-    service_name: Optional[str] = None,
-    correlation_id: Optional[str] = None,
-) -> Dict[str, Any]:
+    service_name: str | None = None,
+    correlation_id: str | None = None,
+) -> dict[str, Any]:
     """Create a standardized forbidden error response."""
 
     return create_error_response(
@@ -188,9 +183,9 @@ def create_forbidden_response(
 
 def create_constitutional_violation_response(
     violation_details: str,
-    service_name: Optional[str] = None,
-    correlation_id: Optional[str] = None,
-) -> Dict[str, Any]:
+    service_name: str | None = None,
+    correlation_id: str | None = None,
+) -> dict[str, Any]:
     """Create a standardized constitutional violation error response."""
 
     return create_error_response(
@@ -205,7 +200,7 @@ def create_constitutional_violation_response(
     )
 
 
-def ensure_constitutional_compliance(response_data: Dict[str, Any]) -> Dict[str, Any]:
+def ensure_constitutional_compliance(response_data: dict[str, Any]) -> dict[str, Any]:
     """Ensure response includes constitutional compliance hash."""
 
     if "constitutional_hash" not in response_data:
@@ -228,8 +223,8 @@ class DependencyHealth(BaseModel):
 
     name: str
     status: HealthStatus
-    response_time_ms: Optional[float] = None
-    error_message: Optional[str] = None
+    response_time_ms: float | None = None
+    error_message: str | None = None
 
 
 class HealthCheckResponse(BaseModel):
@@ -241,8 +236,8 @@ class HealthCheckResponse(BaseModel):
     port: int
     uptime_seconds: float
     constitutional_hash: str = CONSTITUTIONAL_HASH
-    dependencies: Dict[str, str] = Field(default_factory=dict)
-    performance_metrics: Dict[str, Any] = Field(default_factory=dict)
+    dependencies: dict[str, str] = Field(default_factory=dict)
+    performance_metrics: dict[str, Any] = Field(default_factory=dict)
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
@@ -255,7 +250,7 @@ class ServiceStatus(BaseModel):
     status: str
     phase: str
     routers_available: bool
-    endpoints: Dict[str, List[str]]
-    capabilities: Dict[str, Any]
+    endpoints: dict[str, list[str]]
+    capabilities: dict[str, Any]
     constitutional_hash: str = CONSTITUTIONAL_HASH
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

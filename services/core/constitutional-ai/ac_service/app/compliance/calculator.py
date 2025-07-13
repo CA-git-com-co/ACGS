@@ -8,8 +8,7 @@ and trend analysis for constitutional governance.
 
 import logging
 from dataclasses import dataclass
-from datetime import datetime, timedelta
-from typing import Any, Dict, List
+from typing import Any
 
 # Constitutional compliance
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -22,9 +21,9 @@ class ComplianceScore:
     """Compliance score result."""
 
     score: float
-    component_scores: Dict[str, float]
-    risk_assessment: Dict[str, Any]
-    recommendations: List[str]
+    component_scores: dict[str, float]
+    risk_assessment: dict[str, Any]
+    recommendations: list[str]
     constitutional_hash: str = CONSTITUTIONAL_HASH
 
 
@@ -32,9 +31,9 @@ class ComplianceScore:
 class ImpactAssessment:
     """Constitutional impact assessment result."""
 
-    assessment: Dict[str, Any]
-    stakeholder_effects: Dict[str, Any]
-    mitigation_strategies: List[str]
+    assessment: dict[str, Any]
+    stakeholder_effects: dict[str, Any]
+    mitigation_strategies: list[str]
     constitutional_hash: str = CONSTITUTIONAL_HASH
 
 
@@ -45,7 +44,7 @@ class ComplianceCalculator:
         self.constitutional_hash = CONSTITUTIONAL_HASH
         logger.info("ComplianceCalculator initialized")
 
-    async def calculate_score(self, request: Dict[str, Any]) -> ComplianceScore:
+    async def calculate_score(self, request: dict[str, Any]) -> ComplianceScore:
         """Calculate comprehensive compliance score."""
         try:
             policy = request.get("policy", {})
@@ -96,10 +95,10 @@ class ComplianceCalculator:
             )
 
         except Exception as e:
-            logger.error(f"Compliance score calculation failed: {e}")
+            logger.exception(f"Compliance score calculation failed: {e}")
             raise
 
-    def _calculate_constitutional_fidelity(self, policy: Dict[str, Any]) -> float:
+    def _calculate_constitutional_fidelity(self, policy: dict[str, Any]) -> float:
         """Calculate constitutional fidelity score."""
         score = 1.0
 
@@ -113,12 +112,12 @@ class ComplianceCalculator:
 
         # Check fundamental principles adherence
         principles = ["rule_of_law", "separation_of_powers", "checks_and_balances"]
-        missing_principles = sum(1 for p in principles if not policy.get(p, False))
+        missing_principles = sum(1 for p in principles if not policy.get(p))
         score -= missing_principles * 0.1
 
         return max(0.0, score)
 
-    def _calculate_democratic_score(self, policy: Dict[str, Any]) -> float:
+    def _calculate_democratic_score(self, policy: dict[str, Any]) -> float:
         """Calculate democratic participation score."""
         score = 1.0
 
@@ -140,7 +139,7 @@ class ComplianceCalculator:
 
         return max(0.0, score)
 
-    def _calculate_transparency_score(self, policy: Dict[str, Any]) -> float:
+    def _calculate_transparency_score(self, policy: dict[str, Any]) -> float:
         """Calculate transparency score."""
         score = 1.0
 
@@ -162,7 +161,7 @@ class ComplianceCalculator:
 
         return max(0.0, score)
 
-    def _calculate_accountability_score(self, policy: Dict[str, Any]) -> float:
+    def _calculate_accountability_score(self, policy: dict[str, Any]) -> float:
         """Calculate accountability score."""
         score = 1.0
 
@@ -184,7 +183,7 @@ class ComplianceCalculator:
 
         return max(0.0, score)
 
-    def _calculate_rights_score(self, policy: Dict[str, Any]) -> float:
+    def _calculate_rights_score(self, policy: dict[str, Any]) -> float:
         """Calculate rights protection score."""
         score = 1.0
 
@@ -206,7 +205,7 @@ class ComplianceCalculator:
 
         return max(0.0, score)
 
-    def _calculate_procedural_score(self, policy: Dict[str, Any]) -> float:
+    def _calculate_procedural_score(self, policy: dict[str, Any]) -> float:
         """Calculate procedural compliance score."""
         score = 1.0
 
@@ -229,8 +228,8 @@ class ComplianceCalculator:
         return max(0.0, score)
 
     def _assess_constitutional_risk(
-        self, component_scores: Dict[str, float], context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, component_scores: dict[str, float], context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Assess constitutional risk based on scores and context."""
 
         # Calculate overall risk level
@@ -276,55 +275,63 @@ class ComplianceCalculator:
         }
 
     def _generate_recommendations(
-        self, component_scores: Dict[str, float], risk_assessment: Dict[str, Any]
-    ) -> List[str]:
+        self, component_scores: dict[str, float], risk_assessment: dict[str, Any]
+    ) -> list[str]:
         """Generate recommendations based on scores and risk assessment."""
         recommendations = []
 
         # Constitutional fidelity recommendations
         if component_scores["constitutional_fidelity"] < 0.7:
-            recommendations.append(
-                "Strengthen constitutional authority basis for the policy"
-            )
-            recommendations.append(
-                "Ensure compliance with constitutional hash requirements"
+            recommendations.extend(
+                (
+                    "Strengthen constitutional authority basis for the policy",
+                    "Ensure compliance with constitutional hash requirements",
+                )
             )
 
         # Democratic participation recommendations
         if component_scores["democratic_participation"] < 0.7:
-            recommendations.append(
-                "Implement comprehensive public consultation mechanisms"
+            recommendations.extend(
+                (
+                    "Implement comprehensive public consultation mechanisms",
+                    "Establish minority protection safeguards",
+                )
             )
-            recommendations.append("Establish minority protection safeguards")
 
         # Transparency recommendations
         if component_scores["transparency_score"] < 0.7:
-            recommendations.append("Enhance information disclosure and documentation")
-            recommendations.append("Implement comprehensive audit trail mechanisms")
+            recommendations.extend(
+                (
+                    "Enhance information disclosure and documentation",
+                    "Implement comprehensive audit trail mechanisms",
+                )
+            )
 
         # Accountability recommendations
         if component_scores["accountability_score"] < 0.7:
-            recommendations.append(
-                "Establish clear responsibility assignment and oversight"
-            )
-            recommendations.append(
-                "Implement performance metrics and corrective action procedures"
+            recommendations.extend(
+                (
+                    "Establish clear responsibility assignment and oversight",
+                    "Implement performance metrics and corrective action procedures",
+                )
             )
 
         # Rights protection recommendations
         if component_scores["rights_protection"] < 0.7:
-            recommendations.append(
-                "Strengthen individual and collective rights protections"
+            recommendations.extend(
+                (
+                    "Strengthen individual and collective rights protections",
+                    "Ensure due process and equal protection safeguards",
+                )
             )
-            recommendations.append("Ensure due process and equal protection safeguards")
 
         # Risk-specific recommendations
-        if risk_assessment["overall_risk_level"] in ["high", "critical"]:
-            recommendations.append(
-                "Conduct comprehensive constitutional impact assessment"
-            )
-            recommendations.append(
-                "Implement additional safeguards and monitoring mechanisms"
+        if risk_assessment["overall_risk_level"] in {"high", "critical"}:
+            recommendations.extend(
+                (
+                    "Conduct comprehensive constitutional impact assessment",
+                    "Implement additional safeguards and monitoring mechanisms",
+                )
             )
 
         # Remove duplicates while preserving order
@@ -338,8 +345,8 @@ class ComplianceCalculator:
         return unique_recommendations
 
     def _analyze_compliance_trends(
-        self, historical_data: List[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, historical_data: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         """Analyze compliance trends over time."""
         if not historical_data:
             return {
@@ -386,7 +393,7 @@ class ImpactAnalyzer:
         self.constitutional_hash = CONSTITUTIONAL_HASH
         logger.info("ImpactAnalyzer initialized")
 
-    async def analyze_impact(self, request: Dict[str, Any]) -> ImpactAssessment:
+    async def analyze_impact(self, request: dict[str, Any]) -> ImpactAssessment:
         """Analyze constitutional impact."""
         try:
             policy = request.get("policy", {})
@@ -411,12 +418,12 @@ class ImpactAnalyzer:
             )
 
         except Exception as e:
-            logger.error(f"Impact analysis failed: {e}")
+            logger.exception(f"Impact analysis failed: {e}")
             raise
 
     def _assess_overall_impact(
-        self, policy: Dict[str, Any], context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, policy: dict[str, Any], context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Assess overall constitutional impact."""
         impact_level = "low"
         impact_areas = []
@@ -452,8 +459,8 @@ class ImpactAnalyzer:
         }
 
     def _assess_stakeholder_impact(
-        self, policy: Dict[str, Any], stakeholders: List[str]
-    ) -> Dict[str, Any]:
+        self, policy: dict[str, Any], stakeholders: list[str]
+    ) -> dict[str, Any]:
         """Assess impact on different stakeholders."""
         stakeholder_effects = {}
 
@@ -479,7 +486,7 @@ class ImpactAnalyzer:
 
         return stakeholder_effects
 
-    def _assess_citizen_impact(self, policy: Dict[str, Any]) -> Dict[str, Any]:
+    def _assess_citizen_impact(self, policy: dict[str, Any]) -> dict[str, Any]:
         """Assess impact on citizens."""
         effects = {
             "impact_level": "medium",
@@ -497,7 +504,7 @@ class ImpactAnalyzer:
 
         return effects
 
-    def _assess_government_impact(self, policy: Dict[str, Any]) -> Dict[str, Any]:
+    def _assess_government_impact(self, policy: dict[str, Any]) -> dict[str, Any]:
         """Assess impact on government."""
         return {
             "impact_level": "medium",
@@ -512,7 +519,7 @@ class ImpactAnalyzer:
             ),
         }
 
-    def _assess_civil_society_impact(self, policy: Dict[str, Any]) -> Dict[str, Any]:
+    def _assess_civil_society_impact(self, policy: dict[str, Any]) -> dict[str, Any]:
         """Assess impact on civil society."""
         return {
             "impact_level": "medium",
@@ -527,7 +534,7 @@ class ImpactAnalyzer:
             ),
         }
 
-    def _assess_private_sector_impact(self, policy: Dict[str, Any]) -> Dict[str, Any]:
+    def _assess_private_sector_impact(self, policy: dict[str, Any]) -> dict[str, Any]:
         """Assess impact on private sector."""
         return {
             "impact_level": "low",
@@ -539,30 +546,38 @@ class ImpactAnalyzer:
         }
 
     def _generate_mitigation_strategies(
-        self, impact_assessment: Dict[str, Any], stakeholder_effects: Dict[str, Any]
-    ) -> List[str]:
+        self, impact_assessment: dict[str, Any], stakeholder_effects: dict[str, Any]
+    ) -> list[str]:
         """Generate mitigation strategies for identified impacts."""
         strategies = []
 
         # High-impact mitigation strategies
         if impact_assessment["impact_level"] == "high":
-            strategies.append("Implement comprehensive constitutional review process")
-            strategies.append("Establish enhanced monitoring and evaluation mechanisms")
-            strategies.append("Create stakeholder feedback and adjustment procedures")
+            strategies.extend(
+                (
+                    "Implement comprehensive constitutional review process",
+                    "Establish enhanced monitoring and evaluation mechanisms",
+                    "Create stakeholder feedback and adjustment procedures",
+                )
+            )
 
         # Rights protection strategies
         if "fundamental_rights" in impact_assessment["affected_areas"]:
-            strategies.append("Implement robust rights impact assessment")
-            strategies.append(
-                "Establish rights protection safeguards and appeals process"
+            strategies.extend(
+                (
+                    "Implement robust rights impact assessment",
+                    "Establish rights protection safeguards and appeals process",
+                )
             )
 
         # Democratic process protection strategies
         if "democratic_processes" in impact_assessment["affected_areas"]:
-            strategies.append(
-                "Enhance public consultation and participation mechanisms"
+            strategies.extend(
+                (
+                    "Enhance public consultation and participation mechanisms",
+                    "Implement democratic oversight and review procedures",
+                )
             )
-            strategies.append("Implement democratic oversight and review procedures")
 
         # Stakeholder-specific strategies
         for stakeholder, effects in stakeholder_effects.items():

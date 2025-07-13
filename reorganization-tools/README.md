@@ -1,3 +1,5 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 # ACGS Repository Reorganization Tools
 
 This directory contains all tools, scripts, and documentation used for the successful reorganization of the ACGS monolithic repository into 7 focused sub-repositories.

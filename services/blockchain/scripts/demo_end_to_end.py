@@ -10,12 +10,14 @@ import json
 import logging
 
 # Add project paths
-import os
+import pathlib
 import sys
 from datetime import datetime
 
 # Add blockchain directory to path for imports
-blockchain_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+blockchain_dir = pathlib.Path(
+    pathlib.Path(pathlib.Path(__file__).resolve()).parent
+).parent
 if blockchain_dir not in sys.path:
     sys.path.insert(0, blockchain_dir)
 
@@ -46,11 +48,6 @@ class QuantumagiDemo:
     async def run_complete_demo(self):
         """Run the complete Quantumagi demonstration"""
 
-        print("\n" + "=" * 80)
-        print("🏛️  QUANTUMAGI END-TO-END DEMONSTRATION")
-        print("    On-Chain Constitutional Governance for Solana")
-        print("=" * 80)
-
         try:
             # Phase 1: Constitutional Foundation
             await self._phase_1_constitutional_foundation()
@@ -74,13 +71,11 @@ class QuantumagiDemo:
             await self._generate_final_report()
 
         except Exception as e:
-            logger.error(f"Demo failed: {e}")
+            logger.exception(f"Demo failed: {e}")
             raise
 
     async def _phase_1_constitutional_foundation(self):
         """Phase 1: Initialize constitutional framework"""
-        print("\n📜 PHASE 1: CONSTITUTIONAL FOUNDATION")
-        print("-" * 50)
 
         # Create constitutional document
         constitution_content = """
@@ -129,22 +124,13 @@ class QuantumagiDemo:
         constitution_hash = hashlib.sha256(constitution_content.encode()).digest()
         self.demo_data["constitution_hash"] = constitution_hash.hex()
 
-        print(
-            f"✅ Constitutional document created ({len(constitution_content)} characters)"
-        )
-        print(f"📋 Constitution hash: {constitution_hash.hex()[:16]}...")
-        print("🏛️ Framework established with 5 core principles")
-
         # Simulate on-chain initialization
         await asyncio.sleep(1)
-        print("⛓️  Constitution initialized on Solana blockchain")
 
         await asyncio.sleep(2)
 
     async def _phase_2_policy_synthesis(self):
         """Phase 2: GS Engine policy synthesis"""
-        print("\n🧠 PHASE 2: GOVERNANCE SYNTHESIS ENGINE")
-        print("-" * 50)
 
         # Constitutional principles to synthesize
         principles = [
@@ -171,13 +157,9 @@ class QuantumagiDemo:
             },
         ]
 
-        print(f"🔄 Processing {len(principles)} constitutional principles...")
-
         for principle in principles:
-            print(f"\n  📋 Synthesizing: {principle['id']} - {principle['title']}")
 
             # Simulate GS Engine processing
-            print("    🔍 Running multi-model validation...")
             await asyncio.sleep(1)
 
             # Mock validation scores
@@ -190,9 +172,6 @@ class QuantumagiDemo:
             }
 
             consensus_score = sum(validation_scores.values()) / len(validation_scores)
-
-            print(f"    📊 Validation scores: {validation_scores}")
-            print(f"    🎯 Consensus score: {consensus_score:.3f}")
 
             # Generate policy rule
             rule_templates = {
@@ -218,23 +197,12 @@ class QuantumagiDemo:
             self.demo_data["policies"].append(policy)
             self.demo_data["metrics"]["policies_created"] += 1
 
-            print(f"    ✅ Policy synthesized: {policy_rule}")
-            print(f"    📈 Validation score: {consensus_score:.1%}")
-
-        print(
-            f"\n🎉 Policy synthesis complete: {len(self.demo_data['policies'])} policies generated"
-        )
         await asyncio.sleep(2)
 
     async def _phase_3_democratic_governance(self):
         """Phase 3: Democratic voting and enactment"""
-        print("\n🗳️  PHASE 3: DEMOCRATIC GOVERNANCE")
-        print("-" * 50)
-
-        print("📋 Submitting policies for democratic voting...")
 
         for policy in self.demo_data["policies"]:
-            print(f"\n  🗳️  Voting on {policy['id']}: {policy['rule'][:50]}...")
 
             # Simulate voting process
             await asyncio.sleep(0.5)
@@ -248,32 +216,19 @@ class QuantumagiDemo:
             policy["votes_against"] = votes_against
             policy["approval_rate"] = approval_rate
 
-            print(
-                f"    📊 Votes: {votes_for} for, {votes_against} against ({approval_rate:.1%} approval)"
-            )
-
             # Enact if approved
             if approval_rate > 0.6:
                 policy["status"] = "enacted"
                 policy["enacted_at"] = datetime.now().isoformat()
-                print(f"    ✅ Policy ENACTED - {policy['id']}")
             else:
                 policy["status"] = "rejected"
-                print(f"    ❌ Policy REJECTED - {policy['id']}")
 
-        enacted_policies = [
-            p for p in self.demo_data["policies"] if p["status"] == "enacted"
-        ]
-        print(
-            f"\n🎉 Democratic process complete: {len(enacted_policies)}/{len(self.demo_data['policies'])} policies enacted"
-        )
+        [p for p in self.demo_data["policies"] if p["status"] == "enacted"]
 
         await asyncio.sleep(2)
 
     async def _phase_4_compliance_enforcement(self):
         """Phase 4: PGC real-time compliance checking"""
-        print("\n🔍 PHASE 4: PROMPT GOVERNANCE COMPILER (PGC)")
-        print("-" * 50)
 
         # Test scenarios for compliance checking
         test_scenarios = [
@@ -319,13 +274,9 @@ class QuantumagiDemo:
             },
         ]
 
-        print(f"🔄 Running {len(test_scenarios)} compliance test scenarios...")
-
         passed_tests = 0
 
-        for i, scenario in enumerate(test_scenarios, 1):
-            print(f"\n  Test {i}: {scenario['action']}")
-            print(f"    Policy: {scenario['policy_id']}")
+        for scenario in test_scenarios:
 
             # Simulate PGC processing
             await asyncio.sleep(0.3)
@@ -351,18 +302,9 @@ class QuantumagiDemo:
             # Check if result matches expectation
             expected_pass = scenario["expected"] == "PASS"
             if is_compliant == expected_pass:
-                print(f"    ✅ {scenario['expected']} - Confidence: {confidence}%")
                 passed_tests += 1
-            else:
-                print(f"    ❌ Unexpected result - Expected: {scenario['expected']}")
 
-        success_rate = passed_tests / len(test_scenarios)
-        print(
-            f"\n📊 PGC Performance: {passed_tests}/{len(test_scenarios)} tests passed ({success_rate:.1%})"
-        )
-        print(
-            f"🎯 Average confidence: {sum(r['confidence'] for r in self.demo_data['compliance_results'])/len(self.demo_data['compliance_results']):.1f}%"
-        )
+        passed_tests / len(test_scenarios)
 
         await asyncio.sleep(2)
 
@@ -375,9 +317,7 @@ class QuantumagiDemo:
             return False
 
         # Check governance requirements
-        if context.get("requires_governance", False) and not context.get(
-            "has_approval", False
-        ):
+        if context.get("requires_governance") and not context.get("has_approval"):
             return False
 
         # Check financial limits
@@ -389,8 +329,6 @@ class QuantumagiDemo:
 
     async def _phase_5_appeals_system(self):
         """Phase 5: Appeals and human oversight"""
-        print("\n⚖️  PHASE 5: APPEALS & HUMAN OVERSIGHT")
-        print("-" * 50)
 
         # Simulate appeal for a compliance violation
         violation_case = {
@@ -402,24 +340,13 @@ class QuantumagiDemo:
             "evidence": "Transaction logs show proper authorization was present",
         }
 
-        print(f"📋 Processing appeal: {violation_case['appeal_id']}")
-        print(f"    Policy: {violation_case['policy_id']}")
-        print(f"    Appellant: {violation_case['appellant']}")
-        print(f"    Reason: {violation_case['reason']}")
-
         # Simulate automated review
-        print("\n🤖 Automated Review Phase:")
         await asyncio.sleep(1)
 
         automated_decision = "escalate_to_human"
         confidence = 72  # Low confidence triggers human review
 
-        print(f"    🔍 AI Review Decision: {automated_decision}")
-        print(f"    📊 Confidence: {confidence}% (< 85% threshold)")
-        print("    ⬆️  Escalating to human committee...")
-
         # Simulate human committee review
-        print("\n👥 Human Committee Review:")
         await asyncio.sleep(2)
 
         committee_decision = "overturn"
@@ -438,18 +365,10 @@ class QuantumagiDemo:
         self.demo_data["appeals"].append(appeal_result)
         self.demo_data["metrics"]["appeals_processed"] += 1
 
-        print(f"    ⚖️  Committee Decision: {committee_decision.upper()}")
-        print(f"    📝 Ruling: {ruling}")
-        print("    ✅ Appeal resolved successfully")
-
         await asyncio.sleep(2)
 
     async def _phase_6_system_integration(self):
         """Phase 6: System integration and monitoring"""
-        print("\n📊 PHASE 6: SYSTEM INTEGRATION & MONITORING")
-        print("-" * 50)
-
-        print("🔄 Initializing real-time monitoring systems...")
 
         # Simulate event monitoring startup
         monitoring_components = [
@@ -461,11 +380,9 @@ class QuantumagiDemo:
             "Performance Metrics Collector",
         ]
 
-        for component in monitoring_components:
-            print(f"    ✅ {component}")
+        for _component in monitoring_components:
             await asyncio.sleep(0.3)
 
-        print("\n📡 Event monitoring active - listening for:")
         event_types = [
             "Constitution updates",
             "Policy proposals",
@@ -475,17 +392,13 @@ class QuantumagiDemo:
             "Security alerts",
         ]
 
-        for event_type in event_types:
-            print(f"    🔍 {event_type}")
-
-        print("\n🎯 System integration complete - Quantumagi fully operational!")
+        for _event_type in event_types:
+            pass
 
         await asyncio.sleep(2)
 
     async def _generate_final_report(self):
         """Generate comprehensive demonstration report"""
-        print("\n📋 FINAL DEMONSTRATION REPORT")
-        print("=" * 80)
 
         # Calculate metrics
         duration = datetime.now() - self.demo_data["metrics"]["start_time"]
@@ -505,21 +418,6 @@ class QuantumagiDemo:
         else:
             compliance_success_rate = 0.0
 
-        print("🏛️  QUANTUMAGI DEMONSTRATION SUMMARY")
-        print(f"    Duration: {duration.total_seconds():.1f} seconds")
-        print(f"    Constitution Hash: {self.demo_data['constitution_hash'][:16]}...")
-        print()
-        print("📊 GOVERNANCE METRICS:")
-        print(f"    Policies Created: {self.demo_data['metrics']['policies_created']}")
-        print(f"    Policies Enacted: {enacted_policies}")
-        print(
-            f"    Compliance Checks: {self.demo_data['metrics']['compliance_checks']}"
-        )
-        print(
-            f"    Appeals Processed: {self.demo_data['metrics']['appeals_processed']}"
-        )
-        print()
-        print("🎯 PERFORMANCE METRICS:")
         # Calculate metrics with division by zero protection
         policies_created = self.demo_data["metrics"]["policies_created"]
         policy_enactment_rate = (
@@ -531,25 +429,6 @@ class QuantumagiDemo:
             avg_confidence = sum(r["confidence"] for r in compliance_results) / len(
                 compliance_results
             )
-
-        print(f"    Policy Enactment Rate: {policy_enactment_rate:.1%}")
-        print(f"    PGC Accuracy: {compliance_success_rate:.1%}")
-        print(f"    Average Confidence: {avg_confidence:.1f}%")
-        print()
-        print("✅ SYSTEM STATUS:")
-        print("    Constitutional Framework: ACTIVE")
-        print("    GS Engine: OPERATIONAL")
-        print("    PGC Enforcement: ACTIVE")
-        print("    Appeals System: OPERATIONAL")
-        print("    Event Monitoring: ACTIVE")
-        print()
-        print("🎉 QUANTUMAGI DEMONSTRATION COMPLETE!")
-        print("    On-chain constitutional governance successfully demonstrated")
-        print("    AlphaEvolve-ACGS integration validated")
-        print("    Real-time compliance enforcement verified")
-        print("    Democratic governance process confirmed")
-        print()
-        print("=" * 80)
 
         # Save detailed report
         report_data = {
@@ -577,10 +456,8 @@ class QuantumagiDemo:
         report_filename = (
             f"quantumagi_demo_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
         )
-        with open(report_filename, "w") as f:
+        with open(report_filename, "w", encoding="utf-8") as f:
             json.dump(report_data, f, indent=2)
-
-        print(f"📄 Detailed report saved: {report_filename}")
 
 
 async def main():
@@ -591,10 +468,8 @@ async def main():
         await demo.run_complete_demo()
         return 0
     except KeyboardInterrupt:
-        print("\n⏹️  Demo interrupted by user")
         return 1
-    except Exception as e:
-        print(f"\n💥 Demo failed: {e}")
+    except Exception:
         return 1
 
 

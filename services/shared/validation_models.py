@@ -6,8 +6,7 @@ Provides common Pydantic models for validation across ACGS services.
 """
 
 from datetime import datetime, timezone
-from enum import Enum
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -35,8 +34,8 @@ class SignatureRequest(BaseACGSModel):
         ..., description="Content to be signed", min_length=1, max_length=10000
     )
     algorithm: str = Field(default="SHA-256", description="Hash algorithm to use")
-    key_id: Optional[str] = Field(None, description="Key ID for signing")
-    metadata: Optional[Dict[str, Any]] = Field(
+    key_id: str | None = Field(None, description="Key ID for signing")
+    metadata: dict[str, Any] | None = Field(
         default_factory=dict, description="Additional metadata"
     )
 
@@ -84,25 +83,23 @@ class VerificationResponse(BaseACGSModel):
     key_id: str = Field(..., description="Key ID used for verification")
     algorithm: str = Field(..., description="Hash algorithm used")
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    verification_details: Optional[Dict[str, Any]] = Field(default_factory=dict)
+    verification_details: dict[str, Any] | None = Field(default_factory=dict)
 
 
 class AuditLogEntry(BaseACGSModel):
     """Model for audit log entries."""
 
     event_type: str = Field(..., description="Type of event", min_length=1)
-    user_id: Optional[str] = Field(
-        None, description="User ID associated with the event"
-    )
+    user_id: str | None = Field(None, description="User ID associated with the event")
     service_name: str = Field(..., description="Name of the service", min_length=1)
-    resource_type: Optional[str] = Field(None, description="Type of resource affected")
-    resource_id: Optional[str] = Field(None, description="ID of the resource affected")
+    resource_type: str | None = Field(None, description="Type of resource affected")
+    resource_id: str | None = Field(None, description="ID of the resource affected")
     action: str = Field(..., description="Action performed", min_length=1)
-    details: Optional[Dict[str, Any]] = Field(
+    details: dict[str, Any] | None = Field(
         default_factory=dict, description="Additional details"
     )
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    correlation_id: Optional[str] = Field(None, description="Request correlation ID")
+    correlation_id: str | None = Field(None, description="Request correlation ID")
 
     @field_validator("event_type")
     @classmethod
@@ -129,8 +126,8 @@ class PolicyRule(BaseACGSModel):
     name: str = Field(..., description="Human-readable rule name", min_length=1)
     description: str = Field(..., description="Rule description", min_length=1)
     rule_type: str = Field(..., description="Type of rule", min_length=1)
-    conditions: Dict[str, Any] = Field(..., description="Rule conditions")
-    actions: Dict[str, Any] = Field(
+    conditions: dict[str, Any] = Field(..., description="Rule conditions")
+    actions: dict[str, Any] = Field(
         ..., description="Actions to take when rule matches"
     )
     enabled: bool = Field(default=True, description="Whether the rule is enabled")
@@ -151,21 +148,21 @@ class PolicyRule(BaseACGSModel):
 class MultiModelConsensusRequest(BaseACGSModel):
     """Request model for multi-model consensus operations."""
 
-    models: List[str] = Field(
+    models: list[str] = Field(
         ..., description="List of model identifiers", min_length=1
     )
-    input_data: Dict[str, Any] = Field(..., description="Input data for consensus")
+    input_data: dict[str, Any] = Field(..., description="Input data for consensus")
     consensus_threshold: float = Field(
         default=0.7, description="Consensus threshold (0.0-1.0)"
     )
     timeout_seconds: int = Field(
         default=30, description="Timeout for consensus operation"
     )
-    metadata: Optional[Dict[str, Any]] = Field(default_factory=dict)
+    metadata: dict[str, Any] | None = Field(default_factory=dict)
 
     @field_validator("models")
     @classmethod
-    def validate_models(cls, v: List[str]) -> List[str]:
+    def validate_models(cls, v: list[str]) -> list[str]:
         if not v:
             raise ValueError("At least one model must be specified")
         return v
@@ -190,9 +187,9 @@ class ConsensusResponse(BaseACGSModel):
 
     consensus_reached: bool = Field(..., description="Whether consensus was reached")
     consensus_score: float = Field(..., description="Consensus score (0.0-1.0)")
-    participating_models: List[str] = Field(..., description="Models that participated")
-    result: Optional[Dict[str, Any]] = Field(None, description="Consensus result")
-    individual_results: List[Dict[str, Any]] = Field(default_factory=list)
+    participating_models: list[str] = Field(..., description="Models that participated")
+    result: dict[str, Any] | None = Field(None, description="Consensus result")
+    individual_results: list[dict[str, Any]] = Field(default_factory=list)
     processing_time_ms: float = Field(
         ..., description="Processing time in milliseconds"
     )
@@ -228,13 +225,13 @@ class IntegrityCheckResponse(BaseACGSModel):
     resource_id: str = Field(..., description="ID of the resource checked")
     check_type: str = Field(..., description="Type of check performed")
     integrity_score: float = Field(..., description="Integrity score (0.0-1.0)")
-    violations: List[str] = Field(
+    violations: list[str] = Field(
         default_factory=list, description="List of integrity violations"
     )
-    recommendations: List[str] = Field(
+    recommendations: list[str] = Field(
         default_factory=list, description="Recommendations for fixes"
     )
-    check_details: Dict[str, Any] = Field(
+    check_details: dict[str, Any] = Field(
         default_factory=dict, description="Detailed check results"
     )
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
@@ -245,13 +242,13 @@ class PaginationParams(BaseModel):
 
     page: int = Field(default=1, description="Page number (1-based)", ge=1)
     size: int = Field(default=20, description="Page size", ge=1, le=100)
-    sort_by: Optional[str] = Field(None, description="Field to sort by")
+    sort_by: str | None = Field(None, description="Field to sort by")
     sort_order: str = Field(default="asc", description="Sort order")
 
     @field_validator("sort_order")
     @classmethod
     def validate_sort_order(cls, v: str) -> str:
-        if v not in ["asc", "desc"]:
+        if v not in {"asc", "desc"}:
             raise ValueError("Sort order must be 'asc' or 'desc'")
         return v
 
@@ -259,7 +256,7 @@ class PaginationParams(BaseModel):
 class PaginatedResponse(BaseACGSModel):
     """Model for paginated responses."""
 
-    items: List[Any] = Field(..., description="List of items")
+    items: list[Any] = Field(..., description="List of items")
     total_count: int = Field(..., description="Total number of items", ge=0)
     page: int = Field(..., description="Current page number", ge=1)
     size: int = Field(..., description="Page size", ge=1)

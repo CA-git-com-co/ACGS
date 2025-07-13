@@ -6,6 +6,7 @@ Generate valid Solana program IDs for Quantumagi programs
 
 import hashlib
 import os
+import pathlib
 
 import base58
 
@@ -20,9 +21,7 @@ def generate_program_id(program_name: str) -> str:
     program_bytes = hash_obj.digest()
 
     # Convert to base58 (Solana address format)
-    program_id = base58.b58encode(program_bytes).decode("utf-8")
-
-    return program_id
+    return base58.b58encode(program_bytes).decode("utf-8")
 
 
 def main():
@@ -32,15 +31,13 @@ def main():
         "logging": generate_program_id("logging"),
     }
 
-    print("Generated Program IDs:")
-    print("=" * 50)
     for program, program_id in programs.items():
-        print(f"{program}: {program_id}")
+        pass
 
     # Update Anchor.toml
-    anchor_toml_path = os.path.join(os.path.dirname(__file__), "..", "Anchor.toml")
+    anchor_toml_path = os.path.join(pathlib.Path(__file__).parent, "..", "Anchor.toml")
 
-    with open(anchor_toml_path) as f:
+    with open(anchor_toml_path, encoding="utf-8") as f:
         content = f.read()
 
     # Replace program IDs in both localnet and devnet sections
@@ -54,10 +51,8 @@ def main():
             f'{program} = "{program_id}"',
         )
 
-    with open(anchor_toml_path, "w") as f:
+    with open(anchor_toml_path, "w", encoding="utf-8") as f:
         f.write(content)
-
-    print(f"\nUpdated {anchor_toml_path}")
 
     # Update program declarations
     program_files = {
@@ -66,9 +61,9 @@ def main():
     }
 
     for program, file_path in program_files.items():
-        full_path = os.path.join(os.path.dirname(__file__), file_path)
-        if os.path.exists(full_path):
-            with open(full_path) as f:
+        full_path = os.path.join(pathlib.Path(__file__).parent, file_path)
+        if pathlib.Path(full_path).exists():
+            with open(full_path, encoding="utf-8") as f:
                 content = f.read()
 
             # Replace declare_id! statements
@@ -81,10 +76,8 @@ def main():
                 f'declare_id!("{old_id}");', f'declare_id!("{programs[program]}");'
             )
 
-            with open(full_path, "w") as f:
+            with open(full_path, "w", encoding="utf-8") as f:
                 f.write(content)
-
-            print(f"Updated {full_path}")
 
 
 if __name__ == "__main__":

@@ -74,6 +74,8 @@ except ImportError:
             return {"verified": True, "confidence": 0.95}
 
 
+import operator
+
 from ..models.reliability_models import ConstitutionalPrinciple, SynthesisContext
 
 # Core dependencies
@@ -967,7 +969,7 @@ class AutomaticRecoveryOrchestrator:
         except Exception as e:
             execution.status = RecoveryStatus.FAILED
             execution.error_message = str(e)
-            logger.error(
+            logger.exception(
                 f"Request {request_id}: Recovery action {action.strategy.value} failed with error: {e}"
             )
 
@@ -1007,7 +1009,7 @@ class AutomaticRecoveryOrchestrator:
             )
             return False
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Request {request_id}: Error executing strategy {action.strategy}: {e}"
             )
             return False
@@ -1357,7 +1359,7 @@ class EnhancedMultiModelValidator:
             )
             # We can still try to initialize models that don't rely on missing specific imports
 
-        all_model_names = [self.config.primary_model] + self.config.secondary_models
+        all_model_names = [self.config.primary_model, *self.config.secondary_models]
 
         for model_name in all_model_names:
             weight = self.config.model_weights.get(model_name)
@@ -1434,7 +1436,7 @@ class EnhancedMultiModelValidator:
                         0  # Initialize failure count
                     )
             except Exception as e:
-                logger.error(f"Failed to initialize model {model_name}: {e}")
+                logger.exception(f"Failed to initialize model {model_name}: {e}")
 
         if not self.models:
             logger.error(
@@ -1778,7 +1780,7 @@ class EnhancedMultiModelValidator:
 
             model_type = model_info.get("type", "unknown")
 
-            if model_type in ["openai", "anthropic", "cohere"]:  # LangChain models
+            if model_type in {"openai", "anthropic", "cohere"}:  # LangChain models
                 if not hasattr(self, "_call_langchain_model"):  # Defensive check
                     logger.error(
                         f"Request {request_id}: _call_langchain_model method missing."
@@ -1789,13 +1791,13 @@ class EnhancedMultiModelValidator:
                 response_output = await self._call_langchain_model(
                     client, input_data, model_name
                 )
-            elif model_type in [
+            elif model_type in {
                 "fallback_generic",
                 "default_fallback_emergency",
                 "local",
                 "gemini",
                 "fallback",
-            ]:
+            }:
                 if not hasattr(client, "get_structured_interpretation"):
                     logger.error(
                         f"Request {request_id}: Client for model {model_name} (type {model_type}) does not have get_structured_interpretation method."
@@ -1958,7 +1960,7 @@ class EnhancedMultiModelValidator:
                 validation_comment,
             )
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Request {request_id}: Error during cross-validation by {validator_model_name} for {synthesizer_model_name}: {e}"
             )
             return (
@@ -2260,7 +2262,7 @@ class EnhancedMultiModelValidator:
             )
             return None, 0.0, {"reason": "No candidates scored"}
 
-        best_candidate = max(candidate_policies, key=lambda x: x["final_score"])
+        best_candidate = max(candidate_policies, key=operator.itemgetter("final_score"))
 
         final_policy_output = best_candidate["policy_output"]
         final_confidence = best_candidate["final_score"]
@@ -2374,7 +2376,7 @@ class EnhancedMultiModelValidator:
                 raw_llm_response=response,
             )
         except Exception as e:
-            logger.error(f"LangChain model call failed: {e}")
+            logger.exception(f"LangChain model call failed: {e}")
             raise
 
     def _create_cached_metrics(
@@ -2435,9 +2437,11 @@ class EnhancedMultiModelValidator:
         )
         agreement_scores = []
         for vals in validation_matrix.values():
-            for item in vals.values():
-                if isinstance(item, dict) and "score" in item:
-                    agreement_scores.append(item["score"])
+            agreement_scores.extend(
+                item["score"]
+                for item in vals.values()
+                if isinstance(item, dict) and "score" in item
+            )
         model_agreement = (
             float(np.mean(agreement_scores)) if agreement_scores else final_confidence
         )
@@ -2726,7 +2730,7 @@ class EnhancedBiasDetectionFramework:
                 if pattern in text:
                     # Weight by pattern severity and frequency
                     frequency = text.count(pattern)
-                    severity = 0.2 if category in ["demographic", "cognitive"] else 0.1
+                    severity = 0.2 if category in {"demographic", "cognitive"} else 0.1
                     pattern_score = min(frequency * severity, 0.5)
                     category_score += pattern_score
                     detected_patterns.append(f"{category}:{pattern}({frequency})")
@@ -3147,7 +3151,6 @@ class EnhancedSemanticFaithfulnessValidator:
 
         try:
             # Create entailment prompt
-            pass
 
             # For now, use a simple heuristic since we don't have a proper NLI model
             # In practice, would use models like RoBERTa-large-MNLI
@@ -3588,10 +3591,10 @@ class EnhancedLLMReliabilityFramework:
             if (
                 overall_reliability < self.config.reliability_target
                 and ultra_reliable_result.status
-                not in [
+                not in {
                     "FALLBACK_APPLIED_NO_CONSENSUS",
                     "EMERGENCY_SAFEGUARDS_NO_CONSENSUS",
-                ]
+                }
             ):
                 logger.warning(
                     f"Reliability target not met: {overall_reliability:.3f} < {self.config.reliability_target}"
@@ -3693,7 +3696,7 @@ class EnhancedLLMReliabilityFramework:
                                     model_name, {}
                                 ),
                             }
-                            for model_name in self.multi_model_validator.models.keys()
+                            for model_name in self.multi_model_validator.models
                         },
                         "system": {
                             "total_requests": len(self.performance_metrics),
@@ -3744,7 +3747,7 @@ class EnhancedLLMReliabilityFramework:
                             )
 
                 except Exception as recovery_error:
-                    logger.error(
+                    logger.exception(
                         f"Request {process_request_id}: Error in automatic recovery monitoring: {recovery_error}"
                     )
                     # Don't fail the main request due to recovery errors
@@ -3843,7 +3846,7 @@ class EnhancedLLMReliabilityFramework:
                     "Rule-based fallback: Malformed JSON repaired.",
                 )
             except Exception as e:
-                logger.error(f"Failed to repair JSON in fallback: {e}")
+                logger.exception(f"Failed to repair JSON in fallback: {e}")
 
         # Example rule 2: If the error is about "safety violation", return a generic safe response
         if (
@@ -4067,7 +4070,7 @@ class EnhancedLLMReliabilityFramework:
 
         recent_metrics = self.performance_metrics[-100:]
 
-        summary = {
+        return {
             "overall_reliability": self.get_overall_reliability(),
             "reliability_trend": self.get_reliability_trend(),
             "target_achievement": self.get_overall_reliability()
@@ -4105,8 +4108,6 @@ class EnhancedLLMReliabilityFramework:
             },
         }
 
-        return summary
-
     def get_recovery_statistics(self) -> dict[str, Any]:
         """Get comprehensive automatic recovery statistics."""
         if not hasattr(self, "recovery_orchestrator"):
@@ -4118,8 +4119,8 @@ class EnhancedLLMReliabilityFramework:
         self,
         strategy: RecoveryStrategy,
         target_component: str,
-        parameters: dict[str, Any] = None,
-        request_id: str = None,
+        parameters: dict[str, Any] | None = None,
+        request_id: str | None = None,
     ) -> RecoveryExecution | None:
         """Manually trigger a specific recovery action."""
         if not hasattr(self, "recovery_orchestrator"):

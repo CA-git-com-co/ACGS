@@ -6,7 +6,7 @@ Provides comprehensive authorization controls with constitutional compliance.
 """
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -45,8 +45,8 @@ class EnhancedAuthorizationMiddleware:
         self,
         request: Request,
         credentials: HTTPAuthorizationCredentials,
-        required_permissions: List[str] = None,
-    ) -> Dict[str, Any]:
+        required_permissions: list[str] | None = None,
+    ) -> dict[str, Any]:
         """Check authorization for request."""
         try:
             # Extract user context from token (simplified)
@@ -93,7 +93,7 @@ class EnhancedAuthorizationMiddleware:
         except HTTPException:
             raise
         except Exception as e:
-            logger.error(f"Authorization check failed: {e}")
+            logger.exception(f"Authorization check failed: {e}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Authorization check failed",
@@ -106,7 +106,7 @@ class EnhancedAuthorizationMiddleware:
                 return user_role in allowed_roles
 
         # Default: require authentication for all endpoints
-        return user_role in ["admin", "user", "viewer", "service"]
+        return user_role in {"admin", "user", "viewer", "service"}
 
     def _match_endpoint_pattern(self, endpoint: str, pattern: str) -> bool:
         """Match endpoint against pattern (simplified)."""
@@ -114,7 +114,7 @@ class EnhancedAuthorizationMiddleware:
             return endpoint.startswith(pattern[:-1])
         return endpoint == pattern
 
-    async def _extract_user_context(self, token: str) -> Optional[Dict[str, Any]]:
+    async def _extract_user_context(self, token: str) -> dict[str, Any] | None:
         """Extract user context from token (simplified implementation)."""
         # In production, this would decode and validate JWT
         # For now, return mock context for testing

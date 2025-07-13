@@ -143,7 +143,7 @@ class WINALearningSystem:
             return update
 
         except Exception as e:
-            logger.error(f"Failed to process feedback signal: {e}")
+            logger.exception(f"Failed to process feedback signal: {e}")
             return None
 
     async def _constitutional_guided_learning(
@@ -169,7 +169,7 @@ class WINALearningSystem:
                 constitutional_impact = 0.7
                 confidence = 0.7
 
-            update = LearningUpdate(
+            return LearningUpdate(
                 update_id=f"const_learn_{int(time.time())}",
                 strategy_used=LearningStrategy.CONSTITUTIONAL_GUIDED,
                 parameters_updated=parameters_to_update,
@@ -178,10 +178,8 @@ class WINALearningSystem:
                 confidence=confidence,
             )
 
-            return update
-
         except Exception as e:
-            logger.error(f"Constitutional guided learning failed: {e}")
+            logger.exception(f"Constitutional guided learning failed: {e}")
             return None
 
     async def _reinforcement_learning(
@@ -211,7 +209,7 @@ class WINALearningSystem:
                 constitutional_impact = 0.3
                 confidence = 0.5
 
-            update = LearningUpdate(
+            return LearningUpdate(
                 update_id=f"rl_learn_{int(time.time())}",
                 strategy_used=LearningStrategy.REINFORCEMENT,
                 parameters_updated=parameters_to_update,
@@ -220,10 +218,8 @@ class WINALearningSystem:
                 confidence=confidence,
             )
 
-            return update
-
         except Exception as e:
-            logger.error(f"Reinforcement learning failed: {e}")
+            logger.exception(f"Reinforcement learning failed: {e}")
             return None
 
     async def _default_learning(
@@ -237,7 +233,7 @@ class WINALearningSystem:
             constitutional_impact = 0.5
             confidence = 0.5
 
-            update = LearningUpdate(
+            return LearningUpdate(
                 update_id=f"default_learn_{int(time.time())}",
                 strategy_used=LearningStrategy.SUPERVISED,
                 parameters_updated=parameters_to_update,
@@ -246,10 +242,8 @@ class WINALearningSystem:
                 confidence=confidence,
             )
 
-            return update
-
         except Exception as e:
-            logger.error(f"Default learning failed: {e}")
+            logger.exception(f"Default learning failed: {e}")
             return None
 
     def _select_learning_strategy(self, feedback: FeedbackSignal) -> LearningStrategy:
@@ -262,7 +256,7 @@ class WINALearningSystem:
             return LearningStrategy.SUPERVISED
 
         except Exception as e:
-            logger.error(f"Learning strategy selection failed: {e}")
+            logger.exception(f"Learning strategy selection failed: {e}")
             return LearningStrategy.SUPERVISED
 
     async def _apply_learning_update(self, update: LearningUpdate):
@@ -302,7 +296,7 @@ class WINALearningSystem:
             logger.info(f"Applied learning update: {update.update_id}")
 
         except Exception as e:
-            logger.error(f"Failed to apply learning update: {e}")
+            logger.exception(f"Failed to apply learning update: {e}")
 
     def get_learning_summary(self) -> dict[str, Any]:
         """Get summary of learning system performance."""
@@ -333,7 +327,7 @@ class WINALearningSystem:
             }
 
         except Exception as e:
-            logger.error(f"Failed to generate learning summary: {e}")
+            logger.exception(f"Failed to generate learning summary: {e}")
             return {"error": str(e)}
 
     async def batch_process_feedback(
@@ -354,7 +348,7 @@ class WINALearningSystem:
             return updates
 
         except Exception as e:
-            logger.error(f"Batch feedback processing failed: {e}")
+            logger.exception(f"Batch feedback processing failed: {e}")
             return []
 
     def create_feedback_signal(
@@ -363,7 +357,7 @@ class WINALearningSystem:
         feedback_type: FeedbackType,
         source: str,
         value: float,
-        context: dict[str, Any] = None,
+        context: dict[str, Any] | None = None,
     ) -> FeedbackSignal:
         """Create a new feedback signal."""
         return FeedbackSignal(
@@ -379,7 +373,9 @@ class WINALearningSystem:
 _learning_system_instance = None
 
 
-async def get_wina_learning_system(config: dict[str, Any] = None) -> WINALearningSystem:
+async def get_wina_learning_system(
+    config: dict[str, Any] | None = None
+) -> WINALearningSystem:
     """
     Get or create the global WINA learning system instance.
 

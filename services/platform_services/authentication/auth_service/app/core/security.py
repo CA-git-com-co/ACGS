@@ -17,8 +17,8 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 # Use local database and models instead of shared ones
 try:
-    from ..db.session import get_async_db
-    from ..models import User
+    from app.db.session import get_async_db
+    from app.models import User
 except ImportError:
     # Fallback imports
     def get_async_db():
@@ -31,7 +31,8 @@ except ImportError:
         pass
 
 
-from ..crud import crud_user  # Ensure this import works
+from app.crud import crud_user  # Ensure this import works
+
 from .config import settings
 
 
@@ -246,8 +247,8 @@ async def get_current_user_from_api_key(
     request: Request, db: AsyncSession = Depends(get_async_db)
 ) -> User:
     """Authenticate user via API key for service-to-service authentication"""
-    from ..crud import crud_user
-    from ..models import ApiKey
+    from app.crud import crud_user
+    from app.models import ApiKey
 
     # Check for API key in Authorization header
     auth_header = request.headers.get("authorization")

@@ -9,12 +9,10 @@ to enable robust evaluation of agent collaboration quality.
 
 import asyncio
 import logging
-import statistics
-import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
+from typing import Any
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
@@ -73,13 +71,13 @@ class CoordinationScenario:
     """Single coordination scenario for testing"""
 
     scenario_id: str
-    agents_involved: List[str]
-    task_description: Dict[str, Any]
-    coordination_context: Dict[str, Any]
-    expected_outcomes: List[str]
-    constitutional_requirements: List[str]
+    agents_involved: list[str]
+    task_description: dict[str, Any]
+    coordination_context: dict[str, Any]
+    expected_outcomes: list[str]
+    constitutional_requirements: list[str]
     constitutional_hash: str = "cdd01ef066bc6cf2"
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -88,7 +86,7 @@ class CoordinationTestResult:
 
     test_id: str
     scenario: CoordinationScenario
-    attribute_tested: Union[CoordinationAttribute, SpuriousCoordinationAttribute]
+    attribute_tested: CoordinationAttribute | SpuriousCoordinationAttribute
     test_type: str  # "causal_sensitivity" or "spurious_invariance"
 
     # Test outcomes
@@ -104,7 +102,7 @@ class CoordinationTestResult:
 
     # Metadata
     constitutional_hash: str = "cdd01ef066bc6cf2"
-    test_details: Dict[str, Any] = field(default_factory=dict)
+    test_details: dict[str, Any] = field(default_factory=dict)
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
 
@@ -121,19 +119,19 @@ class CoordinationCausalAnalysisResult(BaseModel):
     coordination_robustness_score: float = Field(ge=0.0, le=1.0)
 
     # Detailed results
-    test_results: List[CoordinationTestResult] = Field(default_factory=list)
-    causal_factors: Dict[str, float] = Field(default_factory=dict)
-    spurious_correlations: Dict[str, float] = Field(default_factory=dict)
+    test_results: list[CoordinationTestResult] = Field(default_factory=list)
+    causal_factors: dict[str, float] = Field(default_factory=dict)
+    spurious_correlations: dict[str, float] = Field(default_factory=dict)
 
     # Quality assessments
-    coordination_metrics: Dict[CoordinationQualityMetric, float] = Field(
+    coordination_metrics: dict[CoordinationQualityMetric, float] = Field(
         default_factory=dict
     )
     constitutional_adherence: float = Field(ge=0.0, le=1.0)
 
     # Recommendations
-    coordination_improvements: List[str] = Field(default_factory=list)
-    robustness_recommendations: List[str] = Field(default_factory=list)
+    coordination_improvements: list[str] = Field(default_factory=list)
+    robustness_recommendations: list[str] = Field(default_factory=list)
 
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
@@ -172,7 +170,7 @@ class CausalCoordinationModel:
         self,
         blackboard_service: BlackboardService,
         constitutional_validator: ConstitutionalSafetyValidator,
-        ai_model_service: Optional[AIModelService] = None,
+        ai_model_service: AIModelService | None = None,
     ):
         """Initialize causal coordination model"""
         self.blackboard = blackboard_service
@@ -192,7 +190,7 @@ class CausalCoordinationModel:
         self,
         coordination_scenario: CoordinationScenario,
         coordination_function: callable,
-        test_attributes: Optional[Dict[str, List]] = None,
+        test_attributes: dict[str, list] | None = None,
         enable_counterfactual_testing: bool = True,
     ) -> CoordinationCausalAnalysisResult:
         """Perform causal analysis of coordination quality"""
@@ -298,9 +296,9 @@ class CausalCoordinationModel:
         self,
         scenario: CoordinationScenario,
         coordination_function: callable,
-        causal_attributes: List[CoordinationAttribute],
+        causal_attributes: list[CoordinationAttribute],
         enable_counterfactual: bool,
-    ) -> List[CoordinationTestResult]:
+    ) -> list[CoordinationTestResult]:
         """Test sensitivity to causal coordination attributes"""
 
         test_results = []
@@ -407,9 +405,9 @@ class CausalCoordinationModel:
         self,
         scenario: CoordinationScenario,
         coordination_function: callable,
-        spurious_attributes: List[SpuriousCoordinationAttribute],
+        spurious_attributes: list[SpuriousCoordinationAttribute],
         enable_counterfactual: bool,
-    ) -> List[CoordinationTestResult]:
+    ) -> list[CoordinationTestResult]:
         """Test invariance to spurious coordination attributes"""
 
         test_results = []
@@ -519,14 +517,13 @@ class CausalCoordinationModel:
             # Extract quality score from result
             if isinstance(result, (int, float)):
                 return float(max(0.0, min(1.0, result)))
-            elif isinstance(result, dict):
+            if isinstance(result, dict):
                 return float(
                     result.get("quality_score", result.get("effectiveness", 0.5))
                 )
-            elif hasattr(result, "quality_score"):
+            if hasattr(result, "quality_score"):
                 return float(result.quality_score)
-            else:
-                return 0.5  # Default neutral score
+            return 0.5  # Default neutral score
 
         except Exception as e:
             self.logger.warning(f"Coordination function evaluation failed: {e}")
@@ -685,7 +682,7 @@ class CausalCoordinationModel:
 
     async def _calculate_coordination_metrics(
         self, scenario: CoordinationScenario, coordination_function: callable
-    ) -> Dict[CoordinationQualityMetric, float]:
+    ) -> dict[CoordinationQualityMetric, float]:
         """Calculate comprehensive coordination quality metrics"""
 
         metrics = {}
@@ -716,8 +713,8 @@ class CausalCoordinationModel:
         return metrics
 
     def _extract_causal_factors(
-        self, test_results: List[CoordinationTestResult]
-    ) -> Dict[str, float]:
+        self, test_results: list[CoordinationTestResult]
+    ) -> dict[str, float]:
         """Extract causal factor scores from test results"""
 
         causal_factors = {}
@@ -731,8 +728,8 @@ class CausalCoordinationModel:
         return causal_factors
 
     def _extract_spurious_correlations(
-        self, test_results: List[CoordinationTestResult]
-    ) -> Dict[str, float]:
+        self, test_results: list[CoordinationTestResult]
+    ) -> dict[str, float]:
         """Extract spurious correlation scores from test results"""
 
         spurious_correlations = {}
@@ -753,7 +750,7 @@ class CausalCoordinationModel:
         return spurious_correlations
 
     def _calculate_causal_sensitivity_score(
-        self, causal_factors: Dict[str, float]
+        self, causal_factors: dict[str, float]
     ) -> float:
         """Calculate overall causal sensitivity score"""
 
@@ -774,7 +771,7 @@ class CausalCoordinationModel:
         return sum(weighted_scores) / len(weighted_scores) if weighted_scores else 0.0
 
     def _calculate_spurious_invariance_score(
-        self, spurious_correlations: Dict[str, float]
+        self, spurious_correlations: dict[str, float]
     ) -> float:
         """Calculate spurious invariance score"""
 
@@ -789,10 +786,10 @@ class CausalCoordinationModel:
 
     def _generate_coordination_improvements(
         self,
-        metrics: Dict[CoordinationQualityMetric, float],
-        causal_factors: Dict[str, float],
-        spurious_correlations: Dict[str, float],
-    ) -> List[str]:
+        metrics: dict[CoordinationQualityMetric, float],
+        causal_factors: dict[str, float],
+        spurious_correlations: dict[str, float],
+    ) -> list[str]:
         """Generate coordination improvement recommendations"""
 
         improvements = []
@@ -829,33 +826,33 @@ class CausalCoordinationModel:
         causal_sensitivity: float,
         spurious_invariance: float,
         overall_robustness: float,
-    ) -> List[str]:
+    ) -> list[str]:
         """Generate robustness improvement recommendations"""
 
         recommendations = []
 
         if causal_sensitivity < 0.7:
-            recommendations.append(
-                "Apply CARMA-style causal augmentation to coordination training"
-            )
-            recommendations.append(
-                "Increase sensitivity to genuine coordination quality factors"
+            recommendations.extend(
+                (
+                    "Apply CARMA-style causal augmentation to coordination training",
+                    "Increase sensitivity to genuine coordination quality factors",
+                )
             )
 
         if spurious_invariance < 0.8:
-            recommendations.append(
-                "Add neutral augmentations for spurious invariance in coordination"
-            )
-            recommendations.append(
-                "Implement spurious correlation detection in coordination metrics"
+            recommendations.extend(
+                (
+                    "Add neutral augmentations for spurious invariance in coordination",
+                    "Implement spurious correlation detection in coordination metrics",
+                )
             )
 
         if overall_robustness < 0.6:
-            recommendations.append(
-                "Apply comprehensive CARMA methodology to coordination assessment"
-            )
-            recommendations.append(
-                "Implement counterfactual robustness testing for coordination"
+            recommendations.extend(
+                (
+                    "Apply comprehensive CARMA methodology to coordination assessment",
+                    "Implement counterfactual robustness testing for coordination",
+                )
             )
 
         return recommendations
@@ -905,7 +902,7 @@ class CausalCoordinationModel:
 
         await self.blackboard.add_knowledge(knowledge_item)
 
-    def get_model_statistics(self) -> Dict[str, Any]:
+    def get_model_statistics(self) -> dict[str, Any]:
         """Get coordination model statistics"""
 
         stats = self.model_stats.copy()

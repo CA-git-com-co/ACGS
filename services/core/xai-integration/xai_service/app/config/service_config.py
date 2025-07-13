@@ -9,7 +9,8 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import os
-from typing import Any, Dict, List, Optional
+import pathlib
+from typing import Any
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -70,22 +71,22 @@ class ServiceConfig:
             "rate_limiting": True,
             "max_requests_per_minute": 100,
             "content_filtering": True,
-        }
+        },
     }
 
-    def __init__(self, config_path: Optional[str] = None):
+    def __init__(self, config_path: str | None = None):
         """Initialize service configuration.
-        
+
         Args:
             config_path: Optional path to configuration file
         """
         self.config = self.DEFAULT_CONFIG.copy()
-        
+
         # Override with environment variables
         self._load_from_environment()
-        
+
         # Load from file if provided
-        if config_path and os.path.exists(config_path):
+        if config_path and pathlib.Path(config_path).exists():
             self._load_from_file(config_path)
 
     def _load_from_environment(self):
@@ -93,63 +94,76 @@ class ServiceConfig:
         # Service configuration
         if os.getenv("XAI_SERVICE_PORT"):
             self.config["service"]["port"] = int(os.getenv("XAI_SERVICE_PORT"))
-        
+
         if os.getenv("XAI_SERVICE_HOST"):
             self.config["service"]["host"] = os.getenv("XAI_SERVICE_HOST")
-        
+
         if os.getenv("LOG_LEVEL"):
             self.config["service"]["log_level"] = os.getenv("LOG_LEVEL")
-        
+
         # X.AI configuration
         if os.getenv("XAI_API_HOST"):
             self.config["xai"]["api_host"] = os.getenv("XAI_API_HOST")
-        
+
         if os.getenv("XAI_DEFAULT_MODEL"):
             self.config["xai"]["default_model"] = os.getenv("XAI_DEFAULT_MODEL")
-        
+
         if os.getenv("XAI_MAX_TOKENS"):
             self.config["xai"]["max_tokens"] = int(os.getenv("XAI_MAX_TOKENS"))
-        
+
         if os.getenv("XAI_TEMPERATURE"):
             self.config["xai"]["temperature"] = float(os.getenv("XAI_TEMPERATURE"))
-        
+
         # Performance configuration
         if os.getenv("XAI_TARGET_LATENCY_MS"):
-            self.config["performance"]["target_p99_latency_ms"] = int(os.getenv("XAI_TARGET_LATENCY_MS"))
-        
+            self.config["performance"]["target_p99_latency_ms"] = int(
+                os.getenv("XAI_TARGET_LATENCY_MS")
+            )
+
         if os.getenv("XAI_CACHE_SIZE"):
-            self.config["performance"]["max_cache_size"] = int(os.getenv("XAI_CACHE_SIZE"))
-        
+            self.config["performance"]["max_cache_size"] = int(
+                os.getenv("XAI_CACHE_SIZE")
+            )
+
         # Integration URLs
         if os.getenv("AUTH_SERVICE_URL"):
-            self.config["integration"]["auth_service_url"] = os.getenv("AUTH_SERVICE_URL")
-        
+            self.config["integration"]["auth_service_url"] = os.getenv(
+                "AUTH_SERVICE_URL"
+            )
+
         if os.getenv("CONSTITUTIONAL_AI_URL"):
-            self.config["integration"]["constitutional_ai_url"] = os.getenv("CONSTITUTIONAL_AI_URL")
-        
+            self.config["integration"]["constitutional_ai_url"] = os.getenv(
+                "CONSTITUTIONAL_AI_URL"
+            )
+
         if os.getenv("INTEGRITY_SERVICE_URL"):
-            self.config["integration"]["integrity_service_url"] = os.getenv("INTEGRITY_SERVICE_URL")
-        
+            self.config["integration"]["integrity_service_url"] = os.getenv(
+                "INTEGRITY_SERVICE_URL"
+            )
+
         if os.getenv("GOVERNANCE_ENGINE_URL"):
-            self.config["integration"]["governance_engine_url"] = os.getenv("GOVERNANCE_ENGINE_URL")
+            self.config["integration"]["governance_engine_url"] = os.getenv(
+                "GOVERNANCE_ENGINE_URL"
+            )
 
     def _load_from_file(self, config_path: str):
         """Load configuration from YAML file.
-        
+
         Args:
             config_path: Path to configuration file
         """
         try:
             import yaml
-            with open(config_path, 'r') as f:
+
+            with open(config_path, encoding="utf-8") as f:
                 file_config = yaml.safe_load(f)
                 self._merge_config(self.config, file_config)
-        except Exception as e:
-            print(f"Warning: Could not load config file {config_path}: {e}")
+        except Exception:
+            pass
 
-    def _merge_config(self, base: Dict[str, Any], override: Dict[str, Any]):
+    def _merge_config(self, base: dict[str, Any], override: dict[str, Any]):
         """Recursively merge configuration dictionaries.
-        
+
         Args:
             base: Base configuration dictionary
             override: Override configuration dictionary
@@ -162,17 +176,17 @@ class ServiceConfig:
 
     def get(self, key_path: str, default: Any = None) -> Any:
         """Get configuration value by dot-separated key path.
-        
+
         Args:
             key_path: Dot-separated key path (e.g., 'service.port')
             default: Default value if key not found
-            
+
         Returns:
             Configuration value or default
         """
-        keys = key_path.split('.')
+        keys = key_path.split(".")
         value = self.config
-        
+
         try:
             for key in keys:
                 value = value[key]
@@ -180,64 +194,66 @@ class ServiceConfig:
         except (KeyError, TypeError):
             return default
 
-    def get_service_config(self) -> Dict[str, Any]:
+    def get_service_config(self) -> dict[str, Any]:
         """Get service-specific configuration."""
         return self.config["service"]
 
-    def get_xai_config(self) -> Dict[str, Any]:
+    def get_xai_config(self) -> dict[str, Any]:
         """Get X.AI-specific configuration."""
         return self.config["xai"]
 
-    def get_performance_config(self) -> Dict[str, Any]:
+    def get_performance_config(self) -> dict[str, Any]:
         """Get performance-specific configuration."""
         return self.config["performance"]
 
-    def get_constitutional_config(self) -> Dict[str, Any]:
+    def get_constitutional_config(self) -> dict[str, Any]:
         """Get constitutional governance configuration."""
         return self.config["constitutional"]
 
-    def get_integration_config(self) -> Dict[str, Any]:
+    def get_integration_config(self) -> dict[str, Any]:
         """Get service integration configuration."""
         return self.config["integration"]
 
-    def get_monitoring_config(self) -> Dict[str, Any]:
+    def get_monitoring_config(self) -> dict[str, Any]:
         """Get monitoring configuration."""
         return self.config["monitoring"]
 
-    def get_security_config(self) -> Dict[str, Any]:
+    def get_security_config(self) -> dict[str, Any]:
         """Get security configuration."""
         return self.config["security"]
 
-    def validate_config(self) -> List[str]:
+    def validate_config(self) -> list[str]:
         """Validate configuration and return list of issues.
-        
+
         Returns:
             List of configuration validation issues
         """
         issues = []
-        
+
         # Validate required environment variables
         if not os.getenv("XAI_API_KEY"):
             issues.append("XAI_API_KEY environment variable is required")
-        
+
         # Validate port ranges
         port = self.get("service.port")
         if not (1024 <= port <= 65535):
             issues.append(f"Service port {port} is not in valid range (1024-65535)")
-        
+
         # Validate performance targets
         latency = self.get("performance.target_p99_latency_ms")
         if latency <= 0:
             issues.append("Target P99 latency must be positive")
-        
+
         cache_hit_rate = self.get("performance.target_cache_hit_rate")
         if not (0.0 <= cache_hit_rate <= 1.0):
             issues.append("Target cache hit rate must be between 0.0 and 1.0")
-        
+
         # Validate constitutional hash
         if self.get("service.constitutional_hash") != CONSTITUTIONAL_HASH:
-            issues.append(f"Constitutional hash mismatch: expected {CONSTITUTIONAL_HASH}")
-        
+            issues.append(
+                f"Constitutional hash mismatch: expected {CONSTITUTIONAL_HASH}"
+            )
+
         return issues
 
     def __str__(self) -> str:

@@ -1,3 +1,5 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 # ACGS-1 Monitoring Infrastructure Production Deployment Guide
 
 ## Subtask 13.8: Documentation and Production Deployment

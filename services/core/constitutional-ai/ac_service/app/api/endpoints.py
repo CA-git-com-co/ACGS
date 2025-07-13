@@ -6,10 +6,9 @@ This module contains all the REST API endpoints for the Constitutional AI servic
 """
 
 import logging
-from typing import Any, Dict
+from typing import Any
 
-from fastapi import Depends, FastAPI, HTTPException, Request
-from fastapi.responses import JSONResponse
+from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..schemas import (
@@ -69,7 +68,7 @@ class ConstitutionalAPIEndpoints:
                 validator = ConstitutionalValidator()
                 hash_validation = validator.validate_constitutional_hash()
 
-                health_status = {
+                return {
                     "status": "healthy",
                     "service": "constitutional-ai",
                     "constitutional_hash": CONSTITUTIONAL_HASH,
@@ -86,10 +85,8 @@ class ConstitutionalAPIEndpoints:
                     },
                 }
 
-                return health_status
-
             except Exception as e:
-                logger.error(f"Health check failed: {e}")
+                logger.exception(f"Health check failed: {e}")
                 raise HTTPException(status_code=503, detail="Service unavailable")
 
         @self.app.get("/api/v1/status")
@@ -121,7 +118,7 @@ class ConstitutionalAPIEndpoints:
                 }
 
             except Exception as e:
-                logger.error(f"API status check failed: {e}")
+                logger.exception(f"API status check failed: {e}")
                 raise HTTPException(status_code=500, detail="Status check failed")
 
         @self.app.get("/metrics")
@@ -134,7 +131,7 @@ class ConstitutionalAPIEndpoints:
                 return metrics_service.get_metrics()
 
             except Exception as e:
-                logger.error(f"Metrics collection failed: {e}")
+                logger.exception(f"Metrics collection failed: {e}")
                 raise HTTPException(status_code=500, detail="Metrics unavailable")
 
     def _setup_validation_endpoints(self):
@@ -160,7 +157,7 @@ class ConstitutionalAPIEndpoints:
                 )
 
             except Exception as e:
-                logger.error(f"Content validation failed: {e}")
+                logger.exception(f"Content validation failed: {e}")
                 raise HTTPException(status_code=400, detail="Validation failed")
 
         @self.app.post("/api/v1/validate/constitutional")
@@ -185,7 +182,7 @@ class ConstitutionalAPIEndpoints:
                 }
 
             except Exception as e:
-                logger.error(f"Constitutional compliance validation failed: {e}")
+                logger.exception(f"Constitutional compliance validation failed: {e}")
                 raise HTTPException(
                     status_code=400, detail="Compliance validation failed"
                 )
@@ -203,13 +200,13 @@ class ConstitutionalAPIEndpoints:
                 return framework.get_detailed_status()
 
             except Exception as e:
-                logger.error(f"Framework status check failed: {e}")
+                logger.exception(f"Framework status check failed: {e}")
                 raise HTTPException(
                     status_code=500, detail="Framework status unavailable"
                 )
 
         @self.app.post("/api/v1/framework/validate")
-        async def validate_with_framework(request: Dict[str, Any]):
+        async def validate_with_framework(request: dict[str, Any]):
             """Validate using integrated frameworks."""
             from ..framework.validation import FrameworkValidator
 
@@ -225,7 +222,7 @@ class ConstitutionalAPIEndpoints:
                 }
 
             except Exception as e:
-                logger.error(f"Framework validation failed: {e}")
+                logger.exception(f"Framework validation failed: {e}")
                 raise HTTPException(
                     status_code=400, detail="Framework validation failed"
                 )
@@ -234,7 +231,7 @@ class ConstitutionalAPIEndpoints:
         """Setup compliance calculation endpoints."""
 
         @self.app.post("/api/v1/compliance/score")
-        async def calculate_compliance_score(request: Dict[str, Any]):
+        async def calculate_compliance_score(request: dict[str, Any]):
             """Calculate comprehensive compliance score."""
             from ..compliance.calculator import ComplianceCalculator
 
@@ -251,11 +248,11 @@ class ConstitutionalAPIEndpoints:
                 }
 
             except Exception as e:
-                logger.error(f"Compliance score calculation failed: {e}")
+                logger.exception(f"Compliance score calculation failed: {e}")
                 raise HTTPException(status_code=400, detail="Score calculation failed")
 
         @self.app.post("/api/v1/compliance/impact")
-        async def analyze_constitutional_impact(request: Dict[str, Any]):
+        async def analyze_constitutional_impact(request: dict[str, Any]):
             """Analyze constitutional impact of policies or decisions."""
             from ..compliance.impact import ImpactAnalyzer
 
@@ -271,7 +268,7 @@ class ConstitutionalAPIEndpoints:
                 }
 
             except Exception as e:
-                logger.error(f"Impact analysis failed: {e}")
+                logger.exception(f"Impact analysis failed: {e}")
                 raise HTTPException(status_code=400, detail="Impact analysis failed")
 
 

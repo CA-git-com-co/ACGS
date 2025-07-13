@@ -336,7 +336,7 @@ class RedisCache:
 
         except RedisError as e:
             self.stats.errors += 1
-            logger.error("Redis cache get error", key=redis_key, error=str(e))
+            logger.exception("Redis cache get error", key=redis_key, error=str(e))
             return None
 
     async def put(
@@ -365,7 +365,7 @@ class RedisCache:
 
         except RedisError as e:
             self.stats.errors += 1
-            logger.error("Redis cache put error", key=redis_key, error=str(e))
+            logger.exception("Redis cache put error", key=redis_key, error=str(e))
             return False
 
     async def delete(self, key: str | dict[str, Any]) -> bool:
@@ -379,7 +379,7 @@ class RedisCache:
 
         except RedisError as e:
             self.stats.errors += 1
-            logger.error("Redis cache delete error", key=redis_key, error=str(e))
+            logger.exception("Redis cache delete error", key=redis_key, error=str(e))
             return False
 
     async def clear_pattern(self, pattern: str):
@@ -399,7 +399,7 @@ class RedisCache:
                 )
         except RedisError as e:
             self.stats.errors += 1
-            logger.error(
+            logger.exception(
                 "Redis cache clear pattern error", pattern=pattern, error=str(e)
             )
 
@@ -431,7 +431,7 @@ class RedisCache:
             )
 
         except Exception as e:
-            logger.error("Failed to start invalidation listener", error=str(e))
+            logger.exception("Failed to start invalidation listener", error=str(e))
 
     async def stop_invalidation_listener(self):
         # requires: Valid input parameters
@@ -463,13 +463,13 @@ class RedisCache:
                         invalidation_data = json.loads(message["data"])
                         await self._process_invalidation(invalidation_data)
                     except Exception as e:
-                        logger.error(
+                        logger.exception(
                             "Failed to process invalidation message", error=str(e)
                         )
         except asyncio.CancelledError:
             logger.info("Invalidation listener cancelled")
         except Exception as e:
-            logger.error("Invalidation listener error", error=str(e))
+            logger.exception("Invalidation listener error", error=str(e))
 
     async def _process_invalidation(self, invalidation_data: dict[str, Any]):
         # requires: Valid input parameters
@@ -519,7 +519,7 @@ class RedisCache:
             )
 
         except Exception as e:
-            logger.error("Failed to publish invalidation", error=str(e))
+            logger.exception("Failed to publish invalidation", error=str(e))
 
     def get_stats(self) -> CacheStats:
         """Get cache statistics."""
@@ -659,7 +659,9 @@ class MultiTierCache:
                     await self.put(key, value, ttl, tags)
 
             except Exception as e:
-                logger.error("Cache warming failed for item", item=item, error=str(e))
+                logger.exception(
+                    "Cache warming failed for item", item=item, error=str(e)
+                )
 
         logger.info("Cache warming completed")
 
@@ -668,17 +670,16 @@ class MultiTierCache:
         # ensures: Correct function execution
         # sha256: func_hash
         """Warm cache with governance rules."""
-        warming_data = []
 
-        for rule in rules:
-            warming_data.append(
-                {
-                    "key": f"governance_rule:{rule.get('id')}",
-                    "value": rule,
-                    "ttl": CACHE_TTL_POLICIES["governance_rules"],
-                    "tags": ["governance_rules", rule.get("category", "general")],
-                }
-            )
+        warming_data = [
+            {
+                "key": f"governance_rule:{rule.get('id')}",
+                "value": rule,
+                "ttl": CACHE_TTL_POLICIES["governance_rules"],
+                "tags": ["governance_rules", rule.get("category", "general")],
+            }
+            for rule in rules
+        ]
 
         await self.warm_cache(warming_data)
 
@@ -687,17 +688,16 @@ class MultiTierCache:
         # ensures: Correct function execution
         # sha256: func_hash
         """Warm cache with user sessions."""
-        warming_data = []
 
-        for session in sessions:
-            warming_data.append(
-                {
-                    "key": f"user_session:{session.get('user_id')}",
-                    "value": session,
-                    "ttl": CACHE_TTL_POLICIES["user_sessions"],
-                    "tags": ["user_sessions"],
-                }
-            )
+        warming_data = [
+            {
+                "key": f"user_session:{session.get('user_id')}",
+                "value": session,
+                "ttl": CACHE_TTL_POLICIES["user_sessions"],
+                "tags": ["user_sessions"],
+            }
+            for session in sessions
+        ]
 
         await self.warm_cache(warming_data)
 

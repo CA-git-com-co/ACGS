@@ -61,7 +61,7 @@ class WINADashboard:
             self.performance_collector = await get_wina_performance_collector()
             logger.info("WINA Dashboard connected to performance collector")
         except Exception as e:
-            logger.error(f"Failed to initialize dashboard: {e}")
+            logger.exception(f"Failed to initialize dashboard: {e}")
             raise
 
     async def get_dashboard_data(self, refresh_cache: bool = False) -> dict[str, Any]:
@@ -108,7 +108,7 @@ class WINADashboard:
             return dashboard_data
 
         except Exception as e:
-            logger.error(f"Dashboard data retrieval failed: {e}")
+            logger.exception(f"Dashboard data retrieval failed: {e}")
             return {
                 "timestamp": datetime.now(timezone.utc).isoformat(),
                 "error": f"Dashboard data unavailable: {e!s}",
@@ -177,7 +177,7 @@ class WINADashboard:
             }
 
         except Exception as e:
-            logger.error(f"System overview generation failed: {e}")
+            logger.exception(f"System overview generation failed: {e}")
             return {"error": str(e)}
 
     async def _get_performance_metrics(self) -> dict[str, Any]:
@@ -202,7 +202,7 @@ class WINADashboard:
             }
 
         except Exception as e:
-            logger.error(f"Performance metrics generation failed: {e}")
+            logger.exception(f"Performance metrics generation failed: {e}")
             return {"error": str(e)}
 
     async def _get_component_status(self) -> dict[str, Any]:
@@ -266,7 +266,7 @@ class WINADashboard:
             return component_status
 
         except Exception as e:
-            logger.error(f"Component status generation failed: {e}")
+            logger.exception(f"Component status generation failed: {e}")
             return {"error": str(e)}
 
     async def _get_alerts_summary(self) -> dict[str, Any]:
@@ -314,7 +314,7 @@ class WINADashboard:
             }
 
         except Exception as e:
-            logger.error(f"Alerts summary generation failed: {e}")
+            logger.exception(f"Alerts summary generation failed: {e}")
             return {"error": str(e)}
 
     async def _get_chart_data(self) -> dict[str, Any]:
@@ -346,7 +346,7 @@ class WINADashboard:
             return chart_data
 
         except Exception as e:
-            logger.error(f"Chart data generation failed: {e}")
+            logger.exception(f"Chart data generation failed: {e}")
             return {"error": str(e)}
 
     async def _get_gflops_chart_data(self) -> dict[str, Any]:
@@ -384,7 +384,7 @@ class WINADashboard:
             }
 
         except Exception as e:
-            logger.error(f"GFLOPs chart data generation failed: {e}")
+            logger.exception(f"GFLOPs chart data generation failed: {e}")
             return {"labels": [], "data": [], "error": str(e)}
 
     async def _get_accuracy_chart_data(self) -> dict[str, Any]:
@@ -421,7 +421,7 @@ class WINADashboard:
             }
 
         except Exception as e:
-            logger.error(f"Accuracy chart data generation failed: {e}")
+            logger.exception(f"Accuracy chart data generation failed: {e}")
             return {"labels": [], "data": [], "error": str(e)}
 
     async def _get_component_performance_chart(self) -> dict[str, Any]:
@@ -461,7 +461,7 @@ class WINADashboard:
             return {"components": component_data, "chart_type": "bar"}
 
         except Exception as e:
-            logger.error(f"Component performance chart generation failed: {e}")
+            logger.exception(f"Component performance chart generation failed: {e}")
             return {"components": [], "error": str(e)}
 
     async def _get_system_health_chart(self) -> dict[str, Any]:
@@ -499,7 +499,7 @@ class WINADashboard:
             }
 
         except Exception as e:
-            logger.error(f"System health chart generation failed: {e}")
+            logger.exception(f"System health chart generation failed: {e}")
             return {
                 "labels": [],
                 "cpu": [],
@@ -563,7 +563,7 @@ class WINADashboard:
             }
 
         except Exception as e:
-            logger.error(f"Integration latency chart generation failed: {e}")
+            logger.exception(f"Integration latency chart generation failed: {e}")
             return {"integration_pairs": [], "latency_trends": [], "error": str(e)}
 
     async def _get_health_indicators(self) -> dict[str, Any]:
@@ -640,7 +640,7 @@ class WINADashboard:
             }
 
         except Exception as e:
-            logger.error(f"Health indicators generation failed: {e}")
+            logger.exception(f"Health indicators generation failed: {e}")
             return {
                 "overall_health_score": 0.0,
                 "health_status": "unknown",
@@ -686,7 +686,7 @@ class WINADashboard:
             }
 
         except Exception as e:
-            logger.error(f"Trends data generation failed: {e}")
+            logger.exception(f"Trends data generation failed: {e}")
             return {"error": str(e)}
 
     async def _get_recommendations(self) -> list[str]:
@@ -755,7 +755,7 @@ class WINADashboard:
             return recommendations
 
         except Exception as e:
-            logger.error(f"Recommendations generation failed: {e}")
+            logger.exception(f"Recommendations generation failed: {e}")
             return [f"Unable to generate recommendations: {e!s}"]
 
     async def export_dashboard_data(self, format_type: str = "json") -> str:
@@ -779,21 +779,19 @@ class WINADashboard:
                 timestamp = dashboard_data.get("timestamp", "")
 
                 overview = dashboard_data.get("overview", {})
-                lines.append(
-                    f"gflops_reduction,{overview.get('gflops_reduction', {}).get('current', 0.0)},{timestamp}"
-                )
-                lines.append(
-                    f"accuracy_retention,{overview.get('accuracy_retention', {}).get('current', 0.95)},{timestamp}"
-                )
-                lines.append(
-                    f"constitutional_compliance,{overview.get('constitutional_compliance', {}).get('current', 0.95)},{timestamp}"
+                lines.extend(
+                    (
+                        f"gflops_reduction,{overview.get('gflops_reduction', {}).get('current', 0.0)},{timestamp}",
+                        f"accuracy_retention,{overview.get('accuracy_retention', {}).get('current', 0.95)},{timestamp}",
+                        f"constitutional_compliance,{overview.get('constitutional_compliance', {}).get('current', 0.95)},{timestamp}",
+                    )
                 )
 
                 return "\n".join(lines)
             raise ValueError(f"Unsupported export format: {format_type}")
 
         except Exception as e:
-            logger.error(f"Dashboard data export failed: {e}")
+            logger.exception(f"Dashboard data export failed: {e}")
             raise
 
     async def get_component_details(self, component_type: str) -> dict[str, Any]:
@@ -885,7 +883,7 @@ class WINADashboard:
             }
 
         except Exception as e:
-            logger.error(f"Component details retrieval failed: {e}")
+            logger.exception(f"Component details retrieval failed: {e}")
             return {
                 "component_type": component_type,
                 "error": str(e),

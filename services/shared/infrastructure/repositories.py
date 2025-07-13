@@ -7,14 +7,13 @@ Abstract repository interfaces and PostgreSQL implementations with DDD support.
 
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Generic, List, Optional, Type, TypeVar
+from typing import Any, Generic, TypeVar
 
 import asyncpg
 
 from services.shared.domain.base import (
     CONSTITUTIONAL_HASH,
     AggregateRoot,
-    Entity,
     EntityId,
     TenantId,
 )
@@ -31,7 +30,7 @@ class Repository(ABC, Generic[T]):
     """Abstract repository interface for domain aggregates."""
 
     @abstractmethod
-    async def get_by_id(self, entity_id: EntityId, tenant_id: TenantId) -> Optional[T]:
+    async def get_by_id(self, entity_id: EntityId, tenant_id: TenantId) -> T | None:
         """
         Get aggregate by ID.
 
@@ -42,7 +41,6 @@ class Repository(ABC, Generic[T]):
         Returns:
             Aggregate instance or None if not found
         """
-        pass
 
     @abstractmethod
     async def save(self, aggregate: T) -> None:
@@ -52,7 +50,6 @@ class Repository(ABC, Generic[T]):
         Args:
             aggregate: Aggregate to save
         """
-        pass
 
     @abstractmethod
     async def remove(self, entity_id: EntityId) -> None:
@@ -62,16 +59,15 @@ class Repository(ABC, Generic[T]):
         Args:
             entity_id: ID of aggregate to remove
         """
-        pass
 
     @abstractmethod
     async def find_by_specification(
         self,
         specification: Specification[T],
         tenant_id: TenantId,
-        limit: Optional[int] = None,
-        offset: Optional[int] = None,
-    ) -> List[T]:
+        limit: int | None = None,
+        offset: int | None = None,
+    ) -> list[T]:
         """
         Find aggregates matching specification.
 
@@ -84,7 +80,6 @@ class Repository(ABC, Generic[T]):
         Returns:
             List of matching aggregates
         """
-        pass
 
     async def exists(self, entity_id: EntityId, tenant_id: TenantId) -> bool:
         """
@@ -104,7 +99,7 @@ class Repository(ABC, Generic[T]):
 class EventSourcedRepository(Repository[T], ABC):
     """Repository for event-sourced aggregates."""
 
-    def __init__(self, event_store: Optional[EventStore] = None):
+    def __init__(self, event_store: EventStore | None = None):
         """Initialize with event store."""
         self.event_store = event_store or get_event_store()
 
@@ -119,7 +114,6 @@ class EventSourcedRepository(Repository[T], ABC):
         Returns:
             Stream identifier
         """
-        pass
 
     @abstractmethod
     async def _create_empty_aggregate(
@@ -135,9 +129,8 @@ class EventSourcedRepository(Repository[T], ABC):
         Returns:
             Empty aggregate instance
         """
-        pass
 
-    async def get_by_id(self, entity_id: EntityId, tenant_id: TenantId) -> Optional[T]:
+    async def get_by_id(self, entity_id: EntityId, tenant_id: TenantId) -> T | None:
         """Get aggregate by replaying events from event store."""
         stream_id = self._get_stream_id(entity_id)
 
@@ -192,7 +185,7 @@ class PostgreSQLRepository(Repository[T], ABC):
     """PostgreSQL implementation of repository with multi-tenant support."""
 
     def __init__(
-        self, connection_pool: asyncpg.Pool, table_name: str, aggregate_type: Type[T]
+        self, connection_pool: asyncpg.Pool, table_name: str, aggregate_type: type[T]
     ):
         """
         Initialize PostgreSQL repository.
@@ -205,7 +198,7 @@ class PostgreSQLRepository(Repository[T], ABC):
         self.pool = connection_pool
         self.table_name = table_name
         self.aggregate_type = aggregate_type
-        self._connection: Optional[asyncpg.Connection] = None
+        self._connection: asyncpg.Connection | None = None
 
     def set_connection(self, connection: asyncpg.Connection) -> None:
         """Set specific connection for transaction management."""
@@ -234,10 +227,9 @@ class PostgreSQLRepository(Repository[T], ABC):
         Returns:
             Aggregate instance
         """
-        pass
 
     @abstractmethod
-    async def _aggregate_to_row(self, aggregate: T) -> Dict[str, Any]:
+    async def _aggregate_to_row(self, aggregate: T) -> dict[str, Any]:
         """
         Convert aggregate to database row data.
 
@@ -247,9 +239,8 @@ class PostgreSQLRepository(Repository[T], ABC):
         Returns:
             Dictionary of column values
         """
-        pass
 
-    async def get_by_id(self, entity_id: EntityId, tenant_id: TenantId) -> Optional[T]:
+    async def get_by_id(self, entity_id: EntityId, tenant_id: TenantId) -> T | None:
         """Get aggregate by ID with tenant isolation."""
         conn = await self._get_connection()
 
@@ -295,20 +286,20 @@ class PostgreSQLRepository(Repository[T], ABC):
 
             # Build upsert query
             columns = list(row_data.keys())
-            placeholders = [f"${i+1}" for i in range(len(columns))]
+            placeholders = [f"${i + 1}" for i in range(len(columns))]
             values = [row_data[col] for col in columns]
 
             # Create conflict resolution for upsert
             update_sets = [
                 f"{col} = EXCLUDED.{col}"
                 for col in columns
-                if col not in ("id", "tenant_id", "created_at")
+                if col not in {"id", "tenant_id", "created_at"}
             ]
 
             query = f"""
                 INSERT INTO {self.table_name} ({', '.join(columns)})
                 VALUES ({', '.join(placeholders)})
-                ON CONFLICT (id, tenant_id) 
+                ON CONFLICT (id, tenant_id)
                 DO UPDATE SET {', '.join(update_sets)}
             """
 
@@ -342,9 +333,9 @@ class PostgreSQLRepository(Repository[T], ABC):
         self,
         specification: Specification[T],
         tenant_id: TenantId,
-        limit: Optional[int] = None,
-        offset: Optional[int] = None,
-    ) -> List[T]:
+        limit: int | None = None,
+        offset: int | None = None,
+    ) -> list[T]:
         """Find aggregates matching specification."""
         conn = await self._get_connection()
 
@@ -391,10 +382,10 @@ class RepositoryRegistry:
 
     def __init__(self):
         """Initialize empty registry."""
-        self._repositories: Dict[Type[AggregateRoot], Repository] = {}
+        self._repositories: dict[type[AggregateRoot], Repository] = {}
 
     def register(
-        self, aggregate_type: Type[AggregateRoot], repository: Repository
+        self, aggregate_type: type[AggregateRoot], repository: Repository
     ) -> None:
         """
         Register repository for aggregate type.
@@ -406,7 +397,7 @@ class RepositoryRegistry:
         self._repositories[aggregate_type] = repository
         logger.debug(f"Registered repository for {aggregate_type.__name__}")
 
-    def get_repository(self, aggregate_type: Type[AggregateRoot]) -> Repository:
+    def get_repository(self, aggregate_type: type[AggregateRoot]) -> Repository:
         """
         Get repository for aggregate type.
 
@@ -424,7 +415,7 @@ class RepositoryRegistry:
 
         return self._repositories[aggregate_type]
 
-    def has_repository(self, aggregate_type: Type[AggregateRoot]) -> bool:
+    def has_repository(self, aggregate_type: type[AggregateRoot]) -> bool:
         """
         Check if repository is registered for aggregate type.
 
@@ -436,7 +427,7 @@ class RepositoryRegistry:
         """
         return aggregate_type in self._repositories
 
-    def get_all_repositories(self) -> Dict[Type[AggregateRoot], Repository]:
+    def get_all_repositories(self) -> dict[type[AggregateRoot], Repository]:
         """Get all registered repositories."""
         return self._repositories.copy()
 
@@ -500,7 +491,7 @@ class AmendmentProposalRepository(EventSourcedRepository):
 
 
 # Global repository registry instance
-_repository_registry: Optional[RepositoryRegistry] = None
+_repository_registry: RepositoryRegistry | None = None
 
 
 def get_repository_registry() -> RepositoryRegistry:

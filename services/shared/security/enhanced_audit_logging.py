@@ -5,19 +5,18 @@ This module provides comprehensive audit logging with real-time monitoring,
 compliance tracking, and constitutional governance validation.
 """
 
-import asyncio
 import gzip
 import hashlib
 import json
 import os
+import pathlib
 from abc import ABC, abstractmethod
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Union
+from typing import Any
 
 import structlog
-from pydantic import BaseModel
 
 logger = structlog.get_logger(__name__)
 
@@ -73,23 +72,23 @@ class AuditEvent:
     event_type: AuditEventType
     level: AuditLevel
     timestamp: datetime
-    user_id: Optional[str]
-    session_id: Optional[str]
-    source_ip: Optional[str]
-    user_agent: Optional[str]
-    resource_type: Optional[str]
-    resource_id: Optional[str]
+    user_id: str | None
+    session_id: str | None
+    source_ip: str | None
+    user_agent: str | None
+    resource_type: str | None
+    resource_id: str | None
     action: str
     outcome: str  # success, failure, partial
-    details: Dict[str, Any] = field(default_factory=dict)
-    sensitive_data_hash: Optional[str] = None
-    compliance_tags: Set[ComplianceFramework] = field(default_factory=set)
+    details: dict[str, Any] = field(default_factory=dict)
+    sensitive_data_hash: str | None = None
+    compliance_tags: set[ComplianceFramework] = field(default_factory=set)
     constitutional_hash: str = CONSTITUTIONAL_HASH
-    service_name: Optional[str] = None
-    request_duration_ms: Optional[float] = None
-    error_message: Optional[str] = None
+    service_name: str | None = None
+    request_duration_ms: float | None = None
+    error_message: str | None = None
     risk_score: float = 0.0
-    correlation_id: Optional[str] = None
+    correlation_id: str | None = None
 
 
 @dataclass
@@ -97,8 +96,8 @@ class AuditMetrics:
     """Audit logging metrics."""
 
     total_events: int = 0
-    events_by_type: Dict[str, int] = field(default_factory=dict)
-    events_by_level: Dict[str, int] = field(default_factory=dict)
+    events_by_type: dict[str, int] = field(default_factory=dict)
+    events_by_level: dict[str, int] = field(default_factory=dict)
     failed_events: int = 0
     high_risk_events: int = 0
     constitutional_events: int = 0
@@ -112,24 +111,21 @@ class AuditStorage(ABC):
     @abstractmethod
     async def store_event(self, event: AuditEvent) -> bool:
         """Store an audit event."""
-        pass
 
     @abstractmethod
     async def query_events(
         self,
         start_time: datetime,
         end_time: datetime,
-        filters: Optional[Dict[str, Any]] = None,
-    ) -> List[AuditEvent]:
+        filters: dict[str, Any] | None = None,
+    ) -> list[AuditEvent]:
         """Query audit events."""
-        pass
 
     @abstractmethod
     async def get_metrics(
         self, start_time: datetime, end_time: datetime
     ) -> AuditMetrics:
         """Get audit metrics for a time period."""
-        pass
 
 
 class FileAuditStorage(AuditStorage):
@@ -177,7 +173,7 @@ class FileAuditStorage(AuditStorage):
             return True
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 "Failed to store audit event to file",
                 event_id=event.event_id,
                 error=str(e),
@@ -188,8 +184,8 @@ class FileAuditStorage(AuditStorage):
         self,
         start_time: datetime,
         end_time: datetime,
-        filters: Optional[Dict[str, Any]] = None,
-    ) -> List[AuditEvent]:
+        filters: dict[str, Any] | None = None,
+    ) -> list[AuditEvent]:
         """Query events from files."""
         events = []
         filters = filters or {}
@@ -207,7 +203,7 @@ class FileAuditStorage(AuditStorage):
                             )
                         )
                 else:
-                    with open(file_path, "r", encoding="utf-8") as f:
+                    with open(file_path, encoding="utf-8") as f:
                         events.extend(
                             self._parse_events_from_file(
                                 f, start_time, end_time, filters
@@ -215,7 +211,7 @@ class FileAuditStorage(AuditStorage):
                         )
 
         except Exception as e:
-            logger.error("Failed to query audit events from files", error=str(e))
+            logger.exception("Failed to query audit events from files", error=str(e))
 
         return events
 
@@ -273,14 +269,14 @@ class FileAuditStorage(AuditStorage):
 
     async def _rotate_file(self):
         """Rotate to a new file and optionally compress the old one."""
-        if self.current_file_path and os.path.exists(self.current_file_path):
+        if self.current_file_path and pathlib.Path(self.current_file_path).exists():
             # Compress old file if enabled
             if self.compression_enabled:
                 compressed_path = self.current_file_path + ".gz"
                 with open(self.current_file_path, "rb") as f_in:
                     with gzip.open(compressed_path, "wb") as f_out:
                         f_out.writelines(f_in)
-                os.remove(self.current_file_path)
+                pathlib.Path(self.current_file_path).unlink()
 
         # Reset for new file
         self.current_file_path = None
@@ -293,14 +289,14 @@ class FileAuditStorage(AuditStorage):
         try:
             for filename in os.listdir(self.base_path):
                 file_path = os.path.join(self.base_path, filename)
-                if os.path.getctime(file_path) < cutoff_time.timestamp():
-                    os.remove(file_path)
+                if pathlib.Path(file_path).stat().st_ctime < cutoff_time.timestamp():
+                    pathlib.Path(file_path).unlink()
         except Exception as e:
             logger.warning(f"Failed to cleanup old audit files: {e}")
 
     def _get_files_for_time_range(
         self, start_time: datetime, end_time: datetime
-    ) -> List[str]:
+    ) -> list[str]:
         """Get files that might contain events in the time range."""
         files = []
 
@@ -308,14 +304,16 @@ class FileAuditStorage(AuditStorage):
             for filename in os.listdir(self.base_path):
                 if filename.startswith("audit_"):
                     file_path = os.path.join(self.base_path, filename)
-                    file_time = datetime.fromtimestamp(os.path.getctime(file_path))
+                    file_time = datetime.fromtimestamp(
+                        pathlib.Path(file_path).stat().st_ctime
+                    )
 
                     # Include file if it might contain relevant events
                     if file_time >= start_time - timedelta(days=1):
                         files.append(file_path)
 
         except Exception as e:
-            logger.error(f"Failed to get files for time range: {e}")
+            logger.exception(f"Failed to get files for time range: {e}")
 
         return sorted(files)
 
@@ -324,8 +322,8 @@ class FileAuditStorage(AuditStorage):
         file_handle,
         start_time: datetime,
         end_time: datetime,
-        filters: Dict[str, Any],
-    ) -> List[AuditEvent]:
+        filters: dict[str, Any],
+    ) -> list[AuditEvent]:
         """Parse events from a file handle."""
         events = []
 
@@ -369,7 +367,7 @@ class FileAuditStorage(AuditStorage):
         return events
 
     def _matches_filters(
-        self, event_dict: Dict[str, Any], filters: Dict[str, Any]
+        self, event_dict: dict[str, Any], filters: dict[str, Any]
     ) -> bool:
         """Check if event matches the provided filters."""
         for key, value in filters.items():
@@ -379,9 +377,8 @@ class FileAuditStorage(AuditStorage):
             if isinstance(value, list):
                 if event_dict[key] not in value:
                     return False
-            else:
-                if event_dict[key] != value:
-                    return False
+            elif event_dict[key] != value:
+                return False
 
         return True
 
@@ -391,7 +388,7 @@ class EnhancedAuditLogger:
 
     def __init__(
         self,
-        storage: Optional[AuditStorage] = None,
+        storage: AuditStorage | None = None,
         service_name: str = "acgs-service",
         enable_real_time_alerts: bool = True,
         risk_threshold: float = 0.7,
@@ -401,8 +398,8 @@ class EnhancedAuditLogger:
         self.enable_real_time_alerts = enable_real_time_alerts
         self.risk_threshold = risk_threshold
         self.metrics = AuditMetrics()
-        self.alert_callbacks: List[callable] = []
-        self.compliance_rules: Dict[ComplianceFramework, Dict[str, Any]] = {}
+        self.alert_callbacks: list[callable] = []
+        self.compliance_rules: dict[ComplianceFramework, dict[str, Any]] = {}
         self._initialize_compliance_rules()
 
     def _initialize_compliance_rules(self):
@@ -445,17 +442,17 @@ class EnhancedAuditLogger:
         event_type: AuditEventType,
         action: str,
         outcome: str,
-        user_id: Optional[str] = None,
-        resource_type: Optional[str] = None,
-        resource_id: Optional[str] = None,
-        details: Optional[Dict[str, Any]] = None,
+        user_id: str | None = None,
+        resource_type: str | None = None,
+        resource_id: str | None = None,
+        details: dict[str, Any] | None = None,
         level: AuditLevel = AuditLevel.INFO,
-        session_id: Optional[str] = None,
-        source_ip: Optional[str] = None,
-        user_agent: Optional[str] = None,
-        request_duration_ms: Optional[float] = None,
-        error_message: Optional[str] = None,
-        correlation_id: Optional[str] = None,
+        session_id: str | None = None,
+        source_ip: str | None = None,
+        user_agent: str | None = None,
+        request_duration_ms: float | None = None,
+        error_message: str | None = None,
+        correlation_id: str | None = None,
     ) -> str:
         """Log an audit event."""
         try:
@@ -529,7 +526,7 @@ class EnhancedAuditLogger:
             return event_id
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 "Failed to log audit event",
                 event_type=event_type.value if event_type else "unknown",
                 action=action,
@@ -541,11 +538,11 @@ class EnhancedAuditLogger:
         self,
         action: str,
         outcome: str,
-        user_id: Optional[str] = None,
-        source_ip: Optional[str] = None,
-        user_agent: Optional[str] = None,
-        details: Optional[Dict[str, Any]] = None,
-        session_id: Optional[str] = None,
+        user_id: str | None = None,
+        source_ip: str | None = None,
+        user_agent: str | None = None,
+        details: dict[str, Any] | None = None,
+        session_id: str | None = None,
     ) -> str:
         """Log authentication-specific event."""
         return await self.log_event(
@@ -565,9 +562,9 @@ class EnhancedAuditLogger:
         action: str,
         outcome: str,
         user_id: str,
-        resource_id: Optional[str] = None,
-        details: Optional[Dict[str, Any]] = None,
-        correlation_id: Optional[str] = None,
+        resource_id: str | None = None,
+        details: dict[str, Any] | None = None,
+        correlation_id: str | None = None,
     ) -> str:
         """Log constitutional governance event."""
         return await self.log_event(
@@ -585,9 +582,9 @@ class EnhancedAuditLogger:
     async def log_security_incident(
         self,
         action: str,
-        user_id: Optional[str] = None,
-        source_ip: Optional[str] = None,
-        details: Optional[Dict[str, Any]] = None,
+        user_id: str | None = None,
+        source_ip: str | None = None,
+        details: dict[str, Any] | None = None,
         severity: str = "medium",
     ) -> str:
         """Log security incident."""
@@ -616,11 +613,11 @@ class EnhancedAuditLogger:
         self,
         start_time: datetime,
         end_time: datetime,
-        event_types: Optional[List[AuditEventType]] = None,
-        user_id: Optional[str] = None,
-        outcome: Optional[str] = None,
-        min_risk_score: Optional[float] = None,
-    ) -> List[AuditEvent]:
+        event_types: list[AuditEventType] | None = None,
+        user_id: str | None = None,
+        outcome: str | None = None,
+        min_risk_score: float | None = None,
+    ) -> list[AuditEvent]:
         """Query audit events with filters."""
         filters = {}
 
@@ -641,7 +638,7 @@ class EnhancedAuditLogger:
 
     async def get_compliance_report(
         self, framework: ComplianceFramework, start_time: datetime, end_time: datetime
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate compliance report for a specific framework."""
         rules = self.compliance_rules.get(framework, {})
         required_events = rules.get("required_events", [])
@@ -660,7 +657,7 @@ class EnhancedAuditLogger:
 
         missing_types = set(required_events) - covered_types
 
-        report = {
+        return {
             "framework": framework.value,
             "period": {"start": start_time.isoformat(), "end": end_time.isoformat()},
             "total_events": len(compliance_events),
@@ -673,8 +670,6 @@ class EnhancedAuditLogger:
             "constitutional_hash": CONSTITUTIONAL_HASH,
         }
 
-        return report
-
     def _generate_event_id(self) -> str:
         """Generate unique event ID."""
         import uuid
@@ -685,8 +680,8 @@ class EnhancedAuditLogger:
         self,
         event_type: AuditEventType,
         outcome: str,
-        details: Dict[str, Any],
-        error_message: Optional[str],
+        details: dict[str, Any],
+        error_message: str | None,
     ) -> float:
         """Calculate risk score for the event."""
         score = 0.0
@@ -732,8 +727,8 @@ class EnhancedAuditLogger:
         return min(1.0, score)
 
     def _determine_compliance_tags(
-        self, event_type: AuditEventType, details: Dict[str, Any]
-    ) -> Set[ComplianceFramework]:
+        self, event_type: AuditEventType, details: dict[str, Any]
+    ) -> set[ComplianceFramework]:
         """Determine which compliance frameworks apply to this event."""
         tags = set()
 
@@ -748,7 +743,7 @@ class EnhancedAuditLogger:
 
         return tags
 
-    def _contains_sensitive_data(self, details: Dict[str, Any]) -> bool:
+    def _contains_sensitive_data(self, details: dict[str, Any]) -> bool:
         """Check if details contain sensitive data."""
         sensitive_keys = [
             "password",
@@ -765,7 +760,7 @@ class EnhancedAuditLogger:
         detail_text = json.dumps(details).lower()
         return any(key in detail_text for key in sensitive_keys)
 
-    def _hash_sensitive_data(self, details: Dict[str, Any]) -> str:
+    def _hash_sensitive_data(self, details: dict[str, Any]) -> str:
         """Create hash of sensitive data for audit trail."""
         sensitive_str = json.dumps(details, sort_keys=True)
         return hashlib.sha256(sensitive_str.encode()).hexdigest()
@@ -796,7 +791,7 @@ class EnhancedAuditLogger:
     async def _check_real_time_alerts(self, event: AuditEvent):
         """Check for conditions that should trigger real-time alerts."""
         should_alert = (
-            event.level in [AuditLevel.CRITICAL, AuditLevel.CONSTITUTIONAL]
+            event.level in {AuditLevel.CRITICAL, AuditLevel.CONSTITUTIONAL}
             or event.risk_score >= self.risk_threshold
             or event.event_type == AuditEventType.SECURITY_INCIDENT
         )
@@ -818,14 +813,14 @@ class EnhancedAuditLogger:
                 try:
                     await callback(alert_data)
                 except Exception as e:
-                    logger.error(f"Alert callback failed: {e}")
+                    logger.exception(f"Alert callback failed: {e}")
 
 
 # Utility functions for easy integration
 def create_audit_logger(
     service_name: str,
     storage_type: str = "file",
-    storage_config: Optional[Dict[str, Any]] = None,
+    storage_config: dict[str, Any] | None = None,
 ) -> EnhancedAuditLogger:
     """Create audit logger with specified storage backend."""
     storage_config = storage_config or {}
@@ -843,10 +838,10 @@ async def log_user_action(
     user_id: str,
     action: str,
     resource_type: str,
-    resource_id: Optional[str] = None,
+    resource_id: str | None = None,
     outcome: str = "success",
-    details: Optional[Dict[str, Any]] = None,
-    request_context: Optional[Dict[str, Any]] = None,
+    details: dict[str, Any] | None = None,
+    request_context: dict[str, Any] | None = None,
 ) -> str:
     """Utility function to log user actions."""
     context = request_context or {}

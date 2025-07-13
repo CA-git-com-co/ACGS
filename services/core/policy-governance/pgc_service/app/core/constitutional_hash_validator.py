@@ -183,7 +183,7 @@ class ConstitutionalHashValidator:
             return validation_result
 
         except Exception as e:
-            logger.error(f"Constitutional validation failed: {e}")
+            logger.exception(f"Constitutional validation failed: {e}")
             self._circuit_breaker_failures += 1
 
             return ConstitutionalValidationResult(
@@ -235,14 +235,12 @@ class ConstitutionalHashValidator:
             )
 
             # Combine results
-            combined_result = self._combine_validation_results(
+            return self._combine_validation_results(
                 hash_result, compliance_checks, start_time
             )
 
-            return combined_result
-
         except Exception as e:
-            logger.error(f"Policy constitutional compliance validation failed: {e}")
+            logger.exception(f"Policy constitutional compliance validation failed: {e}")
             return self._create_error_result(context, str(e), start_time)
 
     async def get_constitutional_state(self) -> dict[str, Any]:
@@ -269,7 +267,7 @@ class ConstitutionalHashValidator:
                 else 0.0
             )
 
-            state = {
+            return {
                 "constitutional_hash": self.constitutional_hash,
                 "validation_status": (
                     "healthy" if not self._is_circuit_breaker_open() else "degraded"
@@ -288,10 +286,8 @@ class ConstitutionalHashValidator:
                 "timestamp": current_time,
             }
 
-            return state
-
         except Exception as e:
-            logger.error(f"Failed to get constitutional state: {e}")
+            logger.exception(f"Failed to get constitutional state: {e}")
             return {
                 "constitutional_hash": self.constitutional_hash,
                 "validation_status": "error",
@@ -314,10 +310,10 @@ class ConstitutionalHashValidator:
 
         # Basic hash validation
         if provided_hash is None:
-            if context.validation_level in [
+            if context.validation_level in {
                 ConstitutionalValidationLevel.COMPREHENSIVE,
                 ConstitutionalValidationLevel.CRITICAL,
-            ]:
+            }:
                 violations.append(
                     "Constitutional hash is required for this operation level"
                 )
@@ -333,10 +329,10 @@ class ConstitutionalHashValidator:
             compliance_score = 0.0
 
         # Enhanced validation for higher levels
-        if context.validation_level in [
+        if context.validation_level in {
             ConstitutionalValidationLevel.COMPREHENSIVE,
             ConstitutionalValidationLevel.CRITICAL,
-        ]:
+        }:
             enhanced_checks = await self._perform_enhanced_constitutional_checks(
                 provided_hash, context, policy_data
             )
@@ -401,7 +397,7 @@ class ConstitutionalHashValidator:
             compliance_multiplier *= policy_checks.get("compliance_multiplier", 1.0)
 
         # Context-specific checks
-        if context.operation_type in ["policy_creation", "constitutional_amendment"]:
+        if context.operation_type in {"policy_creation", "constitutional_amendment"}:
             if not provided_hash:
                 violations.append(
                     "Constitutional hash is mandatory for constitutional operations"
@@ -605,12 +601,11 @@ class ConstitutionalHashValidator:
         """Generate HMAC-SHA256 integrity signature."""
         try:
             message = f"{data}|{operation_type}|{self.constitutional_hash}"
-            signature = hmac.new(
+            return hmac.new(
                 self.hmac_secret_key.encode(), message.encode(), hashlib.sha256
             ).hexdigest()
-            return signature
         except Exception as e:
-            logger.error(f"Failed to generate integrity signature: {e}")
+            logger.exception(f"Failed to generate integrity signature: {e}")
             return ""
 
     def _is_circuit_breaker_open(self) -> bool:
@@ -696,4 +691,4 @@ class ConstitutionalHashValidator:
                 )
 
         except Exception as e:
-            logger.error(f"Failed to update metrics: {e}")
+            logger.exception(f"Failed to update metrics: {e}")

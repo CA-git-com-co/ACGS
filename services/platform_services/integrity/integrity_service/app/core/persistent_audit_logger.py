@@ -16,14 +16,12 @@ Key Features:
 - Constitutional compliance validation
 """
 
-import asyncio
 import hashlib
 import json
 import logging
 import time
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Tuple
-from uuid import uuid4
+from typing import Any
 
 import aioredis
 import psycopg2
@@ -39,7 +37,7 @@ logger = logging.getLogger(__name__)
 class PersistentAuditLogger:
     """
     High-performance persistent audit logger with hash chaining and multi-tenant RLS.
-    
+
     Implements:
     - Cryptographic hash chaining for tamper detection
     - Multi-tenant Row Level Security
@@ -47,17 +45,17 @@ class PersistentAuditLogger:
     - Sub-5ms insert latency target
     - Constitutional compliance validation
     """
-    
+
     def __init__(
         self,
-        db_config: Dict[str, Any],
-        redis_config: Optional[Dict[str, Any]] = None,
+        db_config: dict[str, Any],
+        redis_config: dict[str, Any] | None = None,
         pool_size: int = 20,
-        max_overflow: int = 30
+        max_overflow: int = 30,
     ):
         """
         Initialize the persistent audit logger.
-        
+
         Args:
             db_config: Database configuration dictionary
             redis_config: Redis configuration dictionary (optional)
@@ -68,21 +66,23 @@ class PersistentAuditLogger:
         self.redis_config = redis_config or {}
         self.pool_size = pool_size
         self.max_overflow = max_overflow
-        
+
         # Initialize connection pool
-        self.db_pool: Optional[ThreadedConnectionPool] = None
-        self.redis_client: Optional[aioredis.Redis] = None
-        
+        self.db_pool: ThreadedConnectionPool | None = None
+        self.redis_client: aioredis.Redis | None = None
+
         # Performance metrics
-        self.insert_times: List[float] = []
+        self.insert_times: list[float] = []
         self.cache_hits = 0
         self.cache_misses = 0
-        
+
         # Constitutional compliance
         self.constitutional_hash = CONSTITUTIONAL_HASH
-        
-        logger.info(f"PersistentAuditLogger initialized with constitutional hash: {CONSTITUTIONAL_HASH}")
-    
+
+        logger.info(
+            f"PersistentAuditLogger initialized with constitutional hash: {CONSTITUTIONAL_HASH}"
+        )
+
     async def initialize(self) -> None:
         """Initialize database pool and Redis connection."""
         try:
@@ -95,26 +95,26 @@ class PersistentAuditLogger:
                 database=self.db_config.get("database", "acgs_integrity"),
                 user=self.db_config.get("user", "acgs_user"),
                 password=self.db_config.get("password", "acgs_password"),
-                cursor_factory=psycopg2.extras.RealDictCursor
+                cursor_factory=psycopg2.extras.RealDictCursor,
             )
-            
+
             # Initialize Redis client if configured
             if self.redis_config:
                 self.redis_client = aioredis.from_url(
                     self.redis_config.get("url", "redis://localhost:6389"),
                     encoding="utf-8",
-                    decode_responses=True
+                    decode_responses=True,
                 )
-                
+
             # Create audit_logs table if it doesn't exist
             await self._create_audit_table()
-            
+
             logger.info("✅ PersistentAuditLogger initialized successfully")
-            
+
         except Exception as e:
-            logger.error(f"Failed to initialize PersistentAuditLogger: {e}")
+            logger.exception(f"Failed to initialize PersistentAuditLogger: {e}")
             raise
-    
+
     async def _create_audit_table(self) -> None:
         """Create the audit_logs table with proper indexing and RLS."""
         create_table_sql = """
@@ -133,10 +133,10 @@ class PersistentAuditLogger:
             created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
             CONSTRAINT audit_logs_hash_not_empty CHECK (length(current_hash) > 0)
         );
-        
+
         -- Enable Row Level Security
         ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
-        
+
         -- Create RLS policy for multi-tenant isolation
         DROP POLICY IF EXISTS audit_logs_tenant_isolation ON audit_logs;
         CREATE POLICY audit_logs_tenant_isolation ON audit_logs
@@ -148,26 +148,26 @@ class PersistentAuditLogger:
                 )
                 OR current_setting('app.bypass_rls', true) = 'true'
             );
-        
+
         -- Create performance indexes
-        CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_audit_logs_timestamp 
+        CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_audit_logs_timestamp
             ON audit_logs(timestamp DESC);
-        CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_audit_logs_tenant_timestamp 
+        CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_audit_logs_tenant_timestamp
             ON audit_logs(tenant_id, timestamp DESC);
-        CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_audit_logs_event_type 
+        CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_audit_logs_event_type
             ON audit_logs(event_type, timestamp DESC);
-        CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_audit_logs_service_name 
+        CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_audit_logs_service_name
             ON audit_logs(service_name, timestamp DESC);
-        CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_audit_logs_hash_chain 
+        CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_audit_logs_hash_chain
             ON audit_logs(current_hash);
-        CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_audit_logs_constitutional_hash 
+        CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_audit_logs_constitutional_hash
             ON audit_logs(constitutional_hash);
-        
+
         -- Create GIN index for JSONB event_data
-        CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_audit_logs_event_data_gin 
+        CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_audit_logs_event_data_gin
             ON audit_logs USING GIN(event_data);
         """
-        
+
         conn = None
         try:
             conn = self.db_pool.getconn()
@@ -175,48 +175,52 @@ class PersistentAuditLogger:
                 cursor.execute(create_table_sql)
                 conn.commit()
                 logger.info("✅ Audit logs table created with RLS and indexing")
-                
+
         except Exception as e:
             if conn:
                 conn.rollback()
-            logger.error(f"Failed to create audit table: {e}")
+            logger.exception(f"Failed to create audit table: {e}")
             raise
         finally:
             if conn:
                 self.db_pool.putconn(conn)
-    
-    def _calculate_hash_chain(self, prev_hash: Optional[str], event_data: Dict[str, Any]) -> str:
+
+    def _calculate_hash_chain(
+        self, prev_hash: str | None, event_data: dict[str, Any]
+    ) -> str:
         """
         Calculate SHA-256 hash chain for tamper detection.
-        
+
         Args:
             prev_hash: Previous hash in the chain (None for genesis)
             event_data: Event data to hash
-            
+
         Returns:
             SHA-256 hash string
         """
         # Create deterministic string representation
-        event_str = json.dumps(event_data, sort_keys=True, separators=(',', ':'))
-        
+        event_str = json.dumps(event_data, sort_keys=True, separators=(",", ":"))
+
         # Include previous hash in chain (use genesis for first entry)
         chain_input = f"{prev_hash or 'genesis'}:{event_str}:{self.constitutional_hash}"
-        
+
         # Calculate SHA-256 hash
-        return hashlib.sha256(chain_input.encode('utf-8')).hexdigest()
-    
-    async def _get_last_hash(self, tenant_id: Optional[str] = None) -> Optional[str]:
+        return hashlib.sha256(chain_input.encode("utf-8")).hexdigest()
+
+    async def _get_last_hash(self, tenant_id: str | None = None) -> str | None:
         """
         Get the last hash in the chain for a tenant.
-        
+
         Args:
             tenant_id: Tenant ID for multi-tenant isolation
-            
+
         Returns:
             Last hash in chain or None if no entries exist
         """
-        cache_key = f"acgs:audit:last_hash:{tenant_id or 'global'}:{CONSTITUTIONAL_HASH}"
-        
+        cache_key = (
+            f"acgs:audit:last_hash:{tenant_id or 'global'}:{CONSTITUTIONAL_HASH}"
+        )
+
         # Try Redis cache first
         if self.redis_client:
             try:
@@ -227,7 +231,7 @@ class PersistentAuditLogger:
                 self.cache_misses += 1
             except Exception as e:
                 logger.warning(f"Redis cache lookup failed: {e}")
-        
+
         # Fallback to database query
         conn = None
         try:
@@ -237,31 +241,36 @@ class PersistentAuditLogger:
                 if tenant_id:
                     cursor.execute(
                         "SELECT set_config('app.current_tenant_id', %s, true)",
-                        (tenant_id,)
+                        (tenant_id,),
                     )
-                
-                cursor.execute("""
-                    SELECT current_hash 
-                    FROM audit_logs 
+
+                cursor.execute(
+                    """
+                    SELECT current_hash
+                    FROM audit_logs
                     WHERE tenant_id = %s OR (%s IS NULL AND tenant_id IS NULL)
-                    ORDER BY timestamp DESC, id DESC 
+                    ORDER BY timestamp DESC, id DESC
                     LIMIT 1
-                """, (tenant_id, tenant_id))
-                
+                """,
+                    (tenant_id, tenant_id),
+                )
+
                 result = cursor.fetchone()
-                last_hash = result['current_hash'] if result else None
-                
+                last_hash = result["current_hash"] if result else None
+
                 # Cache the result
                 if self.redis_client and last_hash:
                     try:
-                        await self.redis_client.setex(cache_key, 300, last_hash)  # 5 min cache
+                        await self.redis_client.setex(
+                            cache_key, 300, last_hash
+                        )  # 5 min cache
                     except Exception as e:
                         logger.warning(f"Redis cache storage failed: {e}")
-                
+
                 return last_hash
-                
+
         except Exception as e:
-            logger.error(f"Failed to get last hash: {e}")
+            logger.exception(f"Failed to get last hash: {e}")
             return None
         finally:
             if conn:
@@ -269,12 +278,12 @@ class PersistentAuditLogger:
 
     async def log_event(
         self,
-        event_data: Dict[str, Any],
-        tenant_id: Optional[str] = None,
-        user_id: Optional[str] = None,
+        event_data: dict[str, Any],
+        tenant_id: str | None = None,
+        user_id: str | None = None,
         service_name: str = "integrity_service",
-        event_type: str = "audit_event"
-    ) -> Dict[str, Any]:
+        event_type: str = "audit_event",
+    ) -> dict[str, Any]:
         """
         Log an audit event with hash chaining and constitutional compliance.
 
@@ -305,15 +314,15 @@ class PersistentAuditLogger:
 
             # Prepare audit record
             audit_record = {
-                'timestamp': datetime.now(timezone.utc),
-                'event_data': json.dumps(event_data, sort_keys=True),
-                'prev_hash': prev_hash,
-                'current_hash': current_hash,
-                'tenant_id': tenant_id,
-                'user_id': user_id,
-                'service_name': service_name,
-                'event_type': event_type,
-                'constitutional_hash': self.constitutional_hash
+                "timestamp": datetime.now(timezone.utc),
+                "event_data": json.dumps(event_data, sort_keys=True),
+                "prev_hash": prev_hash,
+                "current_hash": current_hash,
+                "tenant_id": tenant_id,
+                "user_id": user_id,
+                "service_name": service_name,
+                "event_type": event_type,
+                "constitutional_hash": self.constitutional_hash,
             }
 
             # Insert into database
@@ -338,26 +347,26 @@ class PersistentAuditLogger:
             logger.info(f"Audit event logged in {insert_time:.2f}ms - ID: {record_id}")
 
             return {
-                'success': True,
-                'record_id': record_id,
-                'current_hash': current_hash,
-                'prev_hash': prev_hash,
-                'insert_time_ms': insert_time,
-                'constitutional_hash': self.constitutional_hash,
-                'timestamp': audit_record['timestamp'].isoformat()
+                "success": True,
+                "record_id": record_id,
+                "current_hash": current_hash,
+                "prev_hash": prev_hash,
+                "insert_time_ms": insert_time,
+                "constitutional_hash": self.constitutional_hash,
+                "timestamp": audit_record["timestamp"].isoformat(),
             }
 
         except Exception as e:
             insert_time = (time.perf_counter() - start_time) * 1000
-            logger.error(f"Failed to log audit event in {insert_time:.2f}ms: {e}")
+            logger.exception(f"Failed to log audit event in {insert_time:.2f}ms: {e}")
             return {
-                'success': False,
-                'error': str(e),
-                'insert_time_ms': insert_time,
-                'constitutional_hash': self.constitutional_hash
+                "success": False,
+                "error": str(e),
+                "insert_time_ms": insert_time,
+                "constitutional_hash": self.constitutional_hash,
             }
 
-    def _validate_constitutional_compliance(self, event_data: Dict[str, Any]) -> bool:
+    def _validate_constitutional_compliance(self, event_data: dict[str, Any]) -> bool:
         """
         Validate event data meets constitutional compliance requirements.
 
@@ -368,26 +377,26 @@ class PersistentAuditLogger:
             True if compliant, False otherwise
         """
         # Basic validation requirements
-        required_fields = ['action', 'resource_type']
+        required_fields = ["action", "resource_type"]
 
         for field in required_fields:
             if field not in event_data:
-                logger.warning(f"Constitutional compliance violation: missing required field '{field}'")
+                logger.warning(
+                    f"Constitutional compliance violation: missing required field '{field}'"
+                )
                 return False
 
         # Validate constitutional hash if present
-        if 'constitutional_hash' in event_data:
-            if event_data['constitutional_hash'] != self.constitutional_hash:
-                logger.warning(f"Constitutional compliance violation: hash mismatch")
+        if "constitutional_hash" in event_data:
+            if event_data["constitutional_hash"] != self.constitutional_hash:
+                logger.warning("Constitutional compliance violation: hash mismatch")
                 return False
 
         # Additional validation rules can be added here
         return True
 
     async def _insert_audit_record(
-        self,
-        audit_record: Dict[str, Any],
-        tenant_id: Optional[str] = None
+        self, audit_record: dict[str, Any], tenant_id: str | None = None
     ) -> int:
         """
         Insert audit record into database with optimized performance.
@@ -407,7 +416,7 @@ class PersistentAuditLogger:
                 if tenant_id:
                     cursor.execute(
                         "SELECT set_config('app.current_tenant_id', %s, true)",
-                        (tenant_id,)
+                        (tenant_id,),
                     )
 
                 # Insert audit record
@@ -420,19 +429,22 @@ class PersistentAuditLogger:
                     ) RETURNING id
                 """
 
-                cursor.execute(insert_sql, (
-                    audit_record['timestamp'],
-                    audit_record['event_data'],
-                    audit_record['prev_hash'],
-                    audit_record['current_hash'],
-                    audit_record['tenant_id'],
-                    audit_record['user_id'],
-                    audit_record['service_name'],
-                    audit_record['event_type'],
-                    audit_record['constitutional_hash']
-                ))
+                cursor.execute(
+                    insert_sql,
+                    (
+                        audit_record["timestamp"],
+                        audit_record["event_data"],
+                        audit_record["prev_hash"],
+                        audit_record["current_hash"],
+                        audit_record["tenant_id"],
+                        audit_record["user_id"],
+                        audit_record["service_name"],
+                        audit_record["event_type"],
+                        audit_record["constitutional_hash"],
+                    ),
+                )
 
-                record_id = cursor.fetchone()['id']
+                record_id = cursor.fetchone()["id"]
                 conn.commit()
 
                 return record_id
@@ -440,17 +452,15 @@ class PersistentAuditLogger:
         except Exception as e:
             if conn:
                 conn.rollback()
-            logger.error(f"Failed to insert audit record: {e}")
+            logger.exception(f"Failed to insert audit record: {e}")
             raise
         finally:
             if conn:
                 self.db_pool.putconn(conn)
 
     async def verify_hash_chain_integrity(
-        self,
-        tenant_id: Optional[str] = None,
-        limit: int = 1000
-    ) -> Dict[str, Any]:
+        self, tenant_id: str | None = None, limit: int = 1000
+    ) -> dict[str, Any]:
         """
         Verify the integrity of the hash chain for tamper detection.
 
@@ -471,7 +481,7 @@ class PersistentAuditLogger:
                 if tenant_id:
                     cursor.execute(
                         "SELECT set_config('app.current_tenant_id', %s, true)",
-                        (tenant_id,)
+                        (tenant_id,),
                     )
 
                 # Get audit records in chronological order
@@ -488,10 +498,11 @@ class PersistentAuditLogger:
 
                 if not records:
                     return {
-                        'integrity_verified': True,
-                        'total_records': 0,
-                        'verification_time_ms': (time.perf_counter() - start_time) * 1000,
-                        'constitutional_hash': self.constitutional_hash
+                        "integrity_verified": True,
+                        "total_records": 0,
+                        "verification_time_ms": (time.perf_counter() - start_time)
+                        * 1000,
+                        "constitutional_hash": self.constitutional_hash,
                     }
 
                 # Verify hash chain
@@ -499,53 +510,59 @@ class PersistentAuditLogger:
                 prev_hash = None
 
                 for record in records:
-                    event_data = json.loads(record['event_data'])
+                    event_data = json.loads(record["event_data"])
                     expected_hash = self._calculate_hash_chain(prev_hash, event_data)
 
-                    if expected_hash != record['current_hash']:
-                        integrity_violations.append({
-                            'record_id': record['id'],
-                            'expected_hash': expected_hash,
-                            'actual_hash': record['current_hash'],
-                            'timestamp': record['timestamp'].isoformat()
-                        })
+                    if expected_hash != record["current_hash"]:
+                        integrity_violations.append(
+                            {
+                                "record_id": record["id"],
+                                "expected_hash": expected_hash,
+                                "actual_hash": record["current_hash"],
+                                "timestamp": record["timestamp"].isoformat(),
+                            }
+                        )
 
                     # Check previous hash linkage
-                    if record['prev_hash'] != prev_hash:
-                        integrity_violations.append({
-                            'record_id': record['id'],
-                            'violation_type': 'prev_hash_mismatch',
-                            'expected_prev_hash': prev_hash,
-                            'actual_prev_hash': record['prev_hash'],
-                            'timestamp': record['timestamp'].isoformat()
-                        })
+                    if record["prev_hash"] != prev_hash:
+                        integrity_violations.append(
+                            {
+                                "record_id": record["id"],
+                                "violation_type": "prev_hash_mismatch",
+                                "expected_prev_hash": prev_hash,
+                                "actual_prev_hash": record["prev_hash"],
+                                "timestamp": record["timestamp"].isoformat(),
+                            }
+                        )
 
-                    prev_hash = record['current_hash']
+                    prev_hash = record["current_hash"]
 
                 verification_time = (time.perf_counter() - start_time) * 1000
 
                 return {
-                    'integrity_verified': len(integrity_violations) == 0,
-                    'total_records': len(records),
-                    'integrity_violations': integrity_violations,
-                    'verification_time_ms': verification_time,
-                    'constitutional_hash': self.constitutional_hash
+                    "integrity_verified": len(integrity_violations) == 0,
+                    "total_records": len(records),
+                    "integrity_violations": integrity_violations,
+                    "verification_time_ms": verification_time,
+                    "constitutional_hash": self.constitutional_hash,
                 }
 
         except Exception as e:
             verification_time = (time.perf_counter() - start_time) * 1000
-            logger.error(f"Hash chain verification failed in {verification_time:.2f}ms: {e}")
+            logger.exception(
+                f"Hash chain verification failed in {verification_time:.2f}ms: {e}"
+            )
             return {
-                'integrity_verified': False,
-                'error': str(e),
-                'verification_time_ms': verification_time,
-                'constitutional_hash': self.constitutional_hash
+                "integrity_verified": False,
+                "error": str(e),
+                "verification_time_ms": verification_time,
+                "constitutional_hash": self.constitutional_hash,
             }
         finally:
             if conn:
                 self.db_pool.putconn(conn)
 
-    async def get_performance_metrics(self) -> Dict[str, Any]:
+    async def get_performance_metrics(self) -> dict[str, Any]:
         """
         Get performance metrics for the audit logger.
 
@@ -554,12 +571,12 @@ class PersistentAuditLogger:
         """
         if not self.insert_times:
             return {
-                'avg_insert_time_ms': 0.0,
-                'p95_insert_time_ms': 0.0,
-                'p99_insert_time_ms': 0.0,
-                'total_operations': 0,
-                'cache_hit_rate': 0.0,
-                'constitutional_hash': self.constitutional_hash
+                "avg_insert_time_ms": 0.0,
+                "p95_insert_time_ms": 0.0,
+                "p99_insert_time_ms": 0.0,
+                "total_operations": 0,
+                "cache_hit_rate": 0.0,
+                "constitutional_hash": self.constitutional_hash,
             }
 
         sorted_times = sorted(self.insert_times)
@@ -570,17 +587,23 @@ class PersistentAuditLogger:
         p99_index = int(0.99 * total_ops)
 
         total_cache_ops = self.cache_hits + self.cache_misses
-        cache_hit_rate = (self.cache_hits / total_cache_ops * 100) if total_cache_ops > 0 else 0.0
+        cache_hit_rate = (
+            (self.cache_hits / total_cache_ops * 100) if total_cache_ops > 0 else 0.0
+        )
 
         return {
-            'avg_insert_time_ms': sum(sorted_times) / total_ops,
-            'p95_insert_time_ms': sorted_times[p95_index] if p95_index < total_ops else 0.0,
-            'p99_insert_time_ms': sorted_times[p99_index] if p99_index < total_ops else 0.0,
-            'total_operations': total_ops,
-            'cache_hit_rate': cache_hit_rate,
-            'cache_hits': self.cache_hits,
-            'cache_misses': self.cache_misses,
-            'constitutional_hash': self.constitutional_hash
+            "avg_insert_time_ms": sum(sorted_times) / total_ops,
+            "p95_insert_time_ms": (
+                sorted_times[p95_index] if p95_index < total_ops else 0.0
+            ),
+            "p99_insert_time_ms": (
+                sorted_times[p99_index] if p99_index < total_ops else 0.0
+            ),
+            "total_operations": total_ops,
+            "cache_hit_rate": cache_hit_rate,
+            "cache_hits": self.cache_hits,
+            "cache_misses": self.cache_misses,
+            "constitutional_hash": self.constitutional_hash,
         }
 
     async def cleanup(self) -> None:
@@ -595,11 +618,11 @@ class PersistentAuditLogger:
             logger.info("PersistentAuditLogger cleanup completed")
 
         except Exception as e:
-            logger.error(f"Error during cleanup: {e}")
+            logger.exception(f"Error during cleanup: {e}")
 
 
 # Global instance for easy access
-_audit_logger_instance: Optional[PersistentAuditLogger] = None
+_audit_logger_instance: PersistentAuditLogger | None = None
 
 
 async def get_audit_logger() -> PersistentAuditLogger:
@@ -613,12 +636,10 @@ async def get_audit_logger() -> PersistentAuditLogger:
             "port": 5439,
             "database": "acgs_integrity",
             "user": "acgs_user",
-            "password": "acgs_password"
+            "password": "acgs_password",
         }
 
-        redis_config = {
-            "url": "redis://localhost:6389"
-        }
+        redis_config = {"url": "redis://localhost:6389"}
 
         _audit_logger_instance = PersistentAuditLogger(db_config, redis_config)
         await _audit_logger_instance.initialize()
@@ -627,12 +648,12 @@ async def get_audit_logger() -> PersistentAuditLogger:
 
 
 async def log_audit_event(
-    event_data: Dict[str, Any],
-    tenant_id: Optional[str] = None,
-    user_id: Optional[str] = None,
+    event_data: dict[str, Any],
+    tenant_id: str | None = None,
+    user_id: str | None = None,
     service_name: str = "integrity_service",
-    event_type: str = "audit_event"
-) -> Dict[str, Any]:
+    event_type: str = "audit_event",
+) -> dict[str, Any]:
     """
     Convenience function to log an audit event.
 
@@ -652,5 +673,5 @@ async def log_audit_event(
         tenant_id=tenant_id,
         user_id=user_id,
         service_name=service_name,
-        event_type=event_type
+        event_type=event_type,
     )

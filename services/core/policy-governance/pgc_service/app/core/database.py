@@ -9,7 +9,7 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import logging
-from typing import Any, Optional
+from typing import Any
 
 # Import real database implementation
 from .real_database import (
@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 class DatabaseManager(RealDatabaseManager):
     """Database manager for PGC service with real database operations."""
 
-    def __init__(self, connection_string: Optional[str] = None):
+    def __init__(self, connection_string: str | None = None):
         """Initialize real database manager."""
         super().__init__(connection_string)
         logger.info("Real database manager initialized for PGC service")
@@ -46,15 +46,15 @@ class DatabaseManager(RealDatabaseManager):
                 "constitutional_hash": CONSTITUTIONAL_HASH,
             }
 
-            result = await self.execute_query(query, params)
+            await self.execute_query(query, params)
             logger.info(f"Policy stored successfully: {policy_data.get('name')}")
             return True
 
         except Exception as e:
-            logger.error(f"Failed to store policy: {e}")
+            logger.exception(f"Failed to store policy: {e}")
             return False
 
-    async def get_policy(self, policy_name: str) -> Optional[dict[str, Any]]:
+    async def get_policy(self, policy_name: str) -> dict[str, Any] | None:
         """Retrieve policy by name."""
         try:
             query = """
@@ -68,12 +68,11 @@ class DatabaseManager(RealDatabaseManager):
             if result:
                 logger.info(f"Policy retrieved: {policy_name}")
                 return result[0]
-            else:
-                logger.warning(f"Policy not found: {policy_name}")
-                return None
+            logger.warning(f"Policy not found: {policy_name}")
+            return None
 
         except Exception as e:
-            logger.error(f"Failed to retrieve policy {policy_name}: {e}")
+            logger.exception(f"Failed to retrieve policy {policy_name}: {e}")
             return None
 
     async def list_policies(self) -> list[dict[str, Any]]:
@@ -92,7 +91,7 @@ class DatabaseManager(RealDatabaseManager):
             return result
 
         except Exception as e:
-            logger.error(f"Failed to list policies: {e}")
+            logger.exception(f"Failed to list policies: {e}")
             return []
 
     async def update_policy(
@@ -119,12 +118,11 @@ class DatabaseManager(RealDatabaseManager):
             if affected_rows > 0:
                 logger.info(f"Policy updated successfully: {policy_name}")
                 return True
-            else:
-                logger.warning(f"No policy found to update: {policy_name}")
-                return False
+            logger.warning(f"No policy found to update: {policy_name}")
+            return False
 
         except Exception as e:
-            logger.error(f"Failed to update policy {policy_name}: {e}")
+            logger.exception(f"Failed to update policy {policy_name}: {e}")
             return False
 
     async def delete_policy(self, policy_name: str) -> bool:
@@ -142,17 +140,16 @@ class DatabaseManager(RealDatabaseManager):
             if affected_rows > 0:
                 logger.info(f"Policy deleted successfully: {policy_name}")
                 return True
-            else:
-                logger.warning(f"No policy found to delete: {policy_name}")
-                return False
+            logger.warning(f"No policy found to delete: {policy_name}")
+            return False
 
         except Exception as e:
-            logger.error(f"Failed to delete policy {policy_name}: {e}")
+            logger.exception(f"Failed to delete policy {policy_name}: {e}")
             return False
 
 
 # Global database manager instance (enhanced with real implementation)
-_db_manager: Optional[DatabaseManager] = None
+_db_manager: DatabaseManager | None = None
 
 
 def get_database_manager() -> DatabaseManager:
@@ -225,7 +222,7 @@ async def _ensure_policy_tables_exist(db_manager: DatabaseManager) -> None:
         logger.info("Policy tables ensured to exist")
 
     except Exception as e:
-        logger.error(f"Failed to create policy tables: {e}")
+        logger.exception(f"Failed to create policy tables: {e}")
 
 
 # Backward compatibility aliases

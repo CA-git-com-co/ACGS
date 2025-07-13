@@ -183,10 +183,7 @@ class CircuitBreaker:
 
         # Check failure rate (alternative threshold)
         failure_rate_threshold = 50.0  # 50% failure rate
-        if self.metrics.failure_rate >= failure_rate_threshold:
-            return True
-
-        return False
+        return self.metrics.failure_rate >= failure_rate_threshold
 
     def _transition_to_open(self):
         # requires: Valid input parameters
@@ -254,7 +251,7 @@ class CircuitBreaker:
             try:
                 callback(old_state, new_state, self.get_status())
             except Exception as e:
-                logger.error(f"Error in circuit breaker callback: {e}")
+                logger.exception(f"Error in circuit breaker callback: {e}")
 
     def add_state_change_callback(self, state: CircuitBreakerState, callback: Callable):
         # requires: Valid input parameters

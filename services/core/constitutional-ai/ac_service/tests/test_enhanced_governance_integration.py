@@ -15,18 +15,20 @@ Key Test Areas:
 """
 
 import asyncio
-import pytest
 import time
-from unittest.mock import AsyncMock, MagicMock, patch
-from fastapi.testclient import TestClient
-from typing import Dict, Any
+from unittest.mock import AsyncMock, patch
 
-from services.core.constitutional_ai.ac_service.app.config.app_config import create_constitutional_ai_app
+import pytest
+from fastapi.testclient import TestClient
+from services.core.constitutional_ai.ac_service.app.config.app_config import (
+    create_constitutional_ai_app,
+)
 from services.core.constitutional_ai.ac_service.app.services.enhanced_governance_framework import (
     DomainType,
     GovernanceFrameworkIntegration,
     create_enhanced_governance_integration,
 )
+
 from services.shared.validation.constitutional_validator import CONSTITUTIONAL_HASH
 
 
@@ -37,29 +39,31 @@ class TestEnhancedGovernanceIntegration:
     def mock_constitutional_validator(self) -> AsyncMock:
         """Mock constitutional validation service"""
         validator = AsyncMock()
-        validator.validate_constitutional_compliance = AsyncMock(return_value={
-            "validation_id": "test_validation_123",
-            "overall_compliant": True,
-            "compliance_score": 0.92,
-            "validation_level": "comprehensive",
-            "results": [
-                {
-                    "rule_id": "CONST-001",
-                    "rule_name": "Democratic Participation",
-                    "compliant": True,
-                    "confidence": 0.95,
-                    "weight": 0.20,
-                }
-            ],
-            "summary": {
-                "total_rules_checked": 5,
-                "rules_passed": 5,
-                "rules_failed": 0,
-                "overall_confidence": 0.92,
-            },
-            "next_steps": ["Proceed to policy governance compliance check"],
-            "constitutional_hash": CONSTITUTIONAL_HASH,
-        })
+        validator.validate_constitutional_compliance = AsyncMock(
+            return_value={
+                "validation_id": "test_validation_123",
+                "overall_compliant": True,
+                "compliance_score": 0.92,
+                "validation_level": "comprehensive",
+                "results": [
+                    {
+                        "rule_id": "CONST-001",
+                        "rule_name": "Democratic Participation",
+                        "compliant": True,
+                        "confidence": 0.95,
+                        "weight": 0.20,
+                    }
+                ],
+                "summary": {
+                    "total_rules_checked": 5,
+                    "rules_passed": 5,
+                    "rules_failed": 0,
+                    "overall_confidence": 0.92,
+                },
+                "next_steps": ["Proceed to policy governance compliance check"],
+                "constitutional_hash": CONSTITUTIONAL_HASH,
+            }
+        )
         return validator
 
     @pytest.fixture
@@ -120,7 +124,7 @@ class TestEnhancedGovernanceIntegration:
 
         # Validate domain-specific behavior
         assert result["domain"] == "healthcare"
-        
+
         # Validate enhanced governance results
         enhanced_gov = result["enhanced_governance"]
         assert "governance_id" in enhanced_gov
@@ -181,7 +185,10 @@ class TestEnhancedGovernanceIntegration:
         # Verify constitutional hash is present throughout
         assert result["constitutional_hash"] == CONSTITUTIONAL_HASH
         assert result["enhanced_governance"]["governance_id"].startswith("gov_")
-        assert result["constitutional_validation"]["constitutional_hash"] == CONSTITUTIONAL_HASH
+        assert (
+            result["constitutional_validation"]["constitutional_hash"]
+            == CONSTITUTIONAL_HASH
+        )
 
     @pytest.mark.asyncio
     async def test_audit_logging_integration(self, governance_integration):
@@ -194,7 +201,9 @@ class TestEnhancedGovernanceIntegration:
         governance_integration.audit_logger.log_governance_evaluation.assert_called_once()
 
         # Verify evaluation ID is tracked
-        call_args = governance_integration.audit_logger.log_governance_evaluation.call_args
+        call_args = (
+            governance_integration.audit_logger.log_governance_evaluation.call_args
+        )
         assert call_args[0][0] == result["evaluation_id"]  # evaluation_id
         assert call_args[0][1] == result  # result
 
@@ -202,7 +211,7 @@ class TestEnhancedGovernanceIntegration:
     async def test_performance_targets_validation(self, governance_integration):
         """Test that performance targets are met"""
         query = "Performance test query"
-        
+
         # Measure latency for multiple requests
         latencies = []
         for _ in range(5):
@@ -210,7 +219,7 @@ class TestEnhancedGovernanceIntegration:
             result = await governance_integration.evaluate_governance(query=query)
             latency_ms = (time.time() - start_time) * 1000
             latencies.append(latency_ms)
-            
+
             # Verify constitutional compliance
             assert result["constitutional_hash"] == CONSTITUTIONAL_HASH
 
@@ -253,27 +262,30 @@ class TestEnhancedGovernanceIntegration:
         result1 = await governance_integration.evaluate_governance(
             query=query, context=context
         )
-        first_latency = (time.time() - start_time) * 1000
+        (time.time() - start_time) * 1000
 
         # Second request (should potentially be cached)
         start_time = time.time()
         result2 = await governance_integration.evaluate_governance(
             query=query, context=context
         )
-        second_latency = (time.time() - start_time) * 1000
+        (time.time() - start_time) * 1000
 
         # Both should have constitutional compliance
         assert result1["constitutional_hash"] == CONSTITUTIONAL_HASH
         assert result2["constitutional_hash"] == CONSTITUTIONAL_HASH
 
         # Results should be consistent
-        assert result1["enhanced_governance"]["consensus_result"] == result2["enhanced_governance"]["consensus_result"]
+        assert (
+            result1["enhanced_governance"]["consensus_result"]
+            == result2["enhanced_governance"]["consensus_result"]
+        )
 
     def test_framework_initialization(self, governance_integration):
         """Test that all domain frameworks are properly initialized"""
         # Verify all domains are initialized
         assert len(governance_integration.frameworks) == len(DomainType)
-        
+
         for domain in DomainType:
             assert domain in governance_integration.frameworks
             framework = governance_integration.frameworks[domain]
@@ -290,12 +302,15 @@ class TestAPIIntegration:
     def app_client(self):
         """Create test client for FastAPI app"""
         # Mock environment variables for testing
-        with patch.dict('os.environ', {
-            'ENABLE_ENHANCED_GOVERNANCE': 'true',
-            'GOVERNANCE_P99_TARGET_MS': '5.0',
-            'GOVERNANCE_THROUGHPUT_TARGET': '100.0',
-            'GOVERNANCE_CACHE_HIT_TARGET': '0.85',
-        }):
+        with patch.dict(
+            "os.environ",
+            {
+                "ENABLE_ENHANCED_GOVERNANCE": "true",
+                "GOVERNANCE_P99_TARGET_MS": "5.0",
+                "GOVERNANCE_THROUGHPUT_TARGET": "100.0",
+                "GOVERNANCE_CACHE_HIT_TARGET": "0.85",
+            },
+        ):
             app = create_constitutional_ai_app()
             return TestClient(app)
 

@@ -20,9 +20,9 @@ from .kafka_config_manager import KafkaConfigManager
 from .kafka_integration import KafkaConsumer, KafkaProducer, KafkaStreamProcessor
 
 __all__ = [
-    "KafkaProducer",
-    "KafkaConsumer",
-    "KafkaStreamProcessor",
     "EventStreamingManager",
     "KafkaConfigManager",
+    "KafkaConsumer",
+    "KafkaProducer",
+    "KafkaStreamProcessor",
 ]

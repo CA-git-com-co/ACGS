@@ -67,7 +67,7 @@ class EventPublisher:
             return subscribers
 
         except Exception as e:
-            self.logger.error(f"Failed to publish event {event_type}: {e}")
+            self.logger.exception(f"Failed to publish event {event_type}: {e}")
             return 0
 
     async def publish_task_created(

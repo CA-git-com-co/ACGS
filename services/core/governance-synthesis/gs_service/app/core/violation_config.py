@@ -153,7 +153,9 @@ class ViolationConfigManager:
             return config
 
         except Exception as e:
-            logger.error(f"Error getting threshold config for {threshold_name}: {e}")
+            logger.exception(
+                f"Error getting threshold config for {threshold_name}: {e}"
+            )
             return None
 
     async def get_all_threshold_configs(
@@ -215,7 +217,7 @@ class ViolationConfigManager:
             return configs.copy()
 
         except Exception as e:
-            logger.error(f"Error getting all threshold configs: {e}")
+            logger.exception(f"Error getting all threshold configs: {e}")
             return {}
 
     async def update_threshold_config(
@@ -291,7 +293,7 @@ class ViolationConfigManager:
             return True
 
         except Exception as e:
-            logger.error(f"Error updating threshold config {threshold_name}: {e}")
+            logger.exception(f"Error updating threshold config {threshold_name}: {e}")
             await db.rollback()
             return False
 
@@ -369,7 +371,7 @@ class ViolationConfigManager:
             self.cache_updated_at = datetime.now(timezone.utc)
 
         except Exception as e:
-            logger.error(f"Error loading initial configuration: {e}")
+            logger.exception(f"Error loading initial configuration: {e}")
 
     def _load_threshold_from_sources(
         self, threshold_name: str
@@ -520,7 +522,7 @@ class ViolationConfigManager:
             return True
 
         except Exception as e:
-            logger.error(f"Error validating threshold config: {e}")
+            logger.exception(f"Error validating threshold config: {e}")
             return False
 
     def _is_cache_valid(self) -> bool:

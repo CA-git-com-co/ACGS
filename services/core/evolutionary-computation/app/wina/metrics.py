@@ -92,7 +92,7 @@ class WINAMetrics:
         metric_id: str,
         metric_type: MetricType,
         value: float,
-        metadata: dict[str, Any] = None,
+        metadata: dict[str, Any] | None = None,
     ):
         """
         Record a new WINA metric.
@@ -125,7 +125,7 @@ class WINAMetrics:
             self._cleanup_old_metrics()
 
         except Exception as e:
-            logger.error(f"Failed to record metric {metric_id}: {e}")
+            logger.exception(f"Failed to record metric {metric_id}: {e}")
 
     def record_optimization_metrics(self, optimization_result: Any):
         """
@@ -166,10 +166,10 @@ class WINAMetrics:
             )
 
         except Exception as e:
-            logger.error(f"Failed to record optimization metrics: {e}")
+            logger.exception(f"Failed to record optimization metrics: {e}")
 
     def get_metrics_summary(
-        self, metric_type: MetricType = None, time_range: timedelta = None
+        self, metric_type: MetricType = None, time_range: timedelta | None = None
     ) -> dict[str, MetricsSummary]:
         """
         Get summary of metrics for analysis.
@@ -224,7 +224,7 @@ class WINAMetrics:
             return summaries
 
         except Exception as e:
-            logger.error(f"Failed to generate metrics summary: {e}")
+            logger.exception(f"Failed to generate metrics summary: {e}")
             return {}
 
     def get_performance_trends(self) -> dict[str, Any]:
@@ -262,7 +262,7 @@ class WINAMetrics:
             return trends
 
         except Exception as e:
-            logger.error(f"Failed to calculate performance trends: {e}")
+            logger.exception(f"Failed to calculate performance trends: {e}")
             return {}
 
     def _update_performance_tracking(self, metric: WINAMetric):
@@ -286,7 +286,7 @@ class WINAMetrics:
                     self.performance_metrics[key] = self.performance_metrics[key][-100:]
 
         except Exception as e:
-            logger.error(f"Failed to update performance tracking: {e}")
+            logger.exception(f"Failed to update performance tracking: {e}")
 
     def _check_alert_conditions(self, metric: WINAMetric):
         """Check if metric triggers any alert conditions."""
@@ -309,7 +309,7 @@ class WINAMetrics:
                     )
 
         except Exception as e:
-            logger.error(f"Failed to check alert conditions: {e}")
+            logger.exception(f"Failed to check alert conditions: {e}")
 
     def _cleanup_old_metrics(self):
         """Remove metrics older than retention period."""
@@ -319,7 +319,7 @@ class WINAMetrics:
                 m for m in self.metrics_storage if m.timestamp >= cutoff_time
             ]
         except Exception as e:
-            logger.error(f"Failed to cleanup old metrics: {e}")
+            logger.exception(f"Failed to cleanup old metrics: {e}")
 
     def export_metrics(self, format_type: str = "json") -> str:
         """
@@ -349,14 +349,14 @@ class WINAMetrics:
 
             if format_type == "csv":
                 lines = ["metric_id,metric_type,value,timestamp"]
-                for m in self.metrics_storage:
-                    lines.append(
-                        f"{m.metric_id},{m.metric_type.value},{m.value},{m.timestamp.isoformat()}"
-                    )
+                lines.extend(
+                    f"{m.metric_id},{m.metric_type.value},{m.value},{m.timestamp.isoformat()}"
+                    for m in self.metrics_storage
+                )
                 return "\n".join(lines)
 
             raise ValueError(f"Unsupported export format: {format_type}")
 
         except Exception as e:
-            logger.error(f"Failed to export metrics: {e}")
+            logger.exception(f"Failed to export metrics: {e}")
             return ""

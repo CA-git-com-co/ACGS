@@ -5,7 +5,7 @@ Request and response schemas for evolutionary computation API endpoints.
 """
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -32,10 +32,10 @@ class EvolutionRequestCreate(BaseModel):
     )
 
     # Initial configuration
-    initial_genotype: Optional[Dict[str, Any]] = Field(
+    initial_genotype: dict[str, Any] | None = Field(
         None, description="Initial genetic configuration"
     )
-    evolution_parameters: Dict[str, Any] = Field(
+    evolution_parameters: dict[str, Any] = Field(
         default_factory=dict, description="Evolution parameters"
     )
 
@@ -52,7 +52,7 @@ class EvolutionRequestCreate(BaseModel):
 
     # Metadata
     description: str = Field(default="", description="Evolution description")
-    tags: List[str] = Field(default_factory=list, description="Evolution tags")
+    tags: list[str] = Field(default_factory=list, description="Evolution tags")
 
 
 class EvolutionRequestResponse(BaseModel):
@@ -93,7 +93,7 @@ class EvolutionRequestResponse(BaseModel):
 class FitnessEvaluationRequest(BaseModel):
     """Schema for fitness evaluation requests."""
 
-    genotype: Dict[str, Any] = Field(
+    genotype: dict[str, Any] = Field(
         ..., description="Genetic representation to evaluate"
     )
     evaluation_type: str = Field(
@@ -112,7 +112,7 @@ class FitnessEvaluationRequest(BaseModel):
     )
 
     # Context
-    evolution_context: Dict[str, Any] = Field(
+    evolution_context: dict[str, Any] = Field(
         default_factory=dict, description="Evolution context"
     )
 
@@ -167,7 +167,7 @@ class PopulationResponse(BaseModel):
     )
 
     # Top individuals (limited for performance)
-    top_individuals: List[Dict[str, Any]] = Field(
+    top_individuals: list[dict[str, Any]] = Field(
         default_factory=list, description="Top performing individuals"
     )
 
@@ -207,7 +207,7 @@ class EvolutionResultResponse(BaseModel):
     )
 
     # Best individual summary
-    best_individual_summary: Optional[Dict[str, Any]] = Field(
+    best_individual_summary: dict[str, Any] | None = Field(
         None, description="Best individual summary"
     )
 

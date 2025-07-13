@@ -5,7 +5,6 @@ Tests for comprehensive tenant isolation and constitutional compliance in Postgr
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import asyncio
 import uuid
 from datetime import datetime, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -90,8 +89,7 @@ class MockTenantSecurityPolicy:
 @pytest.fixture
 def mock_db_session():
     """Mock database session for testing."""
-    session = AsyncMock(spec=AsyncSession)
-    return session
+    return AsyncMock(spec=AsyncSession)
 
 
 @pytest.fixture
@@ -173,7 +171,7 @@ class TestEnhancedRLSSecurity:
             )
 
             # This would call the actual function in practice
-            result = await mock_db_session.execute(
+            await mock_db_session.execute(
                 text(
                     "SELECT set_secure_tenant_context(:user_id, :tenant_id, :bypass_rls, :admin_access, :session_id, :client_ip)"
                 ),
@@ -222,7 +220,6 @@ class TestEnhancedRLSSecurity:
         self, mock_db_session, sample_tenant_id
     ):
         """Test constitutional hash validation in context setting."""
-        invalid_hash = "invalid_hash"
 
         # Mock exception for invalid constitutional hash
         mock_db_session.execute.side_effect = IntegrityError(
@@ -256,7 +253,7 @@ class TestEnhancedRLSSecurity:
         mock_result.scalar.return_value = True
         mock_db_session.execute.return_value = mock_result
 
-        result = await mock_db_session.execute(
+        await mock_db_session.execute(
             text(
                 "SELECT validate_cross_tenant_operation(:source_tenant_id, :target_tenant_id, :operation_type, :user_id)"
             ),
@@ -276,7 +273,7 @@ class TestEnhancedRLSSecurity:
         # Mock monitoring function execution
         mock_db_session.execute.return_value = MagicMock()
 
-        result = await mock_db_session.execute(text("SELECT monitor_rls_violations()"))
+        await mock_db_session.execute(text("SELECT monitor_rls_violations()"))
 
         assert mock_db_session.execute.called
 
@@ -317,7 +314,7 @@ class TestEnhancedRLSSecurity:
         # Mock maintenance job execution
         mock_db_session.execute.return_value = MagicMock()
 
-        result = await mock_db_session.execute(text("SELECT rls_maintenance_job()"))
+        await mock_db_session.execute(text("SELECT rls_maintenance_job()"))
 
         assert mock_db_session.execute.called
 
@@ -357,7 +354,7 @@ class TestEnhancedRLSSecurity:
             "constitutional_hash": "cdd01ef066bc6cf2",
         }
 
-        result = await mock_db_session.execute(
+        await mock_db_session.execute(
             text(
                 "INSERT INTO tenants (id, name, constitutional_hash, organization_id) VALUES (:id, :name, :constitutional_hash, :organization_id)"
             ),
@@ -411,7 +408,7 @@ class TestEnhancedRLSSecurity:
         )
 
         # Query that should be filtered by RLS
-        result = await mock_db_session.execute(text("SELECT * FROM tenants"))
+        await mock_db_session.execute(text("SELECT * FROM tenants"))
 
         assert mock_db_session.execute.called
 

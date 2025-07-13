@@ -14,11 +14,10 @@ import urllib.parse
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
+from typing import Any
 
 import structlog
 from fastapi import HTTPException, Request, Response
-from fastapi.security import HTTPBearer
 from pydantic import BaseModel, Field, field_validator
 from starlette.middleware.base import BaseHTTPMiddleware
 
@@ -54,7 +53,7 @@ class SecurityConfig:
     max_string_length: int = 1000
     max_json_size: int = 1024 * 1024  # 1MB
     max_file_size: int = 10 * 1024 * 1024  # 10MB
-    allowed_file_types: Set[str] = field(
+    allowed_file_types: set[str] = field(
         default_factory=lambda: {
             "jpg",
             "jpeg",
@@ -80,8 +79,8 @@ class ValidationResult:
 
     is_valid: bool
     sanitized_value: Any = None
-    errors: List[str] = field(default_factory=list)
-    security_warnings: List[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
+    security_warnings: list[str] = field(default_factory=list)
     risk_score: float = 0.0
 
 
@@ -165,14 +164,14 @@ class EnhancedInputValidator:
 
     def __init__(self, config: SecurityConfig = None):
         self.config = config or SecurityConfig()
-        self.csrf_tokens: Dict[str, datetime] = {}
+        self.csrf_tokens: dict[str, datetime] = {}
 
     def validate_string(
         self,
         value: str,
-        max_length: Optional[int] = None,
+        max_length: int | None = None,
         min_length: int = 0,
-        allowed_chars: Optional[str] = None,
+        allowed_chars: str | None = None,
         security_level: SecurityLevel = SecurityLevel.MEDIUM,
     ) -> ValidationResult:
         """Comprehensive string validation with security checks."""
@@ -223,7 +222,7 @@ class EnhancedInputValidator:
                     warning = f"Potential {attack_type} detected in input"
                     result.security_warnings.append(warning)
 
-                    if security_level in [SecurityLevel.HIGH, SecurityLevel.CRITICAL]:
+                    if security_level in {SecurityLevel.HIGH, SecurityLevel.CRITICAL}:
                         result.is_valid = False
                         result.errors.append(warning)
 
@@ -248,7 +247,7 @@ class EnhancedInputValidator:
                 risk_score += 0.2
 
         except Exception as e:
-            result.security_warnings.append(f"Encoding detection error: {str(e)}")
+            result.security_warnings.append(f"Encoding detection error: {e!s}")
 
         # Sanitization
         sanitized_value = self._sanitize_string(value, security_level)
@@ -273,11 +272,11 @@ class EnhancedInputValidator:
         # Always trim whitespace
         value = value.strip()
 
-        if security_level in [SecurityLevel.LOW, SecurityLevel.MEDIUM]:
+        if security_level in {SecurityLevel.LOW, SecurityLevel.MEDIUM}:
             # HTML encoding for XSS prevention
             value = html.escape(value)
 
-        elif security_level in [SecurityLevel.HIGH, SecurityLevel.CRITICAL]:
+        elif security_level in {SecurityLevel.HIGH, SecurityLevel.CRITICAL}:
             # Aggressive sanitization
             # Remove all HTML tags
             value = re.sub(r"<[^>]+>", "", value)
@@ -324,7 +323,7 @@ class EnhancedInputValidator:
         return result
 
     def validate_file_upload(
-        self, filename: str, content: bytes, allowed_types: Optional[Set[str]] = None
+        self, filename: str, content: bytes, allowed_types: set[str] | None = None
     ) -> ValidationResult:
         """Validate file upload with security checks."""
         result = ValidationResult(is_valid=True)
@@ -390,7 +389,7 @@ class EnhancedInputValidator:
             return False
 
         # For text files, check for reasonable content
-        if expected_ext in ["txt", "json", "xml"]:
+        if expected_ext in {"txt", "json", "xml"}:
             try:
                 content.decode("utf-8")
                 return True
@@ -450,7 +449,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
         super().__init__(app)
         self.config = config or SecurityConfig()
         self.validator = EnhancedInputValidator(config)
-        self.rate_limits: Dict[str, List[datetime]] = {}
+        self.rate_limits: dict[str, list[datetime]] = {}
 
     async def dispatch(self, request: Request, call_next):
         """Process request through security middleware."""
@@ -466,7 +465,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
                 )
 
             # CSRF protection for state-changing methods
-            if request.method in ["POST", "PUT", "PATCH", "DELETE"]:
+            if request.method in {"POST", "PUT", "PATCH", "DELETE"}:
                 if self.config.enable_csrf_protection:
                     if not await self._validate_csrf(request):
                         return Response(
@@ -511,7 +510,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
             )
             raise
         except Exception as e:
-            logger.error(
+            logger.exception(
                 "Security middleware error",
                 error=str(e),
                 method=request.method,
@@ -645,7 +644,7 @@ class SecureLoginRequest(SecureBaseModel):
 
     username: str = Field(..., min_length=3, max_length=50)
     password: str = Field(..., min_length=8, max_length=128)
-    csrf_token: Optional[str] = Field(None, min_length=16, max_length=128)
+    csrf_token: str | None = Field(None, min_length=16, max_length=128)
 
     @field_validator("username")
     @classmethod
@@ -719,8 +718,8 @@ def validate_input_secure(
 
 
 def sanitize_dict(
-    data: Dict[str, Any], security_level: SecurityLevel = SecurityLevel.MEDIUM
-) -> Dict[str, Any]:
+    data: dict[str, Any], security_level: SecurityLevel = SecurityLevel.MEDIUM
+) -> dict[str, Any]:
     """Sanitize dictionary data recursively."""
     validator = EnhancedInputValidator()
     sanitized = {}

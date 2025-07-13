@@ -85,19 +85,16 @@ AsyncSessionLocal = sessionmaker(
 try:
     Base = declarative_base()
     if Base is None:
-        print("ERROR: declarative_base() returned None, creating new instance")
         from sqlalchemy.orm import declarative_base as db_base
 
         Base = db_base()
-except Exception as e:
-    print(f"ERROR creating declarative_base: {e}")
+except Exception:
     from sqlalchemy.orm import declarative_base as db_base
 
     Base = db_base()
 
 # Ensure Base is not None
 if Base is None:
-    print("CRITICAL: Base is still None after creation, forcing new declarative_base")
     from sqlalchemy.orm import declarative_base as db_base
 
     Base = db_base()
@@ -141,7 +138,6 @@ async def create_db_and_tables():
         # For now, assuming models are loaded.
         # from . import models # noqa
         await conn.run_sync(Base.metadata.create_all)
-    print(f"Database tables checked/created for {DATABASE_URL}")
 
 
 # Note: For Alembic, env.py handles table creation/migration.

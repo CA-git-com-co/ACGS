@@ -22,9 +22,9 @@ setup_constitutional_validation(
 )
 
 # Constitutional compliance logging
-logger.info(f"✅ Optimized constitutional middleware enabled for policy-governance")
-logger.info(f"📋 Constitutional Hash: cdd01ef066bc6cf2")
-logger.info(f"🎯 Performance Target: <0.5ms validation")
+logger.info("✅ Optimized constitutional middleware enabled for policy-governance")
+logger.info("📋 Constitutional Hash: cdd01ef066bc6cf2")
+logger.info("🎯 Performance Target: <0.5ms validation")
 
 
 # Add CORS middleware
@@ -103,9 +103,7 @@ try:
     )
 
     MULTI_TENANT_AVAILABLE = True
-    print("✅ Multi-tenant components loaded successfully")
-except ImportError as e:
-    print(f"⚠️ Multi-tenant components not available: {e}")
+except ImportError:
     MULTI_TENANT_AVAILABLE = False
 
 # Import standardized security middleware
@@ -120,9 +118,7 @@ try:
     )
 
     SECURITY_MIDDLEWARE_AVAILABLE = True
-    print("✅ Standardized security middleware loaded successfully")
-except ImportError as e:
-    print(f"⚠️ Standardized security middleware not available: {e}")
+except ImportError:
     SECURITY_MIDDLEWARE_AVAILABLE = False
 
     # Create fallback functions
@@ -152,7 +148,7 @@ from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.responses import PlainTextResponse
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(Path(Path(__file__).resolve()).parent)
 from optimized_governance_engine import PolicyValidationRequest, get_governance_engine
 
 # Service configuration
@@ -211,16 +207,10 @@ if MULTI_TENANT_AVAILABLE:
     # Add tenant security middleware
     app.add_middleware(TenantSecurityMiddleware)
 
-    print("✅ Multi-tenant middleware applied to pgc service")
-else:
-    print("⚠️ Multi-tenant middleware not available for pgc service")
 
 # Apply standardized security middleware
 if SECURITY_MIDDLEWARE_AVAILABLE:
     app = apply_standardized_security(app, "pgc_service", SERVICE_VERSION)
-    print("✅ Standardized security middleware applied to pgc service")
-else:
-    print("⚠️ Security middleware not available for pgc service")
 
 # Add constitutional validation middleware
 app.add_middleware(
@@ -230,7 +220,6 @@ app.add_middleware(
     enable_strict_validation=True,
     exempt_paths=["/health", "/metrics", "/docs", "/redoc", "/openapi.json"],
 )
-print("✅ Constitutional validation middleware applied to pgc service")
 
 
 # Add secure CORS middleware with environment-based configuration
@@ -420,7 +409,7 @@ async def validate_policy_compliance(
 
     except Exception as e:
         response_time_ms = (time.time() - start_time) * 1000
-        logger.error(f"Optimized validation error: {e}")
+        logger.exception(f"Optimized validation error: {e}")
         return {
             "error": str(e),
             "status": "validation_failed",
@@ -441,7 +430,7 @@ async def govern_policy(
 ):
     """Policy governance endpoint"""
     try:
-        body = await request.json()
+        await request.json()
 
         # Mock policy governance response
         return {
@@ -458,7 +447,7 @@ async def govern_policy(
         }
 
     except Exception as e:
-        logger.error(f"Governance error: {e}")
+        logger.exception(f"Governance error: {e}")
         return {"error": str(e), "status": "failed"}
 
 
@@ -553,7 +542,7 @@ async def validate_policies_batch(request: Request):
 
     except Exception as e:
         total_response_time_ms = (time.time() - start_time) * 1000
-        logger.error(f"Batch validation error: {e}")
+        logger.exception(f"Batch validation error: {e}")
         return {
             "error": str(e),
             "status": "batch_validation_failed",
@@ -589,7 +578,7 @@ async def get_performance_metrics():
             }
 
         except Exception as e:
-            logger.error(f"Performance metrics error: {e}")
+            logger.exception(f"Performance metrics error: {e}")
             return {
                 "error": str(e),
                 "optimization_status": "error",
@@ -613,7 +602,7 @@ async def get_performance_health():
         }
 
     except Exception as e:
-        logger.error(f"Performance health check error: {e}")
+        logger.exception(f"Performance health check error: {e}")
         return {
             "service": SERVICE_NAME,
             "optimization": "error",

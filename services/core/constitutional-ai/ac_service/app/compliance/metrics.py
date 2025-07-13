@@ -8,7 +8,7 @@ This module handles metrics collection and monitoring for constitutional complia
 import logging
 import time
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any
 
 # Constitutional compliance
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -27,7 +27,7 @@ class ComplianceMetrics:
         self.compliance_failures = 0
         logger.info("ComplianceMetrics initialized")
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Get current service metrics."""
         uptime = time.time() - self.start_time
 

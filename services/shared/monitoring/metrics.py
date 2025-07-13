@@ -11,11 +11,12 @@ import statistics
 import threading
 import time
 from abc import ABC, abstractmethod
-from collections import defaultdict, deque
+from collections import deque
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -35,12 +36,12 @@ class MetricValue:
     """Represents a single metric measurement."""
 
     name: str
-    value: Union[int, float]
+    value: int | float
     timestamp: datetime
-    tags: Dict[str, str] = field(default_factory=dict)
+    tags: dict[str, str] = field(default_factory=dict)
     metric_type: MetricType = MetricType.GAUGE
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "name": self.name,
@@ -63,7 +64,12 @@ class HistogramBucket:
 class Metric(ABC):
     """Abstract base class for metrics."""
 
-    def __init__(self, name: str, description: str = None, tags: Dict[str, str] = None):
+    def __init__(
+        self,
+        name: str,
+        description: str | None = None,
+        tags: dict[str, str] | None = None,
+    ):
         self.name = name
         self.description = description or name
         self.tags = tags or {}
@@ -73,22 +79,25 @@ class Metric(ABC):
     @abstractmethod
     def get_value(self) -> MetricValue:
         """Get current metric value."""
-        pass
 
     @abstractmethod
     def reset(self) -> None:
         """Reset metric to initial state."""
-        pass
 
 
 class Counter(Metric):
     """Counter metric that only increases."""
 
-    def __init__(self, name: str, description: str = None, tags: Dict[str, str] = None):
+    def __init__(
+        self,
+        name: str,
+        description: str | None = None,
+        tags: dict[str, str] | None = None,
+    ):
         super().__init__(name, description, tags)
         self._value = 0
 
-    def increment(self, value: Union[int, float] = 1) -> None:
+    def increment(self, value: int | float = 1) -> None:
         """Increment counter by value."""
         if value < 0:
             raise ValueError("Counter value must be non-negative")
@@ -116,21 +125,26 @@ class Counter(Metric):
 class Gauge(Metric):
     """Gauge metric that can increase or decrease."""
 
-    def __init__(self, name: str, description: str = None, tags: Dict[str, str] = None):
+    def __init__(
+        self,
+        name: str,
+        description: str | None = None,
+        tags: dict[str, str] | None = None,
+    ):
         super().__init__(name, description, tags)
         self._value = 0
 
-    def set(self, value: Union[int, float]) -> None:
+    def set(self, value: int | float) -> None:
         """Set gauge to specific value."""
         with self._lock:
             self._value = value
 
-    def increment(self, value: Union[int, float] = 1) -> None:
+    def increment(self, value: int | float = 1) -> None:
         """Increment gauge by value."""
         with self._lock:
             self._value += value
 
-    def decrement(self, value: Union[int, float] = 1) -> None:
+    def decrement(self, value: int | float = 1) -> None:
         """Decrement gauge by value."""
         with self._lock:
             self._value -= value
@@ -158,9 +172,9 @@ class Histogram(Metric):
     def __init__(
         self,
         name: str,
-        description: str = None,
-        tags: Dict[str, str] = None,
-        buckets: List[float] = None,
+        description: str | None = None,
+        tags: dict[str, str] | None = None,
+        buckets: list[float] | None = None,
     ):
         super().__init__(name, description, tags)
 
@@ -189,7 +203,7 @@ class Histogram(Metric):
         self._count = 0
         self._samples = deque(maxlen=1000)  # Keep last 1000 samples for percentiles
 
-    def observe(self, value: Union[int, float]) -> None:
+    def observe(self, value: int | float) -> None:
         """Record an observation."""
         with self._lock:
             self._sum += value
@@ -258,10 +272,15 @@ class Histogram(Metric):
 class Timer(Metric):
     """Timer metric for measuring durations."""
 
-    def __init__(self, name: str, description: str = None, tags: Dict[str, str] = None):
+    def __init__(
+        self,
+        name: str,
+        description: str | None = None,
+        tags: dict[str, str] | None = None,
+    ):
         super().__init__(name, description, tags)
         self._histogram = Histogram(f"{name}_duration", f"{description} duration")
-        self._active_timers: Dict[str, float] = {}
+        self._active_timers: dict[str, float] = {}
 
     def start(self, timer_id: str = "default") -> None:
         """Start timing operation."""
@@ -279,7 +298,7 @@ class Timer(Metric):
             self._histogram.observe(duration)
             return duration
 
-    def time_operation(self, operation_id: str = None):
+    def time_operation(self, operation_id: str | None = None):
         """Context manager for timing operations."""
         return TimerContext(self, operation_id or "default")
 
@@ -322,10 +341,10 @@ class MetricsCollector:
 
     def __init__(self, name: str = "acgs_metrics"):
         self.name = name
-        self._metrics: Dict[str, Metric] = {}
-        self._exporters: List[Callable[[List[MetricValue]], None]] = []
+        self._metrics: dict[str, Metric] = {}
+        self._exporters: list[Callable[[list[MetricValue]], None]] = []
         self._export_interval = 60.0  # Export every minute
-        self._export_task: Optional[asyncio.Task] = None
+        self._export_task: asyncio.Task | None = None
         self._running = False
         self._lock = threading.Lock()
 
@@ -335,12 +354,15 @@ class MetricsCollector:
             self._metrics[metric.name] = metric
             logger.info(f"Registered metric: {metric.name}")
 
-    def get_metric(self, name: str) -> Optional[Metric]:
+    def get_metric(self, name: str) -> Metric | None:
         """Get metric by name."""
         return self._metrics.get(name)
 
     def counter(
-        self, name: str, description: str = None, tags: Dict[str, str] = None
+        self,
+        name: str,
+        description: str | None = None,
+        tags: dict[str, str] | None = None,
     ) -> Counter:
         """Create or get a counter metric."""
         with self._lock:
@@ -355,7 +377,10 @@ class MetricsCollector:
             return counter
 
     def gauge(
-        self, name: str, description: str = None, tags: Dict[str, str] = None
+        self,
+        name: str,
+        description: str | None = None,
+        tags: dict[str, str] | None = None,
     ) -> Gauge:
         """Create or get a gauge metric."""
         with self._lock:
@@ -372,9 +397,9 @@ class MetricsCollector:
     def histogram(
         self,
         name: str,
-        description: str = None,
-        tags: Dict[str, str] = None,
-        buckets: List[float] = None,
+        description: str | None = None,
+        tags: dict[str, str] | None = None,
+        buckets: list[float] | None = None,
     ) -> Histogram:
         """Create or get a histogram metric."""
         with self._lock:
@@ -389,7 +414,10 @@ class MetricsCollector:
             return histogram
 
     def timer(
-        self, name: str, description: str = None, tags: Dict[str, str] = None
+        self,
+        name: str,
+        description: str | None = None,
+        tags: dict[str, str] | None = None,
     ) -> Timer:
         """Create or get a timer metric."""
         with self._lock:
@@ -403,12 +431,12 @@ class MetricsCollector:
             self._metrics[name] = timer
             return timer
 
-    def add_exporter(self, exporter: Callable[[List[MetricValue]], None]) -> None:
+    def add_exporter(self, exporter: Callable[[list[MetricValue]], None]) -> None:
         """Add a metrics exporter."""
         self._exporters.append(exporter)
         logger.info("Added metrics exporter")
 
-    def collect_all(self) -> List[MetricValue]:
+    def collect_all(self) -> list[MetricValue]:
         """Collect all current metric values."""
         with self._lock:
             values = []
@@ -416,7 +444,7 @@ class MetricsCollector:
                 try:
                     values.append(metric.get_value())
                 except Exception as e:
-                    logger.error(f"Error collecting metric {metric.name}: {e}")
+                    logger.exception(f"Error collecting metric {metric.name}: {e}")
             return values
 
     async def export_metrics(self) -> None:
@@ -430,9 +458,9 @@ class MetricsCollector:
                 try:
                     exporter(values)
                 except Exception as e:
-                    logger.error(f"Error in metrics exporter: {e}")
+                    logger.exception(f"Error in metrics exporter: {e}")
         except Exception as e:
-            logger.error(f"Error collecting metrics for export: {e}")
+            logger.exception(f"Error collecting metrics for export: {e}")
 
     async def start_export_loop(self) -> None:
         """Start automatic metrics export loop."""
@@ -451,7 +479,7 @@ class MetricsCollector:
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                logger.error(f"Error in metrics export loop: {e}")
+                logger.exception(f"Error in metrics export loop: {e}")
                 await asyncio.sleep(self._export_interval)
 
     def stop_export_loop(self) -> None:
@@ -460,7 +488,7 @@ class MetricsCollector:
         if self._export_task:
             self._export_task.cancel()
 
-    def get_metrics_summary(self) -> Dict[str, Any]:
+    def get_metrics_summary(self) -> dict[str, Any]:
         """Get summary of all metrics."""
         with self._lock:
             return {
@@ -498,14 +526,14 @@ def get_metrics_collector() -> MetricsCollector:
 
 # Convenience functions for common metrics
 def metric_counter(
-    name: str, description: str = None, tags: Dict[str, str] = None
+    name: str, description: str | None = None, tags: dict[str, str] | None = None
 ) -> Counter:
     """Create or get a counter metric."""
     return _global_collector.counter(name, description, tags)
 
 
 def metric_gauge(
-    name: str, description: str = None, tags: Dict[str, str] = None
+    name: str, description: str | None = None, tags: dict[str, str] | None = None
 ) -> Gauge:
     """Create or get a gauge metric."""
     return _global_collector.gauge(name, description, tags)
@@ -513,39 +541,33 @@ def metric_gauge(
 
 def metric_histogram(
     name: str,
-    description: str = None,
-    tags: Dict[str, str] = None,
-    buckets: List[float] = None,
+    description: str | None = None,
+    tags: dict[str, str] | None = None,
+    buckets: list[float] | None = None,
 ) -> Histogram:
     """Create or get a histogram metric."""
     return _global_collector.histogram(name, description, tags, buckets)
 
 
 def metric_timer(
-    name: str, description: str = None, tags: Dict[str, str] = None
+    name: str, description: str | None = None, tags: dict[str, str] | None = None
 ) -> Timer:
     """Create or get a timer metric."""
     return _global_collector.timer(name, description, tags)
 
 
 # Common exporters
-def prometheus_exporter(metrics: List[MetricValue]) -> None:
+def prometheus_exporter(metrics: list[MetricValue]) -> None:
     """Export metrics in Prometheus format (to stdout)."""
     logger.info(f"Exporting {len(metrics)} metrics to Prometheus format")
     for metric in metrics:
         # This is a basic implementation - in production, use prometheus_client
-        print(f"# HELP {metric.name} {metric.metric_type.value}")
-        print(f"# TYPE {metric.name} {metric.metric_type.value}")
 
         if metric.metric_type == MetricType.HISTOGRAM:
-            value_dict = metric.value
-            print(f"{metric.name}_count {value_dict['count']}")
-            print(f"{metric.name}_sum {value_dict['sum']}")
-        else:
-            print(f"{metric.name} {metric.value}")
+            pass
 
 
-def json_exporter(metrics: List[MetricValue]) -> None:
+def json_exporter(metrics: list[MetricValue]) -> None:
     """Export metrics in JSON format (to log)."""
     import json
 

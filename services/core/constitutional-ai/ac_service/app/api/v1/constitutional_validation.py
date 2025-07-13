@@ -89,7 +89,7 @@ async def validate_constitutional_compliance(request: ConstitutionalValidationRe
         return validation_result
 
     except Exception as e:
-        logger.error(f"Constitutional validation error: {e}")
+        logger.exception(f"Constitutional validation error: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Constitutional validation failed",
@@ -189,4 +189,3 @@ async def flush_cache():
 
 
 # Import asyncio at the end to avoid circular imports
-import asyncio

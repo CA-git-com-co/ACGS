@@ -31,11 +31,11 @@ v1_router.include_router(alphaevolve.router)
 v1_router.include_router(wina_oversight.router)
 
 __all__ = [
-    "v1_router",
     "alphaevolve",
     "evolution",
     "monitoring",
     "oversight",
     "reporting",
+    "v1_router",
     "wina_oversight",
 ]

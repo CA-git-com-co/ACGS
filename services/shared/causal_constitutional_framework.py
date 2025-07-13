@@ -8,13 +8,11 @@ It addresses "constitutional reward hacking" by distinguishing genuine constitut
 violations from spurious correlations.
 """
 
-import asyncio
 import logging
-import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
+from typing import Any
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
@@ -57,10 +55,10 @@ class SpuriousAttribute(Enum):
 class ConstitutionalCounterfactual:
     """Counterfactual scenario for constitutional testing"""
 
-    original_scenario: Dict[str, Any]
+    original_scenario: dict[str, Any]
     intervention_type: str  # "causal_upgrade", "causal_degrade", "neutral_variation"
-    target_attribute: Union[ConstitutionalAttribute, SpuriousAttribute]
-    modified_scenario: Dict[str, Any]
+    target_attribute: ConstitutionalAttribute | SpuriousAttribute
+    modified_scenario: dict[str, Any]
     expected_outcome: str  # "compliant", "violation", "equivalent"
     constitutional_hash: str = "cdd01ef066bc6cf2"
     generation_timestamp: datetime = field(
@@ -73,8 +71,8 @@ class CausalAugmentationPair:
     """Causal augmentation pair for training constitutional robustness"""
 
     scenario_id: str
-    original: Dict[str, Any]
-    modified: Dict[str, Any]
+    original: dict[str, Any]
+    modified: dict[str, Any]
     causal_attribute: ConstitutionalAttribute
     intervention_type: str  # "upgrade" or "degrade"
     preference_label: str  # "original_preferred", "modified_preferred", "equivalent"
@@ -86,8 +84,8 @@ class NeutralAugmentationPair:
     """Neutral augmentation pair for spurious invariance training"""
 
     scenario_id: str
-    variant_a: Dict[str, Any]
-    variant_b: Dict[str, Any]
+    variant_a: dict[str, Any]
+    variant_b: dict[str, Any]
     spurious_variation: SpuriousAttribute
     causal_content_preserved: bool
     tie_label: bool = True  # Always true for neutral pairs
@@ -99,12 +97,12 @@ class ConstitutionalRobustnessResult(BaseModel):
 
     scenario_id: str
     constitutional_hash: str = "cdd01ef066bc6cf2"
-    baseline_compliance: Dict[str, Any]
+    baseline_compliance: dict[str, Any]
     causal_sensitivity_score: float = Field(ge=0.0, le=1.0)
     spurious_invariance_score: float = Field(ge=0.0, le=1.0)
     overall_robustness_score: float = Field(ge=0.0, le=1.0)
-    vulnerability_assessment: Dict[str, Any]
-    counterfactual_results: List[Dict[str, Any]] = Field(default_factory=list)
+    vulnerability_assessment: dict[str, Any]
+    counterfactual_results: list[dict[str, Any]] = Field(default_factory=list)
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
@@ -139,7 +137,7 @@ class CausalConstitutionalFramework:
         self,
         constitutional_validator: ConstitutionalSafetyValidator,
         blackboard_service: BlackboardService,
-        ai_model_service: Optional[AIModelService] = None,
+        ai_model_service: AIModelService | None = None,
     ):
         """Initialize causal constitutional framework"""
         self.constitutional_validator = constitutional_validator
@@ -152,17 +150,17 @@ class CausalConstitutionalFramework:
         self.intervention_templates = self._load_intervention_templates()
 
         # Training data storage
-        self.causal_augmentations: List[CausalAugmentationPair] = []
-        self.neutral_augmentations: List[NeutralAugmentationPair] = []
+        self.causal_augmentations: list[CausalAugmentationPair] = []
+        self.neutral_augmentations: list[NeutralAugmentationPair] = []
 
         # Performance tracking
         self.robustness_scores = []
 
-    def _build_causal_graph(self) -> Dict[str, Any]:
+    def _build_causal_graph(self) -> dict[str, Any]:
         """Build causal graph for constitutional compliance modeling"""
 
         # Causal graph structure following CARMA methodology
-        causal_graph = {
+        return {
             "nodes": {
                 "constitutional_context": "Input constitutional scenario/operation",
                 "causal_attributes": "True constitutional quality drivers",
@@ -197,12 +195,10 @@ class CausalConstitutionalFramework:
             },
         }
 
-        return causal_graph
-
-    def _load_intervention_templates(self) -> Dict[str, Dict[str, str]]:
+    def _load_intervention_templates(self) -> dict[str, dict[str, str]]:
         """Load templates for generating constitutional counterfactuals"""
 
-        templates = {
+        return {
             # Causal attribute interventions
             ConstitutionalAttribute.SAFETY.value: {
                 "upgrade": "Enhance safety measures and risk mitigation in the scenario",
@@ -248,14 +244,12 @@ class CausalConstitutionalFramework:
             },
         }
 
-        return templates
-
     async def generate_constitutional_counterfactuals(
         self,
-        scenario: Dict[str, Any],
-        target_attributes: Optional[List[ConstitutionalAttribute]] = None,
+        scenario: dict[str, Any],
+        target_attributes: list[ConstitutionalAttribute] | None = None,
         include_spurious_variations: bool = True,
-    ) -> List[ConstitutionalCounterfactual]:
+    ) -> list[ConstitutionalCounterfactual]:
         """Generate counterfactual scenarios for constitutional robustness testing"""
 
         if target_attributes is None:
@@ -313,10 +307,10 @@ class CausalConstitutionalFramework:
 
     async def _generate_causal_intervention(
         self,
-        scenario: Dict[str, Any],
+        scenario: dict[str, Any],
         attribute: ConstitutionalAttribute,
         intervention_type: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate causal intervention for specific constitutional attribute"""
 
         if not self.ai_model_service:
@@ -352,8 +346,8 @@ class CausalConstitutionalFramework:
         return modified_scenario
 
     async def _generate_spurious_variation(
-        self, scenario: Dict[str, Any], spurious_attr: SpuriousAttribute
-    ) -> Dict[str, Any]:
+        self, scenario: dict[str, Any], spurious_attr: SpuriousAttribute
+    ) -> dict[str, Any]:
         """Generate spurious variation that preserves constitutional content"""
 
         variation_scenario = scenario.copy()
@@ -381,7 +375,6 @@ class CausalConstitutionalFramework:
 
         elif spurious_attr == SpuriousAttribute.HASH_PLACEMENT:
             # Move constitutional hash to different position
-            hash_positions = ["header", "footer", "inline", "metadata"]
             variation_scenario["hash_placement"] = "alternative"
 
         # Ensure constitutional hash is preserved
@@ -392,7 +385,7 @@ class CausalConstitutionalFramework:
         return variation_scenario
 
     async def assess_constitutional_robustness(
-        self, scenario: Dict[str, Any], validator_instance: Optional[object] = None
+        self, scenario: dict[str, Any], validator_instance: object | None = None
     ) -> ConstitutionalRobustnessResult:
         """Assess constitutional robustness using causal framework"""
 
@@ -447,16 +440,16 @@ class CausalConstitutionalFramework:
 
     async def _test_causal_sensitivity(
         self,
-        scenario: Dict[str, Any],
-        counterfactuals: List[ConstitutionalCounterfactual],
-        validator_instance: Optional[object],
+        scenario: dict[str, Any],
+        counterfactuals: list[ConstitutionalCounterfactual],
+        validator_instance: object | None,
     ) -> float:
         """Test sensitivity to causal constitutional attributes"""
 
         causal_tests = [
             cf
             for cf in counterfactuals
-            if cf.intervention_type in ["causal_upgrade", "causal_degrade"]
+            if cf.intervention_type in {"causal_upgrade", "causal_degrade"}
         ]
 
         if not causal_tests:
@@ -486,9 +479,9 @@ class CausalConstitutionalFramework:
 
     async def _test_spurious_invariance(
         self,
-        scenario: Dict[str, Any],
-        counterfactuals: List[ConstitutionalCounterfactual],
-        validator_instance: Optional[object],
+        scenario: dict[str, Any],
+        counterfactuals: list[ConstitutionalCounterfactual],
+        validator_instance: object | None,
     ) -> float:
         """Test invariance to spurious attributes"""
 
@@ -524,10 +517,10 @@ class CausalConstitutionalFramework:
 
     async def _assess_vulnerabilities(
         self,
-        counterfactuals: List[ConstitutionalCounterfactual],
+        counterfactuals: list[ConstitutionalCounterfactual],
         causal_sensitivity: float,
         spurious_invariance: float,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Assess specific vulnerability patterns"""
 
         vulnerabilities = {
@@ -573,7 +566,7 @@ class CausalConstitutionalFramework:
     async def _log_robustness_assessment(
         self,
         scenario_id: str,
-        baseline_compliance: Dict[str, Any],
+        baseline_compliance: dict[str, Any],
         causal_sensitivity: float,
         spurious_invariance: float,
         overall_robustness: float,
@@ -606,7 +599,7 @@ class CausalConstitutionalFramework:
 
         await self.blackboard.add_knowledge(knowledge_item)
 
-    def get_framework_statistics(self) -> Dict[str, Any]:
+    def get_framework_statistics(self) -> dict[str, Any]:
         """Get framework usage and performance statistics"""
 
         if not self.robustness_scores:

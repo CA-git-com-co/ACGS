@@ -1,3 +1,5 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 <h1 align="center">
     Darwin Gödel Machine:<br/>Open-Ended Evolution of Self-Improving Agents
 </h1>

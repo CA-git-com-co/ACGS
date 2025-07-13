@@ -11,12 +11,11 @@ import time
 import traceback
 import uuid
 from datetime import datetime
-from typing import Any, Dict, Optional, Union
+from typing import Any
 
-from fastapi import FastAPI, HTTPException, Request, status
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.base import BaseHTTPMiddleware
 
 # Constitutional compliance
@@ -33,7 +32,7 @@ class ACGSException(Exception):
         message: str,
         error_code: str = "ACGS_ERROR",
         status_code: int = 500,
-        details: Optional[Dict[str, Any]] = None,
+        details: dict[str, Any] | None = None,
     ):
         self.message = message
         self.error_code = error_code
@@ -46,7 +45,7 @@ class ACGSException(Exception):
 class ConstitutionalComplianceError(ACGSException):
     """Constitutional compliance violation errors."""
 
-    def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
+    def __init__(self, message: str, details: dict[str, Any] | None = None):
         super().__init__(
             message=message,
             error_code="CONSTITUTIONAL_VIOLATION",
@@ -58,7 +57,7 @@ class ConstitutionalComplianceError(ACGSException):
 class SecurityValidationError(ACGSException):
     """Security validation errors."""
 
-    def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
+    def __init__(self, message: str, details: dict[str, Any] | None = None):
         super().__init__(
             message=message,
             error_code="SECURITY_VALIDATION_FAILED",
@@ -70,7 +69,7 @@ class SecurityValidationError(ACGSException):
 class AuthenticationError(ACGSException):
     """Authentication-related errors."""
 
-    def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
+    def __init__(self, message: str, details: dict[str, Any] | None = None):
         super().__init__(
             message=message,
             error_code="AUTHENTICATION_FAILED",
@@ -82,7 +81,7 @@ class AuthenticationError(ACGSException):
 class AuthorizationError(ACGSException):
     """Authorization-related errors."""
 
-    def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
+    def __init__(self, message: str, details: dict[str, Any] | None = None):
         super().__init__(
             message=message,
             error_code="AUTHORIZATION_FAILED",
@@ -94,7 +93,7 @@ class AuthorizationError(ACGSException):
 class ServiceUnavailableError(ACGSException):
     """Service unavailability errors."""
 
-    def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
+    def __init__(self, message: str, details: dict[str, Any] | None = None):
         super().__init__(
             message=message,
             error_code="SERVICE_UNAVAILABLE",
@@ -106,7 +105,7 @@ class ServiceUnavailableError(ACGSException):
 class ValidationError(ACGSException):
     """Validation errors."""
 
-    def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
+    def __init__(self, message: str, details: dict[str, Any] | None = None):
         super().__init__(
             message=message,
             error_code="VALIDATION_FAILED",
@@ -118,7 +117,7 @@ class ValidationError(ACGSException):
 class RateLimitError(ACGSException):
     """Rate limiting errors."""
 
-    def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
+    def __init__(self, message: str, details: dict[str, Any] | None = None):
         super().__init__(
             message=message,
             error_code="RATE_LIMIT_EXCEEDED",
@@ -134,9 +133,9 @@ class ErrorResponse:
     def create_error_response(
         error: Exception,
         request: Request,
-        error_id: Optional[str] = None,
+        error_id: str | None = None,
         include_traceback: bool = False,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Create standardized error response."""
 
         error_id = error_id or str(uuid.uuid4())
@@ -233,7 +232,7 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
             # Log successful requests
             duration = time.time() - start_time
             logger.info(
-                f"Request processed successfully",
+                "Request processed successfully",
                 extra={
                     "service": self.service_name,
                     "method": request.method,
@@ -252,7 +251,7 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
             duration = time.time() - start_time
 
             logger.error(
-                f"Request failed: {str(error)}",
+                f"Request failed: {error!s}",
                 extra={
                     "service": self.service_name,
                     "method": request.method,
@@ -277,9 +276,7 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
             )
 
             # Determine status code
-            if isinstance(error, ACGSException):
-                status_code = error.status_code
-            elif isinstance(error, HTTPException):
+            if isinstance(error, (ACGSException, HTTPException)):
                 status_code = error.status_code
             elif isinstance(error, RequestValidationError):
                 status_code = 422
@@ -421,7 +418,7 @@ def setup_error_handlers(
         error_id = str(uuid.uuid4())
 
         logger.error(
-            f"Internal Server Error: {str(exc)}",
+            f"Internal Server Error: {exc!s}",
             extra={
                 "service": service_name,
                 "error_type": type(exc).__name__,
@@ -430,7 +427,6 @@ def setup_error_handlers(
                 "path": request.url.path,
                 "method": request.method,
             },
-            exc_info=True,
         )
 
         error_response = ErrorResponse.create_error_response(
@@ -464,7 +460,7 @@ def create_error_middleware(service_name: str, development_mode: bool = False):
 
 def log_error_with_context(
     error: Exception,
-    context: Dict[str, Any],
+    context: dict[str, Any],
     service_name: str = "unknown",
     level: str = "error",
 ):
@@ -479,31 +475,29 @@ def log_error_with_context(
     }
 
     if level == "error":
-        logger.error(
-            f"Error in {service_name}: {str(error)}", extra=log_data, exc_info=True
-        )
+        logger.error(f"Error in {service_name}: {error!s}", extra=log_data)
     elif level == "warning":
-        logger.warning(f"Warning in {service_name}: {str(error)}", extra=log_data)
+        logger.warning(f"Warning in {service_name}: {error!s}", extra=log_data)
     else:
-        logger.info(f"Info in {service_name}: {str(error)}", extra=log_data)
+        logger.info(f"Info in {service_name}: {error!s}", extra=log_data)
 
 
-def raise_constitutional_error(message: str, details: Optional[Dict[str, Any]] = None):
+def raise_constitutional_error(message: str, details: dict[str, Any] | None = None):
     """Raise a constitutional compliance error."""
     raise ConstitutionalComplianceError(message=message, details=details)
 
 
-def raise_security_error(message: str, details: Optional[Dict[str, Any]] = None):
+def raise_security_error(message: str, details: dict[str, Any] | None = None):
     """Raise a security validation error."""
     raise SecurityValidationError(message=message, details=details)
 
 
-def raise_auth_error(message: str, details: Optional[Dict[str, Any]] = None):
+def raise_auth_error(message: str, details: dict[str, Any] | None = None):
     """Raise an authentication error."""
     raise AuthenticationError(message=message, details=details)
 
 
-def raise_validation_error(message: str, details: Optional[Dict[str, Any]] = None):
+def raise_validation_error(message: str, details: dict[str, Any] | None = None):
     """Raise a validation error."""
     raise ValidationError(message=message, details=details)
 
@@ -556,13 +550,12 @@ def handle_database_error(error: Exception, operation: str = "database_operation
             message="Database connection unavailable",
             details={"operation": operation, "original_error": str(error)},
         )
-    else:
-        raise ACGSException(
-            message=f"Database operation failed: {operation}",
-            error_code="DATABASE_ERROR",
-            status_code=500,
-            details={"operation": operation, "original_error": str(error)},
-        )
+    raise ACGSException(
+        message=f"Database operation failed: {operation}",
+        error_code="DATABASE_ERROR",
+        status_code=500,
+        details={"operation": operation, "original_error": str(error)},
+    )
 
 
 def handle_external_service_error(error: Exception, service: str = "external_service"):

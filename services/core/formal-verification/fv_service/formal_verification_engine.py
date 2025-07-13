@@ -136,12 +136,16 @@ class FormalVerificationEngine:
 
         # Policy-specific assertions
         if "safety_requirements" in policy_data:
-            for req in policy_data["safety_requirements"]:
-                assertions.append(f"(assert {self.translate_requirement_to_smt(req)})")
+            assertions.extend(
+                f"(assert {self.translate_requirement_to_smt(req)})"
+                for req in policy_data["safety_requirements"]
+            )
 
         if "fairness_requirements" in policy_data:
-            for req in policy_data["fairness_requirements"]:
-                assertions.append(f"(assert {self.translate_requirement_to_smt(req)})")
+            assertions.extend(
+                f"(assert {self.translate_requirement_to_smt(req)})"
+                for req in policy_data["fairness_requirements"]
+            )
 
         return assertions
 
@@ -352,13 +356,9 @@ class FormalVerificationEngine:
 
 def test_formal_verification_engine():
     """Test the formal verification engine"""
-    print("🔬 Testing ACGS Formal Verification Engine")
-    print("=" * 45)
 
     if not Z3_AVAILABLE:
-        print("⚠️  Z3 not available - using mock implementation")
-    else:
-        print("✅ Z3 SMT solver detected")
+        pass
 
     engine = FormalVerificationEngine()
 
@@ -391,35 +391,20 @@ def test_formal_verification_engine():
         ),
     ]
 
-    print("\n🔍 Running verification tests...")
-
-    for i, request in enumerate(test_requests, 1):
-        print(f"\n  Test {i}: {request.policy_id}")
+    for request in test_requests:
         result = engine.verify_policy(request)
 
-        print(f"    Status: {result.verification_status}")
-        print(f"    Valid: {result.is_valid}")
-        print(f"    Constitutional Compliance: {result.constitutional_compliance}")
-        print(f"    Verification Time: {result.verification_time_ms:.2f}ms")
-
         if result.counterexample:
-            print(f"    Counterexample: {result.counterexample}")
+            pass
 
     # Test batch verification
-    print("\n🔄 Testing batch verification...")
-    batch_results = engine.batch_verify(test_requests)
-    print(f"  Batch processed: {len(batch_results)} requests")
+    engine.batch_verify(test_requests)
 
     # Get statistics
-    print("\n📊 Verification Statistics:")
     stats = engine.get_verification_statistics()
-    for key, value in stats.items():
+    for value in stats.values():
         if isinstance(value, float):
-            print(f"  {key}: {value:.3f}")
-        else:
-            print(f"  {key}: {value}")
-
-    print("\n✅ Formal Verification Engine: OPERATIONAL")
+            pass
 
 
 if __name__ == "__main__":

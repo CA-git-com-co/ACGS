@@ -28,7 +28,6 @@ def setup_test_environment():
 
 def test_configuration_loading() -> dict[str, Any]:
     """Test 1: Configuration Loading"""
-    print("1. Testing Configuration Loading...")
 
     try:
         from config.settings import get_settings
@@ -48,13 +47,6 @@ def test_configuration_loading() -> dict[str, Any]:
 
         all_passed = all(checks.values())
 
-        print("   ✓ Settings loaded successfully")
-        print(f"   ✓ Service: {settings.service_name}")
-        print(f"   ✓ Port: {settings.port}")
-        print(f"   ✓ Constitutional hash: {settings.constitutional_hash}")
-        print(f"   ✓ PostgreSQL port: {settings.postgresql_port}")
-        print(f"   ✓ Redis port: {settings.redis_port}")
-
         return {
             "status": "pass" if all_passed else "fail",
             "checks": checks,
@@ -68,32 +60,23 @@ def test_configuration_loading() -> dict[str, Any]:
         }
 
     except Exception as e:
-        print(f"   ✗ Configuration loading failed: {e}")
         return {"status": "fail", "error": str(e)}
 
 
 def test_service_imports() -> dict[str, Any]:
     """Test 2: Service Import Validation"""
-    print("\n2. Testing Service Import Validation...")
 
     try:
         # Test main application import
-        print("   ✓ Main application imported successfully")
 
         # Test middleware imports
-        print("   ✓ Middleware classes imported successfully")
 
         # Test service imports
-        print("   ✓ Service classes imported successfully")
 
         # Test utility imports
         from app.utils.constitutional import CONSTITUTIONAL_HASH
 
-        print("   ✓ Utility modules imported successfully")
-        print(f"   ✓ Constitutional hash constant: {CONSTITUTIONAL_HASH}")
-
         # Test core service imports
-        print("   ✓ Core services imported successfully")
 
         return {
             "status": "pass",
@@ -102,13 +85,11 @@ def test_service_imports() -> dict[str, Any]:
         }
 
     except Exception as e:
-        print(f"   ✗ Service import failed: {e}")
         return {"status": "fail", "error": str(e), "imports_successful": False}
 
 
 def test_database_configuration() -> dict[str, Any]:
     """Test 3: Database Configuration"""
-    print("\n3. Testing Database Configuration...")
 
     try:
         from config.database import DatabaseManager
@@ -117,17 +98,13 @@ def test_database_configuration() -> dict[str, Any]:
         settings = get_settings()
 
         # Test database manager instantiation
-        db_manager = DatabaseManager(
+        DatabaseManager(
             host=settings.postgresql_host,
             port=settings.postgresql_port,
             database=settings.postgresql_database,
             username=settings.postgresql_user,
             password=settings.postgresql_password,
         )
-
-        print("   ✓ DatabaseManager instantiated successfully")
-        print("   ✓ Database URL: postgresql+asyncpg://...@localhost:5439/acgs")
-        print("   ✓ Connection pool configured")
 
         return {
             "status": "pass",
@@ -138,13 +115,11 @@ def test_database_configuration() -> dict[str, Any]:
         }
 
     except Exception as e:
-        print(f"   ✗ Database configuration failed: {e}")
         return {"status": "fail", "error": str(e)}
 
 
 def test_cache_configuration() -> dict[str, Any]:
     """Test 4: Cache Service Configuration"""
-    print("\n4. Testing Cache Service Configuration...")
 
     try:
         from app.services.cache_service import CacheService
@@ -153,11 +128,7 @@ def test_cache_configuration() -> dict[str, Any]:
         settings = get_settings()
 
         # Test cache service instantiation
-        cache_service = CacheService(redis_url=settings.redis_url)
-
-        print("   ✓ CacheService instantiated successfully")
-        print("   ✓ Redis URL: redis://localhost:6389/3")
-        print("   ✓ Cache configuration validated")
+        CacheService(redis_url=settings.redis_url)
 
         return {
             "status": "pass",
@@ -168,13 +139,11 @@ def test_cache_configuration() -> dict[str, Any]:
         }
 
     except Exception as e:
-        print(f"   ✗ Cache service configuration failed: {e}")
         return {"status": "fail", "error": str(e)}
 
 
 def test_constitutional_compliance() -> dict[str, Any]:
     """Test 5: Constitutional Compliance Validation"""
-    print("\n5. Testing Constitutional Compliance...")
 
     try:
         from app.utils.constitutional import CONSTITUTIONAL_HASH
@@ -195,14 +164,7 @@ def test_constitutional_compliance() -> dict[str, Any]:
         all_valid = settings_hash_valid and utility_hash_valid and hash_validation_works
 
         if all_valid:
-            print("   ✓ Constitutional hash validation: PASS")
-            print(f"   ✓ Settings hash: {settings.constitutional_hash}")
-            print(f"   ✓ Utility hash: {CONSTITUTIONAL_HASH}")
-            print("   ✓ Hash consistency: VALIDATED")
-        else:
-            print("   ✗ Constitutional hash validation: FAIL")
-            print(f"   ✗ Settings hash: {settings.constitutional_hash}")
-            print(f"   ✗ Utility hash: {CONSTITUTIONAL_HASH}")
+            pass
 
         return {
             "status": "pass" if all_valid else "fail",
@@ -215,13 +177,11 @@ def test_constitutional_compliance() -> dict[str, Any]:
         }
 
     except Exception as e:
-        print(f"   ✗ Constitutional compliance test failed: {e}")
         return {"status": "fail", "error": str(e)}
 
 
 def test_acgs_infrastructure_readiness() -> dict[str, Any]:
     """Test 6: ACGS Infrastructure Integration Readiness"""
-    print("\n6. Testing ACGS Infrastructure Integration Readiness...")
 
     try:
         from config.settings import get_settings
@@ -250,18 +210,8 @@ def test_acgs_infrastructure_readiness() -> dict[str, Any]:
 
         all_ports_correct = all(port_checks.values())
 
-        print(f"   ✓ Auth Service URL: {infrastructure_config['auth_service_url']}")
-        print(
-            f"   ✓ Context Service URL: {infrastructure_config['context_service_url']}"
-        )
-        print(f"   ✓ PostgreSQL: {infrastructure_config['postgresql_configured']}")
-        print(f"   ✓ Redis: {infrastructure_config['redis_configured']}")
-        print(f"   ✓ Service Port: {settings.port}")
-
         if all_ports_correct:
-            print("   ✓ All ACGS infrastructure ports configured correctly")
-        else:
-            print("   ✗ Some infrastructure ports misconfigured")
+            pass
 
         return {
             "status": "pass" if all_ports_correct else "fail",
@@ -271,18 +221,11 @@ def test_acgs_infrastructure_readiness() -> dict[str, Any]:
         }
 
     except Exception as e:
-        print(f"   ✗ ACGS infrastructure readiness test failed: {e}")
         return {"status": "fail", "error": str(e)}
 
 
 def run_deployment_readiness_validation() -> dict[str, Any]:
     """Run comprehensive deployment readiness validation"""
-    print("=" * 80)
-    print("ACGS Code Analysis Engine - Deployment Readiness Validation")
-    print("=" * 80)
-    print(f"Validation Time: {datetime.now().isoformat()}")
-    print("Constitutional Hash: cdd01ef066bc6cf2")
-    print()
 
     # Setup test environment
     setup_test_environment()
@@ -310,46 +253,19 @@ def run_deployment_readiness_validation() -> dict[str, Any]:
     success_rate = (passed_count / total_tests) * 100
 
     # Generate summary
-    print("\n" + "=" * 80)
-    print("DEPLOYMENT READINESS VALIDATION SUMMARY")
-    print("=" * 80)
 
     for test_name, result in test_results.items():
-        status = "✓ PASS" if result.get("status") == "pass" else "✗ FAIL"
-        display_name = test_name.replace("_", " ").title()
-        print(f"{status} {display_name}")
-
-    print()
-    print(f"Tests Passed: {passed_count}/{total_tests}")
-    print(f"Success Rate: {success_rate:.1f}%")
+        "✓ PASS" if result.get("status") == "pass" else "✗ FAIL"
+        test_name.replace("_", " ").title()
 
     # Determine deployment readiness
     deployment_ready = passed_count == total_tests
 
-    if deployment_ready:
-        print()
-        print("🎉 DEPLOYMENT READINESS VALIDATION: PASSED")
-        print("✓ Service is ready for local startup and basic smoke tests")
-        print("✓ ACGS infrastructure integration configured correctly")
-        print("✓ Constitutional compliance implementation validated")
-        print("✓ All success criteria met - Ready to proceed to Phase 2 deployment")
-    else:
-        print()
-        print("❌ DEPLOYMENT READINESS VALIDATION: FAILED")
-        print("✗ Issues must be resolved before deployment")
-        if failed_tests:
-            print(f"✗ Failed tests: {', '.join(failed_tests)}")
+    if deployment_ready or failed_tests:
+        pass
 
-    print()
-    print("Next Steps:")
     if deployment_ready:
-        print("1. ✅ Start the service: python main.py")
-        print("2. ✅ Run comprehensive validation: python run_priority3_validation.py")
-        print("3. ✅ Proceed to Phase 2 deployment")
-    else:
-        print("1. ❌ Resolve failed validation tests")
-        print("2. ❌ Re-run deployment readiness validation")
-        print("3. ❌ Do not proceed to Phase 2 until all tests pass")
+        pass
 
     return {
         "deployment_ready": deployment_ready,
@@ -369,21 +285,16 @@ def main():
 
         # Save results to file
         results_file = "deployment_readiness_results.json"
-        with open(results_file, "w") as f:
+        with open(results_file, "w", encoding="utf-8") as f:
             json.dump(results, f, indent=2)
-
-        print(f"\n✓ Detailed results saved to: {results_file}")
 
         # Exit with appropriate code
         if results["deployment_ready"]:
-            print("\n🎉 Deployment readiness validation PASSED!")
             sys.exit(0)
         else:
-            print("\n❌ Deployment readiness validation FAILED!")
             sys.exit(1)
 
-    except Exception as e:
-        print(f"\n💥 Deployment readiness validation failed: {e}")
+    except Exception:
         sys.exit(1)
 
 

@@ -11,12 +11,11 @@ from typing import Any
 
 import httpx
 import redis.asyncio as aioredis
+from app.models.agent import Agent
+from app.services.agent_service import AgentService
 from fastapi import HTTPException, Request, status
 from fastapi.security import HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from ..models.agent import Agent
-from ..services.agent_service import AgentService
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -107,7 +106,7 @@ class AgentAuthenticationMiddleware:
         except HTTPException:
             raise
         except Exception as e:
-            logger.error(f"Agent authentication error: {e}")
+            logger.exception(f"Agent authentication error: {e}")
             return None
 
     async def require_agent_authentication(
@@ -215,7 +214,7 @@ class AgentAuthenticationMiddleware:
             # Agent ID might be passed separately or embedded
             pass
 
-        return credentials if credentials else None
+        return credentials or None
 
     def _get_client_ip(self, request: Request) -> str | None:
         """Get client IP address from request."""
@@ -243,7 +242,7 @@ class AgentAuthenticationMiddleware:
             try:
                 await self.redis_client.ping()
             except Exception as e:
-                logger.error(f"Redis connection failed: {e}")
+                logger.exception(f"Redis connection failed: {e}")
                 self.redis_client = None
                 raise
         return self.redis_client
@@ -265,7 +264,7 @@ class AgentAuthenticationMiddleware:
                 await redis.expire(key, 60)
             return count <= max_requests
         except Exception as e:
-            logger.error(f"Rate limit check failed: {e}")
+            logger.exception(f"Rate limit check failed: {e}")
             return True
 
     def _is_high_risk_operation(
@@ -286,11 +285,11 @@ class AgentAuthenticationMiddleware:
 
         # Check context for risk indicators
         if operation_context:
-            if operation_context.get("affects_production", False):
+            if operation_context.get("affects_production"):
                 return True
-            if operation_context.get("irreversible", False):
+            if operation_context.get("irreversible"):
                 return True
-            if operation_context.get("affects_multiple_services", False):
+            if operation_context.get("affects_multiple_services"):
                 return True
 
         return False
@@ -338,7 +337,7 @@ class AgentAuthenticationMiddleware:
         except HTTPException:
             raise
         except Exception as e:
-            logger.error(f"HITL approval request failed: {e}")
+            logger.exception(f"HITL approval request failed: {e}")
             # Fail safe - block operation
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,

@@ -8,7 +8,6 @@ a new ACGS service with constitutional compliance and multi-tenant support.
 
 import uuid
 from datetime import datetime
-from typing import List, Optional
 
 from fastapi import APIRouter, Depends, Field, HTTPException, Query, status
 from pydantic import validator
@@ -20,7 +19,7 @@ from .config import get_settings
 
 # Import template components
 from .main import app, health_checker
-from .models import BaseACGSModel, ModelUtilities
+from .models import BaseACGSModel
 from .schemas import (
     ConstitutionalBaseModel,
     FilterParams,
@@ -135,16 +134,14 @@ class DocumentCreateRequest(TenantAwareModel):
         example="Constitutional Analysis Report",
     )
 
-    content: Optional[str] = Field(
-        None, max_length=50000, description="Document content"
-    )
+    content: str | None = Field(None, max_length=50000, description="Document content")
 
     document_type: str = Field(description="Type of document", example="analysis")
 
-    author: Optional[str] = Field(None, max_length=255, description="Document author")
+    author: str | None = Field(None, max_length=255, description="Document author")
 
     @validator("title")
-    def validate_title(cls, v):
+    def validate_title(self, v):
         """Validate title meets constitutional requirements."""
         if len(v.strip()) < 3:
             raise ValueError(
@@ -156,17 +153,15 @@ class DocumentCreateRequest(TenantAwareModel):
 class DocumentUpdateRequest(ConstitutionalBaseModel):
     """Request schema for updating documents."""
 
-    title: Optional[str] = Field(
+    title: str | None = Field(
         None, min_length=1, max_length=255, description="Document title"
     )
 
-    content: Optional[str] = Field(
-        None, max_length=50000, description="Document content"
-    )
+    content: str | None = Field(None, max_length=50000, description="Document content")
 
-    document_type: Optional[str] = Field(None, description="Type of document")
+    document_type: str | None = Field(None, description="Type of document")
 
-    author: Optional[str] = Field(None, max_length=255, description="Document author")
+    author: str | None = Field(None, max_length=255, description="Document author")
 
 
 class DocumentResponse(TenantAwareModel):
@@ -174,18 +169,18 @@ class DocumentResponse(TenantAwareModel):
 
     id: uuid.UUID = Field(description="Document unique identifier")
     title: str = Field(description="Document title")
-    content: Optional[str] = Field(None, description="Document content")
+    content: str | None = Field(None, description="Document content")
     document_type: str = Field(description="Document type")
-    author: Optional[str] = Field(None, description="Document author")
+    author: str | None = Field(None, description="Document author")
     version: int = Field(description="Document version")
-    word_count: Optional[int] = Field(None, description="Word count")
+    word_count: int | None = Field(None, description="Word count")
     status: str = Field(description="Document status")
     is_active: bool = Field(description="Whether document is active")
     created_at: datetime = Field(description="Creation timestamp")
     updated_at: datetime = Field(description="Last update timestamp")
 
     @validator("content")
-    def sanitize_content(cls, v):
+    def sanitize_content(self, v):
         """Sanitize content for constitutional compliance."""
         if v and len(v) > 1000:  # Truncate for API response
             return v[:1000] + "..."
@@ -198,9 +193,9 @@ class DocumentListResponse(ConstitutionalBaseModel):
     id: uuid.UUID
     title: str
     document_type: str
-    author: Optional[str]
+    author: str | None
     version: int
-    word_count: Optional[int]
+    word_count: int | None
     status: str
     created_at: datetime
     updated_at: datetime
@@ -313,7 +308,7 @@ async def create_document(
 
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to create document: {str(e)}",
+            detail=f"Failed to create document: {e!s}",
         )
 
 
@@ -326,7 +321,7 @@ async def create_document(
 async def list_documents(
     pagination: PaginationParams = Depends(),
     filters: FilterParams = Depends(),
-    document_type: Optional[str] = Query(None, description="Filter by document type"),
+    document_type: str | None = Query(None, description="Filter by document type"),
     tenant_context: SimpleTenantContext = (
         Depends(get_tenant_context) if MULTI_TENANT_AVAILABLE else None
     ),
@@ -394,7 +389,7 @@ async def list_documents(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to retrieve documents: {str(e)}",
+            detail=f"Failed to retrieve documents: {e!s}",
         )
 
 
@@ -456,7 +451,7 @@ async def get_document(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to retrieve document: {str(e)}",
+            detail=f"Failed to retrieve document: {e!s}",
         )
 
 
@@ -495,7 +490,6 @@ app.include_router(documents_router)
 @app.on_event("startup")
 async def document_service_startup():
     """Custom startup procedures for document service."""
-    print("📄 Document service components initialized")
 
     # In real implementation, you might:
     # - Initialize document storage systems
@@ -503,22 +497,15 @@ async def document_service_startup():
     # - Validate document templates
     # - Initialize search indexing
 
-    print(
-        f"✅ Document service ready with constitutional compliance: {CONSTITUTIONAL_HASH}"
-    )
-
 
 @app.on_event("shutdown")
 async def document_service_shutdown():
     """Custom shutdown procedures for document service."""
-    print("📄 Document service shutting down...")
 
     # In real implementation, you might:
     # - Close document processing pipelines
     # - Flush pending document operations
     # - Clean up temporary files
-
-    print("✅ Document service shutdown complete")
 
 
 # ============================================================================
@@ -537,11 +524,6 @@ if __name__ == "__main__":
     # Get service configuration
     config = get_settings()
 
-    print(f"🚀 Starting {config.name} v{config.version}")
-    print(f"🏛️ Constitutional compliance: {config.constitutional.hash}")
-    print(f"🏢 Multi-tenant enabled: {config.multi_tenant.enabled}")
-    print(f"🌍 Environment: {config.environment}")
-
     # Run the service
     uvicorn.run(
         "example_usage:app",
@@ -557,7 +539,6 @@ if __name__ == "__main__":
 # ============================================================================
 
 # Example test cases for the document service
-import pytest
 from fastapi.testclient import TestClient
 
 

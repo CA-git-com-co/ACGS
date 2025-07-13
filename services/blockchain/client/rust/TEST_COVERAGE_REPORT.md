@@ -1,3 +1,5 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 # ACGS Rust Test Coverage Report
 
 ## Migration Status: ✅ COMPLETE

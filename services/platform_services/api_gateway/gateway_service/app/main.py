@@ -21,7 +21,6 @@ from fastapi.security import HTTPBearer
 # Integrated authentication
 from .auth.integrated_auth import (
     AuthenticationResult,
-    IntegratedAuthManager,
     TokenData,
     UserCredentials,
     get_auth_manager,
@@ -65,9 +64,9 @@ setup_constitutional_validation(
 )
 
 # Constitutional compliance logging
-logger.info(f"✅ Optimized constitutional middleware enabled for api-gateway")
-logger.info(f"📋 Constitutional Hash: cdd01ef066bc6cf2")
-logger.info(f"🎯 Performance Target: <0.5ms validation")
+logger.info("✅ Optimized constitutional middleware enabled for api-gateway")
+logger.info("📋 Constitutional Hash: cdd01ef066bc6cf2")
+logger.info("🎯 Performance Target: <0.5ms validation")
 
 
 # Initialize core components
@@ -210,7 +209,7 @@ async def verify_constitutional_compliance() -> dict[str, Any]:
         }
 
     except Exception as e:
-        logger.error(f"Constitutional compliance verification failed: {e}")
+        logger.exception(f"Constitutional compliance verification failed: {e}")
         return {
             "is_compliant": False,
             "error": str(e),
@@ -311,7 +310,7 @@ async def login(credentials: UserCredentials) -> None:
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Authentication service error: {str(e)}",
+            detail=f"Authentication service error: {e!s}",
         )
 
 
@@ -342,7 +341,7 @@ async def logout(request: Request, token: str = Depends(security)):
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Logout error: {str(e)}",
+            detail=f"Logout error: {e!s}",
         )
 
 
@@ -372,7 +371,7 @@ async def get_current_user(request: Request) -> None:
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"User info error: {str(e)}",
+            detail=f"User info error: {e!s}",
         )
 
 
@@ -461,7 +460,7 @@ async def create_user(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"User creation error: {str(e)}",
+            detail=f"User creation error: {e!s}",
         )
 
 
@@ -530,7 +529,7 @@ async def proxy_to_service(
         raise
 
     except Exception as e:
-        logger.error(f"Error proxying request to {service_name}: {e}")
+        logger.exception(f"Error proxying request to {service_name}: {e}")
 
         # Record error metrics
         await metrics_collector.record_error(
@@ -598,7 +597,7 @@ async def reload_security_policies() -> None:
         }
 
     except Exception as e:
-        logger.error(f"Failed to reload security policies: {e}")
+        logger.exception(f"Failed to reload security policies: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to reload security policies",
@@ -620,7 +619,7 @@ async def refresh_service_registry() -> None:
         }
 
     except Exception as e:
-        logger.error(f"Failed to refresh service registry: {e}")
+        logger.exception(f"Failed to refresh service registry: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to refresh service registry",

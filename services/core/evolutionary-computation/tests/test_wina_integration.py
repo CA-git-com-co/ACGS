@@ -7,6 +7,8 @@ with the evolutionary computation service.
 
 import asyncio
 import logging
+import pathlib
+import sys
 
 import pytest
 
@@ -58,7 +60,7 @@ class TestWINAIntegration:
             import os
             import sys
 
-            sys.path.append(os.path.join(os.path.dirname(__file__), "..", "app"))
+            sys.path.append(os.path.join(pathlib.Path(__file__).parent, "..", "app"))
 
             from services.core.evolutionary_computation.app.wina.config import (
                 load_wina_config_from_env,
@@ -220,7 +222,7 @@ class TestWINAIntegration:
         )
 
         try:
-            wina_config, integration_config = load_wina_config_from_env()
+            _wina_config, integration_config = load_wina_config_from_env()
 
             # Validate service endpoints are configured
             endpoints = integration_config.get("service_endpoints", {})
@@ -312,30 +314,19 @@ async def run_integration_tests():
         except Exception as e:
             results["failed"] += 1
             results["errors"].append(f"{test_name}: {e!s}")
-            logger.error(f"❌ {test_name} FAILED: {e}")
+            logger.exception(f"❌ {test_name} FAILED: {e}")
 
     # Print summary
     total_tests = results["passed"] + results["failed"]
     success_rate = results["passed"] / total_tests if total_tests > 0 else 0
 
-    print(f"\n{'=' * 60}")
-    print("WINA INTEGRATION TEST RESULTS")
-    print(f"{'=' * 60}")
-    print(f"Total Tests: {total_tests}")
-    print(f"Passed: {results['passed']}")
-    print(f"Failed: {results['failed']}")
-    print(f"Success Rate: {success_rate:.1%}")
-
     if results["errors"]:
-        print("\nErrors:")
-        for error in results["errors"]:
-            print(f"  - {error}")
-
-    print(f"{'=' * 60}")
+        for _error in results["errors"]:
+            pass
 
     return success_rate >= 0.8  # 80% success rate required
 
 
 if __name__ == "__main__":
     success = asyncio.run(run_integration_tests())
-    exit(0 if success else 1)
+    sys.exit(0 if success else 1)

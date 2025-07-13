@@ -67,7 +67,7 @@ async def generate_crypto_key(
 ):
     """Generate new cryptographic key pair"""
     try:
-        key_info = await key_manager.generate_signing_key(
+        return await key_manager.generate_signing_key(
             db=db,
             purpose=key_request.key_purpose,
             key_size=key_request.key_size,
@@ -77,14 +77,13 @@ async def generate_crypto_key(
                 else None
             ),
         )
-        return key_info
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to generate key: {e!s}")
 
 
 @router.get("/keys", response_model=CryptoKeyList)
 async def list_crypto_keys(
-    purpose: str = None,
+    purpose: str | None = None,
     active_only: bool = False,
     db: AsyncSession = Depends(get_async_db),
     current_user: User = Depends(require_internal_service),
@@ -124,10 +123,7 @@ async def rotate_crypto_key(
 ):
     """Rotate cryptographic key"""
     try:
-        new_key_info = await key_manager.rotate_key(
-            db=db, old_key_id=key_id, reason=reason
-        )
-        return new_key_info
+        return await key_manager.rotate_key(db=db, old_key_id=key_id, reason=reason)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:

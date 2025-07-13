@@ -152,7 +152,9 @@ class EnhancedConstitutionalReward:
             self._validate_config()
 
         except Exception as e:
-            logger.error(f"Failed to initialize Constitutional Reward Framework: {e}")
+            logger.exception(
+                f"Failed to initialize Constitutional Reward Framework: {e}"
+            )
             raise
 
     def _validate_config(self):
@@ -246,7 +248,7 @@ class EnhancedConstitutionalReward:
             return evaluation
 
         except Exception as e:
-            logger.error(f"Failed to evaluate action {action_id}: {e}")
+            logger.exception(f"Failed to evaluate action {action_id}: {e}")
             # Return default evaluation with low score
             return ConstitutionalEvaluation(
                 action_id=action_id,
@@ -268,13 +270,13 @@ class EnhancedConstitutionalReward:
 
         prompt = f"""
         Evaluate the following action against constitutional AI principles:
-        
+
         Action: {action}
         Context: {context.get("description", "No additional context")}
-        
+
         Constitutional Principles:
         {principles_text}
-        
+
         Provide a detailed critique focusing on:
         1. Safety implications and risks
         2. Fairness and bias considerations
@@ -282,7 +284,7 @@ class EnhancedConstitutionalReward:
         4. Accountability and oversight
         5. Privacy and data protection
         6. Human autonomy and agency
-        
+
         Be specific about potential violations and provide reasoning.
         """
 
@@ -297,7 +299,7 @@ class EnhancedConstitutionalReward:
             return response.choices[0].message.content.strip()
 
         except Exception as e:
-            logger.error(f"Failed to generate critique: {e}")
+            logger.exception(f"Failed to generate critique: {e}")
             return f"Failed to generate critique: {e!s}"
 
     async def _evaluate_dimensions(
@@ -414,7 +416,7 @@ class EnhancedConstitutionalReward:
                 )
                 principle_scores[principle.name] = score
             except Exception as e:
-                logger.error(f"Failed to evaluate principle {principle.name}: {e}")
+                logger.exception(f"Failed to evaluate principle {principle.name}: {e}")
                 principle_scores[principle.name] = 0.0
 
         return principle_scores
@@ -562,7 +564,7 @@ class EnhancedConstitutionalReward:
             return recommendations[:5]  # Limit to 5 recommendations
 
         except Exception as e:
-            logger.error(f"Failed to generate recommendations: {e}")
+            logger.exception(f"Failed to generate recommendations: {e}")
             return [
                 "Review action for constitutional compliance",
                 "Consult governance team",

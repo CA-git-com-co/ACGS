@@ -27,8 +27,7 @@ try:
         WINAOptimizer,
     )
     from wina.exceptions import WINAConfigurationError
-except ImportError as e:
-    print(f"Failed to import WINA modules: {e}")
+except ImportError:
     sys.exit(1)
 
 # Configure logging
@@ -79,7 +78,7 @@ async def test_wina_configuration():
         return True
 
     except Exception as e:
-        logger.error(f"✗ WINA configuration test failed: {e}")
+        logger.exception(f"✗ WINA configuration test failed: {e}")
         return False
 
 
@@ -115,7 +114,7 @@ async def test_wina_core():
         return True
 
     except Exception as e:
-        logger.error(f"✗ WINA core test failed: {e}")
+        logger.exception(f"✗ WINA core test failed: {e}")
         return False
 
 
@@ -160,7 +159,7 @@ async def test_svd_transformation():
         logger.warning("PyTorch not available, skipping SVD transformation test")
         return True
     except Exception as e:
-        logger.error(f"✗ SVD transformation test failed: {e}")
+        logger.exception(f"✗ SVD transformation test failed: {e}")
         return False
 
 
@@ -198,7 +197,7 @@ async def test_runtime_gating():
         return True
 
     except Exception as e:
-        logger.error(f"✗ Runtime gating test failed: {e}")
+        logger.exception(f"✗ Runtime gating test failed: {e}")
         return False
 
 
@@ -243,7 +242,7 @@ async def test_constitutional_integration():
         return True
 
     except Exception as e:
-        logger.error(f"✗ Constitutional integration test failed: {e}")
+        logger.exception(f"✗ Constitutional integration test failed: {e}")
         return False
 
 
@@ -275,7 +274,7 @@ async def test_wina_optimizer():
         return True
 
     except Exception as e:
-        logger.error(f"✗ WINA optimizer test failed: {e}")
+        logger.exception(f"✗ WINA optimizer test failed: {e}")
         return False
 
 
@@ -294,7 +293,7 @@ async def test_environment_configuration():
 
         from wina.config import load_wina_config_from_env
 
-        wina_config, integration_config = load_wina_config_from_env()
+        wina_config, _integration_config = load_wina_config_from_env()
 
         assert wina_config.target_sparsity == 0.7
         assert wina_config.gflops_reduction_target == 0.6
@@ -305,7 +304,7 @@ async def test_environment_configuration():
         return True
 
     except Exception as e:
-        logger.error(f"✗ Environment configuration test failed: {e}")
+        logger.exception(f"✗ Environment configuration test failed: {e}")
         return False
 
 
@@ -332,7 +331,7 @@ async def run_all_tests():
             result = await test()
             results.append(result)
         except Exception as e:
-            logger.error(f"Test {test.__name__} failed with exception: {e}")
+            logger.exception(f"Test {test.__name__} failed with exception: {e}")
             results.append(False)
 
     # Summary

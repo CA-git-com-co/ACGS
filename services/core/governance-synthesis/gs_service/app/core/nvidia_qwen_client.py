@@ -165,7 +165,7 @@ class NVIDIAQwenClient:
 
         except Exception as e:
             response_time = (time.time() - start_time) * 1000
-            logger.error(f"Error in NVIDIA Qwen API call: {e}")
+            logger.exception(f"Error in NVIDIA Qwen API call: {e}")
 
             return QwenReasoningResponse(
                 content="",
@@ -376,7 +376,7 @@ def get_nvidia_qwen_client(api_key: str | None = None) -> NVIDIAQwenClient | Non
             _nvidia_qwen_client = NVIDIAQwenClient(api_key=api_key)
             logger.info("Initialized global NVIDIA Qwen client")
         except Exception as e:
-            logger.error(f"Failed to initialize NVIDIA Qwen client: {e}")
+            logger.exception(f"Failed to initialize NVIDIA Qwen client: {e}")
             return None
 
     return _nvidia_qwen_client

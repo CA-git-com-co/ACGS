@@ -26,28 +26,30 @@ class TestWINARegoIntegration:
         """Test basic WINA Rego synthesis functionality."""
 
         # Mock the WINA components to avoid dependency issues
-        with patch("app.core.wina_rego_synthesis.WINA_AVAILABLE", True):
-            with patch(
+        with (
+            patch("app.core.wina_rego_synthesis.WINA_AVAILABLE", True),
+            patch(
                 "app.core.wina_rego_synthesis.load_wina_config_from_env"
-            ) as mock_config:
-                # Mock WINA configuration
-                mock_wina_config = Mock()
-                mock_wina_integration_config = Mock()
-                mock_config.return_value = (
-                    mock_wina_config,
-                    mock_wina_integration_config,
-                )
+            ) as mock_config,
+        ):
+            # Mock WINA configuration
+            mock_wina_config = Mock()
+            mock_wina_integration_config = Mock()
+            mock_config.return_value = (
+                mock_wina_config,
+                mock_wina_integration_config,
+            )
 
-                # Import after mocking
-                from .core.wina_rego_synthesis import WINARegoSynthesizer
+            # Import after mocking
+            from .core.wina_rego_synthesis import WINARegoSynthesizer
 
-                # Create synthesizer
-                synthesizer = WINARegoSynthesizer(enable_wina=True)
+            # Create synthesizer
+            synthesizer = WINARegoSynthesizer(enable_wina=True)
 
-                # Verify initialization
-                assert synthesizer.enable_wina is True
-                assert synthesizer.wina_config is not None
-                assert synthesizer.wina_integration_config is not None
+            # Verify initialization
+            assert synthesizer.enable_wina is True
+            assert synthesizer.wina_config is not None
+            assert synthesizer.wina_integration_config is not None
 
     @pytest.mark.asyncio
     async def test_wina_rego_synthesis_without_dependencies(self):

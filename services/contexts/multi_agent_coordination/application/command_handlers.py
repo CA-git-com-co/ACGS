@@ -7,14 +7,13 @@ Command handlers for multi-agent coordination operations.
 
 import logging
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any
 
-from services.shared.domain.base import EntityId, TenantId
 from services.shared.infrastructure.repositories import get_repository_registry
 from services.shared.infrastructure.unit_of_work import UnitOfWorkManager
 
 from ..domain.entities import Agent, CoordinationSession, CoordinationTask
-from ..domain.value_objects import AgentStatus, TaskStatus
+from ..domain.value_objects import AgentStatus
 from .commands import (
     AddAgentCapabilityCommand,
     AssignTaskCommand,
@@ -23,7 +22,6 @@ from .commands import (
     CreateCoordinationTaskCommand,
     FailTaskCommand,
     RegisterAgentCommand,
-    RequestAgentCollaborationCommand,
     RequestImpactAnalysisCommand,
     StartCoordinationSessionCommand,
     StartTaskExecutionCommand,
@@ -279,7 +277,7 @@ class AnalysisCommandHandler:
 
     async def handle_request_impact_analysis(
         self, command: RequestImpactAnalysisCommand
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Handle impact analysis request."""
         # This integrates with the existing multi-agent coordination
         # to perform constitutional impact analysis
@@ -296,7 +294,7 @@ class AnalysisCommandHandler:
         # 4. Aggregate results
 
         # For now, return a simulated analysis result
-        analysis_result = {
+        return {
             "analysis_id": str(command.analysis_id),
             "subject_id": command.subject_id,
             "analysis_type": command.analysis_type,
@@ -321,8 +319,6 @@ class AnalysisCommandHandler:
             "recommendation": "proceed_with_conditions",
             "timestamp": datetime.utcnow().isoformat(),
         }
-
-        return analysis_result
 
 
 class MultiAgentCoordinationService:
@@ -376,5 +372,5 @@ class MultiAgentCoordinationService:
     # Analysis operations
     async def request_impact_analysis(
         self, command: RequestImpactAnalysisCommand
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         return await self.analysis_handler.handle_request_impact_analysis(command)

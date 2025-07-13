@@ -6,17 +6,15 @@ This module provides integration between SuperClaude cognitive personas and ACGS
 enabling specialized domain expertise while maintaining constitutional compliance.
 """
 
-import asyncio
 import logging
-import time
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Union
+from typing import Any
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
 
-from .blackboard import BlackboardService, KnowledgeItem, TaskDefinition
+from .blackboard import BlackboardService, KnowledgeItem
 
 # Constitutional compliance imports
 from .constitutional_safety_framework import ConstitutionalSafetyValidator
@@ -51,8 +49,8 @@ class PersonaCapabilities(BaseModel):
     communication_style: str
     problem_solving: str
     mcp_preferences: str
-    focus_areas: List[str]
-    constitutional_requirements: List[str] = Field(default_factory=list)
+    focus_areas: list[str]
+    constitutional_requirements: list[str] = Field(default_factory=list)
 
 
 class PersonaIntegrationResult(BaseModel):
@@ -61,12 +59,12 @@ class PersonaIntegrationResult(BaseModel):
     persona: SuperClaudePersona
     agent_type: str
     constitutional_hash: str = "cdd01ef066bc6cf2"
-    analysis_result: Dict[str, Any]
-    persona_insights: Dict[str, Any]
-    constitutional_compliance: Dict[str, Any]
-    recommendations: List[str]
+    analysis_result: dict[str, Any]
+    persona_insights: dict[str, Any]
+    constitutional_compliance: dict[str, Any]
+    recommendations: list[str]
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    audit_trail: List[str] = Field(default_factory=list)
+    audit_trail: list[str] = Field(default_factory=list)
 
 
 class PersonaAgentIntegration:
@@ -195,8 +193,8 @@ class PersonaAgentIntegration:
         self,
         persona: SuperClaudePersona,
         agent_type: str,
-        task_data: Dict[str, Any],
-        agent_result: Dict[str, Any],
+        task_data: dict[str, Any],
+        agent_result: dict[str, Any],
     ) -> PersonaIntegrationResult:
         """Integrate SuperClaude persona with ACGS agent operation"""
 
@@ -223,7 +221,7 @@ class PersonaAgentIntegration:
         # Create audit trail
         audit_trail = [
             f"Persona {persona.value} integrated with {agent_type}",
-            f"Constitutional hash validated: cdd01ef066bc6cf2",
+            "Constitutional hash validated: cdd01ef066bc6cf2",
             f"Persona-specific analysis applied: {len(persona_insights)} insights",
             f"Generated {len(recommendations)} persona-enhanced recommendations",
         ]
@@ -244,8 +242,8 @@ class PersonaAgentIntegration:
         )
 
     async def _validate_constitutional_compliance(
-        self, persona: SuperClaudePersona, agent_type: str, task_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, persona: SuperClaudePersona, agent_type: str, task_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """Validate constitutional compliance for persona-agent integration"""
 
         constitutional_hash = "cdd01ef066bc6cf2"
@@ -273,12 +271,12 @@ class PersonaAgentIntegration:
     async def _apply_persona_analysis(
         self,
         persona_capabilities: PersonaCapabilities,
-        agent_result: Dict[str, Any],
-        task_data: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        agent_result: dict[str, Any],
+        task_data: dict[str, Any],
+    ) -> dict[str, Any]:
         """Apply persona-specific analysis to agent results"""
 
-        insights = {
+        return {
             "persona_perspective": {
                 "identity_lens": persona_capabilities.identity,
                 "core_belief_application": persona_capabilities.core_belief,
@@ -304,11 +302,9 @@ class PersonaAgentIntegration:
             },
         }
 
-        return insights
-
     async def _analyze_constitutional_implications(
-        self, agent_result: Dict[str, Any], persona_capabilities: PersonaCapabilities
-    ) -> Dict[str, Any]:
+        self, agent_result: dict[str, Any], persona_capabilities: PersonaCapabilities
+    ) -> dict[str, Any]:
         """Analyze constitutional implications from persona perspective"""
 
         implications = {
@@ -335,25 +331,23 @@ class PersonaAgentIntegration:
         return implications
 
     async def _analyze_governance_impact(
-        self, agent_result: Dict[str, Any], persona_capabilities: PersonaCapabilities
-    ) -> Dict[str, Any]:
+        self, agent_result: dict[str, Any], persona_capabilities: PersonaCapabilities
+    ) -> dict[str, Any]:
         """Analyze governance impact from persona perspective"""
 
-        impact = {
+        return {
             "governance_enhancement": "Persona expertise enhances governance decision quality",
             "stakeholder_benefit": "Specialized perspective benefits all stakeholders",
             "process_improvement": "Persona-driven analysis improves governance processes",
             "compliance_strengthening": "Domain expertise strengthens compliance validation",
         }
 
-        return impact
-
     async def _analyze_focus_area(
-        self, focus_area: str, agent_result: Dict[str, Any], task_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, focus_area: str, agent_result: dict[str, Any], task_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """Analyze specific focus area from persona perspective"""
 
-        analysis = {
+        return {
             "area": focus_area,
             "relevance": "High - directly applicable to current task",
             "insights": f"Persona expertise in {focus_area} provides valuable perspective",
@@ -361,14 +355,12 @@ class PersonaAgentIntegration:
             "metrics": f"Track {focus_area} improvements with governance validation",
         }
 
-        return analysis
-
     async def _generate_persona_recommendations(
         self,
         persona_capabilities: PersonaCapabilities,
-        agent_result: Dict[str, Any],
-        persona_insights: Dict[str, Any],
-    ) -> List[str]:
+        agent_result: dict[str, Any],
+        persona_insights: dict[str, Any],
+    ) -> list[str]:
         """Generate persona-enhanced recommendations"""
 
         recommendations = [
@@ -380,8 +372,10 @@ class PersonaAgentIntegration:
         ]
 
         # Add persona-specific recommendations
-        for requirement in persona_capabilities.constitutional_requirements:
-            recommendations.append(f"Constitutional requirement: {requirement}")
+        recommendations.extend(
+            f"Constitutional requirement: {requirement}"
+            for requirement in persona_capabilities.constitutional_requirements
+        )
 
         return recommendations
 
@@ -389,8 +383,8 @@ class PersonaAgentIntegration:
         self,
         persona: SuperClaudePersona,
         agent_type: str,
-        insights: Dict[str, Any],
-        recommendations: List[str],
+        insights: dict[str, Any],
+        recommendations: list[str],
     ) -> None:
         """Log persona integration results to blackboard"""
 
@@ -440,7 +434,7 @@ class PersonaEnhancedAgent:
         self.logger = logging.getLogger(__name__)
 
     async def execute_with_persona(
-        self, task_data: Dict[str, Any], persona: Optional[SuperClaudePersona] = None
+        self, task_data: dict[str, Any], persona: SuperClaudePersona | None = None
     ) -> PersonaIntegrationResult:
         """Execute agent task with optional persona enhancement"""
 
@@ -455,29 +449,25 @@ class PersonaEnhancedAgent:
 
         # Apply persona enhancement if specified
         if persona:
-            integration_result = (
-                await self.persona_integration.integrate_persona_with_agent(
-                    persona=persona,
-                    agent_type=self.agent_type,
-                    task_data=task_data,
-                    agent_result=base_result,
-                )
-            )
-            return integration_result
-        else:
-            # Return base result in persona integration format
-            return PersonaIntegrationResult(
-                persona=SuperClaudePersona.ANALYZER,  # Default persona
+            return await self.persona_integration.integrate_persona_with_agent(
+                persona=persona,
                 agent_type=self.agent_type,
-                analysis_result=base_result,
-                persona_insights={},
-                constitutional_compliance={"constitutional_hash": "cdd01ef066bc6cf2"},
-                recommendations=base_result.get("recommendations", []),
+                task_data=task_data,
+                agent_result=base_result,
             )
+        # Return base result in persona integration format
+        return PersonaIntegrationResult(
+            persona=SuperClaudePersona.ANALYZER,  # Default persona
+            agent_type=self.agent_type,
+            analysis_result=base_result,
+            persona_insights={},
+            constitutional_compliance={"constitutional_hash": "cdd01ef066bc6cf2"},
+            recommendations=base_result.get("recommendations", []),
+        )
 
     async def _execute_base_functionality(
-        self, task_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, task_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """Execute base agent functionality - to be implemented by subclasses"""
         raise NotImplementedError(
             "Subclasses must implement _execute_base_functionality"

@@ -165,7 +165,7 @@ class ACGSServiceOrchestrator:
             )
 
         except Exception as e:
-            logger.error(f"Failed to start service orchestrator: {e}")
+            logger.exception(f"Failed to start service orchestrator: {e}")
             await self.stop()
             raise
 
@@ -295,7 +295,7 @@ class ACGSServiceOrchestrator:
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                logger.error(f"Metrics collection error: {e}")
+                logger.exception(f"Metrics collection error: {e}")
                 await asyncio.sleep(30.0)
 
     async def _collect_orchestration_metrics(self):
@@ -332,7 +332,7 @@ class ACGSServiceOrchestrator:
                 )
 
         except Exception as e:
-            logger.error(f"Error collecting orchestration metrics: {e}")
+            logger.exception(f"Error collecting orchestration metrics: {e}")
 
     async def _system_health_monitoring_loop(self):
         # requires: Valid input parameters
@@ -346,7 +346,7 @@ class ACGSServiceOrchestrator:
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                logger.error(f"System health monitoring error: {e}")
+                logger.exception(f"System health monitoring error: {e}")
                 await asyncio.sleep(10.0)
 
     async def _monitor_system_health(self):
@@ -437,7 +437,7 @@ class ACGSServiceOrchestrator:
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                logger.error(f"Performance optimization error: {e}")
+                logger.exception(f"Performance optimization error: {e}")
                 await asyncio.sleep(60.0)
 
     async def _optimize_performance(self):
@@ -464,7 +464,7 @@ class ACGSServiceOrchestrator:
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                logger.error(f"Auto-scaling error: {e}")
+                logger.exception(f"Auto-scaling error: {e}")
                 await asyncio.sleep(60.0)
 
     async def _evaluate_scaling_needs(self):
@@ -506,7 +506,7 @@ class ACGSServiceOrchestrator:
                 else:
                     callback(event_type, event_data)
             except Exception as e:
-                logger.error(f"Event callback error for {event_type}: {e}")
+                logger.exception(f"Event callback error for {event_type}: {e}")
 
     def register_event_callback(self, event_type: str, callback: Callable):
         # requires: Valid input parameters
@@ -583,7 +583,7 @@ class ACGSServiceOrchestrator:
             }
 
         except Exception as e:
-            logger.error(f"Manual failover failed for {service_type.value}: {e}")
+            logger.exception(f"Manual failover failed for {service_type.value}: {e}")
             return {"error": str(e)}
 
 

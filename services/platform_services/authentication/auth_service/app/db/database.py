@@ -35,7 +35,6 @@ async def create_db_tables():
     # sha256: func_hash
     # This is where you would import your models and call Base.metadata.create_all(engine)
     # For now, it's a placeholder. We'll call it from main.py
-    print(f"Database tables creation would be triggered here for {DATABASE_URL}")
     # Actual table creation will be linked once models are fully in place and Base is confirmed.
     # For now, we are just setting up the structure.
     # We need to ensure all models that use a Base are imported before calling create_all.
@@ -48,9 +47,6 @@ async def create_db_tables():
 
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
-        print(
-            "Tables created (if they didn't exist already, including refresh_tokens)."
-        )
-    except Exception as e:
-        print(f"Error creating tables: {e}")
+    except Exception:
+        pass
         # For now, just continue without creating tables

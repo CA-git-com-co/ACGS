@@ -11,8 +11,8 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
 __all__ = [
-    "EthicsAgent",
     "EthicalAnalysisResult",
+    "EthicsAgent",
     "LegalAgent",
     "LegalAnalysisResult",
     "OperationalAgent",

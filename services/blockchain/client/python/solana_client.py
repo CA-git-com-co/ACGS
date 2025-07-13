@@ -83,7 +83,7 @@ class QuantumagiSolanaClient:
         """Initialize the constitutional governance system"""
         try:
             # Derive Constitution PDA
-            constitution_pda, bump = Pubkey.find_program_address(
+            constitution_pda, _bump = Pubkey.find_program_address(
                 [b"constitution"], self.program_id
             )
 
@@ -105,7 +105,7 @@ class QuantumagiSolanaClient:
             return str(signature)
 
         except Exception as e:
-            self.logger.error(f"Failed to initialize constitution: {e}")
+            self.logger.exception(f"Failed to initialize constitution: {e}")
             raise
 
     async def propose_policy_from_principle(
@@ -145,14 +145,14 @@ class QuantumagiSolanaClient:
             return signature
 
         except Exception as e:
-            self.logger.error(f"Failed to propose policy: {e}")
+            self.logger.exception(f"Failed to propose policy: {e}")
             raise
 
     async def _deploy_policy_to_solana(self, policy: SolanaPolicy) -> str:
         """Deploy a synthesized policy to the Solana blockchain"""
 
         # Derive Policy PDA
-        policy_pda, bump = Pubkey.find_program_address(
+        policy_pda, _bump = Pubkey.find_program_address(
             [b"policy", policy.id.to_bytes(8, "little")], self.program_id
         )
 
@@ -176,10 +176,10 @@ class QuantumagiSolanaClient:
         """Enact a previously proposed policy"""
         try:
             # Derive PDAs
-            policy_pda, _ = Pubkey.find_program_address(
+            _policy_pda, _ = Pubkey.find_program_address(
                 [b"policy", policy_id.to_bytes(8, "little")], self.program_id
             )
-            constitution_pda, _ = Pubkey.find_program_address(
+            _constitution_pda, _ = Pubkey.find_program_address(
                 [b"constitution"], self.program_id
             )
 
@@ -198,7 +198,7 @@ class QuantumagiSolanaClient:
             return str(signature)
 
         except Exception as e:
-            self.logger.error(f"Failed to enact policy {policy_id}: {e}")
+            self.logger.exception(f"Failed to enact policy {policy_id}: {e}")
             raise
 
     async def check_compliance(
@@ -210,7 +210,7 @@ class QuantumagiSolanaClient:
         """
         try:
             # Derive Policy PDA
-            policy_pda, _ = Pubkey.find_program_address(
+            _policy_pda, _ = Pubkey.find_program_address(
                 [b"policy", policy_id.to_bytes(8, "little")], self.program_id
             )
 
@@ -238,7 +238,7 @@ class QuantumagiSolanaClient:
                 return False
 
         except Exception as e:
-            self.logger.error(f"Error during compliance check: {e}")
+            self.logger.exception(f"Error during compliance check: {e}")
             return False
 
     async def get_constitution(self) -> ConstitutionAccount | None:
@@ -258,7 +258,7 @@ class QuantumagiSolanaClient:
             return self._decode_constitution_account(data)
 
         except Exception as e:
-            self.logger.error(f"Failed to fetch constitution: {e}")
+            self.logger.exception(f"Failed to fetch constitution: {e}")
             return None
 
     async def get_policy(self, policy_id: int) -> PolicyAccount | None:
@@ -278,7 +278,7 @@ class QuantumagiSolanaClient:
             return self._decode_policy_account(data)
 
         except Exception as e:
-            self.logger.error(f"Failed to fetch policy {policy_id}: {e}")
+            self.logger.exception(f"Failed to fetch policy {policy_id}: {e}")
             return None
 
     async def list_active_policies(self) -> list[PolicyAccount]:
@@ -370,24 +370,22 @@ async def main():
 
         # Propose a policy from a principle
         principle_content = "AI systems must obtain proper authorization before modifying critical state"
-        signature = await client.propose_policy_from_principle(
+        await client.propose_policy_from_principle(
             "PC-001", principle_content, PolicyCategory.PROMPT_CONSTITUTION
         )
-        print(f"Policy proposed: {signature}")
 
         # Enact the policy
         await client.enact_policy(1)
 
         # Check compliance
-        is_compliant = await client.check_compliance(
+        await client.check_compliance(
             1,
             "authorized state modification",
             {"requires_governance": False, "has_approval": True},
         )
-        print(f"Compliance check result: {is_compliant}")
 
-    except Exception as e:
-        print(f"Error: {e}")
+    except Exception:
+        pass
 
 
 if __name__ == "__main__":

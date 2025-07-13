@@ -444,7 +444,7 @@ class BlackboardService:
                         return False
 
                     # Verify task is in a completable state
-                    if task_data["status"] not in ["claimed", "in_progress"]:
+                    if task_data["status"] not in {"claimed", "in_progress"}:
                         return False
 
                     # Start transaction
@@ -459,7 +459,7 @@ class BlackboardService:
                     await pipe.hset(key, "data", json.dumps(task_data))
 
                     # Update task queues
-                    if old_status in ["claimed", "in_progress"]:
+                    if old_status in {"claimed", "in_progress"}:
                         old_queue = f"{self.spaces['tasks']}:{old_status}:priority"
                         await pipe.zrem(old_queue, task_id)
 
@@ -515,7 +515,7 @@ class BlackboardService:
                         return False
 
                     # Verify task is in a failable state
-                    if task_data["status"] not in ["claimed", "in_progress"]:
+                    if task_data["status"] not in {"claimed", "in_progress"}:
                         return False
 
                     # Start transaction
@@ -532,7 +532,7 @@ class BlackboardService:
                     await pipe.hset(key, "data", json.dumps(task_data))
 
                     # Update task queues
-                    if old_status in ["claimed", "in_progress"]:
+                    if old_status in {"claimed", "in_progress"}:
                         old_queue = f"{self.spaces['tasks']}:{old_status}:priority"
                         await pipe.zrem(old_queue, task_id)
 
@@ -826,15 +826,15 @@ class BlackboardService:
     ) -> None:
         """Update task queues when status changes"""
         # Remove from old queue
-        if old_status in ["pending", "claimed", "in_progress"]:
+        if old_status in {"pending", "claimed", "in_progress"}:
             old_queue = f"{self.spaces['tasks']}:{old_status}:priority"
             await self.redis_client.zrem(old_queue, task_id)
 
         # Add to new queue
-        if new_status in ["pending", "claimed", "in_progress"]:
+        if new_status in {"pending", "claimed", "in_progress"}:
             new_queue = f"{self.spaces['tasks']}:{new_status}:priority"
             await self.redis_client.zadd(new_queue, {task_id: priority})
-        elif new_status in ["completed", "failed"]:
+        elif new_status in {"completed", "failed"}:
             archive_queue = f"{self.spaces['tasks']}:{new_status}:timestamp"
             await self.redis_client.zadd(archive_queue, {task_id: int(time.time())})
 
@@ -885,9 +885,7 @@ class BlackboardService:
 
     async def cleanup_expired_items(self) -> int:
         """Clean up expired knowledge items and old tasks"""
-        cleaned_count = 0
+        return 0
 
         # This would implement cleanup logic for expired items
         # For now, Redis TTL handles most expiration automatically
-
-        return cleaned_count

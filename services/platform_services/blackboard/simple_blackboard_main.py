@@ -10,7 +10,7 @@ This is a minimal implementation to ensure constitutional compliance.
 import logging
 import time
 from datetime import datetime, timezone
-from typing import Any, Dict, List
+from typing import Any
 
 import uvicorn
 from fastapi import FastAPI, HTTPException, status
@@ -65,7 +65,7 @@ class KnowledgeItem(BaseModel):
     id: str
     agent_id: str
     knowledge_type: str
-    content: Dict[str, Any]
+    content: dict[str, Any]
     timestamp: str
     constitutional_hash: str = CONSTITUTIONAL_HASH
 
@@ -84,7 +84,7 @@ class AgentInfo(BaseModel):
     id: str
     name: str
     status: str
-    capabilities: List[str]
+    capabilities: list[str]
     timestamp: str
     constitutional_hash: str = CONSTITUTIONAL_HASH
 
@@ -259,7 +259,7 @@ async def get_service_status():
 
 
 @app.get("/constitutional/validate")
-async def validate_constitutional_hash(hash: str = None):
+async def validate_constitutional_hash(hash: str | None = None):
     """Validate constitutional hash compliance."""
     if hash and hash != CONSTITUTIONAL_HASH:
         raise HTTPException(

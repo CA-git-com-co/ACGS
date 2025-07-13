@@ -8,13 +8,14 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import asyncio
+import contextlib
 import logging
 import random
 import time
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 import httpx
 from fastapi import HTTPException, Request, status
@@ -50,7 +51,7 @@ class ServiceInstance:
     url: str
     weight: int = 1
     status: ServiceStatus = ServiceStatus.UNKNOWN
-    last_health_check: Optional[datetime] = None
+    last_health_check: datetime | None = None
     failure_count: int = 0
     response_time_ms: float = 0.0
     constitutional_compliance_verified: bool = False
@@ -64,8 +65,8 @@ class CircuitBreaker:
     failure_count: int = 0
     failure_threshold: int = 5
     reset_timeout_seconds: int = 60
-    last_failure_time: Optional[datetime] = None
-    next_attempt_time: Optional[datetime] = None
+    last_failure_time: datetime | None = None
+    next_attempt_time: datetime | None = None
 
 
 class ServiceRouter:
@@ -85,7 +86,7 @@ class ServiceRouter:
         )
         self.round_robin_counters: dict[str, int] = {}
         self.health_check_interval = 30  # seconds
-        self.health_check_task: Optional[asyncio.Task] = None
+        self.health_check_task: asyncio.Task | None = None
         self.request_timeout = 30  # seconds
         self.service_discovery_client = None
 
@@ -181,7 +182,7 @@ class ServiceRouter:
                 )
 
                 # Also get service capabilities
-                for service_name in discovered_services.keys():
+                for service_name in discovered_services:
                     try:
                         capabilities = await self.service_discovery_client.get_service_capabilities(
                             service_name
@@ -195,7 +196,7 @@ class ServiceRouter:
                         )
 
             except Exception as e:
-                logger.error(f"Failed to discover services: {e}")
+                logger.exception(f"Failed to discover services: {e}")
                 # Fall back to static config
                 await self._register_static_services()
         else:
@@ -215,10 +216,8 @@ class ServiceRouter:
 
         if self.health_check_task:
             self.health_check_task.cancel()
-            try:
+            with contextlib.suppress(asyncio.CancelledError):
                 await self.health_check_task
-            except asyncio.CancelledError:
-                pass
 
         logger.info("Service router cleanup completed")
 
@@ -249,8 +248,8 @@ class ServiceRouter:
         self,
         service_name: str,
         request: Request,
-        tenant_context: Optional[dict[str, Any]] = None,
-        user_context: Optional[dict[str, Any]] = None,
+        tenant_context: dict[str, Any] | None = None,
+        user_context: dict[str, Any] | None = None,
     ) -> httpx.Response:
         """Route request to appropriate service instance."""
 
@@ -324,7 +323,7 @@ class ServiceRouter:
             return response
 
         except Exception as e:
-            logger.error(f"Request failed for {instance.name}: {e}")
+            logger.exception(f"Request failed for {instance.name}: {e}")
 
             # Update instance metrics
             await self._update_instance_metrics(instance, 0, False)
@@ -367,7 +366,7 @@ class ServiceRouter:
 
     async def _select_service_instance(
         self, service_name: str
-    ) -> Optional[ServiceInstance]:
+    ) -> ServiceInstance | None:
         """Select service instance based on load balancing strategy."""
 
         instances = self.services.get(service_name, [])
@@ -386,12 +385,11 @@ class ServiceRouter:
 
         if self.load_balancing_strategy == "round_robin":
             return self._round_robin_selection(service_name, healthy_instances)
-        elif self.load_balancing_strategy == "least_connections":
+        if self.load_balancing_strategy == "least_connections":
             return self._least_connections_selection(healthy_instances)
-        elif self.load_balancing_strategy == "weighted_random":
+        if self.load_balancing_strategy == "weighted_random":
             return self._weighted_random_selection(healthy_instances)
-        else:
-            return random.choice(healthy_instances)
+        return random.choice(healthy_instances)
 
     def _round_robin_selection(
         self, service_name: str, instances: list[ServiceInstance]
@@ -470,7 +468,7 @@ class ServiceRouter:
             }
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 "Constitutional compliance verification failed for"
                 f" {instance.name}: {e}"
             )
@@ -485,8 +483,8 @@ class ServiceRouter:
         self,
         instance: ServiceInstance,
         request: Request,
-        tenant_context: Optional[dict[str, Any]] = None,
-        user_context: Optional[dict[str, Any]] = None,
+        tenant_context: dict[str, Any] | None = None,
+        user_context: dict[str, Any] | None = None,
     ) -> httpx.Response:
         """Forward request to service instance."""
 
@@ -536,23 +534,21 @@ class ServiceRouter:
 
         # Get request body
         body = None
-        if request.method in ["POST", "PUT", "PATCH"]:
+        if request.method in {"POST", "PUT", "PATCH"}:
             body = await request.body()
 
         # Forward request
         async with httpx.AsyncClient(timeout=self.request_timeout) as client:
-            response = await client.request(
+            return await client.request(
                 method=request.method, url=target_url, headers=headers, content=body
             )
-
-        return response
 
     async def _try_fallback_instance(
         self,
         service_name: str,
         request: Request,
-        tenant_context: Optional[dict[str, Any]] = None,
-        user_context: Optional[dict[str, Any]] = None,
+        tenant_context: dict[str, Any] | None = None,
+        user_context: dict[str, Any] | None = None,
     ) -> httpx.Response:
         """Try another instance as fallback."""
 
@@ -658,7 +654,7 @@ class ServiceRouter:
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                logger.error(f"Health check loop error: {e}")
+                logger.exception(f"Health check loop error: {e}")
 
     async def _perform_health_checks(self):
         """Perform health checks on all service instances."""

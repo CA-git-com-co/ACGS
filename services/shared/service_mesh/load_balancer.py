@@ -4,6 +4,7 @@ Enterprise-grade load balancing with multiple strategies and session affinity
 """
 
 import hashlib
+import operator
 import random
 import time
 from typing import Any
@@ -141,7 +142,7 @@ class LoadBalancer:
         instances_with_scores = [
             (instance, instance.load_score) for instance in instances
         ]
-        instances_with_scores.sort(key=lambda x: x[1])
+        instances_with_scores.sort(key=operator.itemgetter(1))
 
         return instances_with_scores[0][0]
 
@@ -206,7 +207,7 @@ class LoadBalancer:
                 ring.append((hash_value, instance.instance_id))
 
         # Sort ring by hash value for consistent ordering
-        ring.sort(key=lambda x: x[0])
+        ring.sort(key=operator.itemgetter(0))
         self._consistent_hash_ring[service_type] = ring
 
     def set_session_affinity(self, session_id: str, instance_id: str):

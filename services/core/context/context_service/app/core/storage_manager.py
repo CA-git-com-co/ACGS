@@ -8,18 +8,23 @@ Orchestrates the three-tier storage architecture for optimal performance:
 """
 
 import asyncio
+import contextlib
 import logging
 import time
 from datetime import datetime, timedelta
-from typing import Any, Optional
+from typing import Any
 from uuid import UUID
 
 import asyncpg
+from context.context_service.app.models.context_models import BaseContext, ContextType
+from context.context_service.app.models.storage_models import (
+    StorageMetrics,
+    StorageOperation,
+    StorageTier,
+)
 
 from services.shared.cache.redis_cluster import get_cache_manager
 
-from ..models.context_models import BaseContext, ContextType
-from ..models.storage_models import StorageMetrics, StorageOperation, StorageTier
 from .embedding_service import EmbeddingService
 from .vector_store import QdrantVectorStore
 
@@ -37,9 +42,9 @@ class MultiTierStorageManager:
 
     def __init__(
         self,
-        redis_config: Optional[dict[str, Any]] = None,
-        qdrant_config: Optional[dict[str, Any]] = None,
-        postgres_config: Optional[dict[str, Any]] = None,
+        redis_config: dict[str, Any] | None = None,
+        qdrant_config: dict[str, Any] | None = None,
+        postgres_config: dict[str, Any] | None = None,
         enable_intelligent_tiering: bool = True,
         l1_cache_ttl_minutes: int = 60,
         l2_vector_ttl_hours: int = 24,
@@ -144,8 +149,8 @@ class MultiTierStorageManager:
         self.max_operations_log = 1000  # Keep last 1000 operations
 
         # Background tasks
-        self.tiering_task: Optional[asyncio.Task] = None
-        self.cleanup_task: Optional[asyncio.Task] = None
+        self.tiering_task: asyncio.Task | None = None
+        self.cleanup_task: asyncio.Task | None = None
 
     async def initialize(self) -> bool:
         """
@@ -194,7 +199,7 @@ class MultiTierStorageManager:
             return success
 
         except Exception as e:
-            logger.error(f"Failed to initialize multi-tier storage: {e}")
+            logger.exception(f"Failed to initialize multi-tier storage: {e}")
             return False
 
     async def _initialize_l1_cache(self) -> bool:
@@ -327,7 +332,7 @@ class MultiTierStorageManager:
         self,
         context: BaseContext,
         generate_embedding: bool = True,
-        tier_preference: Optional[StorageTier] = None,
+        tier_preference: StorageTier | None = None,
     ) -> tuple[bool, dict[str, Any]]:
         """
         Store context using intelligent tiering.
@@ -416,7 +421,7 @@ class MultiTierStorageManager:
 
         except Exception as e:
             operation_time = (time.time() - start_time) * 1000
-            logger.error(f"Failed to store context {context.context_id}: {e}")
+            logger.exception(f"Failed to store context {context.context_id}: {e}")
 
             await self._log_storage_operation(
                 operation_id=operation_id,
@@ -435,7 +440,7 @@ class MultiTierStorageManager:
         self,
         context_id: UUID,
         update_access_time: bool = True,
-    ) -> tuple[Optional[BaseContext], dict[str, Any]]:
+    ) -> tuple[BaseContext | None, dict[str, Any]]:
         """
         Retrieve context using multi-tier lookup.
 
@@ -577,7 +582,7 @@ class MultiTierStorageManager:
 
         except Exception as e:
             retrieval_time = (time.time() - start_time) * 1000
-            logger.error(f"Failed to retrieve context {context_id}: {e}")
+            logger.exception(f"Failed to retrieve context {context_id}: {e}")
 
             await self._log_storage_operation(
                 operation_id=context_id,
@@ -596,11 +601,11 @@ class MultiTierStorageManager:
         """Determine optimal storage tier for context."""
 
         # High priority contexts go to L1 cache
-        if context.priority.value in ["critical", "high"]:
+        if context.priority.value in {"critical", "high"}:
             return StorageTier.L1_CACHE
 
         # Constitutional and policy contexts go to L2 for semantic search
-        if context.context_type in [ContextType.CONSTITUTIONAL, ContextType.POLICY]:
+        if context.context_type in {ContextType.CONSTITUTIONAL, ContextType.POLICY}:
             return StorageTier.L2_VECTOR
 
         # Recent conversations stay in L1 cache
@@ -608,17 +613,17 @@ class MultiTierStorageManager:
             return StorageTier.L1_CACHE
 
         # Domain and agent contexts go to L2 vector store
-        if context.context_type in [ContextType.DOMAIN, ContextType.AGENT]:
+        if context.context_type in {ContextType.DOMAIN, ContextType.AGENT}:
             return StorageTier.L2_VECTOR
 
         # Default to L2 vector store
         return StorageTier.L2_VECTOR
 
-    def _determine_promotion_tier(self, context: BaseContext) -> Optional[StorageTier]:
+    def _determine_promotion_tier(self, context: BaseContext) -> StorageTier | None:
         """Determine if context should be promoted to higher tier."""
 
         # High-priority contexts get promoted to L1
-        if context.priority.value in ["critical", "high"]:
+        if context.priority.value in {"critical", "high"}:
             return StorageTier.L1_CACHE
 
         # Recently accessed contexts get promoted to L2
@@ -648,21 +653,21 @@ class MultiTierStorageManager:
 
     async def _retrieve_from_l1(
         self, context_id: UUID
-    ) -> tuple[Optional[BaseContext], dict[str, Any]]:
+    ) -> tuple[BaseContext | None, dict[str, Any]]:
         """Retrieve context from L1 cache."""
         # Implementation would go here
         return None, {}
 
     async def _retrieve_from_l2(
         self, context_id: UUID
-    ) -> tuple[Optional[BaseContext], dict[str, Any]]:
+    ) -> tuple[BaseContext | None, dict[str, Any]]:
         """Retrieve context from L2 vector store."""
         # Implementation would go here
         return None, {}
 
     async def _retrieve_from_l3(
         self, context_id: UUID
-    ) -> tuple[Optional[BaseContext], dict[str, Any]]:
+    ) -> tuple[BaseContext | None, dict[str, Any]]:
         """Retrieve context from L3 archive."""
         # Implementation would go here
         return None, {}
@@ -676,7 +681,7 @@ class MultiTierStorageManager:
         data_size_bytes: int,
         latency_ms: float,
         success: bool,
-        error_message: Optional[str] = None,
+        error_message: str | None = None,
     ):
         """Log storage operation for analytics."""
         try:
@@ -741,7 +746,7 @@ class MultiTierStorageManager:
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                logger.error(f"Error in intelligent tiering loop: {e}")
+                logger.exception(f"Error in intelligent tiering loop: {e}")
                 await asyncio.sleep(60)  # Wait 1 minute before retry
 
     async def _cleanup_loop(self):
@@ -753,7 +758,7 @@ class MultiTierStorageManager:
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                logger.error(f"Error in cleanup loop: {e}")
+                logger.exception(f"Error in cleanup loop: {e}")
                 await asyncio.sleep(300)  # Wait 5 minutes before retry
 
     async def _perform_intelligent_tiering(self):
@@ -788,17 +793,13 @@ class MultiTierStorageManager:
             # Cancel background tasks
             if self.tiering_task:
                 self.tiering_task.cancel()
-                try:
+                with contextlib.suppress(asyncio.CancelledError):
                     await self.tiering_task
-                except asyncio.CancelledError:
-                    pass
 
             if self.cleanup_task:
                 self.cleanup_task.cancel()
-                try:
+                with contextlib.suppress(asyncio.CancelledError):
                     await self.cleanup_task
-                except asyncio.CancelledError:
-                    pass
 
             # Close storage components
             if self.vector_store:
@@ -813,4 +814,4 @@ class MultiTierStorageManager:
             logger.info("Multi-tier storage manager closed")
 
         except Exception as e:
-            logger.error(f"Error closing multi-tier storage manager: {e}")
+            logger.exception(f"Error closing multi-tier storage manager: {e}")

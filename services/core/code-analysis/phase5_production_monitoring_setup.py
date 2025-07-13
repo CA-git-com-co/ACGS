@@ -10,6 +10,7 @@ Monitoring Ports: Prometheus 9190, Grafana 3100
 
 import json
 import subprocess
+import sys
 import time
 from datetime import datetime
 from typing import Any
@@ -29,19 +30,9 @@ class ProductionMonitoringSetup:
 
     def setup_monitoring_environment(self):
         """Setup monitoring environment and verify services"""
-        print("=" * 80)
-        print("ACGS Code Analysis Engine - Phase 5 Production Monitoring Setup")
-        print("=" * 80)
-        print(f"Service URL: {self.service_url}")
-        print(f"Prometheus URL: {self.prometheus_url}")
-        print(f"Grafana URL: {self.grafana_url}")
-        print(f"Constitutional Hash: {self.constitutional_hash}")
-        print(f"Setup Start: {datetime.now().isoformat()}")
-        print("=" * 80)
 
     def verify_prometheus_metrics_collection(self) -> dict[str, Any]:
         """Verify Prometheus metrics collection from the service"""
-        print("\n1. Verifying Prometheus Metrics Collection...")
 
         try:
             # Check if service metrics endpoint is accessible
@@ -58,20 +49,12 @@ class ProductionMonitoringSetup:
                     "process_resident_memory_bytes",
                 ]
 
-                found_metrics = []
-                for metric in expected_metrics:
-                    if metric in metrics_content:
-                        found_metrics.append(metric)
+                found_metrics = [
+                    metric for metric in expected_metrics if metric in metrics_content
+                ]
 
-                print(f"   ✓ Metrics endpoint accessible: {self.service_url}/metrics")
-                print(f"   ✓ Metrics content length: {len(metrics_content)} bytes")
-                print(
-                    "   ✓ Expected metrics found:"
-                    f" {len(found_metrics)}/{len(expected_metrics)}"
-                )
-
-                for metric in found_metrics:
-                    print(f"   ✓ Found metric: {metric}")
+                for _metric in found_metrics:
+                    pass
 
                 # Check Prometheus scraping (if accessible)
                 prometheus_accessible = False
@@ -81,14 +64,9 @@ class ProductionMonitoringSetup:
                     )
                     if prometheus_response.status_code == 200:
                         prometheus_accessible = True
-                        targets_data = prometheus_response.json()
-                        print(f"   ✓ Prometheus accessible: {self.prometheus_url}")
-                        print(
-                            "   ✓ Prometheus targets:"
-                            f" {len(targets_data.get('data', {}).get('activeTargets', []))}"
-                        )
+                        prometheus_response.json()
                 except Exception:
-                    print(f"   ⚠ Prometheus not accessible at {self.prometheus_url}")
+                    pass
 
                 return {
                     "status": "success",
@@ -99,25 +77,18 @@ class ProductionMonitoringSetup:
                     "prometheus_accessible": prometheus_accessible,
                     "found_metrics": found_metrics,
                 }
-            else:
-                print(
-                    "   ✗ Metrics endpoint not accessible: HTTP"
-                    f" {metrics_response.status_code}"
-                )
-                return {
-                    "status": "failed",
-                    "error": (
-                        f"Metrics endpoint returned HTTP {metrics_response.status_code}"
-                    ),
-                }
+            return {
+                "status": "failed",
+                "error": (
+                    f"Metrics endpoint returned HTTP {metrics_response.status_code}"
+                ),
+            }
 
         except Exception as e:
-            print(f"   ✗ Prometheus metrics verification failed: {e}")
             return {"status": "failed", "error": str(e)}
 
     def setup_grafana_dashboards(self) -> dict[str, Any]:
         """Setup and verify Grafana dashboards"""
-        print("\n2. Setting up Grafana Dashboards...")
 
         try:
             # Check if Grafana is accessible
@@ -130,15 +101,12 @@ class ProductionMonitoringSetup:
                 )
                 if grafana_response.status_code == 200:
                     grafana_accessible = True
-                    print(f"   ✓ Grafana accessible: {self.grafana_url}")
 
                     # Try to create a basic dashboard (would need API key in real scenario)
-                    print("   ⚠ Dashboard creation requires Grafana API key")
-                    print("   ✓ Dashboard template available for manual import")
                     dashboard_created = True
 
             except Exception:
-                print(f"   ⚠ Grafana not accessible at {self.grafana_url}")
+                pass
 
             # Create dashboard configuration
             dashboard_config = {
@@ -194,14 +162,8 @@ class ProductionMonitoringSetup:
 
             # Save dashboard configuration
             dashboard_file = "grafana_dashboard_config.json"
-            with open(dashboard_file, "w") as f:
+            with open(dashboard_file, "w", encoding="utf-8") as f:
                 json.dump(dashboard_config, f, indent=2)
-
-            print(f"   ✓ Dashboard configuration saved: {dashboard_file}")
-            print(
-                "   ✓ Dashboard panels configured:"
-                f" {len(dashboard_config['dashboard']['panels'])}"
-            )
 
             return {
                 "status": "success",
@@ -212,12 +174,10 @@ class ProductionMonitoringSetup:
             }
 
         except Exception as e:
-            print(f"   ✗ Grafana dashboard setup failed: {e}")
             return {"status": "failed", "error": str(e)}
 
     def configure_alerting_rules(self) -> dict[str, Any]:
         """Configure alerting for SLA violations"""
-        print("\n3. Configuring Alerting Rules...")
 
         try:
             # Define alerting rules
@@ -313,22 +273,13 @@ class ProductionMonitoringSetup:
             import yaml
 
             try:
-                with open(alerting_file, "w") as f:
+                with open(alerting_file, "w", encoding="utf-8") as f:
                     yaml.dump(alerting_rules, f, default_flow_style=False)
-                print(f"   ✓ Alerting rules saved: {alerting_file}")
             except ImportError:
                 # Fallback to JSON if PyYAML not available
                 alerting_file = "prometheus_alerting_rules.json"
-                with open(alerting_file, "w") as f:
+                with open(alerting_file, "w", encoding="utf-8") as f:
                     json.dump(alerting_rules, f, indent=2)
-                print(f"   ✓ Alerting rules saved: {alerting_file} (JSON format)")
-
-            print(
-                "   ✓ Alert rules configured:"
-                f" {len(alerting_rules['groups'][0]['rules'])}"
-            )
-            print("   ✓ Critical alerts: 2 (Constitutional Compliance, Service Down)")
-            print("   ✓ Warning alerts: 2 (High Latency, Low Throughput)")
 
             return {
                 "status": "success",
@@ -339,18 +290,17 @@ class ProductionMonitoringSetup:
             }
 
         except Exception as e:
-            print(f"   ✗ Alerting configuration failed: {e}")
             return {"status": "failed", "error": str(e)}
 
     def establish_log_aggregation(self) -> dict[str, Any]:
         """Establish log aggregation and monitoring"""
-        print("\n4. Establishing Log Aggregation...")
 
         try:
             # Check Docker logs for the service
             try:
                 log_result = subprocess.run(
                     ["docker", "logs", "--tail", "50", "acgs-code-analysis-engine"],
+                    check=False,
                     capture_output=True,
                     text=True,
                     timeout=10,
@@ -358,32 +308,14 @@ class ProductionMonitoringSetup:
 
                 if log_result.returncode == 0:
                     log_lines = log_result.stdout.split("\n")
-                    error_lines = [
-                        line for line in log_lines if "ERROR" in line.upper()
-                    ]
-                    warning_lines = [
-                        line for line in log_lines if "WARNING" in line.upper()
-                    ]
-
-                    print("   ✓ Docker logs accessible for acgs-code-analysis-engine")
-                    print(f"   ✓ Recent log lines: {len(log_lines)}")
-                    print(f"   ✓ Error lines: {len(error_lines)}")
-                    print(f"   ✓ Warning lines: {len(warning_lines)}")
+                    [line for line in log_lines if "ERROR" in line.upper()]
+                    [line for line in log_lines if "WARNING" in line.upper()]
 
                     # Check for constitutional compliance in logs
-                    compliance_lines = [
-                        line for line in log_lines if self.constitutional_hash in line
-                    ]
-                    print(
-                        "   ✓ Constitutional compliance references:"
-                        f" {len(compliance_lines)}"
-                    )
+                    [line for line in log_lines if self.constitutional_hash in line]
 
-                else:
-                    print(f"   ⚠ Could not access Docker logs: {log_result.stderr}")
-
-            except Exception as e:
-                print(f"   ⚠ Docker logs check failed: {e}")
+            except Exception:
+                pass
 
             # Create log aggregation configuration
             log_config = {
@@ -410,15 +342,8 @@ class ProductionMonitoringSetup:
 
             # Save log configuration
             log_config_file = "log_aggregation_config.json"
-            with open(log_config_file, "w") as f:
+            with open(log_config_file, "w", encoding="utf-8") as f:
                 json.dump(log_config, f, indent=2)
-
-            print(f"   ✓ Log aggregation configuration saved: {log_config_file}")
-            print(
-                "   ✓ Log sources configured:"
-                f" {len(log_config['log_aggregation']['log_sources'])}"
-            )
-            print("   ✓ Constitutional compliance monitoring: enabled")
 
             return {
                 "status": "success",
@@ -428,12 +353,10 @@ class ProductionMonitoringSetup:
             }
 
         except Exception as e:
-            print(f"   ✗ Log aggregation setup failed: {e}")
             return {"status": "failed", "error": str(e)}
 
     def create_operational_runbooks(self) -> dict[str, Any]:
         """Create operational runbooks and procedures"""
-        print("\n5. Creating Operational Runbooks...")
 
         try:
             # Create comprehensive operational runbook
@@ -522,14 +445,8 @@ Generated: {datetime.now().isoformat()}
 
             # Save runbook
             runbook_file = "operational_runbook.md"
-            with open(runbook_file, "w") as f:
+            with open(runbook_file, "w", encoding="utf-8") as f:
                 f.write(runbook_content)
-
-            print(f"   ✓ Operational runbook created: {runbook_file}")
-            print("   ✓ Health check procedures: 3")
-            print("   ✓ Troubleshooting scenarios: 4")
-            print("   ✓ Monitoring checklists: Daily and Weekly")
-            print("   ✓ Emergency procedures: included")
 
             return {
                 "status": "success",
@@ -539,12 +456,10 @@ Generated: {datetime.now().isoformat()}
             }
 
         except Exception as e:
-            print(f"   ✗ Operational runbook creation failed: {e}")
             return {"status": "failed", "error": str(e)}
 
     def conduct_monitoring_validation(self) -> dict[str, Any]:
         """Conduct comprehensive monitoring validation"""
-        print("\n6. Conducting Monitoring Validation...")
 
         try:
             # Test service under monitoring
@@ -555,10 +470,8 @@ Generated: {datetime.now().isoformat()}
                 "errors": 0,
             }
 
-            print("   --- Running monitoring validation tests ---")
-
             # Perform multiple health checks
-            for i in range(10):
+            for _i in range(10):
                 try:
                     start_time = time.time()
                     response = requests.get(f"{self.service_url}/health", timeout=10)
@@ -591,15 +504,6 @@ Generated: {datetime.now().isoformat()}
             compliance_rate = validation_results["constitutional_compliance"] / 10
             success_rate = validation_results["health_checks"] / 10
 
-            print(
-                "   ✓ Health checks successful:"
-                f" {validation_results['health_checks']}/10"
-            )
-            print(f"   ✓ Average response time: {avg_response_time:.2f}ms")
-            print(f"   ✓ Constitutional compliance rate: {compliance_rate:.1%}")
-            print(f"   ✓ Success rate: {success_rate:.1%}")
-            print(f"   ✓ Errors: {validation_results['errors']}")
-
             monitoring_healthy = (
                 success_rate >= 0.95
                 and compliance_rate >= 1.0
@@ -618,7 +522,6 @@ Generated: {datetime.now().isoformat()}
             }
 
         except Exception as e:
-            print(f"   ✗ Monitoring validation failed: {e}")
             return {"status": "failed", "error": str(e)}
 
     def run_phase5_monitoring_setup(self) -> dict[str, Any]:
@@ -646,7 +549,6 @@ Generated: {datetime.now().isoformat()}
                 result = task_function()
                 self.monitoring_results[task_name.lower().replace(" ", "_")] = result
             except Exception as e:
-                print(f"\n💥 {task_name} failed: {e}")
                 self.monitoring_results[task_name.lower().replace(" ", "_")] = {
                     "status": "failed",
                     "error": str(e),
@@ -656,23 +558,8 @@ Generated: {datetime.now().isoformat()}
         total_time = time.time() - start_time
         summary = self._generate_monitoring_summary(total_time)
 
-        print("\n" + "=" * 80)
-        print("PHASE 5 PRODUCTION MONITORING SETUP SUMMARY")
-        print("=" * 80)
-        print(f"Total setup time: {total_time:.2f} seconds")
-        print(f"Setup status: {summary['overall_status']}")
-        print(f"Monitoring components: {summary['components_configured']}")
-        print(f"Constitutional compliance: {summary['constitutional_compliance']}")
-
         if summary["setup_successful"]:
-            print("\n🎉 Phase 5 production monitoring setup SUCCESSFUL!")
-            print("✓ All monitoring components configured")
-            print("✓ Operational runbooks created")
-            print("✓ Service ready for production deployment")
-        else:
-            print("\n⚠️ Phase 5 production monitoring setup PARTIAL!")
-            print("✗ Some monitoring components need attention")
-            print("✓ Core monitoring functionality available")
+            pass
 
         return {
             "setup_successful": summary["setup_successful"],
@@ -731,22 +618,17 @@ def main():
 
         # Save results to file
         results_file = "phase5_monitoring_setup_results.json"
-        with open(results_file, "w") as f:
+        with open(results_file, "w", encoding="utf-8") as f:
             json.dump(results, f, indent=2)
-
-        print(f"\n✓ Detailed results saved to: {results_file}")
 
         # Exit with appropriate code
         if results["setup_successful"]:
-            print("\n🎉 Phase 5 production monitoring setup completed successfully!")
-            exit(0)
+            sys.exit(0)
         else:
-            print("\n⚠️ Phase 5 production monitoring setup completed with warnings!")
-            exit(2)  # Warning exit code
+            sys.exit(2)  # Warning exit code
 
-    except Exception as e:
-        print(f"\n💥 Phase 5 production monitoring setup failed: {e}")
-        exit(1)
+    except Exception:
+        sys.exit(1)
 
 
 if __name__ == "__main__":

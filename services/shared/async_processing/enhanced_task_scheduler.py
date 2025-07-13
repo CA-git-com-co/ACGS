@@ -10,6 +10,7 @@ This module provides advanced async task scheduling with:
 """
 
 import asyncio
+import contextlib
 import heapq
 import time
 import uuid
@@ -17,12 +18,10 @@ from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple
+from typing import Any
 
 import structlog
-from redis.asyncio import Redis
-
-from ..redis_client import ACGSRedisClient
+from shared.redis_client import ACGSRedisClient
 
 logger = structlog.get_logger(__name__)
 
@@ -60,26 +59,26 @@ class TaskDefinition:
     priority: TaskPriority = TaskPriority.NORMAL
     max_retries: int = 3
     retry_delay: float = 1.0
-    timeout: Optional[float] = None
-    dependencies: List[str] = field(default_factory=list)
-    tags: List[str] = field(default_factory=list)
+    timeout: float | None = None
+    dependencies: list[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
 
     # Task data
-    input_data: Dict[str, Any] = field(default_factory=dict)
-    output_data: Dict[str, Any] = field(default_factory=dict)
-    error_info: Optional[Dict[str, Any]] = None
+    input_data: dict[str, Any] = field(default_factory=dict)
+    output_data: dict[str, Any] = field(default_factory=dict)
+    error_info: dict[str, Any] | None = None
 
     # Execution metadata
     status: TaskStatus = TaskStatus.PENDING
     created_at: datetime = field(default_factory=datetime.now)
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
+    started_at: datetime | None = None
+    completed_at: datetime | None = None
     retry_count: int = 0
-    execution_time: Optional[float] = None
+    execution_time: float | None = None
 
     # Agent assignment
-    assigned_agent: Optional[str] = None
-    agent_capabilities: List[str] = field(default_factory=list)
+    assigned_agent: str | None = None
+    agent_capabilities: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -88,10 +87,10 @@ class TaskExecutionResult:
 
     task_id: str
     success: bool
-    output_data: Dict[str, Any] = field(default_factory=dict)
-    error_info: Optional[Dict[str, Any]] = None
+    output_data: dict[str, Any] = field(default_factory=dict)
+    error_info: dict[str, Any] | None = None
     execution_time: float = 0.0
-    memory_usage: Optional[int] = None
+    memory_usage: int | None = None
 
 
 @dataclass
@@ -99,11 +98,11 @@ class WorkerCapabilities:
     """Worker/agent capabilities definition."""
 
     worker_id: str
-    task_types: List[str]
+    task_types: list[str]
     max_concurrent_tasks: int = 5
     cpu_weight: float = 1.0
     memory_weight: float = 1.0
-    specializations: List[str] = field(default_factory=list)
+    specializations: list[str] = field(default_factory=list)
 
 
 class EnhancedTaskScheduler:
@@ -122,21 +121,21 @@ class EnhancedTaskScheduler:
         self.cleanup_interval = cleanup_interval
 
         # Task management
-        self.pending_tasks: List[Tuple[float, TaskDefinition]] = []  # Priority queue
-        self.running_tasks: Dict[str, TaskDefinition] = {}
-        self.completed_tasks: Dict[str, TaskDefinition] = {}
-        self.failed_tasks: Dict[str, TaskDefinition] = {}
+        self.pending_tasks: list[tuple[float, TaskDefinition]] = []  # Priority queue
+        self.running_tasks: dict[str, TaskDefinition] = {}
+        self.completed_tasks: dict[str, TaskDefinition] = {}
+        self.failed_tasks: dict[str, TaskDefinition] = {}
 
         # Worker management
-        self.workers: Dict[str, WorkerCapabilities] = {}
-        self.worker_loads: Dict[str, int] = defaultdict(int)
-        self.worker_task_history: Dict[str, deque] = defaultdict(
+        self.workers: dict[str, WorkerCapabilities] = {}
+        self.worker_loads: dict[str, int] = defaultdict(int)
+        self.worker_task_history: dict[str, deque] = defaultdict(
             lambda: deque(maxlen=100)
         )
 
         # Task dependencies
-        self.task_dependencies: Dict[str, Set[str]] = {}
-        self.dependency_graph: Dict[str, Set[str]] = {}
+        self.task_dependencies: dict[str, set[str]] = {}
+        self.dependency_graph: dict[str, set[str]] = {}
 
         # Performance tracking
         self.performance_metrics = {
@@ -151,9 +150,9 @@ class EnhancedTaskScheduler:
         }
 
         # Background tasks
-        self._scheduler_task: Optional[asyncio.Task] = None
-        self._cleanup_task: Optional[asyncio.Task] = None
-        self._metrics_task: Optional[asyncio.Task] = None
+        self._scheduler_task: asyncio.Task | None = None
+        self._cleanup_task: asyncio.Task | None = None
+        self._metrics_task: asyncio.Task | None = None
         self._running = False
 
         # Lock for thread safety
@@ -185,10 +184,8 @@ class EnhancedTaskScheduler:
         for task in [self._scheduler_task, self._cleanup_task, self._metrics_task]:
             if task and not task.done():
                 task.cancel()
-                try:
+                with contextlib.suppress(asyncio.CancelledError):
                     await task
-                except asyncio.CancelledError:
-                    pass
 
         # Wait for running tasks to complete (with timeout)
         if self.running_tasks:
@@ -200,7 +197,7 @@ class EnhancedTaskScheduler:
         logger.info("Enhanced task scheduler stopped")
 
     async def submit_task(
-        self, task: TaskDefinition, preferred_worker: Optional[str] = None
+        self, task: TaskDefinition, preferred_worker: str | None = None
     ) -> str:
         """Submit a task for execution."""
         async with self._lock:
@@ -245,7 +242,7 @@ class EnhancedTaskScheduler:
             return task.id
 
     def _calculate_priority_score(
-        self, task: TaskDefinition, preferred_worker: Optional[str] = None
+        self, task: TaskDefinition, preferred_worker: str | None = None
     ) -> float:
         """Calculate priority score for task scheduling."""
         base_score = task.priority.value
@@ -295,19 +292,18 @@ class EnhancedTaskScheduler:
 
                 logger.info("Worker unregistered", worker_id=worker_id)
 
-    async def get_task_status(self, task_id: str) -> Optional[TaskStatus]:
+    async def get_task_status(self, task_id: str) -> TaskStatus | None:
         """Get the current status of a task."""
         if task_id in self.running_tasks:
             return TaskStatus.RUNNING
-        elif task_id in self.completed_tasks:
+        if task_id in self.completed_tasks:
             return TaskStatus.COMPLETED
-        elif task_id in self.failed_tasks:
+        if task_id in self.failed_tasks:
             return TaskStatus.FAILED
-        else:
-            # Check if in pending queue
-            for _, task in self.pending_tasks:
-                if task.id == task_id:
-                    return TaskStatus.PENDING
+        # Check if in pending queue
+        for _, task in self.pending_tasks:
+            if task.id == task_id:
+                return TaskStatus.PENDING
 
         return None
 
@@ -358,7 +354,7 @@ class EnhancedTaskScheduler:
         except asyncio.CancelledError:
             logger.info("Scheduler loop cancelled")
         except Exception as e:
-            logger.error("Error in scheduler loop", error=str(e))
+            logger.exception("Error in scheduler loop", error=str(e))
 
     async def _schedule_tasks(self):
         """Schedule pending tasks to available workers."""
@@ -403,13 +399,9 @@ class EnhancedTaskScheduler:
         if not task.dependencies:
             return True
 
-        for dep_id in task.dependencies:
-            if dep_id not in self.completed_tasks:
-                return False
+        return all(dep_id in self.completed_tasks for dep_id in task.dependencies)
 
-        return True
-
-    def _find_best_worker(self, task: TaskDefinition) -> Optional[str]:
+    def _find_best_worker(self, task: TaskDefinition) -> str | None:
         """Find the best available worker for a task."""
         best_worker = None
         best_score = float("inf")
@@ -464,7 +456,7 @@ class EnhancedTaskScheduler:
         await self._persist_task(task)
 
         # Create execution coroutine
-        execution_task = asyncio.create_task(self._execute_task(task, worker_id))
+        asyncio.create_task(self._execute_task(task, worker_id))
 
         logger.debug(
             "Task assigned to worker",
@@ -556,19 +548,18 @@ class EnhancedTaskScheduler:
                     output_data={"result": f"Task {task.id} completed"},
                     execution_time=0.1,
                 )
-            else:
-                return TaskExecutionResult(
-                    task_id=task.id,
-                    success=False,
-                    error_info={"error": "Simulated task failure"},
-                    execution_time=0.1,
-                )
+            return TaskExecutionResult(
+                task_id=task.id,
+                success=False,
+                error_info={"error": "Simulated task failure"},
+                execution_time=0.1,
+            )
 
         except asyncio.TimeoutError:
             raise
 
     async def _handle_task_failure(
-        self, task: TaskDefinition, worker_id: str, error_info: Optional[Dict[str, Any]]
+        self, task: TaskDefinition, worker_id: str, error_info: dict[str, Any] | None
     ):
         """Handle task failure with retry logic."""
         task.error_info = error_info
@@ -635,7 +626,7 @@ class EnhancedTaskScheduler:
         if completed_task_id in self.dependency_graph:
             dependent_task_ids = self.dependency_graph[completed_task_id]
 
-            for task_id in dependent_task_ids:
+            for _task_id in dependent_task_ids:
                 # Check if all dependencies are now satisfied
                 # The scheduler loop will pick up these tasks
                 pass
@@ -652,7 +643,7 @@ class EnhancedTaskScheduler:
         except asyncio.CancelledError:
             logger.info("Cleanup loop cancelled")
         except Exception as e:
-            logger.error("Error in cleanup loop", error=str(e))
+            logger.exception("Error in cleanup loop", error=str(e))
 
     async def _cleanup_old_tasks(self):
         """Clean up old completed and failed tasks."""
@@ -692,7 +683,7 @@ class EnhancedTaskScheduler:
         except asyncio.CancelledError:
             logger.info("Metrics loop cancelled")
         except Exception as e:
-            logger.error("Error in metrics loop", error=str(e))
+            logger.exception("Error in metrics loop", error=str(e))
 
     async def _update_performance_metrics(self):
         """Update performance metrics."""
@@ -742,9 +733,9 @@ class EnhancedTaskScheduler:
             await self.redis_client.set_json(key, task_data, ttl=86400)  # 24 hours
 
         except Exception as e:
-            logger.error("Failed to persist task", task_id=task.id, error=str(e))
+            logger.exception("Failed to persist task", task_id=task.id, error=str(e))
 
-    def get_performance_metrics(self) -> Dict[str, Any]:
+    def get_performance_metrics(self) -> dict[str, Any]:
         """Get current performance metrics."""
         return {
             **self.performance_metrics,
@@ -756,7 +747,7 @@ class EnhancedTaskScheduler:
             "constitutional_hash": CONSTITUTIONAL_HASH,
         }
 
-    def get_worker_status(self) -> Dict[str, Any]:
+    def get_worker_status(self) -> dict[str, Any]:
         """Get status of all workers."""
         worker_status = {}
 

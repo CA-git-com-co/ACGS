@@ -9,10 +9,9 @@ import asyncio
 import json
 import logging
 import statistics
+import sys
 import time
-from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
-from typing import Any, Dict, List
 
 import asyncpg
 
@@ -39,12 +38,12 @@ class PerformanceMetrics:
     """Performance metrics for database operations."""
 
     operation: str
-    response_times: List[float]
+    response_times: list[float]
     avg_response_time: float
     p95_response_time: float
     p99_response_time: float
     success_rate: float
-    errors: List[str]
+    errors: list[str]
 
 
 class DatabasePerformanceOptimizer:
@@ -82,7 +81,7 @@ class DatabasePerformanceOptimizer:
             return True
 
         except Exception as e:
-            logger.error(f"❌ Failed to initialize database pool: {e}")
+            logger.exception(f"❌ Failed to initialize database pool: {e}")
             return False
 
     async def test_connection_pooling(self) -> PerformanceMetrics:
@@ -97,7 +96,7 @@ class DatabasePerformanceOptimizer:
             try:
                 async with self.connection_pool.acquire() as conn:
                     # Simple query to test connection
-                    result = await conn.fetchval("SELECT 1")
+                    await conn.fetchval("SELECT 1")
                     response_time = (time.time() - start_time) * 1000  # Convert to ms
                     return response_time, None
             except Exception as e:
@@ -131,40 +130,40 @@ class DatabasePerformanceOptimizer:
         test_queries = [
             # Constitutional principles query (should use idx_principles_category_priority)
             """
-            SELECT id, name, description, priority_weight 
-            FROM principles 
-            WHERE category = 'constitutional' AND is_active = true 
-            ORDER BY priority_weight DESC 
+            SELECT id, name, description, priority_weight
+            FROM principles
+            WHERE category = 'constitutional' AND is_active = true
+            ORDER BY priority_weight DESC
             LIMIT 10
             """,
             # Policy status query (should use idx_policies_status_updated)
             """
-            SELECT id, title, status, updated_at 
-            FROM policies 
-            WHERE status IN ('active', 'pending') 
-            ORDER BY updated_at DESC 
+            SELECT id, title, status, updated_at
+            FROM policies
+            WHERE status IN ('active', 'pending')
+            ORDER BY updated_at DESC
             LIMIT 20
             """,
             # User authentication query (should use idx_users_active_role)
             """
-            SELECT id, username, role, is_active 
-            FROM users 
+            SELECT id, username, role, is_active
+            FROM users
             WHERE is_active = true AND role = 'admin'
             LIMIT 5
             """,
             # Session validation query (should use idx_sessions_active_user)
             """
-            SELECT user_id, expires_at, is_active 
-            FROM sessions 
-            WHERE is_active = true AND expires_at > NOW() 
+            SELECT user_id, expires_at, is_active
+            FROM sessions
+            WHERE is_active = true AND expires_at > NOW()
             LIMIT 10
             """,
             # Governance actions query
             """
-            SELECT id, action_type, status, created_at 
-            FROM governance_actions 
-            WHERE status = 'pending' 
-            ORDER BY created_at DESC 
+            SELECT id, action_type, status, created_at
+            FROM governance_actions
+            WHERE status = 'pending'
+            ORDER BY created_at DESC
             LIMIT 15
             """,
         ]
@@ -180,7 +179,7 @@ class DatabasePerformanceOptimizer:
                 except Exception as e:
                     response_time = (time.time() - start_time) * 1000
                     response_times.append(response_time)
-                    errors.append(f"Query error: {str(e)}")
+                    errors.append(f"Query error: {e!s}")
 
         return self._calculate_metrics("query_optimization", response_times, errors)
 
@@ -211,8 +210,8 @@ class DatabasePerformanceOptimizer:
                         # Query policies
                         await conn.fetch(
                             """
-                            SELECT id, title FROM policies 
-                            WHERE status = 'active' 
+                            SELECT id, title FROM policies
+                            WHERE status = 'active'
                             LIMIT 5
                         """
                         )
@@ -220,7 +219,7 @@ class DatabasePerformanceOptimizer:
                         # Update action status
                         await conn.execute(
                             """
-                            UPDATE governance_actions 
+                            UPDATE governance_actions
                             SET status = 'completed', updated_at = NOW()
                             WHERE action_type = $1
                         """,
@@ -263,9 +262,9 @@ class DatabasePerformanceOptimizer:
             (
                 "Constitutional Principles Index",
                 """
-                EXPLAIN (ANALYZE, BUFFERS) 
-                SELECT * FROM principles 
-                WHERE category = 'constitutional' AND is_active = true 
+                EXPLAIN (ANALYZE, BUFFERS)
+                SELECT * FROM principles
+                WHERE category = 'constitutional' AND is_active = true
                 ORDER BY priority_weight DESC
             """,
             ),
@@ -273,9 +272,9 @@ class DatabasePerformanceOptimizer:
             (
                 "Policies Status Index",
                 """
-                EXPLAIN (ANALYZE, BUFFERS) 
-                SELECT * FROM policies 
-                WHERE status IN ('active', 'pending') 
+                EXPLAIN (ANALYZE, BUFFERS)
+                SELECT * FROM policies
+                WHERE status IN ('active', 'pending')
                 ORDER BY updated_at DESC
             """,
             ),
@@ -283,8 +282,8 @@ class DatabasePerformanceOptimizer:
             (
                 "Users Active Role Index",
                 """
-                EXPLAIN (ANALYZE, BUFFERS) 
-                SELECT * FROM users 
+                EXPLAIN (ANALYZE, BUFFERS)
+                SELECT * FROM users
                 WHERE is_active = true AND role = 'admin'
             """,
             ),
@@ -308,7 +307,7 @@ class DatabasePerformanceOptimizer:
             except Exception as e:
                 response_time = (time.time() - start_time) * 1000
                 response_times.append(response_time)
-                errors.append(f"{query_name} error: {str(e)}")
+                errors.append(f"{query_name} error: {e!s}")
 
         return self._calculate_metrics("index_performance", response_times, errors)
 
@@ -344,7 +343,7 @@ class DatabasePerformanceOptimizer:
         except Exception as e:
             response_time = (time.time() - start_time) * 1000
             response_times.append(response_time)
-            errors.append(f"Bulk insert error: {str(e)}")
+            errors.append(f"Bulk insert error: {e!s}")
 
         # Test bulk update
         start_time = time.time()
@@ -352,7 +351,7 @@ class DatabasePerformanceOptimizer:
             async with self.connection_pool.acquire() as conn:
                 await conn.execute(
                     """
-                    UPDATE governance_actions 
+                    UPDATE governance_actions
                     SET status = 'completed', updated_at = NOW()
                     WHERE action_type LIKE 'bulk_action_%'
                 """
@@ -364,12 +363,12 @@ class DatabasePerformanceOptimizer:
         except Exception as e:
             response_time = (time.time() - start_time) * 1000
             response_times.append(response_time)
-            errors.append(f"Bulk update error: {str(e)}")
+            errors.append(f"Bulk update error: {e!s}")
 
         return self._calculate_metrics("bulk_operations", response_times, errors)
 
     def _calculate_metrics(
-        self, operation: str, response_times: List[float], errors: List[str]
+        self, operation: str, response_times: list[float], errors: list[str]
     ) -> PerformanceMetrics:
         """Calculate performance metrics from response times."""
         if not response_times:
@@ -418,13 +417,11 @@ class DatabasePerformanceOptimizer:
             logger.info("✅ Database cleanup completed")
 
         except Exception as e:
-            logger.error(f"❌ Cleanup error: {e}")
+            logger.exception(f"❌ Cleanup error: {e}")
 
 
 async def test_database_performance_optimization():
     """Main test function for database performance optimization."""
-    print("🔍 Testing Database Performance Optimization")
-    print("=" * 60)
 
     config = DatabaseConfig()
     optimizer = DatabasePerformanceOptimizer(config)
@@ -435,42 +432,21 @@ async def test_database_performance_optimization():
 
     try:
         # Run performance tests
-        print("⚡ Running Database Performance Tests...")
 
         # Test connection pooling
         pooling_metrics = await optimizer.test_connection_pooling()
-        print(f"\n📊 Connection Pooling Results:")
-        print(f"   Average Response Time: {pooling_metrics.avg_response_time:.2f}ms")
-        print(f"   95th Percentile: {pooling_metrics.p95_response_time:.2f}ms")
-        print(f"   Success Rate: {pooling_metrics.success_rate:.1f}%")
 
         # Test query optimization
         query_metrics = await optimizer.test_query_optimization()
-        print(f"\n📊 Query Optimization Results:")
-        print(f"   Average Response Time: {query_metrics.avg_response_time:.2f}ms")
-        print(f"   95th Percentile: {query_metrics.p95_response_time:.2f}ms")
-        print(f"   Success Rate: {query_metrics.success_rate:.1f}%")
 
         # Test concurrent operations
         concurrent_metrics = await optimizer.test_concurrent_operations()
-        print(f"\n📊 Concurrent Operations Results:")
-        print(f"   Average Response Time: {concurrent_metrics.avg_response_time:.2f}ms")
-        print(f"   95th Percentile: {concurrent_metrics.p95_response_time:.2f}ms")
-        print(f"   Success Rate: {concurrent_metrics.success_rate:.1f}%")
 
         # Test index performance
         index_metrics = await optimizer.test_index_performance()
-        print(f"\n📊 Index Performance Results:")
-        print(f"   Average Response Time: {index_metrics.avg_response_time:.2f}ms")
-        print(f"   95th Percentile: {index_metrics.p95_response_time:.2f}ms")
-        print(f"   Success Rate: {index_metrics.success_rate:.1f}%")
 
         # Test bulk operations
         bulk_metrics = await optimizer.test_bulk_operations()
-        print(f"\n📊 Bulk Operations Results:")
-        print(f"   Average Response Time: {bulk_metrics.avg_response_time:.2f}ms")
-        print(f"   95th Percentile: {bulk_metrics.p95_response_time:.2f}ms")
-        print(f"   Success Rate: {bulk_metrics.success_rate:.1f}%")
 
         # Calculate overall performance
         all_metrics = [
@@ -484,29 +460,12 @@ async def test_database_performance_optimization():
         overall_p95 = statistics.mean([m.p95_response_time for m in all_metrics])
         overall_success = statistics.mean([m.success_rate for m in all_metrics])
 
-        print(f"\n📈 Overall Performance Summary:")
-        print(f"   Overall Average Response Time: {overall_avg:.2f}ms")
-        print(f"   Overall 95th Percentile: {overall_p95:.2f}ms")
-        print(f"   Overall Success Rate: {overall_success:.1f}%")
-
         # Target validation
         target_response_time = 50.0  # ms
         target_success_rate = 95.0  # %
 
         meets_response_target = overall_p95 <= target_response_time
         meets_success_target = overall_success >= target_success_rate
-
-        print(f"\n🎯 Target Validation:")
-        print(f"   Target Response Time (95th percentile): ≤{target_response_time}ms")
-        print(f"   Achieved Response Time: {overall_p95:.2f}ms")
-        print(
-            f"   Response Time Target: {'✅ MET' if meets_response_target else '❌ NOT MET'}"
-        )
-        print(f"   Target Success Rate: ≥{target_success_rate}%")
-        print(f"   Achieved Success Rate: {overall_success:.1f}%")
-        print(
-            f"   Success Rate Target: {'✅ MET' if meets_success_target else '❌ NOT MET'}"
-        )
 
         return {
             "success": True,
@@ -530,35 +489,17 @@ async def test_database_performance_optimization():
 
 async def main():
     """Main function."""
-    print("🚀 Starting Database Performance Optimization Test")
-    print("=" * 70)
 
     result = await test_database_performance_optimization()
 
     if result["success"]:
-        print("\n🎯 Database Performance Summary")
-        print("=" * 50)
-        print(f"⚡ Average Response Time: {result['overall_avg_response_time']:.2f}ms")
-        print(
-            f"📊 95th Percentile Response Time: {result['overall_p95_response_time']:.2f}ms"
-        )
-        print(f"✅ Success Rate: {result['overall_success_rate']:.1f}%")
-        print(
-            f"🎯 Response Time Target: {'MET' if result['meets_response_target'] else 'NOT MET'}"
-        )
-        print(
-            f"🎯 Success Rate Target: {'MET' if result['meets_success_target'] else 'NOT MET'}"
-        )
 
         if result["meets_response_target"] and result["meets_success_target"]:
-            print("\n🎉 Database performance optimization successful!")
-            exit(0)
+            sys.exit(0)
         else:
-            print("\n⚠️ Database performance targets not fully met.")
-            exit(1)
+            sys.exit(1)
     else:
-        print("\n❌ Database performance optimization test failed.")
-        exit(1)
+        sys.exit(1)
 
 
 if __name__ == "__main__":

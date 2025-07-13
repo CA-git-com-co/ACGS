@@ -319,7 +319,7 @@ class ResourceMonitor:
 
                 time.sleep(self.config.resource_monitoring_interval)
             except Exception as e:
-                logger.error(f"Resource monitoring error: {e}")
+                logger.exception(f"Resource monitoring error: {e}")
 
     def _collect_metrics(self) -> ResourceMetrics:
         """Collect current resource metrics."""
@@ -348,10 +348,9 @@ class ResourceMonitor:
         if not recent_metrics:
             return 0.0
 
-        avg_efficiency = sum(m.utilization_efficiency for m in recent_metrics) / len(
+        return sum(m.utilization_efficiency for m in recent_metrics) / len(
             recent_metrics
         )
-        return avg_efficiency
 
     def should_scale_up(self) -> bool:
         """Determine if pipeline should scale up based on resource utilization."""
@@ -463,7 +462,7 @@ class ParallelValidationPipeline:
             logger.info("Enhanced parallel validation components initialized")
 
         except Exception as e:
-            logger.error(f"Failed to initialize enhanced components: {e}")
+            logger.exception(f"Failed to initialize enhanced components: {e}")
 
     def _initialize_constitutional_validator(self):
         # requires: Valid input parameters
@@ -565,7 +564,7 @@ class ParallelValidationPipeline:
             return response
 
         except Exception as e:
-            logger.error(f"Verification request failed: {e}")
+            logger.exception(f"Verification request failed: {e}")
             self._update_performance_metrics((time.time() - start_time) * 1000, False)
 
             # Task 7: Attempt rollback if needed
@@ -690,7 +689,7 @@ class ParallelValidationPipeline:
             return True
 
         except Exception as e:
-            logger.error(f"Constitutional validation failed: {e}")
+            logger.exception(f"Constitutional validation failed: {e}")
             return False
 
     async def _validate_amendment_compliance(self, amendment_id: int) -> bool:
@@ -703,10 +702,10 @@ class ParallelValidationPipeline:
                         amendment_id
                     )
                 )
-                return amendment_status.get("status") in ["approved", "under_review"]
+                return amendment_status.get("status") in {"approved", "under_review"}
             return True
         except Exception as e:
-            logger.error(f"Amendment validation failed: {e}")
+            logger.exception(f"Amendment validation failed: {e}")
             return False
 
     async def _validate_voting_legitimacy(self, voting_session_id: str) -> bool:
@@ -722,7 +721,7 @@ class ParallelValidationPipeline:
                 return voting_status.get("quorum_met", False)
             return True
         except Exception as e:
-            logger.error(f"Voting validation failed: {e}")
+            logger.exception(f"Voting validation failed: {e}")
             return False
 
     async def _validate_against_principle(
@@ -741,7 +740,7 @@ class ParallelValidationPipeline:
             return compliance_score >= principle_threshold
 
         except Exception as e:
-            logger.error(f"Principle validation failed: {e}")
+            logger.exception(f"Principle validation failed: {e}")
             return False
 
     async def _trigger_performance_alert(self, request_id: str, latency_ms: float):
@@ -787,7 +786,7 @@ class ParallelValidationPipeline:
             logger.info(f"Rollback completed for request {request_id}")
 
         except Exception as e:
-            logger.error(f"Rollback failed for request {request_id}: {e}")
+            logger.exception(f"Rollback failed for request {request_id}: {e}")
 
     async def _process_enhanced_parallel_verification(
         self,
@@ -865,7 +864,7 @@ class ParallelValidationPipeline:
             return await self._process_parallel_verification(request, request_id)
 
         except Exception as e:
-            logger.error(f"Federated validation failed: {e}")
+            logger.exception(f"Federated validation failed: {e}")
             # Fallback to local processing
             return await self._process_parallel_verification(request, request_id)
 
@@ -983,7 +982,7 @@ class ParallelValidationPipeline:
             return []
 
         except Exception as e:
-            logger.error(f"Celery batch execution failed: {e}")
+            logger.exception(f"Celery batch execution failed: {e}")
             # Fallback to local execution
             return await self._execute_batch_locally(batch, request_id)
 
@@ -1019,7 +1018,7 @@ class ParallelValidationPipeline:
                 )
 
             except Exception as e:
-                logger.error(f"Task {task.task_id} failed: {e}")
+                logger.exception(f"Task {task.task_id} failed: {e}")
                 execution_time = (time.time() - start_time) * 1000
 
                 return ValidationResult(
@@ -1097,7 +1096,7 @@ class ParallelValidationPipeline:
             return {"status": "error", "error": "No verification results"}
 
         except Exception as e:
-            logger.error(f"Policy verification task failed: {e}")
+            logger.exception(f"Policy verification task failed: {e}")
             return {"status": "error", "error": str(e)}
 
     async def _execute_bias_detection_task(self, task: ParallelTask) -> dict[str, Any]:
@@ -1159,7 +1158,7 @@ class ParallelValidationPipeline:
             )
 
         except Exception as e:
-            logger.error(f"Sequential verification failed: {e}")
+            logger.exception(f"Sequential verification failed: {e}")
             return VerificationResponse(
                 results=[],
                 overall_status="error",
@@ -1173,7 +1172,7 @@ class ParallelValidationPipeline:
         # Convert individual results to VerificationResult objects
         verification_results = []
         for result in individual_results:
-            if result.result.get("status") in ["verified", "failed", "error"]:
+            if result.result.get("status") in {"verified", "failed", "error"}:
                 verification_result = VerificationResult(
                     policy_rule_id=(
                         int(result.task_id.split("_")[-1])
@@ -1216,7 +1215,7 @@ class ParallelValidationPipeline:
                 return VerificationResponse(**cached_data)
 
         except Exception as e:
-            logger.error(f"Cache check failed: {e}")
+            logger.exception(f"Cache check failed: {e}")
 
         return None
 
@@ -1243,7 +1242,7 @@ class ParallelValidationPipeline:
             )
 
         except Exception as e:
-            logger.error(f"Cache storage failed: {e}")
+            logger.exception(f"Cache storage failed: {e}")
 
     async def _send_progress_update(self, request_id: str, progress: float) -> None:
         """Send progress update via WebSocket."""
@@ -1256,7 +1255,7 @@ class ParallelValidationPipeline:
                     details={"service": "fv_service", "type": "parallel_validation"},
                 )
             except Exception as e:
-                logger.error(f"Failed to send progress update: {e}")
+                logger.exception(f"Failed to send progress update: {e}")
 
     def _update_performance_metrics(self, latency_ms: float, success: bool) -> None:
         """Update pipeline performance metrics."""
@@ -1273,9 +1272,7 @@ class ParallelValidationPipeline:
                 0.9 * self.pipeline_metrics["success_rate"] + 0.1
             )
         else:
-            self.pipeline_metrics["success_rate"] = (
-                0.9 * self.pipeline_metrics["success_rate"]
-            )
+            self.pipeline_metrics["success_rate"] *= 0.9
 
     async def get_pipeline_statistics(self) -> dict[str, Any]:
         """Get pipeline performance statistics."""
@@ -1315,7 +1312,7 @@ class ParallelValidationPipeline:
             logger.info("Enhanced parallel validation pipeline shutdown complete")
 
         except Exception as e:
-            logger.error(f"Error during pipeline shutdown: {e}")
+            logger.exception(f"Error during pipeline shutdown: {e}")
 
 
 # Global pipeline instance

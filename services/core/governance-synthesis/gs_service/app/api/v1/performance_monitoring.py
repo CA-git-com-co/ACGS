@@ -108,7 +108,7 @@ async def get_performance_metrics(
         return PerformanceMetricsResponse(**response_data)
 
     except Exception as e:
-        logger.error("Failed to get performance metrics", error=str(e))
+        logger.exception("Failed to get performance metrics", error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to retrieve performance metrics: {e!s}",
@@ -181,7 +181,7 @@ async def get_system_health() -> SystemHealthResponse:
         )
 
     except Exception as e:
-        logger.error("Failed to get system health", error=str(e))
+        logger.exception("Failed to get system health", error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to retrieve system health: {e!s}",
@@ -223,7 +223,7 @@ async def get_performance_bottlenecks(
         }
 
     except Exception as e:
-        logger.error("Failed to get performance bottlenecks", error=str(e))
+        logger.exception("Failed to get performance bottlenecks", error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to retrieve performance bottlenecks: {e!s}",
@@ -297,7 +297,7 @@ async def get_latency_profile(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("Failed to get latency profile", error=str(e))
+        logger.exception("Failed to get latency profile", error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to retrieve latency profile: {e!s}",
@@ -332,7 +332,7 @@ async def configure_alert(alert_config: AlertConfiguration) -> dict[str, Any]:
         }
 
     except Exception as e:
-        logger.error("Failed to configure alert", error=str(e))
+        logger.exception("Failed to configure alert", error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to configure alert: {e!s}",
@@ -353,7 +353,7 @@ async def get_prometheus_metrics() -> str:
         return generate_latest(REGISTRY).decode("utf-8")
 
     except Exception as e:
-        logger.error("Failed to get Prometheus metrics", error=str(e))
+        logger.exception("Failed to get Prometheus metrics", error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to retrieve Prometheus metrics: {e!s}",

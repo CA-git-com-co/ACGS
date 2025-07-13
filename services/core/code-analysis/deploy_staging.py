@@ -7,7 +7,7 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import json
-import os
+import pathlib
 import subprocess
 import sys
 import time
@@ -30,20 +30,12 @@ class StagingDeployment:
 
     def setup_deployment_environment(self):
         """Setup environment for staging deployment"""
-        print("=" * 80)
-        print("ACGS Code Analysis Engine - Phase 2 Staging Deployment")
-        print("=" * 80)
-        print(f"Constitutional Hash: {self.constitutional_hash}")
-        print(f"Service Port: {self.service_port}")
-        print(f"Deployment Start Time: {datetime.now().isoformat()}")
-        print("=" * 80)
 
         # Verify prerequisites
         self._verify_prerequisites()
 
     def _verify_prerequisites(self):
         """Verify deployment prerequisites"""
-        print("\n1. Verifying Deployment Prerequisites...")
 
         prerequisites = {
             "docker": self._check_docker(),
@@ -54,25 +46,23 @@ class StagingDeployment:
 
         all_met = all(prerequisites.values())
 
-        for prereq, status in prerequisites.items():
-            status_icon = "✓" if status else "✗"
-            print(
-                f"   {status_icon} {prereq.replace('_', ' ').title()}:"
-                f" {'OK' if status else 'FAILED'}"
-            )
+        for _prereq, _status in prerequisites.items():
+            pass
 
         if not all_met:
             raise Exception(
                 "Prerequisites not met. Please resolve issues before deployment."
             )
 
-        print("   ✓ All prerequisites verified")
-
     def _check_docker(self) -> bool:
         """Check if Docker is available"""
         try:
             result = subprocess.run(
-                ["docker", "--version"], capture_output=True, text=True, timeout=10
+                ["docker", "--version"],
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=10,
             )
             return result.returncode == 0
         except Exception:
@@ -83,6 +73,7 @@ class StagingDeployment:
         try:
             result = subprocess.run(
                 ["docker", "compose", "version"],
+                check=False,
                 capture_output=True,
                 text=True,
                 timeout=10,
@@ -103,7 +94,7 @@ class StagingDeployment:
             "config/context-mock.conf",
         ]
 
-        return all(os.path.exists(file) for file in required_files)
+        return all(pathlib.Path(file).exists() for file in required_files)
 
     def _check_source_code(self) -> bool:
         """Check if source code is ready"""
@@ -114,15 +105,13 @@ class StagingDeployment:
             "database/migrations",
         ]
 
-        return all(os.path.exists(path) for path in required_paths)
+        return all(pathlib.Path(path).exists() for path in required_paths)
 
     def build_docker_images(self) -> dict[str, Any]:
         """Build Docker images for the service"""
-        print("\n2. Building Docker Images...")
 
         try:
             # Build the main service image
-            print("   Building ACGS Code Analysis Engine image...")
             build_cmd = [
                 "docker",
                 "build",
@@ -142,16 +131,15 @@ class StagingDeployment:
             ]
 
             result = subprocess.run(
-                build_cmd, capture_output=True, text=True, timeout=300
+                build_cmd, check=False, capture_output=True, text=True, timeout=300
             )
 
             if result.returncode == 0:
-                print("   ✓ Docker image built successfully")
 
                 # Verify image
                 verify_cmd = ["docker", "images", "acgs-code-analysis-engine:latest"]
                 verify_result = subprocess.run(
-                    verify_cmd, capture_output=True, text=True
+                    verify_cmd, check=False, capture_output=True, text=True
                 )
 
                 return {
@@ -160,30 +148,24 @@ class StagingDeployment:
                     "build_output": result.stdout,
                     "image_verified": verify_result.returncode == 0,
                 }
-            else:
-                print(f"   ✗ Docker build failed: {result.stderr}")
-                return {
-                    "status": "failed",
-                    "error": result.stderr,
-                    "build_output": result.stdout,
-                }
+            return {
+                "status": "failed",
+                "error": result.stderr,
+                "build_output": result.stdout,
+            }
 
         except Exception as e:
-            print(f"   ✗ Docker build error: {e}")
             return {"status": "failed", "error": str(e)}
 
     def deploy_with_docker_compose(self) -> dict[str, Any]:
         """Deploy using Docker Compose"""
-        print("\n3. Deploying with Docker Compose...")
 
         try:
             # Stop any existing deployment
-            print("   Stopping existing services...")
             stop_cmd = ["docker", "compose", "--env-file", ".env.staging", "down", "-v"]
-            subprocess.run(stop_cmd, capture_output=True, timeout=60)
+            subprocess.run(stop_cmd, check=False, capture_output=True, timeout=60)
 
             # Start the deployment
-            print("   Starting services...")
             start_cmd = [
                 "docker",
                 "compose",
@@ -195,20 +177,18 @@ class StagingDeployment:
             ]
 
             result = subprocess.run(
-                start_cmd, capture_output=True, text=True, timeout=300
+                start_cmd, check=False, capture_output=True, text=True, timeout=300
             )
 
             if result.returncode == 0:
-                print("   ✓ Services started successfully")
 
                 # Wait for services to be ready
-                print("   Waiting for services to be ready...")
                 time.sleep(30)
 
                 # Check service status
                 status_cmd = ["docker", "compose", "--env-file", ".env.staging", "ps"]
                 status_result = subprocess.run(
-                    status_cmd, capture_output=True, text=True
+                    status_cmd, check=False, capture_output=True, text=True
                 )
 
                 return {
@@ -217,25 +197,20 @@ class StagingDeployment:
                     "services_status": status_result.stdout,
                     "deployment_time": datetime.now().isoformat(),
                 }
-            else:
-                print(f"   ✗ Deployment failed: {result.stderr}")
-                return {
-                    "status": "failed",
-                    "error": result.stderr,
-                    "deployment_output": result.stdout,
-                }
+            return {
+                "status": "failed",
+                "error": result.stderr,
+                "deployment_output": result.stdout,
+            }
 
         except Exception as e:
-            print(f"   ✗ Deployment error: {e}")
             return {"status": "failed", "error": str(e)}
 
     def execute_database_migrations(self) -> dict[str, Any]:
         """Execute database migrations"""
-        print("\n4. Executing Database Migrations...")
 
         try:
             # Check if database is ready
-            print("   Waiting for database to be ready...")
             time.sleep(10)
 
             # Execute migrations using Docker exec
@@ -253,12 +228,10 @@ class StagingDeployment:
             ]
 
             result = subprocess.run(
-                migration_cmd, capture_output=True, text=True, timeout=30
+                migration_cmd, check=False, capture_output=True, text=True, timeout=30
             )
 
             if result.returncode == 0:
-                print("   ✓ Database connection verified")
-                print("   ✓ Migrations executed successfully (using init scripts)")
 
                 return {
                     "status": "success",
@@ -266,23 +239,17 @@ class StagingDeployment:
                     "migrations_executed": True,
                     "database_version": result.stdout.strip(),
                 }
-            else:
-                print(f"   ✗ Database migration failed: {result.stderr}")
-                return {"status": "failed", "error": result.stderr}
+            return {"status": "failed", "error": result.stderr}
 
         except Exception as e:
-            print(f"   ✗ Migration error: {e}")
             return {"status": "failed", "error": str(e)}
 
     def verify_service_registration(self) -> dict[str, Any]:
         """Verify service registration and health"""
-        print("\n5. Verifying Service Registration and Health...")
 
         try:
             # Test service health
             health_url = f"http://localhost:{self.service_port}/health"
-
-            print(f"   Testing service health at {health_url}...")
 
             # Wait for service to be fully ready
             max_retries = 12
@@ -298,16 +265,6 @@ class StagingDeployment:
                             == self.constitutional_hash
                         )
 
-                        print("   ✓ Service health check: OK")
-                        print(
-                            "   ✓ Constitutional hash:"
-                            f" {'VALID' if constitutional_valid else 'INVALID'}"
-                        )
-                        print(
-                            "   ✓ Service status:"
-                            f" {health_data.get('status', 'unknown')}"
-                        )
-
                         return {
                             "status": "success",
                             "health_check_passed": True,
@@ -315,37 +272,28 @@ class StagingDeployment:
                             "health_data": health_data,
                             "service_url": health_url,
                         }
-                    else:
-                        print(
-                            f"   Attempt {attempt + 1}/{max_retries}: HTTP"
-                            f" {response.status_code}"
-                        )
 
                 except requests.exceptions.RequestException:
-                    print(f"   Attempt {attempt + 1}/{max_retries}: Connection failed")
+                    pass
 
                 if attempt < max_retries - 1:
                     time.sleep(10)
 
-            print("   ✗ Service health check failed after all retries")
             return {
                 "status": "failed",
                 "error": "Service health check failed after all retries",
             }
 
         except Exception as e:
-            print(f"   ✗ Service verification error: {e}")
             return {"status": "failed", "error": str(e)}
 
     def test_authentication_integration(self) -> dict[str, Any]:
         """Test authentication integration with Auth Service"""
-        print("\n6. Testing Authentication Integration...")
 
         try:
             # Test Auth Service health
             auth_url = f"http://localhost:{self.auth_port}/health"
 
-            print(f"   Testing Auth Service at {auth_url}...")
             response = requests.get(auth_url, timeout=10)
 
             if response.status_code == 200:
@@ -354,41 +302,27 @@ class StagingDeployment:
                     auth_data.get("constitutional_hash") == self.constitutional_hash
                 )
 
-                print("   ✓ Auth Service health: OK")
-                print(
-                    "   ✓ Constitutional hash:"
-                    f" {'VALID' if constitutional_valid else 'INVALID'}"
-                )
-
                 return {
                     "status": "success",
                     "auth_service_healthy": True,
                     "constitutional_valid": constitutional_valid,
                     "auth_data": auth_data,
                 }
-            else:
-                print(
-                    "   ✗ Auth Service health check failed: HTTP"
-                    f" {response.status_code}"
-                )
-                return {
-                    "status": "failed",
-                    "error": f"Auth Service HTTP {response.status_code}",
-                }
+            return {
+                "status": "failed",
+                "error": f"Auth Service HTTP {response.status_code}",
+            }
 
         except Exception as e:
-            print(f"   ✗ Authentication integration error: {e}")
             return {"status": "failed", "error": str(e)}
 
     def validate_context_service_integration(self) -> dict[str, Any]:
         """Validate Context Service bidirectional integration"""
-        print("\n7. Validating Context Service Integration...")
 
         try:
             # Test Context Service health
             context_url = f"http://localhost:{self.context_port}/health"
 
-            print(f"   Testing Context Service at {context_url}...")
             response = requests.get(context_url, timeout=10)
 
             if response.status_code == 200:
@@ -397,30 +331,18 @@ class StagingDeployment:
                     context_data.get("constitutional_hash") == self.constitutional_hash
                 )
 
-                print("   ✓ Context Service health: OK")
-                print(
-                    "   ✓ Constitutional hash:"
-                    f" {'VALID' if constitutional_valid else 'INVALID'}"
-                )
-
                 return {
                     "status": "success",
                     "context_service_healthy": True,
                     "constitutional_valid": constitutional_valid,
                     "context_data": context_data,
                 }
-            else:
-                print(
-                    "   ✗ Context Service health check failed: HTTP"
-                    f" {response.status_code}"
-                )
-                return {
-                    "status": "failed",
-                    "error": f"Context Service HTTP {response.status_code}",
-                }
+            return {
+                "status": "failed",
+                "error": f"Context Service HTTP {response.status_code}",
+            }
 
         except Exception as e:
-            print(f"   ✗ Context Service integration error: {e}")
             return {"status": "failed", "error": str(e)}
 
     def run_staging_deployment(self) -> dict[str, Any]:
@@ -449,11 +371,9 @@ class StagingDeployment:
                 self.deployment_results[phase_name.lower().replace(" ", "_")] = result
 
                 if result.get("status") != "success":
-                    print(f"\n❌ Phase '{phase_name}' failed. Stopping deployment.")
                     break
 
             except Exception as e:
-                print(f"\n💥 Phase '{phase_name}' error: {e}")
                 self.deployment_results[phase_name.lower().replace(" ", "_")] = {
                     "status": "failed",
                     "error": str(e),
@@ -464,21 +384,8 @@ class StagingDeployment:
         total_time = time.time() - self.start_time
         summary = self._generate_deployment_summary(total_time)
 
-        print("\n" + "=" * 80)
-        print("PHASE 2 STAGING DEPLOYMENT SUMMARY")
-        print("=" * 80)
-        print(f"Total deployment time: {total_time:.2f} seconds")
-        print(f"Deployment status: {summary['overall_status']}")
-        print(f"Constitutional compliance: {summary['constitutional_compliance']}")
-
         if summary["deployment_successful"]:
-            print("\n🎉 Phase 2 staging deployment SUCCESSFUL!")
-            print("✓ Service is running and healthy")
-            print("✓ ACGS infrastructure integration validated")
-            print("✓ Ready for Phase 3 performance validation")
-        else:
-            print("\n❌ Phase 2 staging deployment FAILED!")
-            print("✗ Review deployment results and resolve issues")
+            pass
 
         return {
             "deployment_successful": summary["deployment_successful"],
@@ -533,21 +440,16 @@ def main():
 
         # Save results to file
         results_file = "phase2_staging_deployment_results.json"
-        with open(results_file, "w") as f:
+        with open(results_file, "w", encoding="utf-8") as f:
             json.dump(results, f, indent=2)
-
-        print(f"\n✓ Detailed results saved to: {results_file}")
 
         # Exit with appropriate code
         if results["deployment_successful"]:
-            print("\n🎉 Phase 2 staging deployment completed successfully!")
             sys.exit(0)
         else:
-            print("\n❌ Phase 2 staging deployment failed!")
             sys.exit(1)
 
-    except Exception as e:
-        print(f"\n💥 Staging deployment execution failed: {e}")
+    except Exception:
         sys.exit(1)
 
 

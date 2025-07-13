@@ -1,3 +1,5 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 # HAProxy Monitoring Integration - ACGS-1 Subtask 13.6
 
 ## Overview

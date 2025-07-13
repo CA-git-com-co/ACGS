@@ -6,6 +6,7 @@ Create Date: 2025-05-23 16:09:14.441231
 
 """
 
+import contextlib
 from collections.abc import Sequence
 
 import sqlalchemy as sa
@@ -30,13 +31,9 @@ def upgrade() -> None:
         # The name 'policy_rules_principle_id_fkey' is a common convention.
         # If this fails on some DBs because the name is different, it might need manual adjustment.
         # However, for SQLite, dropping the column often handles the FK.
-        try:
+        with contextlib.suppress(Exception):
             batch_op.drop_constraint(
                 "policy_rules_principle_id_fkey", type_="foreignkey"
-            )
-        except Exception as e:
-            print(
-                f"Could not drop constraint 'policy_rules_principle_id_fkey', possibly does not exist or name differs: {e}"
             )
         batch_op.drop_column("principle_id")
     # ### end Alembic commands ###
@@ -50,11 +47,9 @@ def downgrade() -> None:
         )
         # Attempt to re-create FK constraint by convention.
         # Adjust 'principles.id' if the referenced table/column is different.
-        try:
+        with contextlib.suppress(Exception):
             batch_op.create_foreign_key(
                 "policy_rules_principle_id_fkey", "principles", ["principle_id"], ["id"]
             )
-        except Exception as e:
-            print(f"Could not create constraint 'policy_rules_principle_id_fkey': {e}")
         batch_op.drop_column("source_principle_ids")
     # ### end Alembic commands ###

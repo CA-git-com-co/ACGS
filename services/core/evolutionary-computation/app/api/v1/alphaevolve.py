@@ -161,21 +161,20 @@ async def evaluate_ec_governance(
         )
 
         # Convert proposals to format expected by GS service
-        gs_proposals = []
-        for proposal in request.proposals:
-            gs_proposals.append(
-                {
-                    "proposal_id": proposal.proposal_id,
-                    "algorithm_type": proposal.algorithm_type,
-                    "parameters": proposal.parameters,
-                    "fitness_function": proposal.fitness_function,
-                    "constraints": proposal.constraints,
-                    "objectives": proposal.objectives,
-                    "population_size": proposal.population_size,
-                    "generations": proposal.generations,
-                    "metadata": proposal.metadata,
-                }
-            )
+        gs_proposals = [
+            {
+                "proposal_id": proposal.proposal_id,
+                "algorithm_type": proposal.algorithm_type,
+                "parameters": proposal.parameters,
+                "fitness_function": proposal.fitness_function,
+                "constraints": proposal.constraints,
+                "objectives": proposal.objectives,
+                "population_size": proposal.population_size,
+                "generations": proposal.generations,
+                "metadata": proposal.metadata,
+            }
+            for proposal in request.proposals
+        ]
 
         # Evaluate governance through GS service
         gs_response = await gs_service_client.evaluate_ec_governance(
@@ -263,7 +262,7 @@ async def evaluate_ec_governance(
         return response
 
     except Exception as e:
-        logger.error(f"EC governance evaluation failed: {e}")
+        logger.exception(f"EC governance evaluation failed: {e}")
         raise HTTPException(
             status_code=500, detail=f"Governance evaluation failed: {e!s}"
         )
@@ -334,8 +333,8 @@ async def optimize_ec_algorithm(
 
         # Calculate performance improvements
         performance_improvements = {}
-        for target, _value in request.performance_targets.items():
-            if target in ["efficiency", "accuracy", "convergence_speed"]:
+        for target in request.performance_targets:
+            if target in {"efficiency", "accuracy", "convergence_speed"}:
                 # Estimate improvement based on WINA insights
                 base_improvement = 0.1  # 10% base improvement
                 wina_bonus = wina_insights.get("gflops_reduction", 0.0) * 0.5
@@ -388,7 +387,7 @@ async def optimize_ec_algorithm(
         return response
 
     except Exception as e:
-        logger.error(f"EC algorithm optimization failed: {e}")
+        logger.exception(f"EC algorithm optimization failed: {e}")
         raise HTTPException(
             status_code=500, detail=f"Algorithm optimization failed: {e!s}"
         )
@@ -422,7 +421,7 @@ async def _report_governance_evaluation(
         )
         logger.debug(f"Reported governance evaluation {evaluation_id} to AC service")
     except Exception as e:
-        logger.error(f"Failed to report governance evaluation: {e}")
+        logger.exception(f"Failed to report governance evaluation: {e}")
 
 
 @router.get("/health")
@@ -443,7 +442,7 @@ async def alphaevolve_health_check():
         }
 
     except Exception as e:
-        logger.error(f"AlphaEvolve health check failed: {e}")
+        logger.exception(f"AlphaEvolve health check failed: {e}")
         return {
             "status": "degraded",
             "gs_service_connected": False,

@@ -10,11 +10,10 @@ detection resistant to superficial formatting and spurious attributes.
 import asyncio
 import logging
 import statistics
-import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
+from typing import Any
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
@@ -79,7 +78,7 @@ class BiasTestResult:
 
     test_id: str
     bias_type: BiasType
-    attribute_tested: Union[CausalBiasAttribute, SpuriousBiasAttribute]
+    attribute_tested: CausalBiasAttribute | SpuriousBiasAttribute
     test_type: str  # "causal_sensitivity" or "spurious_invariance"
 
     # Test outcomes
@@ -94,7 +93,7 @@ class BiasTestResult:
 
     # Metadata
     constitutional_hash: str = "cdd01ef066bc6cf2"
-    test_scenarios: Dict[str, Any] = field(default_factory=dict)
+    test_scenarios: dict[str, Any] = field(default_factory=dict)
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
 
@@ -111,13 +110,13 @@ class CausalBiasAnalysisResult(BaseModel):
     robustness_score: float = Field(ge=0.0, le=1.0)
 
     # Detailed results
-    bias_test_results: List[BiasTestResult] = Field(default_factory=list)
-    detected_biases: Dict[str, float] = Field(default_factory=dict)
-    spurious_correlations: Dict[str, float] = Field(default_factory=dict)
+    bias_test_results: list[BiasTestResult] = Field(default_factory=list)
+    detected_biases: dict[str, float] = Field(default_factory=dict)
+    spurious_correlations: dict[str, float] = Field(default_factory=dict)
 
     # Recommendations
-    bias_mitigation_recommendations: List[str] = Field(default_factory=list)
-    robustness_improvements: List[str] = Field(default_factory=list)
+    bias_mitigation_recommendations: list[str] = Field(default_factory=list)
+    robustness_improvements: list[str] = Field(default_factory=list)
 
     # Statistics
     total_tests_performed: int = 0
@@ -165,7 +164,7 @@ class CausalBiasDetector:
         self,
         constitutional_validator: ConstitutionalSafetyValidator,
         blackboard_service: BlackboardService,
-        ai_model_service: Optional[AIModelService] = None,
+        ai_model_service: AIModelService | None = None,
     ):
         """Initialize causal bias detector"""
         self.constitutional_validator = constitutional_validator
@@ -191,9 +190,9 @@ class CausalBiasDetector:
 
     async def analyze_causal_bias(
         self,
-        decision_scenario: Dict[str, Any],
+        decision_scenario: dict[str, Any],
         decision_function: callable,
-        test_attributes: Optional[Dict[str, List]] = None,
+        test_attributes: dict[str, list] | None = None,
         enable_counterfactual_testing: bool = True,
     ) -> CausalBiasAnalysisResult:
         """Perform comprehensive causal bias analysis"""
@@ -296,11 +295,11 @@ class CausalBiasDetector:
 
     async def _test_causal_attribute_sensitivity(
         self,
-        decision_scenario: Dict[str, Any],
+        decision_scenario: dict[str, Any],
         decision_function: callable,
-        causal_attributes: List[CausalBiasAttribute],
+        causal_attributes: list[CausalBiasAttribute],
         enable_counterfactual: bool,
-    ) -> List[BiasTestResult]:
+    ) -> list[BiasTestResult]:
         """Test sensitivity to causal attributes (should be high)"""
 
         test_results = []
@@ -407,11 +406,11 @@ class CausalBiasDetector:
 
     async def _test_spurious_attribute_invariance(
         self,
-        decision_scenario: Dict[str, Any],
+        decision_scenario: dict[str, Any],
         decision_function: callable,
-        spurious_attributes: List[SpuriousBiasAttribute],
+        spurious_attributes: list[SpuriousBiasAttribute],
         enable_counterfactual: bool,
-    ) -> List[BiasTestResult]:
+    ) -> list[BiasTestResult]:
         """Test invariance to spurious attributes (should be high)"""
 
         test_results = []
@@ -451,12 +450,12 @@ class CausalBiasDetector:
                         bias_type=(
                             BiasType.DEMOGRAPHIC
                             if attribute
-                            in [
+                            in {
                                 SpuriousBiasAttribute.GENDER,
                                 SpuriousBiasAttribute.RACE_ETHNICITY,
                                 SpuriousBiasAttribute.AGE,
                                 SpuriousBiasAttribute.RELIGION,
-                            ]
+                            }
                             else BiasType.SELECTION
                         ),
                         attribute_tested=attribute,
@@ -514,22 +513,21 @@ class CausalBiasDetector:
         return test_results
 
     async def _safe_decision_call(
-        self, decision_function: callable, scenario: Dict[str, Any]
+        self, decision_function: callable, scenario: dict[str, Any]
     ) -> Any:
         """Safely call decision function with error handling"""
 
         try:
             if asyncio.iscoroutinefunction(decision_function):
                 return await decision_function(scenario)
-            else:
-                return decision_function(scenario)
+            return decision_function(scenario)
         except Exception as e:
             self.logger.warning(f"Decision function call failed: {e}")
             return {"error": str(e), "approved": False}
 
     async def _generate_causal_improvement(
-        self, scenario: Dict[str, Any], attribute: CausalBiasAttribute
-    ) -> Dict[str, Any]:
+        self, scenario: dict[str, Any], attribute: CausalBiasAttribute
+    ) -> dict[str, Any]:
         """Generate scenario with improved causal attribute"""
 
         improved_scenario = scenario.copy()
@@ -554,8 +552,8 @@ class CausalBiasDetector:
         return improved_scenario
 
     async def _generate_causal_degradation(
-        self, scenario: Dict[str, Any], attribute: CausalBiasAttribute
-    ) -> Dict[str, Any]:
+        self, scenario: dict[str, Any], attribute: CausalBiasAttribute
+    ) -> dict[str, Any]:
         """Generate scenario with degraded causal attribute"""
 
         degraded_scenario = scenario.copy()
@@ -580,8 +578,8 @@ class CausalBiasDetector:
         return degraded_scenario
 
     async def _generate_spurious_variation(
-        self, scenario: Dict[str, Any], attribute: SpuriousBiasAttribute
-    ) -> Dict[str, Any]:
+        self, scenario: dict[str, Any], attribute: SpuriousBiasAttribute
+    ) -> dict[str, Any]:
         """Generate scenario with spurious attribute variation"""
 
         varied_scenario = scenario.copy()
@@ -643,24 +641,22 @@ class CausalBiasDetector:
         # Good invariance: spurious changes should not affect decision
         if baseline_approved == varied_approved:
             return 0.0  # No correlation (good)
-        else:
-            return 1.0  # High correlation (problematic)
+        return 1.0  # High correlation (problematic)
 
     def _extract_decision(self, decision_result: Any) -> bool:
         """Extract boolean decision from result"""
 
         if isinstance(decision_result, bool):
             return decision_result
-        elif isinstance(decision_result, dict):
+        if isinstance(decision_result, dict):
             return decision_result.get("approved", False)
-        elif hasattr(decision_result, "approved"):
+        if hasattr(decision_result, "approved"):
             return decision_result.approved
-        else:
-            return False
+        return False
 
     def _calculate_overall_bias_metrics(
-        self, test_results: List[BiasTestResult]
-    ) -> Dict[str, float]:
+        self, test_results: list[BiasTestResult]
+    ) -> dict[str, float]:
         """Calculate overall bias metrics"""
 
         if not test_results:
@@ -705,8 +701,8 @@ class CausalBiasDetector:
         }
 
     def _identify_detected_biases(
-        self, test_results: List[BiasTestResult]
-    ) -> Dict[str, float]:
+        self, test_results: list[BiasTestResult]
+    ) -> dict[str, float]:
         """Identify specific biases detected"""
 
         detected_biases = {}
@@ -721,8 +717,8 @@ class CausalBiasDetector:
         return detected_biases
 
     def _identify_spurious_correlations(
-        self, test_results: List[BiasTestResult]
-    ) -> Dict[str, float]:
+        self, test_results: list[BiasTestResult]
+    ) -> dict[str, float]:
         """Identify spurious correlations"""
 
         spurious_correlations = {}
@@ -742,26 +738,28 @@ class CausalBiasDetector:
         return spurious_correlations
 
     def _generate_bias_mitigation_recommendations(
-        self, detected_biases: Dict[str, float], spurious_correlations: Dict[str, float]
-    ) -> List[str]:
+        self, detected_biases: dict[str, float], spurious_correlations: dict[str, float]
+    ) -> list[str]:
         """Generate bias mitigation recommendations"""
 
         recommendations = []
 
         if detected_biases:
-            recommendations.append(
-                "Implement bias-aware training with balanced datasets"
+            recommendations.extend(
+                (
+                    "Implement bias-aware training with balanced datasets",
+                    "Add fairness constraints to model optimization",
+                    "Increase diverse representation in training data",
+                )
             )
-            recommendations.append("Add fairness constraints to model optimization")
-            recommendations.append("Increase diverse representation in training data")
 
         if spurious_correlations:
-            recommendations.append(
-                "Apply CARMA-style neutral augmentations for spurious invariance"
-            )
-            recommendations.append("Implement adversarial debiasing techniques")
-            recommendations.append(
-                "Add spurious correlation detection to monitoring pipeline"
+            recommendations.extend(
+                (
+                    "Apply CARMA-style neutral augmentations for spurious invariance",
+                    "Implement adversarial debiasing techniques",
+                    "Add spurious correlation detection to monitoring pipeline",
+                )
             )
 
         # Specific recommendations based on bias types
@@ -776,29 +774,35 @@ class CausalBiasDetector:
         return recommendations
 
     def _generate_robustness_improvements(
-        self, overall_metrics: Dict[str, float], detected_biases: Dict[str, float]
-    ) -> List[str]:
+        self, overall_metrics: dict[str, float], detected_biases: dict[str, float]
+    ) -> list[str]:
         """Generate robustness improvement recommendations"""
 
         improvements = []
 
         if overall_metrics["causal_sensitivity_score"] < 0.7:
-            improvements.append(
-                "Increase causal augmentation training to improve sensitivity"
+            improvements.extend(
+                (
+                    "Increase causal augmentation training to improve sensitivity",
+                    "Add explicit causal attribute training examples",
+                )
             )
-            improvements.append("Add explicit causal attribute training examples")
 
         if overall_metrics["spurious_invariance_score"] < 0.8:
-            improvements.append(
-                "Add neutral augmentations for spurious invariance training"
-            )
-            improvements.append(
-                "Implement regularization against spurious correlations"
+            improvements.extend(
+                (
+                    "Add neutral augmentations for spurious invariance training",
+                    "Implement regularization against spurious correlations",
+                )
             )
 
         if overall_metrics["robustness_score"] < 0.6:
-            improvements.append("Apply comprehensive CARMA training methodology")
-            improvements.append("Implement counterfactual robustness testing")
+            improvements.extend(
+                (
+                    "Apply comprehensive CARMA training methodology",
+                    "Implement counterfactual robustness testing",
+                )
+            )
 
         return improvements
 
@@ -808,7 +812,7 @@ class CausalBiasDetector:
         if "causal" in result.test_type:
             # For causal tests, low bias score is good
             return result.bias_score < 0.3
-        elif "spurious" in result.test_type:
+        if "spurious" in result.test_type:
             # For spurious tests, low correlation is good
             if isinstance(result.attribute_tested, SpuriousBiasAttribute):
                 limit = self.SPURIOUS_CORRELATION_LIMITS.get(
@@ -857,7 +861,7 @@ class CausalBiasDetector:
 
         await self.blackboard.add_knowledge(knowledge_item)
 
-    def get_detection_statistics(self) -> Dict[str, Any]:
+    def get_detection_statistics(self) -> dict[str, Any]:
         """Get bias detection statistics"""
 
         stats = self.detection_stats.copy()

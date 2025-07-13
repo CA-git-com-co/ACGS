@@ -1,3 +1,5 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 # Security Policy
 
 Thank you for helping us keep the inspector secure.

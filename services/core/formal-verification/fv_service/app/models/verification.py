@@ -8,7 +8,7 @@ and verification results with constitutional compliance.
 import uuid
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -45,8 +45,8 @@ class VerificationRequest(BaseModel):
 
     # Verification target
     target_system: str = Field(..., description="System or component to verify")
-    properties: List[str] = Field(..., description="Properties to verify")
-    constraints: List[str] = Field(
+    properties: list[str] = Field(..., description="Properties to verify")
+    constraints: list[str] = Field(
         default_factory=list, description="Verification constraints"
     )
 
@@ -64,7 +64,7 @@ class VerificationRequest(BaseModel):
     safety_critical: bool = Field(default=False)
 
     # Context and metadata
-    context: Dict[str, Any] = Field(
+    context: dict[str, Any] = Field(
         default_factory=dict, description="Verification context"
     )
     requester_id: str = Field(..., description="ID of requesting user/service")
@@ -88,8 +88,8 @@ class ProofObligation(BaseModel):
     # Obligation details
     property_name: str = Field(..., description="Property to prove")
     formula: str = Field(..., description="Logical formula to prove")
-    preconditions: List[str] = Field(default_factory=list, description="Preconditions")
-    postconditions: List[str] = Field(
+    preconditions: list[str] = Field(default_factory=list, description="Preconditions")
+    postconditions: list[str] = Field(
         default_factory=list, description="Postconditions"
     )
 
@@ -128,9 +128,9 @@ class ProofResult(BaseModel):
     proof_complete: bool = Field(..., description="Whether proof is complete")
 
     # Proof details
-    proof_steps: List[str] = Field(default_factory=list, description="Proof steps")
+    proof_steps: list[str] = Field(default_factory=list, description="Proof steps")
     proof_trace: str = Field(default="", description="Detailed proof trace")
-    counterexample: Optional[Dict[str, Any]] = Field(
+    counterexample: dict[str, Any] | None = Field(
         None, description="Counterexample if disproven"
     )
 
@@ -143,7 +143,7 @@ class ProofResult(BaseModel):
 
     # Constitutional compliance
     constitutional_compliance_verified: bool = Field(default=False)
-    constitutional_violations: List[str] = Field(default_factory=list)
+    constitutional_violations: list[str] = Field(default_factory=list)
 
     # Quality metrics
     confidence_score: float = Field(
@@ -173,16 +173,16 @@ class VerificationResult(BaseModel):
     verification_successful: bool = Field(
         ..., description="Overall verification success"
     )
-    properties_verified: List[str] = Field(
+    properties_verified: list[str] = Field(
         default_factory=list, description="Successfully verified properties"
     )
-    properties_failed: List[str] = Field(
+    properties_failed: list[str] = Field(
         default_factory=list, description="Failed properties"
     )
 
     # Proof results
-    proof_obligations: List[ProofObligation] = Field(default_factory=list)
-    proof_results: List[ProofResult] = Field(default_factory=list)
+    proof_obligations: list[ProofObligation] = Field(default_factory=list)
+    proof_results: list[ProofResult] = Field(default_factory=list)
 
     # Verification metrics
     total_time_ms: float = Field(..., description="Total verification time")
@@ -196,7 +196,7 @@ class VerificationResult(BaseModel):
     # Constitutional compliance
     constitutional_compliance_verified: bool = Field(default=False)
     constitutional_compliance_score: float = Field(default=0.0, ge=0.0, le=1.0)
-    constitutional_violations: List[str] = Field(default_factory=list)
+    constitutional_violations: list[str] = Field(default_factory=list)
 
     # Quality assessment
     verification_confidence: float = Field(default=0.0, ge=0.0, le=1.0)
@@ -205,8 +205,8 @@ class VerificationResult(BaseModel):
     )
 
     # Error handling
-    errors: List[str] = Field(default_factory=list, description="Verification errors")
-    warnings: List[str] = Field(
+    errors: list[str] = Field(default_factory=list, description="Verification errors")
+    warnings: list[str] = Field(
         default_factory=list, description="Verification warnings"
     )
 

@@ -20,7 +20,7 @@ import logging
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -87,7 +87,7 @@ class WhatIfToolAnalyzer:
     Google What-If Tool integration for comprehensive model analysis
     """
 
-    def __init__(self, config: Optional[dict[str, Any]] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         self.config = config or {}
         self.alerting = AlertingSystem()
         self.audit_logger = AuditLogger()
@@ -107,7 +107,7 @@ class WhatIfToolAnalyzer:
         self,
         data: pd.DataFrame,
         target_column: str,
-        prediction_column: Optional[str] = None,
+        prediction_column: str | None = None,
     ) -> dict[str, Any]:
         """
         Prepare data for What-If Tool analysis
@@ -127,11 +127,11 @@ class WhatIfToolAnalyzer:
             for _, row in data.iterrows():
                 example = {}
                 for col in data.columns:
-                    if col != target_column and col != prediction_column:
+                    if col not in {target_column, prediction_column}:
                         example[col] = row[col]
 
                 # Add label
-                example["label"] = row[target_column] if target_column in row else 0
+                example["label"] = row.get(target_column, 0)
 
                 # Add prediction if available
                 if prediction_column and prediction_column in row:
@@ -143,20 +143,18 @@ class WhatIfToolAnalyzer:
             feature_names = [
                 col
                 for col in data.columns
-                if col not in [target_column, prediction_column]
+                if col not in {target_column, prediction_column}
             ]
 
-            wit_config = {
+            return {
                 "examples": examples,
                 "feature_names": feature_names,
                 "target_feature": target_column,
                 "data_type": "tabular",
             }
 
-            return wit_config
-
         except Exception as e:
-            logger.error(f"Data preparation for What-If Tool failed: {e}")
+            logger.exception(f"Data preparation for What-If Tool failed: {e}")
             return {"examples": [], "feature_names": [], "error": str(e)}
 
     async def analyze_counterfactuals(
@@ -245,7 +243,7 @@ class WhatIfToolAnalyzer:
             return counterfactuals
 
         except Exception as e:
-            logger.error(f"Counterfactual analysis failed: {e}")
+            logger.exception(f"Counterfactual analysis failed: {e}")
             return await self.analyze_counterfactuals_fallback(
                 model, data, target_column, protected_attribute, num_examples
             )
@@ -301,14 +299,14 @@ class WhatIfToolAnalyzer:
             return counterfactuals
 
         except Exception as e:
-            logger.error(f"Fallback counterfactual analysis failed: {e}")
+            logger.exception(f"Fallback counterfactual analysis failed: {e}")
             return []
 
     async def analyze_feature_importance_bias(
         self,
         model: Any,
         data: pd.DataFrame,
-        protected_attributes: Optional[list[str]] = None,
+        protected_attributes: list[str] | None = None,
     ) -> dict[str, float]:
         """
         Analyze feature importance to detect potential bias sources
@@ -369,7 +367,7 @@ class WhatIfToolAnalyzer:
             return feature_importance
 
         except Exception as e:
-            logger.error(f"Feature importance bias analysis failed: {e}")
+            logger.exception(f"Feature importance bias analysis failed: {e}")
             return {}
 
     async def comprehensive_bias_analysis(
@@ -415,15 +413,19 @@ class WhatIfToolAnalyzer:
             # Generate recommendations
             recommendations = []
             if bias_score > self.bias_thresholds["high"]:
-                recommendations.append(
-                    "High bias detected - immediate intervention required"
+                recommendations.extend(
+                    (
+                        "High bias detected - immediate intervention required",
+                        "Consider retraining with fairness constraints",
+                    )
                 )
-                recommendations.append("Consider retraining with fairness constraints")
             elif bias_score > self.bias_thresholds["medium"]:
-                recommendations.append(
-                    "Moderate bias detected - consider bias mitigation"
+                recommendations.extend(
+                    (
+                        "Moderate bias detected - consider bias mitigation",
+                        "Monitor bias metrics regularly",
+                    )
                 )
-                recommendations.append("Monitor bias metrics regularly")
             elif bias_score > self.bias_thresholds["low"]:
                 recommendations.append("Low bias detected - continue monitoring")
             else:
@@ -470,7 +472,7 @@ class WhatIfToolAnalyzer:
             return result
 
         except Exception as e:
-            logger.error(f"Comprehensive bias analysis failed: {e}")
+            logger.exception(f"Comprehensive bias analysis failed: {e}")
             return BiasAnalysisResult(
                 analysis_type=AnalysisType.BIAS_DETECTION,
                 protected_attribute=protected_attribute,
@@ -491,16 +493,14 @@ class WhatIfToolAnalyzer:
                 # Return probability of positive class for binary classification
                 if predictions.shape[1] == 2:
                     return predictions[:, 1].tolist()
-                else:
-                    return predictions.max(axis=1).tolist()
-            elif hasattr(model, "predict"):
+                return predictions.max(axis=1).tolist()
+            if hasattr(model, "predict"):
                 predictions = model.predict(features)
                 return predictions.tolist()
-            else:
-                # Fallback for unknown model types
-                return [0.5] * len(features)
+            # Fallback for unknown model types
+            return [0.5] * len(features)
         except Exception as e:
-            logger.error(f"Model prediction failed: {e}")
+            logger.exception(f"Model prediction failed: {e}")
             return [0.5] * len(features)
 
     async def generate_wit_report(
@@ -521,7 +521,7 @@ class WhatIfToolAnalyzer:
                     "total_analyses": len(analysis_results),
                     "analysis_timestamp": datetime.utcnow().isoformat(),
                     "protected_attributes_analyzed": list(
-                        set(r.protected_attribute for r in analysis_results)
+                        {r.protected_attribute for r in analysis_results}
                     ),
                 },
                 "bias_scores": {},
@@ -571,7 +571,7 @@ class WhatIfToolAnalyzer:
             return report
 
         except Exception as e:
-            logger.error(f"What-If Tool report generation failed: {e}")
+            logger.exception(f"What-If Tool report generation failed: {e}")
             return {"error": str(e), "timestamp": datetime.utcnow().isoformat()}
 
     def export_for_wit_widget(self, data: pd.DataFrame, model: Any = None) -> str:
@@ -604,7 +604,7 @@ class WhatIfToolAnalyzer:
             return json.dumps(wit_data, default=str, indent=2)
 
         except Exception as e:
-            logger.error(f"What-If Tool export failed: {e}")
+            logger.exception(f"What-If Tool export failed: {e}")
             return json.dumps({"error": str(e)})
 
 
@@ -637,12 +637,8 @@ async def example_usage():
         model, data, "target", "gender"
     )
 
-    print(f"Bias score for gender: {bias_result.bias_score:.3f}")
-    print(f"Recommendations: {bias_result.recommendations}")
-
     # Generate report
-    report = await analyzer.generate_wit_report([bias_result])
-    print(f"Overall risk: {report['overall_risk']}")
+    await analyzer.generate_wit_report([bias_result])
 
 
 if __name__ == "__main__":

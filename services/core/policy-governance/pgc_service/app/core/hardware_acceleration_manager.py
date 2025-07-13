@@ -48,7 +48,6 @@ except ImportError:
     TF_AVAILABLE = False
 
 try:
-    pass
 
     CUPY_AVAILABLE = True
 except ImportError:
@@ -399,11 +398,11 @@ class HardwareAccelerationManager:
             AccelerationType.VECTORIZATION,
         ]
 
-        if target_hardware in [
+        if target_hardware in {
             HardwareType.GPU_NVIDIA,
             HardwareType.GPU_AMD,
             HardwareType.TPU,
-        ]:
+        }:
             base_types.extend(
                 [
                     AccelerationType.MEMORY_OPTIMIZATION,
@@ -527,12 +526,10 @@ class HardwareAccelerationManager:
             return None
 
         # Select device with lowest utilization
-        optimal_device = min(
+        return min(
             available_devices,
             key=lambda d: self.available_hardware[d].utilization_percent,
         )
-
-        return optimal_device
 
     async def _cpu_accelerated_evaluation(
         self, policy_request: dict[str, Any], profile: AccelerationProfile

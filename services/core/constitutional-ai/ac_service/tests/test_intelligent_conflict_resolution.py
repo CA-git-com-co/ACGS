@@ -88,46 +88,48 @@ class TestIntelligentConflictDetector:
         # ensures: Correct function execution
         # sha256: func_hash
         """Test basic conflict detection functionality."""
-        with patch.object(
-            detector, "_get_principles_for_analysis", return_value=mock_principles
+        with (
+            patch.object(
+                detector, "_get_principles_for_analysis", return_value=mock_principles
+            ),
+            patch.object(detector, "_analyze_principles") as mock_analyze,
         ):
-            with patch.object(detector, "_analyze_principles") as mock_analyze:
-                # Mock principle analyses
-                mock_analyze.return_value = [
-                    Mock(
-                        principle_id=1,
-                        semantic_embedding=None,
-                        scope_keywords={"privacy", "data", "user"},
-                        priority_weight=0.8,
-                        stakeholder_impact={"users": 0.9, "developers": 0.3},
-                        temporal_constraints={"immediate": True},
-                        normative_statements=["Users must have control over data"],
-                    ),
-                    Mock(
-                        principle_id=2,
-                        semantic_embedding=None,
-                        scope_keywords={"security", "monitoring", "data"},
-                        priority_weight=0.9,
-                        stakeholder_impact={"users": 0.4, "administrators": 0.9},
-                        temporal_constraints={"immediate": True},
-                        normative_statements=["System must monitor activities"],
-                    ),
-                ]
+            # Mock principle analyses
+            mock_analyze.return_value = [
+                Mock(
+                    principle_id=1,
+                    semantic_embedding=None,
+                    scope_keywords={"privacy", "data", "user"},
+                    priority_weight=0.8,
+                    stakeholder_impact={"users": 0.9, "developers": 0.3},
+                    temporal_constraints={"immediate": True},
+                    normative_statements=["Users must have control over data"],
+                ),
+                Mock(
+                    principle_id=2,
+                    semantic_embedding=None,
+                    scope_keywords={"security", "monitoring", "data"},
+                    priority_weight=0.9,
+                    stakeholder_impact={"users": 0.4, "administrators": 0.9},
+                    temporal_constraints={"immediate": True},
+                    normative_statements=["System must monitor activities"],
+                ),
+            ]
 
-                # Mock database session
-                mock_db = AsyncMock()
+            # Mock database session
+            mock_db = AsyncMock()
 
-                # Run detection
-                conflicts = await detector.detect_conflicts(mock_db)
+            # Run detection
+            conflicts = await detector.detect_conflicts(mock_db)
 
-                # Verify detection results
-                assert isinstance(conflicts, list)
-                # Should detect at least one conflict between privacy and security
-                if conflicts:
-                    conflict = conflicts[0]
-                    assert isinstance(conflict, ConflictDetectionResult)
-                    assert conflict.confidence_score >= 0.0
-                    assert conflict.priority_score >= 0.0
+            # Verify detection results
+            assert isinstance(conflicts, list)
+            # Should detect at least one conflict between privacy and security
+            if conflicts:
+                conflict = conflicts[0]
+                assert isinstance(conflict, ConflictDetectionResult)
+                assert conflict.confidence_score >= 0.0
+                assert conflict.priority_score >= 0.0
 
     @pytest.mark.asyncio
     async def test_semantic_conflict_detection(self, detector):
@@ -355,10 +357,10 @@ class TestHumanEscalationSystem:
         # Critical severity should trigger escalation
         assert escalation_request is not None
         assert isinstance(escalation_request, EscalationRequest)
-        assert escalation_request.escalation_level in [
+        assert escalation_request.escalation_level in {
             EscalationLevel.EMERGENCY_RESPONSE,
             EscalationLevel.CONSTITUTIONAL_COUNCIL,
-        ]
+        }
         assert escalation_request.urgency_score > 0.0
 
     @pytest.mark.asyncio

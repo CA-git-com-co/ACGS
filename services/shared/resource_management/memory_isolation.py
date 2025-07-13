@@ -9,13 +9,11 @@ import asyncio
 import gc
 import logging
 import resource
-import sys
 import threading
 import time
 import tracemalloc
-import weakref
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Set, Union
+from typing import Any
 from uuid import UUID
 
 import psutil
@@ -55,9 +53,9 @@ class TenantMemoryContext:
     """Memory context for a tenant's operations."""
 
     tenant_id: str
-    allocated_objects: Set[int] = field(default_factory=set)
-    memory_snapshots: List[Any] = field(default_factory=list)
-    gc_threshold_override: Optional[tuple] = None
+    allocated_objects: set[int] = field(default_factory=set)
+    memory_snapshots: list[Any] = field(default_factory=list)
+    gc_threshold_override: tuple | None = None
     monitoring_enabled: bool = True
     created_at: float = field(default_factory=time.time)
 
@@ -65,13 +63,9 @@ class TenantMemoryContext:
 class MemoryIsolationError(Exception):
     """Raised when memory isolation constraints are violated."""
 
-    pass
-
 
 class TenantMemoryLimitExceeded(MemoryIsolationError):
     """Raised when a tenant exceeds their memory limit."""
-
-    pass
 
 
 class MemoryIsolationFramework:
@@ -100,18 +94,18 @@ class MemoryIsolationFramework:
         self.constitutional_hash = constitutional_hash
 
         # Tenant memory management
-        self._tenant_limits: Dict[str, MemoryLimit] = {}
-        self._tenant_stats: Dict[str, MemoryUsageStats] = {}
-        self._tenant_contexts: Dict[str, TenantMemoryContext] = {}
+        self._tenant_limits: dict[str, MemoryLimit] = {}
+        self._tenant_stats: dict[str, MemoryUsageStats] = {}
+        self._tenant_contexts: dict[str, TenantMemoryContext] = {}
 
         # Monitoring and control
         self._monitoring_active = False
-        self._monitoring_thread: Optional[threading.Thread] = None
+        self._monitoring_thread: threading.Thread | None = None
         self._shutdown_event = threading.Event()
 
         # Memory tracking
         self._enable_tracemalloc = enable_tracemalloc
-        self._memory_snapshots: List[Any] = []
+        self._memory_snapshots: list[Any] = []
 
         # System monitoring
         self._process = psutil.Process()
@@ -126,7 +120,7 @@ class MemoryIsolationFramework:
         """Get system memory limit from various sources."""
         try:
             # Try to get from resource limits first
-            soft_limit, hard_limit = resource.getrlimit(resource.RLIMIT_AS)
+            _soft_limit, hard_limit = resource.getrlimit(resource.RLIMIT_AS)
             if hard_limit != resource.RLIM_INFINITY:
                 return hard_limit
         except (OSError, AttributeError):
@@ -141,10 +135,10 @@ class MemoryIsolationFramework:
 
     def register_tenant(
         self,
-        tenant_id: Union[str, UUID],
-        soft_limit: Optional[int] = None,
-        hard_limit: Optional[int] = None,
-        growth_rate_limit: Optional[int] = None,
+        tenant_id: str | UUID,
+        soft_limit: int | None = None,
+        hard_limit: int | None = None,
+        growth_rate_limit: int | None = None,
     ) -> None:
         """Register a tenant with memory limits."""
         if isinstance(tenant_id, UUID):
@@ -199,7 +193,7 @@ class MemoryIsolationFramework:
             f"soft={soft_limit}, hard={hard_limit}"
         )
 
-    def unregister_tenant(self, tenant_id: Union[str, UUID]) -> None:
+    def unregister_tenant(self, tenant_id: str | UUID) -> None:
         """Unregister a tenant and clean up memory tracking."""
         if isinstance(tenant_id, UUID):
             tenant_id = str(tenant_id)
@@ -215,9 +209,7 @@ class MemoryIsolationFramework:
 
         logger.info(f"Unregistered tenant {tenant_id} from memory isolation")
 
-    def set_tenant_context(
-        self, tenant_id: Union[str, UUID]
-    ) -> "TenantMemoryContextManager":
+    def set_tenant_context(self, tenant_id: str | UUID) -> "TenantMemoryContextManager":
         """Set memory context for tenant operations."""
         if isinstance(tenant_id, UUID):
             tenant_id = str(tenant_id)
@@ -272,7 +264,7 @@ class MemoryIsolationFramework:
             if context and context.monitoring_enabled:
                 # Use tracemalloc if available
                 if self._enable_tracemalloc and tracemalloc.is_tracing():
-                    current, peak = tracemalloc.get_traced_memory()
+                    current, _peak = tracemalloc.get_traced_memory()
                     # This is a rough estimation - in practice you'd need more sophisticated tracking
                     tenant_usage = (
                         current // len(self._tenant_contexts)
@@ -296,11 +288,11 @@ class MemoryIsolationFramework:
                 return tenant_usage
 
         except Exception as e:
-            logger.error(f"Failed to get memory usage for tenant {tenant_id}: {e}")
+            logger.exception(f"Failed to get memory usage for tenant {tenant_id}: {e}")
 
         return self._tenant_stats[tenant_id].current_usage
 
-    def get_tenant_stats(self, tenant_id: str) -> Optional[MemoryUsageStats]:
+    def get_tenant_stats(self, tenant_id: str) -> MemoryUsageStats | None:
         """Get memory statistics for a tenant."""
         if tenant_id not in self._tenant_stats:
             return None
@@ -309,7 +301,7 @@ class MemoryIsolationFramework:
         self.get_tenant_memory_usage(tenant_id)
         return self._tenant_stats[tenant_id]
 
-    def get_all_tenant_stats(self) -> Dict[str, MemoryUsageStats]:
+    def get_all_tenant_stats(self) -> dict[str, MemoryUsageStats]:
         """Get memory statistics for all tenants."""
         stats = {}
         for tenant_id in self._tenant_stats:
@@ -342,7 +334,7 @@ class MemoryIsolationFramework:
         logger.debug(f"Forced GC for tenant {tenant_id}, collected {collected} objects")
         return collected
 
-    def optimize_tenant_memory(self, tenant_id: str) -> Dict[str, Any]:
+    def optimize_tenant_memory(self, tenant_id: str) -> dict[str, Any]:
         """Optimize memory usage for a specific tenant."""
         if tenant_id not in self._tenant_contexts:
             return {"error": "Tenant not found"}
@@ -389,12 +381,12 @@ class MemoryIsolationFramework:
 
     def detect_memory_leaks(
         self, tenant_id: str, threshold_mb: int = 50
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Detect potential memory leaks for a tenant."""
         if tenant_id not in self._tenant_contexts:
             return {"error": "Tenant not found"}
 
-        context = self._tenant_contexts[tenant_id]
+        self._tenant_contexts[tenant_id]
         stats = self._tenant_stats[tenant_id]
 
         # Check for consistent growth pattern
@@ -488,16 +480,16 @@ class MemoryIsolationFramework:
                                 )
 
                     except Exception as e:
-                        logger.error(f"Error monitoring tenant {tenant_id}: {e}")
+                        logger.exception(f"Error monitoring tenant {tenant_id}: {e}")
 
                 # Wait for next monitoring interval
                 self._shutdown_event.wait(self.monitoring_interval)
 
             except Exception as e:
-                logger.error(f"Error in memory monitoring loop: {e}")
+                logger.exception(f"Error in memory monitoring loop: {e}")
                 self._shutdown_event.wait(self.monitoring_interval)
 
-    def get_system_memory_info(self) -> Dict[str, Any]:
+    def get_system_memory_info(self) -> dict[str, Any]:
         """Get overall system memory information."""
         try:
             virtual_memory = psutil.virtual_memory()
@@ -515,7 +507,7 @@ class MemoryIsolationFramework:
                 "constitutional_hash": self.constitutional_hash,
             }
         except Exception as e:
-            logger.error(f"Failed to get system memory info: {e}")
+            logger.exception(f"Failed to get system memory info: {e}")
             return {"error": str(e)}
 
     def cleanup(self) -> None:
@@ -572,10 +564,10 @@ class MemoryIsolationFramework:
             )
 
         except Exception as e:
-            logger.error(f"Failed to log memory violation: {e}")
+            logger.exception(f"Failed to log memory violation: {e}")
 
     async def _log_memory_optimization(
-        self, tenant_id: str, optimization_result: Dict[str, Any]
+        self, tenant_id: str, optimization_result: dict[str, Any]
     ):
         """Log memory optimization event."""
         try:
@@ -598,7 +590,7 @@ class MemoryIsolationFramework:
             )
 
         except Exception as e:
-            logger.error(f"Failed to log memory optimization: {e}")
+            logger.exception(f"Failed to log memory optimization: {e}")
 
 
 class TenantMemoryContextManager:

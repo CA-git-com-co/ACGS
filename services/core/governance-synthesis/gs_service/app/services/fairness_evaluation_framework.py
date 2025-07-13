@@ -6,7 +6,6 @@ claims in domains without protected attributes, and provides proper fairness
 evaluation for appropriate domains.
 """
 
-import json
 import logging
 from dataclasses import dataclass
 from enum import Enum
@@ -345,7 +344,7 @@ class FairnessEvaluationFramework:
     ) -> FairnessMetric:
         """Calculate demographic parity (statistical parity)."""
         # Use the first protected attribute for simplicity
-        attr_name = list(protected_attributes.keys())[0]
+        attr_name = next(iter(protected_attributes.keys()))
         attr_values = protected_attributes[attr_name]
 
         # Calculate selection rates by group
@@ -383,7 +382,7 @@ class FairnessEvaluationFramework:
         threshold: float,
     ) -> FairnessMetric:
         """Calculate equalized odds (equal TPR and FPR across groups)."""
-        attr_name = list(protected_attributes.keys())[0]
+        attr_name = next(iter(protected_attributes.keys()))
         attr_values = protected_attributes[attr_name]
 
         unique_groups = list(set(attr_values))
@@ -448,7 +447,7 @@ class FairnessEvaluationFramework:
         threshold: float,
     ) -> FairnessMetric:
         """Calculate calibration (predictive accuracy by group)."""
-        attr_name = list(protected_attributes.keys())[0]
+        attr_name = next(iter(protected_attributes.keys()))
         attr_values = protected_attributes[attr_name]
 
         unique_groups = list(set(attr_values))
@@ -486,7 +485,7 @@ class FairnessEvaluationFramework:
         threshold: float,
     ) -> FairnessMetric:
         """Calculate predictive parity (equal PPV across groups)."""
-        attr_name = list(protected_attributes.keys())[0]
+        attr_name = next(iter(protected_attributes.keys()))
         attr_values = protected_attributes[attr_name]
 
         unique_groups = list(set(attr_values))
@@ -532,7 +531,7 @@ class FairnessEvaluationFramework:
         threshold: float,
     ) -> FairnessMetric:
         """Calculate treatment equality (equal FN/FP ratio across groups)."""
-        attr_name = list(protected_attributes.keys())[0]
+        attr_name = next(iter(protected_attributes.keys()))
         attr_values = protected_attributes[attr_name]
 
         unique_groups = list(set(attr_values))
@@ -642,17 +641,15 @@ def run_fairness_evaluation_example():
     framework = FairnessEvaluationFramework()
 
     # Example 1: Arithmetic domain (should not evaluate fairness)
-    arithmetic_result = framework.evaluate_domain_fairness(
+    framework.evaluate_domain_fairness(
         domain_type=DomainType.ARITHMETIC,
         predictions=[1, 0, 1, 0],
         ground_truth=[1, 0, 1, 1],
         protected_attributes={},
     )
-    print("Arithmetic domain result:")
-    print(json.dumps(arithmetic_result, indent=2))
 
     # Example 2: Hiring domain (should evaluate fairness)
-    hiring_result = framework.evaluate_domain_fairness(
+    framework.evaluate_domain_fairness(
         domain_type=DomainType.HIRING,
         predictions=[1, 0, 1, 0, 1, 0, 1, 0],
         ground_truth=[1, 0, 1, 1, 1, 0, 0, 0],
@@ -679,8 +676,6 @@ def run_fairness_evaluation_example():
             ],
         },
     )
-    print("\nHiring domain result:")
-    print(json.dumps(hiring_result, indent=2))
 
 
 if __name__ == "__main__":

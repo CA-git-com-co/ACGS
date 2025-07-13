@@ -8,22 +8,18 @@ and automated fitness scoring for the ACGS framework.
 import asyncio
 import logging
 import time
-import uuid
-from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import redis.asyncio as aioredis
 from prometheus_client import Counter, Gauge, Histogram
 
 from ..models.evolution import (
     EvolutionRequest,
-    EvolutionResult,
     EvolutionStatus,
     FitnessMetrics,
     Individual,
-    Population,
 )
-from ..models.oversight import OversightLevel, RiskAssessment, RiskLevel
+from ..models.oversight import RiskAssessment, RiskLevel
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -39,15 +35,15 @@ class EvolutionEngine:
     targets for optimal performance in the ACGS framework.
     """
 
-    def __init__(self, redis_client: Optional[aioredis.Redis] = None):
+    def __init__(self, redis_client: aioredis.Redis | None = None):
         """Initialize the evolution engine."""
         self.redis = redis_client
         self.setup_metrics()
 
         # Evolution tracking with O(1) lookups
-        self.active_evolutions: Dict[str, EvolutionRequest] = {}
-        self.evolution_cache: Dict[str, Any] = {}
-        self.fitness_cache: Dict[str, FitnessMetrics] = {}
+        self.active_evolutions: dict[str, EvolutionRequest] = {}
+        self.evolution_cache: dict[str, Any] = {}
+        self.fitness_cache: dict[str, FitnessMetrics] = {}
 
         # Configuration
         self.auto_approval_threshold = 0.95
@@ -130,7 +126,7 @@ class EvolutionEngine:
             return request.evolution_id
 
         except Exception as e:
-            logger.error(f"Failed to submit evolution request: {e}")
+            logger.exception(f"Failed to submit evolution request: {e}")
             self.evolution_requests_total.labels(
                 evolution_type=request.evolution_type.value, status="failed"
             ).inc()
@@ -143,9 +139,7 @@ class EvolutionEngine:
                     f"Evolution submission took {duration:.2f}ms (>5ms target)"
                 )
 
-    async def get_evolution_status(
-        self, evolution_id: str
-    ) -> Optional[EvolutionRequest]:
+    async def get_evolution_status(self, evolution_id: str) -> EvolutionRequest | None:
         """
         Get evolution status with O(1) lookup performance.
 
@@ -286,7 +280,6 @@ class EvolutionEngine:
                 )
 
             # Additional constitutional validation would go here
-            pass
 
     async def _process_evolution_request(self, request: EvolutionRequest) -> None:
         """Process evolution request asynchronously."""
@@ -299,7 +292,7 @@ class EvolutionEngine:
 
             # Determine if human oversight is required
             if (
-                risk_assessment.overall_risk in [RiskLevel.HIGH, RiskLevel.CRITICAL]
+                risk_assessment.overall_risk in {RiskLevel.HIGH, RiskLevel.CRITICAL}
                 or request.human_oversight_required
             ):
                 request.status = EvolutionStatus.HUMAN_REVIEW
@@ -309,7 +302,9 @@ class EvolutionEngine:
                 await self._run_evolution_process(request)
 
         except Exception as e:
-            logger.error(f"Evolution process failed for {request.evolution_id}: {e}")
+            logger.exception(
+                f"Evolution process failed for {request.evolution_id}: {e}"
+            )
             request.status = EvolutionStatus.FAILED
 
     async def _assess_evolution_risk(self, request: EvolutionRequest) -> RiskAssessment:
@@ -338,7 +333,7 @@ class EvolutionEngine:
         request.status = EvolutionStatus.COMPLETED
         logger.info(f"Evolution process completed for {request.evolution_id}")
 
-    def _get_fitness_cache_key(self, genotype: Dict[str, Any]) -> str:
+    def _get_fitness_cache_key(self, genotype: dict[str, Any]) -> str:
         """Generate cache key for fitness evaluation."""
         import hashlib
         import json

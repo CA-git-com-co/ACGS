@@ -147,7 +147,7 @@ class DatabaseConnectionManager:
         except Exception as e:
             query_time = time.time() - start_time
             self._update_pool_metrics(pool_name, query_time, success=False)
-            logger.error(f"Query failed in pool '{pool_name}': {e}")
+            logger.exception(f"Query failed in pool '{pool_name}': {e}")
             raise
 
     def _update_pool_metrics(self, pool_name: str, query_time: float, success: bool):
@@ -494,7 +494,7 @@ class InfrastructureIntegrationManager:
                 metrics.total_requests,
             )
         except Exception as e:
-            logger.error(f"Failed to store metrics in database: {e}")
+            logger.exception(f"Failed to store metrics in database: {e}")
 
     async def get_performance_analytics(
         self, service_type: ServiceType, time_range_hours: int = 24
@@ -526,7 +526,7 @@ class InfrastructureIntegrationManager:
                 "instance_analytics": [dict(row) for row in results],
             }
         except Exception as e:
-            logger.error(f"Failed to get performance analytics: {e}")
+            logger.exception(f"Failed to get performance analytics: {e}")
             return {}
 
     async def get_system_health_summary(self) -> dict[str, Any]:
@@ -534,7 +534,7 @@ class InfrastructureIntegrationManager:
         cache_stats = await self.redis_cache.get_cache_stats()
 
         db_stats = {}
-        for pool_name in self.db_manager.pools.keys():
+        for pool_name in self.db_manager.pools:
             db_stats[pool_name] = await self.db_manager.get_pool_stats(pool_name)
 
         return {
@@ -609,7 +609,7 @@ async def initialize_load_balancing_schema(db_manager: DatabaseConnectionManager
             await db_manager.execute_query("metrics", query)
             logger.info("Load balancing schema initialized successfully")
         except Exception as e:
-            logger.error(f"Failed to initialize schema: {e}")
+            logger.exception(f"Failed to initialize schema: {e}")
 
 
 async def get_infrastructure_manager() -> InfrastructureIntegrationManager:

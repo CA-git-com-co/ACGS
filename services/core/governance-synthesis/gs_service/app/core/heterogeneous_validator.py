@@ -274,7 +274,7 @@ class HeterogeneousValidator:
             result = await validator.validate(policy_data, context)
             return (name, result)
         except Exception as exc:
-            logger.error(f"{name} validator failed with exception: {exc}")
+            logger.exception(f"{name} validator failed with exception: {exc}")
             return (
                 name,
                 ValidationResult(

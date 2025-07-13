@@ -18,11 +18,11 @@ from .pgc_client import pgc_service_client
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 __all__ = [
-    "ac_service_client",
     "DataIntegrationPipeline",
     "EvolutionService",
     "FitnessService",
-    "gs_service_client",
     "HITLService",
+    "ac_service_client",
+    "gs_service_client",
     "pgc_service_client",
 ]

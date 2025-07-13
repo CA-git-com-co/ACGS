@@ -6,14 +6,17 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import asyncio
+import contextlib
 import time
 from datetime import datetime, timezone
-from typing import Any, Optional
+from typing import Any
 
 import httpx
-
-from ..utils.constitutional import CONSTITUTIONAL_HASH, ensure_constitutional_compliance
-from ..utils.logging import get_logger, performance_logger
+from app.utils.constitutional import (
+    CONSTITUTIONAL_HASH,
+    ensure_constitutional_compliance,
+)
+from app.utils.logging import get_logger, performance_logger
 
 logger = get_logger("services.registry")
 
@@ -54,12 +57,12 @@ class ServiceRegistryClient:
 
         # Registration state
         self.is_registered = False
-        self.registration_id: Optional[str] = None
-        self.last_health_check: Optional[datetime] = None
+        self.registration_id: str | None = None
+        self.last_health_check: datetime | None = None
         self._start_time = time.time()  # Track service start time for metrics
 
         # Health check task
-        self.health_check_task: Optional[asyncio.Task] = None
+        self.health_check_task: asyncio.Task | None = None
 
         logger.info(
             "Service registry client initialized",
@@ -147,16 +150,15 @@ class ServiceRegistryClient:
                 await self._start_health_checks()
 
                 return True
-            else:
-                logger.error(
-                    f"Service registration failed: {response.status_code}",
-                    extra={
-                        "status_code": response.status_code,
-                        "response": response.text,
-                        "constitutional_hash": CONSTITUTIONAL_HASH,
-                    },
-                )
-                return False
+            logger.error(
+                f"Service registration failed: {response.status_code}",
+                extra={
+                    "status_code": response.status_code,
+                    "response": response.text,
+                    "constitutional_hash": CONSTITUTIONAL_HASH,
+                },
+            )
+            return False
 
         except httpx.RequestError as e:
             logger.error(
@@ -197,7 +199,7 @@ class ServiceRegistryClient:
                 headers={"X-Constitutional-Hash": CONSTITUTIONAL_HASH},
             )
 
-            if response.status_code in [200, 404]:
+            if response.status_code in {200, 404}:
                 self.is_registered = False
                 self.registration_id = None
 
@@ -207,15 +209,14 @@ class ServiceRegistryClient:
                 )
 
                 return True
-            else:
-                logger.error(
-                    f"Service deregistration failed: {response.status_code}",
-                    extra={
-                        "status_code": response.status_code,
-                        "constitutional_hash": CONSTITUTIONAL_HASH,
-                    },
-                )
-                return False
+            logger.error(
+                f"Service deregistration failed: {response.status_code}",
+                extra={
+                    "status_code": response.status_code,
+                    "constitutional_hash": CONSTITUTIONAL_HASH,
+                },
+            )
+            return False
 
         except httpx.RequestError as e:
             logger.error(
@@ -232,7 +233,7 @@ class ServiceRegistryClient:
             )
             return False
 
-    async def discover_service(self, service_name: str) -> Optional[dict[str, Any]]:
+    async def discover_service(self, service_name: str) -> dict[str, Any] | None:
         """
         Discover another service in the registry.
 
@@ -270,22 +271,21 @@ class ServiceRegistryClient:
                 )
 
                 return service_info
-            elif response.status_code == 404:
+            if response.status_code == 404:
                 logger.info(
                     f"Service not found: {service_name}",
                     extra={"constitutional_hash": CONSTITUTIONAL_HASH},
                 )
                 return None
-            else:
-                logger.error(
-                    f"Service discovery failed: {response.status_code}",
-                    extra={
-                        "service_name": service_name,
-                        "status_code": response.status_code,
-                        "constitutional_hash": CONSTITUTIONAL_HASH,
-                    },
-                )
-                return None
+            logger.error(
+                f"Service discovery failed: {response.status_code}",
+                extra={
+                    "service_name": service_name,
+                    "status_code": response.status_code,
+                    "constitutional_hash": CONSTITUTIONAL_HASH,
+                },
+            )
+            return None
 
         except httpx.RequestError as e:
             logger.error(
@@ -325,10 +325,11 @@ class ServiceRegistryClient:
                 services = response.json()
 
                 # Validate constitutional compliance
-                valid_services = []
-                for service in services:
-                    if self._validate_service_response(service):
-                        valid_services.append(service)
+                valid_services = [
+                    service
+                    for service in services
+                    if self._validate_service_response(service)
+                ]
 
                 logger.info(
                     f"Listed {len(valid_services)} services",
@@ -339,15 +340,14 @@ class ServiceRegistryClient:
                 )
 
                 return valid_services
-            else:
-                logger.error(
-                    f"Service listing failed: {response.status_code}",
-                    extra={
-                        "status_code": response.status_code,
-                        "constitutional_hash": CONSTITUTIONAL_HASH,
-                    },
-                )
-                return []
+            logger.error(
+                f"Service listing failed: {response.status_code}",
+                extra={
+                    "status_code": response.status_code,
+                    "constitutional_hash": CONSTITUTIONAL_HASH,
+                },
+            )
+            return []
 
         except httpx.RequestError as e:
             logger.error(
@@ -383,10 +383,8 @@ class ServiceRegistryClient:
         """Stop periodic health checks."""
         if self.health_check_task:
             self.health_check_task.cancel()
-            try:
+            with contextlib.suppress(asyncio.CancelledError):
                 await self.health_check_task
-            except asyncio.CancelledError:
-                pass
             self.health_check_task = None
 
             logger.info(
@@ -515,7 +513,7 @@ class ServiceRegistryClient:
                 "metrics_available": False,
             }
         except Exception as e:
-            logger.error(f"Error collecting system metrics: {e}")
+            logger.exception(f"Error collecting system metrics: {e}")
             return {
                 "uptime_seconds": 0,
                 "memory_usage_mb": 0,
@@ -533,11 +531,7 @@ class ServiceRegistryClient:
 
         # Check for required fields
         required_fields = ["service_name", "service_url", "health_check_url"]
-        for field in required_fields:
-            if field not in service_data:
-                return False
-
-        return True
+        return all(field in service_data for field in required_fields)
 
     def get_status(self) -> dict[str, Any]:
         """Get service registry client status."""

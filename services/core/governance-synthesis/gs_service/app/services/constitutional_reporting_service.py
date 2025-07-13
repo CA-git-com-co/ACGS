@@ -218,7 +218,7 @@ class ConstitutionalReportingService:
             return report
 
         except Exception as e:
-            logger.error(f"Error generating compliance report: {e}")
+            logger.exception(f"Error generating compliance report: {e}")
             self.metrics.record_error("report_generation_error", "error")
             raise
 
@@ -273,7 +273,7 @@ class ConstitutionalReportingService:
             )
 
         except Exception as e:
-            logger.error(f"Error collecting compliance metrics: {e}")
+            logger.exception(f"Error collecting compliance metrics: {e}")
             raise
 
     def _calculate_reporting_period(
@@ -373,7 +373,7 @@ class ConstitutionalReportingService:
             return trends
 
         except Exception as e:
-            logger.error(f"Error performing trend analysis: {e}")
+            logger.exception(f"Error performing trend analysis: {e}")
             return []
 
     async def _generate_recommendations(
@@ -404,15 +404,17 @@ class ConstitutionalReportingService:
             )
 
         # Trend-based recommendations
-        for trend in trends:
-            if trend.trend_direction == "declining" and trend.significance in [
+        recommendations.extend(
+            f"Declining trend detected in {trend.metric_name} "
+            f"({trend.change_percentage:.1f}% decrease). Investigate root causes."
+            for trend in trends
+            if trend.trend_direction == "declining"
+            and trend.significance
+            in {
                 "critical",
                 "moderate",
-            ]:
-                recommendations.append(
-                    f"Declining trend detected in {trend.metric_name} "
-                    f"({trend.change_percentage:.1f}% decrease). Investigate root causes."
-                )
+            }
+        )
 
         return recommendations
 
@@ -444,7 +446,7 @@ class ConstitutionalReportingService:
             ]
 
         except Exception as e:
-            logger.error(f"Error collecting active alerts: {e}")
+            logger.exception(f"Error collecting active alerts: {e}")
             return []
 
     async def _generate_report_summary(
@@ -485,7 +487,7 @@ class ConstitutionalReportingService:
             # Count active critical alerts
             critical_alerts = sum(1 for a in alerts if a.get("severity") == "high")
 
-            summary = f"""
+            return f"""
 Constitutional Compliance Summary:
 
 Overall Health: {health_status} ({overall_health:.1%})
@@ -509,10 +511,8 @@ Key Achievements:
 - {metrics.stakeholder_engagement:.1%} stakeholder engagement rate
             """.strip()
 
-            return summary
-
         except Exception as e:
-            logger.error(f"Error generating report summary: {e}")
+            logger.exception(f"Error generating report summary: {e}")
             return "Error generating summary"
 
     async def send_notification(
@@ -541,7 +541,7 @@ Key Achievements:
             return False
 
         except Exception as e:
-            logger.error(f"Error sending notification: {e}")
+            logger.exception(f"Error sending notification: {e}")
             return False
 
     async def _send_email_notification(
@@ -554,7 +554,7 @@ Key Achievements:
             return True
 
         except Exception as e:
-            logger.error(f"Error sending email notification: {e}")
+            logger.exception(f"Error sending email notification: {e}")
             return False
 
     async def _send_webhook_notification(
@@ -567,5 +567,5 @@ Key Achievements:
             return True
 
         except Exception as e:
-            logger.error(f"Error sending webhook notification: {e}")
+            logger.exception(f"Error sending webhook notification: {e}")
             return False

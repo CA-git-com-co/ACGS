@@ -8,8 +8,7 @@ Core entities for audit trail management and system integrity verification.
 import hashlib
 import json
 from datetime import datetime
-from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from services.shared.domain.base import (
     Entity,
@@ -46,7 +45,7 @@ class AuditEntry(Entity):
         tenant_id: TenantId,
         event_type: str,
         event_source: str,
-        event_data: Dict[str, Any],
+        event_data: dict[str, Any],
         context: AuditContext,
         level: AuditLevel,
         category: AuditCategory,
@@ -95,7 +94,7 @@ class AuditEntry(Entity):
         """Verify entry integrity by recalculating hash."""
         return self._hash == self._calculate_hash()
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "entry_id": str(self.id),
@@ -130,15 +129,15 @@ class AuditTrail(MultiTenantAggregateRoot):
         self.trail_name = trail_name
         self.description = description
         self.category = category
-        self._entries: List[AuditEntry] = []
+        self._entries: list[AuditEntry] = []
         self._hash_chain = HashChain()
         self.created_at = datetime.utcnow()
         self.last_updated = datetime.utcnow()
         self._sealed = False
-        self._archive_date: Optional[datetime] = None
+        self._archive_date: datetime | None = None
 
     @property
-    def entries(self) -> List[AuditEntry]:
+    def entries(self) -> list[AuditEntry]:
         """Get audit entries (read-only)."""
         return self._entries.copy()
 
@@ -158,7 +157,7 @@ class AuditTrail(MultiTenantAggregateRoot):
         return self._sealed
 
     @property
-    def archive_date(self) -> Optional[datetime]:
+    def archive_date(self) -> datetime | None:
         """Get archive date if archived."""
         return self._archive_date
 
@@ -166,7 +165,7 @@ class AuditTrail(MultiTenantAggregateRoot):
         self,
         event_type: str,
         event_source: str,
-        event_data: Dict[str, Any],
+        event_data: dict[str, Any],
         context: AuditContext,
         level: AuditLevel = AuditLevel.INFO,
     ) -> EntityId:
@@ -218,7 +217,7 @@ class AuditTrail(MultiTenantAggregateRoot):
         # Verify each entry
         for i, entry in enumerate(self._entries):
             if not entry.verify_integrity():
-                errors.append(f"Entry {i+1} (ID: {entry.id}) has invalid hash")
+                errors.append(f"Entry {i + 1} (ID: {entry.id}) has invalid hash")
 
         # Verify hash chain
         if not self._verify_hash_chain():
@@ -296,13 +295,13 @@ class AuditTrail(MultiTenantAggregateRoot):
             )
         )
 
-    def get_entries_by_level(self, level: AuditLevel) -> List[AuditEntry]:
+    def get_entries_by_level(self, level: AuditLevel) -> list[AuditEntry]:
         """Get entries filtered by audit level."""
         return [entry for entry in self._entries if entry.level == level]
 
     def get_entries_by_timerange(
         self, start_time: datetime, end_time: datetime
-    ) -> List[AuditEntry]:
+    ) -> list[AuditEntry]:
         """Get entries within specified time range."""
         return [
             entry
@@ -310,11 +309,11 @@ class AuditTrail(MultiTenantAggregateRoot):
             if start_time <= entry.timestamp <= end_time
         ]
 
-    def get_entries_by_source(self, event_source: str) -> List[AuditEntry]:
+    def get_entries_by_source(self, event_source: str) -> list[AuditEntry]:
         """Get entries from specific event source."""
         return [entry for entry in self._entries if entry.event_source == event_source]
 
-    def search_entries(self, query: Dict[str, Any]) -> List[AuditEntry]:
+    def search_entries(self, query: dict[str, Any]) -> list[AuditEntry]:
         """Search entries based on query criteria."""
         results = self._entries.copy()
 
@@ -349,7 +348,7 @@ class AuditTrail(MultiTenantAggregateRoot):
 
         return results
 
-    def get_trail_statistics(self) -> Dict[str, Any]:
+    def get_trail_statistics(self) -> dict[str, Any]:
         """Get statistics about the audit trail."""
         if not self._entries:
             return {
@@ -404,7 +403,7 @@ class AuditTrail(MultiTenantAggregateRoot):
 
         return rebuilt_chain.current_hash == self._hash_chain.current_hash
 
-    def _check_timestamp_gaps(self) -> List[str]:
+    def _check_timestamp_gaps(self) -> list[str]:
         """Check for unusual gaps in timestamps."""
         if len(self._entries) < 2:
             return []
@@ -419,7 +418,7 @@ class AuditTrail(MultiTenantAggregateRoot):
             if time_diff.total_seconds() > 3600:
                 warnings.append(
                     f"Large time gap ({time_diff}) between entries "
-                    f"{sorted_entries[i-1].id} and {sorted_entries[i].id}"
+                    f"{sorted_entries[i - 1].id} and {sorted_entries[i].id}"
                 )
 
         return warnings
@@ -437,18 +436,18 @@ class IntegrityMonitor(MultiTenantAggregateRoot):
         monitor_id: EntityId,
         tenant_id: TenantId,
         monitor_name: str,
-        monitored_components: List[str],
+        monitored_components: list[str],
     ):
         super().__init__(monitor_id, tenant_id)
         self.monitor_name = monitor_name
         self.monitored_components = monitored_components.copy()
-        self._integrity_checks: List[IntegrityCheckResult] = []
+        self._integrity_checks: list[IntegrityCheckResult] = []
         self._violation_count = 0
         self.last_check = datetime.utcnow()
         self.created_at = datetime.utcnow()
 
     @property
-    def integrity_checks(self) -> List[IntegrityCheckResult]:
+    def integrity_checks(self) -> list[IntegrityCheckResult]:
         """Get integrity check history."""
         return self._integrity_checks.copy()
 
@@ -466,7 +465,7 @@ class IntegrityMonitor(MultiTenantAggregateRoot):
 
         self.last_check = datetime.utcnow()
 
-    def get_integrity_status(self) -> Dict[str, Any]:
+    def get_integrity_status(self) -> dict[str, Any]:
         """Get current integrity status."""
         if not self._integrity_checks:
             return {"status": "unknown", "last_check": None, "violation_rate": 0.0}

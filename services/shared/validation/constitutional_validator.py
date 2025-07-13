@@ -4,7 +4,7 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 from datetime import datetime, timezone
-from typing import Any, Dict, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -61,7 +61,7 @@ class ConstitutionalResponse(ConstitutionalBaseModel):
     )
 
 
-def validate_constitutional_compliance(data: Dict[str, Any]) -> bool:
+def validate_constitutional_compliance(data: dict[str, Any]) -> bool:
     """
     Utility function to validate constitutional compliance in data.
 
@@ -74,7 +74,7 @@ def validate_constitutional_compliance(data: Dict[str, Any]) -> bool:
     return data.get("constitutional_hash") == CONSTITUTIONAL_HASH
 
 
-def ensure_constitutional_compliance(data: Dict[str, Any]) -> Dict[str, Any]:
+def ensure_constitutional_compliance(data: dict[str, Any]) -> dict[str, Any]:
     """
     Utility function to ensure constitutional compliance in data.
 

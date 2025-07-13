@@ -32,7 +32,6 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 # WINA imports
 try:
-    pass
 
     # sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', 'shared'))  # Removed during reorganization
     from wina.config import load_wina_config_from_env
@@ -302,7 +301,7 @@ class WINAEnforcementOptimizer:
             return result
 
         except Exception as e:
-            logger.error(f"WINA enforcement optimization failed: {e}")
+            logger.exception(f"WINA enforcement optimization failed: {e}")
             errors.append(str(e))
 
             # Fallback to standard enforcement
@@ -339,7 +338,7 @@ class WINAEnforcementOptimizer:
             # Analyze context requirements
             has_constitutional_requirements = bool(context.constitutional_requirements)
             has_performance_constraints = bool(context.performance_constraints)
-            is_high_priority = context.priority_level in ["high", "critical"]
+            is_high_priority = context.priority_level in {"high", "critical"}
 
             # Get WINA insights for strategy selection
             wina_insights = await self._get_wina_strategy_insights(context, policies)
@@ -513,7 +512,7 @@ class WINAEnforcementOptimizer:
             return enforcement_result
 
         except Exception as e:
-            logger.error(f"Enforcement strategy execution failed: {e}")
+            logger.exception(f"Enforcement strategy execution failed: {e}")
             return {
                 "decision": "deny",
                 "reason": f"Enforcement execution failed: {e!s}",
@@ -649,12 +648,10 @@ class WINAEnforcementOptimizer:
                 request = await self._apply_standard_strategy(request, policies)
 
             # Execute OPA evaluation
-            response = await self.opa_client.evaluate_policy(request)
-
-            return response
+            return await self.opa_client.evaluate_policy(request)
 
         except Exception as e:
-            logger.error(f"OPA evaluation with strategy failed: {e}")
+            logger.exception(f"OPA evaluation with strategy failed: {e}")
             raise
 
     async def _apply_constitutional_priority_strategy(
@@ -744,7 +741,7 @@ class WINAEnforcementOptimizer:
             }
 
         except Exception as e:
-            logger.error(f"OPA response processing failed: {e}")
+            logger.exception(f"OPA response processing failed: {e}")
             return {
                 "decision": "deny",
                 "reason": f"Response processing failed: {e!s}",
@@ -852,7 +849,7 @@ class WINAEnforcementOptimizer:
                 }
                 matching_rules.append(rule_info)
 
-        return matching_rules if matching_rules else None
+        return matching_rules or None
 
     async def _generate_wina_insights(
         self,
@@ -943,8 +940,7 @@ class WINAEnforcementOptimizer:
             return 0.0
 
         # Simple heuristic: more constitutional requirements = higher risk
-        risk_score = min(len(context.constitutional_requirements) * 0.2, 1.0)
-        return risk_score
+        return min(len(context.constitutional_requirements) * 0.2, 1.0)
 
     async def _analyze_performance_benefit(
         self, context: EnforcementContext, policies: list[IntegrityPolicyRule]

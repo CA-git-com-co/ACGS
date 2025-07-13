@@ -1,3 +1,5 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 Generate a short title based on the first message a user begins a conversation with. CRITICAL: Your response must be EXACTLY one line with NO line breaks, newlines, or multiple sentences.
 
 Requirements:

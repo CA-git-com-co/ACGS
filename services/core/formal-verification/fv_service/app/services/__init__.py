@@ -14,8 +14,8 @@ from .z3_solver import Z3ConstitutionalSolver
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 __all__ = [
-    "ac_service_client",
     "FormalVerificationService",
-    "integrity_service_client",
     "Z3ConstitutionalSolver",
+    "ac_service_client",
+    "integrity_service_client",
 ]
