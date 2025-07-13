@@ -1,5 +1,5 @@
 # Constitutional Hash: cdd01ef066bc6cf2
-name: ACGS: Comprehensive Security Scanning
+name: "ACGS: Comprehensive Security Scanning"
 
 on:
   # Reduced triggers to avoid redundancy with cost-optimized-ci.yml

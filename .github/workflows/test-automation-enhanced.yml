@@ -413,12 +413,12 @@ jobs:
             
             # Extract key metrics from benchmark results
             python -c "
-import json
-with open('${{ env.TEST_RESULTS_DIR }}/benchmark-results.json') as f:
-    data = json.load(f)
-    for test in data['benchmarks']:
-        print(f\"- {test['name']}: {test['stats']['mean']:.4f}s (±{test['stats']['stddev']:.4f}s)\")
-" >> ${{ env.TEST_RESULTS_DIR }}/performance-report.md
+            import json
+            with open('${{ env.TEST_RESULTS_DIR }}/benchmark-results.json') as f:
+                data = json.load(f)
+                for test in data['benchmarks']:
+                    print(f\"- {test['name']}: {test['stats']['mean']:.4f}s (±{test['stats']['stddev']:.4f}s)\")
+            " >> ${{ env.TEST_RESULTS_DIR }}/performance-report.md
           fi
 
       - name: Upload performance results

@@ -1,5 +1,5 @@
 # Constitutional Hash: cdd01ef066bc6cf2
-name: ACGS: CI/CD with UV
+name: "ACGS: CI/CD with UV"
 
 on:
   push:
